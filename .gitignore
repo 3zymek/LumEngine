@@ -11,6 +11,7 @@
 *.sln.docstates
 *.env
 
+<<<<<<< HEAD
 # Visual Studio
 *.vcxproj*
 *.sln
@@ -23,6 +24,8 @@ Debug/
 Release/
 
 
+=======
+>>>>>>> 8fc6d2d7721c34e34a910b24faa4002fdb46e5ef
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
