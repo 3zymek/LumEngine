@@ -13,9 +13,8 @@
 	#define ABSTRACT_CLASS	class
 #endif // _WIN32
 
-
 #define DEBUG_ENGINE
-#define DEBUG_EVENT
+//#define DEBUG_EVENT
 
 #ifdef DEBUG_ENGINE
 	#define ENGINE_LOG(x) \

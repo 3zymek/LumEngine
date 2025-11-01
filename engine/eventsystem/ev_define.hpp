@@ -1,8 +1,8 @@
 #pragma once
 #include "e_define.hpp"
 #include "ev_base.hpp"
-#include <vector>
 #include <functional>
+#include <vector>
 
 namespace ev {
 	namespace detail {
