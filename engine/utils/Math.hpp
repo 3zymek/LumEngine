@@ -1,8 +1,8 @@
 #pragma once
 #include <cmath>
-#include "config.hpp"
+#include "e_define.hpp"
 
-namespace Math {
+namespace math {
 
 	constexpr float PI = 3.141592f;
 

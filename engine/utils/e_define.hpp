@@ -15,8 +15,11 @@
 
 
 #define DEBUG_ENGINE
+#define DEBUG_EVENT
+
 #ifdef DEBUG_ENGINE
-	#define LOG_ENGINE(x) std::cout << "[ENGINE] " << x << '\n';
+	#define ENGINE_LOG(x) \
+		do { std::cout << "[ENGINE] " << x << '\n'; } while(0);
 #else
 	#define LOG_ENGINE(x)
 #endif // DEBUG_ENGINE

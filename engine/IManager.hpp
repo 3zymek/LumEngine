@@ -1,6 +1,3 @@
 #pragma once
-#include "config.hpp"
-ABSTRACT_CLASS IManager {
-public:
-	virtual ~IManager() = default;
-};
+#include "e_define.hpp"
+ABSTRACT_CLASS IManager { public: virtual ~IManager() = default; };
