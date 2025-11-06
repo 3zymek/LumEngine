@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿#include <iostream>
 #include "ev_manager.hpp"
 #include "ev_listener.hpp"
@@ -52,3 +53,16 @@ int main()
 
     return 0;
 }
+=======
+﻿#include "ev_bus.hpp"
+#include <iostream>
+struct test : public ev::detail::BaseEvent {
+    test(int a) : t(a) {}
+    int t;
+};
+int main() {
+
+
+
+}
+>>>>>>> 312f60e (backup)
