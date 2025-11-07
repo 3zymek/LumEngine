@@ -12,23 +12,23 @@ namespace math {
 		Vector2()			: x(0), y(0)				{}
 		Vector2(T _x, T _y) : x(_x), y(_y)	{}
 
-		FORCEINLINE float getLength() const {
+		force_inline float getLength() const {
 			return static_cast<float>(std::sqrt ( x * x + y * y));
 		}
-		FORCEINLINE Vector2<T> normalize() {
+		force_inline Vector2<T> normalize() {
 			float length = getLength();
 			return { x / length, y / length };
 		}
-		FORCEINLINE Vector2<T> operator+(const Vector2<T>& other) {
+		force_inline Vector2<T> operator+(const Vector2<T>& other) {
 			return { x + other.x, y + other.y };
 		}
-		FORCEINLINE Vector2<T> operator-(const Vector2<T>& other) {
+		force_inline Vector2<T> operator-(const Vector2<T>& other) {
 			return { x - other.x, y - other.y };
 		}
-		FORCEINLINE Vector2<T> operator*(const Vector2<T>& other) {
+		force_inline Vector2<T> operator*(const Vector2<T>& other) {
 			return { x * other.x, y * other.y };
 		}
-		FORCEINLINE Vector2<T> operator/(const Vector2<T>& other) {
+		force_inline Vector2<T> operator/(const Vector2<T>& other) {
 			return { x / other.x, y / other.y };
 		}
 

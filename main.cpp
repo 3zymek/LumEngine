@@ -56,13 +56,26 @@ int main()
 =======
 ﻿#include "ev_bus.hpp"
 #include <iostream>
-struct test : public ev::detail::BaseEvent {
+#include <fmod.hpp>
+#include <e_define.hpp>
+#include "entity.hpp"
+#include "c_audio_emitter.hpp"
+#include "audio_manager.hpp"
+struct test {
+    Event;
     test(int a) : t(a) {}
     int t;
 };
 int main() {
+<<<<<<< HEAD
 
 
 
 }
 >>>>>>> 312f60e (backup)
+=======
+    Entity e;
+    auto audio = e.AddComponent<AudioEmitterComponent>();
+    audio->get().id = audio::AudioManager::Global().CreateEmitter();
+}
+>>>>>>> 0c3c2bd (working events, ecs and audio in progress)

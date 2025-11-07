@@ -1,16 +1,15 @@
 #pragma once	
 #include <iostream>
-#define NODISCARD		[[nodiscard]]
-#define NORETURN		[[noreturn]]
-#define LIKELEY			[[likely]]
-#define MAYBE_UNUSED	[[maybe_unused]]
+
+#define static_class class
 
 #ifdef _WIN32
-	#define FORCEINLINE		__forceinline
-	#define ABSTRACT_CLASS	class __declspec(novtable)
+	#define force_inline		__forceinline
+	#define abstract_class		class __declspec(novtable)
+
 #else
-	#define FORCEINLINE		inline
-	#define ABSTRACT_CLASS	class
+	#define force_inline		inline
+	#define abstract_class		class
 #endif // _WIN32
 
 

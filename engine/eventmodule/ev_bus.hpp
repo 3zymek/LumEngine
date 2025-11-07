@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <functional>
-#include "ev_base.hpp"
 #include "e_define.hpp"
 #include "ev_define.hpp"
 #include "ev_pool.hpp"
@@ -17,10 +16,10 @@ namespace ev {
 		void RegisterPool();
 
 		template<detail::EventT T, typename Arg>
-		NODISCARD detail::CallbackID Subscribe(Arg&& args);
+		[[nodiscard]] detail::CallbackID Subscribe(Arg&& args);
 
 		template<detail::EventT T, typename Arg>
-		NODISCARD detail::CallbackID SubscribePermamently(Arg&& args);
+		[[nodiscard]] detail::CallbackID SubscribePermamently(Arg&& args);
 
 		template<detail::EventT T>
 		void Unsubscribe(const detail::CallbackID&);

@@ -1,38 +1,28 @@
 #pragma once
 #include "ecs_define.hpp"
 #include "ecs_manager.hpp"
-
-
-
-
-
-ABSTRACT_CLASS Entity {
+abstract_class Entity {
 public:
 
-	Entity(ecs::EntityManager* manager) : m_manager(manager) {}
-	~Entity() = default;
+	force_inline const ecs::detail::EntityID& GetID() { return m_entityID; }
 
-	FORCEINLINE const ecs::detail::EntityID& GetID() { return m_entityID; }
-
-	template<typename CompT>
-	FORCEINLINE void AddComponent() {
-		m_manager->AddComponent<CompT>(GetID());
+	template<ecs::detail::Component T>
+	force_inline std::optional<std::reference_wrapper<T>> AddComponent() {
+		return ecs::EntityManager::Global().AddComponent<T>(m_entityID);
 	}
 
 	template<typename CompT>
-	FORCEINLINE void DeleteComponent() {
-		m_manager->DeleteComponent<CompT>(GetID());
+	force_inline void DeleteComponent() {
+		ecs::EntityManager::Global().DeleteComponent<CompT>(GetID());
 	}
 	
 	template<typename CompT>
-	FORCEINLINE std::optional<std::reference_wrapper<CompT>> GetComponent() {
-		return m_manager->GetComponent<CompT>(GetID());
+	force_inline std::optional<std::reference_wrapper<CompT>> GetComponent() {
+		return ecs::EntityManager::Global().GetComponent<CompT>(GetID());
 	}
-
+	
 private:
 
-	ecs::EntityManager* m_manager;
-
-	ecs::detail::EntityID m_entityID;
+	ecs::detail::EntityID m_entityID = ecs::detail::GenerateEntityID::Get();
 
 };

@@ -16,21 +16,21 @@ namespace ev {
 				m_permament_callbacks.reserve(256);
 			}
 
-			FORCEINLINE void PushEvent(const T& event) {
+			force_inline void PushEvent(const T& event) {
 				m_events.push_back(std::move(event));
 			}
-			FORCEINLINE void SubscribeCallback(const CallbackWrapper<T>& callback) {
+			force_inline void SubscribeCallback(const CallbackWrapper<T>& callback) {
 				m_callbacks.push_back(std::move(callback));
 			}
-			FORCEINLINE void SubscribePermamently(const CallbackWrapper<T>& callback) {
+			force_inline void SubscribePermamently(const CallbackWrapper<T>& callback) {
 				m_permament_callbacks.push_back(std::move(callback));
 			}
-			FORCEINLINE void Unsubscribe(const CallbackID& id) {
+			force_inline void Unsubscribe(const CallbackID& id) {
 				m_callbacks.erase(std::remove_if(m_callbacks.begin(), m_callbacks.end(), [id](const CallbackWrapper<T>& call) {
 					return call.GetID() == id;
 					}), m_callbacks.end());
 			}
-			FORCEINLINE void Process() override {
+			force_inline void Process() override {
 				for (auto& ev : m_events) {
 					for (auto& call : m_callbacks) {
 						auto& callback = call.GetCallback();

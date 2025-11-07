@@ -1,6 +1,5 @@
 #pragma once
 #include "e_define.hpp"
-#include "ev_base.hpp"
 #include <vector>
 #include <functional>
 
@@ -8,9 +7,11 @@ namespace ev {
 	namespace detail {
 
 		constexpr int MAX_EVENT_TYPES = 20;
+		#define Event \
+			constexpr static bool isEvent = true;
 
 		template<typename T>
-		concept EventT = std::is_base_of_v<BaseEvent, T> and !std::is_same_v<BaseEvent, T>;
+		concept EventT = requires { T::isEvent; };
 
 		template<EventT T>
 		using Callback			= std::function<void(const T&)>;
@@ -38,12 +39,12 @@ namespace ev {
 
 		template<EventT T>
 		struct CallbackIDGenerator {
-			FORCEINLINE static CallbackID Get() {
+			force_inline static CallbackID Get() {
 				return Count()++;
 			}
 		private:
 			CallbackIDGenerator() {}
-			FORCEINLINE static CallbackID& Count() {
+			force_inline static CallbackID& Count() {
 				static CallbackID globalID = 0;
 				return globalID;
 			}
@@ -51,13 +52,13 @@ namespace ev {
 
 		struct EventTypeID {
 			template<EventT T>
-			FORCEINLINE static EventType_t Get() {
+			force_inline static EventType_t Get() {
 				static EventType_t typeID = Count()++;
 				return typeID;
 			}
 		private:
 			EventTypeID() {}
-			FORCEINLINE static EventType_t& Count() {
+			force_inline static EventType_t& Count() {
 				static EventType_t globalID = 0;
 				return globalID;
 			}

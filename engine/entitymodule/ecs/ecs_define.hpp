@@ -1,37 +1,43 @@
 #pragma once
 #include "e_define.hpp"
+#include <type_traits>
 
-namespace ecs {
+namespace ecs::detail {
 
-	namespace detail {
+#define ComponentTag \
+        static constexpr bool isComponent = true;
 
-		class BaseComponent;
+    template<typename T>
+    concept Component =
+        requires { T::isComponent; }&&
+    std::is_trivially_copyable_v<T>&&
+        std::is_trivially_destructible_v<T>;
 
-		using EntityID = uint32_t;
-		using EntityTypeID = uint32_t;
+    using EntityID = uint32_t;
+    using EntityTypeID = uint32_t;
 
-		struct EntityTypeIndex {
-			template<class EntityType>
-			static EntityTypeID get() {
-				static EntityTypeID id = count()++;
-				return id;
-			}
-		private:
-			static EntityTypeID& count() {
-				static EntityTypeID globalID = 0;
-				return globalID;
-			}
-		};
+    constexpr unsigned int MAX_POOL_CAPACITY = 10000;
 
-	#define ECS_ASSERT(expr, msg) \
-		do { if(!(expr)) throw std::runtime_error(msg); } while(0);
-
-	#define ECS_ASSERT_IS_COMPONENT(T) \
-		static_assert(std::is_base_of_v<ecs::detail::BaseComponent, T> and !std::is_same_v<ecs::detail::BaseComponent, T>, "Component must be derived from BaseComponent");
-
-	#define ECS_ASSERT_IS_SYSTEM(T) \
-
-	}
+    struct GenerateEntityID {
+        static EntityID Get() {
+            static EntityID globalID = 0;
+            return globalID++;
+        }
+    private:
+        GenerateEntityID() {}
+    };
 
 
+    struct EntityTypeIndex {
+        template<class EntityType>
+        static EntityTypeID get() {
+            static EntityTypeID id = count()++;
+            return id;
+        }
+    private:
+        static EntityTypeID& count() {
+            static EntityTypeID globalID = 0;
+            return globalID;
+        }
+    };
 }

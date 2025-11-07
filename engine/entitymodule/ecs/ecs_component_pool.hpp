@@ -1,48 +1,36 @@
 #pragma once
-#include <unordered_map>
 #include "ecs_define.hpp"
+#include <sparse_set.hpp>
 #include <optional>
+
+struct BasePool {};
+
 namespace ecs {
-
 	namespace detail {
-
-		ABSTRACT_CLASS BasePool {};
-
-		template<class Comp_t>
+		template<Component T>
 		class ComponentPool : public BasePool {
 		public:
-			
-			FORCEINLINE void Add(EntityID _id) {
-				m_components.emplace_back();
-				m_owners.push_back(_id);
+
+			force_inline std::optional<std::reference_wrapper<T>> Add(const EntityID& _id) {
+				if (m_components.contains(_id)) return std::nullopt;
+				T component;
+				m_components.append(component, _id);
+				return std::ref(m_components[_id]);
 			}
-			FORCEINLINE void Delete(EntityID _id) {
-				for (size_t i = 0; i < m_components.size(); i++) {
-					if (m_owners[i] == _id) {
-						std::swap(m_owners[i], m_owners.back());
-						m_owners.pop_back();
-						std::swap(m_components[i], m_components.back());
-						m_components.pop_back();
-						return;
-					}
-				}
+			force_inline void Remove(const EntityID& _id) {
+				if (m_components.contains(_id)) m_components.remove(_id);
 			}
-			FORCEINLINE std::optional<std::reference_wrapper<Comp_t>> Get(EntityID _id) {
-				for (size_t i = 0; i < m_components.size(); i++) {
-					if (m_owners[i] == _id) {
-						return std::ref(m_components[i]);
-					}
-				}
+			force_inline std::optional<std::reference_wrapper<T>> Get(const EntityID& _id) {
+				if (m_components.contains(_id)) return std::ref(m_components[_id]);
 				return std::nullopt;
 			}
 
 		private:
 
-			std::vector<Comp_t> m_components;
-			std::vector<EntityID> m_owners;
+			cstd::sparse_set<T> m_components{ MAX_POOL_CAPACITY };
 
 		};
 
-	}
 
+	}
 }
