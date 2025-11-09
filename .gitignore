@@ -19,9 +19,12 @@
 *.obj
 *.exe
 *.pdb
+*.dll
+*.lib
 bin/
 Debug/
 Release/
+build/
 
 
 =======

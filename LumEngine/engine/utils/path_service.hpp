@@ -4,7 +4,9 @@
 struct PathService {
 	PathService() = delete;
 	inline static void SetRoot(const std::string& root) noexcept {
-		g_root = std::filesystem::absolute(root);
+		auto exe_path = std::filesystem::current_path();
+		g_root = exe_path.parent_path();
+		g_root = g_root / "lumengine" / root;
 	}
 	inline static std::string Resolve(const std::string& relative) noexcept {
 		return (g_root / relative).string();

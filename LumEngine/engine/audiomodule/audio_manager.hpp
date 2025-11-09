@@ -30,6 +30,7 @@ namespace audio {
 			if (!m_name_to_id.contains(_file)) {
 				FMOD::Sound* sound = nullptr;
 				auto path = PathService::Resolve(_file);
+				std::cout << path;
 				m_audio_system->createSound(path.c_str(), _mode, nullptr, &sound);
 				AudioID id = GenerateAudioID::Get();
 				m_sounds.append(sound, id);
