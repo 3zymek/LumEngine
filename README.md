@@ -1,4 +1,4 @@
-# H1 **HOW TO BUILD**
+# **HOW TO BUILD**
 
 1. Download zip file
 2. Unpack zip file
@@ -7,4 +7,6 @@
 5. Go into "build" folder and run LumEngine.sln
 6. Done
 
-## H3 **NOTE: If projects doesn't compile, set LumEngine project as startup project (it will be fixed soon)**
+## **NOTE: If projects doesn't compile, set LumEngine project as startup project (it will be fixed soon)**
+
+And thanks for downloading (even if it isn't finished yet)
