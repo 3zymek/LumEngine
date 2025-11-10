@@ -6,4 +6,8 @@ set "build_dir=%real_root_dir%\build"
 echo Building Project...
 if not exist %build_dir% mkdir %build_dir%
 cd /d %build_dir%
+<<<<<<< HEAD
 cmake %real_root_dir%
+=======
+cmake %real_root_dir%
+>>>>>>> 2193e3f (fixed building, vectors3 with C core)
