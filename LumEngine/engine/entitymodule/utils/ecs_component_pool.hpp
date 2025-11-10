@@ -1,6 +1,6 @@
 #pragma once
 #include "ecs_define.hpp"
-#include <sparse_set.hpp>
+#include "utils/sparse_set.hpp"
 #include <optional>
 
 struct BasePool {};

@@ -1,5 +1,5 @@
 #pragma once
-#include "e_define.hpp"
+#include "utils/e_define.hpp"
 #include <type_traits>
 
 namespace ecs::detail {
@@ -11,7 +11,7 @@ namespace ecs::detail {
     concept Component =
         requires { T::isComponent; }&&
     std::is_trivially_copyable_v<T>&&
-        std::is_trivially_destructible_v<T>;
+    std::is_trivially_destructible_v<T>;
 
     using EntityID = uint32_t;
     using EntityTypeID = uint32_t;

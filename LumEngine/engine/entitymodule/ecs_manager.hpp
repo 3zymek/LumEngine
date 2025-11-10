@@ -1,6 +1,6 @@
 #pragma once
-#include "ecs_define.hpp"
-#include "ecs_component_pool.hpp"
+#include "entitymodule/utils/ecs_define.hpp"
+#include "entitymodule/utils/ecs_component_pool.hpp"
 #include <unordered_map>
 #include <iostream>
 namespace ecs {

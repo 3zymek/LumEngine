@@ -7,21 +7,23 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 file(GLOB_RECURSE ENGINE_SOURCES "${CMAKE_SOURCE_DIR}/lumengine/engine/*.cpp")
 file(GLOB_RECURSE ENGINE_HEADERS "${CMAKE_SOURCE_DIR}/lumengine/engine/*.hpp")
 file(GLOB_RECURSE ENGINE_IPP "${CMAKE_SOURCE_DIR}/lumengine/engine/*.ipp")
+file(GLOB_RECURSE ENGINE_C "${CMAKE_SOURCE_DIR}/lumengine/engine/*.c")
+file(GLOB_RECURSE ENGINE_H "${CMAKE_SOURCE_DIR}/lumengine/engine/*.h")
 
-add_executable(LumEngine ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${ENGINE_IPP})
+add_executable(LumEngine ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${ENGINE_IPP} ${ENGINE_H} ${ENGINE_C})
 
-foreach(src ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${ENGINE_IPP})
+foreach(src ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${ENGINE_IPP} ${ENGINE_H} ${ENGINE_C})
     file(RELATIVE_PATH rel_path "${CMAKE_SOURCE_DIR}/lumengine/engine" "${src}")
     get_filename_component(folder ${rel_path} PATH)
     string(REPLACE "/" "\\" folder "${folder}")
     source_group("${folder}" FILES "${src}")
 endforeach(src ${ENGINE_SOURCES} ${ENGINE_HEADERS})
 
-target_include_directories(LumEngine PRIVATE
-    "${CMAKE_SOURCE_DIR}/lumengine/external/fmod/inc"
+target_include_directories(LumEngine PUBLIC
     "${CMAKE_SOURCE_DIR}/lumengine/engine"
-    "${CMAKE_SOURCE_DIR}/lumengine/engine/utils"
-    "${CMAKE_SOURCE_DIR}/lumengine/engine/eventmodule"
+    "${CMAKE_SOURCE_DIR}/lumengine/engine/utils/math"
+    "${CMAKE_SOURCE_DIR}/lumengine/engine/entitymodule"
+    "${CMAKE_SOURCE_DIR}/lumengine/external/fmod/inc"
     )
 target_link_directories(LumEngine PRIVATE "${CMAKE_SOURCE_DIR}/lumengine/external/fmod/lib")
 target_link_libraries(LumEngine PRIVATE "fmod_vc.lib")

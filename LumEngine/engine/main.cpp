@@ -1,17 +1,15 @@
-#include "ev_bus.hpp"
 #include <iostream>
 #include "audiomodule/audio_manager.hpp"
 #include "utils/path_service.hpp"
-<<<<<<< HEAD
+#include "entitymodule/entity.hpp"
+#include "entitymodule/components/c_audio_emitter.hpp"
 int main() {
-=======
-#include "math/vec3f.hpp"
-int main() {
-
->>>>>>> 2193e3f (fixed building, vectors3 with C core)
 	PathService::SetRoot("assets");
 	audio::AudioManager::Global().Init();
 	audio::AudioManager::Global().LoadSound("test.wav", FMOD_2D);
-	audio::AudioManager::Global().Play("test.wav");
+	Entity e;
+	auto comp = e.AddComponent<AudioEmitterComponent>();
+	comp->emitterID = audio::AudioManager::Global().CreateEmitter();
+	auto* emitter = audio::AudioManager::Global().GetEmitter(comp->emitterID);
 	while(true) {}
 }

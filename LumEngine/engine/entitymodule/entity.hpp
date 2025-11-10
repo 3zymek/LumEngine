@@ -1,5 +1,5 @@
 #pragma once
-#include "ecs_define.hpp"
+#include "entitymodule/utils/ecs_define.hpp"
 #include "ecs_manager.hpp"
 abstract_class Entity {
 public:
