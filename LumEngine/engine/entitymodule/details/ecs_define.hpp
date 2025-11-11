@@ -2,7 +2,14 @@
 #include "utils/e_define.hpp"
 #include <type_traits>
 
+namespace ecs {
+    using EntityID = uint32_t;
+}
+
 namespace ecs::detail {
+
+    constexpr unsigned int MAX_POOL_CAPACITY    = 10000;
+    constexpr unsigned int MAX_ENTITY_COUNT     = 10000;
 
 #define ComponentTag \
         static constexpr bool isComponent = true;
@@ -13,10 +20,7 @@ namespace ecs::detail {
     std::is_trivially_copyable_v<T>&&
     std::is_trivially_destructible_v<T>;
 
-    using EntityID = uint32_t;
-    using EntityTypeID = uint32_t;
-
-    constexpr unsigned int MAX_POOL_CAPACITY = 10000;
+    using ComponentTypeID = uint32_t;
 
     struct GenerateEntityID {
         static EntityID Get() {
@@ -28,15 +32,15 @@ namespace ecs::detail {
     };
 
 
-    struct EntityTypeIndex {
+    struct ComponentTypeIndex {
         template<class EntityType>
-        static EntityTypeID get() {
-            static EntityTypeID id = count()++;
+        static ComponentTypeID get() {
+            static ComponentTypeID id = count()++;
             return id;
         }
     private:
-        static EntityTypeID& count() {
-            static EntityTypeID globalID = 0;
+        static ComponentTypeID& count() {
+            static ComponentTypeID globalID = 0;
             return globalID;
         }
     };

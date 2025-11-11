@@ -1,9 +1,9 @@
 #pragma once
 #include <iostream>
 #include <functional>
-#include "e_define.hpp"
-#include "ev_define.hpp"
-#include "ev_pool.hpp"
+#include "utils/e_define.hpp"
+#include "eventmodule/details/ev_define.hpp"
+#include "eventmodule/details/ev_pool.hpp"
 namespace ev {
 
 	class EventBus {
@@ -16,10 +16,10 @@ namespace ev {
 		void RegisterPool();
 
 		template<detail::EventT T, typename Arg>
-		[[nodiscard]] detail::CallbackID Subscribe(Arg&& args);
+		detail::CallbackID Subscribe(Arg&& args);
 
 		template<detail::EventT T, typename Arg>
-		[[nodiscard]] detail::CallbackID SubscribePermamently(Arg&& args);
+		detail::CallbackID SubscribePermamently(Arg&& args);
 
 		template<detail::EventT T>
 		void Unsubscribe(const detail::CallbackID&);

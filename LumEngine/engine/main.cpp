@@ -1,15 +1,16 @@
 #include <iostream>
-#include "audiomodule/audio_manager.hpp"
 #include "utils/path_service.hpp"
-#include "entitymodule/entity.hpp"
-#include "entitymodule/components/c_audio_emitter.hpp"
+#include "lum_audio.hpp"
+#include "lum_ecs.hpp"
+#include "lum_events.hpp"
 int main() {
 	PathService::SetRoot("assets");
 	audio::AudioManager::Global().Init();
-	audio::AudioManager::Global().LoadSound("test.wav", FMOD_2D);
+	audio::AudioManager::Global().LoadSound("test", "C:/Users/szymo/Desktop/LumEngine/LumEngine/assets/test.wav", FMOD_3D);
 	Entity e;
 	auto comp = e.AddComponent<AudioEmitterComponent>();
-	comp->emitterID = audio::AudioManager::Global().CreateEmitter();
-	auto* emitter = audio::AudioManager::Global().GetEmitter(comp->emitterID);
-	while(true) {}
+	auto audio = audio::AudioManager::Global().CreateEmitter();
+	audio.AddClip("test");
+	audio.PlayClip("test");
+	while (true) { ev::EventBus::Global().ProcessAll(); }
 }

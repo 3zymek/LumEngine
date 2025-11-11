@@ -1,5 +1,5 @@
 #pragma once
-#include "ev_bus.hpp"
+#include "eventmodule/details/ev_bus.hpp"
 namespace ev {
 	template<detail::EventT T>
 	void EventBus::RegisterPool() {

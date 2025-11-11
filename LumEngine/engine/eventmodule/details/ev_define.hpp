@@ -1,5 +1,5 @@
 #pragma once
-#include "e_define.hpp"
+#include "utils/e_define.hpp"
 #include <vector>
 #include <functional>
 
@@ -7,7 +7,7 @@ namespace ev {
 	namespace detail {
 
 		constexpr int MAX_EVENT_TYPES = 20;
-		#define lumEvent \
+		#define LumEventTag \
 			constexpr static bool isEvent = true;
 
 		template<typename T>

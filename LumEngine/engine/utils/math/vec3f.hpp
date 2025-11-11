@@ -1,6 +1,6 @@
 #pragma once
 #include "initial/vec3f.h"
-#include "e_define.hpp"
+#include "utils/e_define.hpp"
 
 // Wrapper for Vector3D from C to C++
 class Vec3f {

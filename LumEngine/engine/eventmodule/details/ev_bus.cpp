@@ -1,4 +1,4 @@
-#include "ev_bus.hpp"
+#include "eventmodule/details/ev_bus.hpp"
 namespace ev {
 	void EventBus::ProcessAll() {
 		for (size_t i = 0; i < detail::MAX_EVENT_TYPES; i++) {

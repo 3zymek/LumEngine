@@ -1,10 +1,10 @@
 #pragma once
-#include "entitymodule/utils/ecs_define.hpp"
-#include "ecs_manager.hpp"
+#include "entitymodule/details/ecs_define.hpp"
+#include "entitymodule/details/ecs_manager.hpp"
 abstract_class Entity {
 public:
 
-	force_inline const ecs::detail::EntityID& GetID() { return m_entityID; }
+	force_inline const ecs::EntityID& GetID() { return m_entityID; }
 
 	template<ecs::detail::Component T>
 	force_inline T* AddComponent() {
@@ -23,6 +23,6 @@ public:
 	
 private:
 
-	ecs::detail::EntityID m_entityID = ecs::detail::GenerateEntityID::Get();
+	ecs::EntityID m_entityID = ecs::detail::GenerateEntityID::Get();
 
 };

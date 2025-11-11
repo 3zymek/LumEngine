@@ -1,6 +1,6 @@
 #pragma once
-#include "ev_define.hpp"
-#include "ev_bus.hpp"
+#include "eventmodule/details/ev_define.hpp"
+#include "eventmodule/details/ev_bus.hpp"
 #include <vector>
 namespace ev {
 
