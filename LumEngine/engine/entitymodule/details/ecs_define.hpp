@@ -1,18 +1,30 @@
 #pragma once
 #include "utils/e_define.hpp"
 #include <type_traits>
-
+#include <exception>
 namespace ecs {
     using EntityID = uint32_t;
 }
 
 namespace ecs::detail {
 
-    constexpr unsigned int MAX_POOL_CAPACITY    = 10000;
-    constexpr unsigned int MAX_ENTITY_COUNT     = 10000;
+    class UniqueComponentAlreadyExists : std::exception {
+        std::string msg;
+    public:
+        UniqueComponentAlreadyExists(const std::string& m) noexcept : msg(m) {}
+        const char* what() const noexcept override {
+            return msg.c_str();
+        }
+    };
 
-#define ComponentTag \
+    constexpr unsigned int MAX_POOL_CAPACITY            = 10000;
+    constexpr unsigned int MAX_ENTITY_COUNT             = 10000;
+    constexpr unsigned int MAX_COMPONENT_TYPES_COUNT    = 10;
+
+#define LumComponentTag \
         static constexpr bool isComponent = true;
+
+    struct UniqueComponent {};
 
     template<typename T>
     concept Component =

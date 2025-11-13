@@ -25,6 +25,8 @@ bin/
 Debug/
 Release/
 build/
+lumengine/external
+lumengine/assets
 
 
 =======

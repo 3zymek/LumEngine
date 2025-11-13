@@ -7,9 +7,12 @@
 #include "entitymodule/details/ecs_define.hpp"
 #include "audiomodule/details/audio_define.hpp"
 #include "audiomodule/details/audio_emitter.hpp"
+#include "audiomodule/details/audio_listener_wrapper.hpp"
+#include "audiomodule/components/c_audio_emitter.hpp"
 namespace audio {
 
 	struct AudioEmitterWrapper;
+	
 
 	class AudioManager {
 	public:
@@ -47,17 +50,30 @@ namespace audio {
 			bool _loop = false
 		);
 
-		AudioEmitterWrapper	CreateEmitter();
+		void RemoveClipFromEmitter(
+			detail::EmitterID _id,
+			detail::AudioID
+		);
+
+		void DestroyEmitter(detail::EmitterID);
+
+		cstd::sparse_set<detail::AudioEmitter>& GetAllEmitters();
+		cstd::sparse_set<detail::AudioClip>&	GetAllSounds();
+
+		AudioEmitterWrapper	CreateEmitter(AudioEmitterComponent*);
+		AudioListenerWrapper* GetListener();
+		FMOD::System* GetSystem();
 
 	private:
 
+		void CreateListener(ecs::EntityID);
 		void SubscribeEvents();
 
-		FMOD::System* m_audio_system = nullptr;
+		AudioListenerWrapper*	listener		= nullptr;
+		FMOD::System*			m_audio_system	= nullptr;
 		
 		cstd::sparse_set<detail::AudioClip>		m_sounds	{ detail::MAX_SOUNDS_COUNT };
 		cstd::sparse_set<detail::AudioEmitter>	m_emitters	{ ecs::detail::MAX_ENTITY_COUNT };
-		cstd::sparse_set<detail::AudioChannel>	m_channels	{ detail::MAX_CHANNELS_COUNT };
 
 		std::unordered_map<std::string, detail::AudioID>	m_name_to_id;
 		std::unordered_map<detail::AudioID, std::string>	m_id_to_name;

@@ -61,9 +61,10 @@ namespace cstd {
 			return m_dense[m_sparse[_idx]];
 		}
 
-		constexpr __forceinline void append(_Val& _value, const sparse_t& _idx) {
+		template<typename T>
+		constexpr __forceinline void append(T&& _value, const sparse_t& _idx) {
 			if ((_idx >= m_size) or (m_sparse[_idx] != NULL_SPARSE)) return;
-			m_dense.emplace_back(std::forward<_Val>(_value));
+			m_dense.emplace_back(std::forward<T>(_value));
 			m_sparse[_idx] = m_dense.size() - 1;
 			m_dense_to_sparse.push_back(_idx);
 		}

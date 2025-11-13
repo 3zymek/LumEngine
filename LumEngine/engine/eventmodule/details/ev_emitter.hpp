@@ -4,10 +4,11 @@
 #include <vector>
 namespace ev {
 
+	// Wrapper to secure events subscribtions
 	class EventEmitter {
 	public:
 
-		EventEmitter(EventBus& em) : m_event(em) {}
+		EventEmitter(EventBus& em = ev::EventBus::Engine()) : m_event(em) {}
 		~EventEmitter() { Destruct(); }
 
 		template<detail::EventT T, typename Arg>

@@ -29,7 +29,7 @@ namespace ev {
 
 		void ProcessAll();
 
-		static EventBus& Global() {
+		static EventBus& Engine() {
 			static EventBus eb;
 			return eb;
 		}
