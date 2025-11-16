@@ -21,9 +21,11 @@ endforeach(src ${ENGINE_SOURCES} ${ENGINE_HEADERS})
 
 target_include_directories(LumEngine PUBLIC
     "${CMAKE_SOURCE_DIR}/lumengine/engine"
-    "${CMAKE_SOURCE_DIR}/lumengine/engine/entitymodule"
-    "${CMAKE_SOURCE_DIR}/lumengine/engine/eventmodule"
-    "${CMAKE_SOURCE_DIR}/lumengine/engine/audiomodule"
+    "${CMAKE_SOURCE_DIR}/lumengine/engine/core"
+    "${CMAKE_SOURCE_DIR}/lumengine/engine/modules"
+    "${CMAKE_SOURCE_DIR}/lumengine/engine/modules/entitymodule"
+    "${CMAKE_SOURCE_DIR}/lumengine/engine/modules/eventmodule"
+    "${CMAKE_SOURCE_DIR}/lumengine/engine/modules/audiomodule"
     "${CMAKE_SOURCE_DIR}/lumengine/external/fmod/inc"
     )
 target_link_directories(LumEngine PRIVATE "${CMAKE_SOURCE_DIR}/lumengine/external/fmod/lib")

@@ -1,23 +1,46 @@
 #include <iostream>
-#include "utils/path_service.hpp"
+#include "core/utils/path_service.hpp"
 #include "lum_audio.hpp"
 #include "lum_ecs.hpp"
 #include "lum_events.hpp"
+#include <thread>
+#include <chrono>
 int main() {
 	
 	PathService::SetRoot("assets");
+
 	
-	auto manager = audio::AudioManager::Global();
-	manager.Init();
-	manager.LoadSound("test", "test.wav", FMOD_3D);
-	manager.LoadSound("test2", "test2.wav", FMOD_3D);
-	audio::AudioSystem sys;
-	Entity emitter;
-	Entity listener;
-	auto clis = listener.AddComponent<AudioListenerComponent>();
-	auto cemi = emitter.AddComponent<AudioEmitterComponent>();
-	auto wrapper = manager.CreateEmitter(cemi);
-	wrapper.AddClip("test", 0.1f);
-	wrapper.PlayClip("test", 0.1f);
-	while (true) { sys.UpdateImplementation(); ev::EventBus::Engine().ProcessAll(); }
+	audio::AudioManager m;
+
+	audio::AudioSystem sys(m);
+
+	m.Init();
+	
+	m.LoadSound("test", "test.wav");
+
+	Entity entity1;
+	Entity entity2;
+
+	auto* listener = entity1.AddComponent<AudioListenerComponent>();
+
+	auto* emitter = entity2.AddComponent<AudioEmitterComponent>();
+
+	m.CreateListener(entity1.GetID());
+
+	auto ewrapper = m.CreateEmitter(emitter);
+
+	ewrapper.Add("test").SetVolume("test", 1.1f).Play("test").SetPitch("test", 0.5);
+
+	ev::EventBus::Engine().ProcessAll();
+	sys.Update();
+
+	system("pause");
+
+	ewrapper.SetPaused("test", true);
+
+	while (true) {
+		ev::EventBus::Engine().ProcessAll();
+		sys.Update();
+	}
+
 }
