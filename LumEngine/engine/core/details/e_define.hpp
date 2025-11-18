@@ -2,6 +2,7 @@
 #include <iostream>
 #include <filesystem>
 #include <string>
+
 #define static_class class
 
 #ifdef _WIN32
@@ -14,10 +15,20 @@
 #endif // _WIN32
 
 
+#define ERRORS
+
 #define DEBUG_ENGINE
 //#define DEBUG_EVENT
-#define DEBUG_AUDIO
-#define DEBUG_ECS
+//#define DEBUG_AUDIO
+//#define DEBUG_ECS
+
+#ifdef ERRORS
+	#define LOG_ERROR(msg) \
+		do { std::cout << "[ERROR] " << msg << '\n'; } while(0);
+#else
+	#define LOG_ERROR(x)
+#endif //LOG_ERROR
+
 
 #ifdef DEBUG_ENGINE
 	#define ENGINE_LOG(x) \

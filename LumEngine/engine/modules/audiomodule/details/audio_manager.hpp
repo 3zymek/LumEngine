@@ -1,5 +1,6 @@
 #pragma once
 #include "details/audio_define.hpp"
+#include "details/ecs_manager.hpp"
 
 #include "utils/sparse_set.hpp"
 
@@ -8,7 +9,6 @@
 #include "details/audio_listener_wrapper.hpp"
 
 #include <unordered_map>
-
 #include <fmod.hpp>
 
 namespace audio {
@@ -42,12 +42,12 @@ namespace audio {
 
 	public:
 
-		AudioManager() {}
+		AudioManager(ecs::EntityManager& m) : m_entity_manager(m) {}
 		~AudioManager() = default;
 
 		void Init(
 			unsigned int _maxchannels = 512, 
-			FMOD_INITFLAGS _flags = FMOD_INIT_3D_RIGHTHANDED, 
+			FMOD_INITFLAGS _flags = FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED,
 			void* _extradrivers = nullptr
 		);
 
@@ -57,20 +57,20 @@ namespace audio {
 		AudioEmitterWrapper		CreateEmitter	( AudioEmitterComponent* );
 
 
-		// Debug
+		////////////////////////////////////
+		/// Debug
+		////////////////////////////////////
 
 		std::optional<AudioID> GetIDByName( string_view );
-
-		void PrintCPUUsage();
-
 
 	private:
 
 		friend class AudioSystem;
 		friend class AudioEmitterWrapper;
 
-
-		// Private helpers
+		////////////////////////////////////
+		/// Private Helpers
+		////////////////////////////////////
 
 		void AddClipToEmitter				( EmitterID, AudioID );
 		void RemoveClipFromEmitter			( EmitterID, AudioID );
@@ -84,6 +84,32 @@ namespace audio {
 		void SubscribeEvents				( );
 		AudioListenerWrapper* GetListener	( );
 
+		inline bool ValidateEmitterID			( EmitterID id ) noexcept {
+
+			if (!m_emitters.contains(id)) {
+				LOG_ERROR("emitter " << id << " does not exists");
+				return false;
+			}
+			return true;
+
+		}
+		inline bool ValidateAudioID				( AudioID id ) noexcept {
+
+			if (!m_sounds.contains(id)) {
+				LOG_ERROR("sound " << id << " does not exists");
+				return false;
+			}
+			return true;
+
+		}
+		inline bool ValidateEmitterAndAudioID	( EmitterID emitterID, AudioID audioID ) noexcept {
+
+			return ValidateEmitterID(emitterID) && ValidateAudioID(audioID);
+
+		}
+
+		ecs::EntityManager& m_entity_manager;
+
 		cmd::CommandBuffer<cmd::AudioCmd, 400> m_commands;
 
 		std::unique_ptr< AudioListenerWrapper >			m_listener;
@@ -92,8 +118,8 @@ namespace audio {
 		cstd::sparse_set< AudioClip >		m_sounds	{ detail::MAX_SOUNDS_COUNT };
 		cstd::sparse_set< AudioEmitter >	m_emitters	{ ecs::detail::MAX_ENTITY_COUNT };
 
-		std::unordered_map< string, AudioID > m_name_to_id;
-		std::unordered_map< AudioID, string > m_id_to_name;
+		std::unordered_map< uint64_t, AudioID > m_name_to_id;
+		std::unordered_map< AudioID, string >	m_id_to_name;
 
 	};
 

@@ -9,12 +9,14 @@
 #include "details/engine_events/ev_audio_events.hpp"
 
 #include "utils/path_service.hpp"
+#include "utils/string_hasher.hpp"
 
 #include "systems/sys_audio.hpp"
 #include "components/c_audio_emitter.hpp"
 #include "components/c_audio_listener.hpp"
 
 #include <fmod.hpp>
+#include <fmod_studio.hpp>
 
 namespace audio {
 
@@ -27,31 +29,39 @@ namespace audio {
 		FMOD::System* sys = nullptr;
 
 		FMOD::System_Create(&sys);
-		sys->init(maxchannels, flags, extradrivers);
+		FMOD_ASSERT(
+			sys->init(maxchannels, flags, extradrivers);
+		);
 		m_audio_system.reset(sys);
 		SubscribeEvents();
 
-		LOG_AUDIO("Initialized audio manager");
+
+		LOG_AUDIO("initialized audio manager");
 	}
 
 	void AudioManager::LoadSound( string_view name, string_view path, FMOD_MODE mode ) {
 
-		if (m_name_to_id.contains(name.data())) return;
+		auto hashed_id = GetIDByName(name);
 
-		auto id = detail::GenerateAudioID::Get();
+		if (hashed_id) return;
+
+		auto id				= detail::GenerateAudioID::Get();
+		auto hashed_new_id	= cstd::StringHasher::Hash(name);
 
 		AudioClip clip;
-		m_audio_system->createSound(
-			PathService::Resolve(path.data()).c_str(),
-			mode, nullptr,
-			&clip.sound
+		FMOD_ASSERT(
+			m_audio_system->createSound(
+				cstd::PathService::Resolve(path.data()).c_str(),
+				mode, nullptr,
+				&clip.sound
+			);
 		);
 
 		m_sounds.append(clip, id);
-		m_name_to_id.emplace(name.data(), id);
+		m_name_to_id.emplace(hashed_new_id, id);
 		m_id_to_name.emplace(id, name.data());
 
-		LOG_AUDIO("Loaded audio - " << path);
+		LOG_AUDIO("loaded audio - " << path);
 	}
 
 	AudioListenerWrapper	AudioManager::CreateListener( EntityID entityID ) {
@@ -59,8 +69,13 @@ namespace audio {
 		if (!m_listener) {
 
 			m_listener = std::make_unique<AudioListenerWrapper>(entityID);
-			LOG_AUDIO("Created listener on entity " << entityID);
-		
+			
+			m_listener->SetRawTransform( 
+				m_entity_manager.GetComponent<TransformComponent>(entityID) 
+			);
+
+			LOG_AUDIO("created listener on entity " << entityID);
+
 		}
 
 		return *m_listener;
@@ -74,20 +89,19 @@ namespace audio {
 
 		m_emitters.append(emitter, id);
 
-		LOG_AUDIO("Created emitter");
+		LOG_AUDIO("created emitter");
 
 		return wrapper;
 	}
-	
+
 
 	////////////////////////////////////
 	/// Private API
 	////////////////////////////////////
 
-	void AudioManager::AddClipToEmitter		( EmitterID emitterID, AudioID audioID ) {
+	void AudioManager::AddClipToEmitter			( EmitterID emitterID, AudioID audioID ) {
 
-		if (!m_emitters.contains(emitterID))
-			return;
+		ValidateEmitterAndAudioID(emitterID, audioID);
 
 		auto& emitter = m_emitters[emitterID];
 
@@ -99,23 +113,21 @@ namespace audio {
 
 		emitter.clips.emplace(audioID, std::move(instance));
 
-		LOG_AUDIO("Added clip " << m_id_to_name[audioID] << " to emitter " << emitterID);
+		LOG_AUDIO("added clip " << m_id_to_name[audioID] << " to emitter " << emitterID);
 
 	}
-	void AudioManager::RemoveClipFromEmitter( EmitterID emitterID, AudioID audioID) {
+	void AudioManager::RemoveClipFromEmitter	( EmitterID emitterID, AudioID audioID ) {
 
-		if (!m_emitters.contains(emitterID) or !m_sounds.contains(audioID))
-			return;
+		ValidateEmitterAndAudioID(emitterID, audioID);
 
 		auto& emitter = m_emitters[emitterID];
 		emitter.clips.erase(audioID);
 
-		LOG_AUDIO("Removing clip " << m_id_to_name[audioID] << " from emitter " << emitterID);
+		LOG_AUDIO("removing clip " << m_id_to_name[audioID] << " from emitter " << emitterID);
 	}
-	void AudioManager::PlayEmitterClip		( EmitterID emitterID, AudioID audioID ) {
+	void AudioManager::PlayEmitterClip			( EmitterID emitterID, AudioID audioID ) {
 
-		if (!m_emitters.contains(emitterID) or !m_sounds.contains(audioID))
-			return;
+		ValidateEmitterAndAudioID(emitterID, audioID);
 
 		auto& emitter = m_emitters[emitterID];
 
@@ -131,13 +143,33 @@ namespace audio {
 
 		emitter.active_clips.push_back(std::move(channel));
 
-		LOG_AUDIO("Playing clip " << m_id_to_name[audioID] << " on emitter " << emitterID);
+		LOG_AUDIO("playing clip " << m_id_to_name[audioID] << " on emitter " << emitterID);
 
 	}
-	void AudioManager::SetEmitterClipVolume	( EmitterID emitterID, AudioID audioID, float volume) {
+	void AudioManager::StopEmitterClip			( EmitterID emitterID, AudioID audioID ) {
 
-		if (!m_emitters.contains(emitterID) or !m_sounds.contains(audioID))
+		ValidateEmitterAndAudioID(emitterID, audioID);
+
+		auto& emitter = m_emitters[emitterID];
+
+		if (!emitter.clips.contains(audioID))
 			return;
+
+
+		for (auto& active_clip : emitter.active_clips) {
+			if (active_clip.audio_clip == audioID) {
+				active_clip.channel->stop();
+				std::swap(emitter.active_clips.back(), active_clip);
+				emitter.active_clips.pop_back();
+			}
+		}
+
+		LOG_AUDIO("stopped clip " << m_id_to_name[audioID] << " on emitter " << emitterID);
+
+	}
+	void AudioManager::SetEmitterClipVolume		( EmitterID emitterID, AudioID audioID, float volume ) {
+
+		ValidateEmitterAndAudioID(emitterID, audioID);
 
 		auto& emitter = m_emitters[emitterID];
 
@@ -147,10 +179,9 @@ namespace audio {
 		emitter.clips[audioID].volume = volume;
 
 	}
-	void AudioManager::SetEmitterClipPitch	( EmitterID emitterID, AudioID audioID, float pitch){
-	
-		if (!m_emitters.contains(emitterID) or !m_sounds.contains(audioID))
-			return;
+	void AudioManager::SetEmitterClipPitch		( EmitterID emitterID, AudioID audioID, float pitch ) {
+
+		ValidateEmitterAndAudioID(emitterID, audioID);
 
 		auto& emitter = m_emitters[emitterID];
 
@@ -158,12 +189,11 @@ namespace audio {
 			return;
 
 		emitter.clips[audioID].pitch = pitch;
-	
+
 	}
-	void AudioManager::SetEmitterClipPause	( EmitterID emitterID, AudioID audioID, bool paused) {
-	
-		if (!m_emitters.contains(emitterID) or !m_sounds.contains(audioID))
-			return;
+	void AudioManager::SetEmitterClipPause		( EmitterID emitterID, AudioID audioID, bool paused ) {
+
+		ValidateEmitterAndAudioID(emitterID, audioID);
 
 		auto& emitter = m_emitters[emitterID];
 
@@ -171,12 +201,11 @@ namespace audio {
 			return;
 
 		emitter.clips[audioID].paused = paused;
-	
+
 	}
-	void AudioManager::SetEmitterClipLoop	( EmitterID emitterID, AudioID audioID, bool loop) {
-	
-		if (!m_emitters.contains(emitterID) or !m_sounds.contains(audioID))
-			return;
+	void AudioManager::SetEmitterClipLoop		( EmitterID emitterID, AudioID audioID, bool loop ) {
+
+		ValidateEmitterAndAudioID(emitterID, audioID);
 
 		auto& emitter = m_emitters[emitterID];
 
@@ -186,29 +215,33 @@ namespace audio {
 		emitter.clips[audioID].loop = loop;
 
 	}
-	void AudioManager::DestroyEmitter		( EmitterID emitterID) {
+	void AudioManager::DestroyEmitter			( EmitterID emitterID ) {
 
-		if (!m_emitters.contains(emitterID))
-			return;
+		ValidateEmitterID(emitterID);
 
 		m_emitters.remove(emitterID);
 
 		LOG_AUDIO("Destroying emitter " << emitterID);
 
 	}
-	void AudioManager::SubscribeEvents		( ) {
+	void AudioManager::SubscribeEvents			( ) {
 
 		ev::EventBus::Engine().SubscribePermamently<ev::ComponentAdded>(
 			[this](const ev::ComponentAdded& ev)
 			{
-				if (ev.component_typeID == ecs::detail::ComponentTypeIndex::get<AudioListenerComponent>())
-					CreateListener(ev.entityID);
+				if (ev.component_typeID == ecs::detail::ComponentTypeIndex::get<AudioListenerComponent>() or
+					ev.component_typeID == ecs::detail::ComponentTypeIndex::get<AudioEmitterComponent>()) {
+
+					m_entity_manager.RequireComponent<TransformComponent>(ev.entityID);
+					
+				}
+					
 			}
 		);
 
 	}
 
-	AudioListenerWrapper* AudioManager::GetListener() {
+	AudioListenerWrapper* AudioManager::GetListener( ) {
 		return m_listener.get();
 	}
 
@@ -218,13 +251,9 @@ namespace audio {
 	////////////////////////////////////
 
 	std::optional<detail::AudioID> AudioManager::GetIDByName( string_view name ) {
-		if (m_name_to_id.contains(name.data()))
-			return m_name_to_id[name.data()];
-		return std::nullopt;
-	}
-
-	void AudioManager::PrintCPUUsage( ) {
-
+		auto it = m_name_to_id.find(cstd::StringHasher::Hash(name));
+		if (it == m_name_to_id.end()) return std::nullopt;
+		return it->second;
 	}
 
 };

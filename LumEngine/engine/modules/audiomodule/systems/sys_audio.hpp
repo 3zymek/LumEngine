@@ -2,12 +2,16 @@
 #include "entitymodule/systems/sys_define.hpp"
 #include "details/audio_manager.hpp"
 #include "core/math/vec3f.hpp"
+
 namespace audio {
 
 	class AudioSystem : public BaseSystem<AudioSystem> {
-	public:
 
 		AudioManager& manager;
+		using Type = cmd::Type;
+
+
+	public:
 
 		AudioSystem( AudioManager& m ) : manager( m ) {}
 

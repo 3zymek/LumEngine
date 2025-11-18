@@ -1,28 +1,36 @@
 #pragma once
 #include "entitymodule/details/ecs_define.hpp"
-#include "entitymodule/details/ecs_manager.hpp"
+namespace ecs { class EntityManager; }
+
 abstract_class Entity {
+
+	using EntityID = ecs::EntityID;
+	using EntityManager = ecs::EntityManager;
+
+	ecs::EntityManager& manager;
+
 public:
 
-	force_inline const ecs::EntityID& GetID() { return m_entityID; }
+	Entity( ecs::EntityManager& m, EntityID entityID ) : manager(m), m_entityID(entityID) {}
+	~Entity() {}
+
+	force_inline const EntityID& GetID() { return m_entityID; }
 
 	template<ecs::detail::Component T>
-	force_inline T* AddComponent() {
-		return ecs::EntityManager::Global().AddComponent<T>(m_entityID);
-	}
+	T* AddComponent();
 
 	template<ecs::detail::Component T>
-	force_inline void DeleteComponent() {
-		ecs::EntityManager::Global().DeleteComponent<T>(GetID());
-	}
+	void DeleteComponent();
 	
 	template<ecs::detail::Component T>
-	force_inline T* GetComponent() {
-		return ecs::EntityManager::Global().GetComponent<T>(GetID());
-	}
+	T* GetComponent();
+
+	template<ecs::detail::Component T>
+	bool Has();
 	
 private:
 
-	ecs::EntityID m_entityID = ecs::detail::GenerateEntityID::Get();
+	EntityID m_entityID{};
 
 };
+#include "entity.ipp"

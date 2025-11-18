@@ -30,6 +30,18 @@ namespace audio {
 
 		return *this;
 	}
+	AudioEmitterWrapper& AudioEmitterWrapper::Stop		( string_view name ) {
+
+		AudioCmd cmd;
+		cmd.type = Type::Stop;
+		cmd.emitterID = emitterID;
+		cmd.data.stop.audioID = *manager.GetIDByName(name);
+
+		manager.m_commands.Push(std::move(cmd));
+
+		return *this;
+
+	}
 	AudioEmitterWrapper& AudioEmitterWrapper::SetVolume	( string_view name, float volume ) {
 
 		AudioCmd cmd;

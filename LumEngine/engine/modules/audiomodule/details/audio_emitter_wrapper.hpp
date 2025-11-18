@@ -18,8 +18,11 @@ namespace audio {
 
 		AudioEmitterWrapper( AudioManager& m, EmitterID emitterID ) : emitterID( emitterID ), manager( m ) {}
 
+		~AudioEmitterWrapper() { manager.DestroyEmitter(emitterID); }
+
 		AudioEmitterWrapper& Add		( string_view );
 		AudioEmitterWrapper& Play		( string_view );
+		AudioEmitterWrapper& Stop		( string_view );
 		AudioEmitterWrapper& SetVolume	( string_view, float );
 		AudioEmitterWrapper& SetPitch	( string_view, float );
 		AudioEmitterWrapper& SetPaused	( string_view, bool );

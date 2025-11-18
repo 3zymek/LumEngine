@@ -1,10 +1,8 @@
 #include "sys_audio.hpp"
 #include "details/audio_emitter.hpp"
 #include "details/audio_listener_wrapper.hpp"
+#include <fmod.hpp>
 namespace audio {
-
-
-
 
 	void AudioSystem::UpdateEmitters		( ) noexcept {
 
@@ -16,46 +14,55 @@ namespace audio {
 
 				auto& clip = emitter.clips[active_clip.audio_clip];
 
+				bool isPlaying;
+				active_clip.channel->isPlaying(&isPlaying);
+				if (!isPlaying) {
+					manager.StopEmitterClip(active_clip.emitter_id, active_clip.audio_clip);
+				}
+				
 				active_clip.channel->setPaused(clip.paused);
 				active_clip.channel->setVolume(clip.volume);
 				active_clip.channel->setPitch(clip.pitch);
 
 			}
-
+			
 		}
 
 	}
-	void AudioSystem::UpdateEmitterActions	( ) {
+	void AudioSystem::UpdateEmitterActions	( ) noexcept {
 
 		for (size_t i = 0; i < manager.m_commands.Count(); i++) {
 			auto& cmd = manager.m_commands[i];
 			switch (cmd.type) {
 
-			case cmd::Type::AddClip: {
+			case Type::AddClip: {
 				manager.AddClipToEmitter(cmd.emitterID, cmd.data.addClip.audioID);
 				break;
 			}
-			case cmd::Type::Play: {
+			case Type::Play: {
 				manager.PlayEmitterClip(cmd.emitterID, cmd.data.play.audioID);
 				break;
 			}
-			case cmd::Type::SetVolume: {
+			case Type::SetVolume: {
 				manager.SetEmitterClipVolume(cmd.emitterID, cmd.data.setVolume.audioID, cmd.data.setVolume.volume);
 				break;
 			}
-			case cmd::Type::SetPitch: {
+			case Type::SetPitch: {
 				manager.SetEmitterClipVolume(cmd.emitterID, cmd.data.setVolume.audioID, cmd.data.setVolume.volume);
 				break;
 			}
-			case cmd::Type::RemoveClip: {
+			case Type::RemoveClip: {
 				manager.RemoveClipFromEmitter(cmd.emitterID, cmd.data.removeClip.audioID);
 				break;
 			}
-			case cmd::Type::SetPause: {
+			case Type::SetPause: {
 				manager.SetEmitterClipPause(cmd.emitterID, cmd.data.setPause.audioID, cmd.data.setPause.paused);
 				break;
 			}
-
+			case Type::Stop: {
+				manager.StopEmitterClip(cmd.emitterID, cmd.data.stop.audioID);
+				break;
+			}
 			}
 		}
 
@@ -66,14 +73,21 @@ namespace audio {
 
 		auto* listener = manager.GetListener();
 
-		FMOD_VECTOR transfered_pos = TransferCoordsToFMOD(listener->GetPosition());
+		if (!listener) return;
+
+		if (!listener->transform) return;
+
+		FMOD_VECTOR transfered_pos = TransferCoordsToFMOD(listener->transform->position);
+		auto v = listener->transform->position;
+
+		listener->transform->position = { v.x() + 1, v.y(), v.z() };
 
 		manager.m_audio_system->set3DListenerAttributes(
-			0,
-			&transfered_pos,
-			nullptr,
-			nullptr,
-			nullptr
+			0,				// id
+			&transfered_pos,// position
+			nullptr,		// velocity
+			nullptr,		// forward
+			nullptr			// up
 		);
 
 	}
