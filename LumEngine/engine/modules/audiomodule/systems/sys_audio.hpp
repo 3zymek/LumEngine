@@ -1,8 +1,7 @@
 #pragma once
 #include "entitymodule/systems/sys_define.hpp"
 #include "details/audio_manager.hpp"
-#include "core/math/vec3f.hpp"
-
+#include "math/glm.hpp"
 namespace audio {
 
 	class AudioSystem : public BaseSystem<AudioSystem> {
@@ -32,7 +31,7 @@ namespace audio {
 		void UpdateEmitterActions	( ) noexcept;
 		void UpdateListener			( ) noexcept;
 
-		FMOD_VECTOR TransferCoordsToFMOD( const Vec3f& ) noexcept;
+		FMOD_VECTOR TransferCoordsToFMOD( const glm::vec3 ) noexcept;
 
 	};
 

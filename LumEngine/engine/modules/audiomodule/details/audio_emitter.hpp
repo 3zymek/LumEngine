@@ -1,7 +1,6 @@
 #pragma once
 #include "audiomodule/details/audio_define.hpp"
 #include "audiomodule/details/audio_manager.hpp"
-#include "core/math/vec3f.hpp"
 #include <unordered_map>
 #include <vector>
 namespace audio {

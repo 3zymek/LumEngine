@@ -3,8 +3,13 @@
 #include "lum_audio.hpp"
 #include "lum_ecs.hpp"
 #include "lum_events.hpp"
+#include "glad/glad.h"
+#include "glfw3.h"
+#include "imgui.h"
 int main() {
-	
+
+	IMGUI_CHECKVERSION();
+
 	cstd::PathService::SetRoot("assets");
 
 	ecs::EntityManager ecs;
@@ -65,7 +70,6 @@ int main() {
 
 
 	while (true) {
-		transform->position.print();
 		ev::EventBus::Engine().ProcessAll();
 		sys.Update();
 	}
