@@ -1,4 +1,4 @@
-#__🟡LUMENGINE🟡__
+#__LUMENGINE__
 ## **HOW TO BUILD**
 
 1. Download zip file
