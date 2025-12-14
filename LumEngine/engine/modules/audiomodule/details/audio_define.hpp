@@ -1,20 +1,20 @@
 #pragma once
-#include "details/e_define.hpp"
 #include <iostream>
 #include <fmod_errors.h>
+#include "core_defines.hpp"
 namespace FMOD { struct Sound; struct Channel; }
 namespace audio {
 	namespace detail {
 
 		using EmitterID = uint32_t;
-		using AudioID = uint32_t;
+		using AudioID	= uint32_t;
 		using ChannelID = uint64_t;
 
-		constexpr unsigned int MAX_SOUNDS_COUNT = 1000;
-		constexpr unsigned int MAX_CHANNELS_COUNT = 700;
+		constexpr unsigned int MAX_SOUNDS_COUNT		= settings::MAX_SOUNDS_COUNT;
+		constexpr unsigned int MAX_CHANNELS_COUNT	= settings::MAX_CHANNELS_COUNT;
 
 		constexpr EmitterID EMITTER_ID_NULL = 0;
-		constexpr AudioID	AUDIO_ID_NULL = 0;
+		constexpr AudioID	AUDIO_ID_NULL	= 0;
 		constexpr ChannelID CHANNEL_ID_NULL = 0;
 
 		struct GenerateAudioID {
@@ -50,25 +50,19 @@ namespace audio {
 			}
 		};
 
+
 		struct AudioClip {
 			FMOD::Sound* sound;
 		};
 
 		struct AudioChannel {
-			FMOD::Channel* channel = nullptr;
+			FMOD::Channel*	channel = nullptr;
 			EmitterID		emitter_id{};
 			AudioID			audio_clip{};
 		};
 
 		#define FMOD_ASSERT(x) \
-			{ FMOD_RESULT r = x; if(r != FMOD_OK) { std::cerr << "[ AUDIO ERROR ] " << FMOD_ErrorString(r) << '\n'; } }
-
-		#ifdef DEBUG_AUDIO
-			#define LOG_AUDIO(msg) \
-				do { std::cout << "[ AUDIO ] " << msg << '\n'; } while(0);
-		#else
-			#define LOG_AUDIO(x)
-		#endif
+			{ FMOD_RESULT r = x; if(r != FMOD_OK) { std::cerr << RED << "[ AUDIO ERROR ] " << RESET << FMOD_ErrorString(r) << '\n'; __debugbreak(); } }
 
 
 	}

@@ -1,5 +1,6 @@
 #pragma once
 #include "entitymodule/details/ecs_define.hpp"
+#include "entitymodule/details/ecs_manager.hpp"
 namespace ecs { class EntityManager; }
 
 abstract_class Entity {
@@ -16,17 +17,25 @@ public:
 
 	force_inline const EntityID& GetID() { return m_entityID; }
 
-	template<ecs::detail::Component T>
-	T* AddComponent();
+	template< ecs::detail::Component T >
+	T* AddComponent() {
+		return manager.AddComponent<T>(m_entityID);
+	}
 
-	template<ecs::detail::Component T>
-	void DeleteComponent();
-	
-	template<ecs::detail::Component T>
-	T* GetComponent();
+	template< ecs::detail::Component T >
+	void DeleteComponent() {
+		manager.DeleteComponent<T>(m_entityID);
+	}
 
-	template<ecs::detail::Component T>
-	bool Has();
+	template< ecs::detail::Component T >
+	T* GetComponent() {
+		return manager.GetComponent<T>(m_entityID);
+	}
+
+	template< ecs::detail::Component T >
+	bool Has() {
+		return manager.Has<T>(m_entityID);
+	}
 	
 private:
 

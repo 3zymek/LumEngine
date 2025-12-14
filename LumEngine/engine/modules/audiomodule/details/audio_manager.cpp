@@ -2,6 +2,7 @@
 #include "details/ev_bus.hpp"
 #include "details/ecs_define.hpp"
 #include "details/audio_define.hpp"
+#include "entity.hpp"
 
 #include "details/audio_emitter_wrapper.hpp"
 #include "details/audio_listener_wrapper.hpp"
@@ -39,27 +40,29 @@ namespace audio {
 		LOG_AUDIO("initialized audio manager");
 	}
 
-	void AudioManager::LoadSound( string_view name, string_view path, FMOD_MODE mode ) {
+	void AudioManager::LoadSound( string_view alias_name, string_view path, FMOD_MODE mode ) {
 
-		auto hashed_id = GetIDByName(name);
+		if (NameExists(alias_name)) {
+			LOG_ERROR("audio clip with name " << alias_name << " already exists");
+			return;
+		}
 
-		if (hashed_id) return;
-
-		auto id				= detail::GenerateAudioID::Get();
-		auto hashed_new_id	= cstd::StringHasher::Hash(name);
+		auto id				= GenerateID<detail::AudioID, detail::AUDIO_ID_NULL>::Get();
+		auto hashed_new_id	= cstd::StringHasher::Hash(alias_name);
 
 		AudioClip clip;
 		FMOD_ASSERT(
 			m_audio_system->createSound(
-				cstd::PathService::Resolve(path.data()).c_str(),
-				mode, nullptr,
+				cstd::PathService::GetPath(path.data()).c_str(),
+				mode, 
+				nullptr,
 				&clip.sound
 			);
 		);
 
 		m_sounds.append(clip, id);
 		m_name_to_id.emplace(hashed_new_id, id);
-		m_id_to_name.emplace(id, name.data());
+		m_id_to_name.emplace(id, alias_name.data());
 
 		LOG_AUDIO("loaded audio - " << path);
 	}
@@ -82,7 +85,7 @@ namespace audio {
 	}
 	AudioEmitterWrapper		AudioManager::CreateEmitter	( AudioEmitterComponent* component ) {
 
-		auto id = detail::GenerateEmitterID::Get();
+		auto id = GenerateID<detail::EmitterID, detail::EMITTER_ID_NULL>::Get();
 		component->emitterID = id;
 		detail::AudioEmitter emitter;
 		AudioEmitterWrapper wrapper(*this, id);
@@ -93,6 +96,24 @@ namespace audio {
 
 		return wrapper;
 	}
+	AudioEmitterWrapper		AudioManager::CreateEmitter( Entity entity ) {
+
+		if (!entity.Has<AudioEmitterComponent>())
+			entity.AddComponent<AudioEmitterComponent>();
+
+		auto id = GenerateID<detail::EmitterID, detail::EMITTER_ID_NULL>::Get();
+		entity.GetComponent<AudioEmitterComponent>()->emitterID = id;
+		detail::AudioEmitter emitter;
+		AudioEmitterWrapper wrapper(*this, id);
+
+		m_emitters.append(emitter, id);
+
+		LOG_AUDIO("created emitter");
+
+		return wrapper;
+	}
+
+
 
 
 	////////////////////////////////////
@@ -245,15 +266,17 @@ namespace audio {
 		return m_listener.get();
 	}
 
-
-	////////////////////////////////////
-	/// Debug
-	////////////////////////////////////
-
 	std::optional<detail::AudioID> AudioManager::GetIDByName( string_view name ) {
 		auto it = m_name_to_id.find(cstd::StringHasher::Hash(name));
-		if (it == m_name_to_id.end()) return std::nullopt;
+		if (it == m_name_to_id.end()) {
+			LOG_ERROR("Audio file named " << name << " does not exists");
+			return std::nullopt;
+		}
 		return it->second;
+	}
+
+	bool AudioManager::NameExists( string_view name ) {
+		return m_name_to_id.find(cstd::StringHasher::Hash(name)) != m_name_to_id.end();
 	}
 
 };
