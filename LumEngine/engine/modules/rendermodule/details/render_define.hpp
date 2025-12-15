@@ -1,6 +1,11 @@
 #pragma once
 #include "core_defines.hpp"
+#include "math/glm.hpp"
 namespace render {
+
+	using MeshHandle = uint64_t;
+	using TextureHandle = uint64_t;
+	using MaterialHandle = uint64_t;
 
 	enum class RenderMode : BitFlags {
 		Solid,
@@ -33,6 +38,16 @@ namespace render {
 
 	};
 
+	struct MaterialInitParams {
+
+	};
+
+	struct Vertex {
+		glm::vec3 position;
+		glm::vec3 normal;
+		glm::vec3 uv;
+	};
+
 
 	inline RenderFeature operator|(RenderFeature a, RenderFeature b ) {
 		return static_cast<RenderFeature>(
@@ -46,6 +61,8 @@ namespace render {
 	}
 
 	namespace detail {
+
+		using Indices = uint32_t;
 
 		inline void APIENTRY GLDebugCallback(
 			GLenum src,

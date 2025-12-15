@@ -4,48 +4,49 @@
 #include "core_defines.hpp"
 namespace FMOD { struct Sound; struct Channel; }
 namespace audio {
-	namespace detail {
 
-		using EmitterID = uint32_t;
-		using AudioID	= uint32_t;
-		using ChannelID = uint64_t;
+	using EmitterHandle = uint32_t;
+	using AudioHandle = uint32_t;
+	using ChannelHandle = uint64_t;
+
+	namespace detail {
 
 		constexpr unsigned int MAX_SOUNDS_COUNT		= settings::MAX_SOUNDS_COUNT;
 		constexpr unsigned int MAX_CHANNELS_COUNT	= settings::MAX_CHANNELS_COUNT;
 
-		constexpr EmitterID EMITTER_ID_NULL = 0;
-		constexpr AudioID	AUDIO_ID_NULL	= 0;
-		constexpr ChannelID CHANNEL_ID_NULL = 0;
+		constexpr EmitterHandle EMITTER_ID_NULL = 0;
+		constexpr AudioHandle	AUDIO_ID_NULL	= 0;
+		constexpr ChannelHandle CHANNEL_ID_NULL = 0;
 
 		struct GenerateAudioID {
-			static AudioID Get() {
+			static AudioHandle Get() {
 				return Count()++;
 			}
 		private:
-			static AudioID& Count() {
-				static AudioID globalID = AUDIO_ID_NULL + 1;
+			static AudioHandle& Count() {
+				static AudioHandle globalID = AUDIO_ID_NULL + 1;
 				return globalID;
 			}
 
 		};
 		struct GenerateEmitterID {
-			static EmitterID Get() {
+			static EmitterHandle Get() {
 				return Count()++;
 			}
 		private:
-			static EmitterID& Count() {
-				static EmitterID globalID = EMITTER_ID_NULL + 1;
+			static EmitterHandle& Count() {
+				static EmitterHandle globalID = EMITTER_ID_NULL + 1;
 				return globalID;
 			}
 
 		};
 		struct GenerateChannelID {
-			static ChannelID Get() {
+			static ChannelHandle Get() {
 				return Count()++;
 			}
 		private:
-			static ChannelID& Count() {
-				static ChannelID globalID = CHANNEL_ID_NULL + 1;
+			static ChannelHandle& Count() {
+				static ChannelHandle globalID = CHANNEL_ID_NULL + 1;
 				return globalID;
 			}
 		};
@@ -57,8 +58,8 @@ namespace audio {
 
 		struct AudioChannel {
 			FMOD::Channel*	channel = nullptr;
-			EmitterID		emitter_id{};
-			AudioID			audio_clip{};
+			EmitterHandle		emitter_id{};
+			AudioHandle			audio_clip{};
 		};
 
 		#define FMOD_ASSERT(x) \

@@ -47,7 +47,7 @@ namespace audio {
 			return;
 		}
 
-		auto id				= GenerateID<detail::AudioID, detail::AUDIO_ID_NULL>::Get();
+		auto id				= GenerateID<AudioHandle, detail::AUDIO_ID_NULL>::Get();
 		auto hashed_new_id	= cstd::StringHasher::Hash(alias_name);
 
 		AudioClip clip;
@@ -85,7 +85,7 @@ namespace audio {
 	}
 	AudioEmitterWrapper		AudioManager::CreateEmitter	( AudioEmitterComponent* component ) {
 
-		auto id = GenerateID<detail::EmitterID, detail::EMITTER_ID_NULL>::Get();
+		auto id = GenerateID<EmitterHandle, detail::EMITTER_ID_NULL>::Get();
 		component->emitterID = id;
 		detail::AudioEmitter emitter;
 		AudioEmitterWrapper wrapper(*this, id);
@@ -101,7 +101,7 @@ namespace audio {
 		if (!entity.Has<AudioEmitterComponent>())
 			entity.AddComponent<AudioEmitterComponent>();
 
-		auto id = GenerateID<detail::EmitterID, detail::EMITTER_ID_NULL>::Get();
+		auto id = GenerateID<EmitterHandle, detail::EMITTER_ID_NULL>::Get();
 		entity.GetComponent<AudioEmitterComponent>()->emitterID = id;
 		detail::AudioEmitter emitter;
 		AudioEmitterWrapper wrapper(*this, id);
@@ -120,7 +120,7 @@ namespace audio {
 	/// Private API
 	////////////////////////////////////
 
-	void AudioManager::AddClipToEmitter			( EmitterID emitterID, AudioID audioID ) {
+	void AudioManager::AddClipToEmitter			( EmitterHandle emitterID, AudioHandle audioID ) {
 
 		ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -137,7 +137,7 @@ namespace audio {
 		LOG_AUDIO("added clip " << m_id_to_name[audioID] << " to emitter " << emitterID);
 
 	}
-	void AudioManager::RemoveClipFromEmitter	( EmitterID emitterID, AudioID audioID ) {
+	void AudioManager::RemoveClipFromEmitter	( EmitterHandle emitterID, AudioHandle audioID ) {
 
 		ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -146,7 +146,7 @@ namespace audio {
 
 		LOG_AUDIO("removing clip " << m_id_to_name[audioID] << " from emitter " << emitterID);
 	}
-	void AudioManager::PlayEmitterClip			( EmitterID emitterID, AudioID audioID ) {
+	void AudioManager::PlayEmitterClip			( EmitterHandle emitterID, AudioHandle audioID ) {
 
 		ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -167,7 +167,7 @@ namespace audio {
 		LOG_AUDIO("playing clip " << m_id_to_name[audioID] << " on emitter " << emitterID);
 
 	}
-	void AudioManager::StopEmitterClip			( EmitterID emitterID, AudioID audioID ) {
+	void AudioManager::StopEmitterClip			( EmitterHandle emitterID, AudioHandle audioID ) {
 
 		ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -188,7 +188,7 @@ namespace audio {
 		LOG_AUDIO("stopped clip " << m_id_to_name[audioID] << " on emitter " << emitterID);
 
 	}
-	void AudioManager::SetEmitterClipVolume		( EmitterID emitterID, AudioID audioID, float volume ) {
+	void AudioManager::SetEmitterClipVolume		( EmitterHandle emitterID, AudioHandle audioID, float volume ) {
 
 		ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -200,7 +200,7 @@ namespace audio {
 		emitter.clips[audioID].volume = volume;
 
 	}
-	void AudioManager::SetEmitterClipPitch		( EmitterID emitterID, AudioID audioID, float pitch ) {
+	void AudioManager::SetEmitterClipPitch		( EmitterHandle emitterID, AudioHandle audioID, float pitch ) {
 
 		ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -212,7 +212,7 @@ namespace audio {
 		emitter.clips[audioID].pitch = pitch;
 
 	}
-	void AudioManager::SetEmitterClipPause		( EmitterID emitterID, AudioID audioID, bool paused ) {
+	void AudioManager::SetEmitterClipPause		( EmitterHandle emitterID, AudioHandle audioID, bool paused ) {
 
 		ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -224,7 +224,7 @@ namespace audio {
 		emitter.clips[audioID].paused = paused;
 
 	}
-	void AudioManager::SetEmitterClipLoop		( EmitterID emitterID, AudioID audioID, bool loop ) {
+	void AudioManager::SetEmitterClipLoop		( EmitterHandle emitterID, AudioHandle audioID, bool loop ) {
 
 		ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -236,7 +236,7 @@ namespace audio {
 		emitter.clips[audioID].loop = loop;
 
 	}
-	void AudioManager::DestroyEmitter			( EmitterID emitterID ) {
+	void AudioManager::DestroyEmitter			( EmitterHandle emitterID ) {
 
 		ValidateEmitterID(emitterID);
 
@@ -266,7 +266,7 @@ namespace audio {
 		return m_listener.get();
 	}
 
-	std::optional<detail::AudioID> AudioManager::GetIDByName( string_view name ) {
+	std::optional<AudioHandle> AudioManager::GetIDByName( string_view name ) {
 		auto it = m_name_to_id.find(cstd::StringHasher::Hash(name));
 		if (it == m_name_to_id.end()) {
 			LOG_ERROR("Audio file named " << name << " does not exists");

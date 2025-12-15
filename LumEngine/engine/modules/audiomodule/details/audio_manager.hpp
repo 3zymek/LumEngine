@@ -29,12 +29,10 @@ namespace audio {
 
 	class AudioManager {
 
-		using AudioID		= detail::AudioID;
 		using AudioInstance = detail::AudioInstance;
 		using AudioClip		= detail::AudioClip;
 		using AudioEmitter	= detail::AudioEmitter;
 		using AudioChannel	= detail::AudioChannel;
-		using EmitterID		= detail::EmitterID;
 		using EntityID		= ecs::EntityID;
 		using FDestructor	= detail::FMODDestructor;
 		using string_view	= std::string_view;
@@ -105,8 +103,8 @@ namespace audio {
 		AudioEmitterWrapper		CreateEmitter	( AudioEmitterComponent* );
 		AudioEmitterWrapper		CreateEmitter	( Entity );
 
-		std::optional<AudioID>	GetIDByName	( string_view );
-		bool					NameExists	( string_view );
+		std::optional<AudioHandle>	GetIDByName	( string_view );
+		bool						NameExists	( string_view );
 
 	private:
 
@@ -120,19 +118,19 @@ namespace audio {
 		/// Private Helpers
 		////////////////////////////////////
 
-		void AddClipToEmitter				( EmitterID, AudioID );
-		void RemoveClipFromEmitter			( EmitterID, AudioID );
-		void PlayEmitterClip				( EmitterID, AudioID );
-		void StopEmitterClip				( EmitterID, AudioID );
-		void SetEmitterClipVolume			( EmitterID, AudioID, float );
-		void SetEmitterClipPitch			( EmitterID, AudioID, float );
-		void SetEmitterClipPause			( EmitterID, AudioID, bool );
-		void SetEmitterClipLoop				( EmitterID, AudioID, bool );
-		void DestroyEmitter					( EmitterID );
+		void AddClipToEmitter				( EmitterHandle, AudioHandle );
+		void RemoveClipFromEmitter			( EmitterHandle, AudioHandle );
+		void PlayEmitterClip				( EmitterHandle, AudioHandle );
+		void StopEmitterClip				( EmitterHandle, AudioHandle );
+		void SetEmitterClipVolume			( EmitterHandle, AudioHandle, float );
+		void SetEmitterClipPitch			( EmitterHandle, AudioHandle, float );
+		void SetEmitterClipPause			( EmitterHandle, AudioHandle, bool );
+		void SetEmitterClipLoop				( EmitterHandle, AudioHandle, bool );
+		void DestroyEmitter					( EmitterHandle );
 		void SubscribeEvents				( );
 		AudioListenerWrapper* GetListener	( );
 
-		inline bool ValidateEmitterID			( EmitterID id ) noexcept {
+		inline bool ValidateEmitterID			( EmitterHandle id ) noexcept {
 
 			if (!m_emitters.contains(id)) {
 				LOG_ERROR("emitter " << id << " does not exists");
@@ -141,7 +139,7 @@ namespace audio {
 			return true;
 
 		}
-		inline bool ValidateAudioID				( AudioID id ) noexcept {
+		inline bool ValidateAudioID				( AudioHandle id ) noexcept {
 
 			if (!m_sounds.contains(id)) {
 				LOG_ERROR("sound " << id << " does not exists");
@@ -150,7 +148,7 @@ namespace audio {
 			return true;
 
 		}
-		inline bool ValidateEmitterAndAudioID	( EmitterID emitterID, AudioID audioID ) noexcept {
+		inline bool ValidateEmitterAndAudioID	( EmitterHandle emitterID, AudioHandle audioID ) noexcept {
 
 			return ValidateEmitterID(emitterID) && ValidateAudioID(audioID);
 
@@ -166,8 +164,8 @@ namespace audio {
 		cstd::sparse_set< AudioClip >		m_sounds	{ detail::MAX_SOUNDS_COUNT };
 		cstd::sparse_set< AudioEmitter >	m_emitters	{ ecs::detail::MAX_ENTITY_COUNT };
 
-		std::unordered_map< uint64_t, AudioID > m_name_to_id;
-		std::unordered_map< AudioID, string >	m_id_to_name;
+		std::unordered_map< uint64_t, AudioHandle > m_name_to_id;
+		std::unordered_map< AudioHandle, string >	m_id_to_name;
 
 	};
 

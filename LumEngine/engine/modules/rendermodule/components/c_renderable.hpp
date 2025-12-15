@@ -1,9 +1,5 @@
 #pragma once
 #include "entitymodule/details/ecs_define.hpp"
-struct AudioEmitterComponent {
-
+class RenderableComponent {
 	LumComponentTag;
-
-	audio::EmitterHandle emitterID{};
-
 };
