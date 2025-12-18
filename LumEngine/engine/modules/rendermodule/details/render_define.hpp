@@ -1,11 +1,53 @@
 #pragma once
 #include "core_defines.hpp"
 #include "math/glm.hpp"
+#include "glad/glad.h"
+#include <Windows.h>
+
+// Mesh
+using Indices = unsigned int;
+struct Vertex {
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec3 uv;
+};
+
+enum class MeshType {
+	Dynamic,
+	Static
+};
+struct MeshHandle {
+private:
+
+	friend class MeshManager;
+
+	MeshType			type; 
+	render::MeshID		id = -1;
+	render::Generation	generation = 0;
+
+};
 namespace render {
 
-	using MeshHandle = uint64_t;
-	using TextureHandle = uint64_t;
-	using MaterialHandle = uint64_t;
+	inline constexpr unsigned int MAX_MESHES_AMOUNT = 100000;
+
+	using Generation = uint32_t;
+	using MeshID = uint64_t;
+
+}
+
+
+// Texture
+using TextureHandle = uint64_t;
+
+
+
+// Material
+using MaterialHandle = uint64_t;
+
+
+
+
+namespace render {
 
 	enum class RenderMode : BitFlags {
 		Solid,
@@ -42,12 +84,6 @@ namespace render {
 
 	};
 
-	struct Vertex {
-		glm::vec3 position;
-		glm::vec3 normal;
-		glm::vec3 uv;
-	};
-
 
 	inline RenderFeature operator|(RenderFeature a, RenderFeature b ) {
 		return static_cast<RenderFeature>(
@@ -61,8 +97,6 @@ namespace render {
 	}
 
 	namespace detail {
-
-		using Indices = uint32_t;
 
 		inline void APIENTRY GLDebugCallback(
 			GLenum src,

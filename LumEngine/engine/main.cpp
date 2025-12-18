@@ -6,6 +6,8 @@
 #include "glad/glad.h"
 #include "glfw3.h"
 #include "rendermodule/core/renderer.hpp"
+#include "rendermodule/core/mesh_manager.hpp"
+#include "rendermodule/details/render_define.hpp"
 int main() {
 
     cstd::PathService::SetRoot("assets");
@@ -17,6 +19,12 @@ int main() {
 
     render::Renderer render;
     render.Init(params);
+
+    render::MeshManager mm;
+    std::vector<Vertex> vertices = { {Vertex({1, 1, 1}, {1, 1, 1}, {1,1,1})} };
+    std::vector<Indices> indices = { 1, 0, 2 };
+    MeshHandle mesh = mm.CreateStaticMesh(vertices, indices);
+    
 
     while (render.WindowIsOpen()) {
         render.StartFrame();
