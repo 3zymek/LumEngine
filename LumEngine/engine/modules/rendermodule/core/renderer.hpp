@@ -28,7 +28,7 @@ namespace render {
 		Renderer() {}
 
 		void Init		( RenderInitParams );
-		void StartFrame	( );
+		void BeginFrame	( );
 		void EndFrame	( );
 		bool WindowIsOpen();
 

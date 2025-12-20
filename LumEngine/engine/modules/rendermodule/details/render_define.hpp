@@ -2,39 +2,39 @@
 #include "core_defines.hpp"
 #include "math/glm.hpp"
 #include "glad/glad.h"
-#include <Windows.h>
-
-// Mesh
-using Indices = unsigned int;
+#include <type_traits>
 struct Vertex {
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec3 uv;
 };
 
-enum class MeshType {
-	Dynamic,
-	Static
-};
-struct MeshHandle {
-private:
 
-	friend class MeshManager;
-
-	MeshType			type; 
-	render::MeshID		id = -1;
-	render::Generation	generation = 0;
-
-};
 namespace render {
-
+	
+	// Mesh
 	inline constexpr unsigned int MAX_MESHES_AMOUNT = 100000;
+	using Index = unsigned int;
 
-	using Generation = uint32_t;
-	using MeshID = uint64_t;
+	namespace detail {
+		
+		using Generation = uint32_t;
+		using MeshID = uint64_t;
+		using VertexCount = unsigned int;
+		using VertexArray = std::vector<Vertex>;
+		using IndexArray = std::vector<Index>;
+
+		struct StaticMesh;
+		struct DynamicMesh;
+
+		template<typename T>
+		concept MeshT = std::same_as<T, StaticMesh> || std::same_as<T, DynamicMesh>;
+
+	}
+
+	// Texture
 
 }
-
 
 // Texture
 using TextureHandle = uint64_t;

@@ -1,54 +1,28 @@
-#include "rendermodule/core/mesh_manager.hpp"
-#include "core_defines.hpp"
-
+#include <rendermodule/core/mesh_manager.hpp>
 namespace render {
+	MeshHandle MeshManager::CreateStaticMesh(std::span<Vertex> vertices, std::span<Index> indices) {
+		StaticMesh mesh;
 
-	MeshHandle MeshManager::CreateDynamicMesh(size_t vertices_amount, size_t indices_amount) {
-		DynamicMesh mesh;
-		
-		mesh.indices_amount = indices_amount;
-		mesh.indices.reserve(indices_amount);
-		mesh.vertices_amount = vertices_amount;
-		mesh.vertices.reserve(vertices_amount);
+		InitStaticMesh(mesh, vertices, indices);
 
-		PreAllocGPU(mesh);
-		
-		return m_dynamic_handles.CreateHandle(mesh);
-
-	}
-	void MeshManager::SetDynamicMeshVertices(MeshHandle& handle, span<Vertex>& vertices) {
-		if (!m_dynamic_handles.Exists(handle))
-			return;
-
-		auto* mesh = m_dynamic_handles.Get(handle);
-		mesh->vertices.assign(vertices.begin(), vertices.end());
-		mesh->vertices_amount = vertices.size();
-
-		UpdateDynamicData(mesh);
-
-	}
-	void MeshManager::SetDynamicMeshIndices(MeshHandle& handle, span<Indices>& indices) {
-		if (!m_dynamic_handles.Exists(handle))
-			return;
-
-		auto* mesh = m_dynamic_handles.Get(handle);
-		mesh->indices.assign(indices.begin(), indices.end());
-		mesh->indices_amount = indices.size();
-
-		UpdateDynamicData(mesh);
+		MeshHandle h;
+		return h;
 
 	}
 
-	void MeshManager::UpdateDynamicData(DynamicMesh* mesh) {
-		
-		glBindVertexArray(mesh->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, mesh->vertices_amount * sizeof(Vertex), mesh->vertices.data());
+	void MeshManager::InitStaticMesh(StaticMesh& mesh, span<Vertex> vertices, span<Index> indices) {
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->EBO);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, mesh->indices_amount * sizeof(Vertex), mesh->indices.data());
+		glGenVertexArrays(1, &mesh.VAO);
+		glGenBuffers(1, &mesh.VBO);
+		glGenBuffers(1, &mesh.EBO);
+
+		glBindVertexArray(mesh.VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
+		glBufferData(GL_ARRAY_BUFFER, mesh.vertices_amount * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices_amount * sizeof(Index), nullptr, GL_STATIC_DRAW);
 
 	}
 
 }
-

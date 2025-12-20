@@ -1,83 +1,92 @@
 #pragma once
-#include "rendermodule/details/render_define.hpp"
-#include "glad/glad.h"
-#include "glfw3.h"
-#include "core/utils/handle_pool.hpp"
+#include <rendermodule/details/render_define.hpp>
+#include <core/utils/handle_pool.hpp>
 #include <vector>
-#include <string>
 #include <span>
-
+#include <type_traits>
 namespace render {
+	enum class MeshType {
+		Dynamic,
+		Static
+	};
+	struct MeshHandle {
 
-	struct DynamicMesh {
+		using MeshID		= detail::MeshID;
+		using Generation	= detail::Generation;
 
-		MeshHandle handle;
+	public:
 
-		GLuint VBO = 0;
-		GLuint VAO = 0;
-		GLuint EBO = 0;
-
-		GLuint vertices_amount	= 0;
-		GLuint indices_amount	= 0;
-
-		GLuint max_vertices = 0;
-		GLuint max_indices	= 0;
-
-		std::vector<Vertex> vertices;
-		std::vector<Indices> indices;
+		MeshID		id = std::numeric_limits<MeshID>::max();
+		Generation	generation = 0;
+		MeshType	type;
 
 	};
 	struct StaticMesh {
+	private:
 
-		MeshHandle handle;
+		using VertexCount = detail::VertexCount;
 
-		GLuint VBO = 0;
+	public:
+
 		GLuint VAO = 0;
+		GLuint VBO = 0;
 		GLuint EBO = 0;
 
-		GLuint vertices_amount	= 0;
-		GLuint indices_amount	= 0;
-
-		bool linked = false;
+		Index		indices_amount = 0;
+		VertexCount	vertices_amount = 0;
 
 	};
+	struct DynamicMesh {
+	private:
 
+		using VertexCount	= detail::VertexCount;
+		using VertexArray	= detail::VertexArray;
+		using IndexArray	= detail::IndexArray;
+
+	public:
+
+		GLuint VAO = 0;
+		GLuint VBO = 0;
+		GLuint EBO = 0;
+
+		Index		indices_amount = 0;
+		VertexCount	vertices_amount = 0;
+
+		Index		max_indices = 0;
+		VertexCount	max_vertices = 0;
+
+		VertexArray	vertices;
+		IndexArray	indices;
+
+	};
 	class MeshManager {
 
-		using string_view	= std::string_view;
+		using string_view = std::string_view;
 		template<typename T>
 		using span = std::span<T>;
 
 	public:
-
-		[[nodiscard]] MeshHandle CreateStaticMesh	( span<Vertex> vert, span<Indices> indic );
-		[[nodiscard]] MeshHandle CreateDynamicMesh	( size_t max_vert, size_t max_indic );
-
-
-		template< MeshType >
-		[[nodiscard]] MeshHandle CreateMeshFromFile	( string_view path );
-
-		void SetDynamicMeshVertices	( MeshHandle, span<Vertex> );
-		void SetDynamicMeshIndices	( MeshHandle, span<Indices> );
 		
-		template< MeshType >
+		[[nodiscard]] MeshHandle CreateStaticMesh(std::span<Vertex>, std::span<Index>);
+		[[nodiscard]] MeshHandle CreateDynamicMesh();
+
+		template <MeshType>
+		[[nodiscard]] MeshHandle LoadMeshFromFile(string_view path);
+
+		template<MeshType>
 		void DrawMesh(MeshHandle);
 
-		template< MeshType >
+		template<MeshType>
 		void DeleteMesh(MeshHandle);
 
 	private:
 
-		void UpdateDynamicData( DynamicMesh* );
+		template<typename T>
+		requires detail::MeshT<T>
+		void DrawMeshImpl(cstd::handle_pool<T, MeshHandle>&, MeshHandle);
 
-		template< typename Mesh >
-		void PreAllocGPU( Mesh&& );
-
-		HandlePool< StaticMesh, MeshHandle > m_static_handles	{ MAX_MESHES_AMOUNT };
-		HandlePool< DynamicMesh, MeshHandle > m_dynamic_handles	{ MAX_MESHES_AMOUNT };
-
-
+		void InitStaticMesh(StaticMesh&, span<Vertex>, span<Index>);
+		void InitDynamicMesh(DynamicMesh&);
 	};
-
+	#include <rendermodule/core/mesh_manager.ipp>
 }
-#include "rendermodule/core/mesh_manager.ipp"
