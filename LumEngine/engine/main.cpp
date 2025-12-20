@@ -20,9 +20,15 @@ int main() {
     render::Renderer render;
     render.Init(params);
 
+    render::MeshManager mm;
+    std::vector<render::Vertex> vertices = { {{1, 1, 1}, {1,1,1}, {1,1,1}} };
+    std::vector<render::Index> indices = { 0, 1, 2, 3 };
+    render::MeshHandle handle = mm.CreateStaticMesh(vertices, indices);
+
     while (render.WindowIsOpen()) {
         render.BeginFrame();
 
+        mm.DrawMesh<render::StaticMesh>(handle);
 
         render.EndFrame();
     }

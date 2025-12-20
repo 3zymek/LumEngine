@@ -3,15 +3,14 @@
 #include "math/glm.hpp"
 #include "glad/glad.h"
 #include <type_traits>
-struct Vertex {
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec3 uv;
-};
-
-
 namespace render {
 	
+	struct Vertex {
+		glm::vec3 position;
+		glm::vec3 normal;
+		glm::vec3 uv;
+	};
+
 	// Mesh
 	inline constexpr unsigned int MAX_MESHES_AMOUNT = 100000;
 	using Index = unsigned int;

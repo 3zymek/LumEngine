@@ -37,7 +37,7 @@ namespace render {
 			LOG_ERROR("[SET] dynamic handle does not exists");
 			return;
 		}
-
+		
 		auto* mesh = m_dynamic_handles.Get(handle);
 		mesh->indices.assign(indices.begin(), indices.end());
 		mesh->indices_amount = mesh->indices.size();
