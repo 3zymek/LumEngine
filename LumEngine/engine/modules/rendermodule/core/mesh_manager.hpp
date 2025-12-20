@@ -68,7 +68,10 @@ namespace render {
 	public:
 		
 		[[nodiscard]] MeshHandle CreateStaticMesh(std::span<Vertex>, std::span<Index>);
-		[[nodiscard]] MeshHandle CreateDynamicMesh();
+		[[nodiscard]] MeshHandle CreateDynamicMesh(size_t, size_t);
+
+		void SetDynamicMeshVertices(MeshHandle, std::span<Vertex>);
+		void SetDynamicMeshIndices(MeshHandle, std::span<Index>);
 
 		template <MeshType>
 		[[nodiscard]] MeshHandle LoadMeshFromFile(string_view path);
@@ -87,6 +90,10 @@ namespace render {
 
 		void InitStaticMesh(StaticMesh&, span<Vertex>, span<Index>);
 		void InitDynamicMesh(DynamicMesh&);
+
+		cstd::handle_pool<StaticMesh, MeshHandle>	m_static_handles{ MAX_MESHES_AMOUNT };
+		cstd::handle_pool<DynamicMesh, MeshHandle>	m_dynamic_handles{ MAX_MESHES_AMOUNT };
+
 	};
 	#include <rendermodule/core/mesh_manager.ipp>
 }
