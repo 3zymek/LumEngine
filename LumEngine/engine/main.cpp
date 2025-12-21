@@ -33,7 +33,6 @@ int main() {
 
     system("pause");
     emitter.Stop("atomic_land");
-    emitter.Stop("kutas");
 
     while (true) {
         ev::EventBus::Engine().ProcessAll();
