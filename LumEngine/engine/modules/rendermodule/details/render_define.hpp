@@ -31,6 +31,15 @@ namespace render {
 
 	}
 
+	// Shader
+
+	namespace detail {
+
+		using ShaderID = uint32_t;
+
+	}
+
+
 	// Texture
 
 }

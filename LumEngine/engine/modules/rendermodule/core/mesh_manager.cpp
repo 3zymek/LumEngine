@@ -1,4 +1,5 @@
-#include <rendermodule/core/mesh_manager.hpp>
+#include "rendermodule/core/mesh_manager.hpp"
+#include "rendermodule/essentials/mesh.hpp"
 namespace render {
 	MeshHandle MeshManager::CreateStaticMesh(std::span<Vertex> vertices, std::span<Index> indices) {
 		StaticMesh mesh;
@@ -28,17 +29,27 @@ namespace render {
 		}
 
 		auto* mesh = m_dynamic_handles.Get(handle);
+
+		if (vertices.size() < mesh->max_vertices)
+			return;
+		
 		mesh->vertices.assign(vertices.begin(), vertices.end());
 		mesh->vertices_amount = mesh->vertices.size();
-
+		
 	}
 	void MeshManager::SetDynamicMeshIndices(MeshHandle handle, std::span<Index> indices) {
 		if (!m_dynamic_handles.Exists(handle)) {
-			LOG_ERROR("[SET] dynamic handle does not exists");
+			LOG_ERROR("[SET] dynamic handle does not exists at SetDynamicMeshIndices()");
 			return;
 		}
 		
 		auto* mesh = m_dynamic_handles.Get(handle);
+
+		if (mesh->indices_amount < indices.size()) {
+			LOG_ERROR("[SET] too much indices at SetDynamicMeshIndices()");
+			return;
+		}
+
 		mesh->indices.assign(indices.begin(), indices.end());
 		mesh->indices_amount = mesh->indices.size();
 
