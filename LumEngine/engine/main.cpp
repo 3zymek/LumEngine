@@ -8,10 +8,40 @@
 #include "rendermodule/core/renderer.hpp"
 #include "rendermodule/core/mesh_manager.hpp"
 #include "rendermodule/details/render_define.hpp"
+#include "core/logger.hpp"
 int main() {
+    
+    Logger::Get().EnableLog(LogSeverity::INFO);
 
     cstd::PathService::SetRoot("assets");
 
+    ecs::EntityManager ecs;
+    audio::AudioManager am(ecs);
+    am.Init(512, FMOD_2D);
+    audio::AudioSystem sys(am);
+
+    Entity e = ecs.CreateEntity();
+    e.AddComponent<AudioEmitterComponent>();
+    auto emitter = am.CreateEmitter(e);
+    am.LoadSound("atomic_land", "test.wav");
+    emitter.Add("atomic_land");
+
+    emitter.Play("atomic_land");
+
+    ev::EventBus::Engine().ProcessAll();
+    sys.Update();
+
+    system("pause");
+    emitter.Stop("atomic_land");
+    emitter.Stop("kutas");
+
+    while (true) {
+        ev::EventBus::Engine().ProcessAll();
+        sys.Update();
+    }
+
+
+    /*
     render::RenderInitParams params;
     params.fullscreen = false;
     params.MSAA_samples = 4;
@@ -35,4 +65,5 @@ int main() {
 
 
     return 0;
+    */
 }

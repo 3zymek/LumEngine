@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <functional>
-#include "core/details/e_define.hpp"
+#include "core/core_defines.hpp"
 #include "eventmodule/details/ev_define.hpp"
 #include "eventmodule/details/ev_pool.hpp"
 namespace ev {

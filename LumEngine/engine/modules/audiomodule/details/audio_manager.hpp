@@ -8,6 +8,7 @@
 #include "components/c_audio_emitter.hpp"
 #include "details/audio_listener_wrapper.hpp"
 
+#include "core/core_common.hpp"
 #include <unordered_map>
 #include <fmod.hpp>
 
@@ -133,7 +134,7 @@ namespace audio {
 		inline bool ValidateEmitterID			( EmitterHandle id ) noexcept {
 
 			if (!m_emitters.contains(id)) {
-				LOG_ERROR("emitter " << id << " does not exists");
+				LOG_ERROR("Emitter does not exists");
 				return false;
 			}
 			return true;
@@ -142,7 +143,7 @@ namespace audio {
 		inline bool ValidateAudioID				( AudioHandle id ) noexcept {
 
 			if (!m_sounds.contains(id)) {
-				LOG_ERROR("sound " << id << " does not exists");
+				LOG_ERROR("Sound does not exists");
 				return false;
 			}
 			return true;

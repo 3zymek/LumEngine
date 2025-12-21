@@ -30,20 +30,26 @@ namespace audio {
 		FMOD::System* sys = nullptr;
 
 		FMOD::System_Create(&sys);
-		FMOD_ASSERT(
-			sys->init(maxchannels, flags, extradrivers);
-		);
+		sys->init(maxchannels, flags, extradrivers);
+
+		if (!sys) {
+			LOG_INIT_FAIL("Audio manager init");
+		}
+		else {
+			LOG_INIT_OK("Audio manager init");
+		}
+
 		m_audio_system.reset(sys);
 		SubscribeEvents();
 
 
-		LOG_AUDIO("initialized audio manager");
+		
 	}
 
 	void AudioManager::LoadSound( string_view alias_name, string_view path, FMOD_MODE mode ) {
 
 		if (NameExists(alias_name)) {
-			LOG_ERROR("audio clip with name " << alias_name << " already exists");
+			LOG_ERROR_S(std::format("Audio Clip with name {} already exists", alias_name.data()));
 			return;
 		}
 
@@ -54,17 +60,17 @@ namespace audio {
 		FMOD_ASSERT(
 			m_audio_system->createSound(
 				cstd::PathService::GetPath(path.data()).c_str(),
-				mode, 
+				mode,
 				nullptr,
 				&clip.sound
-			);
+			)
 		);
 
 		m_sounds.append(clip, id);
 		m_name_to_id.emplace(hashed_new_id, id);
 		m_id_to_name.emplace(id, alias_name.data());
 
-		LOG_AUDIO("loaded audio - " << path);
+		LOG_INFO_S(std::format("Audio {} created", alias_name.data()));
 	}
 
 	AudioListenerWrapper	AudioManager::CreateListener( EntityID entityID ) {
@@ -77,7 +83,7 @@ namespace audio {
 				m_entity_manager.GetComponent<TransformComponent>(entityID) 
 			);
 
-			LOG_AUDIO("created listener on entity " << entityID);
+			LOG_INFO("Audio Listener created");
 
 		}
 
@@ -92,7 +98,7 @@ namespace audio {
 
 		m_emitters.append(emitter, id);
 
-		LOG_AUDIO("created emitter");
+		LOG_INFO("Created emitter");
 
 		return wrapper;
 	}
@@ -108,7 +114,7 @@ namespace audio {
 
 		m_emitters.append(emitter, id);
 
-		LOG_AUDIO("created emitter");
+		LOG_INFO("Created emitter");
 
 		return wrapper;
 	}
@@ -134,7 +140,7 @@ namespace audio {
 
 		emitter.clips.emplace(audioID, std::move(instance));
 
-		LOG_AUDIO("added clip " << m_id_to_name[audioID] << " to emitter " << emitterID);
+		LOG_INFO_S(std::format("Added clip {} to emitter {}", m_name_to_id[audioID], emitterID));
 
 	}
 	void AudioManager::RemoveClipFromEmitter	( EmitterHandle emitterID, AudioHandle audioID ) {
@@ -144,7 +150,7 @@ namespace audio {
 		auto& emitter = m_emitters[emitterID];
 		emitter.clips.erase(audioID);
 
-		LOG_AUDIO("removing clip " << m_id_to_name[audioID] << " from emitter " << emitterID);
+		LOG_INFO_S(std::format("Removed clip {} from emitter {}", m_id_to_name[audioID], emitterID));
 	}
 	void AudioManager::PlayEmitterClip			( EmitterHandle emitterID, AudioHandle audioID ) {
 
@@ -164,7 +170,7 @@ namespace audio {
 
 		emitter.active_clips.push_back(std::move(channel));
 
-		LOG_AUDIO("playing clip " << m_id_to_name[audioID] << " on emitter " << emitterID);
+		LOG_INFO_S(std::format("Played clip {} on emitter {}", m_id_to_name[audioID], emitterID));
 
 	}
 	void AudioManager::StopEmitterClip			( EmitterHandle emitterID, AudioHandle audioID ) {
@@ -173,8 +179,10 @@ namespace audio {
 
 		auto& emitter = m_emitters[emitterID];
 
-		if (!emitter.clips.contains(audioID))
+		if (!emitter.clips.contains(audioID)) {
+			LOG_WARN("Audio does not exists");
 			return;
+		}
 
 
 		for (auto& active_clip : emitter.active_clips) {
@@ -185,7 +193,7 @@ namespace audio {
 			}
 		}
 
-		LOG_AUDIO("stopped clip " << m_id_to_name[audioID] << " on emitter " << emitterID);
+		LOG_INFO_S(std::format("Stopped clip {} on emitter {}", m_id_to_name[audioID], emitterID));
 
 	}
 	void AudioManager::SetEmitterClipVolume		( EmitterHandle emitterID, AudioHandle audioID, float volume ) {
@@ -242,7 +250,7 @@ namespace audio {
 
 		m_emitters.remove(emitterID);
 
-		LOG_AUDIO("Destroying emitter " << emitterID);
+		LOG_INFO_S(std::format("Destroyed emitter {}", emitterID));
 
 	}
 	void AudioManager::SubscribeEvents			( ) {
@@ -269,7 +277,7 @@ namespace audio {
 	std::optional<AudioHandle> AudioManager::GetIDByName( string_view name ) {
 		auto it = m_name_to_id.find(cstd::StringHasher::Hash(name));
 		if (it == m_name_to_id.end()) {
-			LOG_ERROR("Audio file named " << name << " does not exists");
+			LOG_WARN_S(std::format("Audio file named {} does not exists", name));
 			return std::nullopt;
 		}
 		return it->second;

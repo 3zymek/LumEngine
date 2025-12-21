@@ -57,13 +57,13 @@ using MaterialHandle = uint64_t;
 
 namespace render {
 
-	enum class RenderMode : BitFlags {
+	enum class RenderMode : Bit {
 		Solid,
 		Wireframe,
 		Points,
 	};
 
-	enum class RenderFeature : BitFlags {
+	enum class RenderFeature : Bit {
 		None			= 0x00000000,
 		AntiAliasing	= 0x00000010,
 		Bloom			= 0x00000100,
@@ -95,12 +95,12 @@ namespace render {
 
 	inline RenderFeature operator|(RenderFeature a, RenderFeature b ) {
 		return static_cast<RenderFeature>(
-			static_cast<BitFlags>(a) | static_cast<BitFlags>(b)
+			static_cast<Bit>(a) | static_cast<Bit>(b)
 			);
 	}
 	inline RenderFeature operator&(RenderFeature a, RenderFeature b ) {
 		return static_cast<RenderFeature>(
-			static_cast<BitFlags>(a) & static_cast<BitFlags>(b)
+			static_cast<Bit>(a) & static_cast<Bit>(b)
 			);
 	}
 
@@ -120,8 +120,8 @@ namespace render {
 				__debugbreak();
 			}
 			
-			if(severity != GL_DEBUG_SEVERITY_NOTIFICATION)
-				RENDER_LOG(message);
+			if (severity != GL_DEBUG_SEVERITY_NOTIFICATION);
+				
 
 		}
 

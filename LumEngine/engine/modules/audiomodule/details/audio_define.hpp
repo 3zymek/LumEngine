@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <fmod_errors.h>
-#include "core_defines.hpp"
+#include "core_common.hpp"
 namespace FMOD { struct Sound; struct Channel; }
 namespace audio {
 
@@ -63,7 +63,10 @@ namespace audio {
 		};
 
 		#define FMOD_ASSERT(x) \
-			{ FMOD_RESULT r = x; if(r != FMOD_OK) { std::cerr << RED << "[ AUDIO ERROR ] " << RESET << FMOD_ErrorString(r) << '\n'; __debugbreak(); } }
+			do { \
+				FMOD_RESULT r = x; \
+				if(r != FMOD_OK) { LOG_ERROR(FMOD_ErrorString(r)); } \
+			} while(0)
 
 
 	}

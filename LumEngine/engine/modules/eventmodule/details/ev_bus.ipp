@@ -14,7 +14,6 @@ namespace ev {
 		auto call = detail::CallbackWrapper<T>(std::forward<Arg>(arg));
 		auto id = call.GetID();
 		GetPool<T>().SubscribeCallback(std::move(call));
-		EVENT_LOG("Subscribed " << typeid(T).name());
 		return id;
 	}
 
@@ -23,7 +22,6 @@ namespace ev {
 		auto call = detail::CallbackWrapper<T>(std::forward<Arg>(arg));
 		auto id = call.GetID();
 		GetPool<T>().SubscribePermamently(std::move(call));
-		EVENT_LOG("Subscribed Permamently " << typeid(T).name());
 		return id;
 	}
 
@@ -35,7 +33,6 @@ namespace ev {
 	template<detail::EventT T>
 	void EventBus::Emit(const T& event) {
 		GetPool<T>().PushEvent(std::move(event));
-		EVENT_LOG("Emitting event: " << typeid(T).name());
 	}
 
 	template<detail::EventT T>

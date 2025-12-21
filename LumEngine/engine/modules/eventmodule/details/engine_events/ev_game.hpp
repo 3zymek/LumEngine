@@ -1,2 +1,2 @@
 #pragma once
-#include "core/details/e_define.hpp"
+#include "core/core_defines.hpp"

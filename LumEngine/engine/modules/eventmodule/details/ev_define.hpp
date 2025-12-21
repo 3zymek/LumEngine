@@ -1,5 +1,5 @@
 #pragma once
-#include "core/details/e_define.hpp"
+#include "core/core_defines.hpp"
 #include <vector>
 #include <functional>
 #include "core_defines.hpp"

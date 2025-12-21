@@ -1,5 +1,5 @@
 #pragma once
-#include "core/details/e_define.hpp"
+#include "core/core_defines.hpp"
 #include "eventmodule/details/ev_define.hpp"
 #include "entitymodule/details/ecs_define.hpp"
 #include "audiomodule/details/audio_define.hpp"
