@@ -1,5 +1,5 @@
-# __LUMENGINE__ (ONLY WINDOWS!!!)
-# **HOW TO BUILD**
+# __🟡LUMENGINE🟡__
+## **HOW TO BUILD**
 
 1. Download zip file
 2. Unpack zip file
