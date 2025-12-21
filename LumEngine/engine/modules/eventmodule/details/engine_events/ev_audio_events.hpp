@@ -8,7 +8,7 @@ namespace ev {
 	{
 		LumEventTag;
 
-		audio::detail::EmitterID emitterID{};
+		audio::EmitterHandle emitterID{};
 		std::string name{};
 
 		float		volume{};
@@ -20,7 +20,7 @@ namespace ev {
 	{
 		LumEventTag;
 
-		audio::detail::EmitterID emitterID{};
+		audio::EmitterHandle emitterID{};
 		std::string name{};
 
 	};
@@ -28,7 +28,7 @@ namespace ev {
 	{
 		LumEventTag;
 
-		audio::detail::EmitterID emitterID{};
+		audio::EmitterHandle emitterID{};
 		std::string name{};
 
 		float		volume{};
@@ -39,22 +39,22 @@ namespace ev {
 	{
 		LumEventTag;
 
-		audio::detail::EmitterID emitterID{};
+		audio::EmitterHandle emitterID{};
 	};
 	struct GetAllEmitterClips
 	{
 		LumEventTag;
 
-		audio::detail::EmitterID emitterID{};
+		audio::EmitterHandle emitterID{};
 
 	};
 	struct RequestAllEmitteClips
 	{
 		LumEventTag;
 
-		audio::detail::EmitterID emitterID{};
+		audio::EmitterHandle emitterID{};
 
-		std::unordered_map<std::string, audio::detail::AudioID> clips;
+		std::unordered_map<std::string, audio::AudioHandle> clips;
 
 	};
 

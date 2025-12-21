@@ -2,11 +2,11 @@
 #include "core/details/e_define.hpp"
 #include <vector>
 #include <functional>
-
+#include "core_defines.hpp"
 namespace ev {
 	namespace detail {
 
-		constexpr int MAX_EVENT_TYPES = 20;
+		inline constexpr unsigned int MAX_EVENT_TYPES = settings::MAX_EVENT_TYPES;
 		#define LumEventTag \
 			constexpr static bool isEvent = true;
 
@@ -64,16 +64,6 @@ namespace ev {
 			}
 
 		};
-
-		#define EV_ASSERT_IS_EVENT(T) \
-			static_assert(std::is_base_of_v<BaseEvent, T> and !std::is_same_v<BaseEvent, T>, "Event must be derived from BaseEvent")
-
-		#ifdef DEBUG_EVENT
-			#define EVENT_LOG(x) \
-				do { std::cout << "[EVENT] " << x << '\n'; } while(0);
-		#else
-			#define EVENT_LOG(x)
-		#endif // DEBUG_ENGINE
 
 
 	}

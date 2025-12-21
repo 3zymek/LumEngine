@@ -29,12 +29,10 @@ namespace audio {
 
 	class AudioManager {
 
-		using AudioID		= detail::AudioID;
 		using AudioInstance = detail::AudioInstance;
 		using AudioClip		= detail::AudioClip;
 		using AudioEmitter	= detail::AudioEmitter;
 		using AudioChannel	= detail::AudioChannel;
-		using EmitterID		= detail::EmitterID;
 		using EntityID		= ecs::EntityID;
 		using FDestructor	= detail::FMODDestructor;
 		using string_view	= std::string_view;
@@ -45,25 +43,73 @@ namespace audio {
 		AudioManager(ecs::EntityManager& m) : m_entity_manager(m) {}
 		~AudioManager() = default;
 
+
+		/*! @brief Initializes the audio system.
+		*
+		*  Sets up FMOD with a maximum number of channels, initialization flags,
+		*  and optional extra drivers. Must be called before loading or playing sounds.
+		*
+		*  @param maxchannels Maximum number of simultaneous audio channels (default: 512).
+		*  @param flags FMOD initialization flags (default: FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED).
+		*  @param extradrivers Pointer to additional platform-specific drivers (default: nullptr).
+		*
+		*  @thread_safety Call from main thread before any audio operations.
+		*/
 		void Init(
-			unsigned int _maxchannels = 512, 
-			FMOD_INITFLAGS _flags = FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED,
-			void* _extradrivers = nullptr
+			unsigned int maxchannels = 512, 
+			FMOD_INITFLAGS flags = FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED,
+			void* extradrivers = nullptr
 		);
 
-		void LoadSound( string_view, string_view, FMOD_MODE _mode = FMOD_3D );
 
+		/*! @brief Loads a sound for later playback.
+		 *
+		 *  Loads an audio file and registers it under a name. The sound can be 2D, 3D,
+		 *  looping, or streamed depending on the mode. Does not start playback.
+		 *
+		 *  @param alias_name Identifier to reference the sound.
+		 *  @param path File path to the sound resource (WAV, MP3, OGG, etc.).
+		 *  @param _mode FMOD mode flags controlling playback/streaming (default: FMOD_3D).
+		 *
+		 *  @remark Replaces any existing sound with the same name. 3D sounds require a listener.
+		 *  @thread_safety Call from main audio thread or FMOD-safe thread.
+		 */
+		void LoadSound( string_view alias_name, string_view path, FMOD_MODE mode = FMOD_3D );
+
+
+		/*! @brief Creates an audio listener attached to an entity.
+		*
+		*  Initializes a listener component for 3D audio. The listener defines
+		*  the position, orientation, and velocity for 3D sound perception.
+		*
+		*  @param entity The entity ID to attach the listener to.
+		*  @return A wrapper to manipulate the listener.
+		*
+		*  @thread_safety Call from main thread or audio-safe thread.
+		*/
 		AudioListenerWrapper	CreateListener	( EntityID );
+
+
+		/*! @brief Creates an audio emitter.
+		*
+		*  Initializes an emitter that can play sounds in 3D space. The emitter
+		*  can be attached to an entity or used standalone.
+		*
+		*  @param emitterComponent Pointer to the emitter component to initialize.
+		*  @return A wrapper to manipulate the emitter.
+		*
+		*  @thread_safety Call from main thread or audio-safe thread.
+		*/
 		AudioEmitterWrapper		CreateEmitter	( AudioEmitterComponent* );
+		AudioEmitterWrapper		CreateEmitter	( Entity );
 
-
-		////////////////////////////////////
-		/// Debug
-		////////////////////////////////////
-
-		std::optional<AudioID> GetIDByName( string_view );
+		std::optional<AudioHandle>	GetIDByName	( string_view );
+		bool						NameExists	( string_view );
 
 	private:
+
+		AudioManager(AudioManager&&) = delete;
+		AudioManager&& operator=(AudioManager&&) = delete;
 
 		friend class AudioSystem;
 		friend class AudioEmitterWrapper;
@@ -72,19 +118,19 @@ namespace audio {
 		/// Private Helpers
 		////////////////////////////////////
 
-		void AddClipToEmitter				( EmitterID, AudioID );
-		void RemoveClipFromEmitter			( EmitterID, AudioID );
-		void PlayEmitterClip				( EmitterID, AudioID );
-		void StopEmitterClip				( EmitterID, AudioID );
-		void SetEmitterClipVolume			( EmitterID, AudioID, float );
-		void SetEmitterClipPitch			( EmitterID, AudioID, float );
-		void SetEmitterClipPause			( EmitterID, AudioID, bool );
-		void SetEmitterClipLoop				( EmitterID, AudioID, bool );
-		void DestroyEmitter					( EmitterID );
+		void AddClipToEmitter				( EmitterHandle, AudioHandle );
+		void RemoveClipFromEmitter			( EmitterHandle, AudioHandle );
+		void PlayEmitterClip				( EmitterHandle, AudioHandle );
+		void StopEmitterClip				( EmitterHandle, AudioHandle );
+		void SetEmitterClipVolume			( EmitterHandle, AudioHandle, float );
+		void SetEmitterClipPitch			( EmitterHandle, AudioHandle, float );
+		void SetEmitterClipPause			( EmitterHandle, AudioHandle, bool );
+		void SetEmitterClipLoop				( EmitterHandle, AudioHandle, bool );
+		void DestroyEmitter					( EmitterHandle );
 		void SubscribeEvents				( );
 		AudioListenerWrapper* GetListener	( );
 
-		inline bool ValidateEmitterID			( EmitterID id ) noexcept {
+		inline bool ValidateEmitterID			( EmitterHandle id ) noexcept {
 
 			if (!m_emitters.contains(id)) {
 				LOG_ERROR("emitter " << id << " does not exists");
@@ -93,7 +139,7 @@ namespace audio {
 			return true;
 
 		}
-		inline bool ValidateAudioID				( AudioID id ) noexcept {
+		inline bool ValidateAudioID				( AudioHandle id ) noexcept {
 
 			if (!m_sounds.contains(id)) {
 				LOG_ERROR("sound " << id << " does not exists");
@@ -102,7 +148,7 @@ namespace audio {
 			return true;
 
 		}
-		inline bool ValidateEmitterAndAudioID	( EmitterID emitterID, AudioID audioID ) noexcept {
+		inline bool ValidateEmitterAndAudioID	( EmitterHandle emitterID, AudioHandle audioID ) noexcept {
 
 			return ValidateEmitterID(emitterID) && ValidateAudioID(audioID);
 
@@ -115,11 +161,11 @@ namespace audio {
 		std::unique_ptr< AudioListenerWrapper >			m_listener;
 		std::unique_ptr< FMOD::System, FDestructor >	m_audio_system;
 
-		cstd::sparse_set< AudioClip >		m_sounds	{ detail::MAX_SOUNDS_COUNT };
+		cstd::sparse_set< AudioClip >		m_sounds	{ MAX_SOUNDS_COUNT };
 		cstd::sparse_set< AudioEmitter >	m_emitters	{ ecs::detail::MAX_ENTITY_COUNT };
 
-		std::unordered_map< uint64_t, AudioID > m_name_to_id;
-		std::unordered_map< AudioID, string >	m_id_to_name;
+		std::unordered_map< uint64_t, AudioHandle > m_name_to_id;
+		std::unordered_map< AudioHandle, string >	m_id_to_name;
 
 	};
 

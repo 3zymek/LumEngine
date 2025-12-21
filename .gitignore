@@ -25,7 +25,8 @@ bin/
 Debug/
 Release/
 build/
-lumengine/external
+lumengine/external/glfw
+lumengine/external/fmod
 lumengine/assets
 
 

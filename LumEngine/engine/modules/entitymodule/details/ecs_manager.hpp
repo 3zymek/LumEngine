@@ -7,10 +7,10 @@ struct Entity;
 namespace ecs {
 
 	class EntityManager {
-	
+
 	public:
 
-		EntityManager()  { Init(); }
+		EntityManager() { Init(); }
 		~EntityManager() { Destruct(); }
 
 		[[nodiscard]] Entity CreateEntity();
@@ -50,7 +50,7 @@ namespace ecs {
 
 
 		BasePool* m_pools[detail::MAX_COMPONENT_TYPES_COUNT];
-		
+
 	};
 
 }

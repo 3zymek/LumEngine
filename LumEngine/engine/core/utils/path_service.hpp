@@ -3,7 +3,6 @@
 #include <string>
 namespace cstd {
 	struct PathService {
-		PathService() = delete;
 		inline static void SetRoot(std::string_view root) noexcept {
 			namespace fs = std::filesystem;
 			auto path = fs::current_path();
@@ -18,10 +17,11 @@ namespace cstd {
 
 			}
 		}
-		inline static std::string Resolve(std::string_view relative) noexcept {
+		inline static std::string GetPath(std::string_view relative) noexcept {
 			return (g_root / relative.data()).lexically_normal().string();
 		}
 	private:
+		PathService() { SetRoot("assets"); std::cout << g_root; }
 		inline static std::filesystem::path g_root;
 	};
 }

@@ -2,6 +2,7 @@
 #include "details/audio_emitter.hpp"
 #include "details/audio_listener_wrapper.hpp"
 #include <fmod.hpp>
+#include "math/glm.hpp"
 namespace audio {
 
 	void AudioSystem::UpdateEmitters		( ) noexcept {
@@ -78,9 +79,6 @@ namespace audio {
 		if (!listener->transform) return;
 
 		FMOD_VECTOR transfered_pos = TransferCoordsToFMOD(listener->transform->position);
-		auto v = listener->transform->position;
-
-		listener->transform->position = { v.x() + 1, v.y(), v.z() };
 
 		manager.m_audio_system->set3DListenerAttributes(
 			0,				// id
@@ -92,12 +90,12 @@ namespace audio {
 
 	}
 
-	FMOD_VECTOR AudioSystem::TransferCoordsToFMOD( const Vec3f& v ) noexcept {
+	FMOD_VECTOR AudioSystem::TransferCoordsToFMOD( const glm::vec3 v ) noexcept {
 
 		FMOD_VECTOR fmodv;
-		fmodv.x = v.x();
-		fmodv.y = v.y();
-		fmodv.z = v.z();
+		fmodv.x = v.x;
+		fmodv.y = v.y;
+		fmodv.z = v.z;
 		return fmodv;
 
 	}

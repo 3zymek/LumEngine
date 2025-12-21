@@ -10,13 +10,12 @@ namespace audio {
 		using Type			= cmd::Type;
 		using AudioCmd		= cmd::AudioCmd;
 		using AudioManager	= audio::AudioManager;
-		using EmitterID		= detail::EmitterID;
 
 		AudioManager& manager;
 
 	public:
 
-		AudioEmitterWrapper( AudioManager& m, EmitterID emitterID ) : emitterID( emitterID ), manager( m ) {}
+		AudioEmitterWrapper( AudioManager& m, EmitterHandle emitterID ) : emitterID( emitterID ), manager( m ) {}
 
 		~AudioEmitterWrapper() { manager.DestroyEmitter(emitterID); }
 
@@ -27,13 +26,13 @@ namespace audio {
 		AudioEmitterWrapper& SetPitch	( string_view, float );
 		AudioEmitterWrapper& SetPaused	( string_view, bool );
 		AudioEmitterWrapper& SetLoop	( string_view, bool );
-		inline EmitterID GetID() const	{ return emitterID; }
+		inline EmitterHandle GetID() const	{ return emitterID; }
 
 		void Remove( string_view _name );
 
 	private:
 
-		EmitterID emitterID{};
+		EmitterHandle emitterID{};
 
 	};
 

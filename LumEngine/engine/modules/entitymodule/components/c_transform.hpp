@@ -1,11 +1,12 @@
 #pragma once
-#include "math/vec3f.hpp"
 #include "details/ecs_define.hpp"
+#include "math/glm.hpp"
 struct TransformComponent {
 
 	LumComponentTag;
 
-	Vec3f position;
-	Vec3f scale;
+	glm::vec3 position;
+	glm::vec3 scale;
+	glm::vec3 rotation;
 
 };

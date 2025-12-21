@@ -4,6 +4,6 @@ struct AudioEmitterComponent {
 
 	LumComponentTag;
 
-	audio::detail::EmitterID emitterID{};
+	audio::EmitterHandle emitterID{};
 
 };

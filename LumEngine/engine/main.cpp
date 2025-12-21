@@ -3,71 +3,36 @@
 #include "lum_audio.hpp"
 #include "lum_ecs.hpp"
 #include "lum_events.hpp"
+#include "glad/glad.h"
+#include "glfw3.h"
+#include "rendermodule/core/renderer.hpp"
+#include "rendermodule/core/mesh_manager.hpp"
+#include "rendermodule/details/render_define.hpp"
 int main() {
-	
-	cstd::PathService::SetRoot("assets");
 
-	ecs::EntityManager ecs;
-	
-	audio::AudioManager m(ecs);
+    cstd::PathService::SetRoot("assets");
 
-	audio::AudioSystem sys(m);
+    render::RenderInitParams params;
+    params.fullscreen = false;
+    params.MSAA_samples = 4;
+    params.title = "test";
 
-	m.Init(100, FMOD_INIT_NORMAL);
-	
-	m.LoadSound("test", "test.wav", FMOD_2D);
-	m.LoadSound("test2", "test2.wavaw");
+    render::Renderer render;
+    render.Init(params);
 
-	Entity entity1 = ecs.CreateEntity();
-	Entity entity2 = ecs.CreateEntity();
-	
-	std::cout << ecs.Has<TransformComponent>(entity1.GetID());
+    render::MeshManager mm;
+    std::vector<render::Vertex> vertices = { {{1, 1, 1}, {1,1,1}, {1,1,1}} };
+    std::vector<render::Index> indices = { 0, 1, 2, 3 };
+    render::MeshHandle handle = mm.CreateStaticMesh(vertices, indices);
 
-	auto* listener = entity1.AddComponent<AudioListenerComponent>();
-	auto* emitter = entity2.AddComponent<AudioEmitterComponent>();
+    while (render.WindowIsOpen()) {
+        render.BeginFrame();
 
-	m.CreateListener(entity1.GetID());
+        mm.DrawMesh<render::StaticMesh>(handle);
 
-	auto lwrapper = m.CreateListener(entity1.GetID());
-	auto ewrapper = m.CreateEmitter(emitter);
-
-	ewrapper.Add("test")
-		.SetVolume("test", 1.f)
-		.Play("test")
-		.SetPitch("test", 0.5);
-
-	ewrapper.Add("test2")
-		.SetVolume("test2", 1.5f);
-
-	ev::EventBus::Engine().ProcessAll();
-	sys.Update();
-
-	auto* transform = entity1.GetComponent<TransformComponent>();
-
-	system("pause");
-
-	ewrapper.SetPaused("test", true);
-
-	ev::EventBus::Engine().ProcessAll();
-	sys.Update();
-
-	system("pause");
-
-	ewrapper.Stop("test2");
-	ewrapper.SetPaused("test", false);
-
-	ev::EventBus::Engine().ProcessAll();
-	sys.Update();
-
-	system("pause");
-
-	ewrapper.SetVolume("test", 0.f);
+        render.EndFrame();
+    }
 
 
-	while (true) {
-		transform->position.print();
-		ev::EventBus::Engine().ProcessAll();
-		sys.Update();
-	}
-
+    return 0;
 }

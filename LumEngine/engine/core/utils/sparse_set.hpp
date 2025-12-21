@@ -78,6 +78,7 @@ namespace cstd {
 		}
 
 		constexpr __forceinline sparse_t size() { return m_size; }
+		constexpr __forceinline sparse_t dense_size() { return m_dense.size(); }
 		constexpr __forceinline bool empty() { return m_dense.empty(); }
 		constexpr __forceinline void clear() {
 			m_dense.clear();

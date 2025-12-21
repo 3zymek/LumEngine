@@ -1,14 +1,13 @@
 #pragma once
 #include "audiomodule/details/audio_define.hpp"
 #include "audiomodule/details/audio_manager.hpp"
-#include "core/math/vec3f.hpp"
 #include <unordered_map>
 #include <vector>
 namespace audio {
 	namespace detail {
 
 		struct AudioInstance {
-			AudioID id		{};
+			AudioHandle id		{};
 			float volume	{ 1 };
 			float pitch		{ 1 };
 			bool loop		{ false };
@@ -17,7 +16,7 @@ namespace audio {
 
 		struct AudioEmitter {
 			std::vector<AudioChannel> active_clips;
-			std::unordered_map<AudioID, AudioInstance> clips;
+			std::unordered_map<AudioHandle, AudioInstance> clips;
 		};
 	}
 }

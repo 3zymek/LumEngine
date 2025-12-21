@@ -2,7 +2,6 @@
 #include "audiomodule/details/audio_define.hpp"
 #include "entitymodule/details/ecs_define.hpp"
 #include "components/c_transform.hpp"
-#include "core/math/vec3f.hpp"
 namespace audio {
 	class AudioListenerWrapper {
 	public:
