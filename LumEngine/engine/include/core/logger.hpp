@@ -8,8 +8,7 @@ enum class LogSeverity : SeverityMask {
 	ERROR = 0b0000'0010,
 	WARN = 0b0000'0100,
 	INFO = 0b0000'1000,
-	DEBUG = 0b0001'0000,
-	TRACE = 0b0010'0000
+	DEBUG = 0b0001'0000
 };
 inline SeverityMask operator|(LogSeverity s1, LogSeverity s2) {
 	return static_cast<SeverityMask>(s1) | static_cast<SeverityMask>(s2);
@@ -121,7 +120,6 @@ private:
 		case LogSeverity::WARN:  return "WARN";
 		case LogSeverity::INFO:  return "INFO";
 		case LogSeverity::DEBUG: return "DEBUG";
-		case LogSeverity::TRACE: return "TRACE";
 		}
 		return "";
 	}
@@ -132,7 +130,6 @@ private:
 		case LogSeverity::WARN:  return cmdcolor::yellow;
 		case LogSeverity::INFO:  return cmdcolor::green;
 		case LogSeverity::DEBUG: return cmdcolor::blue;
-		case LogSeverity::TRACE: return cmdcolor::cyan;
 		}
 		return "";
 	}

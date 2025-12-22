@@ -20,32 +20,16 @@
 #define LOG_ERROR(msg) \
     do { Logger::Get().Log(LogSeverity::ERROR, __FILE__, __func__, __LINE__, msg); } while (0)
 
-#define LOG_ERROR_S(msg) \
-    do { Logger::Get().Log(LogSeverity::ERROR, __FILE__, __func__, __LINE__, msg.c_str()); } while (0)
-
 #define LOG_WARN(msg) \
     do { Logger::Get().Log(LogSeverity::WARN, __FILE__, __func__, __LINE__, msg); } while (0)
-
-#define LOG_WARN_S(msg) \
-    do { Logger::Get().Log(LogSeverity::WARN, __FILE__, __func__, __LINE__, msg.c_str()); } while (0)
 
 #define LOG_INFO(msg) \
     do { Logger::Get().Log(LogSeverity::INFO, __FILE__, __func__, __LINE__, msg); } while (0)
 
-#define LOG_INFO_S(msg) \
-    do { Logger::Get().Log(LogSeverity::INFO, __FILE__, __func__, __LINE__, msg.c_str()); } while (0)
 
 #define LOG_DEBUG(msg) \
     do { Logger::Get().Log(LogSeverity::DEBUG, __FILE__, __func__, __LINE__, msg); } while (0)
 
-#define LOG_DEBUG_S(msg) \
-    do { Logger::Get().Log(LogSeverity::DEBUG, __FILE__, __func__, __LINE__, msg.c_str()); } while (0)
-
-#define LOG_TRACE(msg) \
-    do { Logger::Get().Log(LogSeverity::TRACE, __FILE__, __func__, __LINE__, msg); } while (0)
-
-#define LOG_TRACE_S(msg) \
-    do { Logger::Get().Log(LogSeverity::TRACE, __FILE__, __func__, __LINE__, msg.c_str()); } while (0)
 
 #define LOG_INIT_OK(msg) \
     do { Logger::Get().LogInit(InitStatus::OK, msg); } while (0)
@@ -57,22 +41,14 @@
 #else
 
 #define LOG_FATAL(msg) ((void)0)
-#define LOG_FATAL_S(msg) ((void)0)
 
 #define LOG_ERROR(msg) ((void)0)
-#define LOG_ERROR_S(msg) ((void)0)
 
 #define LOG_WARN(msg) ((void)0)
-#define LOG_WARN_S(msg) ((void)0)
 
 #define LOG_INFO(msg) ((void)0)
-#define LOG_INFO_S(msg) ((void)0)
 
 #define LOG_DEBUG(msg) ((void)0)
-#define LOG_DEBUG_S(msg) ((void)0)
-
-#define LOG_TRACE(msg) ((void)0)
-#define LOG_TRACE_S(msg) ((void)0)
 
 #define LOG_INIT_OK(msg) ((void)0)
 

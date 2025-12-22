@@ -6,11 +6,11 @@ namespace FMOD { struct Sound; struct Channel; }
 namespace audio {
 
 	using EmitterHandle = uint32_t;
-	using AudioHandle = uint32_t;
+	using AudioHandle	= uint32_t;
 	using ChannelHandle = uint64_t;
 
-	constexpr unsigned int MAX_SOUNDS_COUNT = settings::MAX_SOUNDS_COUNT;
-	constexpr unsigned int MAX_CHANNELS_COUNT = settings::MAX_CHANNELS_COUNT;
+	constexpr unsigned int MAX_SOUNDS_COUNT		= settings::MAX_SOUNDS_COUNT;
+	constexpr unsigned int MAX_CHANNELS_COUNT	= settings::MAX_CHANNELS_COUNT;
 
 	namespace detail {
 
@@ -58,8 +58,8 @@ namespace audio {
 
 		struct AudioChannel {
 			FMOD::Channel*	channel = nullptr;
-			EmitterHandle		emitter_id{};
-			AudioHandle			audio_clip{};
+			EmitterHandle	emitter_id{};
+			AudioHandle		audio_clip{};
 		};
 
 		#define FMOD_ASSERT(x) \

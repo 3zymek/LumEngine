@@ -19,16 +19,96 @@ namespace audio {
 
 		~AudioEmitterWrapper() { manager.DestroyEmitter(emitterID); }
 
-		AudioEmitterWrapper& Add		( string_view );
-		AudioEmitterWrapper& Play		( string_view );
-		AudioEmitterWrapper& Stop		( string_view );
-		AudioEmitterWrapper& SetVolume	( string_view, float );
-		AudioEmitterWrapper& SetPitch	( string_view, float );
-		AudioEmitterWrapper& SetPaused	( string_view, bool );
-		AudioEmitterWrapper& SetLoop	( string_view, bool );
+		/*! @brief Adds a new sound to emitter.
+		*
+		*  Creates and registers an sound identified by the given name (must be loaded from audio_manager.LoadFromFile()).
+		*
+		*  @param name Alias name of the sound to add.
+		*  @return Reference to the created AudioEmitterWrapper for chaining.
+		*
+		*  @thread_safety Call from the main thread or audio system context.
+		*/
+		AudioEmitterWrapper& Add		( string_view name );
+		
+		/*! @brief Plays the sound on emitter.
+		*
+		*  Starts playback of the emitter identified by the given name.
+		*
+		*  @param name Alias name of the sound to play.
+		*  @return Reference to the AudioEmitterWrapper for chaining.
+		*
+		*  @thread_safety Call from the main thread or audio system context.
+		*/
+		AudioEmitterWrapper& Play		( string_view name );
+
+		/*! @brief Stops the sound.
+		*
+		*  Stops playback of the emitter identified by the given name.
+		*
+		*  @param name Alias name of the sound to stop.
+		*  @return Reference to the AudioEmitterWrapper for chaining.
+		*
+		*  @thread_safety Call from the main thread or audio system context.
+		*/
+		AudioEmitterWrapper& Stop		( string_view name );
+
+		/*! @brief Sets the volume of a sound.
+		*
+		*  @param name Alias name of the Sound.
+		*  @param value Volume multiplier (1.0 = original volume, 0.0 = muted).
+		*  @return Reference to the AudioEmitterWrapper for chaining.
+		*
+		*  @thread_safety Call from the main thread or audio system context.
+		*/
+		AudioEmitterWrapper& SetVolume	( string_view name, float value );
+
+		/*! @brief Sets the pitch of a sound.
+		*
+		*  @param name Alias name of the sound.
+		*  @param value Pitch multiplier (1.0 = original pitch).
+		*  @return Reference to the AudioEmitterWrapper for chaining.
+		*
+		*  @thread_safety Call from the main thread or audio system context.
+		*/
+		AudioEmitterWrapper& SetPitch	( string_view name, float value );
+		
+		/*! @brief Pauses or resumes a sound.
+		*
+		*  @param name Name of the sound.
+		*  @param value True to pause, false to resume playback.
+		*  @return Reference to the AudioEmitterWrapper for chaining.
+		*
+		*  @thread_safety Call from the main thread or audio system context.
+		*/
+		AudioEmitterWrapper& SetPaused	( string_view name, bool value );
+
+		/*! @brief Sets looping for a sound.
+		*
+		*  @param name Alias name of the sound.
+		*  @param value True to loop indefinitely, false to play once.
+		*  @return Reference to the AudioEmitterWrapper for chaining.
+		*
+		*  @thread_safety Call from the main thread or audio system context.
+		*/
+		AudioEmitterWrapper& SetLoop	( string_view name, bool value );
+
+		/*! @brief Gets the unique ID of this emitter.
+		*
+		*  @return EmitterHandle representing the internal identifier.
+		*
+		*  @thread_safety Safe to call from any thread.
+		*/
 		inline EmitterHandle GetID() const	{ return emitterID; }
 
-		void Remove( string_view _name );
+		/*! @brief Removes a sound by name.
+		*
+		*  Removes audio clip from this emitter.
+		*
+		*  @param name Alias name of the sound to remove.
+		*
+		*  @thread_safety Call from the main thread or audio system context.
+		*/
+		void Remove( string_view name );
 
 	private:
 

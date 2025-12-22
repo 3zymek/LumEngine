@@ -5,6 +5,8 @@
 #include "include/modules/event/ev_pool.hpp"
 namespace ev {
 
+	struct EventEmitter;
+
 	class EventBus {
 	public:
 
@@ -13,6 +15,8 @@ namespace ev {
 
 		template<detail::EventT T>
 		void RegisterPool();
+
+		EventEmitter CreateEventEmitter();
 
 		template<detail::EventT T, typename Arg>
 		detail::CallbackID Subscribe(Arg&& args);

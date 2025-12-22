@@ -25,14 +25,10 @@ int main() {
     auto emitter = am.CreateEmitter(e);
     am.LoadSound("atomic_land", "test.wav");
     emitter.Add("atomic_land");
-
-    emitter.Play("atomic_land");
+    emitter.Play("atomic_land").SetVolume("atomic_land", 0.1f);
 
     ev::EventBus::Engine().ProcessAll();
     sys.Update();
-
-    system("pause");
-    emitter.Stop("atomic_land");
 
     while (true) {
         ev::EventBus::Engine().ProcessAll();
