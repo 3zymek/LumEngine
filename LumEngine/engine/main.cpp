@@ -1,14 +1,14 @@
 #include <iostream>
-#include "core/utils/path_service.hpp"
-#include "lum_audio.hpp"
-#include "lum_ecs.hpp"
-#include "lum_events.hpp"
+#include "include/core/utils/path_service.hpp"
+#include "include/modules/audio/lum_audio.hpp"
+#include "include/modules/entity/lum_ecs.hpp"
+#include "include/modules/event/lum_events.hpp"
 #include "glad/glad.h"
 #include "glfw3.h"
-#include "rendermodule/core/renderer.hpp"
-#include "rendermodule/core/mesh_manager.hpp"
-#include "rendermodule/details/render_define.hpp"
-#include "core/logger.hpp"
+#include "include/modules/render/core/renderer.hpp"
+#include "include/modules/render/core/mesh_manager.hpp"
+#include "include/modules/render/render_common.hpp"
+#include "include/core/logger.hpp"
 int main() {
     
     Logger::Get().EnableLog(LogSeverity::INFO);
