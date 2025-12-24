@@ -160,8 +160,8 @@ namespace audio {
 		std::unique_ptr< AudioListenerWrapper >			m_listener;
 		std::unique_ptr< FMOD::System, FDestructor >	m_audio_system;
 
-		cstd::sparse_set< AudioClip >		m_sounds	{ MAX_SOUNDS_COUNT };
-		cstd::sparse_set< AudioEmitter >	m_emitters	{ ecs::detail::MAX_ENTITY_COUNT };
+		cstd::sparse_set< AudioClip, AudioHandle >		m_sounds	{ MAX_SOUNDS_COUNT };
+		cstd::sparse_set< AudioEmitter, EmitterHandle >	m_emitters	{ ecs::detail::MAX_ENTITY_COUNT };
 
 		std::unordered_map< uint64_t, AudioHandle > m_name_to_id;
 		#ifdef ENABLE_LOGGER

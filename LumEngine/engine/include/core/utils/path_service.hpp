@@ -2,7 +2,7 @@
 #include "core/core_pch.hpp"
 namespace cstd {
 	struct PathService {
-		inline static void SetRoot(std::string_view root) noexcept {
+		static void SetRoot(std::string_view root) noexcept {
 			namespace fs = std::filesystem;
 			auto path = fs::current_path();
 

@@ -29,13 +29,13 @@ namespace cstd {
 
 	}
 
-	template<typename _Val>
+	template<typename val, typename sparse_val>
 	class sparse_set {
 
-		using sparse_t = size_t;
+		using sparse_t = sparse_val;
 
-		using iterator			= typename std::vector<_Val>::iterator;
-		using const_iterator	= typename std::vector<_Val>::const_iterator;
+		using iterator			= typename std::vector<val>::iterator;
+		using const_iterator	= typename std::vector<val>::const_iterator;
 
 	public:
 
@@ -49,19 +49,19 @@ namespace cstd {
 		const_iterator begin() const { return m_dense.begin(); }
 		const_iterator end() const { return m_dense.end(); }
 
-		_Val& operator[](const sparse_t&);
+		val& operator[](const sparse_t&);
 
-		_Val& get_at(const sparse_t&);
+		val& get_at(const sparse_t&);
 
 		template<typename T>
 		void emplace(T&&, const sparse_t&);
 
 		void reserve(const sparse_t&) noexcept;
 
-		constexpr sparse_t size()		{ return m_size; }
-		constexpr sparse_t dense_size() { return m_dense.size(); }
-		constexpr bool empty()			{ return m_dense.empty(); }
-		constexpr void clear() {
+		inline constexpr sparse_t size()		{ return m_size; }
+		inline constexpr sparse_t dense_size() { return m_dense.size(); }
+		inline constexpr bool empty()			{ return m_dense.empty(); }
+		inline constexpr void clear() {
 			m_dense.clear();
 			m_sparse.clear();
 			m_dense_to_sparse.clear();
@@ -73,19 +73,19 @@ namespace cstd {
 			return _idx < m_size and m_sparse[_idx] != NULL_SPARSE;
 		}
 
-		constexpr void fill_sparse(const sparse_t& _size) {
+		constexpr void fill_sparse(const size_t& _size) {
 			m_sparse.assign(_size, NULL_SPARSE);
 			m_size = _size;
 		}
 
 	private:
 
-		static constexpr size_t NULL_SPARSE = std::numeric_limits<size_t>::max();
-		sparse_t m_size{ 0 };
+		static constexpr sparse_t NULL_SPARSE = std::numeric_limits<sparse_t>::max();
+		size_t m_size{ 0 };
 
-		std::vector<_Val>		m_dense;
+		std::vector<val>		m_dense;
 		std::vector<sparse_t>	m_sparse;
-		std::vector<sparse_t>	m_dense_to_sparse;
+		std::vector<size_t>	m_dense_to_sparse;
 
 	};
 	#include "sparse_set.ipp"

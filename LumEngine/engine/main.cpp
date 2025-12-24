@@ -1,20 +1,20 @@
 #include "core/core_pch.hpp"
-#include "include/core/utils/path_service.hpp"
-#include "include/modules/audio/lum_audio.hpp"
-#include "include/modules/entity/lum_ecs.hpp"
-#include "include/modules/event/lum_events.hpp"
+#include "core/utils/path_service.hpp"
+#include "packages/lum_audio.hpp"
+#include "packages/lum_ecs.hpp"
+#include "packages/lum_events.hpp"
 
-#include "include/core/logger.hpp"
+#include "core/logger.hpp"
 int main() {
     
-    Logger::Get().EnableLog(LogSeverity::INFO);
+    lum::Logger::Get().EnableLog(lum::LogSeverity::INFO);
 
     cstd::PathService::SetRoot("assets");
 
     ecs::EntityManager ecs;
-    audio::AudioManager am(ecs);
+    lum::AudioManager am(ecs);
     am.Init(512, FMOD_2D);
-    audio::AudioSystem sys(am);
+    lum::AudioSystem sys(am);
 
     Entity e = ecs.CreateEntity();
     e.AddComponent<AudioEmitterComponent>();
