@@ -3,15 +3,13 @@
 #include "include/modules/entity/ecs_manager.hpp"
 
 #include "include/core/utils/sparse_set.hpp"
-
 #include "include/modules/audio/command/audio_commands.hpp"
 #include "include/modules/audio/components/c_audio_emitter.hpp"
 #include "include/modules/audio/audio_listener_wrapper.hpp"
 
 #include "include/core/core_common.hpp"
-#include <unordered_map>
-#include <fmod.hpp>
-
+#include "include/core/core_pch.hpp"
+#include "include/modules/audio/audio_pch.hpp"
 namespace audio {
 
 	namespace detail {

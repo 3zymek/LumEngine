@@ -5,16 +5,13 @@
 #include "include/modules/entity/entity.hpp"
 
 #include "include/modules/audio/audio_emitter_wrapper.hpp"
-
+#include "include/modules/audio/audio_listener_wrapper.hpp"
 #include "include/core/utils/path_service.hpp"
 #include "include/core/utils/string_hasher.hpp"
 
 #include "include/modules/audio/systems/sys_audio.hpp"
 #include "include/modules/audio/components/c_audio_emitter.hpp"
 #include "include/modules/audio/components/c_audio_listener.hpp"
-
-#include <fmod.hpp>
-#include <fmod_studio.hpp>
 
 namespace audio {
 

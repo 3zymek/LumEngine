@@ -20,8 +20,11 @@ target_sources(LumEngine PRIVATE ${ENGINE_CPP} ${ENGINE_C} ${ENGINE_HEADERS})
 
 source_group(TREE ${CMAKE_SOURCE_DIR}/lumengine FILES ${ENGINE_CPP} ${ENGINE_C} ${ENGINE_HEADERS})
 
+target_precompile_headers(LumEngine PRIVATE ${CMAKE_SOURCE_DIR}/lumengine/engine/include/core/core_pch.hpp)
+target_precompile_headers(LumEngine PRIVATE ${CMAKE_SOURCE_DIR}/lumengine/engine/include/modules/audio/audio_pch.hpp)
 
 target_include_directories(LumEngine PRIVATE
+    "${CMAKE_SOURCE_DIR}/lumengine/engine/include"
     "${CMAKE_SOURCE_DIR}/lumengine/engine"
     "${CMAKE_SOURCE_DIR}/lumengine/engine/include/modules"
     "${CMAKE_SOURCE_DIR}/lumengine/engine/include/core"
