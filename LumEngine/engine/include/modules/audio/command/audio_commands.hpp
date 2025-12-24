@@ -1,6 +1,6 @@
 #pragma once
-#include "include/modules/audio/audio_common.hpp"
-#include "include/core/utils/command_buffer.hpp"
+#include "audio/audio_common.hpp"
+#include "core/utils/command_buffer.hpp"
 namespace cmd {
 	
 	namespace detail {

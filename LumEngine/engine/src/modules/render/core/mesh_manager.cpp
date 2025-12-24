@@ -1,5 +1,5 @@
-#include "include/modules/render/core/mesh_manager.hpp"
-#include "include/modules/render/essentials/mesh.hpp"
+#include "render/core/mesh_manager.hpp"
+#include "render/essentials/mesh.hpp"
 namespace render {
 	MeshHandle MeshManager::CreateStaticMesh(std::span<Vertex> vertices, std::span<Index> indices) {
 		StaticMesh mesh;

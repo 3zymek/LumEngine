@@ -1,10 +1,8 @@
 #pragma once
-#include <include/modules/render/render_common.hpp>
-#include <include/core/utils/handle_pool.hpp>
-#include <vector>
-#include <span>
-#include <type_traits>
-#include "include/modules/render/essentials/mesh.hpp"
+#include "render/render_common.hpp"
+#include "core/utils/handle_pool.hpp"
+#include "core/core_pch.hpp"
+#include "render/essentials/mesh.hpp"
 namespace render {
 	enum class MeshType {
 		Dynamic,
@@ -58,5 +56,5 @@ namespace render {
 		cstd::handle_pool<DynamicMesh, MeshHandle>	m_dynamic_handles{ MAX_MESHES_AMOUNT };
 		
 	};
-	#include <include/modules/render/core/mesh_manager.ipp>
+	#include "render/core/mesh_manager.ipp"
 }

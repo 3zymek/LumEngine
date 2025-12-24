@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include "core/core_pch.hpp"
 namespace cstd {
 	template<typename DenseType, typename HandleType>
 	class handle_pool {

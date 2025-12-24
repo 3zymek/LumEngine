@@ -1,6 +1,6 @@
 #pragma once
-#include "include/modules/entity/ecs_common.hpp"
-#include "include/core/math/glm.hpp"
+#include "entity/ecs_common.hpp"
+#include "core/core_pch.hpp"
 struct TransformComponent {
 
 	LumComponentTag;

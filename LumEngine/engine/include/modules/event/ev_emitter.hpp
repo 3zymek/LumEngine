@@ -1,7 +1,7 @@
 #pragma once
-#include "include/modules/event/ev_common.hpp"
-#include "include/modules/event/ev_bus.hpp"
-#include <vector>
+#include "event/ev_common.hpp"
+#include "event/ev_bus.hpp"
+#include "core/core_pch.hpp"
 namespace ev {
 
 	// Wrapper to secure events subscribtions

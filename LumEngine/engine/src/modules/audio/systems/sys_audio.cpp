@@ -1,8 +1,8 @@
-#include "include/modules/audio/systems/sys_audio.hpp"
-#include "include/modules/audio/audio_emitter.hpp"
-#include "include/modules/audio/audio_listener_wrapper.hpp"
-#include "include/core/math/glm.hpp"
-#include <fmod.hpp>
+#include "audio/systems/sys_audio.hpp"
+#include "audio/audio_emitter.hpp"
+#include "audio/audio_listener_wrapper.hpp"
+#include "core/core_pch.hpp"
+#include "audio/audio_pch.hpp"
 namespace audio {
 
 	void AudioSystem::UpdateEmitters		( ) noexcept {

@@ -1,7 +1,6 @@
 #pragma once
 #include "core_common.hpp"
-#include <chrono>
-#include <filesystem>
+#include "core/core_pch.hpp"
 using SeverityMask = Bit;
 enum class LogSeverity : SeverityMask {
 	FATAL = 0b0000'0001,

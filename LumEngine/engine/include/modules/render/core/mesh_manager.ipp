@@ -1,5 +1,5 @@
-#include <include/modules/render/core/mesh_manager.hpp>
-#include <include/modules/render/render_common.hpp>
+#include "render/core/mesh_manager.hpp"
+#include "render/render_common.hpp"
 
 template<typename T>
 void render::MeshManager::DrawMesh(MeshHandle handle) {

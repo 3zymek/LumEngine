@@ -1,6 +1,6 @@
-#include "include/modules/audio/audio_emitter_wrapper.hpp"
-#include "include/modules/audio/command/audio_commands.hpp"
-#include "include/modules/audio/audio_manager.hpp"
+#include "audio/audio_emitter_wrapper.hpp"
+#include "audio/command/audio_commands.hpp"
+#include "audio/audio_manager.hpp"
 
 namespace audio {
 	

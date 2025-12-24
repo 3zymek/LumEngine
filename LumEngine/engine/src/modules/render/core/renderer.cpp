@@ -1,5 +1,5 @@
-#include "include/modules/render/core/renderer.hpp"
-#include <memory>
+#include "render/core/renderer.hpp"
+#include "core/core_pch.hpp"
 namespace render {
 	void Renderer::Init( RenderInitParams params ) {
 

@@ -1,5 +1,5 @@
-#include "include/modules/event/ev_bus.hpp"
-#include "include/modules/event/ev_emitter.hpp"
+#include "event/ev_bus.hpp"
+#include "event/ev_emitter.hpp"
 namespace ev {
 
 	EventEmitter EventBus::CreateEventEmitter() {

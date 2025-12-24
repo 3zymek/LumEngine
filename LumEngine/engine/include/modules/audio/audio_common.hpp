@@ -1,6 +1,6 @@
 #pragma once
-#include "include/modules/audio/audio_pch.hpp"
-#include "include/core/core_common.hpp"
+#include "audio/audio_pch.hpp"
+#include "core/core_common.hpp"
 namespace FMOD { struct Sound; struct Channel; }
 namespace audio {
 

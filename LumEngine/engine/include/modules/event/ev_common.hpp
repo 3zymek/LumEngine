@@ -1,6 +1,6 @@
 #pragma once
-#include "include/core/core_defines.hpp"
-#include <vector>
+#include "core/core_pch.hpp"
+#include "core/core_defines.hpp"
 #include <functional>
 namespace ev {
 	namespace detail {

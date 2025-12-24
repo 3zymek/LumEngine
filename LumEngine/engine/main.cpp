@@ -1,13 +1,9 @@
-#include <iostream>
+#include "core/core_pch.hpp"
 #include "include/core/utils/path_service.hpp"
 #include "include/modules/audio/lum_audio.hpp"
 #include "include/modules/entity/lum_ecs.hpp"
 #include "include/modules/event/lum_events.hpp"
-#include "glad/glad.h"
-#include "glfw3.h"
-#include "include/modules/render/core/renderer.hpp"
-#include "include/modules/render/core/mesh_manager.hpp"
-#include "include/modules/render/render_common.hpp"
+
 #include "include/core/logger.hpp"
 int main() {
     

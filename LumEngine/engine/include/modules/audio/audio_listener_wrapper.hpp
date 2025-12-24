@@ -1,7 +1,7 @@
 #pragma once
-#include "include/modules/audio/audio_common.hpp"
-#include "include/modules/entity/ecs_common.hpp"
-#include "include/modules/entity/components/c_transform.hpp"
+#include "audio/audio_common.hpp"
+#include "entity/ecs_common.hpp"
+#include "entity/components/c_transform.hpp"
 namespace audio {
 	class AudioListenerWrapper {
 	public:

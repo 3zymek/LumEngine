@@ -1,9 +1,8 @@
 #pragma once
 #include "glad/glad.h"
 #include "glfw3.h"
-#include "include/core/core_defines.hpp"
-#include "include/modules/render/render_common.hpp"
-#include <memory>
+#include "core/core_defines.hpp"
+#include "render/render_common.hpp"
 namespace render {
 
 	namespace detail {

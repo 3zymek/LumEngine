@@ -1,7 +1,7 @@
 #pragma once
-#include "include/modules/entity/ecs_common.hpp"
-#include "include/core/utils/sparse_set.hpp"
-#include <optional>
+#include "entity/ecs_common.hpp"
+#include "core/utils/sparse_set.hpp"
+#include "core/core_pch.hpp"
 
 struct BasePool {};
 

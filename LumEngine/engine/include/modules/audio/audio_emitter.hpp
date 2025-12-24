@@ -1,8 +1,7 @@
 #pragma once
-#include "include/modules/audio/audio_common.hpp"
-#include "include/modules/audio/audio_manager.hpp"
-#include <unordered_map>
-#include <vector>
+#include "audio/audio_common.hpp"
+#include "audio/audio_manager.hpp"
+#include "core/core_pch.hpp"
 namespace audio {
 	namespace detail {
 

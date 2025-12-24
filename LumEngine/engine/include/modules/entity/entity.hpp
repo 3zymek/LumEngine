@@ -1,7 +1,7 @@
 #pragma once
-#include "include/modules/entity/ecs_common.hpp"
-#include "include/modules/entity/ecs_manager.hpp"
-#include "include/core/core_defines.hpp"
+#include "entity/ecs_common.hpp"
+#include "entity/ecs_manager.hpp"
+#include "core/core_defines.hpp"
 namespace ecs { class EntityManager; }
 
 abstract_class Entity {

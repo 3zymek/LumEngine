@@ -1,6 +1,5 @@
 #pragma once
-#include <filesystem>
-#include <string>
+#include "core/core_pch.hpp"
 namespace cstd {
 	struct PathService {
 		inline static void SetRoot(std::string_view root) noexcept {

@@ -1,5 +1,5 @@
 #pragma once
-#include "include/modules/render/render_common.hpp"
+#include "render/render_common.hpp"
 namespace render {
 	struct StaticMesh {
 	private:

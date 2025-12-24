@@ -1,6 +1,6 @@
 #pragma once
-#include "include/modules/entity/ecs_common.hpp"
-#include "include/modules/event/ev_common.hpp"
+#include "entity/ecs_common.hpp"
+#include "event/ev_common.hpp"
 namespace ev {
 	struct ComponentAdded
 	{

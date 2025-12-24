@@ -1,7 +1,7 @@
 #pragma once
-#include "include/modules/entity/ecs_common.hpp"
-#include "include/modules/event/ev_bus.hpp"
-#include "include/modules/entity/ecs_component_pool.hpp"
+#include "modules/entity/ecs_common.hpp"
+#include "modules/event/ev_bus.hpp"
+#include "modules/entity/ecs_component_pool.hpp"
 namespace ecs {
 	template<detail::Component T>
 	T* EntityManager::AddComponent(EntityID entityID) {

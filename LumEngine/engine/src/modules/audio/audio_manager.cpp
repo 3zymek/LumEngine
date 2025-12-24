@@ -1,17 +1,17 @@
-#include "include/modules/audio/audio_manager.hpp"
-#include "include/modules/event/ev_bus.hpp"
-#include "include/modules/entity/ecs_common.hpp"
-#include "include/modules/audio/audio_common.hpp"
-#include "include/modules/entity/entity.hpp"
+#include "audio/audio_manager.hpp"
+#include "event/ev_bus.hpp"
+#include "entity/ecs_common.hpp"
+#include "audio/audio_common.hpp"
+#include "entity/entity.hpp"
 
-#include "include/modules/audio/audio_emitter_wrapper.hpp"
-#include "include/modules/audio/audio_listener_wrapper.hpp"
-#include "include/core/utils/path_service.hpp"
-#include "include/core/utils/string_hasher.hpp"
+#include "audio/audio_emitter_wrapper.hpp"
+#include "audio/audio_listener_wrapper.hpp"
+#include "core/utils/path_service.hpp"
+#include "core/utils/string_hasher.hpp"
 
-#include "include/modules/audio/systems/sys_audio.hpp"
-#include "include/modules/audio/components/c_audio_emitter.hpp"
-#include "include/modules/audio/components/c_audio_listener.hpp"
+#include "modules/audio/systems/sys_audio.hpp"
+#include "modules/audio/components/c_audio_emitter.hpp"
+#include "modules/audio/components/c_audio_listener.hpp"
 
 namespace audio {
 

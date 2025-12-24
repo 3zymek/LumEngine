@@ -1,6 +1,6 @@
 #pragma once
 #include "key_codes.hpp"
-#include "math/glm.hpp"
+#include "core/core_pch.hpp"
 namespace input {
 	static GLFWwindow* activeWindow = nullptr;
 

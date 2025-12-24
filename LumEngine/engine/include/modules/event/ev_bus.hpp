@@ -1,8 +1,7 @@
 #pragma once
-#include <iostream>
-#include <functional>
-#include "include/modules/event/ev_common.hpp"
-#include "include/modules/event/ev_pool.hpp"
+#include "core/core_pch.hpp"
+#include "event/ev_common.hpp"
+#include "event/ev_pool.hpp"
 namespace ev {
 
 	struct EventEmitter;

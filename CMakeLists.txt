@@ -24,10 +24,8 @@ target_precompile_headers(LumEngine PRIVATE ${CMAKE_SOURCE_DIR}/lumengine/engine
 target_precompile_headers(LumEngine PRIVATE ${CMAKE_SOURCE_DIR}/lumengine/engine/include/modules/audio/audio_pch.hpp)
 
 target_include_directories(LumEngine PRIVATE
-    "${CMAKE_SOURCE_DIR}/lumengine/engine/include"
-    "${CMAKE_SOURCE_DIR}/lumengine/engine"
     "${CMAKE_SOURCE_DIR}/lumengine/engine/include/modules"
-    "${CMAKE_SOURCE_DIR}/lumengine/engine/include/core"
+    "${CMAKE_SOURCE_DIR}/lumengine/engine/include"
     "${CMAKE_SOURCE_DIR}/lumengine/external/fmod/inc"
     "${CMAKE_SOURCE_DIR}/lumengine/external/glfw/inc"
     "${CMAKE_SOURCE_DIR}/lumengine/external/imgui/inc"

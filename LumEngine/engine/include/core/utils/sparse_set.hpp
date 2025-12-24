@@ -5,9 +5,7 @@
 // Dense buffer + sparse index map. O(1) insert/erase without holes.
 // Ideal for ECS component storage (fast random access by entity ID).
 #pragma once
-#include <vector>
-#include <exception>
-#include <string>
+#include "core/core_pch.hpp"
 namespace cstd {
 	namespace detail {
 

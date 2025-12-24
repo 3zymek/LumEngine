@@ -1,8 +1,7 @@
 #pragma once
-#include "include/core/core_defines.hpp"
-#include <type_traits>
-#include <exception>
-#include "include/core/core_common.hpp"
+#include "core/core_defines.hpp"
+#include "core/core_pch.hpp"
+#include "core/core_common.hpp"
 namespace ecs {
     using EntityID = uint32_t;
 }

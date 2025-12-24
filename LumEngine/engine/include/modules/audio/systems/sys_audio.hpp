@@ -1,7 +1,7 @@
 #pragma once
-#include "include/modules/entity/systems/sys_define.hpp"
-#include "include/modules/audio/audio_manager.hpp"
-#include "include/core/math/glm.hpp"
+#include "entity/systems/sys_define.hpp"
+#include "audio/audio_manager.hpp"
+#include "core/math/glm.hpp"
 namespace audio {
 
 	class AudioSystem : public BaseSystem<AudioSystem> {

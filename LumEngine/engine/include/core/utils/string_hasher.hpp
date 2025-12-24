@@ -1,5 +1,5 @@
 #pragma once
-#include <string_view>
+#include "core/core_pch.hpp"
 namespace cstd {
 
 	class StringHasher {

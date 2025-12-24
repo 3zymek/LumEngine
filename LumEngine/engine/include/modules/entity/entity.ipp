@@ -1,5 +1,5 @@
 #pragma once
-#include "include/modules/entity/ecs_manager.hpp"
+#include "entity/ecs_manager.hpp"
 /*
 template< ecs::detail::Component T >
 T* Entity::AddComponent( ) {

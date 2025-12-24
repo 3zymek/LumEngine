@@ -1,8 +1,7 @@
 #pragma once
-#include "include/core/core_defines.hpp"
-#include "include/core/math/glm.hpp"
+#include "core/core_defines.hpp"
+#include "core/core_pch.hpp"
 #include "glad/glad.h"
-#include <type_traits>
 namespace render {
 	
 	struct Vertex {

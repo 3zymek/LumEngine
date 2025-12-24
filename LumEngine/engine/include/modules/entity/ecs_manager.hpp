@@ -1,8 +1,8 @@
 #pragma once
-#include "include/modules/event/engine_events/ev_ecs_events.hpp"
-#include "include/modules/entity/ecs_common.hpp"
-#include "include/modules/entity/ecs_component_pool.hpp"
-#include "include/core/core_defines.hpp"
+#include "event/engine_events/ev_ecs_events.hpp"
+#include "entity/ecs_common.hpp"
+#include "entity/ecs_component_pool.hpp"
+#include "core/core_defines.hpp"
 struct Entity;
 
 namespace ecs {

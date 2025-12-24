@@ -1,6 +1,5 @@
 #pragma once
-#include <cstdlib>
-#include <iostream>
+#include "core/core_pch.hpp"
 
 // GLOBAL ALIAS
 

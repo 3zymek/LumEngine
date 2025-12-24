@@ -1,6 +1,6 @@
 #pragma once
-#include "include/modules/audio/audio_manager.hpp"
-#include "include/modules/audio/audio_emitter.hpp"
+#include "audio/audio_manager.hpp"
+#include "audio/audio_emitter.hpp"
 namespace audio {
 
 	// Wrapper to secure audio emitter and implement user-friendly API
