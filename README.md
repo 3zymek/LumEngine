@@ -1,4 +1,11 @@
 # __🟡LUMENGINE🟡__
+## LumEngine is an open-source, modular game engine developed by a single indie developer.
+
+## (ASSUMPTIONS)
+It focuses on old-school rendering techniques and shaders, making it ideal for creating retro-style games.
+The engine provides a user-friendly API and editor, while giving developers full low-level control over rendering, logic, and systems.
+LumEngine is built for developers who want to understand and control every part of what they create.
+
 ## **HOW TO BUILD**
 
 1. Download zip file
