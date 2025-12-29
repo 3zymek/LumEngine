@@ -2,53 +2,74 @@
 #include "event/ev_common.hpp"
 namespace ev {
 	namespace detail {
-		struct BasePool {
+
+		class BasePool {};
+
+		template<LumEvent T>
+		class EventPool : public BasePool {
+
+			using CallbackArr		= std::array<Callback<T>, MAX_CALLBACKS_PER_FRAME>;
+			using PermCallbackArr	= std::array<Callback<T>, MAX_PERM_CALLBACKS>;
+			using FreeSlots			= std::vector<Event_t>;
+
 		public:
-			virtual			~BasePool() noexcept = default;
-			virtual void	Process() = 0;
-		};
 
-		template<EventT T>
-		struct EventPool : public BasePool {
+			EventPool() { Init(); }
 
-			EventPool() {
-				m_callbacks.reserve(128);
-				m_permament_callbacks.reserve(256);
+			template<typename Lambda>
+			void Subscribe(Lambda&& lambda) {
+
+				auto& slot = callbacks[current_callbacks_id++];
+
+				new (slot.buffer) Lambda(std::forward<Lambda>(lambda));
+				slot.invoke = [](void* userParam, const void* event) {
+					auto* l = reinterpret_cast<Lambda*>(userParam);
+					(*l)(*reinterpret_cast<const T*>(event));
+				};
+				slot.destroy = [](void* userParam) {
+					reinterpret_cast<Lambda*>(userParam)->~Lambda();
+				};
+
 			}
 
-			force_inline void PushEvent(const T& event) {
-				m_events.push_back(std::move(event));
-			}
-			force_inline void SubscribeCallback(const CallbackWrapper<T>& callback) {
-				m_callbacks.push_back(std::move(callback));
-			}
-			force_inline void SubscribePermamently(const CallbackWrapper<T>& callback) {
-				m_permament_callbacks.push_back(std::move(callback));
-			}
-			force_inline void Unsubscribe(const CallbackID& id) {
-				m_callbacks.erase(std::remove_if(m_callbacks.begin(), m_callbacks.end(), [id](const CallbackWrapper<T>& call) {
-					return call.GetID() == id;
-					}), m_callbacks.end());
-			}
-			force_inline void Process() override {
-				for (auto& ev : m_events) {
-					for (auto& call : m_callbacks) {
-						auto& callback = call.GetCallback();
-						callback(ev);
-					}
-					for (auto& call : m_permament_callbacks) {
-						auto& callback = call.GetCallback();
-						callback(ev);
-					}
+			template<typename Lambda>
+			void SubscribePermamently(Lambda&& lambda) {
+				Event_t slot;
+				if (!perm_free_slots.empty()) {
+					slot = perm_free_slots.back();
+					perm_free_slots.pop_back();
 				}
-				m_events.clear();
-				m_callbacks.clear();
+				else {
+					LOG_ERROR("Couldn't substribe - slots for permament callbacks are full");
+					return;
+				}
+				
+					
 			}
+
+			void Emit(const T& event) {
+				for (size_t i = 0; i < current_callbacks_id; i++) {
+					auto& callback = callbacks[i];
+					(*callback.invoke)(&callback.buffer, &event);
+					callback.Destroy();
+				}
+				
+			}
+
 		private:
 
-			std::vector<CallbackWrapper<T>> m_callbacks;
-			std::vector<CallbackWrapper<T>> m_permament_callbacks;
-			std::vector<T>					m_events;
+			void Init() {
+				perm_free_slots.reserve(MAX_PERM_CALLBACKS);
+				for (Event_t i = 0; i < MAX_PERM_CALLBACKS; i++) {
+					perm_free_slots.push_back(i);
+				}
+			}
+			
+			CallbackArr callbacks;
+			Event_t		current_callbacks_id;
+
+			PermCallbackArr perm_callbacks;
+			FreeSlots		perm_free_slots;
 
 		};
 	}

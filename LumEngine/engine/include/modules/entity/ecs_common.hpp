@@ -17,9 +17,9 @@ namespace ecs::detail {
         }
     };
 
-    inline constexpr unsigned int MAX_POOL_CAPACITY         = settings::MAX_POOL_CAPACITY;
-    inline constexpr unsigned int MAX_ENTITY_COUNT          = settings::MAX_ENTITY_COUNT;
-    inline constexpr unsigned int MAX_COMPONENT_TYPES_COUNT = settings::MAX_COMPONENT_TYPES_COUNT;
+    inline constexpr unsigned int MAX_POOL_CAPACITY         = settings::ECS_MAX_POOL_CAPACITY;
+    inline constexpr unsigned int MAX_ENTITY_COUNT          = settings::ECS_MAX_ENTITY_COUNT;
+    inline constexpr unsigned int MAX_COMPONENT_TYPES_COUNT = settings::ECS_MAX_COMPONENT_TYPES_COUNT;
 
 #define LumComponentTag \
         static constexpr bool isComponent = true;

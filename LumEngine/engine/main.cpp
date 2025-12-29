@@ -5,12 +5,23 @@
 #include "lum_packages/lum_events.hpp"
 
 #include "core/logger.hpp"
+
+struct Event_Test {
+    int val;
+    LumEventTag;
+};
+
 int main() {
     
     lum::Logger::Get().EnableLog(lum::LogSeverity::INFO);
 
     cstd::PathService::SetRoot("assets/audio");
 
+    ev::EventBus a;
+
+
+
+    /*
     ecs::EntityManager ecs;
     lum::AudioManager am(ecs);
     am.Init(512, FMOD_2D);
@@ -30,8 +41,6 @@ int main() {
         sys.Update();
     }
 
-
-    /*
     render::RenderInitParams params;
     params.fullscreen = false;
     params.MSAA_samples = 4;

@@ -8,8 +8,8 @@ namespace audio {
 	using AudioHandle	= uint32_t;
 	using ChannelHandle = uint64_t;
 
-	constexpr unsigned int MAX_SOUNDS_COUNT		= settings::MAX_SOUNDS_COUNT;
-	constexpr unsigned int MAX_CHANNELS_COUNT	= settings::MAX_CHANNELS_COUNT;
+	constexpr unsigned int MAX_SOUNDS_COUNT		= settings::AUDIO_MAX_SOUNDS_COUNT;
+	constexpr unsigned int MAX_CHANNELS_COUNT	= settings::AUDIO_MAX_CHANNELS_COUNT;
 
 	namespace detail {
 

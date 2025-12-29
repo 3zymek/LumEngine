@@ -1,68 +1,44 @@
 #pragma once
+#include "core/core_common.hpp"
 #include "core/core_pch.hpp"
-#include "core/core_defines.hpp"
 namespace ev {
 	namespace detail {
 
-		inline constexpr unsigned int MAX_EVENT_TYPES = settings::MAX_EVENT_TYPES;
-		#define LumEventTag \
-			constexpr static bool isEvent = true;
-
 		template<typename T>
-		concept EventT = requires { T::isEvent; };
+		concept LumEvent = requires { T::__lumevent__ == true; };
 
-		template<EventT T>
-		using Callback			= std::function<void(const T&)>;
-		using DestructFunction	= std::function<void()>;
-		using CallbackID		= uint64_t;
-		using EventType_t		= uint32_t;
+		using Event_t	= unsigned int;
+		using InvokeFn	= void(*)(void* userParam, const void* event);
+		using DestroyFn = void(*)(void* userParam);
 
-		template<EventT T>
-		struct CallbackWrapper {
-			explicit CallbackWrapper(Callback<T> call) : callback(call) {}
-			CallbackWrapper() = default;
+		inline constexpr Event_t MAX_EVENT_TYPES = settings::EVENT_MAX_EVENT_TYPES;
+		inline constexpr Event_t MAX_CALLBACKS_PER_FRAME = settings::MAX_CALLBACKS_PER_FRAME;
+		inline constexpr Event_t MAX_PERM_CALLBACKS = settings::MAX_PERMAMENT_CALLBACKS;
 
-			Callback<T>& GetCallback() {
-				return callback;
-			}
-			CallbackID GetID() const {
-				return callID;
-			}
-
-		private:
-
-			Callback<T> callback;
-			CallbackID	callID = CallbackIDGenerator<T>::Get();
-		};
-
-		template<EventT T>
-		struct CallbackIDGenerator {
-			force_inline static CallbackID Get() {
-				return Count()++;
-			}
-		private:
-			CallbackIDGenerator() {}
-			force_inline static CallbackID& Count() {
-				static CallbackID globalID = 0;
-				return globalID;
+		template<LumEvent T>
+		struct Callback {
+			alignas(alignof(std::max_align_t)) char buffer[256]{};
+			InvokeFn invoke = nullptr;
+			DestroyFn destroy = nullptr;
+			void Destroy() {
+				(*destroy)(&buffer);
 			}
 		};
 
-		struct EventTypeID {
-			template<EventT T>
-			force_inline static EventType_t Get() {
-				static EventType_t typeID = Count()++;
+		struct GetEventTypeID {
+			template<LumEvent T>
+			static Event_t Get() {
+				static Event_t typeID = globalID++;
 				return typeID;
 			}
 		private:
-			EventTypeID() {}
-			force_inline static EventType_t& Count() {
-				static EventType_t globalID = 0;
-				return globalID;
-			}
+
+			static inline Event_t globalID = 0;
 
 		};
 
+
+		#define LumEventTag static constexpr inline bool __lumevent__ = true;
 
 	}
 }

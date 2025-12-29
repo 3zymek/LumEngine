@@ -85,7 +85,7 @@ namespace cstd {
 
 		std::vector<val>		m_dense;
 		std::vector<sparse_t>	m_sparse;
-		std::vector<size_t>	m_dense_to_sparse;
+		std::vector<size_t>		m_dense_to_sparse;
 
 	};
 	#include "sparse_set.ipp"
