@@ -1,4 +1,5 @@
-![lumengine logo](https://github.com/3zymek/LumEngine/blob/main/LumEngine/assets/branding/lumengine_big2.png?raw=true)
+![lumengine logo](https://github.com/3zymek/LumEngine/blob/main/LumEngine/assets/branding/lumengine_medium2.png)
+
 ## LumEngine is an open-source, modular game engine developed by a single indie developer.
 
 ## (ASSUMPTIONS)
