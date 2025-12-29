@@ -1,8 +1,8 @@
 #include "core/core_pch.hpp"
 #include "core/utils/path_service.hpp"
-#include "packages/lum_audio.hpp"
-#include "packages/lum_ecs.hpp"
-#include "packages/lum_events.hpp"
+#include "lum_packages/lum_audio.hpp"
+#include "lum_packages/lum_ecs.hpp"
+#include "lum_packages/lum_events.hpp"
 
 #include "core/logger.hpp"
 int main() {

@@ -1,4 +1,6 @@
-# __🟡LUMENGINE🟡__
+<p align="center">
+    <img src ="lumengine/assets/branding/logo_light.png" alt="LumEngine logo" width="360">
+</p>
 ## LumEngine is an open-source, modular game engine developed by a single indie developer.
 
 ## (ASSUMPTIONS)
