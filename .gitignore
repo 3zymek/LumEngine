@@ -27,7 +27,7 @@ Release/
 build/
 lumengine/external/glfw
 lumengine/external/fmod
-lumengine/assets
+lumengine/assets/audio
 
 
 =======

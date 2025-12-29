@@ -9,7 +9,7 @@ int main() {
     
     lum::Logger::Get().EnableLog(lum::LogSeverity::INFO);
 
-    cstd::PathService::SetRoot("assets");
+    cstd::PathService::SetRoot("assets/audio");
 
     ecs::EntityManager ecs;
     lum::AudioManager am(ecs);
@@ -21,7 +21,7 @@ int main() {
     auto emitter = am.CreateEmitter(e);
     am.LoadSound("atomic_land", "test.wav");
     emitter.Add("atomic_land");
-    emitter.Play("atomic_land").SetVolume("atomic_land", 0.1f);
+    emitter.Play("atomic_land").SetVolume("atomic_land", 0.6f);
 
     ev::EventBus::Engine().ProcessAll();
     sys.Update();
