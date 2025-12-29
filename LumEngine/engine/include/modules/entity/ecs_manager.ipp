@@ -8,9 +8,7 @@ namespace ecs {
 
 		auto& pool = GetOrCreatePool<T>();
 
-		ev::EventBus::Engine().Emit<ev::ComponentAdded>(
-			ev::ComponentAdded{ entityID, detail::ComponentTypeIndex::get<T>() }
-		);
+		//event
 
 		return pool.Add(entityID);
 
@@ -21,9 +19,7 @@ namespace ecs {
 
 		auto& pool = GetOrCreatePool<T>();
 
-		ev::EventBus::Engine().Emit<ev::ComponentRemoved>(
-			ev::ComponentRemoved{ entityID, detail::ComponentTypeIndex::get<T>() }
-		);
+		//event
 
 		pool.Delete(entityID);
 

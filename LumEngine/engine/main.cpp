@@ -23,11 +23,10 @@ int main() {
     emitter.Add("atomic_land");
     emitter.Play("atomic_land").SetVolume("atomic_land", 0.6f);
 
-    ev::EventBus::Engine().ProcessAll();
     sys.Update();
 
     while (true) {
-        ev::EventBus::Engine().ProcessAll();
+        
         sys.Update();
     }
 

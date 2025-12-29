@@ -266,7 +266,7 @@ namespace audio {
 
 	}
 	void AudioManager::SubscribeEvents			( ) {
-
+	/*
 		ev::EventBus::Engine().SubscribePermamently<ev::ComponentAdded>(
 			[this](const ev::ComponentAdded& ev)
 			{
@@ -279,7 +279,7 @@ namespace audio {
 					
 			}
 		);
-
+		*/
 	}
 
 	AudioListenerWrapper* AudioManager::GetListener( ) {
