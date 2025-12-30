@@ -16,7 +16,12 @@ namespace ev {
 
 		template<detail::LumEvent EventType, typename Lambda>
 		void Subscribe(Lambda&& lambda) {
-			GetOrCreatePool<EventType>().SubscribeLambda(std::forward<Lambda>(lambda));
+			GetOrCreatePool<EventType>().Subscribe(std::forward<Lambda>(lambda));
+		}
+
+		template<detail::LumEvent EventType, typename Lambda>
+		detail::SubscribtionHandle SubscribePermamently(Lambda&& lambda) {
+			return GetOrCreatePool<EventType>().SubscribePermamently(std::forward<Lambda>(lambda));
 		}
 
 	private:

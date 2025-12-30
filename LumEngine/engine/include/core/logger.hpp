@@ -8,29 +8,28 @@ namespace lum {
 		ERROR = 0b0000'0010,
 		WARN = 0b0000'0100,
 		INFO = 0b0000'1000,
-		DEBUG = 0b0001'0000
+		DEBUG = 0b0001'0000,
+		ALL = FATAL | ERROR | WARN | INFO | DEBUG
 	};
-	inline SeverityMask operator|( LogSeverity s1, LogSeverity s2 ) {
-		return static_cast<SeverityMask>(s1) | static_cast<SeverityMask>(s2);
+	constexpr SeverityMask operator|(LogSeverity a, LogSeverity b) {
+		return static_cast<SeverityMask>(a) | static_cast<SeverityMask>(b);
 	}
-	inline SeverityMask operator|( SeverityMask s1, LogSeverity s2 ) {
-		return s1 | static_cast<SeverityMask>(s2);
+	constexpr SeverityMask operator|(SeverityMask a, LogSeverity b) {
+		return a | static_cast<SeverityMask>(b);
 	}
-	inline SeverityMask operator|( LogSeverity s1, SeverityMask s2 ) {
-		return static_cast<SeverityMask>(s1) | s2;
+	constexpr SeverityMask operator|(LogSeverity a, SeverityMask b) {
+		return static_cast<SeverityMask>(a) | b;
 	}
-	inline SeverityMask operator|=( SeverityMask& s1, LogSeverity s2 ) {
-		return s1 |= static_cast<SeverityMask>(s2);
+
+	constexpr SeverityMask operator&(SeverityMask mask, LogSeverity sev) {
+		return mask & static_cast<SeverityMask>(sev);
 	}
-	inline SeverityMask operator&( LogSeverity s1, LogSeverity s2 ) {
-		return static_cast<SeverityMask>(s1) & static_cast<SeverityMask>(s2);
+	constexpr SeverityMask& operator|=(SeverityMask& mask, LogSeverity sev) {
+		mask |= static_cast<SeverityMask>(sev);
+		return mask;
 	}
-	inline SeverityMask operator&( SeverityMask s1, LogSeverity s2 ) {
-		return s1 & static_cast<SeverityMask>(s2);
-	}
-	inline SeverityMask operator&(LogSeverity s1, SeverityMask s2 ) {
-		return static_cast<SeverityMask>(s1) & s2;
-	}
+
+
 
 	enum class InitStatus {
 		OK,
@@ -44,8 +43,14 @@ namespace lum {
 			return log;
 		}
 
-		inline void EnableLog	( LogSeverity sev ) {
+		inline void EnableLog	( SeverityMask sev ) {
 			g_severity |= sev;
+		}
+		inline void EnableLog( LogSeverity sev ) {
+			g_severity |= sev;
+		}
+		inline void DisableLog( SeverityMask sev ) {
+			g_severity &= ~sev;
 		}
 		inline void DisableLog	( LogSeverity sev ) {
 			g_severity &= ~static_cast<SeverityMask>(sev);

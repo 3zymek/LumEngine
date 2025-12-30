@@ -7,9 +7,10 @@ namespace ev {
 		template<typename T>
 		concept LumEvent = requires { T::__lumevent__ == true; };
 
-		using Event_t	= unsigned int;
+		using Event_t	= int32_t;
 		using InvokeFn	= void(*)(void* userParam, const void* event);
 		using DestroyFn = void(*)(void* userParam);
+		using SubscribtionHandle = Event_t;
 
 		inline constexpr Event_t MAX_EVENT_TYPES = settings::EVENT_MAX_EVENT_TYPES;
 		inline constexpr Event_t MAX_CALLBACKS_PER_FRAME = settings::MAX_CALLBACKS_PER_FRAME;

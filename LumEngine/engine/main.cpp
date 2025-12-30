@@ -13,12 +13,26 @@ struct Event_Test {
 
 int main() {
     
-    lum::Logger::Get().EnableLog(lum::LogSeverity::INFO);
+    lum::Logger::Get().EnableLog(lum::LogSeverity::ALL);
 
     cstd::PathService::SetRoot("assets/audio");
 
+    auto start = std::chrono::system_clock::now();
     ev::EventBus a;
+    
+    a.SubscribePermamently<Event_Test>([](const Event_Test& a) {std::cout << "lumengine\n"; });
+    a.SubscribePermamently<Event_Test>([](const Event_Test& a) {std::cout << "lumengine\n"; });
+    a.SubscribePermamently<Event_Test>([](const Event_Test& a) {std::cout << "lumengine\n"; });
+    a.SubscribePermamently<Event_Test>([](const Event_Test& a) {std::cout << "lumengine\n"; });
 
+    while (true) {
+        a.Emit<Event_Test>({ 32 });
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
+    auto end = std::chrono::system_clock::now();
+    auto time = std::chrono::duration<double>(end - start);
+    std::cout << time;
 
 
     /*
