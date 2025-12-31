@@ -3,6 +3,14 @@
 #include "event/ev_common.hpp"
 #include "event/ev_pool.hpp"
 namespace ev {
+
+	namespace detail {
+
+		struct PoolSlot {
+			alignas(alignof(std::max_align_t)) char buffer[64];
+		};
+
+	}
 	
 	class EventBus {
 	public:
@@ -15,14 +23,33 @@ namespace ev {
 		}
 
 		template<detail::LumEvent EventType, typename Lambda>
-		void Subscribe(Lambda&& lambda) {
-			GetOrCreatePool<EventType>().Subscribe(std::forward<Lambda>(lambda));
+		detail::SubscribtionID Subscribe(Lambda&& lambda) {
+			return GetOrCreatePool<EventType>().Subscribe(std::forward<Lambda>(lambda));
 		}
 
 		template<detail::LumEvent EventType, typename Lambda>
-		detail::SubscribtionHandle SubscribePermamently(Lambda&& lambda) {
+		detail::SubscribtionID SubscribePermamently(Lambda&& lambda) {
 			return GetOrCreatePool<EventType>().SubscribePermamently(std::forward<Lambda>(lambda));
 		}
+
+		template<detail::LumEvent EventType>
+		void Unsubscribe(detail::SubscribtionID id) {
+			GetOrCreatePool<EventType>().Unsubscribe(id);
+		}
+
+		template<detail::LumEvent EventType>
+		void UnsubscribePermament(detail::SubscribtionID id) {
+			GetOrCreatePool<EventType>().UnsubscribePermament(id);
+		}
+
+		void PollEvents() {
+			for (size_t i = 0; i < detail::MAX_EVENT_TYPES; i++) {
+				if(m_pools[i])
+					m_pools[i]->PollEvents();
+			}
+		}
+
+
 
 	private:
 		

@@ -155,7 +155,7 @@ namespace audio {
 
 		ecs::EntityManager& m_entity_manager;
 
-		cmd::CommandBuffer<cmd::AudioCmd, 400> m_commands;
+		cmd::CommandBuffer<cmd::AudioCmd, 100> m_commands;
 
 		std::unique_ptr< AudioListenerWrapper >			m_listener;
 		std::unique_ptr< FMOD::System, FDestructor >	m_audio_system;

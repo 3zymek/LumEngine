@@ -28,11 +28,11 @@ namespace render {
 
 	public:
 		
-		[[nodiscard]] MeshHandle CreateStaticMesh(std::span<Vertex>, std::span<Index>);
+		[[nodiscard]] MeshHandle CreateStaticMesh(span<Vertex>, span<Index>);
 		[[nodiscard]] MeshHandle CreateDynamicMesh(size_t, size_t);
 
-		void SetDynamicMeshVertices(MeshHandle, std::span<Vertex>);
-		void SetDynamicMeshIndices(MeshHandle, std::span<Index>);
+		void SetDynamicMeshVertices(MeshHandle, span<Vertex>);
+		void SetDynamicMeshIndices(MeshHandle, span<Index>);
 
 		template<typename T>
 			requires detail::MeshT<T>

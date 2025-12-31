@@ -48,8 +48,9 @@ namespace settings {
 
 	// All settings under are for single event type
 
-	inline constexpr unsigned int MAX_CALLBACKS_PER_FRAME = 120;
-	inline constexpr unsigned int MAX_PERMAMENT_CALLBACKS = 20;
+	inline constexpr unsigned int EVENT_MAX_CALLBACKS_PER_FRAME		= 20;
+	inline constexpr unsigned int EVENT_MAX_PERMAMENT_CALLBACKS		= 10;
+	inline constexpr unsigned int EVENT_MAX_EMITTS_PER_FRAME		= 100;
 
 	////////////////////////////////////////////////////////////////////////
 

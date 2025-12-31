@@ -10,19 +10,25 @@ namespace ev {
 		using Event_t	= int32_t;
 		using InvokeFn	= void(*)(void* userParam, const void* event);
 		using DestroyFn = void(*)(void* userParam);
-		using SubscribtionHandle = Event_t;
+		using Storage = std::aligned_storage_t<256, alignof(std::max_align_t)>;
 
-		inline constexpr Event_t MAX_EVENT_TYPES = settings::EVENT_MAX_EVENT_TYPES;
-		inline constexpr Event_t MAX_CALLBACKS_PER_FRAME = settings::MAX_CALLBACKS_PER_FRAME;
-		inline constexpr Event_t MAX_PERM_CALLBACKS = settings::MAX_PERMAMENT_CALLBACKS;
+		using SubscribtionID	= uint64_t;
+		using Generation		= uint32_t;
+
+		inline constexpr Event_t MAX_EVENT_TYPES			= settings::EVENT_MAX_EVENT_TYPES;
+		inline constexpr Event_t MAX_CALLBACKS_PER_FRAME	= settings::EVENT_MAX_CALLBACKS_PER_FRAME;
+		inline constexpr Event_t MAX_PERM_CALLBACKS			= settings::EVENT_MAX_PERMAMENT_CALLBACKS;
+		inline constexpr Event_t MAX_EMITTS_PER_FRAME		= settings::EVENT_MAX_EMITTS_PER_FRAME;
 
 		template<LumEvent T>
 		struct Callback {
-			alignas(alignof(std::max_align_t)) char buffer[256]{};
+			Storage buffer[256]{};
 			InvokeFn invoke = nullptr;
 			DestroyFn destroy = nullptr;
+			bool active = false;
 			void Destroy() {
 				(*destroy)(&buffer);
+				active = false;
 			}
 		};
 

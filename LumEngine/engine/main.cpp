@@ -10,29 +10,42 @@ struct Event_Test {
     int val;
     LumEventTag;
 };
+struct TestEvent {
+    int value;
+    LumEventTag;
+};
+struct EventA {
+	int value; LumEventTag;
+};
+
+struct EventB {
+	float x; LumEventTag;
+};
 
 int main() {
-    
+
     lum::Logger::Get().EnableLog(lum::LogSeverity::ALL);
-
-    cstd::PathService::SetRoot("assets/audio");
-
-    auto start = std::chrono::system_clock::now();
-    ev::EventBus a;
     
-    a.SubscribePermamently<Event_Test>([](const Event_Test& a) {std::cout << "lumengine\n"; });
-    a.SubscribePermamently<Event_Test>([](const Event_Test& a) {std::cout << "lumengine\n"; });
-    a.SubscribePermamently<Event_Test>([](const Event_Test& a) {std::cout << "lumengine\n"; });
-    a.SubscribePermamently<Event_Test>([](const Event_Test& a) {std::cout << "lumengine\n"; });
+    ev::EventBus bus;
+    
+    auto now = std::chrono::system_clock::now();
+    bus.Subscribe<EventA>([](const EventA& ev) {std::cout << ev.value << '\n'; });
+    auto id = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "perm\n"; });
+    auto id2 = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "perm\n"; });
+    auto id3 = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "perm\n"; });
 
-    while (true) {
-        a.Emit<Event_Test>({ 32 });
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
+    bus.Emit(EventA{ 20 });
+    bus.Emit(EventB{ 21 });
+    bus.PollEvents();
+    bus.UnsubscribePermament<EventB>(id);
+    bus.UnsubscribePermament<EventB>(id2);
+    bus.UnsubscribePermament<EventB>(id3);
+    bus.Emit(EventB{ 21 });
+    bus.PollEvents();
+
 
     auto end = std::chrono::system_clock::now();
-    auto time = std::chrono::duration<double>(end - start);
-    std::cout << time;
+    std::cout << std::chrono::duration<double>(end - now);
 
 
     /*
