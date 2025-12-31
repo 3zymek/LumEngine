@@ -25,25 +25,7 @@ namespace ev {
 			template<typename Lambda>
 			SubscribtionID Subscribe(Lambda&& lambda) {
 
-				if (callbacks.size() >= MAX_CALLBACKS_PER_FRAME) {
-					LOG_ERROR("Could not subscribe a callback - full callbacks");
-					return;
-				}
-
-				auto& slot = callbacks[current_callbacks_id];
-
-				static_assert(sizeof(Storage) >= sizeof(Lambda), "Lambda too big for buffer");
-				static_assert(alignof(Storage) >= alignof(Lambda), "Lambda aligment dismatch");
-				new (slot.buffer) Lambda(std::forward<Lambda>(lambda));
-
-				slot.invoke = [](void* userParam, const void* event) {
-					auto* l = reinterpret_cast<Lambda*>(userParam);
-					(*l)(*reinterpret_cast<const T*>(event));
-				};
-				slot.destroy = [](void* userParam) {
-					reinterpret_cast<Lambda*>(userParam)->~Lambda();
-				};
-				slot.active = true;
+				SetupCallback(std::forward<Lambda>(lambda), callbacks[current_callbacks_id]);
 				
 				LOG_DEBUG(std::format("Subscribed at slot {}", current_callbacks_id));
 				return current_callbacks_id++;
@@ -61,21 +43,8 @@ namespace ev {
 				auto slot = perm_free_slots.back();
 				perm_free_slots.pop_back();
 				perm_active_slots.push_back( slot );
-				
-				auto& callback = perm_callbacks[slot];
 
-				static_assert(sizeof(Storage) >= sizeof(Lambda), "Lambda too big for buffer");
-				static_assert(alignof(Storage) >= alignof(Lambda), "Lambda aligment dismatch");
-				new (&callback.buffer) Lambda(std::forward<Lambda>(lambda));
-
-				callback.invoke = [](void* userParam, const void* event) {
-					auto* l = reinterpret_cast<Lambda*>(userParam);
-					(*l)(*reinterpret_cast<const T*>(event));
-				};
-				callback.destroy = [](void* userParam) {
-					reinterpret_cast<Lambda*>(userParam)->~Lambda();
-				};
-				callback.active = true;
+				SetupCallback(std::forward<Lambda>(lambda), perm_callbacks[slot]);
 
 				LOG_DEBUG(std::format("Subscribed permamently at slot {}", slot));
 				return slot;
@@ -124,21 +93,16 @@ namespace ev {
 					m_events_next.push_back(event);
 				LOG_DEBUG("Emitting event");
 			}
-
+			
 			void PollEvents() override {
+
 				polling = true;
 
-				for (auto& slot : to_delete) {
-					perm_callbacks[perm_active_slots[slot]].Destroy();
-					std::swap(perm_active_slots[slot], perm_active_slots.back());
-					perm_active_slots.pop_back();
-				}
+				DeleteCallbacks();
 
 				for (auto& event : m_events_current) {
 					InvokeCallbacks(event);
 				}
-
-				to_delete.clear();
 
 				m_events_current.clear();
 
@@ -148,6 +112,35 @@ namespace ev {
 			}
 
 		private:
+
+			template<typename Lambda>
+			void SetupCallback(Lambda&& lambda, Callback<T>& callback) {
+
+				static_assert(sizeof(Storage) >= sizeof(Lambda), "Lambda too big for buffer");
+				static_assert(alignof(Storage) >= alignof(Lambda), "Lambda aligment dismatch");
+				new (&callback.buffer) Lambda(std::forward<Lambda>(lambda));
+
+				callback.invoke = [](void* userParam, const void* event) {
+					auto* l = reinterpret_cast<Lambda*>(userParam);
+					(*l)(*reinterpret_cast<const T*>(event));
+					};
+				callback.destroy = [](void* userParam) {
+					reinterpret_cast<Lambda*>(userParam)->~Lambda();
+					};
+				callback.active = true;
+
+			}
+
+			void DeleteCallbacks() {
+				std::sort(to_delete.begin(), to_delete.end(), std::greater<>());
+
+				for (auto& slot : to_delete) {
+					perm_callbacks[perm_active_slots[slot]].Destroy();
+					std::swap(perm_active_slots[slot], perm_active_slots.back());
+					perm_active_slots.pop_back();
+				}
+				to_delete.clear();
+			}
 
 			void InvokeCallbacks(const T& event) {
 				auto temp = current_callbacks_id;

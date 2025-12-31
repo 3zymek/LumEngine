@@ -30,16 +30,17 @@ int main() {
     
     auto now = std::chrono::system_clock::now();
     bus.Subscribe<EventA>([](const EventA& ev) {std::cout << ev.value << '\n'; });
-    auto id = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "perm\n"; });
-    auto id2 = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "perm\n"; });
-    auto id3 = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "perm\n"; });
+    bus.Subscribe<EventA>([](const EventA& ev) {std::cout << ev.value << '\n'; });
+    auto id = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "call 1\n"; });
+    auto id2 = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "call 2\n"; });
+    auto id3 = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "call 3\n"; });
 
     bus.Emit(EventA{ 20 });
     bus.Emit(EventB{ 21 });
     bus.PollEvents();
     bus.UnsubscribePermament<EventB>(id);
-    bus.UnsubscribePermament<EventB>(id2);
     bus.UnsubscribePermament<EventB>(id3);
+    bus.UnsubscribePermament<EventB>(id2);
     bus.Emit(EventB{ 21 });
     bus.PollEvents();
 
