@@ -7,7 +7,7 @@ namespace ev {
 	namespace detail {
 
 		struct PoolSlot {
-			alignas(alignof(std::max_align_t)) char buffer[64];
+			std::aligned_storage_t<64, alignof(std::max_align_t)> storage[64];
 		};
 
 	}

@@ -10,8 +10,8 @@ namespace ev {
 		template<LumEvent T>
 		class EventPool : public BasePool {
 
-			using CallbackArray		= std::array<Callback<T>, MAX_CALLBACKS_PER_FRAME>;
-			using PermCallbackArray	= std::array<Callback<T>, MAX_PERM_CALLBACKS>;
+			using CallbackArray		= std::array<Callback, MAX_CALLBACKS_PER_FRAME>;
+			using PermCallbackArray	= std::array<Callback, MAX_PERM_CALLBACKS>;
 			using SlotsVector		= std::vector<Event_t>;
 			using EventsVector		= std::vector<T>;
 
@@ -20,7 +20,7 @@ namespace ev {
 
 		public:
 
-			EventPool() { Init(); }
+			EventPool() { Init(); std::cout << sizeof(Callback) * MAX_CALLBACKS_PER_FRAME << '\n'; }
 
 			template<typename Lambda>
 			SubscribtionID Subscribe(Lambda&& lambda) {
@@ -62,7 +62,7 @@ namespace ev {
 
 				callback.Destroy();
 				
-				LOG_DEBUG(std::format("Unsubsribed callback at slot {}", id));
+				LOG_DEBUG(std::format("Unsubscribed callback at slot {}", id));
 
 			}
 			void UnsubscribePermament	( SubscribtionID id ) {
@@ -114,7 +114,7 @@ namespace ev {
 		private:
 
 			template<typename Lambda>
-			void SetupCallback(Lambda&& lambda, Callback<T>& callback) {
+			void SetupCallback(Lambda&& lambda, Callback& callback) {
 
 				static_assert(sizeof(Storage) >= sizeof(Lambda), "Lambda too big for buffer");
 				static_assert(alignof(Storage) >= alignof(Lambda), "Lambda aligment dismatch");

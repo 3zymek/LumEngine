@@ -27,6 +27,7 @@ int main() {
     lum::Logger::Get().EnableLog(lum::LogSeverity::ALL);
     
     ev::EventBus bus;
+    //ev::detail::EventPool<EventA> a;
     
     auto now = std::chrono::system_clock::now();
     bus.Subscribe<EventA>([](const EventA& ev) {std::cout << ev.value << '\n'; });
