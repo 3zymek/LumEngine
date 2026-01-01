@@ -6,7 +6,7 @@ namespace lum {
 		private:
 
 			using VertexCount	= lum::core::render::detail::VertexCount;
-			using Index			= lum::core::render::detail::Index;
+			using Index			= lum::core::render::Index;
 
 		public:
 
@@ -25,7 +25,7 @@ namespace lum {
 			using VertexArray	= lum::core::render::detail::VertexArray;
 			using IndexArray	= lum::core::render::detail::IndexArray;
 			using VertexCount	= lum::core::render::detail::VertexCount;
-			using Index			= lum::core::render::detail::Index;
+			using Index			= lum::core::render::Index;
 
 		public:
 

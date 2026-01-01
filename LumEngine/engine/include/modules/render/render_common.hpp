@@ -5,6 +5,7 @@
 namespace lum::core {
 	namespace render {
 
+		using Index = size_t;
 		struct Vertex {
 			glm::vec3 position;
 			glm::vec3 normal;
@@ -19,7 +20,6 @@ namespace lum::core {
 			using Generation = uint32_t;
 			using MeshID = uint64_t;
 			using VertexCount = size_t;
-			using Index = size_t;
 			using VertexArray = std::vector<Vertex>;
 			using IndexArray = std::vector<Index>;
 

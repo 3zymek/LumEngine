@@ -6,9 +6,9 @@
 
 #include "audio/audio_emitter_wrapper.hpp"
 #include "audio/audio_listener_wrapper.hpp"
-#include "core/utils/path_service.hpp"
 #include "core/utils/string_hasher.hpp"
 
+#include "core/asset_service.hpp"
 #include "modules/audio/systems/sys_audio.hpp"
 #include "modules/audio/components/c_audio_emitter.hpp"
 #include "modules/audio/components/c_audio_listener.hpp"
@@ -53,7 +53,7 @@ namespace lum {
 			AudioClip clip;
 			FMOD_ASSERT(
 				m_audio_system->createSound(
-					cstd::PathService::GetPath(path.data()).c_str(),
+					lum::AssetService::LoadAudio(path).c_str(),
 					mode,
 					nullptr,
 					&clip.sound

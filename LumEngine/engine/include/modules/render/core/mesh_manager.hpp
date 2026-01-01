@@ -26,7 +26,7 @@ namespace lum {
 		class MeshManager {
 
 			using Vertex = lum::core::render::Vertex;
-			using Index = lum::core::render::Vertex;
+			using Index = lum::core::render::Index;
 			using string_view = std::string_view;
 			template<typename T>
 			using span = std::span<T>;
