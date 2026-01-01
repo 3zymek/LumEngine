@@ -3,51 +3,32 @@
 #include "lum_packages/lum_audio.hpp"
 #include "lum_packages/lum_ecs.hpp"
 #include "lum_packages/lum_events.hpp"
-
 #include "core/logger.hpp"
+#include "core/asset_service.hpp"
 
-struct Event_Test {
-    int val;
-    LumEventTag;
-};
-struct TestEvent {
-    int value;
-    LumEventTag;
-};
-struct EventA {
-	int value; LumEventTag;
-};
-
-struct EventB {
-	float x; LumEventTag;
-};
-
+using namespace lum;
 int main() {
+    Logger::Get().EnableLog(LogSeverity::ALL);
+    cstd::PathService::SetRoot("assets/audio");
 
-    lum::Logger::Get().EnableLog(lum::LogSeverity::ALL);
-    
     ev::EventBus bus;
-    //ev::detail::EventPool<EventA> a;
-    
-    auto now = std::chrono::system_clock::now();
-    bus.Subscribe<EventA>([](const EventA& ev) {std::cout << ev.value << '\n'; });
-    bus.Subscribe<EventA>([](const EventA& ev) {std::cout << ev.value << '\n'; });
-    auto id = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "call 1\n"; });
-    auto id2 = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "call 2\n"; });
-    auto id3 = bus.SubscribePermamently<EventB>([](const EventB& ev) {std::cout << "call 3\n"; });
+    ecs::EntityManager ecs(bus);
+    audio::AudioManager audio_manager(ecs);
+    audio_manager.Init();
+    audio_manager.LoadSound("audio01", "test.wav");
+    audio::AudioSystem audio_system(audio_manager);
 
-    bus.Emit(EventA{ 20 });
-    bus.Emit(EventB{ 21 });
-    bus.PollEvents();
-    bus.UnsubscribePermament<EventB>(id);
-    bus.UnsubscribePermament<EventB>(id3);
-    bus.UnsubscribePermament<EventB>(id2);
-    bus.Emit(EventB{ 21 });
-    bus.PollEvents();
+    Entity entity01 = ecs.CreateEntity();
+    entity01.AddComponent<AudioEmitterComponent>();
+    auto emitter = audio_manager.CreateEmitter(entity01);
 
+    emitter.Add("audio01").SetVolume("audio01", 0.01f).Play("audio01");
 
-    auto end = std::chrono::system_clock::now();
-    std::cout << std::chrono::duration<double>(end - now);
+    while (true) {
+        bus.PollEvents();
+        audio_system.Update();
+    }
+
 
 
     /*

@@ -1,61 +1,41 @@
 #pragma once
-#include "include/core/core_defines.hpp"
-#include "include/modules/event/ev_common.hpp"
-#include "include/modules/entity/ecs_common.hpp"
-#include "include/modules/audio/audio_common.hpp"
-namespace ev {
-	struct AddClipToEmitter
-	{
-		LumEventTag;
+#include "core/core_pch.hpp"
+#include "event/ev_common.hpp"
+#include "audio/audio_common.hpp"
+namespace lum {
+	namespace ev {
+		struct AddClipToEmitter
+		{
+			LumEventTag;
 
-		audio::EmitterHandle emitterID{};
-		std::string name{};
+			audio::EmitterHandle emitterID;
+			std::string name;
 
-		float		volume{};
-		float		pitch{};
-		bool		loop{};
+			float		volume;
+			float		pitch;
+			bool		loop;
 
-	};
-	struct RemoveClipFromEmitter
-	{
-		LumEventTag;
+		};
+		struct RemoveClipFromEmitter
+		{
 
-		audio::EmitterHandle emitterID{};
-		std::string name{};
+			LumEventTag;
 
-	};
-	struct PlaySound
-	{
-		LumEventTag;
+			audio::EmitterHandle emitterID;
+			std::string name;
 
-		audio::EmitterHandle emitterID{};
-		std::string name{};
+		};
+		struct PlaySound
+		{
+			LumEventTag;
 
-		float		volume{};
-		float		pitch{};
-		bool		loop{};
-	};
-	struct DestroyEmitter
-	{
-		LumEventTag;
+			audio::EmitterHandle emitterID;
+			std::string name;
 
-		audio::EmitterHandle emitterID{};
-	};
-	struct GetAllEmitterClips
-	{
-		LumEventTag;
+			float		volume;
+			float		pitch;
+			bool		loop;
+		};
 
-		audio::EmitterHandle emitterID{};
-
-	};
-	struct RequestAllEmitteClips
-	{
-		LumEventTag;
-
-		audio::EmitterHandle emitterID{};
-
-		std::unordered_map<std::string, audio::AudioHandle> clips;
-
-	};
-
+	}
 }

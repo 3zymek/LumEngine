@@ -2,7 +2,7 @@
 #include "render/render_common.hpp"
 
 template<typename T>
-void render::MeshManager::DrawMesh(MeshHandle handle) {
+void lum::render::MeshManager::DrawMesh(MeshHandle handle) {
 	if constexpr (std::is_same_v<T, StaticMesh>) {
 		DrawMeshImpl<T>(m_static_handles, handle);
 	}
@@ -13,7 +13,7 @@ void render::MeshManager::DrawMesh(MeshHandle handle) {
 
 }
 template<typename T>
-void render::MeshManager::DeleteMesh(MeshHandle handle) {
+void lum::render::MeshManager::DeleteMesh(MeshHandle handle) {
 	if constexpr (std::is_same_v<T, StaticMesh>) {
 		if (!m_static_handles.Exists(handle))
 			return;
@@ -24,13 +24,13 @@ void render::MeshManager::DeleteMesh(MeshHandle handle) {
 			return;
 		m_dynamic_handles.DeleteHandle(handle);
 	}
-	else static_assert(detail::MeshT<T>, "unsupported mesh type in DeleteMesh");
+	//else static_assert(lum::render::detail::MeshT<T>, "unsupported mesh type in DeleteMesh");
 }
 
 
 
 template<typename T>
-inline void render::MeshManager::DrawMeshImpl(cstd::handle_pool<T, MeshHandle>& handles, MeshHandle handle) {
+inline void lum::render::MeshManager::DrawMeshImpl(cstd::handle_pool<T, MeshHandle>& handles, MeshHandle handle) {
 	if (!handles.Exists(handle))
 		return;
 

@@ -1,19 +1,19 @@
 #pragma once
 #include "entity/ecs_common.hpp"
 #include "event/ev_common.hpp"
-namespace ev {
+namespace lum::ev {
 	struct ComponentAdded
 	{
-		LumEventTag;
 
-		ecs::EntityID entityID{};
-		ecs::detail::ComponentTypeID component_typeID{};
+		ecs::EntityID entityID;
+		ecs::detail::ComponentTID component_typeID;
+		LumEventTag;
 	};
 	struct ComponentRemoved
 	{
 		LumEventTag;
 
 		ecs::EntityID entityID{};
-		ecs::detail::ComponentTypeID component_typeID{};
+		ecs::detail::ComponentTID component_typeID{};
 	};
 }

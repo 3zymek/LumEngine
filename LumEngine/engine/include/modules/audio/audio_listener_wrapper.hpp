@@ -2,23 +2,25 @@
 #include "audio/audio_common.hpp"
 #include "entity/ecs_common.hpp"
 #include "entity/components/c_transform.hpp"
-namespace audio {
-	class AudioListenerWrapper {
-	public:
+namespace lum {
+	namespace audio {
+		class AudioListenerWrapper {
+		public:
 
-		AudioListenerWrapper( ecs::EntityID _id ) : entityID(_id) {}
+			AudioListenerWrapper(ecs::EntityID _id) : entityID(_id) {}
 
-		inline ecs::EntityID GetEntityID( ) const noexcept { return entityID; }
+			inline ecs::EntityID GetEntityID() const noexcept { return entityID; }
 
-	private:
+		private:
 
-		void SetRawTransform( TransformComponent* c ) { transform = c; };
+			void SetRawTransform(ecs::TransformComponent* c) { transform = c; };
 
-		friend class AudioManager;
-		friend class AudioSystem;
+			friend class AudioManager;
+			friend class AudioSystem;
 
-		ecs::EntityID		entityID{};
-		TransformComponent* transform = nullptr;
+			ecs::EntityID		entityID{};
+			ecs::TransformComponent* transform = nullptr;
 
-	};
+		};
+	}
 }

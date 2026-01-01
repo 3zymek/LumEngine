@@ -2,35 +2,106 @@
 #include "core/core_pch.hpp"
 #include "modules/event/ev_common.hpp"
 #include "event/ev_bus.hpp"
-namespace ev {
+namespace lum {
+	namespace ev {
+		namespace detail {
 
-	class EventEmitter {
-	public:
+			using UnsubscribeInvoke = void (*)(SubscribtionID, EventBus&);
 
-		EventEmitter(EventBus& bus) : m_bus(bus) {}
+			struct EmitterSlot {
+				SubscribtionID		id = std::numeric_limits<SubscribtionID>::max();
+				UnsubscribeInvoke	unsub;
+			};
 
-		template<detail::LumEvent EventType>
-		void Emit(const EventType& event) {
-			m_bus.Emit<EventType>(event);
 		}
 
-		template<detail::LumEvent EventType, typename Lambda>
-		void Subscribe(Lambda&& lambda) {
-			m_bus.Subscribe<EventType>(std::forward<Lambda>(lambda));
-		}
+		/*! @class EventEmitter
+		*  @brief RAII wrapper for the EventBus that manages event subscriptions.
+		*
+		*  EventEmitter simplifies callback management for AAA engine systems:
+		*  - automatically unsubscribes permanent callbacks in the destructor,
+		*  - supports one-time and permanent event subscriptions,
+		*  - delegates event emission to the EventBus,
+		*  - zero heap allocations.
+		*
+		*  @note All function calls should be made from the main thread or the EventBus owner context.
+		*/
+		class EventEmitter {
 
-		template<detail::LumEvent EventType, typename Lambda>
-		void SubscribePermamently(Lambda&& lambda) {
-			m_bus.SubscribePermamently<EventType>(std::forward<Lambda>(lambda));
-		}
+			using EmitterSlot = detail::EmitterSlot;
+			using SubscribtionID = detail::SubscribtionID;
 
-	private:
+		public:
 
-		EventBus& m_bus;
+			/*! @brief Constructs an EventEmitter bound to a specific EventBus.
+			*
+			*  All subsequent emits and subscriptions will be routed through this EventBus.
+			*
+			*  @param bus Reference to the EventBus to use.
+			*  @thread_safety Must be called from the main thread or EventBus owner context.
+			*/
+			explicit EventEmitter(EventBus& bus) : m_bus(bus) { m_subscribtions.reserve(detail::MAX_PERM_CALLBACKS); }
+			~EventEmitter() { Destroy(); }
 
-		detail::SubscribtionID m_subscribed_id[detail::MAX_PERM_CALLBACKS];
+			/*! @brief Emits an event to all subscribers of the specified type.
+			*
+			*  Delegates the call to the underlying EventBus.
+			*
+			*  @tparam EventType Type of the event to emit.
+			*  @param event Reference to the event instance to dispatch.
+			*/
+			template<detail::LumEvent EventType>
+			void Emit(const EventType& event) {
+				m_bus.Emit<EventType>(event);
+			}
 
-	};
+			/*! @brief Subscribes a one-time callback for the specified event type.
+			*
+			*  The callback will be invoked once and automatically removed by the EventBus.
+			*
+			*  @tparam EventType Type of event to subscribe to.
+			*  @tparam Lambda Type of the callback function or lambda.
+			*  @param lambda Function to call when the event is emitted.
+			*/
+			template<detail::LumEvent EventType, typename Lambda>
+			void Subscribe(Lambda&& lambda) {
+				m_bus.Subscribe<EventType>(std::forward<Lambda>(lambda));
+			}
 
+			/*! @brief Subscribes a permanent callback for the specified event type.
+			*
+			*  The callback remains active until manually unsubscribed or until the EventEmitter is destroyed.
+			*  EventEmitter automatically handles unsubscribing in its destructor.
+			*
+			*  @tparam EventType Type of event to subscribe to.
+			*  @tparam Lambda Type of the callback function or lambda.
+			*  @param lambda Function to call when the event is emitted.
+			*  @note Subscription will be ignored if MAX_PERM_CALLBACKS limit is reached.
+			*/
+			template<detail::LumEvent EventType, typename Lambda>
+			void SubscribePermamently(Lambda&& lambda) {
+				if (m_subscribtions.size() >= detail::MAX_PERM_CALLBACKS)
+					return;
 
+				auto id = m_bus.SubscribePermanently<EventType>(std::forward<Lambda>(lambda));
+				m_subscribtions.push_back({ id, [](SubscribtionID id, EventBus& bus)
+					{ bus.UnsubscribePermanent<EventType>(id); }
+					});
+			}
+
+		private:
+
+			void Destroy() {
+				for (auto& slot : m_subscribtions) {
+					slot.unsub(slot.id, m_bus);
+				}
+				LOG_DEBUG("Destroyed emitter and unsubscribed all callbacks");
+			}
+
+			EventBus& m_bus;
+
+			std::vector<EmitterSlot> m_subscribtions;
+
+		};
+	}
 }

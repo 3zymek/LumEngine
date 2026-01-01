@@ -1,9 +1,11 @@
 #pragma once
 #include "entity/ecs_common.hpp"
-struct AudioEmitterComponent {
+namespace lum {
+	struct AudioEmitterComponent {
 
-	LumComponentTag;
+		LumComponentTag;
 
-	audio::EmitterHandle emitterID{};
+		audio::EmitterHandle emitterID{};
 
-};
+	};
+}

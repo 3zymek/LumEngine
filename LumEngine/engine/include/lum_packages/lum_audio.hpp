@@ -5,10 +5,3 @@
 #include "audio/audio_listener_wrapper.hpp"
 #include "audio/systems/sys_audio.hpp"
 #include "audio/command/audio_commands.hpp"
-
-namespace lum {
-	using AudioManager = audio::AudioManager;
-	using AudioSystem = audio::AudioSystem;
-	using AudioEmitterWrapper = audio::AudioEmitterWrapper;
-	using AudioListenerWrapper = audio::AudioListenerWrapper;
-}

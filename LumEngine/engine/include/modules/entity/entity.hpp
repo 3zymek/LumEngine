@@ -2,45 +2,46 @@
 #include "entity/ecs_common.hpp"
 #include "entity/ecs_manager.hpp"
 #include "core/core_defines.hpp"
-namespace ecs { class EntityManager; }
+namespace lum {
+	namespace ecs { class EntityManager; }
 
-abstract_class Entity {
+	class Entity {
 
-	using EntityID = ecs::EntityID;
-	using EntityManager = ecs::EntityManager;
+		using EntityID = ecs::EntityID;
+		using EntityManager = ecs::EntityManager;
 
-	ecs::EntityManager& manager;
+		ecs::EntityManager& manager;
 
-public:
+	public:
 
-	Entity( ecs::EntityManager& m, EntityID entityID ) : manager(m), m_entityID(entityID) {}
-	~Entity() {}
+		Entity(ecs::EntityManager& m, EntityID entityID) : manager(m), m_entityID(entityID) {}
+		~Entity( ) {}
 
-	force_inline const EntityID& GetID() { return m_entityID; }
+		inline const EntityID& GetID( ) { return m_entityID; }
 
-	template< ecs::detail::Component T >
-	T* AddComponent() {
-		return manager.AddComponent<T>(m_entityID);
-	}
+		template< ecs::detail::Component T >
+		T* AddComponent( ) {
+			return manager.AddComponent<T>(m_entityID);
+		}
 
-	template< ecs::detail::Component T >
-	void DeleteComponent() {
-		manager.DeleteComponent<T>(m_entityID);
-	}
+		template< ecs::detail::Component T >
+		void DeleteComponent( ) {
+			manager.RemoveComponent<T>(m_entityID);
+		}
 
-	template< ecs::detail::Component T >
-	T* GetComponent() {
-		return manager.GetComponent<T>(m_entityID);
-	}
+		template< ecs::detail::Component T >
+		T* GetComponent( ) {
+			return manager.GetComponent<T>(m_entityID);
+		}
 
-	template< ecs::detail::Component T >
-	bool Has() {
-		return manager.Has<T>(m_entityID);
-	}
-	
-private:
+		template< ecs::detail::Component T >
+		bool Has( ) {
+			return manager.Has<T>(m_entityID);
+		}
 
-	EntityID m_entityID{};
+	private:
 
-};
-#include "entity.ipp"
+		EntityID m_entityID{};
+
+	};
+}
