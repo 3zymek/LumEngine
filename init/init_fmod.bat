@@ -4,6 +4,7 @@ set "root_dir=%CD%"
 set "fmod_dir=%root_dir%\lumengine\external\fmod"
 set "fmod_zip=%fmod_dir%\fmod.zip"
 set "debug_dir=%root_dir%\build\Debug"
+set "release_dir=%root_dir%\build\Release"
 
 if not exist "%fmod_dir%" mkdir "%fmod_dir%"
 
@@ -15,7 +16,9 @@ PowerShell -Command "Expand-Archive -Path '%fmod_dir%\fmod.zip' -DestinationPath
 
 echo Moving FMOD...
 if not exist "%debug_dir%" mkdir "%debug_dir%"
-move /Y "%fmod_dir%\dll\*.dll" "%debug_dir%"
+if not exist "%release_dir%" mkdir "%release_dir%"
+copy /Y "%fmod_dir%\dll\*.dll" "%debug_dir%"
+copy /Y "%fmod_dir%\dll\*.dll" "%release_dir%"
 
 echo Cleaning up...
 if exist "%fmod_zip%" del "%fmod_zip%"

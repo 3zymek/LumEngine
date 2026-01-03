@@ -5,11 +5,12 @@
 namespace lum::core {
 	namespace render {
 
-		using Index = size_t;
+		using Index = uint32_t;
 		struct Vertex {
 			glm::vec3 position;
+			glm::vec3 color;
 			glm::vec3 normal;
-			glm::vec3 uv;
+			glm::vec2 uv;
 		};
 
 		// Mesh

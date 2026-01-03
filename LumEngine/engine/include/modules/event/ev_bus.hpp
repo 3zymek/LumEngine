@@ -117,15 +117,13 @@ namespace lum {
 				return *static_cast<detail::EventPool<EventType>*>(m_pools[typeID]);
 			}
 
-
-
 			void Init( ) {
 				for (size_t i = 0; i < detail::MAX_EVENT_TYPES; i++) {
 					m_pools[i] = nullptr;
 				}
 			}
 
-			detail::BasePool* m_pools[detail::MAX_EVENT_TYPES];
+			detail::BasePool* m_pools[ detail::MAX_EVENT_TYPES ];
 
 		};
 

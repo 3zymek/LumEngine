@@ -11,6 +11,7 @@
 #endif // _WIN32
 
 #define ENABLE_LOGGER
+#define DEBUG_RENDER
 
 #ifdef ENABLE_LOGGER
 #define LOG_FATAL(msg) \

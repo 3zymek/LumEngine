@@ -21,10 +21,17 @@ namespace lum {
 
 		static std::string LoadShader(std::string_view file_name) {
 			auto file = shader_path / file_name;
-			if (!detail::fs::exists(file))
-				throw std::runtime_error(std::string("Couldn't localize shader file named ") + file_name.data());
+			if (!detail::fs::exists(file)) {
+				LOG_ERROR(std::format("Couldn't localize shader file named {}", file_name.data()));
+				return "";
+			}
 
+			std::ifstream loaded_file;
+			loaded_file.open(file);
+			std::stringstream ss;
+			ss << loaded_file.rdbuf();
 
+			return ss.str();
 		}
 
 		static void LoadTexture(std::string_view file_name) {
@@ -33,8 +40,10 @@ namespace lum {
 		
 		static std::string LoadAudio(std::string_view file_name) {
 			auto file = audio_path / file_name;
-			if (!detail::fs::exists(file))
-				throw std::runtime_error(std::string("Couldn't localize audio file named ") + file_name.data());
+			if (!detail::fs::exists(file)) {
+				LOG_ERROR(std::format("Couldn't localize audio file named {}", file_name.data()));
+				return "";
+			}
 
 			return file.lexically_normal().string();
 		}

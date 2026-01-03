@@ -25,7 +25,7 @@ namespace lum {
 
 		void MeshManager::SetDynamicMeshVertices(MeshHandle handle, std::span<Vertex> vertices) {
 			if (!m_dynamic_handles.Exists(handle)) {
-				LOG_ERROR("[SET] dynamic handle does not exists");
+				LOG_ERROR("Dynamic handle does not exists");
 				return;
 			}
 
@@ -40,14 +40,14 @@ namespace lum {
 		} //
 		void MeshManager::SetDynamicMeshIndices(MeshHandle handle, std::span<Index> indices) {
 			if (!m_dynamic_handles.Exists(handle)) {
-				LOG_ERROR("[SET] dynamic handle does not exists at SetDynamicMeshIndices()");
+				LOG_ERROR("Dynamic handle does not exists");
 				return;
 			}
 
 			auto* mesh = m_dynamic_handles.Get(handle);
 
 			if (mesh->indices_amount < indices.size() || !mesh) {
-				LOG_ERROR("[SET] too much indices at SetDynamicMeshIndices()");
+				LOG_ERROR("Too much indices");
 				return;
 			}
 
@@ -67,6 +67,20 @@ namespace lum {
 			glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
 			glBufferData(GL_ARRAY_BUFFER, mesh.vertices_amount * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, position)));
+			glEnableVertexAttribArray(0);
+
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, color)));
+			glEnableVertexAttribArray(1);
+
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, normal)));
+			glEnableVertexAttribArray(2);
+
+			glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, uv)));
+			glEnableVertexAttribArray(3);
+
+
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices_amount * sizeof(Index), indices.data(), GL_STATIC_DRAW);
 
@@ -80,6 +94,18 @@ namespace lum {
 			glBindVertexArray(mesh.VAO);
 			glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
 			glBufferData(GL_ARRAY_BUFFER, mesh.max_vertices * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, position)));
+			glEnableVertexAttribArray(0);
+
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, color)));
+			glEnableVertexAttribArray(1);
+
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, normal)));
+			glEnableVertexAttribArray(2);
+
+			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, uv)));
+			glEnableVertexAttribArray(3);
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.max_indices * sizeof(Index), nullptr, GL_DYNAMIC_DRAW);

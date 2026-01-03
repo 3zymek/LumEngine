@@ -30,12 +30,14 @@ void lum::render::MeshManager::DeleteMesh(MeshHandle handle) {
 
 
 template<typename T>
-inline void lum::render::MeshManager::DrawMeshImpl(cstd::handle_pool<T, MeshHandle>& handles, MeshHandle handle) {
+void lum::render::MeshManager::DrawMeshImpl(cstd::handle_pool<T, MeshHandle>& handles, MeshHandle handle) {
 	if (!handles.Exists(handle))
 		return;
 
 	auto* mesh = handles.Get(handle);
 	glBindVertexArray(mesh->VAO);
+	assert(mesh->indices_amount > 0);
+
 	glDrawElements(GL_TRIANGLES, mesh->indices_amount, GL_UNSIGNED_INT, nullptr);
 
 }

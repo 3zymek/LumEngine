@@ -11,8 +11,10 @@ endif()
 file(GLOB_RECURSE ENGINE_CPP "${CMAKE_SOURCE_DIR}/lumengine/*.cpp")
 file(GLOB_RECURSE ENGINE_HEADERS "${CMAKE_SOURCE_DIR}/lumengine/*.hpp" "${CMAKE_SOURCE_DIR}/lumengine/*.h")
 file(GLOB_RECURSE ENGINE_C "${CMAKE_SOURCE_DIR}/lumengine/*.c")
+file(GLOB_RECURSE ENGINE_IPP)
+file(GLOB_RECURSE ENGINE_SHADERS "${CMAKE_SOURCE_DIR}/assets/shaders/*.vert" "${CMAKE_SOURCE_DIR}/assets/shaders/*.frag")
 
-add_executable(LumEngine ${ENGINE_CPP} ${ENGINE_HEADERS} ${ENGINE_C})
+add_executable(LumEngine ${ENGINE_CPP} ${ENGINE_HEADERS} ${ENGINE_C} ${ENGINE_SHADERS})
 
 set_source_files_properties(${ENGINE_C} ${EXTERNAL_C} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 

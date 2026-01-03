@@ -2,6 +2,23 @@
 #include "core/core_pch.hpp"
 namespace lum::core {
 	namespace render {
+
+		void APIENTRY GLDebugCallback(
+			GLenum src,
+			GLenum type,
+			GLuint id,
+			GLenum severity,
+			GLsizei length,
+			const GLchar* msg,
+			const void* usrParam
+		)
+		{
+
+			//if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
+			LOG_DEBUG(msg);
+
+		}
+
 		void Renderer::Init(RenderInitParams params) {
 
 			if (!glfwInit()) {
@@ -54,6 +71,12 @@ namespace lum::core {
 				return;
 			}
 
+			#ifdef DEBUG_RENDER
+				glDebugMessageCallback(GLDebugCallback, nullptr);
+				glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+				glEnable(GL_DEBUG_OUTPUT);
+			#endif
+
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_MULTISAMPLE);
 
@@ -61,6 +84,8 @@ namespace lum::core {
 
 		void Renderer::BeginFrame() {
 
+			glViewport(0, 0, m_window_width, m_window_height);
+			glClearColor(0.1, 0.1, 0.1, 1);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glfwPollEvents();
 
@@ -76,4 +101,5 @@ namespace lum::core {
 			return !glfwWindowShouldClose(m_window.get());
 		}
 	}
+
 }
