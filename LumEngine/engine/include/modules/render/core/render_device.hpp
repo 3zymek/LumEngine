@@ -1,6 +1,5 @@
 #pragma once
-#include "glad/glad.h"
-#include "glfw3.h"
+#include "render/render_pch.hpp"
 #include "core/core_defines.hpp"
 #include "render/render_common.hpp"
 namespace lum {
@@ -18,20 +17,20 @@ namespace lum {
 			};
 		}
 
-		class Renderer {
+		class RenderDevice {
 
 			using GLFWWindowPtr = std::unique_ptr<GLFWwindow, detail::GLFWWinDestructor>;
 
 		public:
 
-			Renderer() {}
+			RenderDevice() {}
 
 			void Init(RenderConfig);
 			void BeginFrame();
 			void EndFrame();
 			double GetAspectRatio() { return double(m_window_width) / double(m_window_height); }
 			bool WindowIsOpen();
-			inline GLFWwindow* GetWindow() { if (m_window) return m_window.get(); }
+			inline GLFWwindow* GetWindow() { return m_window.get(); }
 
 		private:
 

@@ -1,19 +1,18 @@
 #pragma once
-#include "entity/systems/sys_define.hpp"
 #include "audio/audio_manager.hpp"
 #include "core/math/glm.hpp"
 namespace lum {
-	namespace audio {
+	namespace systems {
 
-		class AudioSystem : public BaseSystem<AudioSystem> {
+		class AudioSystem {
 
-			AudioManager& manager;
+			audio::AudioManager& manager;
 			using Type = cmd::Type;
 
 
 		public:
 
-			AudioSystem(AudioManager& m) : manager(m) {}
+			AudioSystem(audio::AudioManager& m) : manager(m) {}
 
 			inline void Update() noexcept {
 

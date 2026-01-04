@@ -58,9 +58,5 @@ namespace lum {
 			EditorCamera camera{ (float)engine.GetRenderer().GetAspectRatio() };
 
 		};
-
-
-
-
 	}
 }

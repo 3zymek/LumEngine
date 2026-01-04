@@ -1,13 +1,14 @@
 #pragma once
 
 #include "audio/audio_manager.hpp"
-#include "audio/systems/sys_audio.hpp"
-#include "event/ev_bus.hpp"
+#include "audio/audio_system.hpp"
+#include "event/event_bus.hpp"
 #include "entity/ecs_manager.hpp"
-#include "render/core/renderer.hpp"
+#include "render/core/render_device.hpp"
 #include "core/scene_manager.hpp"
-#include "render/core/mesh_manager.hpp"
-#include "input/input_manager.hpp"
+#include "render/core/mesh_storage.hpp"
+#include "input/input_common.hpp"
+#include "entity/systems/transform_system.hpp"
 namespace lum::core {
 
 	struct EngineConfiguration {
@@ -32,7 +33,8 @@ namespace lum::core {
 
 		void EndFrame() {
 
-			audio_system.Update();
+			transform_sys.Update();
+			audio_sys.Update();
 
 			renderer.EndFrame();
 
@@ -41,8 +43,8 @@ namespace lum::core {
 		inline bool Running() { return running; }
 
 		[[nodiscard]] inline ev::		EventBus&		GetEventBus		( ) noexcept { return event_bus;	}
-		[[nodiscard]] inline render::	Renderer&		GetRenderer		( ) noexcept { return renderer;		}
-		[[nodiscard]] inline render::	MeshManager&	GetMeshManager	( ) noexcept { return mesh_mgr;		}
+		[[nodiscard]] inline render::	RenderDevice&		GetRenderer		( ) noexcept { return renderer;		}
+		[[nodiscard]] inline render::	MeshStorage&	GetMeshManager	( ) noexcept { return mesh_mgr;		}
 		[[nodiscard]] inline render::	ShaderManager&	GetShaderManager( ) noexcept { return shader_mgr;	}
 		[[nodiscard]] inline ecs::		EntityManager&	GetECSManager	( ) noexcept { return ecs_mgr;		}
 		[[nodiscard]] inline audio::	AudioManager&	GetAudioManager	( ) noexcept { return audio_mgr;	}
@@ -63,14 +65,15 @@ namespace lum::core {
 
 		}
 
-		ev::	EventBus		event_bus;
-		render::Renderer		renderer;
-		render::MeshManager		mesh_mgr;
-		render::ShaderManager	shader_mgr;
-		ecs::	EntityManager	ecs_mgr		 { event_bus			};
-		audio::	AudioManager	audio_mgr	 { ecs_mgr, event_bus	};
-		audio::	AudioSystem		audio_system { audio_mgr			};
-		core::	SceneManager	scene_mgr;
+		ev::		EventBus		event_bus;
+		render::	RenderDevice	renderer;
+		render::	MeshStorage		mesh_mgr;
+		render::	ShaderManager	shader_mgr;
+		systems::	TransformSystem transform_sys{ ecs_mgr				};
+		ecs::		EntityManager	ecs_mgr		 { event_bus			};
+		audio::		AudioManager	audio_mgr	 { ecs_mgr, event_bus	};
+		systems::	AudioSystem		audio_sys	 { audio_mgr			};
+		core::		SceneManager	scene_mgr;
 
 		bool running = true;
 

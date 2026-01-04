@@ -14,18 +14,20 @@ file(GLOB_RECURSE ENGINE_C "${CMAKE_SOURCE_DIR}/lumengine/*.c")
 file(GLOB_RECURSE ENGINE_IPP)
 file(GLOB_RECURSE ENGINE_SHADERS "${CMAKE_SOURCE_DIR}/assets/shaders/*.vert" "${CMAKE_SOURCE_DIR}/assets/shaders/*.frag")
 
-add_executable(LumEngine ${ENGINE_CPP} ${ENGINE_HEADERS} ${ENGINE_C} ${ENGINE_SHADERS})
+add_executable(LumEngine ${ENGINE_CPP} ${ENGINE_HEADERS} ${ENGINE_C} ${ENGINE_SHADERS} ${ENGINE_SHADERS})
 
 set_source_files_properties(${ENGINE_C} ${EXTERNAL_C} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
-target_sources(LumEngine PRIVATE ${ENGINE_CPP} ${ENGINE_C} ${ENGINE_HEADERS})
+target_sources(LumEngine PRIVATE ${ENGINE_CPP} ${ENGINE_C} ${ENGINE_HEADERS} ${ENGINE_SHADERS})
 
-source_group(TREE ${CMAKE_SOURCE_DIR}/lumengine FILES ${ENGINE_CPP} ${ENGINE_C} ${ENGINE_HEADERS})
+source_group(TREE ${CMAKE_SOURCE_DIR}/lumengine FILES ${ENGINE_CPP} ${ENGINE_C} ${ENGINE_HEADERS} ${ENGINE_SHADERS})
 
 target_precompile_headers(LumEngine PRIVATE ${CMAKE_SOURCE_DIR}/lumengine/engine/include/core/core_pch.hpp)
 target_precompile_headers(LumEngine PRIVATE ${CMAKE_SOURCE_DIR}/lumengine/engine/include/modules/audio/audio_pch.hpp)
+target_precompile_headers(LumEngine PRIVATE ${CMAKE_SOURCE_DIR}/lumengine/engine/include/modules/render/render_pch.hpp)
 
 target_include_directories(LumEngine PRIVATE
+    "${CMAKE_SOURCE_DIR}/lumengine/editor/include"
     "${CMAKE_SOURCE_DIR}/lumengine/engine/include/modules"
     "${CMAKE_SOURCE_DIR}/lumengine/engine/include"
     "${CMAKE_SOURCE_DIR}/lumengine/external/fmod/inc"

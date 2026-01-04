@@ -20,7 +20,7 @@ namespace lum {
 
             template<typename T>
             concept Component =
-                requires { T::__lumcomponent__; }&&
+                requires { T::__lumcomponent__ == true; }&&
                     std::is_trivially_copyable_v<T>&&
                     std::is_trivially_destructible_v<T>;
 

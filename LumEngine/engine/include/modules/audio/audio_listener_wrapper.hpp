@@ -3,6 +3,9 @@
 #include "entity/ecs_common.hpp"
 #include "entity/components/c_transform.hpp"
 namespace lum {
+	namespace systems {
+		struct AudioSystem;
+	}
 	namespace audio {
 		class AudioListenerWrapper {
 		public:
@@ -16,10 +19,10 @@ namespace lum {
 			void SetRawTransform(ecs::components::TransformComponent* c) { transform = c; };
 
 			friend class AudioManager;
-			friend class AudioSystem;
+			friend class lum::systems::AudioSystem;
 
-			ecs::EntityID		entityID{};
-			ecs::components::TransformComponent* transform = nullptr;
+			ecs::EntityID							entityID{};
+			ecs::components::TransformComponent*	transform = nullptr;
 
 		};
 	}

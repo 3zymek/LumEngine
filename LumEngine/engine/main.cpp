@@ -3,10 +3,17 @@
 #include "lum_packages/lum_ecs.hpp"
 #include "lum_packages/lum_events.hpp"
 #include "lum_packages/lum_render.hpp"
-#include "input/input_manager.hpp"
+#include "input/input_common.hpp"
 #include "core/logger.hpp"
-#include "../editor/editor.hpp"
+#include "editor.hpp"
+#include "render/components/c_mesh.hpp"
 using namespace lum;
+struct Bad {
+    LumComponentTag;
+    uint32_t id;
+    std::string name;
+};
+
 int main() {
 
     Logger::Get().EnableLog(LogSeverity::DEBUG);
@@ -20,8 +27,9 @@ int main() {
 
     core::Engine engine{ cfg };
     editor::Editor editor{ engine };
-
     Entity e = engine.GetECSManager().CreateEntity();
+    e.AddComponent<ecs::components::TransformComponent>();
+    e.AddComponent<ecs::components::MeshComponent>();
 
     auto& audio = engine.GetAudioManager();
     audio.LoadSound("01", "test.wav");

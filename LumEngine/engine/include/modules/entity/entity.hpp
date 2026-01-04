@@ -17,10 +17,12 @@ namespace lum {
 		Entity(ecs::EntityManager& m, EntityID entityID) : manager(m), m_entityID(entityID) {}
 		~Entity( ) {}
 
-		inline const EntityID& GetID( ) { return m_entityID; }
+		inline const EntityID& GetID( ) const noexcept { return m_entityID; }
 
 		template< ecs::detail::Component T >
 		T* AddComponent( ) {
+			static_assert(std::is_trivially_copyable_v<T> && "Component is not trivially copyable");
+			static_assert(std::is_trivially_destructible_v<T> && "Component is not trivially destructible");
 			return manager.AddComponent<T>(m_entityID);
 		}
 

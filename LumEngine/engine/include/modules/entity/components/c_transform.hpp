@@ -10,5 +10,8 @@ namespace lum::ecs::components {
 		glm::vec3 scale;
 		glm::vec3 rotation;
 
+		glm::mat4 model;
+		bool dirty = false;
+
 	};
 }

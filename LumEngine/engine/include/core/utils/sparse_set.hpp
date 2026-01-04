@@ -34,10 +34,10 @@ namespace cstd {
 
 		using sparse_t = sparse_val;
 
-		using iterator			= typename std::vector<val>::iterator;
-		using const_iterator	= typename std::vector<val>::const_iterator;
-
 	public:
+
+		using iterator = typename std::vector<val>::iterator;
+		using const_iterator = typename std::vector<val>::const_iterator;
 
 		constexpr sparse_set() = default;
 		explicit constexpr sparse_set(const sparse_t& _size) : m_size(_size) { reserve(_size); fill_sparse(_size); }

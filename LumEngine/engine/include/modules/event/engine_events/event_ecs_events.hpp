@@ -1,6 +1,6 @@
 #pragma once
 #include "entity/ecs_common.hpp"
-#include "event/ev_common.hpp"
+#include "event/event_common.hpp"
 namespace lum::ev {
 	struct ComponentAdded
 	{

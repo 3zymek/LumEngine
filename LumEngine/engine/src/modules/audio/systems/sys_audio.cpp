@@ -1,10 +1,10 @@
-#include "audio/systems/sys_audio.hpp"
+#include "audio/audio_system.hpp"
 #include "audio/audio_emitter.hpp"
 #include "audio/audio_listener_wrapper.hpp"
 #include "core/core_pch.hpp"
 #include "audio/audio_pch.hpp"
 namespace lum {
-	namespace audio {
+	namespace systems {
 
 		void AudioSystem::UpdateEmitters() noexcept {
 

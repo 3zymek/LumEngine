@@ -4,4 +4,3 @@
 #include "entity/ecs_component_pool.hpp"
 #include "entity/components/lum_components.hpp"
 #include "entity/ecs_common.hpp"
-#include "entity/systems/sys_define.hpp"

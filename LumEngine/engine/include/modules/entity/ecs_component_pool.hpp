@@ -11,11 +11,19 @@ namespace lum {
 			template<Component T>
 			class ComponentPool : public BasePool {
 
-				using ComponentIndex = size_t;
+				using ComponentIndex	= size_t;
+				using iterator			= cstd::sparse_set<T, ComponentIndex>::iterator;
+				using const_iterator	= cstd::sparse_set<T, ComponentIndex>::const_iterator;
 
 			public:
 
-				inline T& operator[](size_t index) {
+				iterator begin() { return m_components.begin(); }
+				iterator end() { return m_components.end(); }
+
+				const_iterator begin() const { return m_components.begin(); }
+				const_iterator end() const { return m_components.end(); }
+
+				inline T& operator[]( size_t index ) {
 					return m_components[index];
 				}
 
@@ -23,23 +31,30 @@ namespace lum {
 					return m_components.dense_size();
 				}
 
-				T* Add(EntityID entityID) {
-					if (m_components.contains(entityID)) return nullptr;
+				T* Add( EntityID entityID ) {
+					HOTPATH_CHECK_RETURN_NULLPTR(
+						m_components.contains(entityID), std::format("Entity {} already have {} component", entityID, typeid(T).name())
+					);
 					T component;
 					m_components.emplace(component, entityID);
 					return &m_components[entityID];
 				}
 
-				inline void Remove(EntityID entityID) {
-					if (m_components.contains(entityID)) m_components.remove(entityID);
+				inline void Remove( EntityID entityID ) {
+					HOTPATH_CHECK_RETURN_VOID(
+						!m_components.contains(entityID), std::format("Entity doesn't have {} component to remove", typeid(T).name())
+					);
+					m_components.remove(entityID);
 				}
 
-				inline T* Get(EntityID entityID) {
-					if (m_components.contains(entityID)) return &m_components[entityID];
-					return nullptr;
+				inline T* Get( EntityID entityID ) {
+					HOTPATH_CHECK_RETURN_NULLPTR(
+						!m_components.contains(entityID), std::format("Entity doesn't have {} component", typeid(T).name())
+					);
+					return &m_components[entityID];
 				}
 
-				inline bool Has(EntityID entityID) {
+				inline bool Has( EntityID entityID ) {
 					return m_components.contains(entityID);
 				}
 

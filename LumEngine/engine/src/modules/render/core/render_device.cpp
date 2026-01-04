@@ -1,4 +1,4 @@
-#include "render/core/renderer.hpp"
+#include "render/core/render_device.hpp"
 #include "core/core_pch.hpp"
 namespace lum {
 	namespace render {
@@ -19,7 +19,7 @@ namespace lum {
 
 		}
 
-		void Renderer::Init(RenderConfig params) {
+		void RenderDevice::Init(RenderConfig params) {
 
 			if (!glfwInit()) {
 				LOG_ERROR("failed to initialize GLFW");
@@ -82,7 +82,7 @@ namespace lum {
 
 		}
 
-		void Renderer::BeginFrame() {
+		void RenderDevice::BeginFrame() {
 
 			glViewport(0, 0, m_window_width, m_window_height);
 			glClearColor(0, 0, 0, 1);
@@ -91,13 +91,13 @@ namespace lum {
 
 		}
 
-		void Renderer::EndFrame() {
+		void RenderDevice::EndFrame() {
 
 			glfwSwapBuffers(m_window.get());
 
 		}
 
-		bool Renderer::WindowIsOpen() {
+		bool RenderDevice::WindowIsOpen() {
 			return !glfwWindowShouldClose(m_window.get());
 		}
 	}

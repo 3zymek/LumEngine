@@ -3,8 +3,7 @@
 #include "core/utils/handle_pool.hpp"
 #include "core/core_pch.hpp"
 #include "render/essentials/mesh.hpp"
-#include "glad/glad.h"
-#include "glfw3.h"
+#include "render/render_pch.hpp"
 namespace lum {
 	namespace render {
 		enum class MeshType {
@@ -18,12 +17,12 @@ namespace lum {
 
 		public:
 
-			MeshID		id = std::numeric_limits<MeshID>::max();
-			Generation	generation = 0;
+			MeshID		id;
+			Generation	generation;
 			MeshType	type;
 
 		};
-		class MeshManager {
+		class MeshStorage {
 
 			using Vertex = lum::render::Vertex;
 			using Index = lum::render::Index;
@@ -61,6 +60,6 @@ namespace lum {
 			cstd::handle_pool<DynamicMesh, MeshHandle>	m_dynamic_handles{ lum::render::MAX_MESHES_AMOUNT };
 
 		};
-		#include "render/core/mesh_manager.ipp"
+		#include "render/core/mesh_storage.ipp"
 	}
 }

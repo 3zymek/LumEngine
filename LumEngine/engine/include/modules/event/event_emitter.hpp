@@ -1,7 +1,7 @@
 #pragma once
 #include "core/core_pch.hpp"
-#include "modules/event/ev_common.hpp"
-#include "event/ev_bus.hpp"
+#include "event/event_common.hpp"
+#include "event/event_bus.hpp"
 namespace lum {
 	namespace ev {
 		namespace detail {

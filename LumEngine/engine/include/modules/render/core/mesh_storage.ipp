@@ -1,8 +1,8 @@
-#include "render/core/mesh_manager.hpp"
+#include "render/core/mesh_storage.hpp"
 #include "render/render_common.hpp"
 
 template<typename T>
-void lum::render::MeshManager::DrawMesh(MeshHandle handle) {
+void lum::render::MeshStorage::DrawMesh(MeshHandle handle) {
 	if constexpr (std::is_same_v<T, StaticMesh>) {
 		DrawMeshImpl<T>(m_static_handles, handle);
 	}
@@ -13,7 +13,7 @@ void lum::render::MeshManager::DrawMesh(MeshHandle handle) {
 
 }
 template<typename T>
-void lum::render::MeshManager::DeleteMesh(MeshHandle handle) {
+void lum::render::MeshStorage::DeleteMesh(MeshHandle handle) {
 	if constexpr (std::is_same_v<T, StaticMesh>) {
 		if (!m_static_handles.Exists(handle))
 			return;
@@ -28,7 +28,7 @@ void lum::render::MeshManager::DeleteMesh(MeshHandle handle) {
 }
 
 template<typename T>
-void lum::render::MeshManager::DrawMeshImpl(cstd::handle_pool<T, MeshHandle>& handles, MeshHandle handle) {
+void lum::render::MeshStorage::DrawMeshImpl(cstd::handle_pool<T, MeshHandle>& handles, MeshHandle handle) {
 	if (!handles.Exists(handle))
 		return;
 

@@ -1,9 +1,9 @@
 #pragma once
-#include "event/engine_events/ev_ecs_events.hpp"
+#include "event/engine_events/event_ecs_events.hpp"
 #include "entity/ecs_common.hpp"
 #include "entity/ecs_component_pool.hpp"
 #include "core/core_defines.hpp"
-#include "event/ev_bus.hpp"
+#include "event/event_bus.hpp"
 namespace lum {
 	struct Entity;
 	namespace ev { class EventBus; }
@@ -24,34 +24,29 @@ namespace lum {
 			template<detail::Component T>
 			T* AddComponent(EntityID entityID) {
 
-				auto& pool = GetOrCreatePool<T>();
-
 				event_bus.Emit<ev::ComponentAdded>({ entityID, detail::ComponentTypeID::Get<T>() });
 
 				LOG_DEBUG(std::format("Added component {} to entity {}", typeid(T).name(), entityID));
 
-				return pool.Add(entityID);
+				return GetOrCreatePool<T>().Add(entityID);
 
 			}
 
 			template<detail::Component T>
 			void RemoveComponent(EntityID entityID) {
 
-				auto& pool = GetOrCreatePool<T>();
-
 				event_bus.Emit<ev::ComponentRemoved>({ entityID, detail::ComponentTypeID::Get<T>() });
 
 				LOG_DEBUG(std::format("Removed component {} on entity {}", typeid(T).name(), entityID));
 
-				pool.Delete(entityID);
+				GetOrCreatePool<T>().Delete(entityID);
 
 			}
 
 			template<detail::Component T>
 			T* GetComponent(EntityID entityID) {
 
-				auto& pool = GetOrCreatePool<T>();
-				return pool.Get(entityID);
+				return GetOrCreatePool<T>().Get(entityID);
 
 			}
 
@@ -67,8 +62,7 @@ namespace lum {
 
 			template<detail::Component T>
 			bool Has(EntityID entityID) {
-				auto& pool = GetOrCreatePool<T>();
-				return pool.Has(entityID);
+				return GetOrCreatePool<T>().Has(entityID);
 			}
 
 		private:
@@ -82,8 +76,7 @@ namespace lum {
 					m_pools[typeID] = new detail::ComponentPool<T>;
 					return *static_cast<detail::ComponentPool<T>*>(m_pools[typeID]);
 				}
-				if (std::is_base_of_v<detail::UniqueComponent, T>)
-					throw std::runtime_error("Unique component already exists");
+				//static_assert(std::is_base_of_v<detail::UniqueComponent, T> && "Unique component already exists");
 
 				return *static_cast<detail::ComponentPool<T>*>(m_pools[typeID]);
 			}
@@ -102,7 +95,7 @@ namespace lum {
 				}
 			}
 
-			detail::BasePool* m_pools[detail::MAX_COMPONENT_TYPES_COUNT];
+			detail::BasePool* m_pools[detail::MAX_COMPONENT_TYPES_COUNT]{};
 
 		};
 

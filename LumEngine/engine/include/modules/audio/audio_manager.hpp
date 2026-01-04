@@ -11,6 +11,11 @@
 #include "core/core_pch.hpp"
 #include "audio/audio_pch.hpp"
 namespace lum {
+
+	namespace systems {
+		struct AudioSystem;
+	}
+
 	namespace audio {
 		namespace detail {
 			struct AudioClip;
@@ -140,7 +145,7 @@ namespace lum {
 			AudioManager			( AudioManager&& ) = delete;
 			AudioManager&& operator=( AudioManager&& ) = delete;
 
-			friend class AudioSystem;
+			friend class lum::systems::AudioSystem;
 			friend class AudioEmitterWrapper;
 
 			////////////////////////////////////

@@ -3,8 +3,7 @@
 #include "core/core_defines.hpp"
 #include "core/utils/handle_pool.hpp"
 #include "core/asset_service.hpp"
-#include "glad/glad.h"
-#include "glfw3.h"
+#include "render/render_pch.hpp"
 namespace lum {
 	namespace render {
 

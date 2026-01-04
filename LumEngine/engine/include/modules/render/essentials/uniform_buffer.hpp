@@ -1,6 +1,6 @@
 #pragma once
 #include "core/core_pch.hpp"
-#include "glad/glad.h"
+#include "render/render_pch.hpp"
 namespace lum {
 	namespace render {
 
