@@ -13,13 +13,13 @@ namespace lum {
 
 		private:
 
-			void SetRawTransform(ecs::TransformComponent* c) { transform = c; };
+			void SetRawTransform(ecs::components::TransformComponent* c) { transform = c; };
 
 			friend class AudioManager;
 			friend class AudioSystem;
 
 			ecs::EntityID		entityID{};
-			ecs::TransformComponent* transform = nullptr;
+			ecs::components::TransformComponent* transform = nullptr;
 
 		};
 	}

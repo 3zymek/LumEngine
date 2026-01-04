@@ -2,7 +2,7 @@
 #include "render/essentials/mesh.hpp"
 namespace lum {
 	namespace render {
-		MeshHandle MeshManager::CreateStaticMesh(std::span<Vertex> vertices, std::span<Index> indices) {
+		MeshHandle MeshManager::CreateStaticMesh( std::span<Vertex> vertices, std::span<Index> indices ) {
 			StaticMesh mesh;
 
 			mesh.vertices_amount = vertices.size();
@@ -12,7 +12,7 @@ namespace lum {
 			return m_static_handles.CreateHandle(std::move(mesh));
 
 		}
-		MeshHandle MeshManager::CreateDynamicMesh(size_t max_vertices, size_t max_indices) {
+		MeshHandle MeshManager::CreateDynamicMesh( size_t max_vertices, size_t max_indices ) {
 			DynamicMesh mesh;
 
 			mesh.max_vertices = max_vertices;
@@ -23,7 +23,7 @@ namespace lum {
 
 		}
 
-		void MeshManager::SetDynamicMeshVertices(MeshHandle handle, std::span<Vertex> vertices) {
+		void MeshManager::SetDynamicMeshVertices( MeshHandle handle, std::span<Vertex> vertices ) {
 			if (!m_dynamic_handles.Exists(handle)) {
 				LOG_ERROR("Dynamic handle does not exists");
 				return;
@@ -38,7 +38,7 @@ namespace lum {
 			mesh->vertices_amount = mesh->vertices.size();
 
 		} //
-		void MeshManager::SetDynamicMeshIndices(MeshHandle handle, std::span<Index> indices) {
+		void MeshManager::SetDynamicMeshIndices( MeshHandle handle, std::span<Index> indices ) {
 			if (!m_dynamic_handles.Exists(handle)) {
 				LOG_ERROR("Dynamic handle does not exists");
 				return;
@@ -57,7 +57,7 @@ namespace lum {
 
 		}
 
-		void MeshManager::InitStaticMesh(StaticMesh& mesh, span<Vertex> vertices, span<Index> indices) {
+		void MeshManager::InitStaticMesh	( StaticMesh& mesh, span<Vertex> vertices, span<Index> indices ) {
 
 			glGenVertexArrays(1, &mesh.VAO);
 			glGenBuffers(1, &mesh.VBO);
@@ -85,7 +85,7 @@ namespace lum {
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices_amount * sizeof(Index), indices.data(), GL_STATIC_DRAW);
 
 		}
-		void MeshManager::InitDynamicMesh(DynamicMesh& mesh) {
+		void MeshManager::InitDynamicMesh	( DynamicMesh& mesh ) {
 
 			glGenVertexArrays(1, &mesh.VAO);
 			glGenBuffers(1, &mesh.VBO);

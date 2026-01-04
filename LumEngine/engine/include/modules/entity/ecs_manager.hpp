@@ -28,6 +28,8 @@ namespace lum {
 
 				event_bus.Emit<ev::ComponentAdded>({ entityID, detail::ComponentTypeID::Get<T>() });
 
+				LOG_DEBUG(std::format("Added component {} to entity {}", typeid(T).name(), entityID));
+
 				return pool.Add(entityID);
 
 			}
@@ -38,6 +40,8 @@ namespace lum {
 				auto& pool = GetOrCreatePool<T>();
 
 				event_bus.Emit<ev::ComponentRemoved>({ entityID, detail::ComponentTypeID::Get<T>() });
+
+				LOG_DEBUG(std::format("Removed component {} on entity {}", typeid(T).name(), entityID));
 
 				pool.Delete(entityID);
 
@@ -56,6 +60,8 @@ namespace lum {
 
 				if (!Has<T>(entityID))
 					AddComponent<T>(entityID);
+
+				LOG_DEBUG(std::format("Required component {}", typeid(T).name()));
 
 			}
 

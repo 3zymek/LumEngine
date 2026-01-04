@@ -1,6 +1,6 @@
 #pragma once
 #include "entity/ecs_common.hpp"
-namespace lum {
+namespace lum::ecs::components {
 	struct AudioEmitterComponent {
 
 		LumComponentTag;

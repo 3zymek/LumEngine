@@ -3,7 +3,7 @@
 #include "glfw3.h"
 #include "core/core_defines.hpp"
 #include "render/render_common.hpp"
-namespace lum::core {
+namespace lum {
 	namespace render {
 		namespace detail {
 			struct GLFWWinDestructor {
@@ -26,10 +26,12 @@ namespace lum::core {
 
 			Renderer() {}
 
-			void Init(RenderInitParams);
+			void Init(RenderConfig);
 			void BeginFrame();
 			void EndFrame();
+			double GetAspectRatio() { return double(m_window_width) / double(m_window_height); }
 			bool WindowIsOpen();
+			inline GLFWwindow* GetWindow() { if (m_window) return m_window.get(); }
 
 		private:
 

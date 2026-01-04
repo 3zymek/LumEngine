@@ -2,7 +2,7 @@
 #include "core/core_defines.hpp"
 #include "core/core_pch.hpp"
 #include "glad/glad.h"
-namespace lum::core {
+namespace lum {
 	namespace render {
 
 		using Index = uint32_t;
@@ -65,15 +65,15 @@ namespace lum::core {
 		};
 
 		enum class RenderFeature : Bit {
-			None = 0x00000000,
-			AntiAliasing = 0x00000010,
-			Bloom = 0x00000100,
-			Shadows = 0x00001000,
-			SSAO = 0x00010000,
-			Reflection = 0x00100000,
+			None			= 0x00000000,
+			AntiAliasing	= 0x00000010,
+			Bloom			= 0x00000100,
+			Shadows			= 0x00001000,
+			SSAO			= 0x00010000,
+			Reflection		= 0x00100000,
 		};
 
-		struct RenderInitParams {
+		struct RenderConfig {
 
 			// Window
 

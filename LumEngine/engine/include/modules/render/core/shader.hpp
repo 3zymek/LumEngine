@@ -54,6 +54,10 @@ namespace lum {
 
 			}
 
+			GLuint GetProgram(ShaderHandle handle) {
+				return shader_handles[handle];
+			}
+
 			void UseShader(ShaderHandle handle) {
 				glUseProgram(shader_handles[handle]);
 			}

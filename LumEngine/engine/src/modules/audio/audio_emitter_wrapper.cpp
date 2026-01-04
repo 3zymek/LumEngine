@@ -61,7 +61,7 @@ namespace lum {
 			cmd.type = Type::SetVolume;
 			cmd.emitterID = emitterID;
 			cmd.data.setVolume.audioID = *id;
-			cmd.data.setVolume.volume = volume;
+			cmd.data.setVolume.volume = std::clamp(volume, 0.f, 1.f);
 
 			manager.m_commands.Push(std::move(cmd));
 
@@ -76,7 +76,7 @@ namespace lum {
 			cmd.type = Type::SetPitch;
 			cmd.emitterID = emitterID;
 			cmd.data.setPitch.audioID = *id;
-			cmd.data.setPitch.pitch = pitch;
+			cmd.data.setPitch.pitch = std::clamp(pitch, 0.f, 1.f);
 
 			manager.m_commands.Push(std::move(cmd));
 
@@ -118,7 +118,8 @@ namespace lum {
 		void AudioEmitterWrapper::Remove(string_view name) {
 
 			auto id = manager.GetIDByName(name);
-			if (!id.has_value()) return;
+			if (!id.has_value())
+				return;
 
 			AudioCmd cmd;
 			cmd.type = cmd::Type::RemoveClip;
@@ -127,5 +128,34 @@ namespace lum {
 
 			manager.m_commands.Push(std::move(cmd));
 		}
+
+		float AudioEmitterWrapper::GetVolume(string_view name) {
+			auto id = manager.GetIDByName(name);
+			if (!id.has_value())
+				return std::numeric_limits<float>::max();
+			return manager.GetEmitterClipVolume(emitterID, *id);
+		}
+
+		float AudioEmitterWrapper::GetPitch(string_view name) {
+			auto id = manager.GetIDByName(name);
+			if (!id.has_value())
+				return std::numeric_limits<float>::max();
+			return manager.GetEmitterClipPitch(emitterID, *id);
+		}
+
+		bool AudioEmitterWrapper::GetPaused(string_view name) {
+			auto id = manager.GetIDByName(name);
+			if (!id.has_value())
+				return std::numeric_limits<float>::max();
+			return manager.GetEmitterClipPaused(emitterID, *id);
+		}
+
+		bool AudioEmitterWrapper::GetLooped(string_view name) {
+			auto id = manager.GetIDByName(name);
+			if (!id.has_value())
+				return std::numeric_limits<float>::max();
+			return manager.GetEmitterClipLooped(emitterID, *id);
+		}
+
 	}
 }

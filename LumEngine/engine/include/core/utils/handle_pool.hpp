@@ -9,11 +9,20 @@ namespace cstd {
 		using SparseType = uint32_t;
 		using Hsize_t = size_t;
 
+		using iterator = typename std::vector<DenseType>::iterator;
+		using const_iterator = typename std::vector<DenseType>::const_iterator;
+
 		Hsize_t NULL_HANDLE = -1;
 
 	public:
 
 		handle_pool(Hsize_t new_max_size) : MAX_SIZE(new_max_size) { Reserve(MAX_SIZE); }
+
+		iterator begin() { return m_dense.begin(); }
+		iterator end() { return m_dense.end(); }
+
+		const_iterator begin() const { return m_dense.begin(); }
+		const_iterator end() const { return m_dense.end(); }
 
 		DenseType& operator[](const Hsize_t id) {
 			return m_dense[m_sparse[id]];
@@ -28,15 +37,13 @@ namespace cstd {
 
 		void Reserve(Hsize_t new_max_size);
 
-		__forceinline bool Use(const HandleType& handle) const noexcept {
-			return Exists(handle);
-		}
+		inline Hsize_t DenseSize() const { return m_dense.size(); }
 
-		__forceinline bool Exists(const HandleType& handle) const noexcept {
+		inline bool Exists(const HandleType& handle) const noexcept {
 			return handle.id < m_generations.size() && handle.generation == m_generations[handle.id];
 		}
 
-		__forceinline DenseType* Get(const HandleType& handle) {
+		inline DenseType* Get(const HandleType& handle) {
 			if (Exists(handle))
 				return &m_dense[m_sparse[handle.id]];
 			else

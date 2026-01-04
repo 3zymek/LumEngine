@@ -55,7 +55,3 @@
 #define LOG_INIT_FAIL(msg) ((void)0)
 
 #endif // ENABLE_LOGGER
-
-
-#define EV_ASSERT_IS_EVENT(T) \
-			static_assert(std::is_base_of_v<BaseEvent, T> and !std::is_same_v<BaseEvent, T>, "Event must be derived from BaseEvent")

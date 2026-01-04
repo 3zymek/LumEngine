@@ -1,7 +1,7 @@
 #pragma once
 #include "entity/ecs_common.hpp"
 #include "core/core_pch.hpp"
-namespace lum::ecs {
+namespace lum::ecs::components {
 	struct TransformComponent {
 
 		LumComponentTag;

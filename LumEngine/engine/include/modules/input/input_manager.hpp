@@ -1,24 +1,52 @@
 #pragma once
 #include "key_codes.hpp"
 #include "core/core_pch.hpp"
+
+// THIS IS NOT AN CLASS FOR THIS MOMENT BUT WILL BE
+
 namespace lum {
 	namespace input {
-		static GLFWwindow* activeWindow = nullptr;
-
-		inline unsigned int GetGLFWKey(Key key) {
-			assert(activeWindow && "Active window isn't set!");
-			return static_cast<unsigned int>(key);
+		namespace detail {
+			
+			GLFWwindow* active_window = nullptr;
+		
 		}
 
-		inline bool KeyPressed(Key key) {
-			assert(activeWindow && "Active window isn't set!");
-			return glfwGetKey(activeWindow, GetGLFWKey(key)) == GLFW_PRESS;
+		inline void SetActiveWindow(GLFWwindow* window) {
+			detail::active_window = window;
 		}
 
-		inline glm::vec2 GetMousePos() {
-			assert(activeWindow && "Active window isn't set!");
+		inline unsigned int GetGLFWKey( Key key ) {
+			assert(detail::active_window && "Active window isn't set");
+			return detail::key_map[static_cast<unsigned int>(key)];
+		}
+
+		inline bool KeyPressedOnce( Key key ) {
+			assert(detail::active_window && "Active window isn't set");
+			bool key_pressed = glfwGetKey(detail::active_window, GetGLFWKey(key)) == GLFW_PRESS;
+			int key_code = static_cast<int>(key);
+
+			if (key_pressed && !detail::key_is_pressed[key_code]) {
+				detail::key_is_pressed[key_code] = true;
+				return true;
+			}
+			
+			if (!key_pressed)
+				detail::key_is_pressed[key_code] = false;
+			
+			return false;
+
+		}
+
+		inline bool KeyPressed( Key key ) {
+			assert(detail::active_window && "Active window isn't set");
+			return glfwGetKey(detail::active_window, GetGLFWKey(key)) == GLFW_PRESS;
+		}
+
+		inline glm::vec2 GetMousePos( ) {
+			assert(detail::active_window && "Active window isn't set");
 			double xpos, ypos;
-			glfwGetCursorPos(activeWindow, &xpos, &ypos);
+			glfwGetCursorPos(detail::active_window, &xpos, &ypos);
 			return glm::vec2(xpos, ypos);
 		}
 	}

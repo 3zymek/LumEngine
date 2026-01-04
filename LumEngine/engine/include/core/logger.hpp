@@ -29,8 +29,6 @@ namespace lum {
 		return mask;
 	}
 
-
-
 	enum class InitStatus {
 		OK,
 		FAIL

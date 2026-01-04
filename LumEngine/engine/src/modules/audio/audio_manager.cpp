@@ -19,12 +19,12 @@ namespace lum {
 		/// Public API
 		////////////////////////////////////
 
-		void AudioManager::Init(unsigned int maxchannels, FMOD_INITFLAGS flags, void* extradrivers) {
+		void AudioManager::Init(unsigned int maxchannels, AudioInitFlags flags, void* extradrivers) {
 
 			FMOD::System* sys = nullptr;
 
 			FMOD::System_Create(&sys);
-			sys->init(maxchannels, flags, extradrivers);
+			sys->init(maxchannels, static_cast<FMOD_INITFLAGS>(flags), extradrivers);
 
 			if (!sys) {
 				LOG_INIT_FAIL("Audio manager initialization");
@@ -78,7 +78,7 @@ namespace lum {
 				m_listener = std::make_unique<AudioListenerWrapper>(entityID);
 
 				m_listener->SetRawTransform(
-					m_entity_manager.GetComponent<ecs::TransformComponent>(entityID)
+					m_entity_manager.GetComponent<ecs::components::TransformComponent>(entityID)
 				);
 
 				LOG_INFO("Audio Listener created");
@@ -265,21 +265,31 @@ namespace lum {
 			LOG_INFO(std::format("Destroyed emitter {}", emitterID));
 
 		}
+		float AudioManager::GetEmitterClipVolume(EmitterHandle emitterID, AudioHandle audioID) {
+			return m_emitters[emitterID].clips[audioID].volume;
+		}
+		float AudioManager::GetEmitterClipPitch(EmitterHandle emitterID, AudioHandle audioID) {
+			return m_emitters[emitterID].clips[audioID].pitch;
+		}
+		bool AudioManager::GetEmitterClipLooped(EmitterHandle emitterID, AudioHandle audioID) {
+			return m_emitters[emitterID].clips[audioID].loop;
+		}
+		bool AudioManager::GetEmitterClipPaused(EmitterHandle emitterID, AudioHandle audioID) {
+			return m_emitters[emitterID].clips[audioID].paused;
+		}
 		void AudioManager::SubscribeEvents() {
-			/*
-				ev::EventBus::Engine().SubscribePermamently<ev::ComponentAdded>(
+			m_event_bus.SubscribePermanently<ev::ComponentAdded>(
 					[this](const ev::ComponentAdded& ev)
 					{
-						if (ev.component_typeID == ecs::detail::ComponentTypeIndex::get<AudioListenerComponent>() or
-							ev.component_typeID == ecs::detail::ComponentTypeIndex::get<AudioEmitterComponent>()) {
+						if (ev.component_typeID == ecs::detail::ComponentTypeID::Get<ecs::components::AudioListenerComponent>() or
+							ev.component_typeID == ecs::detail::ComponentTypeID::Get<ecs::components::AudioEmitterComponent>()) {
 
-							m_entity_manager.RequireComponent<TransformComponent>(ev.entityID);
+							m_entity_manager.RequireComponent<ecs::components::TransformComponent>(ev.entityID);
 
 						}
 
 					}
 				);
-				*/
 		}
 
 		AudioListenerWrapper* AudioManager::GetListener() {

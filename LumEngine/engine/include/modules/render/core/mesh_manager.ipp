@@ -27,8 +27,6 @@ void lum::render::MeshManager::DeleteMesh(MeshHandle handle) {
 	//else static_assert(lum::render::detail::MeshT<T>, "unsupported mesh type in DeleteMesh");
 }
 
-
-
 template<typename T>
 void lum::render::MeshManager::DrawMeshImpl(cstd::handle_pool<T, MeshHandle>& handles, MeshHandle handle) {
 	if (!handles.Exists(handle))

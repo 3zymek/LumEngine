@@ -111,6 +111,47 @@ namespace lum {
 			*/
 			void Remove( string_view name );
 
+			/*! @brief Removes a sound by name.
+			*
+			*  Returns current volume of a clip on this emitter.
+			*
+			*  @param name Alias name of the sound.
+			*  @return volume value of a clip on this emitter.
+			*
+			*/
+			float GetVolume	( string_view name );
+
+			/*! @brief Removes a sound by name.
+			*
+			*  Returns current pitch of a clip on this emitter.
+			*
+			*  @param name Alias name of the sound.
+			*  @return pitch value of a clip on this emitter.
+			*
+			*/
+			float GetPitch	( string_view name );
+
+			/*! @brief Removes a sound by name.
+			*
+			*  Returns current paused value of a clip on this emitter.
+			*
+			*  @param name Alias name of the sound.
+			*  @return paused value of a clip on this emitter.
+			*
+			*/
+			bool GetPaused	( string_view name );
+
+			/*! @brief Removes a sound by name.
+			*
+			*  Returns current looped value of a clip on this emitter.
+			*
+			*  @param name Alias name of the sound.
+			*  @return looped value of a clip on this emitter.
+			*
+			*/
+			bool GetLooped	( string_view name );
+
+
 		private:
 
 			EmitterHandle emitterID{};

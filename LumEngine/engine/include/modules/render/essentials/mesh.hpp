@@ -5,8 +5,8 @@ namespace lum {
 		struct StaticMesh {
 		private:
 
-			using VertexCount	= lum::core::render::detail::VertexCount;
-			using Index			= lum::core::render::Index;
+			using VertexCount	= lum::render::detail::VertexCount;
+			using Index			= lum::render::Index;
 
 		public:
 
@@ -21,11 +21,11 @@ namespace lum {
 		struct DynamicMesh {
 		private:
 
-			using VertexCount	= lum::core::render::detail::VertexCount;
-			using VertexArray	= lum::core::render::detail::VertexArray;
-			using IndexArray	= lum::core::render::detail::IndexArray;
-			using VertexCount	= lum::core::render::detail::VertexCount;
-			using Index			= lum::core::render::Index;
+			using VertexCount	= lum::render::detail::VertexCount;
+			using VertexArray	= lum::render::detail::VertexArray;
+			using IndexArray	= lum::render::detail::IndexArray;
+			using VertexCount	= lum::render::detail::VertexCount;
+			using Index			= lum::render::Index;
 
 		public:
 

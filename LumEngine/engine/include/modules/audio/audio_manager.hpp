@@ -28,19 +28,20 @@ namespace lum {
 
 		class AudioManager {
 
-			using AudioInstance	= detail::AudioInstance;
-			using AudioClip		= detail::AudioClip;
-			using AudioEmitter	= detail::AudioEmitter;
-			using AudioChannel	= detail::AudioChannel;
-			using EntityID		= ecs::EntityID;
-			using FDestructor	= detail::FMODDestructor;
-			using string_view	= std::string_view;
-			using string		= std::string;
+			using AudioEmitterComponent = ecs::components::AudioEmitterComponent;
+			using AudioInstance = detail::AudioInstance;
+			using AudioClip = detail::AudioClip;
+			using AudioEmitter = detail::AudioEmitter;
+			using AudioChannel = detail::AudioChannel;
+			using EntityID = ecs::EntityID;
+			using FDestructor = detail::FMODDestructor;
+			using string_view = std::string_view;
+			using string = std::string;
 
 		public:
 
-			AudioManager	( ecs::EntityManager& m ) : m_entity_manager(m) {}
-			~AudioManager	( ) = default;
+			AudioManager(ecs::EntityManager& ecs_m, ev::EventBus& ev_bus) : m_entity_manager(ecs_m), m_event_bus(ev_bus) {}
+			~AudioManager() = default;
 
 
 			/*! @brief Initializes the audio system.
@@ -49,14 +50,14 @@ namespace lum {
 			*  and optional extra drivers. Must be called before loading or playing sounds.
 			*
 			*  @param maxchannels Maximum number of simultaneous audio channels (default: 512).
-			*  @param flags FMOD initialization flags (default: FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED).
+			*  @param flags FMOD initialization flags (default: RightHanded3D and Vol0BecomesVirtual).
 			*  @param extradrivers Pointer to additional platform-specific drivers (default: nullptr).
 			*
 			*  @thread_safety Call from main thread before any audio operations.
 			*/
 			void Init(
 				unsigned int maxchannels = 512,
-				FMOD_INITFLAGS flags = FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED,
+				AudioInitFlags flags = AudioInitFlags::Normal | AudioInitFlags::RightHanded3D | AudioInitFlags::Default,
 				void* extradrivers = nullptr
 			);
 
@@ -100,7 +101,36 @@ namespace lum {
 			*  @thread_safety Call from main thread or audio-safe thread.
 			*/
 			AudioEmitterWrapper		CreateEmitter( AudioEmitterComponent* );
+
+			/*! @brief Creates an audio emitter.
+			*
+			*  Initializes an emitter that can play sounds in 3D space. The emitter
+			*  can be attached to an entity or used standalone.
+			*
+			*  @param emitterComponent Pointer to the emitter component to initialize.
+			*  @return A wrapper to manipulate the emitter.
+			*
+			*  @thread_safety Call from main thread or audio-safe thread.
+			*/
 			AudioEmitterWrapper		CreateEmitter( Entity );
+
+			void AddClipToEmitter		( EmitterHandle, AudioHandle );
+			void RemoveClipFromEmitter	( EmitterHandle, AudioHandle );
+			void PlayEmitterClip		( EmitterHandle, AudioHandle );
+			void StopEmitterClip		( EmitterHandle, AudioHandle );
+			void SetEmitterClipVolume	( EmitterHandle, AudioHandle, float );
+			void SetEmitterClipPitch	( EmitterHandle, AudioHandle, float );
+			void SetEmitterClipPause	( EmitterHandle, AudioHandle, bool );
+			void SetEmitterClipLoop		( EmitterHandle, AudioHandle, bool );
+			void DestroyEmitter			( EmitterHandle );
+
+			float	GetEmitterClipVolume( EmitterHandle, AudioHandle );
+			float	GetEmitterClipPitch	( EmitterHandle, AudioHandle );
+			bool	GetEmitterClipLooped( EmitterHandle, AudioHandle );
+			bool	GetEmitterClipPaused( EmitterHandle, AudioHandle );
+
+
+			AudioListenerWrapper* GetListener( );
 
 			std::optional<AudioHandle>	GetIDByName	( string_view );
 			bool						NameExists	( string_view );
@@ -117,17 +147,7 @@ namespace lum {
 			/// Private Helpers
 			////////////////////////////////////
 
-			void AddClipToEmitter		( EmitterHandle, AudioHandle );
-			void RemoveClipFromEmitter	( EmitterHandle, AudioHandle );
-			void PlayEmitterClip		( EmitterHandle, AudioHandle );
-			void StopEmitterClip		( EmitterHandle, AudioHandle );
-			void SetEmitterClipVolume	( EmitterHandle, AudioHandle, float );
-			void SetEmitterClipPitch	( EmitterHandle, AudioHandle, float );
-			void SetEmitterClipPause	( EmitterHandle, AudioHandle, bool );
-			void SetEmitterClipLoop		( EmitterHandle, AudioHandle, bool );
-			void DestroyEmitter			( EmitterHandle );
 			void SubscribeEvents		( );
-			AudioListenerWrapper* GetListener	( );
 
 			inline bool ValidateEmitterID( EmitterHandle id ) noexcept {
 
@@ -153,6 +173,7 @@ namespace lum {
 
 			}
 
+			ev::EventBus& m_event_bus;
 			ecs::EntityManager& m_entity_manager;
 
 			cmd::CommandBuffer< cmd::AudioCmd, 100 > m_commands;

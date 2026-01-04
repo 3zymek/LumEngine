@@ -1,6 +1,6 @@
 #include "render/core/renderer.hpp"
 #include "core/core_pch.hpp"
-namespace lum::core {
+namespace lum {
 	namespace render {
 
 		void APIENTRY GLDebugCallback(
@@ -14,12 +14,12 @@ namespace lum::core {
 		)
 		{
 
-			//if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
+			if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
 			LOG_DEBUG(msg);
 
 		}
 
-		void Renderer::Init(RenderInitParams params) {
+		void Renderer::Init(RenderConfig params) {
 
 			if (!glfwInit()) {
 				LOG_ERROR("failed to initialize GLFW");
@@ -85,7 +85,7 @@ namespace lum::core {
 		void Renderer::BeginFrame() {
 
 			glViewport(0, 0, m_window_width, m_window_height);
-			glClearColor(0.1, 0.1, 0.1, 1);
+			glClearColor(0, 0, 0, 1);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glfwPollEvents();
 

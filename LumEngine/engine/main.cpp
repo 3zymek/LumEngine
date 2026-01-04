@@ -3,55 +3,92 @@
 #include "lum_packages/lum_ecs.hpp"
 #include "lum_packages/lum_events.hpp"
 #include "lum_packages/lum_render.hpp"
+#include "input/input_manager.hpp"
 #include "core/logger.hpp"
+#include "../editor/editor.hpp"
 using namespace lum;
 int main() {
 
     Logger::Get().EnableLog(LogSeverity::DEBUG);
     
-    core::render::RenderInitParams params;
+    core::EngineConfiguration cfg;
+
+    cfg.render_config.fullscreen = false;
+    cfg.render_config.height = 1280;
+    cfg.render_config.width = 1920;
+    cfg.render_config.title = "LumEngine Editor";
+
+    core::Engine engine{ cfg };
+    editor::Editor editor{ engine };
+
+    Entity e = engine.GetECSManager().CreateEntity();
+
+    auto& audio = engine.GetAudioManager();
+    audio.LoadSound("01", "test.wav");
+    auto emitter = audio.CreateEmitter(e);
+    emitter.Add("01");
+    emitter.Play("01").SetVolume("01", 0.0);
+
+    editor.Run();
+
+
+
+    /*
+
+    render::RenderConfig params;
     params.width = 1920;
     params.height = 1280;
     params.fullscreen = false;
     params.MSAA_samples = 4;
     params.title = "test";
 
-    core::render::Renderer renderer;
+    render::Renderer renderer;
     renderer.Init(params);
-
     ev::EventBus bus;
     ecs::EntityManager ecs(bus);
-    audio::AudioManager audio_manager(ecs);
+    audio::AudioManager audio_manager(ecs, bus);
     audio_manager.Init();
     audio_manager.LoadSound("audio01", "test.wav");
     audio::AudioSystem audio_system(audio_manager);
 
+    input::SetActiveWindow(renderer.GetWindow());
+
     Entity entity01 = ecs.CreateEntity();
-    entity01.AddComponent<AudioEmitterComponent>();
+    entity01.AddComponent<ecs::components::AudioEmitterComponent>();
+    entity01.AddComponent<ecs::components::TransformComponent>();
     auto emitter = audio_manager.CreateEmitter(entity01);
 
-    emitter.Add("audio01").SetVolume("audio01", 0.01f).Play("audio01");
+    emitter.Add("audio01").SetVolume("audio01", 0.5f).Play("audio01");
     
     render::ShaderManager shaders;
     render::ShaderHandle basic_shader = shaders.CreateShader("basic.vert", "basic.frag");
     render::MeshManager mm;
-    std::vector<core::render::Vertex> vertices = { 
-        { {1, 1, 0}, {1, 1, 1}, {0, 0, 0}, {0, 0} },
-        { {-1, 1, 0}, {1, 1, 1}, {0, 0, 0}, {0, 0} },
-        { {0, -1, 0}, {1, 1, 1}, {0, 0, 0}, {0, 0} }    
+    std::vector<render::Vertex> vertices = { 
+        { {1, 1, 0}, {1, 0, 0}, {0, 0, 0}, {0, 0} },
+        { {-1, 1, 0}, {0, 1, 0}, {0, 0, 0}, {0, 0} },
+        { {0, -1, 0}, {0, 0, 1}, {0, 0, 0}, {0, 0} }    
     };
-    std::vector<core::render::Index> indices = { 0, 1, 2 };
+    std::vector<render::Index> indices = { 0, 1, 2 };
     render::MeshHandle mesh_handle = mm.CreateStaticMesh(vertices, indices);
-
     while (renderer.WindowIsOpen()) {
         renderer.BeginFrame();
 
         bus.PollEvents();
         audio_system.Update();
 
+        if (input::KeyPressedOnce(input::Key::SPACE)) {
+            emitter.SetPaused("audio01", !emitter.GetPaused("audio01"));
+        }
+        if (input::KeyPressedOnce(input::Key::UP)) {
+            emitter.SetVolume("audio01", emitter.GetVolume("audio01") + 0.1);
+        }
+        if (input::KeyPressedOnce(input::Key::DOWN)) {
+            emitter.SetVolume("audio01", emitter.GetVolume("audio01") - 0.1);
+        }
+
         shaders.UseShader(basic_shader);
         mm.DrawMesh<render::StaticMesh>(mesh_handle);
 
         renderer.EndFrame();
-    }
+    }*/
 }
