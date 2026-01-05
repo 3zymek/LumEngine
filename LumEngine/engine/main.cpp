@@ -7,6 +7,7 @@
 #include "core/logger.hpp"
 #include "editor.hpp"
 #include "render/components/c_mesh.hpp"
+#include "audio/components/c_audio_listener.hpp"
 using namespace lum;
 struct Bad {
     LumComponentTag;
@@ -16,11 +17,11 @@ struct Bad {
 
 int main() {
 
-    Logger::Get().EnableLog(LogSeverity::DEBUG);
+    Logger::Get().DisableLog(LogSeverity::DEBUG);
     
     core::EngineConfiguration cfg;
 
-    cfg.render_config.fullscreen = false;
+    cfg.render_config.fullscreen = true;
     cfg.render_config.height = 1280;
     cfg.render_config.width = 1920;
     cfg.render_config.title = "LumEngine Editor";
@@ -32,11 +33,10 @@ int main() {
     e.AddComponent<ecs::components::MeshComponent>();
 
     auto& audio = engine.GetAudioManager();
-    audio.LoadSound("01", "test.wav");
+    audio.LoadSound("01", "test2.wav");
     auto emitter = audio.CreateEmitter(e);
     emitter.Add("01");
-    emitter.Play("01").SetVolume("01", 0.0);
-
+    emitter.Play("01").SetVolume("01", 0.5);
     editor.Run();
 
 

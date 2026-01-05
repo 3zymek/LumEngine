@@ -21,6 +21,18 @@ namespace lum {
 
 			}
 
+			glm::vec3 GetPosition() const {
+				return position;
+			}
+
+			glm::vec3 GetForward() const {
+				return front;
+			}
+
+			glm::vec3 GetUp() const {
+				return up;
+			}
+
 		private:
 
 			void RecalculateCameraDir( ) {
@@ -54,7 +66,8 @@ namespace lum {
 				camDir.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
 
 				front = glm::normalize(camDir);
-				right = glm::normalize(glm::cross(front, up));
+				right = glm::normalize(glm::cross(front, {0, 1, 0}));
+				up = glm::normalize(glm::cross(right, front));
 
 				view = glm::lookAt(position, position + front, up);
 				projection = glm::perspective(glm::radians(fov), aspect_ratio, near_plane, far_plane);

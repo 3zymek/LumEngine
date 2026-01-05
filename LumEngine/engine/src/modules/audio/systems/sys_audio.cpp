@@ -22,6 +22,13 @@ namespace lum {
 						manager.StopEmitterClip(active_clip.emitter_id, active_clip.audio_clip);
 					}
 
+					FMOD_VECTOR transfered_pos = TransferEmitterCoordsToFMOD(emitter.transform->position);
+					FMOD_VECTOR vel = { 0, 0, 0 };
+
+					active_clip.channel->set3DAttributes(
+						&transfered_pos,	// position
+						&vel				// velocity
+					);
 					active_clip.channel->setPaused(clip.paused);
 					active_clip.channel->setVolume(clip.volume);
 					active_clip.channel->setPitch(clip.pitch);
@@ -75,28 +82,42 @@ namespace lum {
 
 			auto* listener = manager.GetListener();
 
-			if (!listener) return;
+			HOTPATH_CHECK_RETURN_0(!listener, "Listener doesn't exists");
+			HOTPATH_CHECK_RETURN_0(!listener->transform_component, "Listener doesn't have transform component");
 
-			if (!listener->transform) return;
+			FMOD_VECTOR transfered_pos = TransferListenerCoordsToFMOD(listener->transform_component->position);
 
-			FMOD_VECTOR transfered_pos = TransferCoordsToFMOD(listener->transform->position);
+			FMOD_VECTOR forward = TransferListenerCoordsToFMOD(listener->listener_component->forward);
+			FMOD_VECTOR up		= TransferListenerCoordsToFMOD(listener->listener_component->up);
+
+			FMOD_VECTOR vel = { 0, 0, 0 };
 
 			manager.m_audio_system->set3DListenerAttributes(
 				0,				// id
 				&transfered_pos,// position
-				nullptr,		// velocity
-				nullptr,		// forward
-				nullptr			// up
+				&vel,		// velocity
+				&forward,		// forward
+				&up				// up
 			);
 
 		}
 
-		FMOD_VECTOR AudioSystem::TransferCoordsToFMOD(const glm::vec3 v) noexcept {
+		FMOD_VECTOR AudioSystem::TransferEmitterCoordsToFMOD(const glm::vec3 v) noexcept {
 
 			FMOD_VECTOR fmodv;
 			fmodv.x = v.x;
 			fmodv.y = v.y;
-			fmodv.z = v.z;
+			fmodv.z = -v.z;
+			return fmodv;
+
+		}
+
+		FMOD_VECTOR AudioSystem::TransferListenerCoordsToFMOD(const glm::vec3 v) noexcept {
+
+			FMOD_VECTOR fmodv;
+			fmodv.x = -v.x;
+			fmodv.y = v.y;
+			fmodv.z = -v.z;
 			return fmodv;
 
 		}

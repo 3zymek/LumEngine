@@ -1,6 +1,10 @@
 #pragma once
 #include "core/engine.hpp"
 #include "editor_camera.hpp"
+#include "entity/entity.hpp"
+#include "entity/components/c_transform.hpp"
+#include "render/components/c_mesh.hpp"
+#include "audio/components/c_audio_listener.hpp"
 namespace lum {
 	namespace editor {
 
@@ -17,8 +21,11 @@ namespace lum {
 
 			void Run() {
 
+				// shadery
 				auto& shaders = engine.GetShaderManager();
 				render::ShaderHandle basic_shader = shaders.CreateShader("basic.vert", "basic.frag");
+
+				// mesh
 				auto& mm = engine.GetMeshManager();
 				std::vector<render::Vertex> vertices = {
 					{ {1, 1, 0}, {1, 0, 0}, {0, 0, 0}, {0, 0} },
@@ -26,10 +33,19 @@ namespace lum {
 					{ {0, -1, 0}, {0, 0, 1}, {0, 0, 0}, {0, 0} }
 				};
 				std::vector<render::Index> indices = { 0, 1, 2 };
-				render::MeshHandle mesh_handle = mm.CreateStaticMesh(vertices, indices);
 
-				glm::vec3 model_pos = { 0, 0, 0 };
-				glm::vec3 model_scale = { 1, 1, 1 };
+				// ecs
+				Entity entity = engine.GetECSManager().CreateEntity();
+				auto* transform = entity.AddComponent<ecs::components::TransformComponent>();
+				auto* mesh = entity.AddComponent<ecs::components::MeshComponent>();
+				mesh->handle = mm.CreateStaticMesh(vertices, indices);
+
+
+				Entity e2 = engine.GetECSManager().CreateEntity();
+				auto* listener = e2.AddComponent<ecs::components::AudioListenerComponent>();
+				auto* camera_pos = e2.AddComponent<ecs::components::TransformComponent>();
+
+				engine.GetAudioManager().CreateListener(e2.GetID());
 
 				while (engine.GetRenderer().WindowIsOpen()) {
 
@@ -37,15 +53,19 @@ namespace lum {
 
 					Update();
 
+					listener->forward	= camera.GetForward();
+					listener->up		= camera.GetUp();
+
+					transform->rotation.x += 0.2;
+					transform->rotation.y += 0.2;
+
+					engine.GetTransformSystem().SetRotation(entity, transform->rotation);
+					camera_pos->position = camera.GetPosition();
 					shaders.UseShader(basic_shader);
+					
+					shaders.SetMatrix4fv(basic_shader, "uModel", transform->model);
 
-					glm::mat4 model = glm::mat4(1);
-					model = glm::translate(model, model_pos);
-					model = glm::scale(model, model_scale);
-					GLuint modelPos = glGetUniformLocation(shaders.GetProgram(basic_shader), "uModel");
-					glUniformMatrix4fv(modelPos, 1, GL_FALSE, glm::value_ptr(model));
-
-					mm.DrawMesh<render::StaticMesh>(mesh_handle);
+					mm.DrawMesh<render::StaticMesh>(mesh->handle);
 					
 					engine.EndFrame();
 

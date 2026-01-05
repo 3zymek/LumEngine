@@ -16,12 +16,11 @@ namespace lum {
 
 			inline void Update() noexcept {
 
+				manager.m_audio_system->update();
 
 				UpdateEmitters();
 
 				UpdateListener();
-
-				manager.m_audio_system->update();
 
 			}
 
@@ -31,7 +30,8 @@ namespace lum {
 			void UpdateEmitterActions() noexcept;
 			void UpdateListener() noexcept;
 
-			FMOD_VECTOR TransferCoordsToFMOD(const glm::vec3) noexcept;
+			FMOD_VECTOR TransferEmitterCoordsToFMOD(const glm::vec3 v) noexcept;
+			FMOD_VECTOR TransferListenerCoordsToFMOD( const glm::vec3 ) noexcept;
 
 		};
 	}

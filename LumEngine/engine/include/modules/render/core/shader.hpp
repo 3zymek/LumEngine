@@ -57,6 +57,20 @@ namespace lum {
 				return shader_handles[handle];
 			}
 
+			void SetMatrix4fv(ShaderHandle handle, std::string_view location, const glm::mat4& matrix) {
+
+				GLint u_location = glGetUniformLocation(shader_handles[handle], location.data());
+				glUniformMatrix4fv(u_location, 1, GL_FALSE, glm::value_ptr(matrix));
+
+			}
+
+			void SetVector3fv(ShaderHandle handle, std::string_view location, const glm::vec3& vector) {
+
+				GLint u_location = glGetUniformLocation(shader_handles[handle], location.data());
+				glUniform3fv(u_location, 1, glm::value_ptr(vector));
+
+			}
+
 			void UseShader(ShaderHandle handle) {
 				glUseProgram(shader_handles[handle]);
 			}
@@ -87,6 +101,16 @@ namespace lum {
 
 			Shader(ShaderManager& mgr, ShaderHandle h) : manager(mgr), handle(h) {}
 
+			void SetMatrix4fv(std::string_view location, const glm::mat4& matrix) {
+
+				manager.SetMatrix4fv(handle, location, matrix);
+
+			}
+			void SetVector3fv(std::string_view location, const glm::vec3& vector) {
+
+				manager.SetVector3fv(handle, location, vector);
+
+			}
 			void Use() const { manager.UseShader(handle); }
 
 

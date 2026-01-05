@@ -34,14 +34,14 @@ namespace lum {
 		class AudioManager {
 
 			using AudioEmitterComponent = ecs::components::AudioEmitterComponent;
-			using AudioInstance = detail::AudioInstance;
-			using AudioClip = detail::AudioClip;
-			using AudioEmitter = detail::AudioEmitter;
-			using AudioChannel = detail::AudioChannel;
-			using EntityID = ecs::EntityID;
-			using FDestructor = detail::FMODDestructor;
-			using string_view = std::string_view;
-			using string = std::string;
+			using AudioInstance			= detail::AudioInstance;
+			using AudioClip				= detail::AudioClip;
+			using AudioEmitter			= detail::AudioEmitter;
+			using AudioChannel			= detail::AudioChannel;
+			using EntityID				= ecs::EntityID;
+			using FDestructor			= detail::FMODDestructor;
+			using string_view			= std::string_view;
+			using string				= std::string;
 
 		public:
 
@@ -62,7 +62,7 @@ namespace lum {
 			*/
 			void Init(
 				unsigned int maxchannels = 512,
-				AudioInitFlags flags = AudioInitFlags::Normal | AudioInitFlags::RightHanded3D | AudioInitFlags::Default,
+				AudioInitFlags flags = AudioInitFlags::Default,
 				void* extradrivers = nullptr
 			);
 
@@ -94,18 +94,6 @@ namespace lum {
 			*/
 			AudioListenerWrapper	CreateListener( EntityID );
 
-
-			/*! @brief Creates an audio emitter.
-			*
-			*  Initializes an emitter that can play sounds in 3D space. The emitter
-			*  can be attached to an entity or used standalone.
-			*
-			*  @param emitterComponent Pointer to the emitter component to initialize.
-			*  @return A wrapper to manipulate the emitter.
-			*
-			*  @thread_safety Call from main thread or audio-safe thread.
-			*/
-			AudioEmitterWrapper		CreateEmitter( AudioEmitterComponent* );
 
 			/*! @brief Creates an audio emitter.
 			*

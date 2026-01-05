@@ -9,6 +9,7 @@
 #include "render/core/mesh_storage.hpp"
 #include "input/input_common.hpp"
 #include "entity/systems/transform_system.hpp"
+#include "entity/entity.hpp"
 namespace lum::core {
 
 	struct EngineConfiguration {
@@ -43,13 +44,14 @@ namespace lum::core {
 		inline bool Running() { return running; }
 
 		[[nodiscard]] inline ev::		EventBus&		GetEventBus		( ) noexcept { return event_bus;	}
-		[[nodiscard]] inline render::	RenderDevice&		GetRenderer		( ) noexcept { return renderer;		}
+		[[nodiscard]] inline render::	RenderDevice&	GetRenderer		( ) noexcept { return renderer;		}
 		[[nodiscard]] inline render::	MeshStorage&	GetMeshManager	( ) noexcept { return mesh_mgr;		}
 		[[nodiscard]] inline render::	ShaderManager&	GetShaderManager( ) noexcept { return shader_mgr;	}
 		[[nodiscard]] inline ecs::		EntityManager&	GetECSManager	( ) noexcept { return ecs_mgr;		}
 		[[nodiscard]] inline audio::	AudioManager&	GetAudioManager	( ) noexcept { return audio_mgr;	}
 		[[nodiscard]] inline core::		SceneManager&	GetSceneManager	( ) noexcept { return scene_mgr;	}
-
+		[[nodiscard]] inline systems::TransformSystem& GetTransformSystem() noexcept { return transform_sys; }
+		
 	private:
 
 		void Init(const EngineConfiguration& cfg) {

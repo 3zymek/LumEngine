@@ -22,9 +22,9 @@ namespace lum {
 		void AudioManager::Init(unsigned int maxchannels, AudioInitFlags flags, void* extradrivers) {
 
 			FMOD::System* sys = nullptr;
-
+			static_cast<FMOD_INITFLAGS>(flags);
 			FMOD::System_Create(&sys);
-			sys->init(maxchannels, static_cast<FMOD_INITFLAGS>(flags), extradrivers);
+			sys->init(maxchannels, FMOD_INIT_3D_RIGHTHANDED, extradrivers);
 
 			if (!sys) {
 				LOG_INIT_FAIL("Audio manager initialization");
@@ -35,8 +35,6 @@ namespace lum {
 
 			m_audio_system.reset(sys);
 			SubscribeEvents();
-
-
 
 		}
 
@@ -77,28 +75,14 @@ namespace lum {
 
 				m_listener = std::make_unique<AudioListenerWrapper>(entityID);
 
-				m_listener->SetRawTransform(
-					m_entity_manager.GetComponent<ecs::components::TransformComponent>(entityID)
-				);
+				m_listener->transform_component	= m_entity_manager.GetComponent<ecs::components::TransformComponent>(entityID);
+				m_listener->listener_component	= m_entity_manager.GetComponent<ecs::components::AudioListenerComponent>(entityID);
 
 				LOG_INFO("Audio Listener created");
 
 			}
 
 			return *m_listener;
-		}
-		AudioEmitterWrapper		AudioManager::CreateEmitter(AudioEmitterComponent* component) {
-
-			auto id = GenerateID<EmitterHandle, detail::EMITTER_ID_NULL>::Get();
-			component->emitterID = id;
-			detail::AudioEmitter emitter;
-			AudioEmitterWrapper wrapper(*this, id);
-
-			m_emitters.emplace(emitter, id);
-
-			LOG_INFO("Audio Emitter created");
-
-			return wrapper;
 		}
 		AudioEmitterWrapper		AudioManager::CreateEmitter(Entity entity) {
 
@@ -108,6 +92,7 @@ namespace lum {
 			auto id = GenerateID<EmitterHandle, detail::EMITTER_ID_NULL>::Get();
 			entity.GetComponent<AudioEmitterComponent>()->emitterID = id;
 			detail::AudioEmitter emitter;
+			emitter.transform = m_entity_manager.GetComponent<ecs::components::TransformComponent>(entity.GetID());
 			AudioEmitterWrapper wrapper(*this, id);
 
 			m_emitters.emplace(emitter, id);
@@ -182,12 +167,12 @@ namespace lum {
 				return;
 			}
 
-
 			for (auto& active_clip : emitter.active_clips) {
 				if (active_clip.audio_clip == audioID) {
 					active_clip.channel->stop();
 					std::swap(emitter.active_clips.back(), active_clip);
 					emitter.active_clips.pop_back();
+					emitter.transform = nullptr;
 				}
 			}
 
