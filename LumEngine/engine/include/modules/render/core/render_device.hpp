@@ -23,18 +23,19 @@ namespace lum {
 
 		public:
 
-			RenderDevice() {}
+			RenderDevice( ) {}
 
-			void Init(RenderConfig);
-			void BeginFrame();
-			void EndFrame();
-			double GetAspectRatio() { return double(m_window_width) / double(m_window_height); }
-			bool WindowIsOpen();
-			inline GLFWwindow* GetWindow() { return m_window.get(); }
+			void Init			( RenderConfig );
+			void BeginFrame		( );
+			void EndFrame		( );
+			bool WindowIsOpen	( );
+
+			inline double GetAspectRatio( ) { return to_d(m_window_width) / to_d(m_window_height); }
+			inline GLFWwindow* GetWindow( ) { return m_window.get(); }
 
 		private:
 
-			unsigned int m_window_width = 0, m_window_height = 0;
+			unsigned int	m_window_width = 0, m_window_height = 0;
 			GLFWWindowPtr	m_window = nullptr;
 
 		};

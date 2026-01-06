@@ -50,7 +50,8 @@ namespace lum::core {
 		[[nodiscard]] inline ecs::		EntityManager&	GetECSManager	( ) noexcept { return ecs_mgr;		}
 		[[nodiscard]] inline audio::	AudioManager&	GetAudioManager	( ) noexcept { return audio_mgr;	}
 		[[nodiscard]] inline core::		SceneManager&	GetSceneManager	( ) noexcept { return scene_mgr;	}
-		[[nodiscard]] inline systems::TransformSystem& GetTransformSystem() noexcept { return transform_sys; }
+		[[nodiscard]] inline systems::	TransformSystem&	GetTransformSystem	( ) noexcept { return transform_sys;	}
+		[[nodiscard]] inline systems::	AudioSystem&		GetAudioSystem		( ) noexcept { return audio_sys;		}
 		
 	private:
 
@@ -58,7 +59,8 @@ namespace lum::core {
 
 			renderer.Init(cfg.render_config);
 			audio_mgr.Init();
-
+			shader_mgr.Init();
+			
 			input::SetActiveWindow(renderer.GetWindow());
 
 		}

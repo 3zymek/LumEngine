@@ -65,9 +65,9 @@ namespace lum {
 				camDir.y = glm::sin(glm::radians(pitch));
 				camDir.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
 
-				front = glm::normalize(camDir);
-				right = glm::normalize(glm::cross(front, {0, 1, 0}));
-				up = glm::normalize(glm::cross(right, front));
+				front	= glm::normalize(camDir);
+				right	= glm::normalize(glm::cross(front, {0, 1, 0}));
+				up		= glm::normalize(glm::cross(right, front));
 
 				view = glm::lookAt(position, position + front, up);
 				projection = glm::perspective(glm::radians(fov), aspect_ratio, near_plane, far_plane);

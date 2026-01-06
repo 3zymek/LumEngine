@@ -3,16 +3,74 @@
 namespace lum {
 	// GLOBAL ALIAS
 
-	using Bit = uint64_t;
+	// Type for bits in lumengine
+	using Bit = uint32_t;
 
+	/// Generates ID for any type
+	/// @tparam T object Type to generate an ID
+	/// @tparam NULL_VAL Null value for ID's
 	template<typename T, int NULL_VAL>
 	struct GenerateID {
-		inline static T Get() {
+		inline static uint64_t Get() {
 			return globalID++;
 		}
 	private:
-		inline static T globalID = NULL_VAL + 1;
+		inline static uint64_t globalID = NULL_VAL + 1;
 	};
+	
+	/// Converts any arithmetic type to float at compile-time.
+	/// @param value The numeric value to cast.
+	/// @return The value casted to float.
+	template<typename T>
+		requires std::is_arithmetic_v<T>
+	constexpr float to_f(T value) { return static_cast<float>(value); }
+
+	/// Converts any arithmetic type to unsigned int at compile-time.
+	/// @param value The numeric value to cast.
+	/// @return The value casted to unsigned int.
+	template<typename T>
+		requires std::is_arithmetic_v<T>
+	constexpr float to_u(T value) { return static_cast<unsigned int>(value); }
+
+	/// Converts any arithmetic type to uint32_t at compile-time.
+	/// @param value The numeric value to cast.
+	/// @return The value casted to uint32_t.
+	template<typename T>
+		requires std::is_arithmetic_v<T>
+	constexpr float to_u32(T value) { return static_cast<uint32_t>(value); }
+
+	/// Converts any arithmetic type to uint64_t at compile-time.
+	/// @param value The numeric value to cast.
+	/// @return The value casted to uint64_t.
+	template<typename T>
+		requires std::is_arithmetic_v<T>
+	constexpr float to_u64(T value) { return static_cast<uint64_t>(value); }
+
+	/// Converts any arithmetic type to double at compile-time.
+	/// @param value The numeric value to cast.
+	/// @return The value casted to double.
+	template<typename T>
+		requires std::is_arithmetic_v<T>
+	constexpr float to_d(T value) { return static_cast<double>(value); }
+
+	/// Converts any arithmetic type to int at compile-time.
+	/// @param value The numeric value to cast.
+	/// @return The value casted to int.
+	template<typename T>
+		requires std::is_arithmetic_v<T>
+	constexpr float to_i(T value) { return static_cast<int>(value); }
+
+	/// Calculates linear interpolation in time
+	/// @tparam T Arithmetic type of calculations
+	/// @param a First value
+	/// @param b Second value
+	/// @param t Time
+	template<typename T>
+		requires std::is_arithmetic_v<T>
+	constexpr T lerp(T a, T b, float t) {
+		return a + (b - a) * t;
+	}
+
 
 	namespace settings {
 
@@ -20,8 +78,8 @@ namespace lum {
 		// ECS
 
 		// Defines how much memory needs to be reserved for components
-		inline constexpr size_t ECS_MAX_POOL_CAPACITY	= 1000000;
-		inline constexpr size_t ECS_MAX_ENTITY_COUNT	= 1000000;
+		inline constexpr size_t ECS_MAX_POOL_CAPACITY	= 1024;
+		inline constexpr size_t ECS_MAX_ENTITY_COUNT	= 1024;
 
 		// Defines how much containers needs to be reserved for components
 		inline constexpr size_t ECS_MAX_COMPONENT_TYPES_COUNT = 32;
@@ -33,8 +91,8 @@ namespace lum {
 		// Audio
 
 		// Defines how much memory needs to be reserved for audio
-		inline constexpr size_t AUDIO_MAX_SOUNDS_COUNT		= 1024;
-		inline constexpr size_t AUDIO_MAX_CHANNELS_COUNT	= 1024;
+		inline constexpr size_t AUDIO_MAX_SOUNDS_COUNT		= 256;
+		inline constexpr size_t AUDIO_MAX_CHANNELS_COUNT	= 256;
 
 		////////////////////////////////////////////////////////////////////////
 
@@ -44,13 +102,13 @@ namespace lum {
 
 		// Defines how much memory needs to be reserved for pools
 
-		inline constexpr size_t EVENT_MAX_EVENT_TYPES = 20;
+		inline constexpr size_t EVENT_MAX_EVENT_TYPES = 32;
 
 		// All settings under are for single event type
 
-		inline constexpr size_t EVENT_MAX_CALLBACKS_PER_FRAME	= 10;
-		inline constexpr size_t EVENT_MAX_PERMAMENT_CALLBACKS	= 10;
-		inline constexpr size_t EVENT_MAX_EMITTS_PER_FRAME		= 50;
+		inline constexpr size_t EVENT_MAX_CALLBACKS_PER_FRAME	= 8;
+		inline constexpr size_t EVENT_MAX_PERMAMENT_CALLBACKS	= 8;
+		inline constexpr size_t EVENT_MAX_EMITTS_PER_FRAME		= 64;
 
 		////////////////////////////////////////////////////////////////////////
 

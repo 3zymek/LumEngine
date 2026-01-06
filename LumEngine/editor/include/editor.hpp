@@ -23,7 +23,6 @@ namespace lum {
 
 				// shadery
 				auto& shaders = engine.GetShaderManager();
-				render::ShaderHandle basic_shader = shaders.CreateShader("basic.vert", "basic.frag");
 
 				// mesh
 				auto& mm = engine.GetMeshManager();
@@ -61,9 +60,9 @@ namespace lum {
 
 					engine.GetTransformSystem().SetRotation(entity, transform->rotation);
 					camera_pos->position = camera.GetPosition();
-					shaders.UseShader(basic_shader);
+					shaders.basic_shader.Bind();
 					
-					shaders.SetMatrix4fv(basic_shader, "uModel", transform->model);
+					glUniformMatrix4fv(shaders.basic_shader.uniforms.uModel, 1, GL_FALSE, glm::value_ptr(transform->model));
 
 					mm.DrawMesh<render::StaticMesh>(mesh->handle);
 					
@@ -75,7 +74,7 @@ namespace lum {
 		private:
 
 			core::Engine& engine;
-			EditorCamera camera{ (float)engine.GetRenderer().GetAspectRatio() };
+			EditorCamera camera{ to_f(engine.GetRenderer().GetAspectRatio()) };
 
 		};
 	}

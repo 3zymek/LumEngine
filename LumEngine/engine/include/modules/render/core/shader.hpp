@@ -4,6 +4,7 @@
 #include "core/utils/handle_pool.hpp"
 #include "core/asset_service.hpp"
 #include "render/render_pch.hpp"
+#include "core/utils/string_hasher.hpp"
 namespace lum {
 	namespace render {
 
@@ -21,105 +22,108 @@ namespace lum {
 
 		};
 
+		enum class ShaderType {
+			Basic
+		};
+
+		class BasicShader {
+		public:
+			
+			GLuint program;
+
+			struct Uniforms {
+				GLint uModel;
+			} uniforms;
+
+			void Bind() const {
+				glUseProgram(program);
+			}
+
+		};
+
+		struct PerObjectUniforms {
+			GLuint uModel;
+		};
+
+		struct ShaderUniforms {
+			PerObjectUniforms object;
+		};
+
 		class ShaderManager {
 		public:
 
-			[[nodiscard]] ShaderHandle CreateShader(std::string vert_file_name, std::string frag_file_name) {
+			BasicShader basic_shader;
 
-				std::string vert_file = lum::AssetService::LoadShader(vert_file_name);
-				std::string frag_file = lum::AssetService::LoadShader(frag_file_name);
+			[[nodiscard]] ShaderHandle CreateShader(std::string_view, std::string_view);
 
+			GLuint GetProgram(ShaderHandle handle) {
+				return m_shader_handles[handle];
+			}
+
+			void SetMatrix4fv(ShaderHandle handle, std::string_view location, const glm::mat4& matrix);
+
+			void SetVector3fv(ShaderHandle handle, std::string_view location, const glm::vec3& vector);
+
+			void Init() {
+				CreateBasicShader();
+				LOG_INIT_OK("Shader manager initialization");
+			}
+
+		private:
+
+			void CreateBasicShader() {
+
+				GLuint vert_shader = CreateVertexShader("basic.vert");
+				GLuint frag_shader = CreateFragmentShader("basic.frag");
+
+				basic_shader.program = glCreateProgram();
+
+				glAttachShader(basic_shader.program, vert_shader);
+				glAttachShader(basic_shader.program, frag_shader);
+				LinkProgram(basic_shader.program);
+
+				glDeleteShader(vert_shader);
+				glDeleteShader(frag_shader);
+
+				basic_shader.Bind();
+
+				basic_shader.uniforms.uModel = glGetUniformLocation(basic_shader.program, "uModel");
+
+			}
+			
+			void LinkProgram(GLuint program);
+			void CompileShader(GLuint shader);
+
+			GLuint CreateVertexShader(std::string file) {
+
+				std::string vert_file = lum::AssetService::LoadShader(file);
 				const char* vert_c_str = vert_file.c_str();
-				const char* frag_c_str = frag_file.c_str();
 
 				GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
 				glShaderSource(vert_shader, 1, &vert_c_str, nullptr);
 				CompileShader(vert_shader);
 
+				return vert_shader;
+
+			}
+
+			GLuint CreateFragmentShader(std::string file) {
+
+				std::string frag_file = lum::AssetService::LoadShader(file);
+				const char* frag_c_str = frag_file.c_str();
+
 				GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 				glShaderSource(frag_shader, 1, &frag_c_str, nullptr);
 				CompileShader(frag_shader);
 
-				GLuint shader_program = glCreateProgram();
-
-				glAttachShader(shader_program, vert_shader);
-				glAttachShader(shader_program, frag_shader);
-				glLinkProgram(shader_program);
-
-				glDeleteShader(vert_shader);
-				glDeleteShader(frag_shader);
-
-				return shader_handles.CreateHandle(shader_program);
+				return frag_shader;
 
 			}
 
-			GLuint GetProgram(ShaderHandle handle) {
-				return shader_handles[handle];
-			}
-
-			void SetMatrix4fv(ShaderHandle handle, std::string_view location, const glm::mat4& matrix) {
-
-				GLint u_location = glGetUniformLocation(shader_handles[handle], location.data());
-				glUniformMatrix4fv(u_location, 1, GL_FALSE, glm::value_ptr(matrix));
-
-			}
-
-			void SetVector3fv(ShaderHandle handle, std::string_view location, const glm::vec3& vector) {
-
-				GLint u_location = glGetUniformLocation(shader_handles[handle], location.data());
-				glUniform3fv(u_location, 1, glm::value_ptr(vector));
-
-			}
-
-			void UseShader(ShaderHandle handle) {
-				glUseProgram(shader_handles[handle]);
-			}
-
-
-		private:
-
-			void CompileShader(GLuint& shader) {
-
-				glCompileShader(shader);
-
-				GLint success;
-				GLchar buff[2048];
-				glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-				if (!success) {
-					glGetShaderInfoLog(shader, sizeof(buff), nullptr, buff);
-					LOG_ERROR(buff);
-				}
-
-			}
-
-
-			cstd::handle_pool<GLuint, ShaderHandle> shader_handles{ 10 };
+			cstd::handle_pool<GLuint, ShaderHandle> m_shader_handles{ 10 };
 
 		};
 
-		struct Shader {
-
-			Shader(ShaderManager& mgr, ShaderHandle h) : manager(mgr), handle(h) {}
-
-			void SetMatrix4fv(std::string_view location, const glm::mat4& matrix) {
-
-				manager.SetMatrix4fv(handle, location, matrix);
-
-			}
-			void SetVector3fv(std::string_view location, const glm::vec3& vector) {
-
-				manager.SetVector3fv(handle, location, vector);
-
-			}
-			void Use() const { manager.UseShader(handle); }
-
-
-		private:
-
-			ShaderManager& manager;
-			ShaderHandle handle;
-
-		};
 
 	}
 }

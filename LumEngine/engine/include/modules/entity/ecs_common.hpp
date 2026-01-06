@@ -26,16 +26,6 @@ namespace lum {
 
             using ComponentTID = uint32_t;
 
-            struct GenerateEntityID {
-                static EntityID Get() {
-                    static EntityID globalID = 0;
-                    return globalID++;
-                }
-            private:
-                GenerateEntityID() {}
-            };
-
-
             struct ComponentTypeID {
                 template<Component ComponentType>
                 static ComponentTID Get() {

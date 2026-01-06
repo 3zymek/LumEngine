@@ -95,7 +95,7 @@ namespace lum {
 			manager.m_audio_system->set3DListenerAttributes(
 				0,				// id
 				&transfered_pos,// position
-				&vel,		// velocity
+				&vel,			// velocity
 				&forward,		// forward
 				&up				// up
 			);

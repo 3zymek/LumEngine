@@ -4,9 +4,9 @@
 namespace lum::ecs::components {
 	struct MeshComponent {
 
-		LumComponentTag;
-
 		render::MeshHandle handle;
+
+		LumComponentTag;
 
 	};
 }

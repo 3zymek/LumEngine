@@ -80,7 +80,6 @@ namespace lum {
 			glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, uv)));
 			glEnableVertexAttribArray(3);
 
-
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices_amount * sizeof(Index), indices.data(), GL_STATIC_DRAW);
 

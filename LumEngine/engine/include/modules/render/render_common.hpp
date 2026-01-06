@@ -83,7 +83,7 @@ namespace lum {
 
 			// Render
 
-			RenderMode render_mode;
+			RenderMode render_mode{};
 			unsigned int MSAA_samples = 1;
 			bool vSync = false;
 

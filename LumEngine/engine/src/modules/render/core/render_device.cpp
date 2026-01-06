@@ -15,7 +15,12 @@ namespace lum {
 		{
 
 			if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
-			LOG_DEBUG(msg);
+			if(severity == GL_DEBUG_SEVERITY_LOW)
+				LOG_INFO(msg);
+			if (severity == GL_DEBUG_SEVERITY_MEDIUM)
+				LOG_WARN(msg);
+			if (severity == GL_DEBUG_SEVERITY_HIGH)
+				LOG_FATAL(msg);
 
 		}
 
