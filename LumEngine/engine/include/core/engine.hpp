@@ -7,7 +7,7 @@
 #include "render/core/render_device.hpp"
 #include "core/scene_manager.hpp"
 #include "render/core/mesh_storage.hpp"
-#include "input/input_common.hpp"
+#include "window_context/input_common.hpp"
 #include "entity/systems/transform_system.hpp"
 #include "entity/entity.hpp"
 namespace lum::core {

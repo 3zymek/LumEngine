@@ -1,5 +1,6 @@
 #pragma once
-#include "core/core_pch.hpp"
+#include <iostream>
+#include <vector>
 namespace cstd {
 	template<typename DenseType, typename HandleType>
 	class handle_pool {
@@ -12,7 +13,7 @@ namespace cstd {
 		using iterator = typename std::vector<DenseType>::iterator;
 		using const_iterator = typename std::vector<DenseType>::const_iterator;
 
-		static constexpr Hsize_t NULL_HANDLE = std::numeric_limits<Hsize_t>::max();
+		static constexpr SparseType NULL_HANDLE = std::numeric_limits<SparseType>::max();
 
 	public:
 
@@ -42,13 +43,13 @@ namespace cstd {
 				m_free_slots.pop_back();
 			}
 			else
-				slot = nextSlot++;
+				slot = static_cast<Slot>(nextSlot++);
 
 			m_dense.push_back(obj);
 
 			Hsize_t lastDense = m_dense.size() - 1;
 
-			m_sparse[slot] = lastDense;
+			m_sparse[slot] = static_cast<SparseType>(lastDense);
 			m_dense_to_sparse[lastDense] = slot;
 
 			HandleType handle;
@@ -60,7 +61,7 @@ namespace cstd {
 		}
 
 		void DeleteHandle(const HandleType& handle) {
-			Slot slot = handle.id;
+			Slot slot = static_cast<Slot>(handle.id);
 			if (slot >= m_sparse.size()) return;
 			if (m_generations[slot] != handle.generation) return;
 
@@ -72,8 +73,8 @@ namespace cstd {
 				std::swap(m_dense[denseIndex], m_dense[lastIndex]);
 
 				Slot movedSlot = m_dense_to_sparse[lastIndex];
-				m_sparse[movedSlot] = denseIndex;
-				m_dense_to_sparse[denseIndex] = movedSlot;
+				m_sparse[movedSlot] = static_cast<SparseType>(denseIndex);
+				m_dense_to_sparse[denseIndex] = static_cast<SparseType>(movedSlot);
 
 
 			}
@@ -107,7 +108,6 @@ namespace cstd {
 				return &m_dense[m_sparse[handle.id]];
 			else
 				return nullptr;
-
 		}
 
 	private:
