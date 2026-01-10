@@ -29,20 +29,23 @@ namespace lum {
 	}
 
 	///  OpenGL window
-	unsigned int OpenGL_Window::GetWidth() {
+	unsigned int OpenGL_Window::GetWidth( ) {
 		return width;
 	}
-	unsigned int OpenGL_Window::GetHeight() {
+	unsigned int OpenGL_Window::GetHeight( ) {
 		return height;
 	}
-	void* OpenGL_Window::GetNativeWindow() {
+	void* OpenGL_Window::GetNativeWindow( ) {
 		return m_window;
 	}
-	bool OpenGL_Window::IsOpen() {
+	bool OpenGL_Window::IsOpen( ) {
 		return !glfwWindowShouldClose(m_window);
 	}
+	RenderBackend OpenGL_Window::GetBackend( ) {
+		return backend;
+	}
 
-	void OpenGL_Window::Init(const WindowDescriptor& desc) {
+	void OpenGL_Window::Init( const WindowDescriptor& desc ) {
 
 		if (!glfwInit()) {
 			LOG_FATAL("Failed to initialize GLFW");
@@ -83,10 +86,12 @@ namespace lum {
 		glDebugMessageCallback(rhi::detail::GLDebugCallback, nullptr);
 #endif
 
+		backend = RenderBackend::OpenGL;
+
 	}
 
 
-	Window* CreateWindow(const WindowDescriptor& desc) {
+	Window* CreateWindow( const WindowDescriptor& desc ) {
 		switch (desc.render) {
 		case RenderBackend::OpenGL: return new OpenGL_Window(desc);
 		}

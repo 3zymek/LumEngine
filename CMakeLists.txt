@@ -24,7 +24,7 @@ source_group(TREE ${CMAKE_SOURCE_DIR}/lumengine FILES ${ENGINE_CPP} ${ENGINE_C} 
 
 target_precompile_headers(LumEngine PRIVATE ${CMAKE_SOURCE_DIR}/lumengine/engine/include/core/core_pch.hpp)
 target_precompile_headers(LumEngine PRIVATE ${CMAKE_SOURCE_DIR}/lumengine/engine/include/modules/audio/audio_pch.hpp)
-target_precompile_headers(LumEngine PRIVATE ${CMAKE_SOURCE_DIR}/lumengine/engine/include/modules/render/render_pch.hpp)
+target_precompile_headers(LumEngine PRIVATE ${CMAKE_SOURCE_DIR}/lumengine/engine/include/modules/rhi/rhi_pch.hpp)
 
 target_include_directories(LumEngine PRIVATE
     "${CMAKE_SOURCE_DIR}/lumengine/editor/include"

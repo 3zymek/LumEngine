@@ -6,10 +6,11 @@
 #include "window_context/input_common.hpp"
 #include "core/logger.hpp"
 #include "editor.hpp"
-#include "render/components/c_mesh.hpp"
 #include "audio/components/c_audio_listener.hpp"
 #include "window_context/window.hpp"
+#include "rhi/core/rhi_device.hpp"
 using namespace lum;
+using namespace lum::rhi;
 struct Bad {
     LumComponentTag;
     uint32_t id;
@@ -18,18 +19,30 @@ struct Bad {
 
 int main() {
 
-    Logger::Get().EnableLog(LogSeverity::DEBUG);
+    Logger::Get().EnableLog(LogSeverity::ALL);
     
     WindowDescriptor desc;
     auto* window = CreateWindow(desc);
+    auto* device = rhi::CreateDevice(window);
+
+    std::vector<Vertex> verts = {
+        {{1,1,0}, {1,0,0}},
+        {{-1,1,0}, {0,1,0}},
+        {{0, -1, 0}, {0,0,1}}
+    };
+
+    rhi::RHI_BufferDescriptor bdesc{
+        .size = verts.size() * sizeof(Vertex),
+        .flags = flags::Dynamic | flags::Vertex_Buffer | flags::Map_Write | flags::Map_Read
+    };
+    auto vbo = device->CreateBuffer(bdesc);
+
+    device->UpdateBuffer(vbo, verts.data(), 0, 0, flags::Map_Read);
 
     while (window->IsOpen()) {
+        device->BeginFrame();
 
-        glClear(GL_COLOR_BUFFER_BIT);
-        glfwPollEvents();
-
-        glfwSwapBuffers(static_cast<GLFWwindow*>(window->GetNativeWindow()));
-
+        device->EndFrame();
     }
 
     /*

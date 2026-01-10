@@ -1,8 +1,8 @@
 #pragma once
 #include "core/core_pch.hpp"
-#include "render/essentials/uniform_buffer.hpp"
 #include "glad/glad.h"
 #include "glfw3.h"
+/*
 namespace lum {
 	namespace editor {
 
@@ -111,6 +111,6 @@ namespace lum {
 
 		};
 	}
-}
+}*/
 
 

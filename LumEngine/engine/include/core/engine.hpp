@@ -4,17 +4,14 @@
 #include "audio/audio_system.hpp"
 #include "event/event_bus.hpp"
 #include "entity/ecs_manager.hpp"
-#include "render/core/render_device.hpp"
 #include "core/scene_manager.hpp"
-#include "render/core/mesh_storage.hpp"
 #include "window_context/input_common.hpp"
 #include "entity/systems/transform_system.hpp"
 #include "entity/entity.hpp"
+/*
 namespace lum::core {
 
 	struct EngineConfiguration {
-
-		render::RenderConfig	render_config;
 
 	};
 
@@ -82,4 +79,4 @@ namespace lum::core {
 		bool running = true;
 
 	};
-}
+}*/

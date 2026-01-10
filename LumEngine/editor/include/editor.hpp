@@ -3,8 +3,8 @@
 #include "editor_camera.hpp"
 #include "entity/entity.hpp"
 #include "entity/components/c_transform.hpp"
-#include "render/components/c_mesh.hpp"
 #include "audio/components/c_audio_listener.hpp"
+/*
 namespace lum {
 	namespace editor {
 
@@ -78,4 +78,4 @@ namespace lum {
 
 		};
 	}
-}
+}*/
