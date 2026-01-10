@@ -31,6 +31,9 @@
     #define HOTPATH_ASSERT_0(expr, msg) \
         do { if (expr) { LOG_WARN(msg); return 0; } } while (0)
 
+    #define HOTPATH_ASSERT_CUSTOM(expr, msg, retival) \
+        do { if(expr) { LOG_WARN(msg); return retival; } } while(0)
+
 #else
     #define HOTPATH_CHECK(expr, msg) ((void)0)
     #define HOTPATH_CHECK_RETURN(expr, msg) ((void)0)

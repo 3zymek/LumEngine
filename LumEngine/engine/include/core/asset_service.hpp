@@ -19,26 +19,11 @@ namespace lum {
 	class AssetService {
 	public:
 
-		static std::string LoadShader(std::string_view file_name) {
-			auto file = shader_path / file_name;
-			if (!detail::fs::exists(file)) {
-				LOG_ERROR(std::format("Couldn't localize shader file named {}", file_name.data()));
-				return "";
-			}
-
-			std::ifstream loaded_file;
-			loaded_file.open(file);
-			std::stringstream ss;
-			ss << loaded_file.rdbuf();
-
-			return ss.str();
-		}
-
 		static void LoadTexture(std::string_view file_name) {
 
 		}
 		
-		static std::string LoadAudio(std::string_view file_name) {
+		inline static std::string LoadAudio(std::string_view file_name) {
 			auto file = audio_path / file_name;
 			if (!detail::fs::exists(file)) {
 				LOG_ERROR(std::format("Couldn't localize audio file named {}", file_name.data()));
@@ -46,6 +31,25 @@ namespace lum {
 			}
 
 			return file.lexically_normal().string();
+		}
+
+		static inline std::string LoadShader(std::string_view file_name) {
+			auto file = (shader_path / file_name).lexically_normal().string();
+			if (!detail::fs::exists(file)) {
+				LOG_ERROR(std::format("Couldn't localize shader file named {}", file_name.data()));
+				return "";
+			}
+
+			std::ifstream loaded_file(file);
+			if (!loaded_file.is_open()) {
+				LOG_ERROR(std::format("Couldn't open shader file named {}", file_name.data()));
+				return "";
+			}
+
+			std::stringstream ss;
+			ss << loaded_file.rdbuf();
+			
+			return ss.str();
 		}
 
 	private:

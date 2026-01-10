@@ -71,6 +71,13 @@ namespace lum {
 		return a + (b - a) * t;
 	}
 
+	/// Returns max value of arithmetic type.
+	/// @tparam Arithmetic type.
+	template<typename T>
+	requires std::is_arithmetic_v<T>
+	constexpr T max_val() {
+		return std::numeric_limits<T>::max();
+	}
 
 	namespace settings {
 

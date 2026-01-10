@@ -9,6 +9,8 @@
 #include "audio/components/c_audio_listener.hpp"
 #include "window_context/window.hpp"
 #include "rhi/core/rhi_device.hpp"
+#include "core/asset_service.hpp"
+#include "rhi/rhi_common.hpp"
 using namespace lum;
 using namespace lum::rhi;
 struct Bad {
@@ -23,7 +25,7 @@ int main() {
     
     WindowDescriptor desc;
     auto* window = CreateWindow(desc);
-    auto* device = rhi::CreateDevice(window);
+    auto* device = CreateDevice(window);
 
     std::vector<Vertex> verts = {
         {{1,1,0}, {1,0,0}},
@@ -31,16 +33,48 @@ int main() {
         {{0, -1, 0}, {0,0,1}}
     };
 
-    rhi::RHI_BufferDescriptor bdesc{
+    rhi::BufferDescriptor bdesc{
         .size = verts.size() * sizeof(Vertex),
-        .flags = flags::Dynamic | flags::Vertex_Buffer | flags::Map_Write | flags::Map_Read
+        .buffer_type = BufferType::Vertex,
+        .buffer_usage = BufferUsage::Dynamic,
+        .map_flags = map_flags::Write
     };
     auto vbo = device->CreateBuffer(bdesc);
 
-    device->UpdateBuffer(vbo, verts.data(), 0, 0, flags::Map_Read);
+    void* ptr = device->MapBuffer(vbo, 0, 0, map_flags::Write);
+
+    std::memcpy(ptr, verts.data(), verts.size() * sizeof(Vertex));
+
+    device->UnmapBuffer(vbo);
+
+    std::vector<VertexAttribute> attrib(2);
+    auto& pos = attrib[0];
+    pos.binding = 0;
+    pos.format = format::Float3;
+    pos.offset = 0;
+    pos.relative_offset = offsetof(Vertex, position);
+    pos.shader_location = 0;
+
+    auto& color = attrib[1];
+    color.binding = 0;
+    color.format = format::Float3;
+    color.offset = 0;
+    color.relative_offset = offsetof(Vertex, color);
+    color.shader_location = 1;
+
+    VertexLayoutDescriptor vdesc;
+    vdesc.stride = sizeof(Vertex);
+    vdesc.attributes = attrib;
+
+    auto vao = device->CreateVertexLayout(vdesc, vbo);
+
+    auto shader = device->CreateShader({ "basic.vert", "basic.frag" });
 
     while (window->IsOpen()) {
         device->BeginFrame();
+
+        device->BindShader(shader);
+        device->Draw(vao, 3);
 
         device->EndFrame();
     }
