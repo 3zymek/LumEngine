@@ -12,32 +12,122 @@ namespace lum::rhi {
 	class RHI_Device {
 	public:
 
-		virtual void BeginFrame	( ) = 0;
-		virtual void EndFrame	( ) = 0;
+		///////////////////////////////////////////////////
+		/// Buffers
+		///////////////////////////////////////////////////
+
+		/*! @brief Creates Vertex buffer (VBO).
+		* 
+		*  @param desc BufferDescriptor of VBO (containing size, flags, usage and data).
+		*  @return Handle to the buffer.
+		* 
+		*/
+		virtual BufferHandle CreateVertexBuffer( const BufferDescriptor& desc ) = 0;
+		/*! @brief Creates Element buffer (EBO).
+		*
+		*  @param desc BufferDescriptor of EBO (containing size, flags, usage and data).
+		*  @return Handle to the buffer.
+		* 
+		*/
+		virtual BufferHandle CreateElementBuffer( const BufferDescriptor& desc ) = 0;
+		/*! @brief Creates Uniform buffer (UBO).
+		*
+		*  @param desc BufferDescriptor of UBO (containing size, flags, usage and data).
+		*  @return Handle to the buffer.
+		* 
+		*/
+		virtual BufferHandle CreateUniformBuffer( const BufferDescriptor& desc ) = 0;
+		/*! @brief Updates data of given buffer.
+		*
+		*  @param buff Buffer handle to update.  
+		*  @param data Pointer to source data in CPU memeory.
+		*  @param offset Byte offset from the beginning of the buffer (0 for whole buffer).
+		*  @param size Byte size of data to write (0 for whole buffer).
+		* 
+		*/
+		virtual void UpdateBuffer( BufferHandle buff, const void* data, size_t offset = 0, size_t size = 0 )	= 0;
+		/*! @brief Deletes the buffer.
+		*
+		*  @param buff Buffer handle to update.
+		*
+		*/
+		virtual void DeleteBuffer( BufferHandle& buff ) = 0;
+		/*! @brief Maps data of given buffer.
+		*
+		*  @param buff Buffer handle to map.
+		*  @param flags Mapping flags (example: rhi::map_flags::Write).
+		*  @param offset Byte offset from the beginning of the buffer to map (0 for whole buffer).
+		*  @param size Byte size of data to map (0 for whole buffer).
+		* 
+		*  @return GPU data pointer to manage.
+		*	
+		*/
+		virtual void*			MapBuffer	( BufferHandle buff, MapFlag flags, size_t offset = 0, size_t size = 0 ) = 0;
+		/*! @brief Unmaps the buffer.
+		*
+		*  @param buff Buffer handle to unmap.
+		*
+		*/
+		virtual void			UnmapBuffer	( BufferHandle buff )												= 0;
+		/*! @brief Connects element buffer (EBO) to vertex layout (VAO).
+		*
+		*  @param ebo Element buffer to connect.
+		*  @param vao Vertex layout to connect.
+		* 
+		*/
+		virtual void AttachElementBufferToLayout( BufferHandle ebo, VertexLayoutHandle vao )			= 0;
 
 
-		virtual BufferHandle	CreateBuffer( const BufferDescriptor& desc ) = 0;
-		virtual void		UpdateBuffer( 
-			BufferHandle vbo, 
-			const void* data, 
-			size_t offset, 
-			size_t size,
-			MapFlag map_flags
-		) = 0;
-		virtual void		DeleteBuffer( BufferHandle& vbo ) = 0;
-		virtual void*		MapBuffer	( BufferHandle vbo, size_t, size_t, MapFlag ) = 0;
-		virtual void		UnmapBuffer	( BufferHandle vbo ) = 0;
+		///////////////////////////////////////////////////
+		/// Layouts
+		///////////////////////////////////////////////////
 
-
+		/*! @brief Creates Vertex layout (VAO).
+		*
+		*  @param ebo Element buffer to connect.
+		*  @param vao Vertex layout to connect.
+		* 
+		*  @return Handle to vertex layout.
+		*
+		*/
 		virtual VertexLayoutHandle CreateVertexLayout( const VertexLayoutDescriptor& desc, BufferHandle vbo ) = 0;
 		virtual void DeleteVertexLayout( ) = 0;
 
-		virtual ShaderHandle	CreateShader	( const ShaderDescriptor& desc) = 0;
-		virtual void			BindShader		( ShaderHandle shader )				= 0;
-		virtual void			DeleteShader	( ShaderHandle shader )				= 0;
+
+		///////////////////////////////////////////////////
+		/// Shaders
+		///////////////////////////////////////////////////
+
+		/*! @brief Creates Shader.
+		*
+		*  @param desc Shader Descriptor (vertex source file name, fragment source file name).
+		*
+		*  @return Handle to shader.
+		*
+		*/
+		virtual ShaderHandle	CreateShader( const ShaderDescriptor& desc)	= 0;
+		/*! @brief Binds shader.
+		*
+		*  @param shader Shader to bind.
+		*
+		*/
+		virtual void			BindShader	( ShaderHandle shader ) = 0;
+		/*! @brief Deletes shader.
+		*
+		*  @param shader Shader to delete.
+		*
+		*/
+		virtual void			DeleteShader( ShaderHandle shader ) = 0;
 
 
-		virtual void Draw( VertexLayoutHandle vao, uint32_t vertex_count ) = 0;
+		///////////////////////////////////////////////////
+		/// Other
+		///////////////////////////////////////////////////
+
+		virtual void Draw			( VertexLayoutHandle vao, uint32_t vertex_count )	= 0;
+		virtual void DrawElements	( VertexLayoutHandle, uint32_t indices_count )		= 0;
+		virtual void BeginFrame		( )													= 0;
+		virtual void EndFrame		( )													= 0;
 
 	protected:
 
@@ -45,13 +135,12 @@ namespace lum::rhi {
 		static constexpr unsigned int MAX_BUFFERS = 10000;
 		static constexpr unsigned int MAX_LAYOUTS = 10000;
 
-		cstd::handle_pool<Shader, ShaderHandle> m_shaders{ MAX_SHADERS };
-		cstd::handle_pool<Buffer, BufferHandle> m_buffers{ MAX_BUFFERS };
+		cstd::handle_pool<Shader, ShaderHandle>				m_shaders{ MAX_SHADERS };
+		cstd::handle_pool<Buffer, BufferHandle>				m_buffers{ MAX_BUFFERS };
 		cstd::handle_pool<VertexLayout, VertexLayoutHandle> m_layouts{ MAX_LAYOUTS };
 
 	};
 
 	RHI_Device* CreateDevice(Window*);
-
 
 }

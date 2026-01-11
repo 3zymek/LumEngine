@@ -27,38 +27,14 @@ int main() {
     auto* window = CreateWindow(desc);
     auto* device = CreateDevice(window);
 
-    std::vector<Vertex> verts = {
-        {{1,1,0}, {1,0,0}},
-        {{-1,1,0}, {0,1,0}},
-        {{0, -1, 0}, {0,0,1}}
-    };
-
-    rhi::BufferDescriptor bdesc{
-        .size = verts.size() * sizeof(Vertex),
-        .buffer_type = BufferType::Vertex,
-        .buffer_usage = BufferUsage::Dynamic,
-        .map_flags = map_flags::Write
-    };
-    auto vbo = device->CreateBuffer(bdesc);
-
-    void* ptr = device->MapBuffer(vbo, 0, 0, map_flags::Write);
-
-    std::memcpy(ptr, verts.data(), verts.size() * sizeof(Vertex));
-
-    device->UnmapBuffer(vbo);
-
     std::vector<VertexAttribute> attrib(2);
     auto& pos = attrib[0];
-    pos.binding = 0;
     pos.format = format::Float3;
-    pos.offset = 0;
     pos.relative_offset = offsetof(Vertex, position);
     pos.shader_location = 0;
 
     auto& color = attrib[1];
-    color.binding = 0;
     color.format = format::Float3;
-    color.offset = 0;
     color.relative_offset = offsetof(Vertex, color);
     color.shader_location = 1;
 
@@ -66,15 +42,38 @@ int main() {
     vdesc.stride = sizeof(Vertex);
     vdesc.attributes = attrib;
 
-    auto vao = device->CreateVertexLayout(vdesc, vbo);
+    std::vector<Vertex> verts = {
+        {{1,1,0}, {1,0,0}},
+        {{-1,1,0}, {0,1,0}},
+        {{0, -1, 0}, {0,0,1}}
+    };
+    std::vector<unsigned int> indices = {
+        0,1,2
+    };
 
+    rhi::BufferDescriptor bdesc{
+        .buffer_usage = BufferUsage::Dynamic,
+        .size = verts.size() * sizeof(Vertex),
+        .data = verts.data()
+    };
+    rhi::BufferDescriptor indi{
+        .buffer_usage = BufferUsage::Dynamic,
+        .size = bytesize(indices),
+        .data = indices.data()
+    };
+
+    auto vbo = device->CreateVertexBuffer(bdesc);
+    auto ebo = device->CreateElementBuffer(indi);
+
+    auto vao = device->CreateVertexLayout(vdesc, vbo);
+    device->AttachElementBufferToLayout(ebo, vao);
     auto shader = device->CreateShader({ "basic.vert", "basic.frag" });
 
     while (window->IsOpen()) {
         device->BeginFrame();
 
         device->BindShader(shader);
-        device->Draw(vao, 3);
+        device->DrawElements(vao, indices.size());
 
         device->EndFrame();
     }

@@ -28,7 +28,7 @@ namespace lum {
 
 		enum class BufferType : uint8_t {
 			Vertex, // Buffer contains vertices.
-			Index,	// Buffer contains indices (elements).
+			Element,// Buffer contains indices (elements).
 			Uniform // Buffer contains uniforms.
 		};
 

@@ -12,10 +12,10 @@ namespace lum::rhi {
 	};
 
 	struct BufferDescriptor {
-		size_t			size = 0;
-		BufferType		buffer_type = BufferType::Vertex;
-		BufferUsage		buffer_usage = BufferUsage::Static;
-		MapFlag			map_flags = 0;
+		BufferUsage		buffer_usage	= BufferUsage::Static;
+		size_t			size			= 0;
+		MapFlag			map_flags		= 0;
+		const void*		data			= nullptr;
 	};
 
 	struct Buffer {

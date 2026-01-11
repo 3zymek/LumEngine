@@ -72,11 +72,26 @@ namespace lum {
 	}
 
 	/// Returns max value of arithmetic type.
-	/// @tparam Arithmetic type.
+	/// @tparam T arithmetic type.
 	template<typename T>
 	requires std::is_arithmetic_v<T>
 	constexpr T max_val() {
 		return std::numeric_limits<T>::max();
+	}
+
+	/// @return Returns definitive size of vector in bytes.
+	/// @param vector Vector to calculate size.
+	template<typename T>
+	constexpr size_t bytesize(const std::vector<T>& vector) {
+		return sizeof(T) * vector.size();
+	}
+
+	/// @return Returns definitive size of type in bytes multiplied by size.
+	/// @param arr Pointer to the data.
+	/// @param size How much elements.
+	template<typename T>
+	constexpr size_t bytesize(const T* arr, size_t size) {
+		return sizeof(T) * size;
 	}
 
 	namespace settings {
