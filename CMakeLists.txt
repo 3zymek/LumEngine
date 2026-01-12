@@ -33,6 +33,7 @@ target_include_directories(LumEngine PRIVATE
     "${CMAKE_SOURCE_DIR}/lumengine/external/fmod/inc"
     "${CMAKE_SOURCE_DIR}/lumengine/external/glfw/inc"
     "${CMAKE_SOURCE_DIR}/lumengine/external/imgui/inc"
+    "${CMAKE_SOURCE_DIR}/lumengine/external/stb/inc"
 )
 
 target_link_libraries(LumEngine PRIVATE 

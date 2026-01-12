@@ -35,10 +35,15 @@
         do { if(expr) { LOG_WARN(msg); return retival; } } while(0)
 
 #else
-    #define HOTPATH_CHECK(expr, msg) ((void)0)
-    #define HOTPATH_CHECK_RETURN(expr, msg) ((void)0)
-    #define HOTPATH_CHECK_RETURN_NULLPTR(expr, msg) ((void)0)
-    #define HOTPATH_CHECK_RETURN_0(expr, msg) ((void)0)
+#define HOTPATH_ASSERT(expr, msg) ((void)0)
+
+#define HOTPATH_ASSERT_VOID(expr, msg) ((void)0)
+
+#define HOTPATH_ASSERT_NULLPTR(expr, msg) ((void)0)
+
+#define HOTPATH_ASSERT_0(expr, msg) ((void)0)
+
+#define HOTPATH_ASSERT_CUSTOM(expr, msg, retival) ((void)0)
 #endif
 
 

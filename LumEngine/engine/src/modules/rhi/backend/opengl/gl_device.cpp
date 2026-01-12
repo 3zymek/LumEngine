@@ -82,7 +82,7 @@ namespace lum::gl {
 		LOG_DEBUG(std::format("Created buffer {}", buffer.handle.gl_handle));
 		return m_buffers.CreateHandle(std::move(buffer));
 	}
-	rhi::BufferHandle		GL_Device::CreateUniformBuffer(const rhi::BufferDescriptor& desc) {
+	rhi::BufferHandle		GL_Device::CreateUniformBuffer	( const rhi::BufferDescriptor& desc ) {
 		if (!IsValidBufferDescriptor(desc))
 			return rhi::BufferHandle{};
 
@@ -167,8 +167,8 @@ namespace lum::gl {
 
 		rhi::Buffer& buffer = m_buffers[vbo];
 
-		HOTPATH_ASSERT_NULLPTR(offset + size > buffer.size, "Invalid offset or size");
-		if (size == 0) size = buffer.size;
+		HOTPATH_ASSERT_NULLPTR(offset + size > buffer.size || size >  buffer.size, "Invalid offset or size");
+		if (size <= 0) size = buffer.size;
 
 		void* ptr = glMapNamedBufferRange(buffer.handle.gl_handle, offset, size, TranslateMappingFlags(flags));
 		
@@ -182,6 +182,7 @@ namespace lum::gl {
 		HOTPATH_ASSERT_VOID(!m_buffers.Exists(vbo), "Handle does not exist");
 
 		rhi::Buffer& buffer = m_buffers[vbo];
+		HOTPATH_ASSERT_VOID(!buffer.mapped, "Buffer is already unmapped");
 		glUnmapNamedBuffer(buffer.handle.gl_handle);
 
 		LOG_DEBUG(std::format("Unmapped buffer {}", buffer.handle.gl_handle));
@@ -239,7 +240,7 @@ namespace lum::gl {
 		return m_layouts.CreateHandle(std::move(layout));
 
 	}
-	void					GL_Device::DeleteVertexLayout( ) {
+	void					GL_Device::DeleteVertexLayout( rhi::VertexLayoutHandle& layout ) {
 
 
 	}
@@ -289,7 +290,36 @@ namespace lum::gl {
 		glUseProgram(m_shaders[shader].handle);
 
 	}
-	void				GL_Device::DeleteShader	( rhi::ShaderHandle shader ) {
+	void				GL_Device::DeleteShader	( rhi::ShaderHandle& shader ) {
+
+	}
+
+
+	///////////////////////////////////////////////////
+	/// Textures
+	///////////////////////////////////////////////////
+
+	rhi::TextureHandle	GL_Device::CreateTexture2D(const rhi::TextureDescriptor& desc) {
+		if (m_textures.DenseSize() >= MAX_TEXTURES) {
+			LOG_ERROR("Max textures reached");
+			return rhi::TextureHandle{};
+		}
+
+		rhi::Texture texture;
+
+
+		return m_textures.CreateHandle(std::move(texture));
+	}
+	rhi::TextureHandle	GL_Device::CreateTexture3D(const rhi::TextureDescriptor& desc) {
+		rhi::Texture texture;
+
+
+		return m_textures.CreateHandle(std::move(texture));
+	}
+	void			GL_Device::DeleteTexture(rhi::TextureHandle& texture) {
+
+	}
+	void			GL_Device::BindTexture(rhi::TextureHandle texture) {
 
 	}
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "core/core_pch.hpp"
+#include "stb_image.h"
 namespace lum {
 
 	namespace detail {
@@ -15,12 +16,35 @@ namespace lum {
 		Texture,
 		Audio
 	};
+
+	struct TextureData {
+		int width = 0;
+		int height = 0;
+		int color_channels = 0;
+		std::vector<uint8_t> pixels;
+	};
 	
 	class AssetService {
 	public:
 
-		static void LoadTexture(std::string_view file_name) {
+		static TextureData LoadTexture(const char* file_name) {
 
+			TextureData tx;
+			int ignore;
+			unsigned char* data = stbi_load(file_name, &tx.width, &tx.height, &ignore, STBI_rgb_alpha);
+			tx.color_channels = STBI_rgb_alpha;
+
+			if (!data) {
+				LOG_ERROR(std::format("Failed to load texture {}", file_name));
+				return TextureData{};
+			}
+
+			size_t size = tx.width * tx.height * tx.color_channels;
+			tx.pixels.resize(size);
+			std::memcpy(tx.pixels.data(), data, size);
+
+			stbi_image_free(data);
+			return tx;
 		}
 		
 		inline static std::string LoadAudio(std::string_view file_name) {
