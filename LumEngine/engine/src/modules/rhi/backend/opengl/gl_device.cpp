@@ -6,6 +6,7 @@
 #include "rhi/core/rhi_vertex_layout.hpp"
 #include "core/asset_service.hpp"
 #include "window_context/window.hpp"
+#include "rhi/rhi_common.hpp"
 namespace lum::gl {
 
 	///////////////////////////////////////////////////
@@ -306,20 +307,64 @@ namespace lum::gl {
 		}
 
 		rhi::Texture texture;
+		TextureData data = AssetService::LoadTexture(desc.filename);
+		texture.height = data.height;
+		texture.width = data.width;
+		texture.mag_filters = desc.mag_filter;
+		texture.min_filters = desc.min_filter;
+		glCreateTextures(GL_TEXTURE_2D, 1, &texture.handle.gl_handle);
+		if (desc.min_filter != rhi::TextureMinFilter::Linear && desc.min_filter != rhi::TextureMinFilter::Nearest) {
+			glTextureStorage2D(
+				texture.handle.gl_handle,
+				rhi::mipmap_lvls(texture.width, texture.height),
+				GL_RGBA8,
+				texture.width,
+				texture.height
+			);
+		}
+		else {
+			glTextureStorage2D(
+				texture.handle.gl_handle,
+				1,
+				GL_RGBA8,
+				texture.width,
+				texture.height
+			);
+		}
 
+		glTextureSubImage2D(
+			texture.handle.gl_handle, 
+			0, 
+			0, 
+			0, 
+			texture.width, 
+			texture.height, 
+			GL_RGBA, 
+			GL_UNSIGNED_BYTE, 
+			data.pixels.data()
+		);
+		
+		glTextureParameteri(texture.handle.gl_handle, GL_TEXTURE_MIN_FILTER, TranslateTextureMinFilter(desc.min_filter));
+		glTextureParameteri(texture.handle.gl_handle, GL_TEXTURE_MAG_FILTER, TranslateTextureMagFilter(desc.mag_filter));
+		glTextureParameteri(texture.handle.gl_handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(texture.handle.gl_handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		return m_textures.CreateHandle(std::move(texture));
 	}
+	// TO IMPLEMENT:
 	rhi::TextureHandle	GL_Device::CreateTexture3D(const rhi::TextureDescriptor& desc) {
+
 		rhi::Texture texture;
-
-
 		return m_textures.CreateHandle(std::move(texture));
 	}
 	void			GL_Device::DeleteTexture(rhi::TextureHandle& texture) {
 
 	}
 	void			GL_Device::BindTexture(rhi::TextureHandle texture) {
+
+		rhi::Texture& tex = m_textures[texture];
+
+		glBindTextureUnit(0, tex.handle.gl_handle);
 
 	}
 
@@ -360,6 +405,30 @@ namespace lum::gl {
 	/// Private helpers
 	///////////////////////////////////////////////////
 
+	GLbitfield GL_Device::TranslateTextureMinFilter(const rhi::TextureMinFilter& filter) {
+
+		switch (filter) {
+		case rhi::TextureMinFilter::Linear: return GL_LINEAR;
+		case rhi::TextureMinFilter::Nearest: return GL_NEAREST;
+		case rhi::TextureMinFilter::Linear_mipmap_linear: return GL_LINEAR_MIPMAP_LINEAR;
+		case rhi::TextureMinFilter::Linear_mipmap_nearest: return GL_LINEAR_MIPMAP_NEAREST;
+		case rhi::TextureMinFilter::Nearest_mipmap_linear: return GL_NEAREST_MIPMAP_LINEAR;
+		case rhi::TextureMinFilter::Nearest_mipmap_nearest: return GL_NEAREST_MIPMAP_NEAREST;
+		}
+
+		return GL_NEAREST;
+
+	}
+	GLbitfield GL_Device::TranslateTextureMagFilter(const rhi::TextureMagFilter& filter) {
+
+		switch(filter) {
+		case rhi::TextureMagFilter::Linear: return GL_LINEAR;
+		case rhi::TextureMagFilter::Nearest: return GL_NEAREST;
+		}
+
+		return GL_NEAREST;
+
+	}
 	bool		GL_Device::IsValidBufferDescriptor	( const rhi::BufferDescriptor& desc ) {
 
 		if (desc.buffer_usage == rhi::BufferUsage::Static) {

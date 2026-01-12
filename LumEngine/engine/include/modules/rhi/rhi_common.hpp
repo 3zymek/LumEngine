@@ -6,9 +6,18 @@ namespace lum {
 	struct Vertex {
 		glm::vec3 position;
 		glm::vec3 color;
+		glm::vec2 uv;
 	};
 
 	namespace rhi {
+
+		/// Returns amount of mipmap levels count for image.
+		/// @param width Width of an image.
+		/// @param height Height of an image.
+		/// @return Mipmap levels count.
+		inline unsigned int mipmap_lvls(unsigned int width, unsigned int height) {
+			return 1 + std::floor(std::log2(std::max(width, height)));
+		}
 
 		struct BufferHandle;
 		struct VertexLayoutHandle;

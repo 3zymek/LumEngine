@@ -19,6 +19,7 @@ namespace lum::gl {
 		using ShaderHandle		= rhi::ShaderHandle;
 		using ShaderDescriptor	= rhi::ShaderDescriptor;
 
+		using Texture = rhi::Texture;
 		using TextureHandle		= rhi::TextureHandle;
 		using TextureDescriptor = rhi::TextureDescriptor;
 
@@ -82,6 +83,8 @@ namespace lum::gl {
 		/// Private helpers
 		///////////////////////////////////////////////////
 
+		GLbitfield	TranslateTextureMinFilter(const rhi::TextureMinFilter&);
+		GLbitfield	TranslateTextureMagFilter(const rhi::TextureMagFilter&);
 		bool		IsValidBufferDescriptor	( const BufferDescriptor& desc );
 		GLbitfield	TranslateMappingFlags	( MapFlag flags );
 

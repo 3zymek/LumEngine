@@ -29,9 +29,13 @@ namespace lum {
 
 		static TextureData LoadTexture(const char* file_name) {
 
+			auto path = texture_path / std::string(file_name);
+			std::string absolute_path = path.lexically_normal().string();
+
 			TextureData tx;
 			int ignore;
-			unsigned char* data = stbi_load(file_name, &tx.width, &tx.height, &ignore, STBI_rgb_alpha);
+			unsigned char* data = stbi_load(absolute_path.c_str(), &tx.width, &tx.height, &ignore, STBI_rgb_alpha);
+			assert(tx.width > 0 & tx.height > 0);
 			tx.color_channels = STBI_rgb_alpha;
 
 			if (!data) {
