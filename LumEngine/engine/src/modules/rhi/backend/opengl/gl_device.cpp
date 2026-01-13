@@ -332,6 +332,8 @@ namespace lum::gl {
 			);
 		}
 
+		glGenerateMipmap(GL_TEXTURE_2D);
+
 		glTextureSubImage2D(
 			texture.handle.gl_handle, 
 			0, 
@@ -344,6 +346,12 @@ namespace lum::gl {
 			data.pixels.data()
 		);
 		
+		GLfloat max_anisotropy;
+		float anisotropy = desc.anisotropy;
+		glGetFloatv(GL_TEXTURE_MAX_ANISOTROPY, &max_anisotropy);
+		if (anisotropy < max_anisotropy && anisotropy > 0)
+			glTextureParameteri(texture.handle.gl_handle, GL_TEXTURE_MAX_ANISOTROPY, anisotropy);
+
 		glTextureParameteri(texture.handle.gl_handle, GL_TEXTURE_MIN_FILTER, TranslateTextureMinFilter(desc.min_filter));
 		glTextureParameteri(texture.handle.gl_handle, GL_TEXTURE_MAG_FILTER, TranslateTextureMagFilter(desc.mag_filter));
 		glTextureParameteri(texture.handle.gl_handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -389,7 +397,7 @@ namespace lum::gl {
 	}
 	void GL_Device::BeginFrame() {
 
-		glClearColor(0.2, 0.2, 0.2, 1.0);
+		glClearColor(0, 0, 0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glfwPollEvents();
 

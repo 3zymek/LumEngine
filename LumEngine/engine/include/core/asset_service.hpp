@@ -34,9 +34,9 @@ namespace lum {
 
 			TextureData tx;
 			int ignore;
-			unsigned char* data = stbi_load(absolute_path.c_str(), &tx.width, &tx.height, &ignore, STBI_rgb_alpha);
+			unsigned char* data = stbi_load(absolute_path.c_str(), &tx.width, &tx.height, &ignore, 4);
 			assert(tx.width > 0 & tx.height > 0);
-			tx.color_channels = STBI_rgb_alpha;
+			tx.color_channels = 4;
 
 			if (!data) {
 				LOG_ERROR(std::format("Failed to load texture {}", file_name));
@@ -46,6 +46,9 @@ namespace lum {
 			size_t size = tx.width * tx.height * tx.color_channels;
 			tx.pixels.resize(size);
 			std::memcpy(tx.pixels.data(), data, size);
+
+			std::cout << tx.width << " " << tx.height << '\n';
+			std::cout << ignore << '\n';
 
 			stbi_image_free(data);
 			return tx;

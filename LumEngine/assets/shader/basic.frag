@@ -1,9 +1,11 @@
 #version 440 core
-in vec3 vertexPos;
-in vec3 vertexColor;
+layout(binding = 0) uniform sampler2D uTexture;
 
-out vec4 FragColor;
+in vec3 fragPos;
+in vec3 fragColor;
+in vec2 fragUV;
 
 void main() {
-	FragColor = vec4(vertexColor, 1.0);
+
+
 }

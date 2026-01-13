@@ -126,6 +126,7 @@ namespace lum::rhi {
 		*
 		*/
 		virtual void			DeleteShader( ShaderHandle& shader ) = 0;
+		virtual void SetMat4(glm::mat4)
 
 
 

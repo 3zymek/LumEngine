@@ -32,6 +32,8 @@ namespace lum::rhi {
 		// Filter that applies to texture, when texture is minified (scaled down)
 		TextureMinFilter min_filter;
 
+		float anisotropy = 0;
+
 		// Path/Name of the texture
 		const char* filename;
 

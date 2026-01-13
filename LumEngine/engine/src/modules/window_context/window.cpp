@@ -66,6 +66,9 @@ namespace lum {
 		}
 		else m_window = glfwCreateWindow(desc.width, desc.height, desc.title, nullptr, nullptr);
 
+		width = desc.width;
+		height = desc.height;
+
 		if (!m_window) {
 			LOG_FATAL("Failed to initialize window");
 			glfwTerminate();
