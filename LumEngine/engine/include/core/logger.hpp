@@ -1,7 +1,8 @@
 #pragma once
-#include "core_common.hpp"
 #include "core/core_pch.hpp"
+#include "core/core_common.hpp"
 namespace lum {
+
 	using SeverityMask = Bit;
 	enum class LogSeverity : SeverityMask {
 		FATAL = 0b0000'0001,
@@ -11,20 +12,24 @@ namespace lum {
 		DEBUG = 0b0001'0000,
 		ALL = FATAL | ERROR | WARN | INFO | DEBUG
 	};
-	constexpr SeverityMask operator|(LogSeverity a, LogSeverity b) {
+	LUM_FUNC_INLINE_QUALIFIER
+	SeverityMask operator|(LogSeverity a, LogSeverity b) {
 		return static_cast<SeverityMask>(a) | static_cast<SeverityMask>(b);
 	}
-	constexpr SeverityMask operator|(SeverityMask a, LogSeverity b) {
+	LUM_FUNC_INLINE_QUALIFIER
+	SeverityMask operator|(SeverityMask a, LogSeverity b) {
 		return a | static_cast<SeverityMask>(b);
 	}
-	constexpr SeverityMask operator|(LogSeverity a, SeverityMask b) {
+	LUM_FUNC_INLINE_QUALIFIER
+	SeverityMask operator|(LogSeverity a, SeverityMask b) {
 		return static_cast<SeverityMask>(a) | b;
 	}
-
-	constexpr SeverityMask operator&(SeverityMask mask, LogSeverity sev) {
+	LUM_FUNC_INLINE_QUALIFIER
+	SeverityMask operator&(SeverityMask mask, LogSeverity sev) {
 		return mask & static_cast<SeverityMask>(sev);
 	}
-	constexpr SeverityMask& operator|=(SeverityMask& mask, LogSeverity sev) {
+	LUM_FUNC_INLINE_QUALIFIER
+	SeverityMask& operator|=(SeverityMask& mask, LogSeverity sev) {
 		mask |= static_cast<SeverityMask>(sev);
 		return mask;
 	}
@@ -41,19 +46,24 @@ namespace lum {
 			return log;
 		}
 
-		inline void EnableLog	( SeverityMask sev ) {
+		LUM_FUNC_RUNTIME_QUALIFIER
+		void EnableLog	( SeverityMask sev ) {
 			g_severity |= sev;
 		}
-		inline void EnableLog( LogSeverity sev ) {
+		LUM_FUNC_RUNTIME_QUALIFIER
+		void EnableLog( LogSeverity sev ) {
 			g_severity |= sev;
 		}
-		inline void DisableLog( SeverityMask sev ) {
+		LUM_FUNC_RUNTIME_QUALIFIER
+		void DisableLog( SeverityMask sev ) {
 			g_severity &= ~sev;
 		}
-		inline void DisableLog	( LogSeverity sev ) {
+		LUM_FUNC_RUNTIME_QUALIFIER
+		void DisableLog	( LogSeverity sev ) {
 			g_severity &= ~static_cast<SeverityMask>(sev);
 		}
-		inline void LogInit		( InitStatus stat, const char* msg ) {
+		LUM_FUNC_RUNTIME_QUALIFIER
+		void LogInit		( InitStatus stat, const char* msg ) {
 			std::cout << "[" << ToColor(stat) << ToString(stat) << cmdcolor::reset << "] " << msg << '\n';
 		}
 

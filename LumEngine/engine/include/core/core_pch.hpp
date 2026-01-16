@@ -23,6 +23,6 @@
 #include <fstream>
 #include <sstream>
 
-#include "math/glm.hpp"
-#include "math/gtc/matrix_transform.hpp"
-#include "math/gtc/type_ptr.hpp"
+#include "math/backend/glm.hpp"
+#include "math/backend/gtc/matrix_transform.hpp"
+#include "math/backend/gtc/type_ptr.hpp"

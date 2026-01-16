@@ -883,7 +883,7 @@ namespace detail
 #if GLM_HAS_ALIGNOF && (GLM_LANG & GLM_LANG_CXXMS_FLAG) && (defined(GLM_FORCE_ALIGNED_GENTYPES) || (GLM_CONFIG_SIMD == GLM_ENABLE))
 #	define GLM_CONFIG_ALIGNED_GENTYPES GLM_ENABLE
 #else
-#	define GLM_CONFIG_ALIGNED_GENTYPES GLM_DISABLE
+#	define GLM_CONFIG_ALIGNED_GENTYPES GLM_ENABLE
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////

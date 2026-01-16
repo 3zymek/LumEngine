@@ -1,6 +1,7 @@
 #pragma once
 #include "core/core_pch.hpp"
 #include "stb_image.h"
+#include "core/lum_assert.hpp"
 namespace lum {
 
 	namespace detail {
@@ -27,7 +28,7 @@ namespace lum {
 	class AssetService {
 	public:
 
-		static TextureData LoadTexture(const char* file_name) {
+		static TextureData LoadTexture(cstr file_name) {
 
 			auto path = texture_path / std::string(file_name);
 			std::string absolute_path = path.lexically_normal().string();
@@ -64,27 +65,37 @@ namespace lum {
 			return file.lexically_normal().string();
 		}
 
-		static inline std::string LoadShader(std::string_view file_name) {
+		static std::string LoadShader(std::string_view file_name) {
+
 			auto file = (shader_path / file_name).lexically_normal().string();
+
 			if (!detail::fs::exists(file)) {
 				LOG_ERROR(std::format("Couldn't localize shader file named {}", file_name.data()));
 				return "";
 			}
 
 			std::ifstream loaded_file(file);
-			if (!loaded_file.is_open()) {
+			std::ifstream defines(shader_define);
+			if (!loaded_file.is_open() || !defines.is_open()) {
 				LOG_ERROR(std::format("Couldn't open shader file named {}", file_name.data()));
 				return "";
 			}
 
+			std::string version;
+			std::getline(loaded_file, version);
+
 			std::stringstream ss;
+			ss << version << '\n';
+			ss << defines.rdbuf() << '\n';
 			ss << loaded_file.rdbuf();
-			
+			std::cout << ss.str();
+
 			return ss.str();
 		}
 
 	private:
 
+		static inline std::string shader_define = (detail::fs::current_path().parent_path() / "lumengine" / "engine" / "include" / "core" / "shaders_define.h").lexically_normal().string();
 		static inline detail::fs::path shader_path	= detail::g_assets_root	/ "shader";
 		static inline detail::fs::path audio_path	= detail::g_assets_root	/ "audio";
 		static inline detail::fs::path texture_path	= detail::g_assets_root	/ "texture";

@@ -11,6 +11,7 @@
 #include "rhi/core/rhi_device.hpp"
 #include "core/asset_service.hpp"
 #include "rhi/rhi_common.hpp"
+#include "core/shaders_define.h"
 using namespace lum;
 using namespace lum::rhi;
 
@@ -122,43 +123,46 @@ private:
 
 int main() {
 
-    Logger::Get().EnableLog(LogSeverity::ALL);
+    Logger::Get().DisableLog(LogSeverity::ALL);
     
     WindowDescriptor desc;
-    desc.height = 1440;
-    desc.width = 5440;
+    //desc.height = 1440;
+    //desc.width = 5440;
     auto* window = CreateWindow(desc);
     auto* device = CreateDevice(window);
     input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
-    Camera camera{ window };
-
     
-    std::vector<VertexAttribute> attrib(2);
+    std::vector<VertexAttribute> attrib(3);
     auto& pos = attrib[0];
     pos.format = format::Float3;
     pos.relative_offset = offsetof(Vertex, position);
-    pos.shader_location = 0;
+    pos.shader_location = LUM_POSITION;
 
     auto& color = attrib[1];
     color.format = format::Float3;
     color.relative_offset = offsetof(Vertex, color);
-    color.shader_location = 1;
+    color.shader_location = LUM_COLOR;
+
+    auto& uv = attrib[2];
+    uv.format = format::Float2;
+    uv.relative_offset = offsetof(Vertex, uv);
+    uv.shader_location = LUM_UV;
 
     VertexLayoutDescriptor vdesc;
     vdesc.stride = sizeof(Vertex);
     vdesc.attributes = attrib;
 
     std::vector<Vertex> verts = {
-        {{ 1, 1, 0}, {1,0,0}}, // top-right
-        {{-1, 1, 0}, {0,1,0}}, // top-left
-        {{-1,-1, 0}, {0,0,1}}, // bottom-left
-        {{ 1,-1, 0}, {0,1,0}}  // bottom-right
+        {{ 1, 1, 0}, {0,0,0}, {1, 1}}, // top-right
+        {{-1, 1, 0}, {0,0,0}, {0, 1}}, // top-left
+        {{-1,-1, 0}, {0,0,0}, {0, 0}}, // bottom-left
+        {{ 1,-1, 0}, {0,0,0}, {1, 0}}  // bottom-right
     };
     std::vector<unsigned int> indices = {
         0,1,2, 0,2,3
     };
-
+    
     rhi::BufferDescriptor bdesc{
         .buffer_usage = BufferUsage::Dynamic,
         .size = verts.size() * sizeof(Vertex),
@@ -176,19 +180,18 @@ int main() {
     auto vao = device->CreateVertexLayout(vdesc, vbo);
     device->AttachElementBufferToLayout(ebo, vao);
     auto shader = device->CreateShader({ "basic.vert", "basic.frag" });
-    /*
+    
     TextureDescriptor tdescript;
-    tdescript.filename = "test.png";
+    tdescript.filename = "test.jpg";
     tdescript.mag_filter = TextureMagFilter::Nearest;
     tdescript.min_filter = TextureMinFilter::Nearest;
     auto texture = device->CreateTexture2D(tdescript);
-    */
+    
     while (window->IsOpen()) {
         device->BeginFrame();
 
-        camera.Update();
-
         device->BindShader(shader);
+        device->BindTexture(texture);
         device->DrawElements(vao, indices.size());
 
         device->EndFrame();

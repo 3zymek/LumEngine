@@ -1,6 +1,7 @@
 #pragma once
 #include "window_context/window.hpp"
 #include "core/core_defines.hpp"
+#include "core/lum_assert.hpp"
 namespace lum {
 
 	namespace rhi::detail {

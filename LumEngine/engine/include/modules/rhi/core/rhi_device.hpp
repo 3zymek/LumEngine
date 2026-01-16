@@ -46,7 +46,7 @@ namespace lum::rhi {
 		*  @param size Byte size of data to write (0 for whole buffer).
 		* 
 		*/
-		virtual void UpdateBuffer( BufferHandle buff, const void* data, size_t offset = 0, size_t size = 0 ) = 0;
+		virtual void UpdateBuffer( const BufferHandle& buff, cvptr data, size_t offset = 0, size_t size = 0 ) = 0;
 		/*! @brief Deletes buffer.
 		*
 		*  @param buff Buffer handle to delete.
@@ -63,20 +63,20 @@ namespace lum::rhi {
 		*  @return GPU data pointer to manage.
 		*	
 		*/
-		virtual void*			MapBuffer	( BufferHandle buff, MapFlag flags, size_t offset = 0, size_t size = 0 ) = 0;
+		virtual vptr			MapBuffer	( const BufferHandle& buff, MapFlag flags, size_t offset = 0, size_t size = 0 ) = 0;
 		/*! @brief Unmaps buffer.
 		*
 		*  @param buff Buffer handle to unmap.
 		*
 		*/
-		virtual void			UnmapBuffer	( BufferHandle buff ) = 0;
+		virtual void			UnmapBuffer	( const BufferHandle& buff ) = 0;
 		/*! @brief Connects element buffer (EBO) to vertex layout (VAO).
 		*
 		*  @param ebo Element buffer to connect.
 		*  @param vao Vertex layout to connect.
 		* 
 		*/
-		virtual void AttachElementBufferToLayout( BufferHandle ebo, VertexLayoutHandle vao ) = 0;
+		virtual void AttachElementBufferToLayout( const BufferHandle& ebo, const VertexLayoutHandle& vao ) = 0;
 
 
 
@@ -92,7 +92,7 @@ namespace lum::rhi {
 		*  @return Handle to vertex layout.
 		*
 		*/
-		virtual VertexLayoutHandle	CreateVertexLayout( const VertexLayoutDescriptor& desc, BufferHandle vbo )	= 0;
+		virtual VertexLayoutHandle	CreateVertexLayout( const VertexLayoutDescriptor& desc, const BufferHandle& vbo )	= 0;
 		/*! @brief Deletes vertex layout.
 		*
 		*  @param layout Layout handle to delete.
@@ -119,16 +119,19 @@ namespace lum::rhi {
 		*  @param shader Shader to bind.
 		*
 		*/
-		virtual void			BindShader	( ShaderHandle shader ) = 0;
+		virtual void			BindShader	( const ShaderHandle& shader ) = 0;
 		/*! @brief Deletes shader.
 		*
 		*  @param shader Shader to delete.
 		*
 		*/
 		virtual void			DeleteShader( ShaderHandle& shader ) = 0;
-		virtual void SetMat4(glm::mat4)
-
-
+		virtual void			SetMat4		( const ShaderHandle& shader, const glm::mat4& mat ) = 0;
+		virtual void			Setf		( const ShaderHandle& shader, float value ) = 0;
+		virtual void			Seti		( const ShaderHandle& shader, int value ) = 0;
+		virtual void			SetVec3		( const ShaderHandle& shader, const glm::vec4& vec ) = 0;
+		virtual void			SetVec3		( const ShaderHandle& shader, const glm::vec3& vec ) = 0;
+		virtual void			SetVec3		( const ShaderHandle& shader, const glm::vec2& vec ) = 0;
 
 		///////////////////////////////////////////////////
 		/// Textures
@@ -137,7 +140,7 @@ namespace lum::rhi {
 		virtual TextureHandle	CreateTexture2D	( const TextureDescriptor& desc ) = 0;
 		virtual TextureHandle	CreateTexture3D	( const TextureDescriptor& desc ) = 0;
 		virtual void			DeleteTexture	( TextureHandle& texture ) = 0;
-		virtual void			BindTexture		( TextureHandle texture ) = 0;
+		virtual void			BindTexture		( const TextureHandle& texture ) = 0;
 
 
 
@@ -145,8 +148,8 @@ namespace lum::rhi {
 		/// Other
 		///////////////////////////////////////////////////
 
-		virtual void Draw			( VertexLayoutHandle vao, uint32_t vertex_count )	= 0;
-		virtual void DrawElements	( VertexLayoutHandle, uint32_t indices_count )		= 0;
+		virtual void Draw			( const VertexLayoutHandle& vao, uint32_t vertex_count )	= 0;
+		virtual void DrawElements	( const VertexLayoutHandle&, uint32_t indices_count )		= 0;
 		virtual void BeginFrame		( )													= 0;
 		virtual void EndFrame		( )													= 0;
 

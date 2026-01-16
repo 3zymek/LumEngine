@@ -1,5 +1,6 @@
 #pragma once
 #include "event/event_common.hpp"
+#include "core/lum_assert.hpp"
 namespace lum {
 	namespace ev {
 		namespace detail {

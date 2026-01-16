@@ -1,4 +1,5 @@
 #include "core/logger.hpp"
+#include "core/core_common.hpp"
 namespace lum {
 
 	void Logger::Log(LogSeverity sev, const char* file, const char* func, int line, const std::string& msg) {

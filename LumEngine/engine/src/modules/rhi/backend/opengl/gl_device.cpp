@@ -13,7 +13,7 @@ namespace lum::gl {
 	/// Buffers
 	///////////////////////////////////////////////////
 
-	rhi::BufferHandle		GL_Device::CreateVertexBuffer	( const rhi::BufferDescriptor& desc ) {
+	rhi::BufferHandle		GL_Device::CreateVertexBuffer	( const BufferDescriptor& desc ) {
 		if (!IsValidBufferDescriptor(desc))
 			return rhi::BufferHandle{};
 
@@ -48,7 +48,7 @@ namespace lum::gl {
 		LOG_DEBUG(std::format("Created buffer {}", buffer.handle.gl_handle));
 		return m_buffers.CreateHandle(std::move(buffer));
 	}
-	rhi::BufferHandle		GL_Device::CreateElementBuffer	( const rhi::BufferDescriptor& desc ) {
+	rhi::BufferHandle		GL_Device::CreateElementBuffer	( const BufferDescriptor& desc ) {
 		if (!IsValidBufferDescriptor(desc))
 			return rhi::BufferHandle{};
 
@@ -83,7 +83,7 @@ namespace lum::gl {
 		LOG_DEBUG(std::format("Created buffer {}", buffer.handle.gl_handle));
 		return m_buffers.CreateHandle(std::move(buffer));
 	}
-	rhi::BufferHandle		GL_Device::CreateUniformBuffer	( const rhi::BufferDescriptor& desc ) {
+	rhi::BufferHandle		GL_Device::CreateUniformBuffer	( const BufferDescriptor& desc ) {
 		if (!IsValidBufferDescriptor(desc))
 			return rhi::BufferHandle{};
 
@@ -118,7 +118,7 @@ namespace lum::gl {
 		LOG_DEBUG(std::format("Created buffer {}", buffer.handle.gl_handle));
 		return m_buffers.CreateHandle(std::move(buffer));
 	}
-	void					GL_Device::UpdateBuffer	( rhi::BufferHandle vbo, const void* data, size_t offset, size_t size ) {
+	void					GL_Device::UpdateBuffer			( const BufferHandle& vbo, cvptr data, size_t offset, size_t size ) {
 
 		HOTPATH_ASSERT_VOID(!m_buffers.Exists(vbo), "Buffer does not exist");
 
@@ -150,7 +150,7 @@ namespace lum::gl {
 
 		LOG_DEBUG(std::format("Updated buffer {}", buffer.handle.gl_handle));
 	}
-	void					GL_Device::DeleteBuffer	( rhi::BufferHandle& vbo ) {
+	void					GL_Device::DeleteBuffer			( BufferHandle& vbo ) {
 
 		HOTPATH_ASSERT_VOID(!m_buffers.Exists(vbo), "Buffer doesn't exist");
 
@@ -162,7 +162,7 @@ namespace lum::gl {
 		LOG_DEBUG(std::format("Deleted buffer {}", buffer.handle.gl_handle));
 	
 	}
-	void*					GL_Device::MapBuffer	( rhi::BufferHandle vbo, rhi::MapFlag flags, size_t offset, size_t size ) {
+	vptr					GL_Device::MapBuffer			( const BufferHandle& vbo, MapFlag flags, size_t offset, size_t size ) {
 
 		HOTPATH_ASSERT_NULLPTR(!m_buffers.Exists(vbo), "Handle doesn't exist");
 
@@ -171,14 +171,14 @@ namespace lum::gl {
 		HOTPATH_ASSERT_NULLPTR(offset + size > buffer.size || size >  buffer.size, "Invalid offset or size");
 		if (size <= 0) size = buffer.size;
 
-		void* ptr = glMapNamedBufferRange(buffer.handle.gl_handle, offset, size, TranslateMappingFlags(flags));
+		vptr ptr = glMapNamedBufferRange(buffer.handle.gl_handle, offset, size, TranslateMappingFlags(flags));
 		
 		HOTPATH_ASSERT_NULLPTR(!ptr, "Error during mapping");
 
 		LOG_DEBUG(std::format("Mapped buffer {}", buffer.handle.gl_handle));
 		return ptr;
 	}
-	void					GL_Device::UnmapBuffer	( rhi::BufferHandle vbo ) {
+	void					GL_Device::UnmapBuffer			( const BufferHandle& vbo ) {
 
 		HOTPATH_ASSERT_VOID(!m_buffers.Exists(vbo), "Handle does not exist");
 
@@ -188,7 +188,7 @@ namespace lum::gl {
 
 		LOG_DEBUG(std::format("Unmapped buffer {}", buffer.handle.gl_handle));
 	}
-	void					GL_Device::AttachElementBufferToLayout( rhi::BufferHandle ebo, rhi::VertexLayoutHandle vao ) {
+	void					GL_Device::AttachElementBufferToLayout( const BufferHandle& ebo, const VertexLayoutHandle& vao ) {
 		HOTPATH_ASSERT_VOID(!m_layouts.Exists(vao), "Layout doesn't exists");
 		HOTPATH_ASSERT_VOID(!m_buffers.Exists(ebo), "Buffer doesn't exists");
 
@@ -200,7 +200,7 @@ namespace lum::gl {
 	/// Layouts
 	///////////////////////////////////////////////////
 
-	rhi::VertexLayoutHandle GL_Device::CreateVertexLayout( const rhi::VertexLayoutDescriptor& desc, rhi::BufferHandle vbo ) {
+	rhi::VertexLayoutHandle GL_Device::CreateVertexLayout( const VertexLayoutDescriptor& desc, const BufferHandle& vbo ) {
 
 		HOTPATH_ASSERT_CUSTOM(!m_buffers.Exists(vbo), "Buffer doesn't exists", rhi::VertexLayoutHandle{});
 		HOTPATH_ASSERT_CUSTOM(desc.attributes.size() <= 0, "VertexLayout has no attributes", rhi::VertexLayoutHandle{});
@@ -241,26 +241,43 @@ namespace lum::gl {
 		return m_layouts.CreateHandle(std::move(layout));
 
 	}
-	void					GL_Device::DeleteVertexLayout( rhi::VertexLayoutHandle& layout ) {
+	void					GL_Device::DeleteVertexLayout( VertexLayoutHandle& layout ) {
 
 
 	}
+	void	GL_Device::SetMat4(const ShaderHandle& shader, const glm::mat4& mat) {
 
+	}
+	void	GL_Device::Setf(const ShaderHandle& shader, float value) {
+
+	}
+	void	GL_Device::Seti(const ShaderHandle& shader, int value) {
+
+	}
+	void	GL_Device::SetVec3(const ShaderHandle& shader, const glm::vec4& vec) {
+
+	}
+	void	GL_Device::SetVec3(const ShaderHandle& shader, const glm::vec3& vec) {
+
+	}
+	void	GL_Device::SetVec3(const ShaderHandle& shader, const glm::vec2& vec) {
+
+	}
 
 	///////////////////////////////////////////////////
 	/// Shaders
 	///////////////////////////////////////////////////
 
-	rhi::ShaderHandle	GL_Device::CreateShader	( const rhi::ShaderDescriptor& desc ) {
+	rhi::ShaderHandle	GL_Device::CreateShader	( const ShaderDescriptor& desc ) {
 		if (m_shaders.DenseSize() >= MAX_SHADERS) {
 			LOG_ERROR("Max shaders reached");
 			return rhi::ShaderHandle{};
 		}
 		std::string&& vfile = AssetService::LoadShader(desc.vertex_source);
-		const char* vcstr = vfile.c_str();
+		cstr vcstr = vfile.c_str();
 
 		std::string&& ffile = AssetService::LoadShader(desc.fragment_source);
-		const char* fcstr = ffile.c_str();
+		cstr fcstr = ffile.c_str();
 
 		rhi::Shader shader;
 
@@ -285,13 +302,13 @@ namespace lum::gl {
 
 		return m_shaders.CreateHandle(std::move(shader));
 	}
-	void				GL_Device::BindShader	( rhi::ShaderHandle shader ) {
+	void				GL_Device::BindShader	( const ShaderHandle& shader ) {
 		HOTPATH_ASSERT_VOID(!m_shaders.Exists(shader), "Shader doesn't exists");
 
 		glUseProgram(m_shaders[shader].handle);
 
 	}
-	void				GL_Device::DeleteShader	( rhi::ShaderHandle& shader ) {
+	void				GL_Device::DeleteShader	( ShaderHandle& shader ) {
 
 	}
 
@@ -300,7 +317,7 @@ namespace lum::gl {
 	/// Textures
 	///////////////////////////////////////////////////
 
-	rhi::TextureHandle	GL_Device::CreateTexture2D(const rhi::TextureDescriptor& desc) {
+	rhi::TextureHandle	GL_Device::CreateTexture2D(const TextureDescriptor& desc) {
 		if (m_textures.DenseSize() >= MAX_TEXTURES) {
 			LOG_ERROR("Max textures reached");
 			return rhi::TextureHandle{};
@@ -348,7 +365,7 @@ namespace lum::gl {
 		
 		GLfloat max_anisotropy;
 		float anisotropy = desc.anisotropy;
-		glGetFloatv(GL_TEXTURE_MAX_ANISOTROPY, &max_anisotropy);
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &max_anisotropy);
 		if (anisotropy < max_anisotropy && anisotropy > 0)
 			glTextureParameteri(texture.handle.gl_handle, GL_TEXTURE_MAX_ANISOTROPY, anisotropy);
 
@@ -360,15 +377,15 @@ namespace lum::gl {
 		return m_textures.CreateHandle(std::move(texture));
 	}
 	// TO IMPLEMENT:
-	rhi::TextureHandle	GL_Device::CreateTexture3D(const rhi::TextureDescriptor& desc) {
+	rhi::TextureHandle	GL_Device::CreateTexture3D(const TextureDescriptor& desc ) {
 
 		rhi::Texture texture;
 		return m_textures.CreateHandle(std::move(texture));
 	}
-	void			GL_Device::DeleteTexture(rhi::TextureHandle& texture) {
+	void			GL_Device::DeleteTexture( TextureHandle& texture ) {
 
 	}
-	void			GL_Device::BindTexture(rhi::TextureHandle texture) {
+	void			GL_Device::BindTexture( const TextureHandle& texture ) {
 
 		rhi::Texture& tex = m_textures[texture];
 
@@ -381,14 +398,14 @@ namespace lum::gl {
 	/// Other
 	///////////////////////////////////////////////////
 
-	void GL_Device::Draw(rhi::VertexLayoutHandle vao, uint32_t vertex_count) {
+	void GL_Device::Draw(const VertexLayoutHandle& vao, uint32_t vertex_count) {
 		HOTPATH_ASSERT_VOID(!m_layouts.Exists(vao), "Cannot draw, invalid vertex layout");
 
 		glBindVertexArray(m_layouts[vao].vao);
 		glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
 	}
-	void GL_Device::DrawElements(rhi::VertexLayoutHandle vao, uint32_t indices_count) {
+	void GL_Device::DrawElements( const VertexLayoutHandle& vao, uint32_t indices_count) {
 		HOTPATH_ASSERT_VOID(!m_layouts.Exists(vao), "Cannot draw, invalid vertex layout");
 
 		glBindVertexArray(m_layouts[vao].vao);
@@ -455,7 +472,7 @@ namespace lum::gl {
 		return true;
 
 	}
-	GLbitfield	GL_Device::TranslateMappingFlags	( rhi::MapFlag flags ) {
+	GLbitfield	GL_Device::TranslateMappingFlags	( MapFlag flags ) {
 		GLbitfield flag = 0;
 
 		if (flags & rhi::map_flags::Persistent)			flag |= GL_MAP_PERSISTENT_BIT;

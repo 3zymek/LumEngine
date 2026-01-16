@@ -35,7 +35,7 @@ namespace lum::rhi {
 		float anisotropy = 0;
 
 		// Path/Name of the texture
-		const char* filename;
+		cstr filename;
 
 	};
 
