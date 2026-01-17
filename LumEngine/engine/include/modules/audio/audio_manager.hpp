@@ -60,7 +60,6 @@ namespace lum {
 			*
 			*  @thread_safety Call from main thread before any audio operations.
 			*/
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void Init(
 				unsigned int maxchannels = 512,
 				AudioInitFlags flags = AudioInitFlags::Default,
@@ -80,7 +79,6 @@ namespace lum {
 			 *  @remark Replaces any existing sound with the same name. 3D sounds require a listener.
 			 *  @thread_safety Call from main audio thread or FMOD-safe thread.
 			 */
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void LoadSound( string_view alias_name, string_view path, FMOD_MODE mode = FMOD_3D );
 
 
@@ -94,7 +92,6 @@ namespace lum {
 			*
 			*  @thread_safety Call from main thread or audio-safe thread.
 			*/
-			LUM_FUNC_RUNTIME_QUALIFIER
 			AudioListenerWrapper	CreateListener( EntityID );
 
 
@@ -108,55 +105,25 @@ namespace lum {
 			*
 			*  @thread_safety Call from main thread or audio-safe thread.
 			*/
-			LUM_FUNC_RUNTIME_QUALIFIER
 			AudioEmitterWrapper		CreateEmitter( Entity );
 
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void AddClipToEmitter		( EmitterHandle, AudioHandle );
-			
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void RemoveClipFromEmitter	( EmitterHandle, AudioHandle );
-			
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void PlayEmitterClip		( EmitterHandle, AudioHandle );
-			
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void StopEmitterClip		( EmitterHandle, AudioHandle );
-			
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void SetEmitterClipVolume	( EmitterHandle, AudioHandle, float );
-			
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void SetEmitterClipPitch	( EmitterHandle, AudioHandle, float );
-			
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void SetEmitterClipPause	( EmitterHandle, AudioHandle, bool );
-			
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void SetEmitterClipLoop		( EmitterHandle, AudioHandle, bool );
-			
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void DestroyEmitter			( EmitterHandle );
 
-			LUM_FUNC_RUNTIME_QUALIFIER
 			float	GetEmitterClipVolume( EmitterHandle, AudioHandle );
-			
-			LUM_FUNC_RUNTIME_QUALIFIER
 			float	GetEmitterClipPitch	( EmitterHandle, AudioHandle );
-			
-			LUM_FUNC_RUNTIME_QUALIFIER
 			bool	GetEmitterClipLooped( EmitterHandle, AudioHandle );
-
-			LUM_FUNC_RUNTIME_QUALIFIER
 			bool	GetEmitterClipPaused( EmitterHandle, AudioHandle );
 
-			LUM_FUNC_RUNTIME_QUALIFIER
-			AudioListenerWrapper* GetListener( );
-
-			LUM_FUNC_RUNTIME_QUALIFIER
+			AudioListenerWrapper*		GetListener	( );
 			std::optional<AudioHandle>	GetIDByName	( string_view );
-
-			LUM_FUNC_RUNTIME_QUALIFIER
 			bool						NameExists	( string_view );
 
 		private:
@@ -171,11 +138,9 @@ namespace lum {
 			/// Private Helpers
 			////////////////////////////////////
 
-			LUM_FUNC_RUNTIME_QUALIFIER
 			void SubscribeEvents		( );
 
-			LUM_FUNC_RUNTIME_QUALIFIER
-			inline bool ValidateEmitterID( EmitterHandle id ) noexcept {
+			inline bool ValidateEmitterID	( EmitterHandle id ) noexcept {
 
 				if (!m_emitters.contains(id)) {
 					LOG_WARN("Emitter does not exist");
@@ -184,9 +149,7 @@ namespace lum {
 				return true;
 
 			}
-
-			LUM_FUNC_RUNTIME_QUALIFIER
-			inline bool ValidateAudioID( AudioHandle id ) noexcept {
+			inline bool ValidateAudioID		( AudioHandle id ) noexcept {
 
 				if (!m_sounds.contains(id)) {
 					LOG_WARN("Sound does not exist");
@@ -195,8 +158,6 @@ namespace lum {
 				return true;
 
 			}
-
-			LUM_FUNC_RUNTIME_QUALIFIER
 			inline bool ValidateEmitterAndAudioID( EmitterHandle emitterID, AudioHandle audioID ) noexcept {
 
 				return ValidateEmitterID(emitterID) && ValidateAudioID(audioID);

@@ -77,7 +77,7 @@ namespace lum::rhi {
 		* 
 		*/
 		virtual void AttachElementBufferToLayout( const BufferHandle& ebo, const VertexLayoutHandle& vao ) = 0;
-
+		virtual void SetUniformBufferBinding(const BufferHandle& ubo, int binding) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -126,12 +126,12 @@ namespace lum::rhi {
 		*
 		*/
 		virtual void			DeleteShader( ShaderHandle& shader ) = 0;
-		virtual void			SetMat4		( const ShaderHandle& shader, const glm::mat4& mat ) = 0;
-		virtual void			Setf		( const ShaderHandle& shader, float value ) = 0;
-		virtual void			Seti		( const ShaderHandle& shader, int value ) = 0;
-		virtual void			SetVec3		( const ShaderHandle& shader, const glm::vec4& vec ) = 0;
-		virtual void			SetVec3		( const ShaderHandle& shader, const glm::vec3& vec ) = 0;
-		virtual void			SetVec3		( const ShaderHandle& shader, const glm::vec2& vec ) = 0;
+		virtual void			SetMat4		( const ShaderHandle& shader, cstr location, const glm::mat4& mat ) = 0;
+		virtual void			Setf		( const ShaderHandle& shader, cstr location, float value ) = 0;
+		virtual void			Seti		( const ShaderHandle& shader, cstr location, int value ) = 0;
+		virtual void			SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec4& vec ) = 0;
+		virtual void			SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec3& vec ) = 0;
+		virtual void			SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec2& vec ) = 0;
 
 		///////////////////////////////////////////////////
 		/// Textures
@@ -155,10 +155,17 @@ namespace lum::rhi {
 
 	protected:
 
-		static constexpr unsigned int MAX_SHADERS = 8;
-		static constexpr unsigned int MAX_BUFFERS = 10000;
-		static constexpr unsigned int MAX_LAYOUTS = 10000;
-		static constexpr unsigned int MAX_TEXTURES = 1000;
+		LUM_CONST_VAR_QUALIFIER
+		static unsigned int MAX_SHADERS = 8;
+
+		LUM_CONST_VAR_QUALIFIER
+		static unsigned int MAX_BUFFERS = 10000;
+
+		LUM_CONST_VAR_QUALIFIER
+		static unsigned int MAX_LAYOUTS = 10000;
+
+		LUM_CONST_VAR_QUALIFIER
+		static unsigned int MAX_TEXTURES = 1000;
 
 		cstd::handle_pool<Shader, ShaderHandle>				m_shaders	{ MAX_SHADERS };
 		cstd::handle_pool<Buffer, BufferHandle>				m_buffers	{ MAX_BUFFERS };

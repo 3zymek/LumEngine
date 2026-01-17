@@ -36,7 +36,7 @@ namespace lum {
 			TextureData tx;
 			int ignore;
 			unsigned char* data = stbi_load(absolute_path.c_str(), &tx.width, &tx.height, &ignore, 4);
-			assert(tx.width > 0 & tx.height > 0);
+			assert(tx.width > 0 && tx.height > 0);
 			tx.color_channels = 4;
 
 			if (!data) {

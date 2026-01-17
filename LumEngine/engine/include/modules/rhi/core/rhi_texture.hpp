@@ -28,14 +28,14 @@ namespace lum::rhi {
 	struct TextureDescriptor {
 
 		// Filter that applies to texture, when texture is magnified (scaled up)
-		TextureMagFilter mag_filter;
+		TextureMagFilter mag_filter{};
 		// Filter that applies to texture, when texture is minified (scaled down)
-		TextureMinFilter min_filter;
+		TextureMinFilter min_filter{};
 
 		float anisotropy = 0;
 
 		// Path/Name of the texture
-		cstr filename;
+		cstr filename = nullptr;
 
 	};
 

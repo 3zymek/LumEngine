@@ -195,6 +195,13 @@ namespace lum::gl {
 		glVertexArrayElementBuffer(m_layouts[vao].vao, m_buffers[ebo].handle.gl_handle);
 
 	}
+	void					GL_Device::SetUniformBufferBinding(const BufferHandle& ubo, int binding) {
+		HOTPATH_ASSERT_VOID(!m_buffers.Exists(ubo), "Uniform buffer doesn't exists");
+
+		rhi::Buffer buffer = m_buffers[ubo];
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer.handle.gl_handle);
+
+	}
 
 	///////////////////////////////////////////////////
 	/// Layouts
@@ -245,24 +252,6 @@ namespace lum::gl {
 
 
 	}
-	void	GL_Device::SetMat4(const ShaderHandle& shader, const glm::mat4& mat) {
-
-	}
-	void	GL_Device::Setf(const ShaderHandle& shader, float value) {
-
-	}
-	void	GL_Device::Seti(const ShaderHandle& shader, int value) {
-
-	}
-	void	GL_Device::SetVec3(const ShaderHandle& shader, const glm::vec4& vec) {
-
-	}
-	void	GL_Device::SetVec3(const ShaderHandle& shader, const glm::vec3& vec) {
-
-	}
-	void	GL_Device::SetVec3(const ShaderHandle& shader, const glm::vec2& vec) {
-
-	}
 
 	///////////////////////////////////////////////////
 	/// Shaders
@@ -311,7 +300,28 @@ namespace lum::gl {
 	void				GL_Device::DeleteShader	( ShaderHandle& shader ) {
 
 	}
+	void				GL_Device::SetMat4		( const ShaderHandle& shader, cstr location, const glm::mat4& mat ) {
 
+		GLuint loc = glGetUniformLocation(m_shaders[shader].handle, location);
+		if (loc == -1) LOG_ERROR(std::format("Couldn't localize uniform named {}", location));
+		glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mat));
+
+	}
+	void				GL_Device::Setf			( const ShaderHandle& shader, cstr location, float value ) {
+
+	}
+	void				GL_Device::Seti			( const ShaderHandle& shader, cstr location, int value ) {
+
+	}
+	void				GL_Device::SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec4& vec ) {
+
+	}
+	void				GL_Device::SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec3& vec ) {
+
+	}
+	void				GL_Device::SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec2& vec ) {
+
+	}
 
 	///////////////////////////////////////////////////
 	/// Textures
@@ -329,27 +339,19 @@ namespace lum::gl {
 		texture.width = data.width;
 		texture.mag_filters = desc.mag_filter;
 		texture.min_filters = desc.min_filter;
-		glCreateTextures(GL_TEXTURE_2D, 1, &texture.handle.gl_handle);
-		if (desc.min_filter != rhi::TextureMinFilter::Linear && desc.min_filter != rhi::TextureMinFilter::Nearest) {
-			glTextureStorage2D(
-				texture.handle.gl_handle,
-				rhi::mipmap_lvls(texture.width, texture.height),
-				GL_RGBA8,
-				texture.width,
-				texture.height
-			);
-		}
-		else {
-			glTextureStorage2D(
-				texture.handle.gl_handle,
-				1,
-				GL_RGBA8,
-				texture.width,
-				texture.height
-			);
-		}
 
-		glGenerateMipmap(GL_TEXTURE_2D);
+		glCreateTextures(GL_TEXTURE_2D, 1, &texture.handle.gl_handle);
+
+		int mipmaps = (desc.min_filter != rhi::TextureMinFilter::Linear && desc.min_filter != rhi::TextureMinFilter::Nearest) ?
+			rhi::mipmap_lvls(texture.width, texture.height) : 1;
+
+		glTextureStorage2D(
+			texture.handle.gl_handle,
+			mipmaps,
+			GL_RGBA8,
+			texture.width,
+			texture.height
+		);
 
 		glTextureSubImage2D(
 			texture.handle.gl_handle, 
@@ -362,6 +364,9 @@ namespace lum::gl {
 			GL_UNSIGNED_BYTE, 
 			data.pixels.data()
 		);
+
+		if (mipmaps > 1)
+			glGenerateTextureMipmap(texture.handle.gl_handle);
 		
 		GLfloat max_anisotropy;
 		float anisotropy = desc.anisotropy;
@@ -430,7 +435,14 @@ namespace lum::gl {
 	/// Private helpers
 	///////////////////////////////////////////////////
 
-	GLbitfield GL_Device::TranslateTextureMinFilter(const rhi::TextureMinFilter& filter) {
+	void GL_Device::CacheUniformLocations( ) {
+
+
+
+
+	}
+
+	GLbitfield	GL_Device::TranslateTextureMinFilter(const rhi::TextureMinFilter& filter) {
 
 		switch (filter) {
 		case rhi::TextureMinFilter::Linear: return GL_LINEAR;
@@ -444,7 +456,7 @@ namespace lum::gl {
 		return GL_NEAREST;
 
 	}
-	GLbitfield GL_Device::TranslateTextureMagFilter(const rhi::TextureMagFilter& filter) {
+	GLbitfield	GL_Device::TranslateTextureMagFilter(const rhi::TextureMagFilter& filter) {
 
 		switch(filter) {
 		case rhi::TextureMagFilter::Linear: return GL_LINEAR;

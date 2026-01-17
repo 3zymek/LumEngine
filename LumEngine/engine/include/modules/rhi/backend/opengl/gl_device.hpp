@@ -5,6 +5,7 @@
 #include "core/core_defines.hpp"
 #include "rhi/core/rhi_vertex_layout.hpp"
 #include "core/asset_service.hpp"
+#include "core/utils/sparse_set.hpp"
 namespace lum::gl {
 
 	class GL_Device : public rhi::RHI_Device {
@@ -19,7 +20,7 @@ namespace lum::gl {
 		using ShaderHandle		= rhi::ShaderHandle;
 		using ShaderDescriptor	= rhi::ShaderDescriptor;
 
-		using Texture = rhi::Texture;
+		using Texture			= rhi::Texture;
 		using TextureHandle		= rhi::TextureHandle;
 		using TextureDescriptor = rhi::TextureDescriptor;
 
@@ -38,8 +39,9 @@ namespace lum::gl {
 		void			DeleteBuffer		( BufferHandle& buff )															override;
 		vptr			MapBuffer			( const BufferHandle& buff, MapFlag flags, size_t offset = 0, size_t size = 0 )	override;
 		void			UnmapBuffer			( const BufferHandle& buff )													override;
-		void			AttachElementBufferToLayout( const BufferHandle&, const VertexLayoutHandle& )						override;
-		
+		void			AttachElementBufferToLayout	( const BufferHandle&, const VertexLayoutHandle& )						override;
+		void			SetUniformBufferBinding		( const BufferHandle& ubo, int binding )								override;
+
 		///////////////////////////////////////////////////
 		/// Layouts
 		///////////////////////////////////////////////////
@@ -51,24 +53,24 @@ namespace lum::gl {
 		/// Shaders
 		///////////////////////////////////////////////////
 
-		ShaderHandle	CreateShader( const ShaderDescriptor& desc )						override;
-		void			BindShader	( const ShaderHandle& shader )							override;
-		void			DeleteShader( ShaderHandle& shader )								override;
-		virtual void	SetMat4		( const ShaderHandle& shader, const glm::mat4& mat )	override;
-		virtual void	Setf		( const ShaderHandle& shader, float value )				override;
-		virtual void	Seti		( const ShaderHandle& shader, int value )				override;
-		virtual void	SetVec3		( const ShaderHandle& shader, const glm::vec4& vec )	override;
-		virtual void	SetVec3		( const ShaderHandle& shader, const glm::vec3& vec )	override;
-		virtual void	SetVec3		( const ShaderHandle& shader, const glm::vec2& vec )	override;
+		ShaderHandle	CreateShader( const ShaderDescriptor& desc )									override;
+		void			BindShader	( const ShaderHandle& shader )										override;
+		void			DeleteShader( ShaderHandle& shader )											override;
+		void			SetMat4		( const ShaderHandle& shader, cstr location, const glm::mat4& mat )	override;
+		void			Setf		( const ShaderHandle& shader, cstr location, float value )			override;
+		void			Seti		( const ShaderHandle& shader, cstr location, int value )			override;
+		void			SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec4& vec )	override;
+		void			SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec3& vec )	override;
+		void			SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec2& vec )	override;
 
 		///////////////////////////////////////////////////
 		/// Textures
 		///////////////////////////////////////////////////
 
-		virtual TextureHandle	CreateTexture2D	( const TextureDescriptor& desc )	override;
-		virtual TextureHandle	CreateTexture3D	( const TextureDescriptor& desc )	override;
-		virtual void			DeleteTexture	( TextureHandle& texture )			override;
-		virtual void			BindTexture		( const TextureHandle& texture )	override;
+		TextureHandle	CreateTexture2D	( const TextureDescriptor& desc )	override;
+		TextureHandle	CreateTexture3D	( const TextureDescriptor& desc )	override;
+		void			DeleteTexture	( TextureHandle& texture )			override;
+		void			BindTexture		( const TextureHandle& texture )	override;
 
 
 		///////////////////////////////////////////////////
@@ -82,12 +84,18 @@ namespace lum::gl {
 
 	protected:
 
+		LUM_CONST_VAR_QUALIFIER 
+		static unsigned int MAX_UNIFORMS = 1000;
+
+		cstd::sparse_set<GLuint, uint32_t> m_unifomrs{ MAX_UNIFORMS };
+
 		Window* window = nullptr;
 
 		///////////////////////////////////////////////////
 		/// Private helpers
 		///////////////////////////////////////////////////
 
+		void		CacheUniformLocations();
 		GLbitfield	TranslateTextureMinFilter(const rhi::TextureMinFilter&);
 		GLbitfield	TranslateTextureMagFilter(const rhi::TextureMagFilter&);
 		bool		IsValidBufferDescriptor	( const BufferDescriptor& desc );

@@ -2,11 +2,11 @@
 #include "sparse_set.hpp"
 
 template<typename val, typename sparse_val>
-val& cstd::sparse_set<val, sparse_val>::operator[](const sparse_t& _idx) {
+constexpr val& cstd::sparse_set<val, sparse_val>::operator[](const sparse_t& _idx) {
 	return m_dense[m_sparse[_idx]];
 }
 template<typename val, typename sparse_val>
-val& cstd::sparse_set<val, sparse_val>::get_at(const sparse_t& _idx) {
+constexpr val& cstd::sparse_set<val, sparse_val>::get_at(const sparse_t& _idx) {
 	if (_idx > m_size) throw detail::OutOfRange("index out of range");
 	else if (m_sparse[_idx] == NULL_SPARSE) throw detail::NullValue("null value at index");
 	return m_dense[m_sparse[_idx]];
@@ -14,7 +14,7 @@ val& cstd::sparse_set<val, sparse_val>::get_at(const sparse_t& _idx) {
 
 template<typename val, typename sparse_val>
 template<typename T>
-void cstd::sparse_set<val, sparse_val>::emplace(T&& _value, const sparse_t& _idx) {
+constexpr void cstd::sparse_set<val, sparse_val>::emplace(T&& _value, const sparse_t& _idx) {
 	if ((_idx >= m_size) or (m_sparse[_idx] != NULL_SPARSE)) return;
 
 	m_dense.emplace_back(std::forward<T>(_value));
@@ -23,7 +23,7 @@ void cstd::sparse_set<val, sparse_val>::emplace(T&& _value, const sparse_t& _idx
 }
 
 template<typename val, typename sparse_val>
-void cstd::sparse_set<val, sparse_val>::reserve(const sparse_t& _size) noexcept {
+constexpr void cstd::sparse_set<val, sparse_val>::reserve(const sparse_t& _size) noexcept {
 	m_dense.reserve(_size);
 	m_sparse.reserve(_size);
 	m_dense_to_sparse.reserve(_size);

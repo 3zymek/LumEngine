@@ -1,11 +1,36 @@
 #pragma once
 
+///////////////////////////////////////////
 // Shaders locations
+///////////////////////////////////////////
 
-#define LUM_POSITION 0
-#define LUM_COLOR 1
-#define LUM_UV 2
-#define LUM_NORMAL 3
+// Shader location for position
+#define LUM_LAYOUT_POSITION 0
+
+// Shader location for color
+#define LUM_LAYOUT_COLOR 1
+
+// Shader location for uv
+#define LUM_LAYOUT_UV 2
+
+// Shader location for normal
+#define LUM_LAYOUT_NORMAL 3
+
+
+///////////////////////////////////////////
+// Uniform buffers
+///////////////////////////////////////////
+
+// Uniform buffer binding for camera ( mat4 uProjection, mat4 uView );
+#define LUM_UBO_CAMERA_BINDING 0
+
+// Uniform buffer binding for camera ( mat4 uModel );
+#define LUM_UBO_MODEL_BINDING 1
+
+
+///////////////////////////////////////////
+// Instance names
+///////////////////////////////////////////
 
 #define LUM_PROJECTION_MAT4 uProjection
 #define LUM_PROJECTION_MAT4_STR "uProjection"
@@ -14,4 +39,4 @@
 #define LUM_VIEW_MAT4_STR "uView"
 
 #define LUM_MODEL_MAT4 uModel
-#define LUM_MODEL_MAT4_STR "uView"
+#define LUM_MODEL_MAT4_STR "uModel"

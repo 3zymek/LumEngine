@@ -21,7 +21,6 @@ namespace lum {
 	/// @tparam NULL_VAL Null value for ID's
 	template<typename T, int NULL_VAL>
 	struct GenerateID {
-		LUM_FUNC_RUNTIME_QUALIFIER 
 		static uint64_t Get() {
 			return globalID++;
 		}
@@ -34,48 +33,42 @@ namespace lum {
 	/// @return The value casted to float.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	LUM_FUNC_HOT_QUALIFIER
-	float to_f(T value) { return static_cast<float>(value); }
+	inline constexpr float to_f(T value) { return static_cast<float>(value); }
 
 	/// Converts any arithmetic type to unsigned int at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to unsigned int.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	LUM_FUNC_HOT_QUALIFIER
-	float to_u(T value) { return static_cast<unsigned int>(value); }
+	inline constexpr unsigned int to_u(T value) { return static_cast<unsigned int>(value); }
 
 	/// Converts any arithmetic type to uint32_t at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to uint32_t.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	LUM_FUNC_HOT_QUALIFIER
-	float to_u32(T value) { return static_cast<uint32_t>(value); }
+	inline constexpr uint32_t to_u32(T value) { return static_cast<uint32_t>(value); }
 
 	/// Converts any arithmetic type to uint64_t at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to uint64_t.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	LUM_FUNC_HOT_QUALIFIER
-	float to_u64(T value) { return static_cast<uint64_t>(value); }
+	inline constexpr uint64_t to_u64(T value) { return static_cast<uint64_t>(value); }
 
 	/// Converts any arithmetic type to double at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to double.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	LUM_FUNC_HOT_QUALIFIER
-	float to_d(T value) { return static_cast<double>(value); }
+	inline constexpr float to_d(T value) { return static_cast<double>(value); }
 
 	/// Converts any arithmetic type to int at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to int.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	LUM_FUNC_HOT_QUALIFIER
-	float to_i(T value) { return static_cast<int>(value); }
+	inline constexpr int to_i(T value) { return static_cast<int>(value); }
 
 	/// Calculates linear interpolation in time
 	/// @tparam T Arithmetic type of calculations
@@ -84,8 +77,7 @@ namespace lum {
 	/// @param t Time
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	LUM_FUNC_HOT_QUALIFIER
-	T lerp(T a, T b, float t) {
+	inline constexpr T lerp(T a, T b, float t) {
 		return a + (b - a) * t;
 	}
 
@@ -93,16 +85,14 @@ namespace lum {
 	/// @tparam T arithmetic type.
 	template<typename T>
 	requires std::is_arithmetic_v<T>
-	LUM_FUNC_HOT_QUALIFIER
-	T max_val() {
+	inline constexpr T max_val() {
 		return std::numeric_limits<T>::max();
 	}
 
 	/// @return Returns definitive size of vector in bytes.
 	/// @param vector Vector to calculate size.
 	template<typename T>
-	LUM_FUNC_HOT_QUALIFIER
-	size_t bytesize(const std::vector<T>& vector) {
+	inline constexpr size_t bytesize(const std::vector<T>& vector) {
 		return sizeof(T) * vector.size();
 	}
 
@@ -110,8 +100,7 @@ namespace lum {
 	/// @param arr Pointer to the data.
 	/// @param size How much elements.
 	template<typename T>
-	LUM_FUNC_HOT_QUALIFIER
-	size_t bytesize(const T* arr, size_t size) {
+	inline constexpr size_t bytesize(const T* arr, size_t size) {
 		return sizeof(T) * size;
 	}
 

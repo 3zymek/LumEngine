@@ -1,7 +1,7 @@
 #pragma once
 #include "logger.hpp"
 // Settings
-//#define ENABLE_LOGGER
+#define ENABLE_LOGGER
 
 #define DEBUG_RENDER
 

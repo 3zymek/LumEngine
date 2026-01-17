@@ -8,26 +8,7 @@
 #define LUM_FORCEINLINE inline
 #endif
 
-#define LUM_INLINE_QUALIFIER        inline
-#define LUM_CONSTEXPR_QUALIFIER     constexpr
-#define LUM_NODISCARD_QUALIFIER     [[nodiscard]]
-#define LUM_FORCEINLINE_QUALIFIER   LUM_FORCEINLINE
-#define LUM_NOEXCEPT_QUALIFIER      noexcept
+#define LUM_NODISCARD     [[nodiscard]]
+#define LUM_NOEXCEPT      noexcept
 
-// inline constexpr
-#define LUM_CONST_VAR_QUALIFIER \
-    LUM_INLINE_QUALIFIER \
-    LUM_CONSTEXPR_QUALIFIER
-
-// __forceinline constexpr
-#define LUM_FUNC_HOT_QUALIFIER \
-    LUM_FORCEINLINE_QUALIFIER \
-    LUM_CONSTEXPR_QUALIFIER
-
-// inline constexpr
-#define LUM_FUNC_INLINE_QUALIFIER \
-    LUM_INLINE_QUALIFIER \
-    LUM_CONSTEXPR_QUALIFIER
-
-// inline
-#define LUM_FUNC_RUNTIME_QUALIFIER
+#define LUM_CONST_VAR_QUALIFIER inline constexpr

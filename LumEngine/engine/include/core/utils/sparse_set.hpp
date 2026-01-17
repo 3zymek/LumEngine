@@ -3,7 +3,7 @@
 //
 // sparse_set<T>
 // Dense buffer + sparse index map. O(1) insert/erase without holes.
-// Ideal for ECS component storage (fast random access by entity ID).
+// Perfect for ECS component storage (fast random access by entity ID).
 #pragma once
 #include "core/core_pch.hpp"
 namespace cstd {
@@ -49,14 +49,14 @@ namespace cstd {
 		const_iterator begin() const { return m_dense.begin(); }
 		const_iterator end() const { return m_dense.end(); }
 
-		val& operator[](const sparse_t&);
+		constexpr val& operator[](const sparse_t&);
 
-		val& get_at(const sparse_t&);
+		constexpr val& get_at(const sparse_t&);
 
 		template<typename T>
-		void emplace(T&&, const sparse_t&);
+		constexpr void emplace(T&&, const sparse_t&);
 
-		void reserve(const sparse_t&) noexcept;
+		constexpr void reserve(const sparse_t&) noexcept;
 
 		inline constexpr sparse_t size()		{ return m_size; }
 		inline constexpr sparse_t dense_size() { return m_dense.size(); }

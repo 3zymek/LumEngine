@@ -12,24 +12,19 @@ namespace lum {
 		DEBUG = 0b0001'0000,
 		ALL = FATAL | ERROR | WARN | INFO | DEBUG
 	};
-	LUM_FUNC_INLINE_QUALIFIER
-	SeverityMask operator|(LogSeverity a, LogSeverity b) {
+	inline constexpr SeverityMask operator|(LogSeverity a, LogSeverity b) {
 		return static_cast<SeverityMask>(a) | static_cast<SeverityMask>(b);
 	}
-	LUM_FUNC_INLINE_QUALIFIER
-	SeverityMask operator|(SeverityMask a, LogSeverity b) {
+	inline constexpr SeverityMask operator|(SeverityMask a, LogSeverity b) {
 		return a | static_cast<SeverityMask>(b);
 	}
-	LUM_FUNC_INLINE_QUALIFIER
-	SeverityMask operator|(LogSeverity a, SeverityMask b) {
+	inline constexpr SeverityMask operator|(LogSeverity a, SeverityMask b) {
 		return static_cast<SeverityMask>(a) | b;
 	}
-	LUM_FUNC_INLINE_QUALIFIER
-	SeverityMask operator&(SeverityMask mask, LogSeverity sev) {
+	inline constexpr SeverityMask operator&(SeverityMask mask, LogSeverity sev) {
 		return mask & static_cast<SeverityMask>(sev);
 	}
-	LUM_FUNC_INLINE_QUALIFIER
-	SeverityMask& operator|=(SeverityMask& mask, LogSeverity sev) {
+	inline constexpr SeverityMask& operator|=(SeverityMask& mask, LogSeverity sev) {
 		mask |= static_cast<SeverityMask>(sev);
 		return mask;
 	}
@@ -46,24 +41,19 @@ namespace lum {
 			return log;
 		}
 
-		LUM_FUNC_RUNTIME_QUALIFIER
-		void EnableLog	( SeverityMask sev ) {
+		inline constexpr void EnableLog	( SeverityMask sev ) {
 			g_severity |= sev;
 		}
-		LUM_FUNC_RUNTIME_QUALIFIER
-		void EnableLog( LogSeverity sev ) {
+		inline constexpr void EnableLog( LogSeverity sev ) {
 			g_severity |= sev;
 		}
-		LUM_FUNC_RUNTIME_QUALIFIER
-		void DisableLog( SeverityMask sev ) {
+		inline constexpr void DisableLog( SeverityMask sev ) {
 			g_severity &= ~sev;
 		}
-		LUM_FUNC_RUNTIME_QUALIFIER
-		void DisableLog	( LogSeverity sev ) {
+		inline constexpr void DisableLog	( LogSeverity sev ) {
 			g_severity &= ~static_cast<SeverityMask>(sev);
 		}
-		LUM_FUNC_RUNTIME_QUALIFIER
-		void LogInit		( InitStatus stat, const char* msg ) {
+		inline void LogInit		( InitStatus stat, const char* msg ) {
 			std::cout << "[" << ToColor(stat) << ToString(stat) << cmdcolor::reset << "] " << msg << '\n';
 		}
 
