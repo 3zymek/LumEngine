@@ -2,10 +2,15 @@
 #include "window_context/window.hpp"
 #include "core/core_defines.hpp"
 #include "core/lum_assert.hpp"
+#if LUM_ENABLE_IMGUI == 1
+	#include "imgui.h"
+	#include "imgui_impl_glfw.h"
+	#include "imgui_impl_opengl3.h"
+#endif
 namespace lum {
 
 	namespace rhi::detail {
-#if defined(DEBUG_RENDER)
+#		if defined(LUM_DEBUG_RENDER)
 		void APIENTRY GLDebugCallback(
 			GLenum src,
 			GLenum type,
@@ -19,14 +24,14 @@ namespace lum {
 
 			if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return; // disable unnecessary spam 
 			if (severity == GL_DEBUG_SEVERITY_LOW)
-				LOG_INFO(msg);
+				LUM_LOG_INFO(msg);
 			if (severity == GL_DEBUG_SEVERITY_MEDIUM)
-				LOG_WARN(msg);
+				LUM_LOG_WARN(msg);
 			if (severity == GL_DEBUG_SEVERITY_HIGH)
-				LOG_FATAL(msg);
+				LUM_LOG_FATAL(msg);
 
 		}
-#endif
+#		endif
 	}
 
 	///  OpenGL window
@@ -49,16 +54,16 @@ namespace lum {
 	void OpenGL_Window::Init( const WindowDescriptor& desc ) {
 
 		if (!glfwInit()) {
-			LOG_FATAL("Failed to initialize GLFW");
+			LUM_LOG_INIT_FAIL("Failed to initialize GLFW");
 			return;
 		}
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#if defined(DEBUG_RENDER)
-		glfwWindowHint(GLFW_CONTEXT_DEBUG, GLFW_OPENGL_DEBUG_CONTEXT);
-#endif
+#		if defined(LUM_DEBUG_RENDER)
+			glfwWindowHint(GLFW_CONTEXT_DEBUG, GLFW_OPENGL_DEBUG_CONTEXT);
+#		endif
 		if (desc.MSAA_samples > 0)
 			glfwWindowHint(GLFW_SAMPLES, desc.MSAA_samples);
 
@@ -71,7 +76,7 @@ namespace lum {
 		height = desc.height;
 
 		if (!m_window) {
-			LOG_FATAL("Failed to initialize window");
+			LUM_LOG_INIT_FAIL("Failed to initialize window");
 			glfwTerminate();
 			return;
 		}
@@ -79,16 +84,22 @@ namespace lum {
 		glfwMakeContextCurrent(m_window);
 
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-			LOG_FATAL("Failed to initialize GLAD");
+			LUM_LOG_INIT_FAIL("Failed to initialize GLAD");
 			glfwTerminate();
 			return;
 		}
 
-#if defined(DEBUG_RENDER)
-		glEnable(GL_DEBUG_OUTPUT);
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		glDebugMessageCallback(rhi::detail::GLDebugCallback, nullptr);
-#endif
+#		if LUM_ENABLE_IMGUI == 1
+			IMGUI_CHECKVERSION();
+			ImGui::CreateContext();
+			ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+			ImGui_ImplOpenGL3_Init("#version 450");
+#		endif
+#		if defined(LUM_DEBUG_RENDER)
+			glEnable(GL_DEBUG_OUTPUT);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			glDebugMessageCallback(rhi::detail::GLDebugCallback, nullptr);
+#		endif
 
 		backend = RenderBackend::OpenGL;
 

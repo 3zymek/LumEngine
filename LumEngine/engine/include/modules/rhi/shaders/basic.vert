@@ -2,16 +2,23 @@
 layout(location = LUM_LAYOUT_POSITION) in vec3 aPos;
 layout(location = LUM_LAYOUT_COLOR) in vec3 aColor;
 layout(location = LUM_LAYOUT_UV) in vec2 aUV;
-
-out vec3 fragColor;
-out vec2 fragUV;
-
 layout(std140, binding = LUM_UBO_CAMERA_BINDING) uniform CameraUniforms {
 	mat4 LUM_VIEW_MAT4;
 	mat4 LUM_PROJECTION_MAT4;
 };
+layout(std140, binding = LUM_UBO_MODEL_BINDING) uniform ModelUniforms {
+	mat4 LUM_MODEL_MAT4;
+	vec3 uModelPos;
+	vec3 uModelScale;
+	vec3 uModelRot;
+};
 
-uniform mat4 LUM_MODEL_MAT4;
+out vec3 fragColor;
+out vec2 fragUV;
+
+out vec3 modelPosition;
+out vec3 modelScale;
+out vec3 modelRotation;
 
 void main() {
 	gl_Position =
@@ -22,4 +29,7 @@ void main() {
 	
 	fragColor = aColor;
 	fragUV = aUV;
+	modelPosition = uModelPos;
+	modelScale = uModelScale;
+	modelRotation = uModelRot;
 }

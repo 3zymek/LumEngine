@@ -1,6 +1,5 @@
 #pragma once
 #include "rhi/rhi_pch.hpp"
-
 namespace lum {
 
 	enum class RenderBackend : uint8_t { OpenGL, /*Vulkan*/ };

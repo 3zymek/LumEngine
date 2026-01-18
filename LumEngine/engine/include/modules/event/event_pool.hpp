@@ -26,7 +26,7 @@ namespace lum {
 
 					SetupCallback(std::forward<Lambda>(lambda), callbacks[current_callbacks_id]);
 
-					LOG_DEBUG(std::format("Subscribed at slot {}", current_callbacks_id));
+					LUM_LOG_DEBUG(std::format("Subscribed at slot {}", current_callbacks_id));
 					return current_callbacks_id++;
 
 				}
@@ -35,7 +35,7 @@ namespace lum {
 				SubscribtionID SubscribePermanently(Lambda&& lambda) {
 
 					if (perm_free_slots.empty()) {
-						LOG_ERROR("Couldn't substribe - slots for permament callbacks are full");
+						LUM_LOG_ERROR("Couldn't substribe - slots for permament callbacks are full");
 						return std::numeric_limits<SubscribtionID>::max();
 					}
 
@@ -45,7 +45,7 @@ namespace lum {
 
 					SetupCallback(std::forward<Lambda>(lambda), perm_callbacks[slot]);
 
-					LOG_DEBUG(std::format("Subscribed permamently at slot {}", slot));
+					LUM_LOG_DEBUG(std::format("Subscribed permamently at slot {}", slot));
 					return slot;
 
 				}
@@ -53,7 +53,7 @@ namespace lum {
 				void Unsubscribe(SubscribtionID id) {
 
 					if (current_callbacks_id < id) {
-						LOG_WARN(std::format("Subscribtion at id {} does not exists", id));
+						LUM_LOG_WARN(std::format("Subscribtion at id {} does not exists", id));
 						return;
 					}
 
@@ -63,13 +63,13 @@ namespace lum {
 
 					callback.Destroy();
 
-					LOG_DEBUG(std::format("Unsubscribed callback at slot {}", id));
+					LUM_LOG_DEBUG(std::format("Unsubscribed callback at slot {}", id));
 
 				}
 				void UnsubscribePermanent(SubscribtionID id) {
 
 					if (perm_active_slots.empty() || to_delete.size() >= MAX_TO_DELETE_CALLBACKS_PER_FRAME) {
-						LOG_WARN("Unable to unsubscribe callback");
+						LUM_LOG_WARN("Unable to unsubscribe callback");
 						return;
 					}
 
@@ -94,7 +94,7 @@ namespace lum {
 						m_events_current.push_back(event);
 					else
 						m_events_next.push_back(event);
-					LOG_DEBUG("Emitting event");
+					LUM_LOG_DEBUG("Emitting event");
 
 				}
 

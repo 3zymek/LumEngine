@@ -40,16 +40,13 @@ namespace lum {
 			tx.color_channels = 4;
 
 			if (!data) {
-				LOG_ERROR(std::format("Failed to load texture {}", file_name));
+				LUM_LOG_ERROR(std::format("Failed to load texture {}", file_name));
 				return TextureData{};
 			}
 
 			size_t size = tx.width * tx.height * tx.color_channels;
 			tx.pixels.resize(size);
 			std::memcpy(tx.pixels.data(), data, size);
-
-			std::cout << tx.width << " " << tx.height << '\n';
-			std::cout << ignore << '\n';
 
 			stbi_image_free(data);
 			return tx;
@@ -58,26 +55,26 @@ namespace lum {
 		inline static std::string LoadAudio(std::string_view file_name) {
 			auto file = audio_path / file_name;
 			if (!detail::fs::exists(file)) {
-				LOG_ERROR(std::format("Couldn't localize audio file named {}", file_name.data()));
+				LUM_LOG_ERROR(std::format("Couldn't localize audio file named {}", file_name.data()));
 				return "";
 			}
 
 			return file.lexically_normal().string();
 		}
 
-		static std::string LoadShader(std::string_view file_name) {
+		static std::string LoadInternalShader(std::string_view file_name) {
 
-			auto file = (shader_path / file_name).lexically_normal().string();
+			auto file = (internal_shader_path / file_name).lexically_normal().string();
 
 			if (!detail::fs::exists(file)) {
-				LOG_ERROR(std::format("Couldn't localize shader file named {}", file_name.data()));
+				LUM_LOG_ERROR(std::format("Couldn't localize shader file named {}", file_name.data()));
 				return "";
 			}
 
 			std::ifstream loaded_file(file);
 			std::ifstream defines(shader_define);
 			if (!loaded_file.is_open() || !defines.is_open()) {
-				LOG_ERROR(std::format("Couldn't open shader file named {}", file_name.data()));
+				LUM_LOG_ERROR(std::format("Couldn't open shader file named {}", file_name.data()));
 				return "";
 			}
 
@@ -88,15 +85,41 @@ namespace lum {
 			ss << version << '\n';
 			ss << defines.rdbuf() << '\n';
 			ss << loaded_file.rdbuf();
-			std::cout << ss.str();
+
+			return ss.str();
+		}
+		static std::string LoadExternalShader(std::string_view file_name) {
+
+			auto file = (external_shader_path / file_name).lexically_normal().string();
+
+			if (!detail::fs::exists(file)) {
+				LUM_LOG_ERROR(std::format("Couldn't localize shader file named {}", file_name.data()));
+				return "";
+			}
+
+			std::ifstream loaded_file(file);
+			std::ifstream defines(shader_define);
+			if (!loaded_file.is_open() || !defines.is_open()) {
+				LUM_LOG_ERROR(std::format("Couldn't open shader file named {}", file_name.data()));
+				return "";
+			}
+
+			std::string version;
+			std::getline(loaded_file, version);
+
+			std::stringstream ss;
+			ss << version << '\n';
+			ss << defines.rdbuf() << '\n';
+			ss << loaded_file.rdbuf();
 
 			return ss.str();
 		}
 
 	private:
 
+		static inline detail::fs::path internal_shader_path = detail::fs::current_path().parent_path() / "lumengine" / "engine" / "include" / "modules" / "rhi" / "shaders";
 		static inline std::string shader_define = (detail::fs::current_path().parent_path() / "lumengine" / "engine" / "include" / "core" / "shaders_define.h").lexically_normal().string();
-		static inline detail::fs::path shader_path	= detail::g_assets_root	/ "shader";
+		static inline detail::fs::path external_shader_path	= detail::g_assets_root	/ "shader";
 		static inline detail::fs::path audio_path	= detail::g_assets_root	/ "audio";
 		static inline detail::fs::path texture_path	= detail::g_assets_root	/ "texture";
 

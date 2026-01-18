@@ -17,23 +17,23 @@ namespace lum::rhi {
 		/// Buffers
 		///////////////////////////////////////////////////
 
-		/*! @brief Creates Vertex buffer (VBO).
+		/*! @brief Creates Vertex buffer ( VBO ).
 		* 
-		*  @param desc BufferDescriptor of VBO (containing size, flags, usage and data).
+		*  @param desc BufferDescriptor of VBO ( containing size, flags, usage and data ).
 		*  @return Handle to the buffer.
 		* 
 		*/
 		virtual BufferHandle CreateVertexBuffer( const BufferDescriptor& desc ) = 0;
-		/*! @brief Creates Element buffer (EBO).
+		/*! @brief Creates Element buffer ( EBO ).
 		*
-		*  @param desc BufferDescriptor of EBO (containing size, flags, usage and data).
+		*  @param desc BufferDescriptor of EBO ( containing size, flags, usage and data ).
 		*  @return Handle to the buffer.
 		* 
 		*/
 		virtual BufferHandle CreateElementBuffer( const BufferDescriptor& desc ) = 0;
-		/*! @brief Creates Uniform buffer (UBO).
+		/*! @brief Creates Uniform buffer ( UBO ).
 		*
-		*  @param desc BufferDescriptor of UBO (containing size, flags, usage and data).
+		*  @param desc BufferDescriptor of UBO ( containing size, flags, usage and data ).
 		*  @return Handle to the buffer.
 		* 
 		*/
@@ -42,8 +42,8 @@ namespace lum::rhi {
 		*
 		*  @param buff Buffer handle to update.  
 		*  @param data Pointer to source data in CPU memeory.
-		*  @param offset Byte offset from the beginning of the buffer (0 for whole buffer).
-		*  @param size Byte size of data to write (0 for whole buffer).
+		*  @param offset Byte offset from the beginning of the buffer ( 0 for whole buffer ).
+		*  @param size Byte size of data to write ( 0 for whole buffer ).
 		* 
 		*/
 		virtual void UpdateBuffer( const BufferHandle& buff, cvptr data, size_t offset = 0, size_t size = 0 ) = 0;
@@ -56,9 +56,9 @@ namespace lum::rhi {
 		/*! @brief Maps data of given buffer.
 		*
 		*  @param buff Buffer handle to map.
-		*  @param flags Mapping flags (example: rhi::map_flags::Write).
-		*  @param offset Byte offset from the beginning of the buffer to map (0 for whole buffer).
-		*  @param size Byte size of data to map (0 for whole buffer).
+		*  @param flags Mapping flags ( example: rhi::map_flags::Write ).
+		*  @param offset Byte offset from the beginning of the buffer to map ( 0 for whole buffer ).
+		*  @param size Byte size of data to map ( 0 for whole buffer ).
 		* 
 		*  @return GPU data pointer to manage.
 		*	
@@ -70,13 +70,19 @@ namespace lum::rhi {
 		*
 		*/
 		virtual void			UnmapBuffer	( const BufferHandle& buff ) = 0;
-		/*! @brief Connects element buffer (EBO) to vertex layout (VAO).
+		/*! @brief Connects element buffer ( EBO ) to vertex layout ( VAO ).
 		*
 		*  @param ebo Element buffer to connect.
 		*  @param vao Vertex layout to connect.
 		* 
 		*/
 		virtual void AttachElementBufferToLayout( const BufferHandle& ebo, const VertexLayoutHandle& vao ) = 0;
+		/*! @brief Connects uniform buffer ( UBO ) to binding in shaders.
+		*
+		*  @param ubo Uniform buffer handle
+		*  @param binding Binding in the shader ( example: LUM_UBO_CAMERA )
+		*
+		*/
 		virtual void SetUniformBufferBinding(const BufferHandle& ubo, int binding) = 0;
 
 
@@ -174,6 +180,15 @@ namespace lum::rhi {
 
 	};
 
-	RHI_Device* CreateDevice(Window*);
+	/*! @brief Creates render device.
+	*
+	*  Initializes and creates render device including used backend (OpenGL for now).
+	* 
+	*  @param window Pointer to the window.
+	*
+	*  @return Pointer to the device.
+	*
+	*/
+	RHI_Device* CreateDevice(Window* window);
 
 }

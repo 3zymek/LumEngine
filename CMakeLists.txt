@@ -12,7 +12,7 @@ file(GLOB_RECURSE ENGINE_CPP "${CMAKE_SOURCE_DIR}/lumengine/*.cpp")
 file(GLOB_RECURSE ENGINE_HEADERS "${CMAKE_SOURCE_DIR}/lumengine/*.hpp" "${CMAKE_SOURCE_DIR}/lumengine/*.h")
 file(GLOB_RECURSE ENGINE_C "${CMAKE_SOURCE_DIR}/lumengine/*.c")
 file(GLOB_RECURSE ENGINE_IPP)
-file(GLOB_RECURSE ENGINE_SHADERS "${CMAKE_SOURCE_DIR}/assets/shaders/*.vert" "${CMAKE_SOURCE_DIR}/assets/shaders/*.frag")
+file(GLOB_RECURSE ENGINE_SHADERS "${CMAKE_SOURCE_DIR}/lumengine/*.vert" "${CMAKE_SOURCE_DIR}/lumengine/*.frag")
 
 add_executable(LumEngine ${ENGINE_CPP} ${ENGINE_HEADERS} ${ENGINE_C} ${ENGINE_SHADERS} ${ENGINE_SHADERS})
 

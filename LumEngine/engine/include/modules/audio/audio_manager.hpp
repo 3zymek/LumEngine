@@ -143,7 +143,7 @@ namespace lum {
 			inline bool ValidateEmitterID	( EmitterHandle id ) noexcept {
 
 				if (!m_emitters.contains(id)) {
-					LOG_WARN("Emitter does not exist");
+					LUM_LOG_WARN("Emitter does not exist");
 					return false;
 				}
 				return true;
@@ -152,7 +152,7 @@ namespace lum {
 			inline bool ValidateAudioID		( AudioHandle id ) noexcept {
 
 				if (!m_sounds.contains(id)) {
-					LOG_WARN("Sound does not exist");
+					LUM_LOG_WARN("Sound does not exist");
 					return false;
 				}
 				return true;
@@ -176,7 +176,7 @@ namespace lum {
 			cstd::sparse_set< AudioEmitter, EmitterHandle >	m_emitters{ ecs::detail::MAX_ENTITY_COUNT };
 
 			std::unordered_map< uint64_t, AudioHandle >		m_name_to_id;
-			#ifdef ENABLE_LOGGER
+			#ifdef LUM_ENABLE_LOGGER
 				std::unordered_map< AudioHandle, string >	m_id_to_name;
 			#endif
 		};

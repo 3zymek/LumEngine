@@ -6,7 +6,7 @@ namespace lum {
 		Entity EntityManager::CreateEntity() {
 			EntityID entityID = GenerateID<Entity, 0>::Get();
 
-			LOG_INFO("Created entity");
+			LUM_LOG_INFO("Created entity");
 
 			return Entity(*this, entityID);
 		}

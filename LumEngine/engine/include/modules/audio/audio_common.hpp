@@ -60,7 +60,7 @@ namespace lum {
 			#define FMOD_ASSERT(x) \
 				do { \
 					FMOD_RESULT r = x; \
-					if(r != FMOD_OK) { LOG_ERROR(FMOD_ErrorString(r)); } \
+					if(r != FMOD_OK) { LUM_LOG_ERROR(FMOD_ErrorString(r)); } \
 				} while(0)
 		}
 	}

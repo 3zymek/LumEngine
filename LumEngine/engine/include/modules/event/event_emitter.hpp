@@ -95,7 +95,7 @@ namespace lum {
 				for (auto& slot : m_subscribtions) {
 					slot.unsub(slot.id, m_bus);
 				}
-				LOG_DEBUG("Destroyed emitter and unsubscribed all callbacks");
+				LUM_LOG_DEBUG("Destroyed emitter and unsubscribed all callbacks");
 			}
 
 			EventBus& m_bus;

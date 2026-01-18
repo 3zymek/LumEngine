@@ -26,7 +26,7 @@ namespace lum {
 
 				event_bus.Emit<ev::ComponentAdded>({ entityID, detail::ComponentTypeID::Get<T>() });
 
-				LOG_DEBUG(std::format("Added component {} to entity {}", typeid(T).name(), entityID));
+				LUM_LOG_DEBUG(std::format("Added component {} to entity {}", typeid(T).name(), entityID));
 
 				return GetOrCreatePool<T>().Add(entityID);
 
@@ -37,7 +37,7 @@ namespace lum {
 
 				event_bus.Emit<ev::ComponentRemoved>({ entityID, detail::ComponentTypeID::Get<T>() });
 
-				LOG_DEBUG(std::format("Removed component {} on entity {}", typeid(T).name(), entityID));
+				LUM_LOG_DEBUG(std::format("Removed component {} on entity {}", typeid(T).name(), entityID));
 
 				GetOrCreatePool<T>().Delete(entityID);
 
@@ -56,7 +56,7 @@ namespace lum {
 				if (!Has<T>(entityID))
 					AddComponent<T>(entityID);
 
-				LOG_DEBUG(std::format("Required component {}", typeid(T).name()));
+				LUM_LOG_DEBUG(std::format("Required component {}", typeid(T).name()));
 
 			}
 
@@ -85,7 +85,7 @@ namespace lum {
 				for (size_t i = 0; i < detail::MAX_COMPONENT_TYPES_COUNT; i++) {
 					m_pools[i] = nullptr;
 				}
-				LOG_INIT_OK("Entity Component System init");
+				LUM_LOG_INIT_OK("Entity Component System init");
 			}
 
 			inline void Destruct() {
