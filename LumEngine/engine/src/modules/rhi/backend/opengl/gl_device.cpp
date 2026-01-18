@@ -123,7 +123,7 @@ namespace lum::gl {
 		LUM_LOG_INFO(std::format("Created uniform buffer {}", buffer.handle.gl_handle));
 		return m_buffers.CreateHandle(std::move(buffer));
 	}
-	void					GL_Device::UpdateBuffer			( const BufferHandle& vbo, cvptr data, size_t offset, size_t size ) {
+	void					GL_Device::UpdateBuffer			( const BufferHandle& vbo, cvptr_t data, size_t offset, size_t size ) {
 
 		LUM_HOTPATH_ASSERT_VOID(!m_buffers.Exists(vbo), "Buffer does not exist");
 
@@ -167,7 +167,7 @@ namespace lum::gl {
 		LUM_LOG_INFO(std::format("Deleted buffer {}", buffer.handle.gl_handle));
 	
 	}
-	vptr					GL_Device::MapBuffer			( const BufferHandle& vbo, MapFlag flags, size_t offset, size_t size ) {
+	vptr_t					GL_Device::MapBuffer			( const BufferHandle& vbo, MapFlag flags, size_t offset, size_t size ) {
 
 		LUM_HOTPATH_ASSERT_NULLPTR(!m_buffers.Exists(vbo), "Handle doesn't exist");
 
@@ -176,7 +176,7 @@ namespace lum::gl {
 		LUM_HOTPATH_ASSERT_NULLPTR(offset + size > buffer.size || size >  buffer.size, "Invalid offset or size");
 		if (size <= 0) size = buffer.size;
 
-		vptr ptr = glMapNamedBufferRange(buffer.handle.gl_handle, offset, size, TranslateMappingFlags(flags));
+		vptr_t ptr = glMapNamedBufferRange(buffer.handle.gl_handle, offset, size, TranslateMappingFlags(flags));
 		
 		LUM_HOTPATH_ASSERT_NULLPTR(!ptr, "Error during mapping");
 
@@ -267,10 +267,10 @@ namespace lum::gl {
 			return rhi::ShaderHandle{};
 		}
 		std::string&& vfile = AssetService::LoadInternalShader(desc.vertex_source);
-		cstr vcstr = vfile.c_str();
+		cstr_t vcstr = vfile.c_str();
 
 		std::string&& ffile = AssetService::LoadInternalShader(desc.fragment_source);
-		cstr fcstr = ffile.c_str();
+		cstr_t fcstr = ffile.c_str();
 
 		rhi::Shader shader;
 
@@ -304,26 +304,26 @@ namespace lum::gl {
 	void				GL_Device::DeleteShader	( ShaderHandle& shader ) {
 
 	}
-	void				GL_Device::SetMat4		( const ShaderHandle& shader, cstr location, const glm::mat4& mat ) {
+	void				GL_Device::SetMat4		( const ShaderHandle& shader, cstr_t location, const glm::mat4& mat ) {
 
 		GLuint loc = glGetUniformLocation(m_shaders[shader].handle, location);
 		if (loc == -1) LUM_LOG_ERROR(std::format("Couldn't localize uniform named {}", location));
 		glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mat));
 
 	}
-	void				GL_Device::Setf			( const ShaderHandle& shader, cstr location, float value ) {
+	void				GL_Device::Setf			( const ShaderHandle& shader, cstr_t location, float value ) {
 
 	}
-	void				GL_Device::Seti			( const ShaderHandle& shader, cstr location, int value ) {
+	void				GL_Device::Seti			( const ShaderHandle& shader, cstr_t location, int value ) {
 
 	}
-	void				GL_Device::SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec4& vec ) {
+	void				GL_Device::SetVec3		( const ShaderHandle& shader, cstr_t location, const glm::vec4& vec ) {
 
 	}
-	void				GL_Device::SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec3& vec ) {
+	void				GL_Device::SetVec3		( const ShaderHandle& shader, cstr_t location, const glm::vec3& vec ) {
 
 	}
-	void				GL_Device::SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec2& vec ) {
+	void				GL_Device::SetVec3		( const ShaderHandle& shader, cstr_t location, const glm::vec2& vec ) {
 
 	}
 

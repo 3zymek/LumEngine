@@ -14,7 +14,7 @@ namespace lum::rhi {
 	struct BufferDescriptor {
 		BufferUsage		buffer_usage	= BufferUsage::Static;
 		size_t			size			= 0;
-		MapFlag			map_flags		= 0;
+		mapflag_t			map_flags		= 0;
 		const void*		data			= nullptr;
 	};
 
@@ -22,7 +22,7 @@ namespace lum::rhi {
 
 		BufferType	type	{};
 		BufferUsage usage	{};
-		MapFlag		flags	= 0;
+		mapflag_t		flags	= 0;
 		size_t		size	= 0;
 		bool		mapped	= false;
 

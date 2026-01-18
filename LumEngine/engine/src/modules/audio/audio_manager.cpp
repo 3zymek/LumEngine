@@ -19,7 +19,7 @@ namespace lum {
 		/// Public API
 		////////////////////////////////////
 
-		void AudioManager::Init(unsigned int maxchannels, AudioInitFlags flags, vptr extradrivers) {
+		void AudioManager::Init(unsigned int maxchannels, AudioInitFlags flags, vptr_t extradrivers) {
 
 			FMOD::System* sys = nullptr;
 			static_cast<FMOD_INITFLAGS>(flags);

@@ -63,7 +63,7 @@ namespace lum {
 			void Init(
 				unsigned int maxchannels = 512,
 				AudioInitFlags flags = AudioInitFlags::Default,
-				vptr extradrivers = nullptr
+				vptr_t extradrivers = nullptr
 			);
 
 

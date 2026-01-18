@@ -13,7 +13,7 @@ namespace lum::rhi {
 	// Attributes for single vertex in vertex layout
 	struct VertexAttribute {
 		// Data in buffer format (Float, Float2, Mat4, etc.)
-		VertexLayoutFormat format = 0;
+		layoutformat_t format = 0;
 		// Offset where to start reading single attribute. 
 		// example: offsetof(Vertex, color).
 		size_t relative_offset = 0;

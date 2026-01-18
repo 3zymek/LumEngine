@@ -12,7 +12,7 @@ namespace lum::gl {
 
 		using BufferHandle		= rhi::BufferHandle;
 		using BufferDescriptor	= rhi::BufferDescriptor;
-		using MapFlag			= rhi::MapFlag;
+		using MapFlag			= rhi::mapflag_t;
 
 		using VertexLayoutHandle		= rhi::VertexLayoutHandle;
 		using VertexLayoutDescriptor	= rhi::VertexLayoutDescriptor;
@@ -35,9 +35,9 @@ namespace lum::gl {
 		BufferHandle	CreateVertexBuffer	( const BufferDescriptor& desc )									override;
 		BufferHandle	CreateElementBuffer	( const BufferDescriptor& desc )									override;
 		BufferHandle	CreateUniformBuffer	( const BufferDescriptor& desc )									override;
-		void			UpdateBuffer		( const BufferHandle& buff, cvptr data, size_t offset = 0, size_t size = 0 )	override;
+		void			UpdateBuffer		( const BufferHandle& buff, cvptr_t data, size_t offset = 0, size_t size = 0 )	override;
 		void			DeleteBuffer		( BufferHandle& buff )															override;
-		vptr			MapBuffer			( const BufferHandle& buff, MapFlag flags, size_t offset = 0, size_t size = 0 )	override;
+		vptr_t			MapBuffer			( const BufferHandle& buff, MapFlag flags, size_t offset = 0, size_t size = 0 )	override;
 		void			UnmapBuffer			( const BufferHandle& buff )													override;
 		void			AttachElementBufferToLayout	( const BufferHandle&, const VertexLayoutHandle& )						override;
 		void			SetUniformBufferBinding		( const BufferHandle& ubo, int binding )								override;
@@ -56,12 +56,12 @@ namespace lum::gl {
 		ShaderHandle	CreateShader( const ShaderDescriptor& desc )									override;
 		void			BindShader	( const ShaderHandle& shader )										override;
 		void			DeleteShader( ShaderHandle& shader )											override;
-		void			SetMat4		( const ShaderHandle& shader, cstr location, const glm::mat4& mat )	override;
-		void			Setf		( const ShaderHandle& shader, cstr location, float value )			override;
-		void			Seti		( const ShaderHandle& shader, cstr location, int value )			override;
-		void			SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec4& vec )	override;
-		void			SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec3& vec )	override;
-		void			SetVec3		( const ShaderHandle& shader, cstr location, const glm::vec2& vec )	override;
+		void			SetMat4		( const ShaderHandle& shader, cstr_t location, const glm::mat4& mat )	override;
+		void			Setf		( const ShaderHandle& shader, cstr_t location, float value )			override;
+		void			Seti		( const ShaderHandle& shader, cstr_t location, int value )			override;
+		void			SetVec3		( const ShaderHandle& shader, cstr_t location, const glm::vec4& vec )	override;
+		void			SetVec3		( const ShaderHandle& shader, cstr_t location, const glm::vec3& vec )	override;
+		void			SetVec3		( const ShaderHandle& shader, cstr_t location, const glm::vec2& vec )	override;
 
 		///////////////////////////////////////////////////
 		/// Textures

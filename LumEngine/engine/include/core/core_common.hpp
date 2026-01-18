@@ -6,15 +6,15 @@ namespace lum {
 	// GLOBAL ALIAS
 
 	// Alias for void*
-	using vptr = void*;
+	using vptr_t = void*;
 	// Alias for const void*
-	using cvptr = const void*;
+	using cvptr_t = const void*;
 
 	// Alias for const char*
-	using cstr = const char*;
+	using cstr_t = const char*;
 
 	// Type for bits in lumengine
-	using Bit = uint32_t;
+	using bit_t = uint32_t;
 
 	/// Generates ID for any type
 	/// @tparam T object Type to generate an ID
@@ -148,47 +148,47 @@ namespace lum {
 	}
 
 	namespace cmdcolor {
-		LUM_CONST_VAR_QUALIFIER cstr reset		= "\033[0m";
-		LUM_CONST_VAR_QUALIFIER cstr black		= "\033[30m";
-		LUM_CONST_VAR_QUALIFIER cstr red		= "\033[31m";
-		LUM_CONST_VAR_QUALIFIER cstr green		= "\033[32m";
-		LUM_CONST_VAR_QUALIFIER cstr yellow		= "\033[33m";
-		LUM_CONST_VAR_QUALIFIER cstr blue		= "\033[34m";
-		LUM_CONST_VAR_QUALIFIER cstr magenta	= "\033[35m";
-		LUM_CONST_VAR_QUALIFIER cstr cyan		= "\033[36m";
-		LUM_CONST_VAR_QUALIFIER cstr white		= "\033[37m";
+		LUM_CONST_VAR_QUALIFIER cstr_t reset		= "\033[0m";
+		LUM_CONST_VAR_QUALIFIER cstr_t black		= "\033[30m";
+		LUM_CONST_VAR_QUALIFIER cstr_t red		= "\033[31m";
+		LUM_CONST_VAR_QUALIFIER cstr_t green		= "\033[32m";
+		LUM_CONST_VAR_QUALIFIER cstr_t yellow		= "\033[33m";
+		LUM_CONST_VAR_QUALIFIER cstr_t blue		= "\033[34m";
+		LUM_CONST_VAR_QUALIFIER cstr_t magenta	= "\033[35m";
+		LUM_CONST_VAR_QUALIFIER cstr_t cyan		= "\033[36m";
+		LUM_CONST_VAR_QUALIFIER cstr_t white		= "\033[37m";
 
-		LUM_CONST_VAR_QUALIFIER cstr light_black	= "\033[90m";
-		LUM_CONST_VAR_QUALIFIER cstr light_red		= "\033[91m";
-		LUM_CONST_VAR_QUALIFIER cstr light_green	= "\033[92m";
-		LUM_CONST_VAR_QUALIFIER cstr light_yellow	= "\033[93m";
-		LUM_CONST_VAR_QUALIFIER cstr light_blue		= "\033[94m";
-		LUM_CONST_VAR_QUALIFIER cstr light_magenta	= "\033[95m";
-		LUM_CONST_VAR_QUALIFIER cstr light_cyan		= "\033[96m";
-		LUM_CONST_VAR_QUALIFIER cstr light_white	= "\033[97m";
+		LUM_CONST_VAR_QUALIFIER cstr_t light_black	= "\033[90m";
+		LUM_CONST_VAR_QUALIFIER cstr_t light_red		= "\033[91m";
+		LUM_CONST_VAR_QUALIFIER cstr_t light_green	= "\033[92m";
+		LUM_CONST_VAR_QUALIFIER cstr_t light_yellow	= "\033[93m";
+		LUM_CONST_VAR_QUALIFIER cstr_t light_blue		= "\033[94m";
+		LUM_CONST_VAR_QUALIFIER cstr_t light_magenta	= "\033[95m";
+		LUM_CONST_VAR_QUALIFIER cstr_t light_cyan		= "\033[96m";
+		LUM_CONST_VAR_QUALIFIER cstr_t light_white	= "\033[97m";
 
-		LUM_CONST_VAR_QUALIFIER cstr bg_black		= "\033[40m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_red			= "\033[41m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_green		= "\033[42m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_yellow		= "\033[43m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_blue		= "\033[44m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_magenta		= "\033[45m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_cyan		= "\033[46m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_white		= "\033[47m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_black		= "\033[40m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_red			= "\033[41m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_green		= "\033[42m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_yellow		= "\033[43m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_blue		= "\033[44m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_magenta		= "\033[45m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_cyan		= "\033[46m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_white		= "\033[47m";
 
-		LUM_CONST_VAR_QUALIFIER cstr bg_light_black		= "\033[100m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_light_red		= "\033[101m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_light_green		= "\033[102m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_light_yellow	= "\033[103m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_light_blue		= "\033[104m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_light_magenta	= "\033[105m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_light_cyan		= "\033[106m";
-		LUM_CONST_VAR_QUALIFIER cstr bg_light_white		= "\033[107m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_black		= "\033[100m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_red		= "\033[101m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_green		= "\033[102m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_yellow	= "\033[103m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_blue		= "\033[104m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_magenta	= "\033[105m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_cyan		= "\033[106m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_white		= "\033[107m";
 
-		LUM_CONST_VAR_QUALIFIER cstr bold			= "\033[1m";
-		LUM_CONST_VAR_QUALIFIER cstr italic			= "\033[3m";
-		LUM_CONST_VAR_QUALIFIER cstr underline		= "\033[4m";
-		LUM_CONST_VAR_QUALIFIER cstr strikethrough	= "\033[9m";
-		LUM_CONST_VAR_QUALIFIER cstr reverse		= "\033[7m";
+		LUM_CONST_VAR_QUALIFIER cstr_t bold			= "\033[1m";
+		LUM_CONST_VAR_QUALIFIER cstr_t italic			= "\033[3m";
+		LUM_CONST_VAR_QUALIFIER cstr_t underline		= "\033[4m";
+		LUM_CONST_VAR_QUALIFIER cstr_t strikethrough	= "\033[9m";
+		LUM_CONST_VAR_QUALIFIER cstr_t reverse		= "\033[7m";
 	}
 }

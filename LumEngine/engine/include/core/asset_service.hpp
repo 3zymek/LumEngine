@@ -28,7 +28,7 @@ namespace lum {
 	class AssetService {
 	public:
 
-		static TextureData LoadTexture(cstr file_name) {
+		static TextureData LoadTexture(cstr_t file_name) {
 
 			auto path = texture_path / std::string(file_name);
 			std::string absolute_path = path.lexically_normal().string();

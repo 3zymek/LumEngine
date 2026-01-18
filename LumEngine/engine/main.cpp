@@ -258,9 +258,9 @@ int main() {
         ImGui::DragFloat3("scale", glm::value_ptr(model_scale), 0.1f, -1000, 1000);
         ImGui::DragFloat3("rotation", glm::value_ptr(model_rotation), 0.1f, -1000, 1000);
         ImGui::End();
-
-        glm::quat rot = glm::quat(glm::radians(model_rotation));
-        glm::mat4 rotation = glm::mat4_cast(rot);
+        
+        glm::quat rot       = glm::quat(glm::radians(model_rotation));
+        glm::mat4 rotation  = glm::mat4_cast(rot);
         modelu.model = glm::mat4(1.f);
         modelu.model = glm::translate(modelu.model, model_position);
         modelu.model = glm::scale(modelu.model, model_scale);
