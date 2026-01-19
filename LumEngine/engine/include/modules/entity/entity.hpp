@@ -37,7 +37,7 @@ namespace lum {
 		}
 
 		template< ecs::detail::Component T >
-		bool Has( ) {
+		LUMbool Has( ) {
 			return manager.Has<T>(m_entityID);
 		}
 

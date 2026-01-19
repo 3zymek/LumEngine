@@ -8,7 +8,12 @@
 	#define LUM_FORCEINLINE inline
 #endif
 
-#define LUM_NODISCARD     [[nodiscard]]
+#if defined(__cplusplus) && __cplusplus >= 201703L
+	#define LUM_NODISCARD [[nodiscard]]
+#else
+	#define LUM_NODISCARD
+#endif
+
 #define LUM_NOEXCEPT      noexcept
 
 #define LUM_CONST_VAR_QUALIFIER inline constexpr

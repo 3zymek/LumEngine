@@ -6,28 +6,28 @@ namespace lum::rhi {
 
 	struct BufferHandle {
 		
-		uint64_t id = max_val<uint64_t>();
-		uint32_t generation = 0;
+		bufferid id = max_val<bufferid>();
+		bufferid generation = 0;
 
 	};
 
 	struct BufferDescriptor {
-		BufferUsage		buffer_usage	= BufferUsage::Static;
-		size_t			size			= 0;
-		mapflag_t			map_flags		= 0;
-		const void*		data			= nullptr;
+		BufferUsage	buffer_usage	= BufferUsage::Static;
+		size_t		size			= 0;
+		mapflag	map_flags		= 0;
+		LUMcvptr		data			= nullptr;
 	};
 
 	struct Buffer {
 
 		BufferType	type	{};
 		BufferUsage usage	{};
-		mapflag_t		flags	= 0;
+		mapflag	flags	= 0;
 		size_t		size	= 0;
 		bool		mapped	= false;
 
 		union {
-			uint32_t gl_handle = 0;
+			bufferid gl_handle = 0;
 		} handle{};
 
 	};

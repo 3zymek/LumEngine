@@ -5,16 +5,16 @@
 namespace lum {
     namespace ecs {
 
-        using EntityID = uint32_t;
+        using EntityID = LUMuint;
 
         namespace detail {
 
-            inline constexpr unsigned int MAX_POOL_CAPACITY = settings::ECS_MAX_POOL_CAPACITY;
-            inline constexpr unsigned int MAX_ENTITY_COUNT = settings::ECS_MAX_ENTITY_COUNT;
-            inline constexpr unsigned int MAX_COMPONENT_TYPES_COUNT = settings::ECS_MAX_COMPONENT_TYPES_COUNT;
+            inline constexpr LUMuint MAX_POOL_CAPACITY = settings::ECS_MAX_POOL_CAPACITY;
+            inline constexpr LUMuint MAX_ENTITY_COUNT = settings::ECS_MAX_ENTITY_COUNT;
+            inline constexpr LUMuint MAX_COMPONENT_TYPES_COUNT = settings::ECS_MAX_COMPONENT_TYPES_COUNT;
 
             #define LumComponentTag \
-                static constexpr bool __lumcomponent__ = true;
+                static constexpr LUMbool __lumcomponent__ = true;
 
             struct UniqueComponent {};
 
@@ -24,7 +24,7 @@ namespace lum {
                     std::is_trivially_copyable_v<T>&&
                     std::is_trivially_destructible_v<T>;
 
-            using ComponentTID = uint32_t;
+            using ComponentTID = LUMuint;
 
             struct ComponentTypeID {
                 template<Component ComponentType>

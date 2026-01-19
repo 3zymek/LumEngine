@@ -5,27 +5,40 @@ namespace lum {
 
 	// GLOBAL ALIAS
 
+	using LUMdouble = double;
+	using LUMfloat	= float;
+	using LUMint	= int;
+	using LUMuint	= uint32_t;
+	using LUMbyte	= uint8_t;
+	using LUMbool	= bool;
+	using LUMushort = uint16_t;
+	using LUMsize	= size_t;
+	using LUMstring = std::string;
+	using LUMstrview = std::string_view;
+
+
 	// Alias for void*
-	using vptr_t = void*;
+	using LUMvptr = void*;
 	// Alias for const void*
-	using cvptr_t = const void*;
+	using LUMcvptr = const void*;
 
 	// Alias for const char*
-	using cstr_t = const char*;
+	using LUMcharptr = const char*;
+	using LUMstr = char*;
 
 	// Type for bits in lumengine
-	using bit_t = uint32_t;
+	using LUMbitfield = uint32_t;
 
 	/// Generates ID for any type
 	/// @tparam T object Type to generate an ID
 	/// @tparam NULL_VAL Null value for ID's
 	template<typename T, int NULL_VAL>
 	struct GenerateID {
-		static uint64_t Get() {
+		static LUMuint Get() {
 			return globalID++;
 		}
 	private:
-		inline static uint64_t globalID = NULL_VAL + 1;
+		inline static LUMuint globalID = NULL_VAL + 1;
 	};
 	
 	/// Converts any arithmetic type to float at compile-time.
@@ -33,7 +46,7 @@ namespace lum {
 	/// @return The value casted to float.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr float to_f(T value) { return static_cast<float>(value); }
+	inline constexpr LUMfloat to_f(T value) { return static_cast<LUMfloat>(value); }
 
 	/// Converts any arithmetic type to unsigned int at compile-time.
 	/// @param value The numeric value to cast.
@@ -47,7 +60,7 @@ namespace lum {
 	/// @return The value casted to uint32_t.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr uint32_t to_u32(T value) { return static_cast<uint32_t>(value); }
+	inline constexpr LUMuint to_u32(T value) { return static_cast<LUMuint>(value); }
 
 	/// Converts any arithmetic type to uint64_t at compile-time.
 	/// @param value The numeric value to cast.
@@ -61,14 +74,14 @@ namespace lum {
 	/// @return The value casted to double.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr float to_d(T value) { return static_cast<double>(value); }
+	inline constexpr LUMdouble to_d(T value) { return static_cast<LUMdouble>(value); }
 
 	/// Converts any arithmetic type to int at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to int.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr int to_i(T value) { return static_cast<int>(value); }
+	inline constexpr LUMint to_i(T value) { return static_cast<LUMint>(value); }
 
 	/// Calculates linear interpolation in time
 	/// @tparam T Arithmetic type of calculations
@@ -77,7 +90,7 @@ namespace lum {
 	/// @param t Time
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr T lerp(T a, T b, float t) {
+	inline constexpr T lerp(T a, T b, LUMfloat t) {
 		return a + (b - a) * t;
 	}
 
@@ -148,47 +161,47 @@ namespace lum {
 	}
 
 	namespace cmdcolor {
-		LUM_CONST_VAR_QUALIFIER cstr_t reset		= "\033[0m";
-		LUM_CONST_VAR_QUALIFIER cstr_t black		= "\033[30m";
-		LUM_CONST_VAR_QUALIFIER cstr_t red		= "\033[31m";
-		LUM_CONST_VAR_QUALIFIER cstr_t green		= "\033[32m";
-		LUM_CONST_VAR_QUALIFIER cstr_t yellow		= "\033[33m";
-		LUM_CONST_VAR_QUALIFIER cstr_t blue		= "\033[34m";
-		LUM_CONST_VAR_QUALIFIER cstr_t magenta	= "\033[35m";
-		LUM_CONST_VAR_QUALIFIER cstr_t cyan		= "\033[36m";
-		LUM_CONST_VAR_QUALIFIER cstr_t white		= "\033[37m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr reset		= "\033[0m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr black		= "\033[30m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr red		= "\033[31m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr green		= "\033[32m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr yellow		= "\033[33m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr blue		= "\033[34m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr magenta	= "\033[35m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr cyan		= "\033[36m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr white		= "\033[37m";
 
-		LUM_CONST_VAR_QUALIFIER cstr_t light_black	= "\033[90m";
-		LUM_CONST_VAR_QUALIFIER cstr_t light_red		= "\033[91m";
-		LUM_CONST_VAR_QUALIFIER cstr_t light_green	= "\033[92m";
-		LUM_CONST_VAR_QUALIFIER cstr_t light_yellow	= "\033[93m";
-		LUM_CONST_VAR_QUALIFIER cstr_t light_blue		= "\033[94m";
-		LUM_CONST_VAR_QUALIFIER cstr_t light_magenta	= "\033[95m";
-		LUM_CONST_VAR_QUALIFIER cstr_t light_cyan		= "\033[96m";
-		LUM_CONST_VAR_QUALIFIER cstr_t light_white	= "\033[97m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr light_black	= "\033[90m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr light_red		= "\033[91m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr light_green	= "\033[92m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr light_yellow	= "\033[93m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr light_blue		= "\033[94m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr light_magenta	= "\033[95m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr light_cyan		= "\033[96m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr light_white	= "\033[97m";
 
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_black		= "\033[40m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_red			= "\033[41m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_green		= "\033[42m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_yellow		= "\033[43m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_blue		= "\033[44m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_magenta		= "\033[45m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_cyan		= "\033[46m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_white		= "\033[47m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_black		= "\033[40m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_red			= "\033[41m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_green		= "\033[42m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_yellow		= "\033[43m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_blue		= "\033[44m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_magenta		= "\033[45m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_cyan		= "\033[46m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_white		= "\033[47m";
 
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_black		= "\033[100m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_red		= "\033[101m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_green		= "\033[102m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_yellow	= "\033[103m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_blue		= "\033[104m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_magenta	= "\033[105m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_cyan		= "\033[106m";
-		LUM_CONST_VAR_QUALIFIER cstr_t bg_light_white		= "\033[107m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_light_black		= "\033[100m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_light_red		= "\033[101m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_light_green		= "\033[102m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_light_yellow	= "\033[103m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_light_blue		= "\033[104m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_light_magenta	= "\033[105m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_light_cyan		= "\033[106m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bg_light_white		= "\033[107m";
 
-		LUM_CONST_VAR_QUALIFIER cstr_t bold			= "\033[1m";
-		LUM_CONST_VAR_QUALIFIER cstr_t italic			= "\033[3m";
-		LUM_CONST_VAR_QUALIFIER cstr_t underline		= "\033[4m";
-		LUM_CONST_VAR_QUALIFIER cstr_t strikethrough	= "\033[9m";
-		LUM_CONST_VAR_QUALIFIER cstr_t reverse		= "\033[7m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr bold			= "\033[1m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr italic			= "\033[3m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr underline		= "\033[4m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr strikethrough	= "\033[9m";
+		LUM_CONST_VAR_QUALIFIER LUMcharptr reverse		= "\033[7m";
 	}
 }

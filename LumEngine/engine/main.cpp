@@ -169,17 +169,17 @@ int main() {
     ///////////////////////////////////////////
     std::vector<VertexAttribute> attrib(3);
     auto& pos = attrib[0];
-    pos.format = format::Float3;
+    pos.format = DataFormat::Float3;
     pos.relative_offset = offsetof(Vertex, position);
     pos.shader_location = LUM_LAYOUT_POSITION;
 
     auto& color = attrib[1];
-    color.format = format::Float3;
+    color.format = DataFormat::Float3;
     color.relative_offset = offsetof(Vertex, color);
     color.shader_location = LUM_LAYOUT_COLOR;
 
     auto& uv = attrib[2];
-    uv.format = format::Float2;
+    uv.format = DataFormat::Float2;
     uv.relative_offset = offsetof(Vertex, uv);
     uv.shader_location = LUM_LAYOUT_UV;
 
@@ -223,6 +223,11 @@ int main() {
         .map_flags = map_flags::Write,
         .data = nullptr
     };
+    SamplerDescriptor samplerdesc{
+        .mag_filter = SamplerMagFilter::Nearest,
+        .min_filter = SamplerMinFilter::Nearest,
+        .anisotropy = 8,
+    };
 
     ///////////////////////////////////////////
     // Buffers
@@ -230,6 +235,7 @@ int main() {
     auto vbo = device->CreateVertexBuffer(bdesc);
     auto ebo = device->CreateElementBuffer(indi);
     auto ubo = device->CreateUniformBuffer(uniformbuffer_descriptor);
+    auto sampler = device->CreateSampler(samplerdesc);
     auto model_ubo = device->CreateUniformBuffer(uniformbuffer_descriptor2);
     device->SetUniformBufferBinding(model_ubo, LUM_UBO_MODEL_BINDING);
     device->SetUniformBufferBinding(ubo, LUM_UBO_CAMERA_BINDING);
@@ -240,9 +246,6 @@ int main() {
     
     TextureDescriptor tdescript;
     tdescript.filename = "test.jpg";
-    tdescript.mag_filter = TextureMagFilter::Nearest;
-    tdescript.min_filter = TextureMinFilter::Nearest;
-    tdescript.anisotropy = 10;
     auto texture = device->CreateTexture2D(tdescript);
 
     glm::vec3 model_position    = { 0,0,0 };
@@ -274,6 +277,7 @@ int main() {
         device->UpdateBuffer(model_ubo, &modelu, 0, 0);
         device->UpdateBuffer(ubo, &cubo, 0, 0);
 
+        device->BindSampler(sampler);
         device->BindTexture(texture);
         device->DrawElements(vao, indices.size());
 

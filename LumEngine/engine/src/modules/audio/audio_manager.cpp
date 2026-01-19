@@ -19,7 +19,7 @@ namespace lum {
 		/// Public API
 		////////////////////////////////////
 
-		void AudioManager::Init(unsigned int maxchannels, AudioInitFlags flags, vptr_t extradrivers) {
+		void AudioManager::Init(LUMuint maxchannels, AudioInitFlags flags, LUMvptr extradrivers) {
 
 			FMOD::System* sys = nullptr;
 			static_cast<FMOD_INITFLAGS>(flags);
@@ -38,7 +38,7 @@ namespace lum {
 
 		}
 
-		void AudioManager::LoadSound(string_view alias_name, string_view path, FMOD_MODE mode) {
+		void AudioManager::LoadSound(LUMstrview alias_name, LUMstrview path, FMOD_MODE mode) {
 
 			if (NameExists(alias_name)) {
 				LUM_LOG_ERROR(std::format("Audio Clip with name {} already exists", alias_name.data()));
@@ -179,7 +179,7 @@ namespace lum {
 			LUM_LOG_DEBUG(std::format("Stopped clip {} on emitter {}", m_id_to_name[audioID], emitterID));
 
 		}
-		void AudioManager::SetEmitterClipVolume(EmitterHandle emitterID, AudioHandle audioID, float volume) {
+		void AudioManager::SetEmitterClipVolume(EmitterHandle emitterID, AudioHandle audioID, LUMfloat volume) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -195,7 +195,7 @@ namespace lum {
 			LUM_LOG_DEBUG(std::format("Set volume ({}) at clip {} on emitter {}", volume, m_id_to_name[audioID], emitterID));
 
 		}
-		void AudioManager::SetEmitterClipPitch(EmitterHandle emitterID, AudioHandle audioID, float pitch) {
+		void AudioManager::SetEmitterClipPitch(EmitterHandle emitterID, AudioHandle audioID, LUMfloat pitch) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -211,7 +211,7 @@ namespace lum {
 			LUM_LOG_DEBUG(std::format("Set pitch ({}) at clip {} on emitter {}", pitch, m_id_to_name[audioID], emitterID));
 
 		}
-		void AudioManager::SetEmitterClipPause(EmitterHandle emitterID, AudioHandle audioID, bool paused) {
+		void AudioManager::SetEmitterClipPause(EmitterHandle emitterID, AudioHandle audioID, LUMbool paused) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -227,7 +227,7 @@ namespace lum {
 			LUM_LOG_DEBUG(std::format("Set paused ({}) at clip {} on emitter {}", paused, m_id_to_name[audioID], emitterID));
 
 		}
-		void AudioManager::SetEmitterClipLoop(EmitterHandle emitterID, AudioHandle audioID, bool loop) {
+		void AudioManager::SetEmitterClipLoop(EmitterHandle emitterID, AudioHandle audioID, LUMbool loop) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -250,16 +250,16 @@ namespace lum {
 			LUM_LOG_INFO(std::format("Destroyed emitter {}", emitterID));
 
 		}
-		float AudioManager::GetEmitterClipVolume(EmitterHandle emitterID, AudioHandle audioID) {
+		LUMfloat AudioManager::GetEmitterClipVolume(EmitterHandle emitterID, AudioHandle audioID) {
 			return m_emitters[emitterID].clips[audioID].volume;
 		}
-		float AudioManager::GetEmitterClipPitch(EmitterHandle emitterID, AudioHandle audioID) {
+		LUMfloat AudioManager::GetEmitterClipPitch(EmitterHandle emitterID, AudioHandle audioID) {
 			return m_emitters[emitterID].clips[audioID].pitch;
 		}
-		bool AudioManager::GetEmitterClipLooped(EmitterHandle emitterID, AudioHandle audioID) {
+		LUMbool AudioManager::GetEmitterClipLooped(EmitterHandle emitterID, AudioHandle audioID) {
 			return m_emitters[emitterID].clips[audioID].loop;
 		}
-		bool AudioManager::GetEmitterClipPaused(EmitterHandle emitterID, AudioHandle audioID) {
+		LUMbool AudioManager::GetEmitterClipPaused(EmitterHandle emitterID, AudioHandle audioID) {
 			return m_emitters[emitterID].clips[audioID].paused;
 		}
 		void AudioManager::SubscribeEvents() {
@@ -281,7 +281,7 @@ namespace lum {
 			return m_listener.get();
 		}
 
-		std::optional<AudioHandle> AudioManager::GetIDByName(string_view name) {
+		std::optional<AudioHandle> AudioManager::GetIDByName(LUMstrview name) {
 			auto it = m_name_to_id.find(cstd::StringHasher::Hash(name));
 			if (it == m_name_to_id.end()) {
 				LUM_LOG_WARN(std::format("Audio file named {} does not exists", name));
@@ -290,7 +290,7 @@ namespace lum {
 			return it->second;
 		}
 
-		bool AudioManager::NameExists(string_view name) {
+		bool AudioManager::NameExists(LUMstrview name) {
 			return m_name_to_id.find(cstd::StringHasher::Hash(name)) != m_name_to_id.end();
 		}
 	};

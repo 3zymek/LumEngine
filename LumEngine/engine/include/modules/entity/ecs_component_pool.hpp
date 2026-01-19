@@ -12,7 +12,7 @@ namespace lum {
 			template<Component T>
 			class ComponentPool : public BasePool {
 
-				using ComponentIndex	= size_t;
+				using ComponentIndex	= LUMsize;
 				using iterator			= cstd::sparse_set<T, ComponentIndex>::iterator;
 				using const_iterator	= cstd::sparse_set<T, ComponentIndex>::const_iterator;
 
@@ -24,11 +24,11 @@ namespace lum {
 				const_iterator begin() const { return m_components.begin(); }
 				const_iterator end() const { return m_components.end(); }
 
-				inline T& operator[]( size_t index ) {
+				inline T& operator[]( LUMsize index ) {
 					return m_components[index];
 				}
 
-				inline size_t size() {
+				inline LUMsize size() {
 					return m_components.dense_size();
 				}
 

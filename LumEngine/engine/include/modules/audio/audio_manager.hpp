@@ -61,9 +61,9 @@ namespace lum {
 			*  @thread_safety Call from main thread before any audio operations.
 			*/
 			void Init(
-				unsigned int maxchannels = 512,
+				LUMuint maxchannels = 512,
 				AudioInitFlags flags = AudioInitFlags::Default,
-				vptr_t extradrivers = nullptr
+				LUMvptr extradrivers = nullptr
 			);
 
 
@@ -79,7 +79,7 @@ namespace lum {
 			 *  @remark Replaces any existing sound with the same name. 3D sounds require a listener.
 			 *  @thread_safety Call from main audio thread or FMOD-safe thread.
 			 */
-			void LoadSound( string_view alias_name, string_view path, FMOD_MODE mode = FMOD_3D );
+			void LoadSound( LUMstrview alias_name, LUMstrview path, FMOD_MODE mode = FMOD_3D );
 
 
 			/*! @brief Creates an audio listener attached to an entity.
@@ -111,10 +111,10 @@ namespace lum {
 			void RemoveClipFromEmitter	( EmitterHandle, AudioHandle );
 			void PlayEmitterClip		( EmitterHandle, AudioHandle );
 			void StopEmitterClip		( EmitterHandle, AudioHandle );
-			void SetEmitterClipVolume	( EmitterHandle, AudioHandle, float );
-			void SetEmitterClipPitch	( EmitterHandle, AudioHandle, float );
-			void SetEmitterClipPause	( EmitterHandle, AudioHandle, bool );
-			void SetEmitterClipLoop		( EmitterHandle, AudioHandle, bool );
+			void SetEmitterClipVolume	( EmitterHandle, AudioHandle, LUMfloat );
+			void SetEmitterClipPitch	( EmitterHandle, AudioHandle, LUMfloat );
+			void SetEmitterClipPause	( EmitterHandle, AudioHandle, LUMbool );
+			void SetEmitterClipLoop		( EmitterHandle, AudioHandle, LUMbool );
 			void DestroyEmitter			( EmitterHandle );
 
 			float	GetEmitterClipVolume( EmitterHandle, AudioHandle );
@@ -123,8 +123,8 @@ namespace lum {
 			bool	GetEmitterClipPaused( EmitterHandle, AudioHandle );
 
 			AudioListenerWrapper*		GetListener	( );
-			std::optional<AudioHandle>	GetIDByName	( string_view );
-			bool						NameExists	( string_view );
+			std::optional<AudioHandle>	GetIDByName	( LUMstrview );
+			bool						NameExists	( LUMstrview );
 
 		private:
 

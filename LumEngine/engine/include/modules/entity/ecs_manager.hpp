@@ -19,7 +19,8 @@ namespace lum {
 			EntityManager(ev::EventBus& bus) : event_bus(bus) { Init(); }
 			~EntityManager() { Destruct(); }
 
-			[[nodiscard]] Entity CreateEntity();
+			LUM_NODISCARD
+			Entity CreateEntity();
 
 			template<detail::Component T>
 			T* AddComponent(EntityID entityID) {
@@ -61,7 +62,7 @@ namespace lum {
 			}
 
 			template<detail::Component T>
-			bool Has(EntityID entityID) {
+			LUMbool Has(EntityID entityID) {
 				return GetOrCreatePool<T>().Has(entityID);
 			}
 
@@ -82,14 +83,14 @@ namespace lum {
 			}
 
 			inline void Init() {
-				for (size_t i = 0; i < detail::MAX_COMPONENT_TYPES_COUNT; i++) {
+				for (LUMsize i = 0; i < detail::MAX_COMPONENT_TYPES_COUNT; i++) {
 					m_pools[i] = nullptr;
 				}
 				LUM_LOG_INIT_OK("Entity Component System init");
 			}
 
 			inline void Destruct() {
-				for (size_t i = 0; i < detail::MAX_COMPONENT_TYPES_COUNT; i++) {
+				for (LUMsize i = 0; i < detail::MAX_COMPONENT_TYPES_COUNT; i++) {
 					delete m_pools[i];
 					m_pools[i] = nullptr;
 				}

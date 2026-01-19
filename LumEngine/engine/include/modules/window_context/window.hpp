@@ -1,25 +1,26 @@
 #pragma once
 #include "rhi/rhi_pch.hpp"
+#include "core/core_common.hpp"
 namespace lum {
 
-	enum class RenderBackend : uint8_t { OpenGL, /*Vulkan*/ };
+	enum class RenderBackend : LUMbyte { OpenGL, /*Vulkan*/ };
 
 	struct WindowDescriptor {
-		const char* title			= "LumEngine";
-		bool fullscreen				= false;
-		unsigned int height			= 500;
-		unsigned int width			= 500;
-		unsigned int MSAA_samples	= 0;
-		RenderBackend render		= RenderBackend::OpenGL;
+		LUMcharptr title		= "LumEngine";
+		LUMbool fullscreen		= false;
+		LUMuint height			= 500;
+		LUMuint width			= 500;
+		LUMuint MSAA_samples	= 0;
+		RenderBackend render	= RenderBackend::OpenGL;
 	};
 
 	class Window {
 	public:
 
-		virtual unsigned int	GetWidth		( ) = 0;
-		virtual unsigned int	GetHeight		( ) = 0;
-		virtual void*			GetNativeWindow	( ) = 0;
-		virtual bool			IsOpen			( ) = 0;
+		virtual LUMuint	GetWidth		( ) = 0;
+		virtual LUMuint	GetHeight		( ) = 0;
+		virtual LUMvptr	GetNativeWindow	( ) = 0;
+		virtual LUMbool	IsOpen			( ) = 0;
 		virtual RenderBackend	GetBackend		( )	= 0;
 
 	protected:
@@ -34,16 +35,16 @@ namespace lum {
 
 		OpenGL_Window( const WindowDescriptor& desc ) { Init(desc); }
 
-		unsigned int			GetWidth		( ) override;
-		unsigned int			GetHeight		( ) override;
-		void*					GetNativeWindow	( ) override;
-		bool					IsOpen			( ) override;
+		LUMuint					GetWidth		( ) override;
+		LUMuint					GetHeight		( ) override;
+		LUMvptr					GetNativeWindow	( ) override;
+		LUMbool					IsOpen			( ) override;
 		virtual RenderBackend	GetBackend		( ) override;
 
 	private:
 
-		unsigned int width = 0;
-		unsigned int height = 0;
+		LUMuint width = 0;
+		LUMuint height = 0;
 		
 		GLFWwindow* m_window = nullptr;
 

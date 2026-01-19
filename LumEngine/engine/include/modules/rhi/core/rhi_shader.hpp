@@ -5,8 +5,8 @@ namespace lum::rhi {
 
 	struct ShaderHandle {
 
-		uint64_t id = max_val<uint64_t>();
-		uint32_t generation = 0;
+		shaderid id = max_val<shaderid>();
+		shaderid generation = 0;
 
 	};
 
@@ -17,7 +17,7 @@ namespace lum::rhi {
 
 	struct Shader {
 
-		uint64_t handle = 0;
+		shaderid handle = 0;
 
 	};
 

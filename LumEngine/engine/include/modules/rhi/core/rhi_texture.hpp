@@ -6,25 +6,28 @@ namespace lum::rhi {
 
 	struct TextureHandle {
 
-		uint64_t id = max_val<uint64_t>();
-		uint32_t generation = 0;
+		textureid id = max_val<textureid>();
+		textureid generation = 0;
 
 	};
 
 	struct TextureDescriptor {
 
 		// Path/Name of the texture
-		cstr_t filename = nullptr;
+		LUMcharptr filename = nullptr;
+
+		// Can texture have LOD ( Level Of Detail )
+		bool mipmaping = false;
 
 	};
 
 	struct Texture {
 
-		unsigned int width = 0;
-		unsigned int height = 0;
+		LUMuint width = 0;
+		LUMuint height = 0;
 
 		union {
-			uint32_t gl_handle = 0;
+			textureid gl_handle = 0;
 		} handle{};
 
 	};

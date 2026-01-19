@@ -32,7 +32,7 @@ namespace lum {
 
 		namespace detail {
 
-			std::array<bool, static_cast<int>(Key::MAX_COUNT)> key_is_pressed{};
+			std::array<LUMbool, static_cast<LUMint>(Key::MAX_COUNT)> key_is_pressed{};
 
 			inline static int key_map[] = {
 				GLFW_KEY_SPACE,

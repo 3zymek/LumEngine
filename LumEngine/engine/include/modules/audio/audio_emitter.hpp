@@ -7,11 +7,11 @@ namespace lum {
 		namespace detail {
 
 			struct AudioInstance {
-				AudioHandle id	{	};
-				float volume	{ 1 };
-				float pitch		{ 1 };
-				bool loop		{ false };
-				bool paused		{ false };
+				AudioHandle id		{	};
+				LUMfloat volume		{ 1 };
+				LUMfloat pitch		{ 1 };
+				LUMbool loop		{ false };
+				LUMbool paused		{ false };
 			};
 
 			struct AudioEmitter {

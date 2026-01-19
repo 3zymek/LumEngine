@@ -12,10 +12,10 @@ namespace lum {
 			template<LumEvent T>
 			class EventPool : public BasePool {
 
-				using CallbackArray = std::array<Callback, MAX_CALLBACKS_PER_FRAME>;
+				using CallbackArray		= std::array<Callback, MAX_CALLBACKS_PER_FRAME>;
 				using PermCallbackArray = std::array<Callback, MAX_PERM_CALLBACKS>;
-				using SlotsVector = std::vector<Event_t>;
-				using EventsVector = std::vector<T>;
+				using SlotsVector		= std::vector<Event_t>;
+				using EventsVector		= std::vector<T>;
 
 			public:
 
@@ -125,11 +125,11 @@ namespace lum {
 					static_assert(alignof(Storage) >= alignof(Lambda), "Lambda aligment dismatch");
 					new (&callback.buffer) Lambda(std::forward<Lambda>(lambda));
 
-					callback.invoke = [](void* userParam, const void* event) {
+					callback.invoke = [](LUMvptr userParam, LUMcvptr event) {
 						auto* l = reinterpret_cast<Lambda*>(userParam);
 						(*l)(*reinterpret_cast<const T*>(event));
 						};
-					callback.destroy = [](void* userParam) {
+					callback.destroy = [](LUMvptr userParam) {
 						reinterpret_cast<Lambda*>(userParam)->~Lambda();
 						};
 					callback.active = true;

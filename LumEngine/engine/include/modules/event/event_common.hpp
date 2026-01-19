@@ -11,12 +11,12 @@ namespace lum {
 			std::is_trivially_copyable_v<T>&&
 				std::is_trivially_constructible_v<T>;
 
-			using Event_t	= int32_t;
-			using InvokeFn	= void(*)(void* userParam, const void* event);
-			using DestroyFn = void(*)(void* userParam);
+			using Event_t	= LUMuint;
+			using InvokeFn	= void(*)(LUMvptr userParam, LUMcvptr event);
+			using DestroyFn = void(*)(LUMvptr userParam);
 			using Storage	= std::aligned_storage_t<256, alignof(std::max_align_t)>;
 
-			using SubscribtionID = uint32_t;
+			using SubscribtionID = LUMuint;
 
 			inline constexpr size_t MAX_EVENT_TYPES = settings::EVENT_MAX_EVENT_TYPES;
 			inline constexpr size_t MAX_CALLBACKS_PER_FRAME = settings::EVENT_MAX_CALLBACKS_PER_FRAME;
@@ -28,7 +28,7 @@ namespace lum {
 				Storage buffer{};
 				InvokeFn invoke = nullptr;
 				DestroyFn destroy = nullptr;
-				bool active = false;
+				LUMbool active = false;
 				void Destroy() {
 					(*destroy)(&buffer);
 					active = false;
@@ -48,7 +48,7 @@ namespace lum {
 			};
 
 
-			#define LumEventTag static constexpr bool __lumevent__ = true;
+			#define LumEventTag static constexpr LUMbool __lumevent__ = true;
 
 		}
 	}
