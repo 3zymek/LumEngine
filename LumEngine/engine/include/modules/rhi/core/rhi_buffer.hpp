@@ -14,15 +14,15 @@ namespace lum::rhi {
 	struct BufferDescriptor {
 		BufferUsage	buffer_usage	= BufferUsage::Static;
 		size_t		size			= 0;
-		mapflag	map_flags		= 0;
-		LUMcvptr		data			= nullptr;
+		mapflag	map_flags			= 0;
+		cvptr		data			= nullptr;
 	};
 
 	struct Buffer {
 
 		BufferType	type	{};
 		BufferUsage usage	{};
-		mapflag	flags	= 0;
+		mapflag		flags	= 0;
 		size_t		size	= 0;
 		bool		mapped	= false;
 

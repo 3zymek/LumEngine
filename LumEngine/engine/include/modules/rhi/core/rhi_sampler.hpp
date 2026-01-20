@@ -1,6 +1,6 @@
 #pragma once
 #include "rhi/rhi_common.hpp"
-
+#include "core/shaders_define.h"
 namespace lum::rhi {
 
 	struct SamplerHandle {
@@ -11,13 +11,13 @@ namespace lum::rhi {
 	};
 
 	// Filter that applies to texture, when texture is magnified ( scaled up )
-	enum class SamplerMagFilter : LUMbyte {
+	enum class SamplerMagFilter : byte {
 		Linear,	// Takes 4 neighbouring texels and calculates it weighted average value (Effect: Smoothness, Fuzzy, no sharp edges).
 		Nearest	// Takes texture coordinate from UV map, rounds it and takes 1 texel (Effect: Sharpness). 
 	};
 
 	// Filter that applies to texture, when texture is minified ( scaled down )
-	enum class SamplerMinFilter : LUMbyte {
+	enum class SamplerMinFilter : byte {
 		Linear,					// Takes 4 neighbouring texels and calculates it weighted average value ( Effect: Smoothness, Fuzzy, no sharp edges, NO MIPMAP ).
 		Linear_mipmap_nearest,	// Takes 4 neighbouring texels from single mipmap and calculates it weighted average value ( Effect: Compromise for quality and performance, smoothness ).
 		Linear_mipmap_linear,	// Takes 4 neighbouring texels from 2 mipmaps and calculates it weighted average value ( Effect: Best quality, smooth but not fuzzy ).
@@ -27,7 +27,7 @@ namespace lum::rhi {
 	};
 
 	// Defines what will happen to texture when out of bounds
-	enum class SamplerWrap : LUMbyte {
+	enum class SamplerWrap : byte {
 		Repeat,				// Texture will repeat
 		Repeat_mirrored,	// Texture will repeat and every second repeat is mirrored
 		Clamp_edge,			// Last texture pixel will be streched
@@ -49,13 +49,14 @@ namespace lum::rhi {
 		SamplerWrap wrap_r;
 
 		// Level of anisotropic filtering ( sharpens textures at steep viewing angles, prevents blur and stretch )
-		LUMint anisotropy = 0;
+		int32 anisotropy = 0;
 
 	};
 
 	struct Sampler {
 
 		samplerid handle = 0;
+		uint16 binding = LUM_NULL_BINDING;
 
 	};
 

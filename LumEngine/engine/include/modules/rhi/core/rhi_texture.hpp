@@ -2,6 +2,7 @@
 #include "rhi/rhi_pch.hpp"
 #include "rhi/rhi_common.hpp"
 #include "core/core_common.hpp"
+#include "core/shaders_define.h"
 namespace lum::rhi {
 
 	struct TextureHandle {
@@ -14,7 +15,7 @@ namespace lum::rhi {
 	struct TextureDescriptor {
 
 		// Path/Name of the texture
-		LUMcharptr filename = nullptr;
+		ccharptr filename = nullptr;
 
 		// Can texture have LOD ( Level Of Detail )
 		bool mipmaping = false;
@@ -23,8 +24,10 @@ namespace lum::rhi {
 
 	struct Texture {
 
-		LUMuint width = 0;
-		LUMuint height = 0;
+		uint32 width = 0;
+		uint32 height = 0;
+
+		uint16 binding = LUM_NULL_BINDING;
 
 		union {
 			textureid gl_handle = 0;

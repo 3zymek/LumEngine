@@ -1,5 +1,5 @@
 #version 450 core
-layout(binding = 0) uniform sampler2D uTexture;
+layout(binding = LUM_TEXTURE_BINDING_01) uniform sampler2D uTexture;
 
 in vec3 fragColor;
 in vec2 fragUV;

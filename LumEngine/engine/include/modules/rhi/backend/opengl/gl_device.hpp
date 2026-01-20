@@ -40,12 +40,12 @@ namespace lum::gl {
 		BufferHandle	CreateVertexBuffer	( const BufferDescriptor& desc )									override;
 		BufferHandle	CreateElementBuffer	( const BufferDescriptor& desc )									override;
 		BufferHandle	CreateUniformBuffer	( const BufferDescriptor& desc )									override;
-		void			UpdateBuffer		( const BufferHandle& buff, LUMcvptr data, LUMsize offset = 0, LUMsize size = 0 )	override;
+		void			UpdateBuffer		( const BufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 )		override;
 		void			DeleteBuffer		( BufferHandle& buff )															override;
-		LUMvptr			MapBuffer			( const BufferHandle& buff, mapflag_t flags, LUMsize offset = 0, LUMsize size = 0 )	override;
+		vptr			MapBuffer			( const BufferHandle& buff, mapflag_t flags, usize offset = 0, usize size = 0 )	override;
 		void			UnmapBuffer			( const BufferHandle& buff )													override;
 		void			AttachElementBufferToLayout	( const BufferHandle&, const VertexLayoutHandle& )						override;
-		void			SetUniformBufferBinding		( const BufferHandle& ubo, LUMint binding )								override;
+		void			SetUniformBufferBinding		( const BufferHandle& ubo, int32 binding )								override;
 
 		///////////////////////////////////////////////////
 		/// Layouts
@@ -61,12 +61,12 @@ namespace lum::gl {
 		ShaderHandle	CreateShader( const ShaderDescriptor& desc )									override;
 		void			BindShader	( const ShaderHandle& shader )										override;
 		void			DeleteShader( ShaderHandle& shader )											override;
-		void			SetMat4		( const ShaderHandle& shader, LUMcharptr location, const glm::mat4& mat )	override;
-		void			Setf		( const ShaderHandle& shader, LUMcharptr location, LUMfloat value )			override;
-		void			Seti		( const ShaderHandle& shader, LUMcharptr location, LUMint value )			override;
-		void			SetVec3		( const ShaderHandle& shader, LUMcharptr location, const glm::vec4& vec )	override;
-		void			SetVec3		( const ShaderHandle& shader, LUMcharptr location, const glm::vec3& vec )	override;
-		void			SetVec3		( const ShaderHandle& shader, LUMcharptr location, const glm::vec2& vec )	override;
+		void			SetMat4		( const ShaderHandle& shader, ccharptr location, const glm::mat4& mat )	override;
+		void			Setf		( const ShaderHandle& shader, ccharptr location, float32 value )		override;
+		void			Seti		( const ShaderHandle& shader, ccharptr location, int32 value )			override;
+		void			SetVec4		( const ShaderHandle& shader, ccharptr location, const glm::vec4& vec )	override;
+		void			SetVec3		( const ShaderHandle& shader, ccharptr location, const glm::vec3& vec )	override;
+		void			SetVec2		( const ShaderHandle& shader, ccharptr location, const glm::vec2& vec )	override;
 
 		///////////////////////////////////////////////////
 		/// Textures
@@ -75,34 +75,35 @@ namespace lum::gl {
 		TextureHandle	CreateTexture2D	( const TextureDescriptor& desc )	override;
 		TextureHandle	CreateTexture3D	( const TextureDescriptor& desc )	override;
 		void			DeleteTexture	( TextureHandle& texture )			override;
-		void			BindTexture		( const TextureHandle& texture )	override;
+		void			SetTextureBinding( const TextureHandle& texture, uint16 binding ) override;
+		void			BindTexture		( const TextureHandle& texture, uint16 binding = LUM_NULL_BINDING)	override;
 
 
 		///////////////////////////////////////////////////
 		/// Samplers
 		///////////////////////////////////////////////////
 
-		SamplerHandle	CreateSampler	( const SamplerDescriptor& desc )	override;
-		void			SetSamplerBinding(const SamplerHandle& sampler, LUMint binding) override;
-		void			BindSampler		( const SamplerHandle& sampler )	override;
-		void			DeleteSampler	( SamplerHandle sampler )			override;
+		SamplerHandle	CreateSampler	( const SamplerDescriptor& desc )				override;
+		void			SetSamplerBinding( const SamplerHandle& sampler, uint16 binding )	override;
+		void			BindSampler		( const SamplerHandle& sampler, uint16 binding = LUM_NULL_BINDING ) override;
+		void			DeleteSampler	( SamplerHandle sampler )						override;
 
 
 		///////////////////////////////////////////////////
 		/// Other
 		///////////////////////////////////////////////////
 
-		void Draw			( const VertexLayoutHandle& vao, LUMuint vertex_count )	override;
-		void DrawElements	( const VertexLayoutHandle& vao, LUMuint indices_count )	override;
-		void BeginFrame		( )													override;
-		void EndFrame		( )													override;
+		void Draw			( const VertexLayoutHandle& vao, uint32 vertex_count )	override;
+		void DrawElements	( const VertexLayoutHandle& vao, uint32 indices_count )	override;
+		void BeginFrame		( )														override;
+		void EndFrame		( )														override;
 
 	protected:
 
 		LUM_CONST_VAR_QUALIFIER 
-		static unsigned int MAX_UNIFORMS = 1000;
+		static uint16 MAX_UNIFORMS = 1000;
 
-		cstd::sparse_set<GLuint, LUMuint> m_unifomrs{ MAX_UNIFORMS };
+		cstd::sparse_set<GLuint, uint32> m_unifomrs{ MAX_UNIFORMS };
 
 		Window* window = nullptr;
 

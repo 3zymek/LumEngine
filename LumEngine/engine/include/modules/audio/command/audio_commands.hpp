@@ -6,10 +6,10 @@ namespace lum {
 		namespace detail {
 			struct AddClip		{ audio::AudioHandle audioID; };
 			struct RemoveClip	{ audio::AudioHandle audioID; };
-			struct SetVolume	{ audio::AudioHandle audioID; LUMfloat volume; };
-			struct SetPitch		{ audio::AudioHandle audioID; LUMfloat pitch; };
-			struct SetLoop		{ audio::AudioHandle audioID; LUMbool loop; };
-			struct SetPause		{ audio::AudioHandle audioID; LUMbool paused; };
+			struct SetVolume	{ audio::AudioHandle audioID; float32 volume; };
+			struct SetPitch		{ audio::AudioHandle audioID; float32 pitch; };
+			struct SetLoop		{ audio::AudioHandle audioID; bool loop; };
+			struct SetPause		{ audio::AudioHandle audioID; bool paused; };
 			struct Stop			{ audio::AudioHandle audioID; };
 			struct Play			{ audio::AudioHandle audioID; };
 

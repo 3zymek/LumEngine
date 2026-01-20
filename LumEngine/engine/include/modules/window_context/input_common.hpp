@@ -16,15 +16,15 @@ namespace lum {
 			detail::active_window = window;
 		}
 
-		inline LUMuint GetGLFWKey( Key key ) {
+		inline uint32 GetGLFWKey( Key key ) {
 			assert(detail::active_window && "Active window isn't set");
-			return detail::key_map[static_cast<LUMuint>(key)];
+			return detail::key_map[static_cast<uint32>(key)];
 		}
 
-		inline LUMbool KeyPressedOnce( Key key ) {
+		inline bool KeyPressedOnce( Key key ) {
 			assert(detail::active_window && "Active window isn't set");
 			bool key_pressed = glfwGetKey(detail::active_window, GetGLFWKey(key)) == GLFW_PRESS;
-			int key_code = static_cast<LUMint>(key);
+			int key_code = static_cast<int32>(key);
 
 			if (key_pressed && !detail::key_is_pressed[key_code]) {
 				detail::key_is_pressed[key_code] = true;

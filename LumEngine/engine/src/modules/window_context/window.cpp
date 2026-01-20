@@ -10,7 +10,7 @@
 namespace lum {
 
 	namespace rhi::detail {
-#		if defined(LUM_DEBUG_RENDER)
+#		if LUM_ENABLE_DEBUG_RENDER == 1
 		void APIENTRY GLDebugCallback(
 			GLenum src,
 			GLenum type,

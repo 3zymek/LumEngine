@@ -14,6 +14,7 @@
 #include "core/shaders_define.h"
 #include "core/math/backend/gtx/string_cast.hpp"
 #include "imgui.h"
+#include "core/fixed_string.hpp"
 using namespace lum;
 using namespace lum::rhi;
 #define LUM_UNIFORM_BUFFER_STRUCT struct alignas(16)
@@ -150,7 +151,7 @@ LUM_UNIFORM_BUFFER_STRUCT ModelUBO {
 int main() {
 
     Logger::Get().EnableLog(LogSeverity::ALL);
-    Logger::Get().DisableLog(LogSeverity::DEBUG);
+    //Logger::Get().DisableLog(LogSeverity::DEBUG);
 
     ///////////////////////////////////////////
     // Init
@@ -183,9 +184,9 @@ int main() {
     uv.relative_offset = offsetof(Vertex, uv);
     uv.shader_location = LUM_LAYOUT_UV;
 
-    VertexLayoutDescriptor vdesc;
-    vdesc.stride = sizeof(Vertex);
-    vdesc.attributes = attrib;
+    VertexLayoutDescriptor vao_description;
+    vao_description.stride = sizeof(Vertex);
+    vao_description.attributes = attrib;
 
     std::vector<Vertex> verts = {
         {{ 10, 10, 0}, {0,0,1}, {2, 2}}, // top-right
@@ -197,12 +198,12 @@ int main() {
         0,1,2, 0,2,3
     };
 
-    rhi::BufferDescriptor bdesc{
+    rhi::BufferDescriptor vbo_description{
         .buffer_usage = BufferUsage::Dynamic,
         .size = verts.size() * sizeof(Vertex),
         .data = verts.data()
     };
-    rhi::BufferDescriptor indi{
+    rhi::BufferDescriptor ebo_description{
         .buffer_usage = BufferUsage::Dynamic,
         .size = bytesize(indices),
         .data = indices.data()
@@ -210,49 +211,59 @@ int main() {
     CameraUBO cubo;
     cubo.view = c.view;
     cubo.proj = c.projection;
-    rhi::BufferDescriptor uniformbuffer_descriptor{
+    rhi::BufferDescriptor ubo_description{
         .buffer_usage = BufferUsage::Dynamic,
         .size = sizeof(cubo),
         .map_flags = map_flags::Write,
         .data = &cubo
     };
-    ModelUBO modelu;
-    rhi::BufferDescriptor uniformbuffer_descriptor2{
+    ModelUBO UBO_model;
+    rhi::BufferDescriptor ubo_description_2{
         .buffer_usage = BufferUsage::Dynamic,
-        .size = sizeof(modelu),
+        .size = sizeof(UBO_model),
         .map_flags = map_flags::Write,
         .data = nullptr
     };
     SamplerDescriptor samplerdesc{
         .mag_filter = SamplerMagFilter::Nearest,
-        .min_filter = SamplerMinFilter::Nearest,
-        .anisotropy = 8,
+        .min_filter = SamplerMinFilter::Linear_mipmap_linear,
+        .anisotropy = 16,
     };
 
     ///////////////////////////////////////////
     // Buffers
     ///////////////////////////////////////////
-    auto vbo = device->CreateVertexBuffer(bdesc);
-    auto ebo = device->CreateElementBuffer(indi);
-    auto ubo = device->CreateUniformBuffer(uniformbuffer_descriptor);
+    auto vbo = device->CreateVertexBuffer(vbo_description);
+    auto ebo = device->CreateElementBuffer(ebo_description);
+    auto ubo = device->CreateUniformBuffer(ubo_description);
     auto sampler = device->CreateSampler(samplerdesc);
-    auto model_ubo = device->CreateUniformBuffer(uniformbuffer_descriptor2);
+    auto model_ubo = device->CreateUniformBuffer(ubo_description_2);
     device->SetUniformBufferBinding(model_ubo, LUM_UBO_MODEL_BINDING);
     device->SetUniformBufferBinding(ubo, LUM_UBO_CAMERA_BINDING);
+    device->SetSamplerBinding(sampler, LUM_TEXTURE_BINDING_01);
 
-    auto vao = device->CreateVertexLayout(vdesc, vbo);
+    auto vao = device->CreateVertexLayout(vao_description, vbo);
     device->AttachElementBufferToLayout(ebo, vao);
     auto shader = device->CreateShader({ "basic.vert", "basic.frag" });
     
-    TextureDescriptor tdescript;
-    tdescript.filename = "test.jpg";
-    auto texture = device->CreateTexture2D(tdescript);
+    TextureDescriptor texture_description;
+    texture_description.filename = "test.jpg";
+    texture_description.mipmaping = true;
+    auto texture = device->CreateTexture2D(texture_description);
+    device->SetTextureBinding(texture, LUM_TEXTURE_BINDING_01);
 
     glm::vec3 model_position    = { 0,0,0 };
     glm::vec3 model_scale       = { 1,1,1 };
     glm::vec3 model_rotation    = { 0,0,0 };
 
     while (window->IsOpen()) {
+
+        glm::quat rot = glm::quat(glm::radians(model_rotation));
+        glm::mat4 rotation = glm::mat4_cast(rot);
+        UBO_model.model = glm::mat4(1.f);
+        UBO_model.model = glm::translate(UBO_model.model, model_position);
+        UBO_model.model = UBO_model.model * rotation;
+        UBO_model.model = glm::scale(UBO_model.model, model_scale);
 
         device->BeginFrame();
         
@@ -261,20 +272,13 @@ int main() {
         ImGui::DragFloat3("scale", glm::value_ptr(model_scale), 0.1f, -1000, 1000);
         ImGui::DragFloat3("rotation", glm::value_ptr(model_rotation), 0.1f, -1000, 1000);
         ImGui::End();
-        
-        glm::quat rot       = glm::quat(glm::radians(model_rotation));
-        glm::mat4 rotation  = glm::mat4_cast(rot);
-        modelu.model = glm::mat4(1.f);
-        modelu.model = glm::translate(modelu.model, model_position);
-        modelu.model = glm::scale(modelu.model, model_scale);
-        modelu.model = modelu.model * rotation;
 
         c.Update();
 
         device->BindShader(shader);
         cubo.view = c.view;
         cubo.proj = c.projection;
-        device->UpdateBuffer(model_ubo, &modelu, 0, 0);
+        device->UpdateBuffer(model_ubo, &UBO_model, 0, 0);
         device->UpdateBuffer(ubo, &cubo, 0, 0);
 
         device->BindSampler(sampler);

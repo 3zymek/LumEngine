@@ -22,11 +22,15 @@
 ///////////////////////////////////////////
 
 // Uniform buffer binding for camera ( mat4 uProjection, mat4 uView );
-#define LUM_UBO_CAMERA_BINDING 0
+#define LUM_UBO_CAMERA_BINDING 1
 
 // Uniform buffer binding for camera ( mat4 uModel );
-#define LUM_UBO_MODEL_BINDING 1
+#define LUM_UBO_MODEL_BINDING 2
 
+
+#define LUM_TEXTURE_BINDING_01 1
+
+#define LUM_NULL_BINDING max_val<uint16_t>()
 
 ///////////////////////////////////////////
 // Instance names

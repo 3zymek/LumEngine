@@ -8,9 +8,26 @@
 #include "rhi/rhi_common.hpp"
 #include "rhi/core/rhi_texture.hpp"
 #include "rhi/core/rhi_sampler.hpp"
+#include "core/shaders_define.h"
 namespace lum { class Window; }
 namespace lum::rhi {
 
+	/*!
+	*  @brief Low-level GPU interface for resource creation and rendering.
+	*
+	*  @brief RHI_Device provides functions to create, bind, and manage GPU resources
+	*  such as textures, samplers, shaders, and buffers. It also handles
+	*  binding resources to the pipeline for drawing or compute operations.
+	*
+	*  @brief All operations are GPU-aware and should be used according to the
+	*  current command buffer / pipeline state.
+	*
+	*  @brief Typical usage:
+	*  @brief  - Create resources (textures, shaders, buffers)
+	*  @brief  - Bind resources (shaders, textures, samplers)
+	*  @brief  - Update uniforms or descriptors
+	*  @brief  - Issue draw/dispatch commands
+	*/
 	class RHI_Device {
 	public:
 
@@ -50,7 +67,9 @@ namespace lum::rhi {
 		*  @param size Byte size of data to write ( 0 for whole buffer ).
 		* 
 		*/
-		virtual void UpdateBuffer( const BufferHandle& buff, LUMcvptr data, LUMsize offset = 0, LUMsize size = 0 ) = 0;
+		LUM_NODISCARD
+		virtual BufferHandle CreateFramebuffer(const BufferDescriptor& desc) = 0;
+		virtual void UpdateBuffer( const BufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 ) = 0;
 		/*! @brief Deletes buffer.
 		*
 		*  @param buff Buffer handle to delete.
@@ -68,7 +87,7 @@ namespace lum::rhi {
 		*	
 		*/
 		LUM_NODISCARD 
-		virtual LUMvptr MapBuffer( const BufferHandle& buff, mapflag flags, LUMsize offset = 0, LUMsize size = 0 ) = 0;
+		virtual vptr MapBuffer( const BufferHandle& buff, mapflag flags, usize offset = 0, usize size = 0 ) = 0;
 		/*! @brief Unmaps buffer.
 		*
 		*  @param buff Buffer handle to unmap.
@@ -88,7 +107,7 @@ namespace lum::rhi {
 		*  @param binding Binding in the shader ( example: LUM_UBO_CAMERA )
 		*
 		*/
-		virtual void SetUniformBufferBinding( const BufferHandle& ubo, LUMint binding ) = 0;
+		virtual void SetUniformBufferBinding( const BufferHandle& ubo, int32 binding ) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -118,88 +137,163 @@ namespace lum::rhi {
 		/// Shaders
 		///////////////////////////////////////////////////
 
-		/*! @brief Creates Shader.
+		/*! @brief Creates a shader from a descriptor.
 		*
-		*  @param desc Shader Descriptor (vertex source file name, fragment source file name).
-		*
-		*  @return Handle to shader.
-		*
+		*  Uses vertex/fragment sources from the descriptor.
+		*  @param desc ShaderDescriptor with source file names.
+		*  @return Handle to the created shader.
+		* 
 		*/
 		LUM_NODISCARD
 		virtual ShaderHandle CreateShader( const ShaderDescriptor& desc)	= 0;
-		/*! @brief Binds shader.
+		/*! @brief Binds a shader for rendering.
 		*
-		*  @param shader Shader to bind.
-		*
+		*  The bound shader will be used on next draw/dispatch.
+		*  @param shader Shader handle to bind.
+		* 
 		*/
 		virtual void BindShader( const ShaderHandle& shader ) = 0;
-		/*! @brief Deletes shader.
+		/*! @brief Deletes a shader.
 		*
-		*  @param shader Shader to delete.
-		*
+		*  Frees GPU resources and invalidates the handle.
+		*  @param shader Shader handle to delete.
+		* 
 		*/
-		virtual void			DeleteShader( ShaderHandle& shader ) = 0;
-		virtual void			SetMat4		( const ShaderHandle& shader, LUMcharptr location, const glm::mat4& mat ) = 0;
-		virtual void			Setf		( const ShaderHandle& shader, LUMcharptr location, LUMfloat value )	= 0;
-		virtual void			Seti		( const ShaderHandle& shader, LUMcharptr location, LUMint value )	= 0;
-		virtual void			SetVec3		( const ShaderHandle& shader, LUMcharptr location, const glm::vec4& vec ) = 0;
-		virtual void			SetVec3		( const ShaderHandle& shader, LUMcharptr location, const glm::vec3& vec ) = 0;
-		virtual void			SetVec3		( const ShaderHandle& shader, LUMcharptr location, const glm::vec2& vec ) = 0;
+		virtual void DeleteShader( ShaderHandle& shader ) = 0;
+		/*! @brief Sets a 4x4 matrix uniform in a shader.
+		* 
+		*  @param shader Shader handle.
+		*  @param location Name of the uniform.
+		*  @param mat Matrix to set.
+		* 
+		*/
+		virtual void SetMat4( const ShaderHandle& shader, ccharptr location, const glm::mat4& mat ) = 0;
+		/*!
+		* @brief Sets a float uniform in a shader.
+		*/
+		virtual void Setf( const ShaderHandle& shader, ccharptr location, float32 value )	= 0;
+		/*!
+		* @brief Sets an int uniform in a shader.
+		*/
+		virtual void Seti( const ShaderHandle& shader, ccharptr location, int32 value )	= 0;
+		/*!
+		* @brief Sets a vec4 uniform in a shader.
+		*/
+		virtual void SetVec4( const ShaderHandle& shader, ccharptr location, const glm::vec4& vec ) = 0;
+		/*!
+		* @brief Sets a vec3 uniform in a shader.
+		*/
+		virtual void SetVec3( const ShaderHandle& shader, ccharptr location, const glm::vec3& vec ) = 0;
+		/*!
+		* @brief Sets a vec2 uniform in a shader.
+		*/
+		virtual void SetVec2( const ShaderHandle& shader, ccharptr location, const glm::vec2& vec ) = 0;
 
 		///////////////////////////////////////////////////
 		/// Textures
 		///////////////////////////////////////////////////
 
+		/*! @brief Creates a 2D texture.
+		*
+		*  Uses the descriptor to initialize GPU texture.
+		*  @param desc Texture properties and data.
+		*  @return Handle to the created texture.
+		* 
+		*/
 		LUM_NODISCARD 
 		virtual TextureHandle CreateTexture2D( const TextureDescriptor& desc ) = 0;
 
+		/*! @brief Creates a 3D texture.
+		*
+		*  Uses the descriptor to initialize GPU 3D texture.
+		*  @param desc Texture properties and data.
+		*  @return Handle to the created texture.
+		* 
+		*/
 		LUM_NODISCARD 
 		virtual TextureHandle CreateTexture3D( const TextureDescriptor& desc ) = 0;
-
+		/*! @brief Deletes a texture.
+		*
+		*  Frees GPU memory and invalidates the handle.
+		*  @param texture Handle of the texture to delete.
+		* 
+		*/
 		virtual void DeleteTexture( TextureHandle& texture ) = 0;
-
-		virtual void BindTexture( const TextureHandle& texture ) = 0;
+		/*! @brief Binds a texture to the active slot/unit.
+		*
+		*  The bound texture will be used by shaders on the next draw/dispatch.
+		*  @param texture Texture to bind.
+		* 
+		*/
+		virtual void SetTextureBinding(const TextureHandle& texture, uint16 binding) = 0;
+		virtual void BindTexture( const TextureHandle& texture, uint16 binding = LUM_NULL_BINDING ) = 0;
 
 
 		///////////////////////////////////////////////////
 		/// Samplers
 		///////////////////////////////////////////////////
+		
+		/*! @brief Creates Sampler.
+		*
+		*  @param desc SamplerDescriptor of sampler.
+		*
+		*/
+		LUM_NODISCARD
+		virtual SamplerHandle CreateSampler( const SamplerDescriptor& desc ) = 0;
+		/*!
+		*  @brief Binds a sampler to a GPU slot.
+		*
+		*  Keeps the binding until changed. Used by shaders on next draw/dispatch.
+		*
+		*  @param sampler  Sampler handle to bind.
+		*  @param binding  GPU binding slot index.
+		*/
+		virtual void SetSamplerBinding( const SamplerHandle& sampler, uint16 binding ) = 0;
+		virtual void BindSampler( const SamplerHandle& sampler, uint16 binding = LUM_NULL_BINDING )	= 0;
+		virtual void DeleteSampler( SamplerHandle sampler ) = 0;
 
-		LUM_NODISCARD 
-		virtual SamplerHandle	CreateSampler	( const SamplerDescriptor& desc )	= 0;
-		virtual void			SetSamplerBinding( const SamplerHandle& sampler, LUMint binding ) = 0;
+		///////////////////////////////////////////////////
+		/// Samplers
+		///////////////////////////////////////////////////
 
-		virtual void			BindSampler		( const SamplerHandle& sampler )	= 0;
-
-		virtual void			DeleteSampler	( SamplerHandle sampler )			= 0;
-
+		/*
+		virtual PipelineHandle CreatePipeline(const PipelineDescriptor& desc) = 0;
+		virtual void DeletePipeline(PipelineHandle& pipeline) = 0;
+		
+		*/
 
 
 		///////////////////////////////////////////////////
 		/// Other
 		///////////////////////////////////////////////////
 
-		virtual void Draw			( const VertexLayoutHandle& vao, LUMuint vertex_count )	= 0;
-		virtual void DrawElements	( const VertexLayoutHandle&, LUMuint indices_count )		= 0;
+		/*
+		virtual void EnableState(..);
+		virtual void DisableState(...);
+
+		*/
+
+		virtual void Draw			( const VertexLayoutHandle& vao, uint32 vertex_count )	= 0;
+		virtual void DrawElements	( const VertexLayoutHandle&, uint32 indices_count )		= 0;
 		virtual void BeginFrame		( )															= 0;
 		virtual void EndFrame		( )															= 0;
 
 	protected:
 		
 		LUM_CONST_VAR_QUALIFIER
-		static LUMuint MAX_SHADERS = 8;
+		static uint8 MAX_SHADERS = 8;
 
 		LUM_CONST_VAR_QUALIFIER
-		static LUMuint MAX_SAMPLERS = 500;
+		static uint32 MAX_SAMPLERS = 500;
 
 		LUM_CONST_VAR_QUALIFIER
-		static LUMuint MAX_BUFFERS = 10000;
+		static uint32 MAX_BUFFERS = 10000;
 
 		LUM_CONST_VAR_QUALIFIER
-		static LUMuint MAX_LAYOUTS = 10000;
+		static uint32 MAX_LAYOUTS = 10000;
 
 		LUM_CONST_VAR_QUALIFIER
-		static LUMuint MAX_TEXTURES = 1000;
+		static uint32 MAX_TEXTURES = 1000;
 
 		cstd::handle_pool<Sampler, SamplerHandle>			m_samplers	{ MAX_SAMPLERS };
 		cstd::handle_pool<Shader, ShaderHandle>				m_shaders	{ MAX_SHADERS };

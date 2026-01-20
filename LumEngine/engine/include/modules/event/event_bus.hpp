@@ -98,7 +98,7 @@ namespace lum {
 			*  @thread_safety Call from the main thread or the thread that owns the EventBus.
 			*/
 			void PollEvents( ) {
-				for (LUMsize i = 0; i < detail::MAX_EVENT_TYPES; i++) {
+				for (usize i = 0; i < detail::MAX_EVENT_TYPES; i++) {
 					if (m_pools[i])
 						m_pools[i]->PollEvents();
 				}

@@ -3,18 +3,18 @@
 namespace lum {
 	namespace cmd {
 		#define LumCmdTag \
-			constexpr static LUMbool __lumcmd__ = true;
+			constexpr static bool __lumcmd__ = true;
 
 		template<typename T>
 		concept Cmd = requires { T::__lumcmd__ == true; }&&
 			std::is_trivially_copyable_v<T>&&
 			std::is_trivially_destructible_v<T>;
 
-		template <Cmd T, LUMsize MAX_SIZE>
+		template <Cmd T, usize MAX_SIZE>
 		class CommandBuffer {
 		public:
 
-			T& operator[](LUMsize index) {
+			T& operator[](usize index) {
 				return cmdbuffer[index];
 			}
 
@@ -29,7 +29,7 @@ namespace lum {
 
 			inline T* Begin() { return cmdbuffer; }
 
-			inline LUMsize Count() const noexcept { return count; }
+			inline usize Count() const noexcept { return count; }
 
 			inline void Clear() noexcept {
 
@@ -42,7 +42,7 @@ namespace lum {
 		private:
 
 			T cmdbuffer[MAX_SIZE]{};
-			LUMsize count = 0;
+			usize count = 0;
 
 		};
 	}

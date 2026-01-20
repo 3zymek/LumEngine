@@ -5,14 +5,14 @@ namespace FMOD { struct Sound; struct Channel; }
 namespace lum {
 	namespace audio {
 
-		using EmitterHandle = LUMuint;
-		using AudioHandle	= LUMuint;
-		using ChannelHandle = LUMuint;
+		using EmitterHandle = uint32;
+		using AudioHandle	= uint32;
+		using ChannelHandle = uint32;
 
-		constexpr LUMuint MAX_SOUNDS_COUNT = settings::AUDIO_MAX_SOUNDS_COUNT;
-		constexpr LUMuint MAX_CHANNELS_COUNT = settings::AUDIO_MAX_CHANNELS_COUNT;
+		constexpr uint32 MAX_SOUNDS_COUNT = settings::AUDIO_MAX_SOUNDS_COUNT;
+		constexpr uint32 MAX_CHANNELS_COUNT = settings::AUDIO_MAX_CHANNELS_COUNT;
 
-		enum class AudioInitFlags : LUMbitfield {
+		enum class AudioInitFlags : bitfield {
 			Normal				= 0x00000000, // Default audio initialization (no extra features)
 			RightHanded3D		= 0x00000004, // Use right-handed coordinate system for 3D audio (matches OpenGL / RH engines)
 			ChannelLowpass		= 0x00000100, // Enable per-channel low-pass filter support (muffling, occlusion effects)
@@ -24,19 +24,19 @@ namespace lum {
 		};
 
 		constexpr AudioInitFlags operator|(AudioInitFlags a, AudioInitFlags b) {
-			return static_cast<AudioInitFlags>(static_cast<LUMbitfield>(a) | static_cast<LUMbitfield>(b));
+			return static_cast<AudioInitFlags>(static_cast<bitfield>(a) | static_cast<bitfield>(b));
 		}
-		constexpr AudioInitFlags operator|(AudioInitFlags a, LUMbitfield b) {
-			return static_cast<AudioInitFlags>(static_cast<LUMbitfield>(a) | b);
+		constexpr AudioInitFlags operator|(AudioInitFlags a, bitfield b) {
+			return static_cast<AudioInitFlags>(static_cast<bitfield>(a) | b);
 		}
-		constexpr AudioInitFlags operator|(LUMbitfield a, AudioInitFlags b) {
-			return static_cast<AudioInitFlags>(a | static_cast<LUMbitfield>(b));
+		constexpr AudioInitFlags operator|(bitfield a, AudioInitFlags b) {
+			return static_cast<AudioInitFlags>(a | static_cast<bitfield>(b));
 		}
-		constexpr LUMbitfield operator&(LUMbitfield mask, AudioInitFlags sev) {
-			return mask & static_cast<LUMbitfield>(sev);
+		constexpr bitfield operator&(bitfield mask, AudioInitFlags sev) {
+			return mask & static_cast<bitfield>(sev);
 		}
-		constexpr LUMbitfield& operator|=(LUMbitfield& mask, AudioInitFlags sev) {
-			mask |= static_cast<LUMbitfield>(sev);
+		constexpr bitfield& operator|=(bitfield& mask, AudioInitFlags sev) {
+			mask |= static_cast<bitfield>(sev);
 			return mask;
 		}
 

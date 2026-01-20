@@ -1,6 +1,5 @@
 #pragma once
 #include "core/core_pch.hpp"
-
 namespace lum {
 
 	struct alignas(16) Vertex {
@@ -15,7 +14,7 @@ namespace lum {
 		/// @param width Width of an image.
 		/// @param height Height of an image.
 		/// @return Mipmap levels count.
-		inline LUMuint mipmap_lvls( LUMuint width, LUMuint height ) {
+		inline uint32 mipmap_lvls( uint32 width, uint32 height ) {
 			return 1 + std::floor(std::log2(std::max(width, height)));
 		}
 
@@ -23,14 +22,14 @@ namespace lum {
 		struct VertexLayoutHandle;
 		struct ShaderHandle;
 
-		using bufferid		= LUMuint;
-		using layoutid		= LUMuint;
-		using textureid		= LUMuint;
-		using samplerid		= LUMuint;
-		using shaderid		= LUMbyte;
-		using mapflag		= LUMushort;
+		using bufferid		= uint32;
+		using layoutid		= uint32;
+		using textureid		= uint32;
+		using samplerid		= uint32;
+		using shaderid		= uint8;
+		using mapflag		= uint16;
 
-		enum class DataFormat : LUMbyte {
+		enum class DataFormat : byte {
 			Float,
 			Float2,
 			Float3,
@@ -40,13 +39,13 @@ namespace lum {
 			Quat
 		};
 
-		enum class BufferType : LUMbyte {
+		enum class BufferType : byte {
 			Vertex, // Buffer contains vertices.
 			Element,// Buffer contains indices (elements).
 			Uniform // Buffer contains uniforms.
 		};
 
-		enum class BufferUsage : LUMbyte {
+		enum class BufferUsage : byte {
 			Static, // Data cannot be updated during runtime (better performance).
 			Dynamic // Data can be updated during runtime (slower performance).
 		};

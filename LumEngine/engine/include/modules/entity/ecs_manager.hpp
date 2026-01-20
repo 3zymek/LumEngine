@@ -62,7 +62,7 @@ namespace lum {
 			}
 
 			template<detail::Component T>
-			LUMbool Has(EntityID entityID) {
+			bool Has(EntityID entityID) {
 				return GetOrCreatePool<T>().Has(entityID);
 			}
 
@@ -83,14 +83,14 @@ namespace lum {
 			}
 
 			inline void Init() {
-				for (LUMsize i = 0; i < detail::MAX_COMPONENT_TYPES_COUNT; i++) {
+				for (usize i = 0; i < detail::MAX_COMPONENT_TYPES_COUNT; i++) {
 					m_pools[i] = nullptr;
 				}
 				LUM_LOG_INIT_OK("Entity Component System init");
 			}
 
 			inline void Destruct() {
-				for (LUMsize i = 0; i < detail::MAX_COMPONENT_TYPES_COUNT; i++) {
+				for (usize i = 0; i < detail::MAX_COMPONENT_TYPES_COUNT; i++) {
 					delete m_pools[i];
 					m_pools[i] = nullptr;
 				}

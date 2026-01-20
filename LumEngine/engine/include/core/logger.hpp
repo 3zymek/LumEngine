@@ -3,7 +3,7 @@
 #include "core/core_common.hpp"
 namespace lum {
 
-	using SeverityMask = LUMbitfield;
+	using SeverityMask = bitfield;
 	enum class LogSeverity : SeverityMask {
 		FATAL = 0b0000'0001,
 		ERROR = 0b0000'0010,

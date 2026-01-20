@@ -125,11 +125,11 @@ namespace lum {
 					static_assert(alignof(Storage) >= alignof(Lambda), "Lambda aligment dismatch");
 					new (&callback.buffer) Lambda(std::forward<Lambda>(lambda));
 
-					callback.invoke = [](LUMvptr userParam, LUMcvptr event) {
+					callback.invoke = [](vptr userParam, cvptr event) {
 						auto* l = reinterpret_cast<Lambda*>(userParam);
 						(*l)(*reinterpret_cast<const T*>(event));
 						};
-					callback.destroy = [](LUMvptr userParam) {
+					callback.destroy = [](vptr userParam) {
 						reinterpret_cast<Lambda*>(userParam)->~Lambda();
 						};
 					callback.active = true;
