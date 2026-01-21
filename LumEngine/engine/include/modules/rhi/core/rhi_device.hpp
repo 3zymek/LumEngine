@@ -9,6 +9,7 @@
 #include "rhi/core/rhi_texture.hpp"
 #include "rhi/core/rhi_sampler.hpp"
 #include "core/shaders_define.h"
+#include "rhi/core/rhi_framebuffer.hpp"
 namespace lum { class Window; }
 namespace lum::rhi {
 
@@ -68,7 +69,14 @@ namespace lum::rhi {
 		* 
 		*/
 		LUM_NODISCARD
-		virtual BufferHandle CreateFramebuffer(const BufferDescriptor& desc) = 0;
+		virtual FramebufferHandle CreateFramebuffer(const FramebufferDescriptor& desc) = 0;
+
+		virtual void DeleteFramebuffer(FramebufferHandle& buff) = 0;
+
+		virtual void BindFramebuffer(const FramebufferHandle& buff) = 0;
+
+		virtual void UnbindFramebuffer(const FramebufferHandle& buff) = 0;
+
 		virtual void UpdateBuffer( const BufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 ) = 0;
 		/*! @brief Deletes buffer.
 		*
@@ -295,11 +303,15 @@ namespace lum::rhi {
 		LUM_CONST_VAR_QUALIFIER
 		static uint32 MAX_TEXTURES = 1000;
 
-		cstd::handle_pool<Sampler, SamplerHandle>			m_samplers	{ MAX_SAMPLERS };
-		cstd::handle_pool<Shader, ShaderHandle>				m_shaders	{ MAX_SHADERS };
-		cstd::handle_pool<Buffer, BufferHandle>				m_buffers	{ MAX_BUFFERS };
-		cstd::handle_pool<VertexLayout, VertexLayoutHandle> m_layouts	{ MAX_LAYOUTS };
-		cstd::handle_pool<Texture, TextureHandle>			m_textures	{ MAX_TEXTURES };
+		LUM_CONST_VAR_QUALIFIER
+		static uint32 MAX_FRAMEBUFFERS = 100;
+
+		cstd::handle_pool<Sampler, SamplerHandle>			m_samplers		{ MAX_SAMPLERS };
+		cstd::handle_pool<Shader, ShaderHandle>				m_shaders		{ MAX_SHADERS };
+		cstd::handle_pool<Buffer, BufferHandle>				m_buffers		{ MAX_BUFFERS };
+		cstd::handle_pool<VertexLayout, VertexLayoutHandle> m_layouts		{ MAX_LAYOUTS };
+		cstd::handle_pool<Texture, TextureHandle>			m_textures		{ MAX_TEXTURES };
+		cstd::handle_pool<Framebuffer, FramebufferHandle>	m_framebuffers	{ MAX_FRAMEBUFFERS };
 
 	};
 

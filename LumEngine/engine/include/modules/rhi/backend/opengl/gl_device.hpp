@@ -29,6 +29,10 @@ namespace lum::gl {
 		using SamplerHandle		= rhi::SamplerHandle;
 		using SamplerDescriptor = rhi::SamplerDescriptor;
 
+		using Framebuffer			= rhi::Framebuffer;
+		using FramebufferHandle		= rhi::FramebufferHandle;
+		using FramebufferDescriptor = rhi::FramebufferDescriptor;
+
 	public:
 
 		GL_Device(Window* win) : window(win) {}
@@ -37,15 +41,19 @@ namespace lum::gl {
 		/// Buffers
 		///////////////////////////////////////////////////
 
-		BufferHandle	CreateVertexBuffer	( const BufferDescriptor& desc )									override;
-		BufferHandle	CreateElementBuffer	( const BufferDescriptor& desc )									override;
-		BufferHandle	CreateUniformBuffer	( const BufferDescriptor& desc )									override;
-		void			UpdateBuffer		( const BufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 )		override;
-		void			DeleteBuffer		( BufferHandle& buff )															override;
-		vptr			MapBuffer			( const BufferHandle& buff, mapflag_t flags, usize offset = 0, usize size = 0 )	override;
-		void			UnmapBuffer			( const BufferHandle& buff )													override;
-		void			AttachElementBufferToLayout	( const BufferHandle&, const VertexLayoutHandle& )						override;
-		void			SetUniformBufferBinding		( const BufferHandle& ubo, int32 binding )								override;
+		BufferHandle		CreateVertexBuffer			( const BufferDescriptor& desc )									override;
+		BufferHandle		CreateElementBuffer			( const BufferDescriptor& desc )									override;
+		BufferHandle		CreateUniformBuffer			( const BufferDescriptor& desc )									override;
+		FramebufferHandle	CreateFramebuffer			( const FramebufferDescriptor& desc )									override;
+		void				DeleteFramebuffer			( FramebufferHandle& buff )												override;
+		void				BindFramebuffer				( const FramebufferHandle& buff )										override;
+		void				UnbindFramebuffer			( const FramebufferHandle& buff )										override;
+		void				UpdateBuffer				( const BufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 )		override;
+		void				DeleteBuffer				( BufferHandle& buff )															override;
+		vptr				MapBuffer					( const BufferHandle& buff, mapflag_t flags, usize offset = 0, usize size = 0 )	override;
+		void				UnmapBuffer					( const BufferHandle& buff )													override;
+		void				AttachElementBufferToLayout	( const BufferHandle&, const VertexLayoutHandle& )						override;
+		void				SetUniformBufferBinding		( const BufferHandle& ubo, int32 binding )								override;
 
 		///////////////////////////////////////////////////
 		/// Layouts

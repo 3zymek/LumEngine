@@ -123,6 +123,30 @@ namespace lum::gl {
 		LUM_LOG_INFO(std::format("Created uniform buffer {}", buffer.handle.gl_handle));
 		return m_buffers.CreateHandle(std::move(buffer));
 	}
+	rhi::FramebufferHandle GL_Device::CreateFramebuffer(const FramebufferDescriptor& desc) {
+		LUM_HOTPATH_ASSERT_CUSTOM(
+			m_framebuffers.DenseSize() >= MAX_FRAMEBUFFERS, 
+			"Max framebuffers reached", 
+			FramebufferHandle{}
+		);
+
+		Framebuffer fbo;
+
+		glCreateFramebuffers(1, &fbo.handle);
+
+
+		return m_framebuffers.CreateHandle(std::move(fbo));
+
+	}
+	void GL_Device::DeleteFramebuffer(FramebufferHandle& buff) {
+
+	}
+	void GL_Device::BindFramebuffer(const FramebufferHandle& buff) {
+
+	}
+	void GL_Device::UnbindFramebuffer(const FramebufferHandle& buff) {
+
+	}
 	void GL_Device::UpdateBuffer( const BufferHandle& vbo, cvptr data, usize offset, usize size ) {
 
 		LUM_HOTPATH_ASSERT_VOID(!m_buffers.Exists(vbo), "Buffer does not exist");

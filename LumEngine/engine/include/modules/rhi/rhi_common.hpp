@@ -1,5 +1,6 @@
 #pragma once
 #include "core/core_pch.hpp"
+#include "core/core_common.hpp"
 namespace lum {
 
 	struct alignas(16) Vertex {
@@ -26,6 +27,7 @@ namespace lum {
 		using layoutid		= uint32;
 		using textureid		= uint32;
 		using samplerid		= uint32;
+		using framebufferid = uint32;
 		using shaderid		= uint8;
 		using mapflag		= uint16;
 
