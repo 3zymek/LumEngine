@@ -32,6 +32,7 @@ namespace lum::gl {
 		using Framebuffer			= rhi::Framebuffer;
 		using FramebufferHandle		= rhi::FramebufferHandle;
 		using FramebufferDescriptor = rhi::FramebufferDescriptor;
+		using FramebufferTextureDescriptor = rhi::FramebufferTextureDescriptor;
 
 	public:
 
@@ -41,13 +42,17 @@ namespace lum::gl {
 		/// Buffers
 		///////////////////////////////////////////////////
 
-		BufferHandle		CreateVertexBuffer			( const BufferDescriptor& desc )									override;
-		BufferHandle		CreateElementBuffer			( const BufferDescriptor& desc )									override;
-		BufferHandle		CreateUniformBuffer			( const BufferDescriptor& desc )									override;
+		BufferHandle		CreateVertexBuffer			( const BufferDescriptor& desc )										override;
+		BufferHandle		CreateElementBuffer			( const BufferDescriptor& desc )										override;
+		BufferHandle		CreateUniformBuffer			( const BufferDescriptor& desc )										override;
 		FramebufferHandle	CreateFramebuffer			( const FramebufferDescriptor& desc )									override;
+		TextureHandle		CreateFramebufferTexture	( const FramebufferTextureDescriptor& desc )							override;
+		void				SetFramebufferColorTexture	( const FramebufferHandle& fbo, const TextureHandle& tex, uint8 index ) override;
+		void				SetFramebufferDepthTexture	( const FramebufferHandle& fbo, const TextureHandle& tex )				override;
+		void				SetFramebufferStencilTexture( const FramebufferHandle& fbo, const TextureHandle& tex )				override;
 		void				DeleteFramebuffer			( FramebufferHandle& buff )												override;
 		void				BindFramebuffer				( const FramebufferHandle& buff )										override;
-		void				UnbindFramebuffer			( const FramebufferHandle& buff )										override;
+		void				UnbindFramebuffer			( )										override;
 		void				UpdateBuffer				( const BufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 )		override;
 		void				DeleteBuffer				( BufferHandle& buff )															override;
 		vptr				MapBuffer					( const BufferHandle& buff, mapflag_t flags, usize offset = 0, usize size = 0 )	override;

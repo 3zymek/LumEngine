@@ -61,7 +61,7 @@ namespace lum {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#		if defined(LUM_DEBUG_RENDER)
+#		if LUM_ENABLE_DEBUG_RENDER == 1
 			glfwWindowHint(GLFW_CONTEXT_DEBUG, GLFW_OPENGL_DEBUG_CONTEXT);
 #		endif
 		if (desc.MSAA_samples > 0)
@@ -95,7 +95,7 @@ namespace lum {
 			ImGui_ImplGlfw_InitForOpenGL(m_window, true);
 			ImGui_ImplOpenGL3_Init("#version 450");
 #		endif
-#		if defined(LUM_DEBUG_RENDER)
+#		if LUM_ENABLE_DEBUG_RENDER == 1
 			glEnable(GL_DEBUG_OUTPUT);
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 			glDebugMessageCallback(rhi::detail::GLDebugCallback, nullptr);

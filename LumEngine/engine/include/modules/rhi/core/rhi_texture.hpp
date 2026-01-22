@@ -20,6 +20,9 @@ namespace lum::rhi {
 		// Can texture have LOD ( Level Of Detail )
 		bool mipmaping = false;
 
+		uint32 width = 0;
+		uint32 height = 0;
+
 	};
 
 	struct Texture {

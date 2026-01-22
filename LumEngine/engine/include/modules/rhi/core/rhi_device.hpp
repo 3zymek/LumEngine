@@ -71,11 +71,16 @@ namespace lum::rhi {
 		LUM_NODISCARD
 		virtual FramebufferHandle CreateFramebuffer(const FramebufferDescriptor& desc) = 0;
 
-		virtual void DeleteFramebuffer(FramebufferHandle& buff) = 0;
+		virtual TextureHandle CreateFramebufferTexture(const FramebufferTextureDescriptor& desc) = 0;
+		virtual void SetFramebufferColorTexture(const FramebufferHandle& fbo, const TextureHandle& tex, uint8 index) = 0;
+		virtual void SetFramebufferDepthTexture(const FramebufferHandle& fbo, const TextureHandle& tex) = 0;
+		virtual void SetFramebufferStencilTexture(const FramebufferHandle& fbo, const TextureHandle& tex) = 0;
 
-		virtual void BindFramebuffer(const FramebufferHandle& buff) = 0;
+		virtual void DeleteFramebuffer(FramebufferHandle& fbo) = 0;
 
-		virtual void UnbindFramebuffer(const FramebufferHandle& buff) = 0;
+		virtual void BindFramebuffer(const FramebufferHandle& fbo) = 0;
+
+		virtual void UnbindFramebuffer( ) = 0;
 
 		virtual void UpdateBuffer( const BufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 ) = 0;
 		/*! @brief Deletes buffer.

@@ -134,17 +134,56 @@ namespace lum::gl {
 
 		glCreateFramebuffers(1, &fbo.handle);
 
-
 		return m_framebuffers.CreateHandle(std::move(fbo));
 
 	}
-	void GL_Device::DeleteFramebuffer(FramebufferHandle& buff) {
+	rhi::TextureHandle GL_Device::CreateFramebufferTexture(const FramebufferTextureDescriptor& desc) {
+		LUM_HOTPATH_ASSERT_CUSTOM(
+			m_textures.DenseSize() >= MAX_TEXTURES || desc.height <= 0 || desc.width <= 0,
+			"Max textures reached",
+			TextureHandle{}
+		);
 
+		Texture tex;
+
+		glCreateTextures(GL_TEXTURE_2D, 1, &tex.handle.gl_handle);
+
+		glTextureStorage2D(tex.handle.gl_handle, 1, GL_RGB8, desc.width, desc.height);
+
+		return m_textures.CreateHandle(std::move(tex));
+	}
+	void GL_Device::SetFramebufferColorTexture(const FramebufferHandle& fbo, const TextureHandle& tex, uint8 index) {
+		LUM_HOTPATH_ASSERT_VOID(!m_framebuffers.Exists(fbo) || !m_textures.Exists(tex), "Framebuffer doesn't exists");
+
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_textures[tex].handle.gl_handle, 0);
+
+	}
+	void GL_Device::SetFramebufferDepthTexture(const FramebufferHandle& fbo, const TextureHandle& tex) {
+		LUM_HOTPATH_ASSERT_VOID(!m_framebuffers.Exists(fbo), "Framebuffer doesn't exists");
+
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_textures[tex].handle.gl_handle, 0);
+
+	}
+	void GL_Device::SetFramebufferStencilTexture(const FramebufferHandle& fbo, const TextureHandle& tex) {
+
+	}
+	void GL_Device::DeleteFramebuffer(FramebufferHandle& buff) {
+		LUM_HOTPATH_ASSERT_VOID(!m_framebuffers.Exists(buff), "Framebuffer doesn't exists");
+
+		Framebuffer& fbo = m_framebuffers[buff];
+		glDeleteFramebuffers(1, &fbo.handle);
+
+		m_framebuffers.DeleteHandle(buff);
 	}
 	void GL_Device::BindFramebuffer(const FramebufferHandle& buff) {
+		LUM_HOTPATH_ASSERT_VOID(!m_framebuffers.Exists(buff), "Framebuffer doesn't exists");
+
+		glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffers[buff].handle);
 
 	}
-	void GL_Device::UnbindFramebuffer(const FramebufferHandle& buff) {
+	void GL_Device::UnbindFramebuffer() {
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	}
 	void GL_Device::UpdateBuffer( const BufferHandle& vbo, cvptr data, usize offset, usize size ) {
@@ -387,21 +426,25 @@ namespace lum::gl {
 			rhi::TextureHandle{}
 		);
 
-		rhi::Texture texture;
+		Texture texture;
 		TextureData data = AssetService::LoadTexture(desc.filename);
-		texture.height = data.height;
-		texture.width = data.width;
+
+		uint32 width = (desc.width == 0) ? data.width : desc.width;
+		uint32 height = (desc.height == 0) ? data.height : desc.height;
+
+		texture.height = height;
+		texture.width = width;
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &texture.handle.gl_handle);
 
-		int mipmaps = rhi::mipmap_lvls(texture.width, texture.height);
+		int mipmaps = rhi::mipmap_lvls(width, height);
 
 		glTextureStorage2D(
 			texture.handle.gl_handle,
 			mipmaps,
 			GL_RGBA8,
-			texture.width,
-			texture.height
+			width,
+			height
 		);
 
 		glTextureSubImage2D(
@@ -409,8 +452,8 @@ namespace lum::gl {
 			0, 
 			0, 
 			0, 
-			texture.width, 
-			texture.height, 
+			width, 
+			height, 
 			GL_RGBA, 
 			GL_UNSIGNED_BYTE, 
 			data.pixels.data()
@@ -528,6 +571,7 @@ namespace lum::gl {
 	}
 	void GL_Device::BeginFrame( ) {
 
+		glViewport(0, 0, window->GetWidth(), window->GetHeight());
 		glClearColor(0, 0, 0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
