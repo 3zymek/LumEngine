@@ -2439,15 +2439,15 @@ int ImTextureDataGetFormatBytesPerPixel(ImTextureFormat format)
     return 0;
 }
 
-const char* ImTextureDataGetStatusName(ImTextureStatus status)
+const char* ImTextureDataGetStatusName(ImTexturestatus status)
 {
     switch (status)
     {
-    case ImTextureStatus_OK: return "OK";
-    case ImTextureStatus_Destroyed: return "Destroyed";
-    case ImTextureStatus_WantCreate: return "WantCreate";
-    case ImTextureStatus_WantUpdates: return "WantUpdates";
-    case ImTextureStatus_WantDestroy: return "WantDestroy";
+    case ImTexturestatus_OK: return "OK";
+    case ImTexturestatus_Destroyed: return "Destroyed";
+    case ImTexturestatus_WantCreate: return "WantCreate";
+    case ImTexturestatus_WantUpdates: return "WantUpdates";
+    case ImTexturestatus_WantDestroy: return "WantDestroy";
     }
     return "N/A";
 }
@@ -2464,10 +2464,10 @@ const char* ImTextureDataGetFormatName(ImTextureFormat format)
 
 void ImTextureData::Create(ImTextureFormat format, int w, int h)
 {
-    IM_ASSERT(Status == ImTextureStatus_Destroyed);
+    IM_ASSERT(Status == ImTexturestatus_Destroyed);
     DestroyPixels();
     Format = format;
-    Status = ImTextureStatus_WantCreate;
+    Status = ImTexturestatus_WantCreate;
     Width = w;
     Height = h;
     BytesPerPixel = ImTextureDataGetFormatBytesPerPixel(format);
@@ -2790,43 +2790,43 @@ void ImFontAtlasUpdateNewFrame(ImFontAtlas* atlas, int frame_count, bool rendere
     {
         ImTextureData* tex = atlas->TexList[tex_n];
         bool remove_from_list = false;
-        if (tex->Status == ImTextureStatus_OK)
+        if (tex->Status == ImTexturestatus_OK)
         {
             tex->Updates.resize(0);
             tex->UpdateRect.x = tex->UpdateRect.y = (unsigned short)~0;
             tex->UpdateRect.w = tex->UpdateRect.h = 0;
         }
-        if (tex->Status == ImTextureStatus_WantCreate && atlas->RendererHasTextures)
+        if (tex->Status == ImTexturestatus_WantCreate && atlas->RendererHasTextures)
             IM_ASSERT(tex->TexID == ImTextureID_Invalid && tex->BackendUserData == NULL && "Backend set texture's TexID/BackendUserData but did not update Status to OK.");
 
         // Request destroy
         // - Keep bool to true in order to differentiate a planned destroy vs a destroy decided by the backend.
         // - We don't destroy pixels right away, as backend may have an in-flight copy from RAM.
-        if (tex->WantDestroyNextFrame && tex->Status != ImTextureStatus_Destroyed && tex->Status != ImTextureStatus_WantDestroy)
+        if (tex->WantDestroyNextFrame && tex->Status != ImTexturestatus_Destroyed && tex->Status != ImTexturestatus_WantDestroy)
         {
-            IM_ASSERT(tex->Status == ImTextureStatus_OK || tex->Status == ImTextureStatus_WantCreate || tex->Status == ImTextureStatus_WantUpdates);
-            tex->Status = ImTextureStatus_WantDestroy;
+            IM_ASSERT(tex->Status == ImTexturestatus_OK || tex->Status == ImTexturestatus_WantCreate || tex->Status == ImTexturestatus_WantUpdates);
+            tex->Status = ImTexturestatus_WantDestroy;
         }
 
         // If a texture has never reached the backend, they don't need to know about it.
-        // (note: backends between 1.92.0 and 1.92.4 could set an already destroyed texture to ImTextureStatus_WantDestroy
+        // (note: backends between 1.92.0 and 1.92.4 could set an already destroyed texture to ImTexturestatus_WantDestroy
         //  when invalidating graphics objects twice, which would previously remove it from the list and crash.)
-        if (tex->Status == ImTextureStatus_WantDestroy && tex->TexID == ImTextureID_Invalid && tex->BackendUserData == NULL)
-            tex->Status = ImTextureStatus_Destroyed;
+        if (tex->Status == ImTexturestatus_WantDestroy && tex->TexID == ImTextureID_Invalid && tex->BackendUserData == NULL)
+            tex->Status = ImTexturestatus_Destroyed;
 
         // Process texture being destroyed
-        if (tex->Status == ImTextureStatus_Destroyed)
+        if (tex->Status == ImTexturestatus_Destroyed)
         {
             IM_ASSERT(tex->TexID == ImTextureID_Invalid && tex->BackendUserData == NULL && "Backend set texture Status to Destroyed but did not clear TexID/BackendUserData!");
             if (tex->WantDestroyNextFrame)
                 remove_from_list = true; // Destroy was scheduled by us
             else
-                tex->Status = ImTextureStatus_WantCreate; // Destroy was done was backend: recreate it (e.g. freed resources mid-run)
+                tex->Status = ImTexturestatus_WantCreate; // Destroy was done was backend: recreate it (e.g. freed resources mid-run)
         }
 
         // The backend may need defer destroying by a few frames, to handle texture used by previous in-flight rendering.
         // We allow the texture staying in _WantDestroy state and increment a counter which the backend can use to take its decision.
-        if (tex->Status == ImTextureStatus_WantDestroy)
+        if (tex->Status == ImTexturestatus_WantDestroy)
             tex->UnusedFrames++;
 
         // Destroy and remove
@@ -2955,7 +2955,7 @@ void ImFontAtlasTextureBlockCopy(ImTextureData* src_tex, int src_x, int src_y, I
 // Queue texture block update for renderer backend
 void ImFontAtlasTextureBlockQueueUpload(ImFontAtlas* atlas, ImTextureData* tex, int x, int y, int w, int h)
 {
-    IM_ASSERT(tex->Status != ImTextureStatus_WantDestroy && tex->Status != ImTextureStatus_Destroyed);
+    IM_ASSERT(tex->Status != ImTexturestatus_WantDestroy && tex->Status != ImTexturestatus_Destroyed);
     IM_ASSERT(x >= 0 && x <= 0xFFFF && y >= 0 && y <= 0xFFFF && w >= 0 && x + w <= 0x10000 && h >= 0 && y + h <= 0x10000);
     IM_UNUSED(atlas);
 
@@ -2972,10 +2972,10 @@ void ImFontAtlasTextureBlockQueueUpload(ImFontAtlas* atlas, ImTextureData* tex, 
     tex->UsedRect.h = (unsigned short)(ImMax(tex->UsedRect.y + tex->UsedRect.h, req.y + req.h) - tex->UsedRect.y);
     atlas->TexIsBuilt = false;
 
-    // No need to queue if status is == ImTextureStatus_WantCreate
-    if (tex->Status == ImTextureStatus_OK || tex->Status == ImTextureStatus_WantUpdates)
+    // No need to queue if status is == ImTexturestatus_WantCreate
+    if (tex->Status == ImTexturestatus_OK || tex->Status == ImTexturestatus_WantUpdates)
     {
-        tex->Status = ImTextureStatus_WantUpdates;
+        tex->Status = ImTexturestatus_WantUpdates;
         tex->Updates.push_back(req);
     }
 }
@@ -3971,7 +3971,7 @@ ImTextureData* ImFontAtlasTextureAdd(ImFontAtlas* atlas, int w, int h)
     ImTextureData* new_tex;
 
     // FIXME: Cannot reuse texture because old UV may have been used already (unless we remap UV).
-    /*if (old_tex != NULL && old_tex->Status == ImTextureStatus_WantCreate)
+    /*if (old_tex != NULL && old_tex->Status == ImTexturestatus_WantCreate)
     {
         // Reuse texture not yet used by backend.
         IM_ASSERT(old_tex->TexID == ImTextureID_Invalid && old_tex->BackendUserData == NULL);
@@ -3991,7 +3991,7 @@ ImTextureData* ImFontAtlasTextureAdd(ImFontAtlas* atlas, int w, int h)
     {
         // Queue old as to destroy next frame
         old_tex->WantDestroyNextFrame = true;
-        IM_ASSERT(old_tex->Status == ImTextureStatus_OK || old_tex->Status == ImTextureStatus_WantCreate || old_tex->Status == ImTextureStatus_WantUpdates);
+        IM_ASSERT(old_tex->Status == ImTexturestatus_OK || old_tex->Status == ImTexturestatus_WantCreate || old_tex->Status == ImTexturestatus_WantUpdates);
     }
 
     new_tex->Create(atlas->TexDesiredFormat, w, h);
@@ -4136,7 +4136,7 @@ ImVec2i ImFontAtlasTextureGetSizeEstimate(ImFontAtlas* atlas)
 {
     int min_w = ImUpperPowerOfTwo(atlas->TexMinWidth);
     int min_h = ImUpperPowerOfTwo(atlas->TexMinHeight);
-    if (atlas->Builder == NULL || atlas->TexData == NULL || atlas->TexData->Status == ImTextureStatus_WantDestroy)
+    if (atlas->Builder == NULL || atlas->TexData == NULL || atlas->TexData->Status == ImTexturestatus_WantDestroy)
         return ImVec2i(min_w, min_h);
 
     ImFontAtlasBuilder* builder = atlas->Builder;
@@ -4541,11 +4541,11 @@ void ImFontAtlasDebugLogTextureRequests(ImFontAtlas* atlas)
     {
         if ((g.IO.BackendFlags & ImGuiBackendFlags_RendererHasTextures) == 0)
             IM_ASSERT(tex->Updates.Size == 0);
-        if (tex->Status == ImTextureStatus_WantCreate)
+        if (tex->Status == ImTexturestatus_WantCreate)
             IMGUI_DEBUG_LOG_FONT("[font] Texture #%03d: create %dx%d\n", tex->UniqueID, tex->Width, tex->Height);
-        else if (tex->Status == ImTextureStatus_WantDestroy)
+        else if (tex->Status == ImTexturestatus_WantDestroy)
             IMGUI_DEBUG_LOG_FONT("[font] Texture #%03d: destroy %dx%d, texid=0x%" IM_PRIX64 ", backend_data=%p\n", tex->UniqueID, tex->Width, tex->Height, IM_TEXTUREID_TO_U64(tex->TexID), tex->BackendUserData);
-        else if (tex->Status == ImTextureStatus_WantUpdates)
+        else if (tex->Status == ImTexturestatus_WantUpdates)
         {
             IMGUI_DEBUG_LOG_FONT("[font] Texture #%03d: update %d regions, texid=0x%" IM_PRIX64 ", backend_data=0x%" IM_PRIX64 "\n", tex->UniqueID, tex->Updates.Size, IM_TEXTUREID_TO_U64(tex->TexID), (ImU64)(intptr_t)tex->BackendUserData);
             for (const ImTextureRect& r : tex->Updates)

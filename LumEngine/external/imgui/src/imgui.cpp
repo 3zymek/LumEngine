@@ -373,7 +373,7 @@ IMPLEMENTING SUPPORT for ImGuiBackendFlags_RendererHasTextures:
         // Update textures
         ImDrawData* draw_data = ImGui::GetDrawData();
         for (ImTextureData* tex : *draw_data->Textures)
-            if (tex->Status != ImTextureStatus_OK)
+            if (tex->Status != ImTexturestatus_OK)
                 MyImGuiBackend_UpdateTexture(tex);
 
         // Render dear imgui contents, swap buffers

@@ -542,7 +542,7 @@ void    ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data)
     // (This almost always points to ImGui::GetPlatformIO().Textures[] but is part of ImDrawData to allow overriding or disabling texture updates).
     if (draw_data->Textures != nullptr)
         for (ImTextureData* tex : *draw_data->Textures)
-            if (tex->Status != ImTextureStatus_OK)
+            if (tex->Status != ImTexturestatus_OK)
                 ImGui_ImplOpenGL3_UpdateTexture(tex);
 
     // Backup GL state
@@ -718,13 +718,13 @@ static void ImGui_ImplOpenGL3_DestroyTexture(ImTextureData* tex)
 
     // Clear identifiers and mark as destroyed (in order to allow e.g. calling InvalidateDeviceObjects while running)
     tex->SetTexID(ImTextureID_Invalid);
-    tex->SetStatus(ImTextureStatus_Destroyed);
+    tex->SetStatus(ImTexturestatus_Destroyed);
 }
 
 void ImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex)
 {
     // FIXME: Consider backing up and restoring
-    if (tex->Status == ImTextureStatus_WantCreate || tex->Status == ImTextureStatus_WantUpdates)
+    if (tex->Status == ImTexturestatus_WantCreate || tex->Status == ImTexturestatus_WantUpdates)
     {
 #ifdef GL_UNPACK_ROW_LENGTH // Not on WebGL/ES
         GL_CALL(glPixelStorei(GL_UNPACK_ROW_LENGTH, 0));
@@ -734,7 +734,7 @@ void ImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex)
 #endif
     }
 
-    if (tex->Status == ImTextureStatus_WantCreate)
+    if (tex->Status == ImTexturestatus_WantCreate)
     {
         // Create and upload new texture to graphics system
         //IMGUI_DEBUG_LOG("UpdateTexture #%03d: WantCreate %dx%d\n", tex->UniqueID, tex->Width, tex->Height);
@@ -757,12 +757,12 @@ void ImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex)
 
         // Store identifiers
         tex->SetTexID((ImTextureID)(intptr_t)gl_texture_id);
-        tex->SetStatus(ImTextureStatus_OK);
+        tex->SetStatus(ImTexturestatus_OK);
 
         // Restore state
         GL_CALL(glBindTexture(GL_TEXTURE_2D, last_texture));
     }
-    else if (tex->Status == ImTextureStatus_WantUpdates)
+    else if (tex->Status == ImTexturestatus_WantUpdates)
     {
         // Update selected blocks. We only ever write to textures regions which have never been used before!
         // This backend choose to use tex->Updates[] but you can use tex->UpdateRect to upload a single region.
@@ -790,10 +790,10 @@ void ImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex)
             GL_CALL(glTexSubImage2D(GL_TEXTURE_2D, 0, r.x, r.y, r.w, r.h, GL_RGBA, GL_UNSIGNED_BYTE, bd->TempBuffer.Data));
         }
 #endif
-        tex->SetStatus(ImTextureStatus_OK);
+        tex->SetStatus(ImTexturestatus_OK);
         GL_CALL(glBindTexture(GL_TEXTURE_2D, last_texture)); // Restore state
     }
-    else if (tex->Status == ImTextureStatus_WantDestroy && tex->UnusedFrames > 0)
+    else if (tex->Status == ImTexturestatus_WantDestroy && tex->UnusedFrames > 0)
         ImGui_ImplOpenGL3_DestroyTexture(tex);
 }
 

@@ -25,12 +25,19 @@ namespace lum {
 		requires std::is_arithmetic_v<T>
 	inline constexpr float32 to_f(T value) { return static_cast<float32>(value); }
 
-	/// Converts any arithmetic type to unsigned int at compile-time.
+	/// Converts any arithmetic type to uint8 at compile-time.
 	/// @param value The numeric value to cast.
-	/// @return The value casted to unsigned int.
+	/// @return The value casted to uint8.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr unsigned int to_u(T value) { return static_cast<unsigned int>(value); }
+	inline constexpr uint8 to_u8(T value) { return static_cast<uint8>(value); }
+
+	/// Converts any arithmetic type to uint16 at compile-time.
+	/// @param value The numeric value to cast.
+	/// @return The value casted to uint16.
+	template<typename T>
+		requires std::is_arithmetic_v<T>
+	inline constexpr uint16 to_u16(T value) { return static_cast<uint16>(value); }
 
 	/// Converts any arithmetic type to uint32_t at compile-time.
 	/// @param value The numeric value to cast.
@@ -53,9 +60,9 @@ namespace lum {
 		requires std::is_arithmetic_v<T>
 	inline constexpr float64 to_d(T value) { return static_cast<float64>(value); }
 
-	/// Converts any arithmetic type to int at compile-time.
+	/// Converts any arithmetic type to int32 at compile-time.
 	/// @param value The numeric value to cast.
-	/// @return The value casted to int.
+	/// @return The value casted to int32.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
 	inline constexpr int32 to_i(T value) { return static_cast<int32>(value); }

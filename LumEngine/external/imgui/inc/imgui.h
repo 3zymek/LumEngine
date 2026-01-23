@@ -50,7 +50,7 @@ Index of this file:
 // [SECTION] Helpers (ImGuiOnceUponAFrame, ImGuiTextFilter, ImGuiTextBuffer, ImGuiStorage, ImGuiListClipper, Math Operators, ImColor)
 // [SECTION] Multi-Select API flags and structures (ImGuiMultiSelectFlags, ImGuiMultiSelectIO, ImGuiSelectionRequest, ImGuiSelectionBasicStorage, ImGuiSelectionExternalStorage)
 // [SECTION] Drawing API (ImDrawCallback, ImDrawCmd, ImDrawIdx, ImDrawVert, ImDrawChannel, ImDrawListSplitter, ImDrawFlags, ImDrawListFlags, ImDrawList, ImDrawData)
-// [SECTION] Texture API (ImTextureFormat, ImTextureStatus, ImTextureRect, ImTextureData)
+// [SECTION] Texture API (ImTextureFormat, ImTexturestatus, ImTextureRect, ImTextureData)
 // [SECTION] Font API (ImFontConfig, ImFontGlyph, ImFontGlyphRangesBuilder, ImFontAtlasFlags, ImFontAtlas, ImFontBaked, ImFont)
 // [SECTION] Viewports (ImGuiViewportFlags, ImGuiViewport)
 // [SECTION] ImGuiPlatformIO + other Platform Dependent Interfaces (ImGuiPlatformImeData)
@@ -3425,7 +3425,7 @@ struct ImDrawData
 };
 
 //-----------------------------------------------------------------------------
-// [SECTION] Texture API (ImTextureFormat, ImTextureStatus, ImTextureRect, ImTextureData)
+// [SECTION] Texture API (ImTextureFormat, ImTexturestatus, ImTextureRect, ImTextureData)
 //-----------------------------------------------------------------------------
 // In principle, the only data types that user/application code should care about are 'ImTextureRef' and 'ImTextureID'.
 // They are defined above in this header file. Read their description to the difference between ImTextureRef and ImTextureID.
@@ -3443,17 +3443,17 @@ enum ImTextureFormat
 };
 
 // Status of a texture to communicate with Renderer Backend.
-enum ImTextureStatus
+enum ImTexturestatus
 {
-    ImTextureStatus_OK,
-    ImTextureStatus_Destroyed,      // Backend destroyed the texture.
-    ImTextureStatus_WantCreate,     // Requesting backend to create the texture. Set status OK when done.
-    ImTextureStatus_WantUpdates,    // Requesting backend to update specific blocks of pixels (write to texture portions which have never been used before). Set status OK when done.
-    ImTextureStatus_WantDestroy,    // Requesting backend to destroy the texture. Set status to Destroyed when done.
+    ImTexturestatus_OK,
+    ImTexturestatus_Destroyed,      // Backend destroyed the texture.
+    ImTexturestatus_WantCreate,     // Requesting backend to create the texture. Set status OK when done.
+    ImTexturestatus_WantUpdates,    // Requesting backend to update specific blocks of pixels (write to texture portions which have never been used before). Set status OK when done.
+    ImTexturestatus_WantDestroy,    // Requesting backend to destroy the texture. Set status to Destroyed when done.
 };
 
 // Coordinates of a rectangle within a texture.
-// When a texture is in ImTextureStatus_WantUpdates state, we provide a list of individual rectangles to copy to the graphics system.
+// When a texture is in ImTexturestatus_WantUpdates state, we provide a list of individual rectangles to copy to the graphics system.
 // You may use ImTextureData::Updates[] for the list, or ImTextureData::UpdateBox for a single bounding box.
 struct ImTextureRect
 {
@@ -3472,7 +3472,7 @@ struct ImTextureData
 {
     //------------------------------------------ core / backend ---------------------------------------
     int                 UniqueID;               // w    -   // [DEBUG] Sequential index to facilitate identifying a texture when debugging/printing. Unique per atlas.
-    ImTextureStatus     Status;                 // rw   rw  // ImTextureStatus_OK/_WantCreate/_WantUpdates/_WantDestroy. Always use SetStatus() to modify!
+    ImTexturestatus     Status;                 // rw   rw  // ImTexturestatus_OK/_WantCreate/_WantUpdates/_WantDestroy. Always use SetStatus() to modify!
     void*               BackendUserData;        // -    rw  // Convenience storage for backend. Some backends may have enough with TexID.
     ImTextureID         TexID;                  // r    w   // Backend-specific texture identifier. Always use SetTexID() to modify! The identifier will stored in ImDrawCmd::GetTexID() and passed to backend's RenderDrawData function.
     ImTextureFormat     Format;                 // w    r   // ImTextureFormat_RGBA32 (default) or ImTextureFormat_Alpha8
@@ -3486,10 +3486,10 @@ struct ImTextureData
     int                 UnusedFrames;           // w    r   // In order to facilitate handling Status==WantDestroy in some backend: this is a count successive frames where the texture was not used. Always >0 when Status==WantDestroy.
     unsigned short      RefCount;               // w    r   // Number of contexts using this texture. Used during backend shutdown.
     bool                UseColors;              // w    r   // Tell whether our texture data is known to use colors (rather than just white + alpha).
-    bool                WantDestroyNextFrame;   // rw   -   // [Internal] Queued to set ImTextureStatus_WantDestroy next frame. May still be used in the current frame.
+    bool                WantDestroyNextFrame;   // rw   -   // [Internal] Queued to set ImTexturestatus_WantDestroy next frame. May still be used in the current frame.
 
     // Functions
-    ImTextureData()     { memset(this, 0, sizeof(*this)); Status = ImTextureStatus_Destroyed; TexID = ImTextureID_Invalid; }
+    ImTextureData()     { memset(this, 0, sizeof(*this)); Status = ImTexturestatus_Destroyed; TexID = ImTextureID_Invalid; }
     ~ImTextureData()    { DestroyPixels(); }
     IMGUI_API void      Create(ImTextureFormat format, int w, int h);
     IMGUI_API void      DestroyPixels();
@@ -3504,7 +3504,7 @@ struct ImTextureData
     // - Call SetTexID() and SetStatus() after honoring texture requests. Never modify TexID and Status directly!
     // - A backend may decide to destroy a texture that we did not request to destroy, which is fine (e.g. freeing resources), but we immediately set the texture back in _WantCreate mode.
     void    SetTexID(ImTextureID tex_id)            { TexID = tex_id; }
-    void    SetStatus(ImTextureStatus status)       { Status = status; if (status == ImTextureStatus_Destroyed && !WantDestroyNextFrame) Status = ImTextureStatus_WantCreate; }
+    void    SetStatus(ImTexturestatus status)       { Status = status; if (status == ImTexturestatus_Destroyed && !WantDestroyNextFrame) Status = ImTexturestatus_WantCreate; }
 };
 
 //-----------------------------------------------------------------------------
@@ -3885,7 +3885,7 @@ inline ImTextureID ImDrawCmd::GetTexID() const
     // must iterate and handle ImTextureData requests stored in ImDrawData::Textures[].
     ImTextureID tex_id = TexRef._TexData ? TexRef._TexData->TexID : TexRef._TexID; // == TexRef.GetTexID() above.
     if (TexRef._TexData != NULL)
-        IM_ASSERT(tex_id != ImTextureID_Invalid && "ImDrawCmd is referring to ImTextureData that wasn't uploaded to graphics system. Backend must call ImTextureData::SetTexID() after handling ImTextureStatus_WantCreate request!");
+        IM_ASSERT(tex_id != ImTextureID_Invalid && "ImDrawCmd is referring to ImTextureData that wasn't uploaded to graphics system. Backend must call ImTextureData::SetTexID() after handling ImTexturestatus_WantCreate request!");
     return tex_id;
 }
 

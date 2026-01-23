@@ -12,7 +12,7 @@ namespace lum::gl {
 
 		using BufferHandle		= rhi::BufferHandle;
 		using BufferDescriptor	= rhi::BufferDescriptor;
-		using mapflag_t			= rhi::mapflag;
+		using Mapflag			= rhi::Mapflag;
 
 		using VertexLayout				= rhi::VertexLayout;
 		using VertexLayoutHandle		= rhi::VertexLayoutHandle;
@@ -34,103 +34,185 @@ namespace lum::gl {
 		using FramebufferDescriptor = rhi::FramebufferDescriptor;
 		using FramebufferTextureDescriptor = rhi::FramebufferTextureDescriptor;
 
+		using Pipeline				= rhi::Pipeline;
+		using PipelineHandle		= rhi::PipelineHandle;
+		using PipelineDescriptor	= rhi::PipelineDescriptor;
+
+		using State			= rhi::State;
+		using PolygonMode	= rhi::PolygonMode;
+		using Face			= rhi::Face;
+
 	public:
 
-		GL_Device(Window* win) : window(win) {}
+		GL_Device(Window* win) : pWindow(win) {}
 
 		///////////////////////////////////////////////////
 		/// Buffers
 		///////////////////////////////////////////////////
 
-		BufferHandle		CreateVertexBuffer			( const BufferDescriptor& desc )										override;
-		BufferHandle		CreateElementBuffer			( const BufferDescriptor& desc )										override;
-		BufferHandle		CreateUniformBuffer			( const BufferDescriptor& desc )										override;
-		FramebufferHandle	CreateFramebuffer			( const FramebufferDescriptor& desc )									override;
-		TextureHandle		CreateFramebufferTexture	( const FramebufferTextureDescriptor& desc )							override;
-		void				SetFramebufferColorTexture	( const FramebufferHandle& fbo, const TextureHandle& tex, uint8 index ) override;
-		void				SetFramebufferDepthTexture	( const FramebufferHandle& fbo, const TextureHandle& tex )				override;
-		void				SetFramebufferStencilTexture( const FramebufferHandle& fbo, const TextureHandle& tex )				override;
-		void				DeleteFramebuffer			( FramebufferHandle& buff )												override;
-		void				BindFramebuffer				( const FramebufferHandle& buff )										override;
-		void				UnbindFramebuffer			( )										override;
-		void				UpdateBuffer				( const BufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 )		override;
-		void				DeleteBuffer				( BufferHandle& buff )															override;
-		vptr				MapBuffer					( const BufferHandle& buff, mapflag_t flags, usize offset = 0, usize size = 0 )	override;
-		void				UnmapBuffer					( const BufferHandle& buff )													override;
-		void				AttachElementBufferToLayout	( const BufferHandle&, const VertexLayoutHandle& )						override;
-		void				SetUniformBufferBinding		( const BufferHandle& ubo, int32 binding )								override;
+		BufferHandle		CreateVertexBuffer			( const BufferDescriptor& )												override;
+		BufferHandle		CreateElementBuffer			( const BufferDescriptor& )												override;
+		BufferHandle		CreateUniformBuffer			( const BufferDescriptor& )												override;
+		void				UpdateBuffer				( const BufferHandle&, cvptr, usize, usize )		override;
+		void				DeleteBuffer				( BufferHandle& )															override;
+		vptr				MapBuffer					( const BufferHandle&, Mapflag, usize, usize )	override;
+		void				UnmapBuffer					( const BufferHandle& )													override;
+		void				AttachElementBufferToLayout	( const BufferHandle&, const VertexLayoutHandle& )								override;
+		void				SetUniformBufferBinding		( const BufferHandle&, int32 )										override;
+
+
+
+		///////////////////////////////////////////////////
+		/// Framebuffers
+		///////////////////////////////////////////////////
+
+		FramebufferHandle	CreateFramebuffer			( )																		override;
+		TextureHandle		CreateFramebufferTexture	( const FramebufferTextureDescriptor& )							override;
+		void				SetFramebufferColorTexture	( const FramebufferHandle&, const TextureHandle&, uint8 )	override;
+		void				SetFramebufferDepthTexture	( const FramebufferHandle&, const TextureHandle&)				override;
+		void				SetFramebufferStencilTexture( const FramebufferHandle&, const TextureHandle&)				override;
+		void				DeleteFramebuffer			( FramebufferHandle& )												override;
+		void				BindFramebuffer				( const FramebufferHandle& )										override;
+		void				UnbindFramebuffer			( )																		override;
+
+
 
 		///////////////////////////////////////////////////
 		/// Layouts
 		///////////////////////////////////////////////////
 
-		VertexLayoutHandle	CreateVertexLayout( const VertexLayoutDescriptor& desc, const BufferHandle& vbo)	override;
-		void				DeleteVertexLayout( VertexLayoutHandle& layout )									override;
+		VertexLayoutHandle	CreateVertexLayout( const VertexLayoutDescriptor&, const BufferHandle&)	override;
+		void				DeleteVertexLayout( VertexLayoutHandle& )									override;
 
 		///////////////////////////////////////////////////
-		/// Shaders
+		/// Shaders ( !!! ADD CACHE LOCATIONS !!! )
 		///////////////////////////////////////////////////
 
-		ShaderHandle	CreateShader( const ShaderDescriptor& desc )									override;
-		void			BindShader	( const ShaderHandle& shader )										override;
-		void			DeleteShader( ShaderHandle& shader )											override;
-		void			SetMat4		( const ShaderHandle& shader, ccharptr location, const glm::mat4& mat )	override;
-		void			Setf		( const ShaderHandle& shader, ccharptr location, float32 value )		override;
-		void			Seti		( const ShaderHandle& shader, ccharptr location, int32 value )			override;
-		void			SetVec4		( const ShaderHandle& shader, ccharptr location, const glm::vec4& vec )	override;
-		void			SetVec3		( const ShaderHandle& shader, ccharptr location, const glm::vec3& vec )	override;
-		void			SetVec2		( const ShaderHandle& shader, ccharptr location, const glm::vec2& vec )	override;
+		ShaderHandle	CreateShader( const ShaderDescriptor& )										override;
+		void			BindShader	( const ShaderHandle& )											override;
+		void			DeleteShader( ShaderHandle& )												override;
+		void			SetMat4		( const ShaderHandle&, ccharptr, const glm::mat4& )	override;
+		void			Setf		( const ShaderHandle&, ccharptr, float32 )		override;
+		void			Seti		( const ShaderHandle&, ccharptr, int32 )			override;
+		void			SetVec4		( const ShaderHandle&, ccharptr, const glm::vec4& )	override;
+		void			SetVec3		( const ShaderHandle&, ccharptr, const glm::vec3& )	override;
+		void			SetVec2		( const ShaderHandle&, ccharptr, const glm::vec2& )	override;
 
 		///////////////////////////////////////////////////
 		/// Textures
 		///////////////////////////////////////////////////
 
-		TextureHandle	CreateTexture2D	( const TextureDescriptor& desc )	override;
-		TextureHandle	CreateTexture3D	( const TextureDescriptor& desc )	override;
-		void			DeleteTexture	( TextureHandle& texture )			override;
-		void			SetTextureBinding( const TextureHandle& texture, uint16 binding ) override;
-		void			BindTexture		( const TextureHandle& texture, uint16 binding = LUM_NULL_BINDING)	override;
+		TextureHandle	CreateTexture2D		( const TextureDescriptor& )									override;
+		TextureHandle	CreateTexture3D		( const TextureDescriptor& )									override;
+		void			DeleteTexture		( TextureHandle& )											override;
+		void			SetTextureBinding	( const TextureHandle&, uint16)					override;
+		void			BindTexture			( const TextureHandle&, uint16 )	override;
 
 
 		///////////////////////////////////////////////////
 		/// Samplers
 		///////////////////////////////////////////////////
 
-		SamplerHandle	CreateSampler	( const SamplerDescriptor& desc )				override;
-		void			SetSamplerBinding( const SamplerHandle& sampler, uint16 binding )	override;
-		void			BindSampler		( const SamplerHandle& sampler, uint16 binding = LUM_NULL_BINDING ) override;
-		void			DeleteSampler	( SamplerHandle sampler )						override;
+		SamplerHandle	CreateSampler		( const SamplerDescriptor& )									override;
+		void			SetSamplerBinding	( const SamplerHandle&, uint16 )					override;
+		void			BindSampler			( const SamplerHandle&, uint16) override;
+		void			DeleteSampler		( SamplerHandle )											override;
+
+
+
+		///////////////////////////////////////////////////
+		/// Pipelines
+		///////////////////////////////////////////////////
+
+		rhi::PipelineHandle CreatePipeline(const PipelineDescriptor& ) override;
+		void DeletePipeline(PipelineHandle&) override;
+		void BindPipeline(const PipelineHandle&) override;
+
 
 
 		///////////////////////////////////////////////////
 		/// Other
 		///////////////////////////////////////////////////
 
-		void Draw			( const VertexLayoutHandle& vao, uint32 vertex_count )	override;
-		void DrawElements	( const VertexLayoutHandle& vao, uint32 indices_count )	override;
+		void EnableState	( State )										override;
+		void DisableState	( State )										override;
+		void Draw			( const VertexLayoutHandle&, uint32 )	override;
+		void DrawElements	( const VertexLayoutHandle&, uint32 )	override;
 		void BeginFrame		( )														override;
 		void EndFrame		( )														override;
 
 	protected:
 
+		LUM_CONST_VAR_QUALIFIER
+		static GLbitfield skPolygonModeLookup[] = 
+		{ 
+			GL_POINT, 
+			GL_LINE, 
+			GL_FILL 
+		};
+		LUM_CONST_VAR_QUALIFIER
+		static GLbitfield skFacesLookup[] = 
+		{ 
+			GL_FRONT, 
+			GL_BACK, 
+			GL_FRONT_AND_BACK 
+		};
+		LUM_CONST_VAR_QUALIFIER
+		static GLbitfield skBufferUsageLookup[] =
+		{
+			0,
+			GL_DYNAMIC_STORAGE_BIT
+		};
+
+		// USE!!!!!!!:
+		LUM_CONST_VAR_QUALIFIER
+		static GLbitfield skTextureMagFilterLookup[] =
+		{
+			GL_LINEAR,
+			GL_NEAREST
+		};
+
+		// USE!!!!!!!:
+		LUM_CONST_VAR_QUALIFIER
+		static GLbitfield skTextureMinFilterLookup[] =
+		{
+			GL_LINEAR,
+			GL_LINEAR_MIPMAP_NEAREST,
+			GL_LINEAR_MIPMAP_LINEAR,
+			GL_NEAREST,
+			GL_NEAREST_MIPMAP_NEAREST,
+			GL_NEAREST_MIPMAP_LINEAR
+		};
+
+		// USE!!!!!!!:
+		LUM_CONST_VAR_QUALIFIER
+		static GLbitfield skSamplerWrapLookup[] =
+		{
+			GL_REPEAT,
+			GL_MIRRORED_REPEAT,
+			GL_CLAMP_TO_EDGE,
+			GL_CLAMP_TO_BORDER
+		};
+
 		LUM_CONST_VAR_QUALIFIER 
-		static uint16 MAX_UNIFORMS = 1000;
+		static uint16 sMaxUniforms = 1000;
 
-		cstd::sparse_set<GLuint, uint32> m_unifomrs{ MAX_UNIFORMS };
+		cstd::sparse_set<GLuint, uint32> mUnifomrs{ sMaxUniforms };
 
-		Window* window = nullptr;
+		Window* pWindow = nullptr;
 
 		///////////////////////////////////////////////////
-		/// Private helpers
+		/// Private helpers ( !!! REPAIR TYPE CASTING !!! )
 		///////////////////////////////////////////////////
 
 		void		CacheUniformLocations		( );
-		GLbitfield	TranslateDataFormat			( const rhi::DataFormat ) noexcept;
-		GLbitfield	TranslateTextureMinFilter	( const rhi::SamplerMinFilter ) noexcept;
-		GLbitfield	TranslateTextureMagFilter	( const rhi::SamplerMagFilter ) noexcept;
-		GLbitfield	TranslateTextureWrap		( const rhi::SamplerWrap wrap ) noexcept;
-		bool		IsValidBufferDescriptor		( const BufferDescriptor& desc ) noexcept;
-		GLbitfield	TranslateMappingFlags		( mapflag_t flags ) noexcept;
+		GLbitfield	TranslateDataFormat			( const rhi::DataFormat )		noexcept;
+		GLbitfield	TranslateTextureMinFilter	( const rhi::SamplerMinFilter )	noexcept;
+		GLbitfield	TranslateTextureMagFilter	( const rhi::SamplerMagFilter )	noexcept;
+		GLbitfield	TranslateTextureWrap		( const rhi::SamplerWrap)		noexcept;
+		bool		IsValidBufferDescriptor		( const BufferDescriptor&)		noexcept;
+		GLbitfield	TranslateMappingFlags		( Mapflag )						noexcept;
+		GLbitfield	TranslateStateFlags			( State )						noexcept;
 
 	};
 

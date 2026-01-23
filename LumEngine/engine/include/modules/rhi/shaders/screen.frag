@@ -7,6 +7,6 @@ out vec4 final;
 
 void main() {
 // Reverse
-	final.rgb = 1.0 - texture(uScreenTex, vUv).rgb;
+	final.rgb = texture(uScreenTex, vUv).rgb;
 	final.a = 1.0;
 }

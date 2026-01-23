@@ -194,14 +194,14 @@ int main() {
     BufferDescriptor ebo_descriptor;
     ebo_descriptor.buffer_usage = BufferUsage::Static;
     ebo_descriptor.data = indices.data();
-    ebo_descriptor.map_flags = map_flags::Read;
+    ebo_descriptor.map_flags = Mapflag::Read;
     ebo_descriptor.size = sizeof(indices);
     BufferHandle EBO = device->CreateElementBuffer(ebo_descriptor);
 
     BufferDescriptor vbo_descriptor;
     vbo_descriptor.buffer_usage = BufferUsage::Dynamic;
     vbo_descriptor.data = verts.data();
-    vbo_descriptor.map_flags = map_flags::Write;
+    vbo_descriptor.map_flags = Mapflag::Write;
     vbo_descriptor.size = bytesize(verts);
     BufferHandle VBO = device->CreateVertexBuffer(vbo_descriptor);
 
@@ -226,13 +226,13 @@ int main() {
     framebuffer_tex_desc.width = window->GetWidth();
     framebuffer_tex_desc.height = window->GetHeight();
     TextureHandle FBO_TEX = device->CreateFramebufferTexture(framebuffer_tex_desc);
-    FramebufferHandle FBO = device->CreateFramebuffer(FramebufferDescriptor{});
+    FramebufferHandle FBO = device->CreateFramebuffer();
     device->BindFramebuffer(FBO);
     device->SetFramebufferColorTexture(FBO, FBO_TEX, 0);
 
     BufferDescriptor FBO_VBO_desc;
     FBO_VBO_desc.buffer_usage = BufferUsage::Dynamic;
-    FBO_VBO_desc.map_flags = map_flags::Write;
+    FBO_VBO_desc.map_flags = Mapflag::Write;
     FBO_VBO_desc.size = sizeof(quad);
     FBO_VBO_desc.data = quad;
     BufferHandle FBO_VBO = device->CreateVertexBuffer(FBO_VBO_desc);
@@ -251,19 +251,46 @@ int main() {
     FBO_VAO_desc.attributes = at;
     VertexLayoutHandle FBO_VAO = device->CreateVertexLayout(FBO_VAO_desc, FBO_VBO);
 
+
+    PipelineDescriptor pipeline_desc;
+    pipeline_desc.polygon_mode = PolygonMode::line;
+    auto debug_pipeline = device->CreatePipeline(pipeline_desc);
+    auto basic_pipeline = device->CreatePipeline(PipelineDescriptor{});
+
+    /*
+
+    X Depth_Test <--
+    X Stencil_Test
+    X Alpha_Test
+    X Scissor_Test
+    X Blend
+    X Cull_Face
+    X Polygon_offset
+
+    */
+
     while (window->IsOpen()) {
         device->BeginFrame();
 
+        device->BindPipeline(debug_pipeline);
+        //
         device->BindFramebuffer(FBO);
+
+
+
         device->BindShader(basic_shader);
         device->DrawElements(VAO, indices.size());
+
+
+
         device->UnbindFramebuffer();
+        //
+        device->BindPipeline(basic_pipeline);
 
         device->BindShader(screen_shader);
         device->BindTexture(FBO_TEX, 7);
         device->Draw(FBO_VAO, 6);
         
-
         device->EndFrame();
     }
 }
