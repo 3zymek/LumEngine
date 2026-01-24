@@ -192,26 +192,26 @@ int main() {
     ShaderHandle screen_shader = device->CreateShader(screen_shader_desc);
 
     BufferDescriptor ebo_descriptor;
-    ebo_descriptor.buffer_usage = BufferUsage::Static;
+    ebo_descriptor.buffer_usage = BufferUsage::dynamic_usage;
     ebo_descriptor.data = indices.data();
-    ebo_descriptor.map_flags = Mapflag::Read;
+    ebo_descriptor.map_flags = Mapflag::read;
     ebo_descriptor.size = sizeof(indices);
     BufferHandle EBO = device->CreateElementBuffer(ebo_descriptor);
 
     BufferDescriptor vbo_descriptor;
-    vbo_descriptor.buffer_usage = BufferUsage::Dynamic;
+    vbo_descriptor.buffer_usage = BufferUsage::dynamic_usage;
     vbo_descriptor.data = verts.data();
-    vbo_descriptor.map_flags = Mapflag::Write;
+    vbo_descriptor.map_flags = Mapflag::write;
     vbo_descriptor.size = bytesize(verts);
     BufferHandle VBO = device->CreateVertexBuffer(vbo_descriptor);
 
     std::vector<VertexAttribute> vbo_attrs(2);
     auto& vbo_pos = vbo_attrs[0];
-    vbo_pos.format = DataFormat::Float3;
+    vbo_pos.format = DataFormat::vec3;
     vbo_pos.relative_offset = offsetof(Vertex, position);
     vbo_pos.shader_location = LUM_LAYOUT_POSITION;
     auto& vbo_color = vbo_attrs[1];
-    vbo_color.format = DataFormat::Float3;
+    vbo_color.format = DataFormat::vec3;
     vbo_color.relative_offset = offsetof(Vertex, color);
     vbo_color.shader_location = LUM_LAYOUT_COLOR;
     VertexLayoutDescriptor vao_descriptor;
@@ -222,7 +222,7 @@ int main() {
     device->AttachElementBufferToLayout(EBO, VAO);
 
     FramebufferTextureDescriptor framebuffer_tex_desc;
-    framebuffer_tex_desc.attachment = FramebufferAttachment::Color_Attachment;
+    framebuffer_tex_desc.attachment = FramebufferAttachment::color_attach;
     framebuffer_tex_desc.width = window->GetWidth();
     framebuffer_tex_desc.height = window->GetHeight();
     TextureHandle FBO_TEX = device->CreateFramebufferTexture(framebuffer_tex_desc);
@@ -231,19 +231,18 @@ int main() {
     device->SetFramebufferColorTexture(FBO, FBO_TEX, 0);
 
     BufferDescriptor FBO_VBO_desc;
-    FBO_VBO_desc.buffer_usage = BufferUsage::Dynamic;
-    FBO_VBO_desc.map_flags = Mapflag::Write;
+    FBO_VBO_desc.buffer_usage = BufferUsage::dynamic_usage;
+    FBO_VBO_desc.map_flags = Mapflag::write;
     FBO_VBO_desc.size = sizeof(quad);
     FBO_VBO_desc.data = quad;
-    BufferHandle FBO_VBO = device->CreateVertexBuffer(FBO_VBO_desc);
-    
+    BufferHandle FBO_VBO = device->CreateVertexBuffer(FBO_VBO_desc); 
     std::vector<VertexAttribute> at(2);
     auto& pos = at[0];
-    pos.format = DataFormat::Float2;
+    pos.format = DataFormat::vec2;
     pos.relative_offset = 0;
     pos.shader_location = 0;
     auto& uv = at[1];
-    uv.format = DataFormat::Float2;
+    uv.format = DataFormat::vec2;
     uv.relative_offset = 2 * sizeof(float);
     uv.shader_location = 1;
     VertexLayoutDescriptor FBO_VAO_desc;
@@ -253,9 +252,19 @@ int main() {
 
 
     PipelineDescriptor pipeline_desc;
-    pipeline_desc.polygon_mode = PolygonMode::line;
+    pipeline_desc.rasterizer.polygonMode = PolygonMode::fill;
+    pipeline_desc.scissor.bEnabled = true;
+    pipeline_desc.scissor.height = window->GetHeight() / 2.0;
+    pipeline_desc.scissor.width = window->GetWidth() / 2.0;
     auto debug_pipeline = device->CreatePipeline(pipeline_desc);
+
+    PipelineDescriptor pipeline_desc2;
+    pipeline_desc2.rasterizer.polygonMode = PolygonMode::line;
+    auto debug_pipeline2 = device->CreatePipeline(pipeline_desc2);
+
     auto basic_pipeline = device->CreatePipeline(PipelineDescriptor{});
+
+    bool changed = false;
 
     /*
 
@@ -272,19 +281,23 @@ int main() {
     while (window->IsOpen()) {
         device->BeginFrame();
 
-        device->BindPipeline(debug_pipeline);
         //
         device->BindFramebuffer(FBO);
 
-
+        device->ClearFramebuffer(FBO, {0.f, 0.f, 0.f, 1.f}, 1.0f);
+    
+        device->BindPipeline(changed ? debug_pipeline2 : debug_pipeline);
 
         device->BindShader(basic_shader);
         device->DrawElements(VAO, indices.size());
 
-
+        if (input::KeyPressedOnce(input::Key::SPACE)) {
+            changed = !changed;
+        }
 
         device->UnbindFramebuffer();
         //
+
         device->BindPipeline(basic_pipeline);
 
         device->BindShader(screen_shader);

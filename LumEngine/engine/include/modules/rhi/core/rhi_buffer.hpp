@@ -4,7 +4,7 @@
 #include "rhi/rhi_common.hpp"
 namespace lum::rhi {
 
-	struct BufferHandle {
+	struct alignas(8) BufferHandle {
 		
 		bufferid id = max_val<bufferid>();
 		bufferid generation = 0;
@@ -12,7 +12,7 @@ namespace lum::rhi {
 	};
 
 	struct BufferDescriptor {
-		BufferUsage	buffer_usage	= BufferUsage::Static;
+		BufferUsage	buffer_usage	= BufferUsage::static_usage;
 		size_t		size			= 0;
 		Mapflag		map_flags		{};
 		cvptr		data			= nullptr;

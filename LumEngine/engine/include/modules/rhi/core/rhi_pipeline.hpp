@@ -1,9 +1,9 @@
 #pragma once
 #include "rhi/rhi_common.hpp"
-
+#include "rhi/core/rhi_states.hpp"
 namespace lum::rhi {
 
-	struct PipelineHandle {
+	struct alignas(8) PipelineHandle {
 
 		pipelineid id = max_val<pipelineid>();
 		pipelineid generation = 0;
@@ -12,15 +12,31 @@ namespace lum::rhi {
 
 	struct PipelineDescriptor {
 
-		PolygonMode polygon_mode = PolygonMode::fill;
-		Face polygon_mode_faces = Face::front_back;
+		RasterizerState rasterizer	{};
+		DepthState		depth		{};
+		StencilState	stencil		{};
+		ScissorState	scissor		{};
+		
+		
+		bool blendEnabled = false;
+
+
+		bool cullEnabled = false;
 
 	};
 
 	struct Pipeline {
 
-		PolygonMode polygon_mode{};
-		Face polygon_mode_faces{};
+		RasterizerState rasterizer{};
+		DepthState		depth{};
+		StencilState	stencil{};
+		ScissorState	scissor{};
+
+
+		bool blendEnabled = false;
+
+
+		bool cullEnabled = false;
 
 	};
 

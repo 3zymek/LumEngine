@@ -2,7 +2,7 @@
 #include "rhi/rhi_common.hpp"
 namespace lum::rhi {
 
-	struct FramebufferHandle {
+	struct alignas(8) FramebufferHandle {
 
 		framebufferid id = max_val<framebufferid>();
 		framebufferid generation = 0;
@@ -10,9 +10,9 @@ namespace lum::rhi {
 	};
 
 	enum class FramebufferAttachment : uint8 {
-		Depth_Attachment,
-		Stencil_Attachment,
-		Color_Attachment
+		depth_attach,
+		stencil_attach,
+		color_attach
 	};
 
 	struct FramebufferTextureDescriptor {
@@ -25,10 +25,6 @@ namespace lum::rhi {
 		bool mipmaps = false;
 
 		FramebufferAttachment attachment{};
-
-	};
-
-	struct FramebufferDescriptor {
 
 	};
 

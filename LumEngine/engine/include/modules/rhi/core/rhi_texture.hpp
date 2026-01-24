@@ -5,7 +5,7 @@
 #include "core/shaders_define.h"
 namespace lum::rhi {
 
-	struct TextureHandle {
+	struct alignas(8) TextureHandle {
 
 		textureid id = max_val<textureid>();
 		textureid generation = 0;

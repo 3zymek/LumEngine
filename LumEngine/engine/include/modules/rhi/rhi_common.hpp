@@ -32,24 +32,23 @@ namespace lum {
 		using shaderid		= uint8;
 
 		enum class DataFormat : byte {
-			Float,
-			Float2,
-			Float3,
-			Float4,
-			Mat3,
-			Mat4,
-			Quat
+			float1,
+			vec2,
+			vec3,
+			vec4,
+			mat3,
+			mat4
 		};
 
 		enum class BufferType : byte {
-			Vertex, // Buffer contains vertices.
-			Element,// Buffer contains indices (elements).
-			Uniform// Buffer contains uniforms.
+			vertex, // Buffer contains vertices.
+			element,// Buffer contains indices (elements).
+			uniform// Buffer contains uniforms.
 		};
 
 		enum class BufferUsage : byte {
-			Static, // Data cannot be updated during runtime (better performance).
-			Dynamic // Data can be updated during runtime (slower performance).
+			static_usage, // Data cannot be updated during runtime (better performance).
+			dynamic_usage // Data can be updated during runtime (slower performance).
 		};
 
 		enum class PolygonMode : byte {
@@ -59,13 +58,13 @@ namespace lum {
 		};
 
 		enum class Mapflag : byte {
-			Persistent, // Pointer to the mapped data can be available all the time.
-			Write, // CPU can only write data through mapping.
-			Read, // CPU can only read data through mapping.
-			Coherent, // CPU changes instantly are available for GPU.
-			Invalidate_Range, // GPU creates new range in buffer, old data is still available.
-			Invalidate_Buffer, // GPU creates new buffer, destroys the old one.
-			Unsynchronized, // GPU maps buffer with no backend conditions.
+			persistent			= 1 << 0, // Pointer to the mapped data can be available all the time.
+			write				= 1 << 1, // CPU can only write data through mapping.
+			read				= 1 << 2, // CPU can only read data through mapping.
+			coherent			= 1 << 3, // CPU changes instantly are available for GPU.
+			invalidate_Range	= 1 << 4, // GPU creates new range in buffer, old data is still available.
+			invalidate_Buffer	= 1 << 5, // GPU creates new buffer, destroys the old one.
+			unsynchronized		= 1 << 6, // GPU maps buffer with no backend conditions.
 		};
 
 		constexpr Mapflag operator|(Mapflag a, Mapflag b) noexcept {
@@ -86,23 +85,39 @@ namespace lum {
 		};
 
 		enum class State : byte {
-			none = 0,
-			depth_test = 0xAA,
-			stencil_test = 0xAB,
-			scissor = 0xAC,
-			blend = 0xAD,
-			cull_face = 0xAE,
-			// polygon
+			none			= 1 << 0,
+			depth_test		= 1 << 1,
+			stencil_test	= 1 << 2,
+			scissor			= 1 << 3,
+			blend			= 1 << 4,
+			cull_face		= 1 << 5,
 		};
 
 		constexpr State operator|(State a, State b) noexcept {
 			return static_cast<State>(static_cast<byte>(a) | static_cast<byte>(b));
 		}
-		constexpr bool operator&(State a, State b) noexcept {
-			return static_cast<byte>(a) & static_cast<byte>(b);
+		constexpr State operator|=(State& a, State b) noexcept {
+			a = a | b;
+			return a;
 		}
+
+		constexpr bool operator&(State a, State b) noexcept {
+			return (static_cast<byte>(a) & static_cast<byte>(b)) != 0;
+		}
+		constexpr bool operator&(byte a, State b) noexcept {
+			return (a & static_cast<byte>(b)) != 0;
+		}
+		constexpr bool operator&(State a, byte b) noexcept {
+			return (static_cast<byte>(a) & b) != 0;
+		}
+
 		constexpr State operator~(State a) noexcept {
 			return static_cast<State>(~static_cast<byte>(a));
+		}
+
+		constexpr State& operator^=(State& a, State b) {
+			a = static_cast<State>(static_cast<byte>(a) ^ static_cast<byte>(b));
+			return a;
 		}
 
 		namespace detail {

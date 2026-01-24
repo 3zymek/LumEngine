@@ -144,6 +144,8 @@ namespace lum::rhi {
 		virtual void SetFramebufferDepthTexture(const FramebufferHandle& fbo, const TextureHandle& tex) = 0;
 		virtual void SetFramebufferStencilTexture(const FramebufferHandle& fbo, const TextureHandle& tex) = 0;
 
+		virtual void ClearFramebuffer(FramebufferHandle fbo, glm::vec4 color, float32 depth) = 0;
+
 		virtual void DeleteFramebuffer(FramebufferHandle& fbo) = 0;
 
 		virtual void BindFramebuffer(const FramebufferHandle& fbo) = 0;
@@ -331,8 +333,6 @@ namespace lum::rhi {
 		/// Other
 		///////////////////////////////////////////////////
 
-		virtual void EnableState		(State states) = 0;
-		virtual void DisableState		(State states) = 0;
 		virtual void Draw				( const VertexLayoutHandle& vao, uint32 vertex_count )		= 0;
 		virtual void DrawElements		( const VertexLayoutHandle&, uint32 indices_count )			= 0;
 		virtual void BeginFrame			( )															= 0;
@@ -340,36 +340,37 @@ namespace lum::rhi {
 
 	protected:
 
-		inline static State sEnabledStates = State::none;
+		ScissorState mScissorState{};
+		State mEnabledStates = State::none;
 		
 		LUM_CONST_VAR_QUALIFIER
-		static uint8 sMaxShaders = 8;
+		static uint8 skMaxShaders = 8;
 
 		LUM_CONST_VAR_QUALIFIER
-		static uint32 sMaxSamplers = 500;
+		static uint32 skMaxSamplers = 500;
 
 		LUM_CONST_VAR_QUALIFIER
-		static uint32 sMaxBuffers = 10000;
+		static uint32 skMaxBuffers = 10000;
 
 		LUM_CONST_VAR_QUALIFIER
-		static uint32 sMaxLayouts = 10000;
+		static uint32 skMaxLayouts = 10000;
 
 		LUM_CONST_VAR_QUALIFIER
-		static uint32 sMaxTextures = 1000;
+		static uint32 skMaxTextures = 1000;
 
 		LUM_CONST_VAR_QUALIFIER
-		static uint32 sMaxFramebuffers = 100;
+		static uint32 skMaxFramebuffers = 100;
 
 		LUM_CONST_VAR_QUALIFIER
-		static uint32 sMaxPipelines = 100;
+		static uint32 skMaxPipelines = 100;
 
-		cstd::handle_pool<Sampler, SamplerHandle>			mSamplers		{ sMaxSamplers };
-		cstd::handle_pool<Shader, ShaderHandle>				mShaders		{ sMaxShaders };
-		cstd::handle_pool<Buffer, BufferHandle>				mBuffers		{ sMaxBuffers };
-		cstd::handle_pool<VertexLayout, VertexLayoutHandle> mLayouts		{ sMaxLayouts };
-		cstd::handle_pool<Texture, TextureHandle>			mTextures		{ sMaxTextures };
-		cstd::handle_pool<Framebuffer, FramebufferHandle>	mFramebuffers	{ sMaxFramebuffers };
-		cstd::handle_pool<Pipeline, PipelineHandle>			mPipelines		{ sMaxPipelines };
+		cstd::handle_pool<Sampler, SamplerHandle>			mSamplers		{ skMaxSamplers };
+		cstd::handle_pool<Shader, ShaderHandle>				mShaders		{ skMaxShaders };
+		cstd::handle_pool<Buffer, BufferHandle>				mBuffers		{ skMaxBuffers };
+		cstd::handle_pool<VertexLayout, VertexLayoutHandle> mLayouts		{ skMaxLayouts };
+		cstd::handle_pool<Texture, TextureHandle>			mTextures		{ skMaxTextures };
+		cstd::handle_pool<Framebuffer, FramebufferHandle>	mFramebuffers	{ skMaxFramebuffers };
+		cstd::handle_pool<Pipeline, PipelineHandle>			mPipelines		{ skMaxPipelines };
 
 	};
 

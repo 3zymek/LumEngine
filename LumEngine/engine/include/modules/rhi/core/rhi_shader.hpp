@@ -3,7 +3,7 @@
 #include "core/core_common.hpp"
 namespace lum::rhi {
 
-	struct ShaderHandle {
+	struct alignas(2) ShaderHandle {
 
 		shaderid id = max_val<shaderid>();
 		shaderid generation = 0;

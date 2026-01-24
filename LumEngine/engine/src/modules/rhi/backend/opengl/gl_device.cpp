@@ -7,6 +7,7 @@
 #include "core/asset_service.hpp"
 #include "window_context/window.hpp"
 #include "rhi/rhi_common.hpp"
+#include "core/core_pch.hpp"
 #if LUM_ENABLE_IMGUI == 1
 	#include "imgui.h"
 	#include "imgui_impl_glfw.h"
@@ -22,7 +23,7 @@ namespace lum::gl {
 		if (!IsValidBufferDescriptor(desc))
 			return rhi::BufferHandle{};
 
-		if (mBuffers.DenseSize() >= sMaxBuffers) {
+		if (mBuffers.DenseSize() >= skMaxBuffers) {
 			LUM_LOG_ERROR("Max buffers reached");
 			return rhi::BufferHandle{};
 		}
@@ -35,11 +36,11 @@ namespace lum::gl {
 		rhi::Buffer buffer;
 		buffer.size = desc.size;
 		buffer.flags = desc.map_flags;
-		buffer.type = rhi::BufferType::Vertex;
+		buffer.type = rhi::BufferType::vertex;
 		buffer.usage = desc.buffer_usage;
 
 		GLbitfield init_flags =
-			(skBufferUsageLookup[static_cast<byte>(desc.buffer_usage)])
+			((desc.buffer_usage == rhi::BufferUsage::dynamic_usage) ? GL_DYNAMIC_STORAGE_BIT : 0)
 			| TranslateMappingFlags(desc.map_flags);
 
 		glCreateBuffers(1, &buffer.handle.gl_handle);
@@ -57,7 +58,7 @@ namespace lum::gl {
 		if (!IsValidBufferDescriptor(desc))
 			return rhi::BufferHandle{};
 
-		if (mBuffers.DenseSize() >= sMaxBuffers) {
+		if (mBuffers.DenseSize() >= skMaxBuffers) {
 			LUM_LOG_ERROR("Max buffers reached");
 			return rhi::BufferHandle{};
 		}
@@ -70,11 +71,11 @@ namespace lum::gl {
 		rhi::Buffer buffer;
 		buffer.size = desc.size;
 		buffer.flags = desc.map_flags;
-		buffer.type = rhi::BufferType::Element;
+		buffer.type = rhi::BufferType::element;
 		buffer.usage = desc.buffer_usage;
 
 		GLbitfield init_flags =
-			((buffer.usage == rhi::BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
+			((buffer.usage == rhi::BufferUsage::static_usage) ? 0 : GL_DYNAMIC_STORAGE_BIT)
 			| TranslateMappingFlags(desc.map_flags);
 
 		glCreateBuffers(1, &buffer.handle.gl_handle);
@@ -92,7 +93,7 @@ namespace lum::gl {
 		if (!IsValidBufferDescriptor(desc))
 			return rhi::BufferHandle{};
 
-		if (mBuffers.DenseSize() >= sMaxBuffers) {
+		if (mBuffers.DenseSize() >= skMaxBuffers) {
 			LUM_LOG_ERROR("Max buffers reached");
 			return rhi::BufferHandle{};
 		}
@@ -105,11 +106,11 @@ namespace lum::gl {
 		rhi::Buffer buffer;
 		buffer.size = desc.size;
 		buffer.flags = desc.map_flags;
-		buffer.type = rhi::BufferType::Uniform;
+		buffer.type = rhi::BufferType::uniform;
 		buffer.usage = desc.buffer_usage;
 
 		GLbitfield init_flags =
-			((buffer.usage == rhi::BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
+			((buffer.usage == rhi::BufferUsage::static_usage) ? 0 : GL_DYNAMIC_STORAGE_BIT)
 			| TranslateMappingFlags(desc.map_flags);
 
 		glCreateBuffers(1, &buffer.handle.gl_handle);
@@ -132,11 +133,11 @@ namespace lum::gl {
 		LUM_HOTPATH_ASSERT_VOID(offset + size > buffer.size, "Invalid offset or size");
 		if (size == 0) size = buffer.size;
 		LUM_HOTPATH_ASSERT_VOID(
-			buffer.usage == rhi::BufferUsage::Static, 
+			buffer.usage == rhi::BufferUsage::static_usage, 
 			std::format("Buffer {} is static, cannot be updated", buffer.handle.gl_handle)
 		);
 		LUM_HOTPATH_ASSERT_VOID(
-			!(buffer.flags & rhi::Mapflag::Write),
+			!(buffer.flags & rhi::Mapflag::write),
 			std::format("Buffer {} has no write flags enabled", buffer.handle.gl_handle)
 		);
 
@@ -215,7 +216,7 @@ namespace lum::gl {
 
 	rhi::FramebufferHandle GL_Device::CreateFramebuffer() {
 		LUM_HOTPATH_ASSERT_CUSTOM(
-			mFramebuffers.DenseSize() >= sMaxFramebuffers,
+			mFramebuffers.DenseSize() >= skMaxFramebuffers,
 			"Max framebuffers reached",
 			FramebufferHandle{}
 		);
@@ -229,7 +230,7 @@ namespace lum::gl {
 	}
 	rhi::TextureHandle GL_Device::CreateFramebufferTexture(const FramebufferTextureDescriptor& desc) {
 		LUM_HOTPATH_ASSERT_CUSTOM(
-			mTextures.DenseSize() >= sMaxTextures || desc.height <= 0 || desc.width <= 0,
+			mTextures.DenseSize() >= skMaxTextures || desc.height <= 0 || desc.width <= 0,
 			"Max textures reached",
 			TextureHandle{}
 		);
@@ -256,6 +257,12 @@ namespace lum::gl {
 	}
 	void GL_Device::SetFramebufferStencilTexture(const FramebufferHandle& fbo, const TextureHandle& tex) {
 
+	}
+	void GL_Device::ClearFramebuffer(FramebufferHandle fbo, glm::vec4 color, float32 depth) {
+		BindFramebuffer(fbo);
+		glClearColor(color.r, color.g, color.b, color.a);
+		glClearDepth(std::clamp(depth, 0.0f, 1.0f));
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	void GL_Device::DeleteFramebuffer(FramebufferHandle& buff) {
 		LUM_HOTPATH_ASSERT_VOID(!mFramebuffers.Exists(buff), "Framebuffer doesn't exists");
@@ -331,13 +338,14 @@ namespace lum::gl {
 	}
 
 
+
 	///////////////////////////////////////////////////
 	/// Shaders
 	///////////////////////////////////////////////////
 
 	rhi::ShaderHandle GL_Device::CreateShader( const ShaderDescriptor& desc ) {
 		LUM_HOTPATH_ASSERT_CUSTOM(
-			mShaders.DenseSize() >= sMaxShaders,
+			mShaders.DenseSize() >= skMaxShaders,
 			"Max shaders reached",
 			rhi::ShaderHandle{}
 		);
@@ -424,13 +432,14 @@ namespace lum::gl {
 	}
 
 
+
 	///////////////////////////////////////////////////
 	/// Textures
 	///////////////////////////////////////////////////
 
 	rhi::TextureHandle GL_Device::CreateTexture2D( const TextureDescriptor& desc ) {
 		LUM_HOTPATH_ASSERT_CUSTOM(
-			mTextures.DenseSize() >= sMaxTextures,
+			mTextures.DenseSize() >= skMaxTextures,
 			"Max textures reached",
 			rhi::TextureHandle{}
 		);
@@ -515,7 +524,7 @@ namespace lum::gl {
 
 	rhi::SamplerHandle GL_Device::CreateSampler( const SamplerDescriptor& desc ) {
 		LUM_HOTPATH_ASSERT_CUSTOM(
-			mSamplers.DenseSize() >= sMaxSamplers, 
+			mSamplers.DenseSize() >= skMaxSamplers, 
 			"Max samplers reached", 
 			rhi::SamplerHandle{}
 		);
@@ -523,16 +532,16 @@ namespace lum::gl {
 		Sampler sampler;
 		
 		glCreateSamplers(1, &sampler.handle);
-		glSamplerParameteri(sampler.handle, GL_TEXTURE_MAG_FILTER, TranslateTextureMagFilter(desc.mag_filter));
-		glSamplerParameteri(sampler.handle, GL_TEXTURE_MIN_FILTER, TranslateTextureMinFilter(desc.min_filter));
+		glSamplerParameteri(sampler.handle, GL_TEXTURE_MAG_FILTER, (desc.mag_filter == rhi::SamplerMagFilter::nearest) ? GL_NEAREST : GL_LINEAR);
+		glSamplerParameteri(sampler.handle, GL_TEXTURE_MIN_FILTER, skTextureMinFilterLookup[static_cast<byte>(desc.min_filter)]);
 
-		glSamplerParameteri(sampler.handle, GL_TEXTURE_WRAP_S, TranslateTextureWrap(desc.wrap_s));
-		glSamplerParameteri(sampler.handle, GL_TEXTURE_WRAP_T, TranslateTextureWrap(desc.wrap_t));
+		glSamplerParameteri(sampler.handle, GL_TEXTURE_WRAP_S, skSamplerWrapLookup[static_cast<byte>(desc.wrap_s)]);
+		glSamplerParameteri(sampler.handle, GL_TEXTURE_WRAP_T, skSamplerWrapLookup[static_cast<byte>(desc.wrap_t)]);
 
-		GLfloat max_anisotropy;
+		GLfloat max_anisotropy = 1.0f;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &max_anisotropy);
-		int final_anisotropy = (desc.anisotropy > max_anisotropy) ? max_anisotropy : desc.anisotropy;
-		glSamplerParameteri(sampler.handle, GL_TEXTURE_MAX_ANISOTROPY, final_anisotropy);
+		GLfloat final_anisotropy = std::clamp((float32)desc.anisotropy, 1.0f, (float32)max_anisotropy);
+		glSamplerParameterf(sampler.handle, GL_TEXTURE_MAX_ANISOTROPY, final_anisotropy);
 
 		return mSamplers.CreateHandle(std::move(sampler));
 	}
@@ -543,7 +552,6 @@ namespace lum::gl {
 		mSamplers[sampler].binding = binding;
 
 	}
-	// TO CHANGE: add binding slot
 	void GL_Device::BindSampler( const SamplerHandle& sampler, uint16 binding) {
 		LUM_HOTPATH_ASSERT_VOID(!mSamplers.Exists(sampler), std::format("Sampler {} doesn't exists", sampler.id));
 		LUM_HOTPATH_ASSERT_VOID(
@@ -561,8 +569,7 @@ namespace lum::gl {
 	void GL_Device::DeleteSampler( SamplerHandle sampler ) {
 		LUM_HOTPATH_ASSERT_VOID(!mSamplers.Exists(sampler), std::format("Sampler {} doesn't exists", sampler.id));
 
-		Sampler& samp = mSamplers[sampler];
-		glDeleteSamplers(1, &samp.handle);
+		glDeleteSamplers(1, &mSamplers[sampler].handle);
 
 		mSamplers.DeleteHandle(sampler);
 	}
@@ -576,15 +583,13 @@ namespace lum::gl {
 
 	rhi::PipelineHandle GL_Device::CreatePipeline(const PipelineDescriptor& desc) {
 		LUM_HOTPATH_ASSERT_CUSTOM(
-			mPipelines.DenseSize() >= sMaxPipelines,
+			mPipelines.DenseSize() >= skMaxPipelines,
 			"Max pipelines reached",
 			PipelineHandle{}
 		);
 
 		Pipeline pipeline;
-		pipeline.polygon_mode = desc.polygon_mode;
-		pipeline.polygon_mode_faces = desc.polygon_mode_faces;
-
+		std::memcpy(&pipeline, &desc, sizeof(desc));
 
 		return mPipelines.CreateHandle(std::move(pipeline));
 	}
@@ -599,39 +604,51 @@ namespace lum::gl {
 		Pipeline& pip = mPipelines[pipeline];
 
 		glPolygonMode(
-			skFacesLookup[static_cast<byte>(pip.polygon_mode_faces)], 
-			skPolygonModeLookup[static_cast<byte>(pip.polygon_mode)]
+			skFacesLookup[static_cast<byte>(pip.rasterizer.polygonModeFaces)], 
+			skPolygonModeLookup[static_cast<byte>(pip.rasterizer.polygonMode)]
 		);
+
+		if (pip.depth.bEnabled) {
+			if (!(mEnabledStates & State::depth_test))
+			{
+				glEnable(GL_DEPTH_TEST);
+				mEnabledStates |= State::depth_test;
+			}
+		}
+		else {
+			if (mEnabledStates & State::depth_test) {
+				glDisable(GL_DEPTH_TEST);
+				mEnabledStates |= ~State::depth_test;
+			}
+		}
+
+		if (pip.scissor.bEnabled != (mEnabledStates & State::scissor)) {
+			if (!(mEnabledStates & State::scissor)) {
+				glEnable(GL_SCISSOR_TEST);
+				mEnabledStates |= State::scissor;
+				LUM_LOG_ERROR("WLACZAM");
+			}
+			else {
+				glDisable(GL_SCISSOR_TEST);
+				mEnabledStates |= ~State::scissor;
+				LUM_LOG_ERROR("WYLACZAM");
+			}
+		}
+		if (pip.scissor.bEnabled && (pip.scissor != mScissorState)) {
+			glScissor(pip.scissor.x, pip.scissor.y, pip.scissor.width, pip.scissor.height);
+			mScissorState = pip.scissor;
+		}
+
 	
 	}
+
+
 
 
 	///////////////////////////////////////////////////
 	/// Other
 	///////////////////////////////////////////////////
 	
-	void GL_Device::EnableState(State states) {
-		
-		switch (states) {
-		case State::depth_test:		{ glEnable(GL_DEPTH_TEST);		break; }
-		case State::stencil_test:	{ glEnable(GL_STENCIL_TEST);	break; }
-		case State::scissor:		{ glEnable(GL_SCISSOR_TEST);	break; }
-		case State::blend:			{ glEnable(GL_BLEND);			break; }
-		case State::cull_face:		{ glEnable(GL_CULL_FACE);		break; }
-		}
-
-	}
-	void GL_Device::DisableState(State states) {
-
-		switch (states) {
-		case State::depth_test:		{ glDisable(GL_DEPTH_TEST);		break; }
-		case State::stencil_test:	{ glDisable(GL_STENCIL_TEST);	break; }
-		case State::scissor:		{ glDisable(GL_SCISSOR_TEST);	break; }
-		case State::blend:			{ glDisable(GL_BLEND);			break; }
-		case State::cull_face:		{ glDisable(GL_CULL_FACE);		break; }
-		}
-
-	}
 	void GL_Device::Draw(const VertexLayoutHandle& vao, uint32 vertex_count) {
 		LUM_HOTPATH_ASSERT_VOID(!mLayouts.Exists(vao), "Cannot draw, invalid vertex layout");
 
@@ -675,6 +692,8 @@ namespace lum::gl {
 	}
 
 
+
+
 	///////////////////////////////////////////////////
 	/// Private helpers
 	///////////////////////////////////////////////////
@@ -686,61 +705,17 @@ namespace lum::gl {
 
 
 	}
-	GLbitfield	GL_Device::TranslateDataFormat( const rhi::DataFormat format ) noexcept {
-		switch (format) {
-		case rhi::DataFormat::Float: return 1;
-		case rhi::DataFormat::Float2: return 2;
-		case rhi::DataFormat::Float3: return 3;
-		case rhi::DataFormat::Float4: return 4;
-		case rhi::DataFormat::Mat3: return 9;
-		case rhi::DataFormat::Mat4: return 16;
-		}
-		return 1;
-	}
-	GLbitfield	GL_Device::TranslateTextureMinFilter( const rhi::SamplerMinFilter filter ) noexcept  {
-
-		switch (filter) {
-		case rhi::SamplerMinFilter::Linear: return GL_LINEAR;
-		case rhi::SamplerMinFilter::Nearest: return GL_NEAREST;
-		case rhi::SamplerMinFilter::Linear_mipmap_linear: return GL_LINEAR_MIPMAP_LINEAR;
-		case rhi::SamplerMinFilter::Linear_mipmap_nearest: return GL_LINEAR_MIPMAP_NEAREST;
-		case rhi::SamplerMinFilter::Nearest_mipmap_linear: return GL_NEAREST_MIPMAP_LINEAR;
-		case rhi::SamplerMinFilter::Nearest_mipmap_nearest: return GL_NEAREST_MIPMAP_NEAREST;
-		}
-
-		return GL_NEAREST;
-
-	}
-	GLbitfield	GL_Device::TranslateTextureMagFilter( const rhi::SamplerMagFilter filter ) noexcept {
-
-		switch(filter) {
-		case rhi::SamplerMagFilter::Linear: return GL_LINEAR;
-		case rhi::SamplerMagFilter::Nearest: return GL_NEAREST;
-		}
-
-		return GL_NEAREST;
-
-	}
-	GLbitfield	GL_Device::TranslateTextureWrap( const rhi::SamplerWrap wrap ) noexcept {
-		switch (wrap) {
-			case rhi::SamplerWrap::Clamp_border:	return GL_CLAMP_TO_BORDER;
-			case rhi::SamplerWrap::Clamp_edge:		return GL_CLAMP_TO_EDGE;
-			case rhi::SamplerWrap::Repeat:			return GL_REPEAT;
-			case rhi::SamplerWrap::Repeat_mirrored: return GL_MIRRORED_REPEAT;
-		}
-		return GL_CLAMP_TO_EDGE;
-	}
 	bool GL_Device::IsValidBufferDescriptor( const rhi::BufferDescriptor& desc ) noexcept {
 
-		if (desc.buffer_usage == rhi::BufferUsage::Static) {
+		if (desc.buffer_usage == rhi::BufferUsage::static_usage) {
 
-			if ((desc.map_flags & ~(rhi::Mapflag::Coherent | rhi::Mapflag::Read)) != 0) {
+			if ((desc.map_flags & ~(rhi::Mapflag::coherent | rhi::Mapflag::read)) != 0) {
 				LUM_LOG_ERROR("Invalid buffer descriptor");
 				return false;
 			}
 
 		}
-		else if ((desc.map_flags & rhi::Mapflag::Coherent) && !(desc.map_flags & rhi::Mapflag::Persistent)) {
+		else if ((desc.map_flags & rhi::Mapflag::coherent) && !(desc.map_flags & rhi::Mapflag::persistent)) {
 			LUM_LOG_ERROR("Invalid buffer descriptor");
 			return false;
 		}
@@ -751,26 +726,15 @@ namespace lum::gl {
 	GLbitfield	GL_Device::TranslateMappingFlags( Mapflag flags ) noexcept {
 		GLbitfield flag = 0;
 
-		if (flags & rhi::Mapflag::Persistent)			flag |= GL_MAP_PERSISTENT_BIT;
-		if (flags & rhi::Mapflag::Write)				flag |= GL_MAP_WRITE_BIT;
-		if (flags & rhi::Mapflag::Read)					flag |= GL_MAP_READ_BIT;
-		if (flags & rhi::Mapflag::Coherent)				flag |= GL_MAP_COHERENT_BIT;
-		if (flags & rhi::Mapflag::Invalidate_Buffer)	flag |= GL_MAP_INVALIDATE_BUFFER_BIT;
-		if (flags & rhi::Mapflag::Invalidate_Range)		flag |= GL_MAP_INVALIDATE_RANGE_BIT;
-		if (flags & rhi::Mapflag::Unsynchronized)		flag |= GL_MAP_UNSYNCHRONIZED_BIT;
+		if (flags & rhi::Mapflag::persistent)			flag |= GL_MAP_PERSISTENT_BIT;
+		if (flags & rhi::Mapflag::write)				flag |= GL_MAP_WRITE_BIT;
+		if (flags & rhi::Mapflag::read)					flag |= GL_MAP_READ_BIT;
+		if (flags & rhi::Mapflag::coherent)				flag |= GL_MAP_COHERENT_BIT;
+		if (flags & rhi::Mapflag::invalidate_Buffer)	flag |= GL_MAP_INVALIDATE_BUFFER_BIT;
+		if (flags & rhi::Mapflag::invalidate_Range)		flag |= GL_MAP_INVALIDATE_RANGE_BIT;
+		if (flags & rhi::Mapflag::unsynchronized)		flag |= GL_MAP_UNSYNCHRONIZED_BIT;
 
 		return flag;
-	}
-	GLbitfield GL_Device::TranslateStateFlags( State flags ) noexcept {
-
-		switch (flags) {
-		case State::depth_test: return GL_DEPTH_TEST;
-		case State::stencil_test: return GL_STENCIL_TEST;
-		case State::scissor: return GL_SCISSOR_TEST;
-		case State::blend: return GL_BLEND;
-		case State::cull_face: return GL_CULL_FACE;
-		}
-
 	}
 
 }
