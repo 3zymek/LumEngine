@@ -38,6 +38,29 @@ namespace lum::rhi {
 		bool		bWriteToZBuffer = false;
 		CompareFlag	compare_flag = CompareFlag::always;
 
+		constexpr bool operator==(const DepthState& other) const noexcept {
+			return bWriteToZBuffer == other.bWriteToZBuffer && compare_flag == other.compare_flag;
+		}
+		constexpr bool operator!=(const DepthState& other) const noexcept {
+			return !(*this == other);
+		}
+
+
+	};
+
+	struct CullState {
+		
+		bool bEnabled = false;
+		Face face = Face::back;
+		WindingOrder windingOrder = WindingOrder::counter_clockwise;
+
+		constexpr bool operator==(const CullState& other) const noexcept {
+			return face == other.face && windingOrder != other.windingOrder;
+		}
+		constexpr bool operator!=(const CullState& other) const noexcept {
+			return !(*this == other);
+		}
+
 	};
 
 	// -

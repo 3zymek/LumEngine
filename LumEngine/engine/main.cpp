@@ -14,6 +14,7 @@
 #include "core/shaders_define.h"
 #include "core/math/backend/gtx/string_cast.hpp"
 #include "imgui.h"
+#include "core/flags.hpp"
 #include "core/fixed_string.hpp"
 using namespace lum;
 using namespace lum::rhi;
@@ -128,7 +129,7 @@ private:
     float yaw = 0, pitch = 0;
     float fov = 45.f;
     float min_plane = 0.1f;
-    float max_plane = 100000.f;
+    float max_plane = 1000.f;
     float sensivity = 0.2f;
     bool mouse_locked = false;
 
@@ -148,15 +149,75 @@ LUM_UNIFORM_BUFFER_STRUCT ModelUBO {
     glm::vec3 rot;
 };
 
+glm::vec3 model_pos = { 0,0,0 };
+glm::vec3 model_rot = { 0,0,0 };
+glm::vec3 model_scale = { 1,1,1, };
+
+void UpdateCamera(RHI_Device* dev, Camera& cam, rhi::BufferHandle& ubo, CameraUBO& camstruct, rhi::BufferHandle& modelubo, ModelUBO modelstruct) {
+    
+    glm::quat rot = glm::quat(glm::radians(model_rot));
+    glm::mat4 rotation = glm::mat4_cast(rot);
+    modelstruct.model = glm::mat4(1.f);
+    modelstruct.model = glm::translate(modelstruct.model, model_pos);
+    modelstruct.model = modelstruct.model * rotation;
+    modelstruct.model = glm::scale(modelstruct.model, model_scale);
+    
+    camstruct.proj = cam.projection;
+    camstruct.view = cam.view;
+
+    dev->UpdateBuffer(ubo, &camstruct, 0, 0);
+    dev->UpdateBuffer(modelubo, &modelstruct, 0, 0);
+    
+    cam.Update();
+}
+
 std::vector<Vertex> verts = {
-    {{ 0.5, 0.5, 0}, {0,0,1}}, // top-right
-    {{-0.5, 0.5, 0}, {0,0,1}}, // top-left
-    {{-0.5,-0.5, 0}, {0,1,0}}, // bottom-left
-    {{ 0.5,-0.5, 0}, {0,1,0}}  // bottom-right
+    // Front face (z = 0.5)
+    {{-0.5, -0.5,  0.5}, {0, 0, 1}, {0, 0}},
+    {{ 0.5, -0.5,  0.5}, {0, 0, 1}, {1, 0}},
+    {{ 0.5,  0.5,  0.5}, {0, 0, 1}, {1, 1}},
+    {{-0.5,  0.5,  0.5}, {0, 0, 1}, {0, 1}},
+
+    // Back face (z = -0.5)
+    {{-0.5, -0.5, -0.5}, {0, 0, -1}, {1, 0}},
+    {{-0.5,  0.5, -0.5}, {0, 0, -1}, {1, 1}},
+    {{ 0.5,  0.5, -0.5}, {0, 0, -1}, {0, 1}},
+    {{ 0.5, -0.5, -0.5}, {0, 0, -1}, {0, 0}},
+
+    // Left face (x = -0.5)
+    {{-0.5, -0.5, -0.5}, {-1, 0, 0}, {0, 0}},
+    {{-0.5, -0.5,  0.5}, {-1, 0, 0}, {1, 0}},
+    {{-0.5,  0.5,  0.5}, {-1, 0, 0}, {1, 1}},
+    {{-0.5,  0.5, -0.5}, {-1, 0, 0}, {0, 1}},
+
+    // Right face (x = 0.5)
+    {{ 0.5, -0.5, -0.5}, {1, 0, 0}, {1, 0}},
+    {{ 0.5,  0.5, -0.5}, {1, 0, 0}, {1, 1}},
+    {{ 0.5,  0.5,  0.5}, {1, 0, 0}, {0, 1}},
+    {{ 0.5, -0.5,  0.5}, {1, 0, 0}, {0, 0}},
+
+    // Top face (y = 0.5)
+    {{-0.5,  0.5,  0.5}, {0, 1, 0}, {0, 0}},
+    {{ 0.5,  0.5,  0.5}, {0, 1, 0}, {1, 0}},
+    {{ 0.5,  0.5, -0.5}, {0, 1, 0}, {1, 1}},
+    {{-0.5,  0.5, -0.5}, {0, 1, 0}, {0, 1}},
+
+    // Bottom face (y = -0.5)
+    {{-0.5, -0.5,  0.5}, {0, -1, 0}, {1, 0}},
+    {{-0.5, -0.5, -0.5}, {0, -1, 0}, {1, 1}},
+    {{ 0.5, -0.5, -0.5}, {0, -1, 0}, {0, 1}},
+    {{ 0.5, -0.5,  0.5}, {0, -1, 0}, {0, 0}}
 };
-std::vector<unsigned int> indices = {
-    0,1,2, 0,2,3
+
+std::vector<uint32> indices = {
+    0,1,2, 2,3,0,         // front
+    4,5,6, 6,7,4,         // back
+    8,9,10, 10,11,8,      // left
+    12,13,14, 14,15,12,   // right
+    16,17,18, 18,19,16,   // top
+    20,21,22, 22,23,20    // bottom
 };
+
 float quad[] = {
     // pos      // uv
     -1.0f, -1.0f, 0.0f, 0.0f,
@@ -170,17 +231,23 @@ float quad[] = {
 
 int main() {
 
+    // =====================
+    // Logger + Window + Device
+    // =====================
     Logger::Get().EnableLog(LogSeverity::ALL);
 
     WindowDescriptor window_desc;
     window_desc.MSAA_samples = 4;
     window_desc.height = 1000;
-    window_desc.width = 1000;
+    window_desc.width = 2000;
 
     Window* window = CreateWindow(window_desc);
     RHI_Device* device = CreateDevice(window);
     input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
+    // =====================
+    // Shaders
+    // =====================
     ShaderDescriptor shader_desc;
     shader_desc.fragment_source = "basic.frag";
     shader_desc.vertex_source = "basic.vert";
@@ -191,13 +258,9 @@ int main() {
     screen_shader_desc.vertex_source = "screen.vert";
     ShaderHandle screen_shader = device->CreateShader(screen_shader_desc);
 
-    BufferDescriptor ebo_descriptor;
-    ebo_descriptor.buffer_usage = BufferUsage::dynamic_usage;
-    ebo_descriptor.data = indices.data();
-    ebo_descriptor.map_flags = Mapflag::read;
-    ebo_descriptor.size = sizeof(indices);
-    BufferHandle EBO = device->CreateElementBuffer(ebo_descriptor);
-
+    // =====================
+    // Buffers (VBO, EBO)
+    // =====================
     BufferDescriptor vbo_descriptor;
     vbo_descriptor.buffer_usage = BufferUsage::dynamic_usage;
     vbo_descriptor.data = verts.data();
@@ -205,108 +268,178 @@ int main() {
     vbo_descriptor.size = bytesize(verts);
     BufferHandle VBO = device->CreateVertexBuffer(vbo_descriptor);
 
-    std::vector<VertexAttribute> vbo_attrs(2);
-    auto& vbo_pos = vbo_attrs[0];
-    vbo_pos.format = DataFormat::vec3;
-    vbo_pos.relative_offset = offsetof(Vertex, position);
-    vbo_pos.shader_location = LUM_LAYOUT_POSITION;
-    auto& vbo_color = vbo_attrs[1];
-    vbo_color.format = DataFormat::vec3;
-    vbo_color.relative_offset = offsetof(Vertex, color);
-    vbo_color.shader_location = LUM_LAYOUT_COLOR;
+    BufferDescriptor ebo_descriptor;
+    ebo_descriptor.buffer_usage = BufferUsage::dynamic_usage;
+    ebo_descriptor.data = indices.data();
+    ebo_descriptor.map_flags = Mapflag::read;
+    ebo_descriptor.size = bytesize(indices);
+    BufferHandle EBO = device->CreateElementBuffer(ebo_descriptor);
+
+    // =====================
+    // Vertex Layout / VAO
+    // =====================
+    std::vector<VertexAttribute> vbo_attrs(3);
+    vbo_attrs[0].format = DataFormat::vec3;
+    vbo_attrs[0].relative_offset = offsetof(Vertex, position);
+    vbo_attrs[0].shader_location = LUM_LAYOUT_POSITION;
+
+    vbo_attrs[1].format = DataFormat::vec3;
+    vbo_attrs[1].relative_offset = offsetof(Vertex, color);
+    vbo_attrs[1].shader_location = LUM_LAYOUT_COLOR;
+
+    vbo_attrs[2].format = DataFormat::vec2;
+    vbo_attrs[2].relative_offset = offsetof(Vertex, uv);
+    vbo_attrs[2].shader_location = LUM_LAYOUT_UV;
+
     VertexLayoutDescriptor vao_descriptor;
     vao_descriptor.attributes = vbo_attrs;
     vao_descriptor.stride = sizeof(Vertex);
     VertexLayoutHandle VAO = device->CreateVertexLayout(vao_descriptor, VBO);
-
     device->AttachElementBufferToLayout(EBO, VAO);
 
+    // =====================
+    // FBO
+    // =====================
     FramebufferTextureDescriptor framebuffer_tex_desc;
     framebuffer_tex_desc.attachment = FramebufferAttachment::color_attach;
     framebuffer_tex_desc.width = window->GetWidth();
     framebuffer_tex_desc.height = window->GetHeight();
     TextureHandle FBO_TEX = device->CreateFramebufferTexture(framebuffer_tex_desc);
+
     FramebufferHandle FBO = device->CreateFramebuffer();
     device->BindFramebuffer(FBO);
     device->SetFramebufferColorTexture(FBO, FBO_TEX, 0);
 
+    FramebufferTextureDescriptor framebuffer_depth_desc;
+    framebuffer_depth_desc.attachment = FramebufferAttachment::depth_attach;
+    framebuffer_depth_desc.width = window->GetWidth();
+    framebuffer_depth_desc.height = window->GetHeight();
+    auto FBO_DEPTH = device->CreateFramebufferTexture(framebuffer_depth_desc);
+    device->SetFramebufferDepthTexture(FBO, FBO_DEPTH);
+
+    // FBO quad
     BufferDescriptor FBO_VBO_desc;
     FBO_VBO_desc.buffer_usage = BufferUsage::dynamic_usage;
     FBO_VBO_desc.map_flags = Mapflag::write;
     FBO_VBO_desc.size = sizeof(quad);
     FBO_VBO_desc.data = quad;
-    BufferHandle FBO_VBO = device->CreateVertexBuffer(FBO_VBO_desc); 
+    BufferHandle FBO_VBO = device->CreateVertexBuffer(FBO_VBO_desc);
+
     std::vector<VertexAttribute> at(2);
-    auto& pos = at[0];
-    pos.format = DataFormat::vec2;
-    pos.relative_offset = 0;
-    pos.shader_location = 0;
-    auto& uv = at[1];
-    uv.format = DataFormat::vec2;
-    uv.relative_offset = 2 * sizeof(float);
-    uv.shader_location = 1;
+    at[0].format = DataFormat::vec2;
+    at[0].relative_offset = 0;
+    at[0].shader_location = 0;
+    at[1].format = DataFormat::vec2;
+    at[1].relative_offset = 2 * sizeof(float);
+    at[1].shader_location = 1;
+
     VertexLayoutDescriptor FBO_VAO_desc;
     FBO_VAO_desc.stride = 4 * sizeof(float);
     FBO_VAO_desc.attributes = at;
     VertexLayoutHandle FBO_VAO = device->CreateVertexLayout(FBO_VAO_desc, FBO_VBO);
 
-
+    // =====================
+    // Pipelines
+    // =====================
     PipelineDescriptor pipeline_desc;
     pipeline_desc.rasterizer.polygonMode = PolygonMode::fill;
-    pipeline_desc.scissor.bEnabled = true;
-    pipeline_desc.scissor.height = window->GetHeight() / 2.0;
-    pipeline_desc.scissor.width = window->GetWidth() / 2.0;
+    pipeline_desc.depth.bEnabled = true;
+    pipeline_desc.depth.bWriteToZBuffer = true;
+    pipeline_desc.cull.bEnabled = true;
+    pipeline_desc.cull.face = Face::back;
+    pipeline_desc.cull.windingOrder = WindingOrder::counter_clockwise;
+    pipeline_desc.depth.compare_flag = CompareFlag::less;
     auto debug_pipeline = device->CreatePipeline(pipeline_desc);
 
     PipelineDescriptor pipeline_desc2;
     pipeline_desc2.rasterizer.polygonMode = PolygonMode::line;
+    pipeline_desc2.depth.bEnabled = true;
+    pipeline_desc2.depth.bWriteToZBuffer = true;
+    pipeline_desc2.depth.compare_flag = CompareFlag::less;
     auto debug_pipeline2 = device->CreatePipeline(pipeline_desc2);
 
     auto basic_pipeline = device->CreatePipeline(PipelineDescriptor{});
 
     bool changed = false;
 
-    /*
+    // =====================
+    // Camera + UBOs
+    // =====================
+    Camera c{ window };
 
-    X Depth_Test <--
-    X Stencil_Test
-    X Alpha_Test
-    X Scissor_Test
-    X Blend
-    X Cull_Face
-    X Polygon_offset
+    CameraUBO camera_ubo_struct{};
+    BufferDescriptor camera_ubo_desc;
+    camera_ubo_desc.buffer_usage = BufferUsage::dynamic_usage;
+    camera_ubo_desc.map_flags = Mapflag::write;
+    camera_ubo_desc.size = sizeof(CameraUBO);
+    auto cameraUniform = device->CreateUniformBuffer(camera_ubo_desc);
 
-    */
+    ModelUBO model_ubo_struct{};
+    BufferDescriptor model_ubo_desc;
+    model_ubo_desc.buffer_usage = BufferUsage::dynamic_usage;
+    model_ubo_desc.map_flags = Mapflag::write;
+    model_ubo_desc.size = sizeof(CameraUBO);
+    auto modelUniform = device->CreateUniformBuffer(model_ubo_desc);
 
+    device->SetUniformBufferBinding(cameraUniform, LUM_UBO_CAMERA_BINDING);
+    device->SetUniformBufferBinding(modelUniform, LUM_UBO_MODEL_BINDING);
+
+    // =====================
+    // Textures + Samplers
+    // =====================
+    TextureDescriptor grass_desc;
+    grass_desc.height = 100;
+    grass_desc.width = 100;
+    grass_desc.filename = "stone.png";
+    auto grassTexture = device->CreateTexture2D(grass_desc);
+
+    SamplerDescriptor grass_sampler_desc;
+    grass_sampler_desc.mag_filter = SamplerMagFilter::nearest;
+    grass_sampler_desc.min_filter = SamplerMinFilter::nearest;
+    auto grassSampler = device->CreateSampler(grass_sampler_desc);
+    device->SetSamplerBinding(grassSampler, LUM_TEXTURE_BINDING_01);
+    device->SetTextureBinding(grassTexture, LUM_TEXTURE_BINDING_01);
+
+    // =====================
+    // Render loop
+    // =====================
     while (window->IsOpen()) {
         device->BeginFrame();
 
-        //
-        device->BindFramebuffer(FBO);
+        // ---- ImGui Transform
+        ImGui::Begin("Transform");
+        ImGui::DragFloat3("position", glm::value_ptr(model_pos), 0.1f, -1000, 1000);
+        ImGui::DragFloat3("scale", glm::value_ptr(model_scale), 0.1f, -1000, 1000);
+        ImGui::DragFloat3("rotation", glm::value_ptr(model_rot), 0.1f, -1000, 1000);
+        ImGui::End();
 
-        device->ClearFramebuffer(FBO, {0.f, 0.f, 0.f, 1.f}, 1.0f);
-    
-        device->BindPipeline(changed ? debug_pipeline2 : debug_pipeline);
-
+        // ---- Camera update
         device->BindShader(basic_shader);
+        UpdateCamera(device, c, cameraUniform, camera_ubo_struct, modelUniform, model_ubo_struct);
+
+        // ---- Render do FBO
+        device->BindFramebuffer(FBO);
+        device->ClearFramebuffer(FBO, { 0.f,0.f,0.f,1.f }, 1.0f);
+        device->BindPipeline(changed ? debug_pipeline2 : debug_pipeline);
+        device->BindSampler(grassSampler);
+        device->BindTexture(grassTexture);
         device->DrawElements(VAO, indices.size());
 
-        if (input::KeyPressedOnce(input::Key::SPACE)) {
+        if (input::KeyPressedOnce(input::Key::SPACE))
             changed = !changed;
-        }
 
         device->UnbindFramebuffer();
-        //
 
+        // ---- Render FBO na ekran
         device->BindPipeline(basic_pipeline);
-
         device->BindShader(screen_shader);
         device->BindTexture(FBO_TEX, 7);
         device->Draw(FBO_VAO, 6);
-        
+
         device->EndFrame();
     }
 }
+
 /*
 int main() {
 
@@ -525,6 +658,7 @@ int main() {
         device->BindFramebuffer(fbo);
         glClear(GL_COLOR_BUFFER_BIT);
         device->BindShader(shader);
+
         cubo.view = c.view;
         cubo.proj = c.projection;
         device->UpdateBuffer(model_ubo, &UBO_model, 0, 0);

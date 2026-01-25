@@ -16,6 +16,7 @@ namespace lum::rhi {
 		DepthState		depth		{};
 		StencilState	stencil		{};
 		ScissorState	scissor		{};
+		CullState		cull		{};
 		
 		
 		bool blendEnabled = false;
@@ -27,10 +28,11 @@ namespace lum::rhi {
 
 	struct Pipeline {
 
-		RasterizerState rasterizer{};
-		DepthState		depth{};
-		StencilState	stencil{};
-		ScissorState	scissor{};
+		RasterizerState rasterizer	{};
+		DepthState		depth		{};
+		StencilState	stencil		{};
+		ScissorState	scissor		{};
+		CullState		cull		{};
 
 
 		bool blendEnabled = false;

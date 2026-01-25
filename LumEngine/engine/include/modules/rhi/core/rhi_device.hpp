@@ -11,6 +11,7 @@
 #include "core/shaders_define.h"
 #include "rhi/core/rhi_framebuffer.hpp"
 #include "rhi/core/rhi_pipeline.hpp"
+#include "core/flags.hpp"
 namespace lum { class Window; }
 namespace lum::rhi {
 
@@ -286,7 +287,7 @@ namespace lum::rhi {
 		*  @param texture Texture to bind.
 		* 
 		*/
-		virtual void SetTextureBinding(const TextureHandle& texture, uint16 binding) = 0;
+		virtual void SetTextureBinding( const TextureHandle& texture, uint16 binding ) = 0;
 		virtual void BindTexture( const TextureHandle& texture, uint16 binding = LUM_NULL_BINDING ) = 0;
 
 
@@ -340,8 +341,10 @@ namespace lum::rhi {
 
 	protected:
 
-		ScissorState mScissorState{};
-		State mEnabledStates = State::none;
+		CullState		mCullState		{};
+		ScissorState	mScissorState	{};
+		DepthState		mDepthState		{};
+		Flags<State>	mEnabledStates	{};
 		
 		LUM_CONST_VAR_QUALIFIER
 		static uint8 skMaxShaders = 8;

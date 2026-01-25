@@ -32,6 +32,7 @@ namespace lum::gl {
 		using Framebuffer					= rhi::Framebuffer;
 		using FramebufferHandle				= rhi::FramebufferHandle;
 		using FramebufferTextureDescriptor	= rhi::FramebufferTextureDescriptor;
+		using FramebufferAttachment			= rhi::FramebufferAttachment;
 
 		using Pipeline				= rhi::Pipeline;
 		using PipelineHandle		= rhi::PipelineHandle;

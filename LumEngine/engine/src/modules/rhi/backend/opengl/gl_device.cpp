@@ -239,7 +239,8 @@ namespace lum::gl {
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &tex.handle.gl_handle);
 
-		glTextureStorage2D(tex.handle.gl_handle, 1, GL_RGB8, desc.width, desc.height);
+		GLenum format = (desc.attachment == FramebufferAttachment::depth_attach) ? GL_DEPTH_COMPONENT24 : GL_RGBA8;
+		glTextureStorage2D(tex.handle.gl_handle, 1, format, desc.width, desc.height);
 
 		return mTextures.CreateHandle(std::move(tex));
 	}
@@ -608,35 +609,52 @@ namespace lum::gl {
 			skPolygonModeLookup[static_cast<byte>(pip.rasterizer.polygonMode)]
 		);
 
-		if (pip.depth.bEnabled) {
-			if (!(mEnabledStates & State::depth_test))
-			{
-				glEnable(GL_DEPTH_TEST);
-				mEnabledStates |= State::depth_test;
-			}
+		// Depth
+		if (pip.depth.bEnabled && !mEnabledStates.Has(State::depth_test)) {
+			glEnable(GL_DEPTH_TEST);
+			mEnabledStates.Enable(State::depth_test);
 		}
-		else {
-			if (mEnabledStates & State::depth_test) {
-				glDisable(GL_DEPTH_TEST);
-				mEnabledStates |= ~State::depth_test;
-			}
+		else if(!pip.depth.bEnabled && mEnabledStates.Has(State::depth_test)) {
+			glDisable(GL_DEPTH_TEST);
+			mEnabledStates.Disable(State::depth_test);
+		}
+		if (pip.depth.bEnabled && (pip.depth != mDepthState)) {
+			glDepthFunc(skCompareFlagLookup[static_cast<byte>(pip.depth.compare_flag)]);
+			glDepthMask((pip.depth.bWriteToZBuffer) ? GL_TRUE : GL_FALSE);
+			mDepthState = pip.depth;
 		}
 
-		if (pip.scissor.bEnabled != (mEnabledStates & State::scissor)) {
-			if (!(mEnabledStates & State::scissor)) {
+		// Scissors
+		if (pip.scissor.bEnabled != mEnabledStates.Has(State::scissor)) {
+			if (pip.scissor.bEnabled) {
 				glEnable(GL_SCISSOR_TEST);
-				mEnabledStates |= State::scissor;
-				LUM_LOG_ERROR("WLACZAM");
+				mEnabledStates.Enable(State::scissor);
+				mScissorState = pip.scissor;
 			}
 			else {
 				glDisable(GL_SCISSOR_TEST);
-				mEnabledStates |= ~State::scissor;
-				LUM_LOG_ERROR("WYLACZAM");
+				mEnabledStates.Disable(State::scissor);
 			}
 		}
 		if (pip.scissor.bEnabled && (pip.scissor != mScissorState)) {
 			glScissor(pip.scissor.x, pip.scissor.y, pip.scissor.width, pip.scissor.height);
 			mScissorState = pip.scissor;
+		}
+
+		// Cull
+		if (pip.cull.bEnabled && !mEnabledStates.Has(State::cull_face)) {
+			glEnable(GL_CULL_FACE);
+			mEnabledStates.Enable(State::cull_face);
+		}
+		else if (!pip.cull.bEnabled && mEnabledStates.Has(State::cull_face)) {
+			glDisable(GL_CULL_FACE);
+			mEnabledStates.Disable(State::cull_face);
+		}
+		if (pip.cull.bEnabled && (pip.cull != mCullState)) {
+			glCullFace(skFacesLookup[static_cast<byte>(pip.cull.face)]);
+			glFrontFace(pip.cull.windingOrder == rhi::WindingOrder::counter_clockwise ? GL_CCW : GL_CW);
+			mCullState = pip.cull;
+			LUM_LOG_DEBUG("zmieniono cull");
 		}
 
 	
@@ -660,14 +678,14 @@ namespace lum::gl {
 		LUM_HOTPATH_ASSERT_VOID(!mLayouts.Exists(vao), "Cannot draw, invalid vertex layout");
 
 		glBindVertexArray(mLayouts[vao].vao);
-		glDrawElements(GL_TRIANGLES, indices_count, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices_count), GL_UNSIGNED_INT, nullptr);
 
 	}
 	void GL_Device::BeginFrame( ) {
 
 		glViewport(0, 0, pWindow->GetWidth(), pWindow->GetHeight());
 		glClearColor(0, 0, 0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 #		if LUM_ENABLE_IMGUI == 1
 			ImGui_ImplOpenGL3_NewFrame();
@@ -686,7 +704,7 @@ namespace lum::gl {
 
 
 #		endif
-
+		
 		glfwSwapBuffers(static_cast<GLFWwindow*>(pWindow->GetNativeWindow()));
 
 	}

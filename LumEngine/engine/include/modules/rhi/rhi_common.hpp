@@ -84,7 +84,12 @@ namespace lum {
 			front_back,
 		};
 
-		enum class State : byte {
+		enum class WindingOrder : byte {
+			counter_clockwise, // Front-facing triangles are defined in counter-clockwise order
+			clockwise         // Front-facing triangles are defined in clockwise order
+		};
+
+		enum class State : bitfield {
 			none			= 1 << 0,
 			depth_test		= 1 << 1,
 			stencil_test	= 1 << 2,
@@ -92,33 +97,6 @@ namespace lum {
 			blend			= 1 << 4,
 			cull_face		= 1 << 5,
 		};
-
-		constexpr State operator|(State a, State b) noexcept {
-			return static_cast<State>(static_cast<byte>(a) | static_cast<byte>(b));
-		}
-		constexpr State operator|=(State& a, State b) noexcept {
-			a = a | b;
-			return a;
-		}
-
-		constexpr bool operator&(State a, State b) noexcept {
-			return (static_cast<byte>(a) & static_cast<byte>(b)) != 0;
-		}
-		constexpr bool operator&(byte a, State b) noexcept {
-			return (a & static_cast<byte>(b)) != 0;
-		}
-		constexpr bool operator&(State a, byte b) noexcept {
-			return (static_cast<byte>(a) & b) != 0;
-		}
-
-		constexpr State operator~(State a) noexcept {
-			return static_cast<State>(~static_cast<byte>(a));
-		}
-
-		constexpr State& operator^=(State& a, State b) {
-			a = static_cast<State>(static_cast<byte>(a) ^ static_cast<byte>(b));
-			return a;
-		}
 
 		namespace detail {
 
