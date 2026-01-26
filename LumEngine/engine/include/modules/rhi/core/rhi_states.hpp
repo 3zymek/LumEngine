@@ -2,7 +2,7 @@
 #include "rhi/rhi_common.hpp"
 
 namespace lum::rhi {
-	
+
 	enum class CompareFlag : byte {
 		less,		// Draws only pixels with Z < bufferZ
 		less_equal,	// Draws only pixels with Z <= bufferZ
@@ -10,46 +10,81 @@ namespace lum::rhi {
 		greater_equal,
 		not_equal,
 		always,		// Always draws a pixel
-		never,
+		never
 	};
 
 	enum class StencilFlag : byte {
-		keep,
 		zero,
-		replace
+		one,
+		keep,
+		replace,
+		increment,
+		increment_wrap,
+		decrement,
+		decrement_wrap,
+		invert
 	};
 
 	// +
 	struct RasterizerState {
 
-		PolygonMode polygonMode = PolygonMode::fill;
-		Face		polygonModeFaces = Face::front_back;
+		PolygonMode topologyMode = PolygonMode::fill;
+		Face		topologyModeFaces = Face::front_back;
 
+		// IMPLEMENT
 		bool	bEnableDepthBias = false;
 		float32 depthBiasFactor = 0.f;
 		float32 depthBiasUnits = 0.f;
 
-	};
-
-	// +
-	struct DepthState {
-
-		bool		bEnabled = false;
-		bool		bWriteToZBuffer = false;
-		CompareFlag	compare_flag = CompareFlag::always;
-
-		constexpr bool operator==(const DepthState& other) const noexcept {
-			return bWriteToZBuffer == other.bWriteToZBuffer && compare_flag == other.compare_flag;
+		constexpr bool operator==(const RasterizerState& other) const noexcept {
+			return  
+				topologyMode == other.topologyMode && 
+				topologyModeFaces == other.topologyModeFaces && 
+				bEnableDepthBias == other.bEnableDepthBias && 
+				depthBiasFactor == other.depthBiasFactor && 
+				depthBiasUnits == other.depthBiasUnits;
 		}
-		constexpr bool operator!=(const DepthState& other) const noexcept {
+		constexpr bool operator!=(const RasterizerState& other) const noexcept {
 			return !(*this == other);
 		}
 
+	};
+
+	// +
+	struct DepthStencilState {
+
+		struct Depth {
+
+			bool		bEnabled = false;
+			bool		bWriteToZBuffer = false;
+			CompareFlag	compareFlag = CompareFlag::always;
+
+			constexpr bool operator==(const Depth& other) const noexcept {
+				return bWriteToZBuffer == other.bWriteToZBuffer && compareFlag == other.compareFlag;
+			}
+			constexpr bool operator!=(const Depth& other) const noexcept {
+				return !(*this == other);
+			}
+		} depth;
+
+		struct Stencil {
+
+			// Drawing condition
+
+			bool		bEnabled = false;
+			int32		value = 0;
+			CompareFlag compareFlag = CompareFlag::always;
+
+			// Optional operation
+
+
+
+		} stencil;
 
 	};
 
 	struct CullState {
-		
+
 		bool bEnabled = false;
 		Face face = Face::back;
 		WindingOrder windingOrder = WindingOrder::counter_clockwise;

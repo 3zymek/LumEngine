@@ -604,57 +604,92 @@ namespace lum::gl {
 
 		Pipeline& pip = mPipelines[pipeline];
 
-		glPolygonMode(
-			skFacesLookup[static_cast<byte>(pip.rasterizer.polygonModeFaces)], 
-			skPolygonModeLookup[static_cast<byte>(pip.rasterizer.polygonMode)]
-		);
+		// Topology
+
+		const auto& rast = pip.rasterizer;
+
+		if (rast != mRasterizerState) {
+			glPolygonMode(
+				skFacesLookup[static_cast<byte>(rast.topologyModeFaces)],
+				skPolygonModeLookup[static_cast<byte>(rast.topologyMode)]
+			);
+			mRasterizerState = rast;
+		}
 
 		// Depth
-		if (pip.depth.bEnabled && !mEnabledStates.Has(State::depth_test)) {
+
+		const auto& depth = pip.depthStencil.depth;
+		bool depthEnabled = mEnabledStates.Has(State::depth_test);
+
+		if (depth.bEnabled && !depthEnabled) {
+
 			glEnable(GL_DEPTH_TEST);
 			mEnabledStates.Enable(State::depth_test);
+
 		}
-		else if(!pip.depth.bEnabled && mEnabledStates.Has(State::depth_test)) {
+		else if(!depth.bEnabled && depthEnabled) {
+
 			glDisable(GL_DEPTH_TEST);
 			mEnabledStates.Disable(State::depth_test);
+
 		}
-		if (pip.depth.bEnabled && (pip.depth != mDepthState)) {
-			glDepthFunc(skCompareFlagLookup[static_cast<byte>(pip.depth.compare_flag)]);
-			glDepthMask((pip.depth.bWriteToZBuffer) ? GL_TRUE : GL_FALSE);
-			mDepthState = pip.depth;
+		if (depth.bEnabled && (depth != mDepthState.depth)) {
+
+			glDepthFunc(skCompareFlagLookup[static_cast<byte>(pip.depthStencil.depth.compareFlag)]);
+			glDepthMask((pip.depthStencil.depth.bWriteToZBuffer) ? GL_TRUE : GL_FALSE);
+			mDepthState.depth = depth;
+
 		}
 
 		// Scissors
-		if (pip.scissor.bEnabled != mEnabledStates.Has(State::scissor)) {
+
+		const auto& scissors = pip.scissor;
+		bool scissorsEnabled = mEnabledStates.Has(State::scissor);
+
+		if (scissors.bEnabled != scissorsEnabled) {
 			if (pip.scissor.bEnabled) {
+
 				glEnable(GL_SCISSOR_TEST);
 				mEnabledStates.Enable(State::scissor);
-				mScissorState = pip.scissor;
+				mScissorState = scissors;
 			}
 			else {
+
 				glDisable(GL_SCISSOR_TEST);
 				mEnabledStates.Disable(State::scissor);
+
 			}
 		}
-		if (pip.scissor.bEnabled && (pip.scissor != mScissorState)) {
-			glScissor(pip.scissor.x, pip.scissor.y, pip.scissor.width, pip.scissor.height);
-			mScissorState = pip.scissor;
+		if (scissors.bEnabled && (scissors != mScissorState)) {
+
+			glScissor(scissors.x, scissors.y, scissors.width, scissors.height);
+			mScissorState = scissors;
+
 		}
 
 		// Cull
-		if (pip.cull.bEnabled && !mEnabledStates.Has(State::cull_face)) {
+
+		const auto& cull = pip.cull;
+		bool cullEnabled = mEnabledStates.Has(State::cull_face);
+
+		if (cull.bEnabled && !cullEnabled) {
+
 			glEnable(GL_CULL_FACE);
 			mEnabledStates.Enable(State::cull_face);
+
 		}
-		else if (!pip.cull.bEnabled && mEnabledStates.Has(State::cull_face)) {
+		else if (!pip.cull.bEnabled && cullEnabled) {
+
 			glDisable(GL_CULL_FACE);
 			mEnabledStates.Disable(State::cull_face);
+
 		}
-		if (pip.cull.bEnabled && (pip.cull != mCullState)) {
-			glCullFace(skFacesLookup[static_cast<byte>(pip.cull.face)]);
-			glFrontFace(pip.cull.windingOrder == rhi::WindingOrder::counter_clockwise ? GL_CCW : GL_CW);
-			mCullState = pip.cull;
-			LUM_LOG_DEBUG("zmieniono cull");
+		if (cull.bEnabled && (pip.cull != mCullState)) {
+
+			glCullFace(skFacesLookup[static_cast<byte>(cull.face)]);
+			glFrontFace(cull.windingOrder == rhi::WindingOrder::counter_clockwise ? GL_CCW : GL_CW);
+			mCullState = cull;
+
 		}
 
 	

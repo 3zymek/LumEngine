@@ -341,10 +341,11 @@ namespace lum::rhi {
 
 	protected:
 
-		CullState		mCullState		{};
-		ScissorState	mScissorState	{};
-		DepthState		mDepthState		{};
-		Flags<State>	mEnabledStates	{};
+		CullState			mCullState		{};
+		ScissorState		mScissorState	{};
+		DepthStencilState	mDepthState		{};
+		RasterizerState		mRasterizerState{};
+		Flags<State>		mEnabledStates	{};
 		
 		LUM_CONST_VAR_QUALIFIER
 		static uint8 skMaxShaders = 8;

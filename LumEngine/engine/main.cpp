@@ -22,6 +22,7 @@ using namespace lum::rhi;
 class Camera {
 public:
 
+    
     Camera(Window* wind) : m_window(wind) { Init(wind); }
     
     void Update() {
@@ -342,20 +343,20 @@ int main() {
     // Pipelines
     // =====================
     PipelineDescriptor pipeline_desc;
-    pipeline_desc.rasterizer.polygonMode = PolygonMode::fill;
-    pipeline_desc.depth.bEnabled = true;
-    pipeline_desc.depth.bWriteToZBuffer = true;
+    pipeline_desc.rasterizer.topologyMode = PolygonMode::fill;
+    pipeline_desc.depthStencil.depth.bEnabled = true;
+    pipeline_desc.depthStencil.depth.bWriteToZBuffer = true;
     pipeline_desc.cull.bEnabled = true;
     pipeline_desc.cull.face = Face::back;
     pipeline_desc.cull.windingOrder = WindingOrder::counter_clockwise;
-    pipeline_desc.depth.compare_flag = CompareFlag::less;
+    pipeline_desc.depthStencil.depth.compareFlag = CompareFlag::less;
     auto debug_pipeline = device->CreatePipeline(pipeline_desc);
 
     PipelineDescriptor pipeline_desc2;
-    pipeline_desc2.rasterizer.polygonMode = PolygonMode::line;
-    pipeline_desc2.depth.bEnabled = true;
-    pipeline_desc2.depth.bWriteToZBuffer = true;
-    pipeline_desc2.depth.compare_flag = CompareFlag::less;
+    pipeline_desc2.rasterizer.topologyMode = PolygonMode::line;
+    pipeline_desc2.depthStencil.depth.bEnabled = true;
+    pipeline_desc2.depthStencil.depth.bWriteToZBuffer = true;
+    pipeline_desc2.depthStencil.depth.compareFlag = CompareFlag::less;
     auto debug_pipeline2 = device->CreatePipeline(pipeline_desc2);
 
     auto basic_pipeline = device->CreatePipeline(PipelineDescriptor{});
