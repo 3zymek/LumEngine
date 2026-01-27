@@ -15,16 +15,16 @@ namespace lum {
 		constexpr Flags() noexcept = default;
 		constexpr explicit Flags(T flag) noexcept : mFlags(static_cast<U>(flag)) {}
 
-		constexpr void Enable(T flag) noexcept {
+		constexpr void enable(T flag) noexcept {
 			mFlags |= static_cast<U>(flag);
 		}
-		constexpr void Disable(T flag) noexcept {
+		constexpr void disable(T flag) noexcept {
 			mFlags &= ~static_cast<U>(flag);
 		}
-		constexpr bool Has(T flag) const noexcept {
+		constexpr bool has(T flag) const noexcept {
 			return (mFlags & static_cast<U>(flag)) != 0;
 		}
-		constexpr void Clear() noexcept {
+		constexpr void clear() noexcept {
 			mFlags = 0;
 		}
 
@@ -36,13 +36,13 @@ namespace lum {
 	}
 	template<Enum T>
 	constexpr Flags<T> operator|(Flags<T> a, T b) {
-		a.Enable(b);
+		a.enable(b);
 		return a;
 	}
 
 	template<Enum T>
 	constexpr Flags<T>& operator|=(Flags<T>& a, T b) {
-		a.Enable(b);
+		a.enable(b);
 		return a;
 	}
 
@@ -52,7 +52,7 @@ namespace lum {
 		Flags<T> result;
 		if ((static_cast<std::underlying_type_t<T>>(a) &
 			static_cast<std::underlying_type_t<T>>(b)) != 0) {
-			result.Enable(a & b);
+			result.enable(a & b);
 		}
 		return result;
 	}

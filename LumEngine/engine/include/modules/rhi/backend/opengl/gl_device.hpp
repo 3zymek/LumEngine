@@ -44,21 +44,21 @@ namespace lum::gl {
 
 	public:
 
-		GL_Device(Window* win) : pWindow(win) {}
+		GL_Device(Window* win) : window(win) {}
 
 		///////////////////////////////////////////////////
 		/// Buffers
 		///////////////////////////////////////////////////
 
-		BufferHandle		CreateVertexBuffer			( const BufferDescriptor& )							override;
-		BufferHandle		CreateElementBuffer			( const BufferDescriptor& )							override;
-		BufferHandle		CreateUniformBuffer			( const BufferDescriptor& )							override;
-		void				UpdateBuffer				( const BufferHandle&, cvptr, usize, usize )		override;
-		void				DeleteBuffer				( BufferHandle& )									override;
-		vptr				MapBuffer					( const BufferHandle&, Mapflag, usize, usize )		override;
-		void				UnmapBuffer					( const BufferHandle& )								override;
-		void				AttachElementBufferToLayout	( const BufferHandle&, const VertexLayoutHandle& )	override;
-		void				SetUniformBufferBinding		( const BufferHandle&, int32 )						override;
+		BufferHandle		create_vertex_buffer			( const BufferDescriptor& )							override;
+		BufferHandle		create_element_buffer			( const BufferDescriptor& )							override;
+		BufferHandle		create_uniform_buffer			( const BufferDescriptor& )							override;
+		void				update_buffer				( const BufferHandle&, cvptr, usize, usize )		override;
+		void				delete_buffer				( BufferHandle& )									override;
+		vptr				map_buffer					( const BufferHandle&, Mapflag, usize, usize )		override;
+		void				unmap_buffer					( const BufferHandle& )								override;
+		void				attach_element_buffer_to_layout	( const BufferHandle&, const VertexLayoutHandle& )	override;
+		void				set_uniform_buffer_binding		( const BufferHandle&, int32 )						override;
 
 
 
@@ -66,15 +66,15 @@ namespace lum::gl {
 		/// Framebuffers
 		///////////////////////////////////////////////////
 
-		FramebufferHandle	CreateFramebuffer			( )															override;
-		TextureHandle		CreateFramebufferTexture	( const FramebufferTextureDescriptor& )						override;
-		void				SetFramebufferColorTexture	( const FramebufferHandle&, const TextureHandle&, uint8 )	override;
-		void				SetFramebufferDepthTexture	( const FramebufferHandle&, const TextureHandle&)			override;
-		void				SetFramebufferStencilTexture( const FramebufferHandle&, const TextureHandle&)			override;
-		void				ClearFramebuffer			( FramebufferHandle, glm::vec4, float32)					override;
-		void				DeleteFramebuffer			( FramebufferHandle& )										override;
-		void				BindFramebuffer				( const FramebufferHandle& )								override;
-		void				UnbindFramebuffer			( )															override;
+		FramebufferHandle	create_framebuffer			( )															override;
+		TextureHandle		create_framebuffer_texture	( const FramebufferTextureDescriptor& )						override;
+		void				set_framebuffer_color_texture	( const FramebufferHandle&, const TextureHandle&, uint8 )	override;
+		void				set_framebuffer_depth_texture	( const FramebufferHandle&, const TextureHandle&)			override;
+		void				set_framebuffer_stencil_texture( const FramebufferHandle&, const TextureHandle&)			override;
+		void				clear_framebuffer			( FramebufferHandle, glm::vec4, float32)					override;
+		void				delete_framebuffer			( FramebufferHandle& )										override;
+		void				bind_framebuffer				( const FramebufferHandle& )								override;
+		void				unbind_framebuffer			( )															override;
 
 
 
@@ -82,8 +82,8 @@ namespace lum::gl {
 		/// Layouts
 		///////////////////////////////////////////////////
 
-		VertexLayoutHandle	CreateVertexLayout( const VertexLayoutDescriptor&, const BufferHandle&)	override;
-		void				DeleteVertexLayout( VertexLayoutHandle& )								override;
+		VertexLayoutHandle	create_vertex_layout( const VertexLayoutDescriptor&, const BufferHandle&)	override;
+		void				delete_vertex_layout( VertexLayoutHandle& )								override;
 
 
 
@@ -91,15 +91,15 @@ namespace lum::gl {
 		/// Shaders ( !!! ADD CACHE LOCATIONS !!! )
 		///////////////////////////////////////////////////
 
-		ShaderHandle	CreateShader( const ShaderDescriptor& )							override;
-		void			BindShader	( const ShaderHandle& )								override;
-		void			DeleteShader( ShaderHandle& )									override;
-		void			SetMat4		( const ShaderHandle&, ccharptr, const glm::mat4& )	override;
-		void			Setf		( const ShaderHandle&, ccharptr, float32 )			override;
-		void			Seti		( const ShaderHandle&, ccharptr, int32 )			override;
-		void			SetVec4		( const ShaderHandle&, ccharptr, const glm::vec4& )	override;
-		void			SetVec3		( const ShaderHandle&, ccharptr, const glm::vec3& )	override;
-		void			SetVec2		( const ShaderHandle&, ccharptr, const glm::vec2& )	override;
+		ShaderHandle	create_shader( const ShaderDescriptor& )							override;
+		void			bind_shader	( const ShaderHandle& )								override;
+		void			delete_shader( ShaderHandle& )									override;
+		void			set_mat4		( const ShaderHandle&, ccharptr, const glm::mat4& )	override;
+		void			set_f		( const ShaderHandle&, ccharptr, float32 )			override;
+		void			set_i		( const ShaderHandle&, ccharptr, int32 )			override;
+		void			set_vec4		( const ShaderHandle&, ccharptr, const glm::vec4& )	override;
+		void			set_vec3		( const ShaderHandle&, ccharptr, const glm::vec3& )	override;
+		void			set_vec2		( const ShaderHandle&, ccharptr, const glm::vec2& )	override;
 
 
 
@@ -107,11 +107,11 @@ namespace lum::gl {
 		/// Textures
 		///////////////////////////////////////////////////
 
-		TextureHandle	CreateTexture2D		( const TextureDescriptor& )		override;
-		TextureHandle	CreateTexture3D		( const TextureDescriptor& )		override;
-		void			DeleteTexture		( TextureHandle& )					override;
-		void			SetTextureBinding	( const TextureHandle&, uint16)		override;
-		void			BindTexture			( const TextureHandle&, uint16 )	override;
+		TextureHandle	create_texture_2d		( const TextureDescriptor& )		override;
+		TextureHandle	create_texture_3d		( const TextureDescriptor& )		override;
+		void			delete_texture		( TextureHandle& )					override;
+		void			set_texture_binding	( const TextureHandle&, uint16)		override;
+		void			bind_texture			( const TextureHandle&, uint16 )	override;
 
 
 
@@ -119,10 +119,10 @@ namespace lum::gl {
 		/// Samplers
 		///////////////////////////////////////////////////
 
-		SamplerHandle	CreateSampler		( const SamplerDescriptor& )		override;
-		void			SetSamplerBinding	( const SamplerHandle&, uint16 )	override;
-		void			BindSampler			( const SamplerHandle&, uint16)		override;
-		void			DeleteSampler		( SamplerHandle )					override;
+		SamplerHandle	create_sampler		( const SamplerDescriptor& )		override;
+		void			set_sampler_binding	( const SamplerHandle&, uint16 )	override;
+		void			bind_sampler			( const SamplerHandle&, uint16)		override;
+		void			delete_sampler		( SamplerHandle )					override;
 
 
 
@@ -130,9 +130,9 @@ namespace lum::gl {
 		/// Pipelines
 		///////////////////////////////////////////////////
 
-		rhi::PipelineHandle CreatePipeline(const PipelineDescriptor& )	override;
-		void DeletePipeline(PipelineHandle&)							override;
-		void BindPipeline(const PipelineHandle&)						override;
+		rhi::PipelineHandle create_pipeline(const PipelineDescriptor& )	override;
+		void delete_pipeline(PipelineHandle&)							override;
+		void bind_pipeline(const PipelineHandle&)						override;
 
 
 
@@ -140,10 +140,10 @@ namespace lum::gl {
 		/// Other
 		///////////////////////////////////////////////////
 
-		void Draw			( const VertexLayoutHandle&, uint32 )	override;
-		void DrawElements	( const VertexLayoutHandle&, uint32 )	override;
-		void BeginFrame		( )										override;
-		void EndFrame		( )										override;
+		void draw			( const VertexLayoutHandle&, uint32 )	override;
+		void draw_elements	( const VertexLayoutHandle&, uint32 )	override;
+		void begin_frame		( )										override;
+		void end_frame		( )										override;
 
 
 
@@ -171,6 +171,7 @@ namespace lum::gl {
 			GL_LINEAR,
 			GL_LINEAR_MIPMAP_NEAREST,
 			GL_LINEAR_MIPMAP_LINEAR,
+
 			GL_NEAREST,
 			GL_NEAREST_MIPMAP_NEAREST,
 			GL_NEAREST_MIPMAP_LINEAR
@@ -181,6 +182,7 @@ namespace lum::gl {
 		{
 			GL_REPEAT,
 			GL_MIRRORED_REPEAT,
+
 			GL_CLAMP_TO_EDGE,
 			GL_CLAMP_TO_BORDER
 		};
@@ -197,15 +199,54 @@ namespace lum::gl {
 			GL_NEVER
 		};
 
-		Window* pWindow = nullptr;
+		LUM_CONST_VAR_QUALIFIER
+		static GLenum skBlendFactorLookup[] =
+		{
+			GL_ZERO,
+			GL_ONE,
+
+			GL_SRC_COLOR,
+			GL_ONE_MINUS_SRC_COLOR,
+			GL_SRC_ALPHA,
+			GL_ONE_MINUS_SRC_ALPHA,
+
+			GL_DST_COLOR,
+			GL_ONE_MINUS_DST_COLOR,
+			GL_DST_ALPHA,
+			GL_ONE_MINUS_DST_ALPHA,
+
+			GL_CONSTANT_COLOR,
+			GL_ONE_MINUS_CONSTANT_COLOR,
+			GL_CONSTANT_ALPHA,
+			GL_ONE_MINUS_CONSTANT_ALPHA,
+
+			GL_SRC_ALPHA_SATURATE,
+
+			GL_SRC1_COLOR,
+			GL_ONE_MINUS_SRC1_COLOR,
+			GL_SRC1_ALPHA,
+			GL_ONE_MINUS_SRC1_ALPHA,
+
+		};
+		LUM_CONST_VAR_QUALIFIER
+		static GLenum skBlendOpLookup[] =
+		{
+			GL_FUNC_ADD,
+			GL_FUNC_SUBTRACT,
+			GL_FUNC_REVERSE_SUBTRACT,
+			GL_MIN,
+			GL_MAX
+		};
+
+		Window* window = nullptr;
 
 		///////////////////////////////////////////////////
 		/// Private helpers ( !!! REPAIR TYPE CASTING !!! )
 		///////////////////////////////////////////////////
 
-		void		CacheUniformLocations		( );
-		bool		IsValidBufferDescriptor		( const BufferDescriptor&)		noexcept;
-		GLbitfield	TranslateMappingFlags		( Mapflag )						noexcept;
+		void		_cache_uniforms_locations		( );
+		bool		_is_valid_buffer_descriptor		( const BufferDescriptor&)		noexcept;
+		GLbitfield	_translate_mapping_flags		( Mapflag )						noexcept;
 
 	};
 

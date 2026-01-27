@@ -17,7 +17,7 @@ namespace cstd {
 
 	public:
 
-		handle_pool(Hsize_t new_max_size) : MAX_SIZE(new_max_size) { Reserve(MAX_SIZE); }
+		handle_pool(Hsize_t new_max_size) : MAX_SIZE(new_max_size) { reserve(MAX_SIZE); }
 
 		iterator begin() { return m_dense.begin(); }
 		iterator end() { return m_dense.end(); }
@@ -32,7 +32,7 @@ namespace cstd {
 			return m_dense[m_sparse[handle.id]];
 		}
 
-		HandleType CreateHandle(const DenseType& obj) {
+		HandleType create_handle(const DenseType& obj) {
 			if (m_dense.size() == MAX_SIZE)
 				throw std::runtime_error("Handle pool full");
 
@@ -60,7 +60,7 @@ namespace cstd {
 
 		}
 
-		void DeleteHandle(const HandleType& handle) {
+		void delete_handle(const HandleType& handle) {
 			Slot slot = static_cast<Slot>(handle.id);
 			if (slot >= m_sparse.size()) return;
 			if (m_generations[slot] != handle.generation) return;
@@ -89,7 +89,7 @@ namespace cstd {
 
 		}
 
-		void Reserve(Hsize_t new_max_size) {
+		void reserve(Hsize_t new_max_size) {
 			m_dense.reserve(new_max_size);
 			m_sparse.resize(new_max_size, NULL_HANDLE);
 			m_dense_to_sparse.resize(new_max_size, NULL_HANDLE);
@@ -97,14 +97,14 @@ namespace cstd {
 			m_free_slots.reserve(new_max_size);
 		}
 
-		inline Hsize_t DenseSize() const { return m_dense.size(); }
+		inline Hsize_t dense_size() const { return m_dense.size(); }
 
-		inline bool Exists(const HandleType& handle) const noexcept {
+		inline bool exists(const HandleType& handle) const noexcept {
 			return handle.id < m_generations.size() && handle.generation == m_generations[handle.id];
 		}
 
-		inline DenseType* Get(const HandleType& handle) {
-			if (Exists(handle))
+		inline DenseType* get(const HandleType& handle) {
+			if (exists(handle))
 				return &m_dense[m_sparse[handle.id]];
 			else
 				return nullptr;

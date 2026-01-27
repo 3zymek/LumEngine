@@ -21,14 +21,14 @@ namespace lum {
 	struct TextureData {
 		int width = 0;
 		int height = 0;
-		int color_channels = 0;
+		int colorChannels = 0;
 		std::vector<uint8_t> pixels;
 	};
 	
 	class AssetService {
 	public:
 
-		static TextureData LoadTexture(ccharptr file_name) {
+		static TextureData load_texture(ccharptr file_name) {
 
 			auto path = texture_path / std::string(file_name);
 			std::string absolute_path = path.lexically_normal().string();
@@ -37,14 +37,14 @@ namespace lum {
 			int ignore;
 			unsigned char* data = stbi_load(absolute_path.c_str(), &tx.width, &tx.height, &ignore, 4);
 			assert(tx.width > 0 && tx.height > 0);
-			tx.color_channels = 4;
+			tx.colorChannels = 4;
 
 			if (!data) {
 				LUM_LOG_ERROR(std::format("Failed to load texture {}", file_name));
 				return TextureData{};
 			}
 
-			size_t size = tx.width * tx.height * tx.color_channels;
+			size_t size = tx.width * tx.height * tx.colorChannels;
 			tx.pixels.resize(size);
 			std::memcpy(tx.pixels.data(), data, size);
 
@@ -52,7 +52,8 @@ namespace lum {
 			return tx;
 		}
 		
-		inline static std::string LoadAudio(std::string_view file_name) {
+		inline static std::string load_audio(std::string_view file_name) {
+
 			auto file = audio_path / file_name;
 			if (!detail::fs::exists(file)) {
 				LUM_LOG_ERROR(std::format("Couldn't localize audio file named {}", file_name.data()));
@@ -88,6 +89,7 @@ namespace lum {
 
 			return ss.str();
 		}
+
 		static std::string LoadExternalShader(std::string_view file_name) {
 
 			auto file = (external_shader_path / file_name).lexically_normal().string();

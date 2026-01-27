@@ -4,15 +4,15 @@ namespace lum::rhi {
 
 	struct alignas(8) FramebufferHandle {
 
-		framebufferid id = max_val<framebufferid>();
-		framebufferid generation = 0;
+		FramebufferID id = max_val<FramebufferID>();
+		FramebufferID generation = 0;
 
 	};
 
 	enum class FramebufferAttachment : uint8 {
-		depth_attach,
-		stencil_attach,
-		color_attach
+		DepthAttach,
+		StencilAttach,
+		ColorAttach
 	};
 
 	struct FramebufferTextureDescriptor {
@@ -30,7 +30,7 @@ namespace lum::rhi {
 
 	struct Framebuffer {
 
-		framebufferid handle = 0;
+		FramebufferID handle = 0;
 
 	};
 

@@ -11,7 +11,7 @@ namespace lum {
 	/// @tparam NULL_VAL Null value for ID's
 	template<typename T, int NULL_VAL>
 	struct GenerateID {
-		static uint32 Get() {
+		static uint32 get() {
 			return globalID++;
 		}
 	private:
@@ -116,7 +116,7 @@ namespace lum {
 
 		// Defines how much memory needs to be reserved for components
 		LUM_CONST_VAR_QUALIFIER usize ECS_MAX_POOL_CAPACITY	= 1024;
-		LUM_CONST_VAR_QUALIFIER usize ECS_MAX_ENTITY_COUNT		= 1024;
+		LUM_CONST_VAR_QUALIFIER usize ECS_MAX_ENTITY_COUNT	= 1024;
 
 		// Defines how much containers needs to be reserved for components
 		LUM_CONST_VAR_QUALIFIER usize ECS_MAX_COMPONENT_TYPES_COUNT = 32;

@@ -6,15 +6,15 @@ namespace lum::rhi {
 
 	struct alignas(8) BufferHandle {
 		
-		bufferid id = max_val<bufferid>();
-		bufferid generation = 0;
+		BufferID id = max_val<BufferID>();
+		BufferID generation = 0;
 
 	};
 
 	struct BufferDescriptor {
-		BufferUsage	buffer_usage	= BufferUsage::static_usage;
+		BufferUsage	bufferUsage	= BufferUsage::Static;
 		size_t		size			= 0;
-		Mapflag		map_flags		{};
+		Mapflag		mapFlags		{};
 		cvptr		data			= nullptr;
 	};
 
@@ -27,7 +27,7 @@ namespace lum::rhi {
 		bool		mapped	= false;
 
 		union {
-			bufferid gl_handle = 0;
+			BufferID glHandle = 0;
 		} handle{};
 
 	};

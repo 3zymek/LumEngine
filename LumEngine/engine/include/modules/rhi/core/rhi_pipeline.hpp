@@ -5,8 +5,8 @@ namespace lum::rhi {
 
 	struct alignas(8) PipelineHandle {
 
-		pipelineid id = max_val<pipelineid>();
-		pipelineid generation = 0;
+		PipelineID id = max_val<PipelineID>();
+		PipelineID generation = 0;
 
 	};
 

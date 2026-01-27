@@ -5,8 +5,8 @@ namespace lum::rhi {
 
 	struct alignas(8) VertexLayoutHandle {
 
-		layoutid id = std::numeric_limits<layoutid>::max();
-		layoutid generation = 0;
+		LayoutID id = std::numeric_limits<LayoutID>::max();
+		LayoutID generation = 0;
 
 	};
 
@@ -16,16 +16,17 @@ namespace lum::rhi {
 		DataFormat format{};
 		// Offset where to start reading single attribute. 
 		// example: offsetof(Vertex, color).
-		usize relative_offset = 0;
+		usize relativeOffset = 0;
 		// Location to shader attribute.
-		usize shader_location = 0;
+		usize shaderLocation = 0;
+		
 	};
 	struct VertexLayoutDescriptor {
 
 		// Pointer to the array of vertex attributes.
 		std::span<const VertexAttribute> attributes;
 		// Sizeof single element in buffer.
-		usize stride	= 0;
+		usize stride = 0;
 		// Binding slot (use only when you're making multiple buffers in one layout, otherwise binding = 0).
 		usize binding = 0;
 		// Offset where to start reading buffer (use only when you're making multiple buffers in one layout, otherwise offset = 0).
@@ -35,7 +36,7 @@ namespace lum::rhi {
 
 	struct VertexLayout {
 		
-		layoutid vao = 0;
+		LayoutID vao = 0;
 
 	};
 

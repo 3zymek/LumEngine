@@ -7,8 +7,8 @@ namespace lum::rhi {
 
 	struct alignas(8) TextureHandle {
 
-		textureid id = max_val<textureid>();
-		textureid generation = 0;
+		TextureID id = max_val<TextureID>();
+		TextureID generation = 0;
 
 	};
 
@@ -33,7 +33,7 @@ namespace lum::rhi {
 		uint16 binding = LUM_NULL_BINDING;
 
 		union {
-			textureid gl_handle = 0;
+			TextureID glHandle = 0;
 		} handle{};
 
 	};

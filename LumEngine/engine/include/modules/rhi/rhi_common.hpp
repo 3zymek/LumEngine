@@ -23,79 +23,79 @@ namespace lum {
 		struct VertexLayoutHandle;
 		struct ShaderHandle;
 		
-		using bufferid		= uint32;
-		using layoutid		= uint32;
-		using textureid		= uint32;
-		using samplerid		= uint32;
-		using framebufferid = uint32;
-		using pipelineid	= uint32;
-		using shaderid		= uint8;
+		using BufferID		= uint32;
+		using LayoutID		= uint32;
+		using TextureID		= uint32;
+		using SamplerID		= uint32;
+		using FramebufferID = uint32;
+		using PipelineID	= uint32;
+		using ShaderID		= uint8;
+		using Bitflag		= uint16;
 
-		enum class DataFormat : byte {
-			float1,
-			vec2,
-			vec3,
-			vec4,
-			mat3,
-			mat4
+		enum class DataFormat : Bitflag {
+			Float1,
+			Vec2,
+			Vec3,
+			Vec4,
+			Mat3,
+			Mat4
 		};
 
-		enum class BufferType : byte {
-			vertex, // Buffer contains vertices.
-			element,// Buffer contains indices (elements).
-			uniform// Buffer contains uniforms.
+		enum class BufferType : Bitflag {
+			Vertex, // Buffer contains vertices.
+			Element,// Buffer contains indices (elements).
+			Uniform	// Buffer contains uniforms.
 		};
 
-		enum class BufferUsage : byte {
-			static_usage, // Data cannot be updated during runtime (better performance).
-			dynamic_usage // Data can be updated during runtime (slower performance).
+		enum class BufferUsage : Bitflag {
+			Static, // Data cannot be updated during runtime (better performance).
+			Dynamic // Data can be updated during runtime (slower performance).
 		};
 
-		enum class PolygonMode : byte {
-			point,
-			line,
-			fill
+		enum class PolygonMode : Bitflag {
+			Point,
+			Line,
+			Fill
 		};
 
-		enum class Mapflag : byte {
-			persistent			= 1 << 0, // Pointer to the mapped data can be available all the time.
-			write				= 1 << 1, // CPU can only write data through mapping.
-			read				= 1 << 2, // CPU can only read data through mapping.
-			coherent			= 1 << 3, // CPU changes instantly are available for GPU.
-			invalidate_Range	= 1 << 4, // GPU creates new range in buffer, old data is still available.
-			invalidate_Buffer	= 1 << 5, // GPU creates new buffer, destroys the old one.
-			unsynchronized		= 1 << 6, // GPU maps buffer with no backend conditions.
+		enum class Mapflag : Bitflag {
+			Persistent			= 1 << 0, // Pointer to the mapped data can be available all the time.
+			Write				= 1 << 1, // CPU can only write data through mapping.
+			Read				= 1 << 2, // CPU can only read data through mapping.
+			Coherent			= 1 << 3, // CPU changes instantly are available for GPU.
+			Invalidate_Range	= 1 << 4, // GPU creates new range in buffer, old data is still available.
+			Invalidate_Buffer	= 1 << 5, // GPU creates new buffer, destroys the old one.
+			Unsynchronized		= 1 << 6, // GPU maps buffer with no backend conditions.
 		};
 
 		constexpr Mapflag operator|(Mapflag a, Mapflag b) noexcept {
-			return static_cast<Mapflag>(static_cast<byte>(a) | static_cast<byte>(b));
+			return static_cast<Mapflag>(static_cast<Bitflag>(a) | static_cast<Bitflag>(b));
 		}
 		constexpr bool operator&(Mapflag a, Mapflag b) noexcept {
-			return static_cast<byte>(a) & static_cast<byte>(b);
+			return static_cast<Bitflag>(a) & static_cast<Bitflag>(b);
 		}
 		constexpr Mapflag operator~(Mapflag a) noexcept {
-			return static_cast<Mapflag>(~static_cast<byte>(a));
+			return static_cast<Mapflag>(~static_cast<Bitflag>(a));
 		}
 
-
-		enum class Face : byte {
-			front,
-			back,
-			front_back,
+		enum class Face : Bitflag {
+			Front,
+			Back,
+			FrontBack,
 		};
 
-		enum class WindingOrder : byte {
-			counter_clockwise, // Front-facing triangles are defined in counter-clockwise order
-			clockwise         // Front-facing triangles are defined in clockwise order
+		enum class WindingOrder : Bitflag {
+			CounterClockwise, // Front-facing triangles are defined in counter-clockwise order ( CCW)
+			Clockwise         // Front-facing triangles are defined in clockwise order ( CW )
 		};
 
-		enum class State : bitfield {
-			none			= 1 << 0,
-			depth_test		= 1 << 1,
-			stencil_test	= 1 << 2,
-			scissor			= 1 << 3,
-			blend			= 1 << 4,
-			cull_face		= 1 << 5,
+		enum class State : Bitflag {
+			None			= 1 << 0,
+			DepthTest		= 1 << 1,
+			StencilTest		= 1 << 2,
+			Scissor			= 1 << 3,
+			Blend			= 1 << 4,
+			CullFace		= 1 << 5,
 		};
 
 		namespace detail {

@@ -45,13 +45,13 @@ namespace lum {
 				return;
 			}
 
-			auto id = GenerateID<AudioHandle, detail::AUDIO_ID_NULL>::Get();
+			auto id = GenerateID<AudioHandle, detail::AUDIO_ID_NULL>::get();
 			auto hashed_new_id = cstd::StringHasher::Hash(alias_name);
 
 			AudioClip clip;
 			FMOD_ASSERT(
 				m_audio_system->createSound(
-					lum::AssetService::LoadAudio(path).c_str(),
+					lum::AssetService::load_audio(path).c_str(),
 					mode,
 					nullptr,
 					&clip.sound
@@ -89,7 +89,7 @@ namespace lum {
 			if (!entity.Has<AudioEmitterComponent>())
 				entity.AddComponent<AudioEmitterComponent>();
 
-			auto id = GenerateID<EmitterHandle, detail::EMITTER_ID_NULL>::Get();
+			auto id = GenerateID<EmitterHandle, detail::EMITTER_ID_NULL>::get();
 			entity.GetComponent<AudioEmitterComponent>()->emitterID = id;
 			detail::AudioEmitter emitter;
 			emitter.transform = m_entity_manager.GetComponent<ecs::components::TransformComponent>(entity.GetID());
