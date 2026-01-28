@@ -16,6 +16,7 @@ namespace lum::rhi {
 		DepthStencilState		depthStencil{};
 		ScissorState			scissor		{};
 		CullState				cull		{};
+		BlendState				blend		{};
 
 	};
 
@@ -25,6 +26,7 @@ namespace lum::rhi {
 		DepthStencilState		depthStencil{};
 		ScissorState			scissor		{};
 		CullState				cull		{};
+		BlendState				blend		{};
 
 	};
 

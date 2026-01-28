@@ -19,20 +19,28 @@ namespace lum {
 			return 1 + std::floor(std::log2(std::max(width, height)));
 		}
 
+		/// @return Value of enum to lookup array.
+		/// @param e Enum.
+		template<typename E>
+			requires std::is_enum_v<E>
+		constexpr inline std::underlying_type_t<E> lookup_cast(E e) {
+			return to_underlying(e);
+		}
+
 		struct BufferHandle;
 		struct VertexLayoutHandle;
 		struct ShaderHandle;
 		
-		using BufferID		= uint32;
-		using LayoutID		= uint32;
-		using TextureID		= uint32;
-		using SamplerID		= uint32;
-		using FramebufferID = uint32;
-		using PipelineID	= uint32;
-		using ShaderID		= uint8;
-		using Bitflag		= uint16;
+		using BufferID			= uint32;
+		using LayoutID			= uint32;
+		using TextureID			= uint32;
+		using SamplerID			= uint32;
+		using FramebufferID		= uint32;
+		using PipelineID		= uint32;
+		using ShaderID			= uint8;
+		using EnumFlag	= uint16;
 
-		enum class DataFormat : Bitflag {
+		enum class DataFormat : EnumFlag {
 			Float1,
 			Vec2,
 			Vec3,
@@ -41,24 +49,24 @@ namespace lum {
 			Mat4
 		};
 
-		enum class BufferType : Bitflag {
+		enum class BufferType : EnumFlag {
 			Vertex, // Buffer contains vertices.
 			Element,// Buffer contains indices (elements).
 			Uniform	// Buffer contains uniforms.
 		};
 
-		enum class BufferUsage : Bitflag {
+		enum class BufferUsage : EnumFlag {
 			Static, // Data cannot be updated during runtime (better performance).
 			Dynamic // Data can be updated during runtime (slower performance).
 		};
 
-		enum class PolygonMode : Bitflag {
+		enum class PolygonMode : EnumFlag {
 			Point,
 			Line,
 			Fill
 		};
 
-		enum class Mapflag : Bitflag {
+		enum class Mapflag : EnumFlag {
 			Persistent			= 1 << 0, // Pointer to the mapped data can be available all the time.
 			Write				= 1 << 1, // CPU can only write data through mapping.
 			Read				= 1 << 2, // CPU can only read data through mapping.
@@ -69,33 +77,34 @@ namespace lum {
 		};
 
 		constexpr Mapflag operator|(Mapflag a, Mapflag b) noexcept {
-			return static_cast<Mapflag>(static_cast<Bitflag>(a) | static_cast<Bitflag>(b));
+			return static_cast<Mapflag>(static_cast<EnumFlag>(a) | static_cast<EnumFlag>(b));
 		}
 		constexpr bool operator&(Mapflag a, Mapflag b) noexcept {
-			return static_cast<Bitflag>(a) & static_cast<Bitflag>(b);
+			return static_cast<EnumFlag>(a) & static_cast<EnumFlag>(b);
 		}
 		constexpr Mapflag operator~(Mapflag a) noexcept {
-			return static_cast<Mapflag>(~static_cast<Bitflag>(a));
+			return static_cast<Mapflag>(~static_cast<EnumFlag>(a));
 		}
 
-		enum class Face : Bitflag {
+		enum class Face : EnumFlag {
 			Front,
 			Back,
 			FrontBack,
 		};
 
-		enum class WindingOrder : Bitflag {
+		enum class WindingOrder : EnumFlag {
 			CounterClockwise, // Front-facing triangles are defined in counter-clockwise order ( CCW)
 			Clockwise         // Front-facing triangles are defined in clockwise order ( CW )
 		};
 
-		enum class State : Bitflag {
+		enum class State : EnumFlag {
 			None			= 1 << 0,
 			DepthTest		= 1 << 1,
 			StencilTest		= 1 << 2,
 			Scissor			= 1 << 3,
 			Blend			= 1 << 4,
 			CullFace		= 1 << 5,
+			DepthBias		= 1 << 6
 		};
 
 		namespace detail {

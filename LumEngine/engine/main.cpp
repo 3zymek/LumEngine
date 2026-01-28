@@ -154,7 +154,7 @@ glm::vec3 model_pos = { 0,0,0 };
 glm::vec3 model_rot = { 0,0,0 };
 glm::vec3 model_scale = { 1,1,1, };
 
-void UpdateCamera(RHI_Device* dev, Camera& cam, rhi::BufferHandle& ubo, CameraUBO& camstruct, rhi::BufferHandle& modelubo, ModelUBO modelstruct) {
+void UpdateCamera(RenderDevice* dev, Camera& cam, rhi::BufferHandle& ubo, CameraUBO& camstruct, rhi::BufferHandle& modelubo, ModelUBO modelstruct) {
     
     glm::quat rot = glm::quat(glm::radians(model_rot));
     glm::mat4 rotation = glm::mat4_cast(rot);
@@ -166,8 +166,8 @@ void UpdateCamera(RHI_Device* dev, Camera& cam, rhi::BufferHandle& ubo, CameraUB
     camstruct.proj = cam.projection;
     camstruct.view = cam.view;
 
-    dev->update_buffer(ubo, &camstruct, 0, 0);
-    dev->update_buffer(modelubo, &modelstruct, 0, 0);
+    dev->UpdateBuffer(ubo, &camstruct, 0, 0);
+    dev->UpdateBuffer(modelubo, &modelstruct, 0, 0);
     
     cam.Update();
 }
@@ -243,7 +243,7 @@ int main() {
     window_desc.width = 2000;
 
     Window* window = CreateWindow(window_desc);
-    RHI_Device* device = create_device(window);
+    RenderDevice* device = create_device(window);
     input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
     // =====================
@@ -252,12 +252,12 @@ int main() {
     ShaderDescriptor shader_desc;
     shader_desc.fragment_source = "basic.frag";
     shader_desc.vertex_source = "basic.vert";
-    ShaderHandle basic_shader = device->create_shader(shader_desc);
+    ShaderHandle basic_shader = device->CreateShader(shader_desc);
 
     ShaderDescriptor screen_shader_desc;
     screen_shader_desc.fragment_source = "screen.frag";
     screen_shader_desc.vertex_source = "screen.vert";
-    ShaderHandle screen_shader = device->create_shader(screen_shader_desc);
+    ShaderHandle screen_shader = device->CreateShader(screen_shader_desc);
 
     // =====================
     // Buffers (VBO, EBO)
@@ -267,14 +267,14 @@ int main() {
     vbo_descriptor.data = verts.data();
     vbo_descriptor.mapFlags = Mapflag::Write;
     vbo_descriptor.size = bytesize(verts);
-    BufferHandle VBO = device->create_vertex_buffer(vbo_descriptor);
+    BufferHandle VBO = device->CreateVertexBuffer(vbo_descriptor);
 
     BufferDescriptor ebo_descriptor;
     ebo_descriptor.bufferUsage = BufferUsage::Dynamic;
     ebo_descriptor.data = indices.data();
     ebo_descriptor.mapFlags = Mapflag::Read;
     ebo_descriptor.size = bytesize(indices);
-    BufferHandle EBO = device->create_element_buffer(ebo_descriptor);
+    BufferHandle EBO = device->CreateElementBuffer(ebo_descriptor);
 
     // =====================
     // Vertex Layout / VAO
@@ -295,8 +295,8 @@ int main() {
     VertexLayoutDescriptor vao_descriptor;
     vao_descriptor.attributes = vbo_attrs;
     vao_descriptor.stride = sizeof(Vertex);
-    VertexLayoutHandle VAO = device->create_vertex_layout(vao_descriptor, VBO);
-    device->attach_element_buffer_to_layout(EBO, VAO);
+    VertexLayoutHandle VAO = device->CreateVertexLayout(vao_descriptor, VBO);
+    device->AttachElementBufferToLayout(EBO, VAO);
 
     // =====================
     // FBO
@@ -305,18 +305,18 @@ int main() {
     framebuffer_tex_desc.attachment = FramebufferAttachment::ColorAttach;
     framebuffer_tex_desc.width = window->GetWidth();
     framebuffer_tex_desc.height = window->GetHeight();
-    TextureHandle FBO_TEX = device->create_framebuffer_texture(framebuffer_tex_desc);
+    TextureHandle FBO_TEX = device->CreateFramebufferTexture(framebuffer_tex_desc);
 
-    FramebufferHandle FBO = device->create_framebuffer();
-    device->bind_framebuffer(FBO);
-    device->set_framebuffer_color_texture(FBO, FBO_TEX, 0);
+    FramebufferHandle FBO = device->CreateFramebuffer();
+    device->BindFramebuffer(FBO);
+    device->SetFramebufferColorTexture(FBO, FBO_TEX, 0);
 
     FramebufferTextureDescriptor framebuffer_depth_desc;
     framebuffer_depth_desc.attachment = FramebufferAttachment::DepthAttach;
     framebuffer_depth_desc.width = window->GetWidth();
     framebuffer_depth_desc.height = window->GetHeight();
-    auto FBO_DEPTH = device->create_framebuffer_texture(framebuffer_depth_desc);
-    device->set_framebuffer_depth_texture(FBO, FBO_DEPTH);
+    auto FBO_DEPTH = device->CreateFramebufferTexture(framebuffer_depth_desc);
+    device->SetFramebufferDepthTexture(FBO, FBO_DEPTH);
 
     // FBO quad
     BufferDescriptor FBO_VBO_desc;
@@ -324,7 +324,7 @@ int main() {
     FBO_VBO_desc.mapFlags = Mapflag::Write;
     FBO_VBO_desc.size = sizeof(quad);
     FBO_VBO_desc.data = quad;
-    BufferHandle FBO_VBO = device->create_vertex_buffer(FBO_VBO_desc);
+    BufferHandle FBO_VBO = device->CreateVertexBuffer(FBO_VBO_desc);
 
     std::vector<VertexAttribute> at(2);
     at[0].format = DataFormat::Vec2;
@@ -337,30 +337,49 @@ int main() {
     VertexLayoutDescriptor FBO_VAO_desc;
     FBO_VAO_desc.stride = 4 * sizeof(float);
     FBO_VAO_desc.attributes = at;
-    VertexLayoutHandle FBO_VAO = device->create_vertex_layout(FBO_VAO_desc, FBO_VBO);
+    VertexLayoutHandle FBO_VAO = device->CreateVertexLayout(FBO_VAO_desc, FBO_VBO);
 
     // =====================
     // Pipelines
     // =====================
     PipelineDescriptor pipeline_desc;
     pipeline_desc.rasterizer.topologyMode = PolygonMode::Fill;
+
     pipeline_desc.depthStencil.depth.bEnabled = true;
     pipeline_desc.depthStencil.depth.bWriteToZBuffer = true;
-    //pipeline_desc.cull.bEnabled = true;
-    pipeline_desc.cull.face = Face::FrontBack;
-    pipeline_desc.cull.windingOrder = WindingOrder::CounterClockwise;
     pipeline_desc.depthStencil.depth.compareFlag = CompareFlag::Less;
-    auto debug_pipeline = device->create_pipeline(pipeline_desc);
+    
+    pipeline_desc.blend.bEnabled = true;
+    pipeline_desc.blend.srcAlphaFactor = BlendFactor::SrcAlpha;
+    pipeline_desc.blend.srcColorFactor = BlendFactor::SrcAlpha;
+    pipeline_desc.blend.dstColorFactor = BlendFactor::OneMinusSrcColor;
+    pipeline_desc.blend.dstAlphaFactor = BlendFactor::OneMinusSrcColor;
+
+    pipeline_desc.blend.colorOp = BlendOp::Max;
+
+    //pipeline_desc.cull.bEnabled = true;
+    pipeline_desc.cull.face = Face::Back;
+    pipeline_desc.cull.windingOrder = WindingOrder::CounterClockwise;
+
+    pipeline_desc.scissor.bEnabled = true;
+    
+    auto debug_pipeline = device->CreatePipeline(pipeline_desc);
+    
+
 
     PipelineDescriptor pipeline_desc2;
     pipeline_desc2.rasterizer.topologyMode = PolygonMode::Line;
+    
     pipeline_desc2.depthStencil.depth.bEnabled = true;
     pipeline_desc2.depthStencil.depth.bWriteToZBuffer = true;
     pipeline_desc2.depthStencil.depth.compareFlag = CompareFlag::Less;
-    auto debug_pipeline2 = device->create_pipeline(pipeline_desc2);
+    
+    pipeline_desc2.blend.bEnabled = true;
 
-    auto basic_pipeline = device->create_pipeline(PipelineDescriptor{});
-
+    pipeline_desc2.scissor.bEnabled = true;
+    
+    auto debug_pipeline2 = device->CreatePipeline(pipeline_desc2);
+    auto basic_pipeline = device->CreatePipeline(PipelineDescriptor{});
     bool topologyChanged = false;
 
     // =====================
@@ -373,39 +392,39 @@ int main() {
     camera_ubo_desc.bufferUsage = BufferUsage::Dynamic;
     camera_ubo_desc.mapFlags = Mapflag::Write;
     camera_ubo_desc.size = sizeof(CameraUBO);
-    auto cameraUniform = device->create_uniform_buffer(camera_ubo_desc);
+    auto cameraUniform = device->CreateUniformBuffer(camera_ubo_desc);
 
     ModelUBO model_ubo_struct{};
     BufferDescriptor model_ubo_desc;
     model_ubo_desc.bufferUsage = BufferUsage::Dynamic;
     model_ubo_desc.mapFlags = Mapflag::Write;
     model_ubo_desc.size = sizeof(CameraUBO);
-    auto modelUniform = device->create_uniform_buffer(model_ubo_desc);
+    auto modelUniform = device->CreateUniformBuffer(model_ubo_desc);
 
-    device->set_uniform_buffer_binding(cameraUniform, LUM_UBO_CAMERA_BINDING);
-    device->set_uniform_buffer_binding(modelUniform, LUM_UBO_MODEL_BINDING);
+    device->SetUniformBufferBinding(cameraUniform, LUM_UBO_CAMERA_BINDING);
+    device->SetUniformBufferBinding(modelUniform, LUM_UBO_MODEL_BINDING);
 
     // =====================
     // Textures + Samplers
     // =====================
     TextureDescriptor grass_desc;
+    grass_desc.filename = "stone.png";
     grass_desc.height = 100;
     grass_desc.width = 100;
-    grass_desc.filename = "stone.png";
-    auto grassTexture = device->create_texture_2d(grass_desc);
+    auto grassTexture = device->CreateTexture2D(grass_desc);
 
     SamplerDescriptor grass_sampler_desc;
     grass_sampler_desc.magFilter = SamplerMagFilter::Nearest;
     grass_sampler_desc.minFilter = SamplerMinFilter::Nearest;
-    auto grassSampler = device->create_sampler(grass_sampler_desc);
-    device->set_sampler_binding(grassSampler, LUM_TEXTURE_BINDING_01);
-    device->set_texture_binding(grassTexture, LUM_TEXTURE_BINDING_01);
+    auto grassSampler = device->CreateSampler(grass_sampler_desc);
+    device->SetSamplerBinding(grassSampler, LUM_TEXTURE_BINDING_01);
+    device->SetTextureBinding(grassTexture, LUM_TEXTURE_BINDING_01);
 
     // =====================
     // Render loop
     // =====================
     while (window->IsOpen()) {
-        device->begin_frame();
+        device->BeginFrame();
 
         // ---- ImGui Transform
         ImGui::Begin("Transform");
@@ -415,28 +434,31 @@ int main() {
         ImGui::End();
 
         // ---- Camera update
-        device->bind_shader(basic_shader);
+        device->BindShader(basic_shader);
         UpdateCamera(device, c, cameraUniform, camera_ubo_struct, modelUniform, model_ubo_struct);
-
+        
         // ---- Render FBO
-        device->bind_framebuffer(FBO);
-        device->clear_framebuffer(FBO, { 0.f,0.f,0.f,1.f }, 1.0f);
-        device->bind_pipeline(topologyChanged ? debug_pipeline2 : debug_pipeline);
-        device->bind_sampler(grassSampler);
-        device->bind_texture(grassTexture);
-        device->draw_elements(VAO, indices.size());
+        device->BindFramebuffer(FBO);
+        device->ClearFramebuffer(FBO, { 0.2f,0.2f,0.2f,1.f }, 1.0f);
+        device->BindPipeline(topologyChanged ? debug_pipeline2 : debug_pipeline);
+        //device->SetScissor(0, 0, window->GetWidth() / 2.f, window->GetHeight() / 2.f);
+        device->BindSampler(grassSampler);
+        device->BindTexture(grassTexture);
+        glDepthMask(GL_FALSE);
+        device->DrawElements(VAO, indices.size());
+        glDepthMask(GL_TRUE);
 
         if (input::KeyPressedOnce(input::Key::SPACE))
             topologyChanged = !topologyChanged;
 
-        device->unbind_framebuffer();
+        device->UnbindFramebuffer();
 
-        device->bind_pipeline(basic_pipeline);
-        device->bind_shader(screen_shader);
-        device->bind_texture(FBO_TEX, 7);
-        device->draw(FBO_VAO, 6);
+        device->BindPipeline(basic_pipeline);
+        device->BindShader(screen_shader);
+        device->BindTexture(FBO_TEX, 7);
+        device->Draw(FBO_VAO, 6);
 
-        device->end_frame();
+        device->EndFrame();
     }
 }
 

@@ -19,10 +19,9 @@ namespace lum::rhi {
 		PolygonMode topologyMode = PolygonMode::Fill;
 		Face		topologyModeFaces = Face::FrontBack;
 
-		// IMPLEMENT
 		bool	bEnableDepthBias = false;
-		float32 depthBiasFactor = 0.f; // DELETE
-		float32 depthBiasUnits = 0.f; // DELETE
+		float32 depthBiasFactor = 0.f;
+		float32 depthBiasUnits = 0.f;
 
 		constexpr bool operator==(const RasterizerState& other) const noexcept {
 			return
@@ -203,16 +202,22 @@ namespace lum::rhi {
 		Src1Color,
 		OneMinusSrc1Color,
 		Src1Alpha,
-		OneMinusSrc1Alpha
+		OneMinusSrc1Alpha,
+
+		Default,
 
 	};
 
 	enum class BlendOp : bitfield {
+		
 		Add,
 		Substract,
 		ReverseSubstract,
 		Min,
-		Max
+		Max,
+
+		Default
+
 	};
 
 	struct BlendState {

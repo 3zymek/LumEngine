@@ -31,7 +31,7 @@ namespace lum::rhi {
 	*  @brief  - Update uniforms or descriptors
 	*  @brief  - Issue draw/dispatch commands
 	*/
-	class RHI_Device {
+	class RenderDevice {
 	public:
 
 		///////////////////////////////////////////////////
@@ -45,7 +45,7 @@ namespace lum::rhi {
 		* 
 		*/
 		LUM_NODISCARD 
-		virtual BufferHandle create_vertex_buffer( const BufferDescriptor& desc ) = 0;
+		virtual BufferHandle CreateVertexBuffer( const BufferDescriptor& desc ) = 0;
 		
 		/*! @brief Creates Element buffer ( EBO ).
 		*
@@ -54,7 +54,7 @@ namespace lum::rhi {
 		* 
 		*/
 		LUM_NODISCARD 
-		virtual BufferHandle create_element_buffer( const BufferDescriptor& desc ) = 0;
+		virtual BufferHandle CreateElementBuffer( const BufferDescriptor& desc ) = 0;
 		
 		/*! @brief Creates Uniform buffer ( UBO ).
 		*
@@ -63,7 +63,7 @@ namespace lum::rhi {
 		* 
 		*/
 		LUM_NODISCARD 
-		virtual BufferHandle create_uniform_buffer( const BufferDescriptor& desc ) = 0;
+		virtual BufferHandle CreateUniformBuffer( const BufferDescriptor& desc ) = 0;
 
 		/*! @brief Updates data of given buffer.
 		*
@@ -73,14 +73,14 @@ namespace lum::rhi {
 		*  @param size Byte size of data to write ( 0 for whole buffer ).
 		*
 		*/
-		virtual void update_buffer( const BufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 ) = 0;
+		virtual void UpdateBuffer( const BufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 ) = 0;
 		
 		/*! @brief Deletes buffer.
 		*
 		*  @param buff Buffer handle to delete.
 		*
 		*/
-		virtual void delete_buffer( BufferHandle& buff ) = 0;
+		virtual void DeleteBuffer( BufferHandle& buff ) = 0;
 		
 		/*! @brief Maps data of given buffer.
 		*
@@ -93,14 +93,14 @@ namespace lum::rhi {
 		*	
 		*/
 		LUM_NODISCARD 
-		virtual vptr map_buffer( const BufferHandle& buff, Mapflag flags, usize offset = 0, usize size = 0 ) = 0;
+		virtual vptr MapBuffer( const BufferHandle& buff, Mapflag flags, usize offset = 0, usize size = 0 ) = 0;
 		
 		/*! @brief Unmaps buffer.
 		*
 		*  @param buff Buffer handle to unmap.
 		*
 		*/
-		virtual void unmap_buffer( const BufferHandle& buff ) = 0;
+		virtual void UnmapBuffer( const BufferHandle& buff ) = 0;
 		
 		/*! @brief Connects element buffer ( EBO ) to vertex layout ( VAO ).
 		*
@@ -108,7 +108,7 @@ namespace lum::rhi {
 		*  @param vao Vertex layout to connect.
 		* 
 		*/
-		virtual void attach_element_buffer_to_layout( const BufferHandle& ebo, const VertexLayoutHandle& vao ) = 0;
+		virtual void AttachElementBufferToLayout( const BufferHandle& ebo, const VertexLayoutHandle& vao ) = 0;
 		
 		/*! @brief Connects uniform buffer ( UBO ) to binding in shaders.
 		*
@@ -116,7 +116,7 @@ namespace lum::rhi {
 		*  @param binding Binding in the shader ( example: LUM_UBO_CAMERA )
 		*
 		*/
-		virtual void set_uniform_buffer_binding( const BufferHandle& ubo, int32 binding ) = 0;
+		virtual void SetUniformBufferBinding( const BufferHandle& ubo, int32 binding ) = 0;
 
 
 
@@ -135,22 +135,22 @@ namespace lum::rhi {
 		*
 		*/
 		LUM_NODISCARD
-		virtual FramebufferHandle create_framebuffer() = 0;
+		virtual FramebufferHandle CreateFramebuffer() = 0;
 
 		// TO LOOK:
-		virtual TextureHandle create_framebuffer_texture(const FramebufferTextureDescriptor& desc) = 0;
+		virtual TextureHandle CreateFramebufferTexture(const FramebufferTextureDescriptor& desc) = 0;
 		// TO FIX:
-		virtual void set_framebuffer_color_texture(const FramebufferHandle& fbo, const TextureHandle& tex, uint8 index) = 0;
+		virtual void SetFramebufferColorTexture(const FramebufferHandle& fbo, const TextureHandle& tex, uint8 index) = 0;
 		// TO IMPLEMENT:
-		virtual void set_framebuffer_depth_texture(const FramebufferHandle& fbo, const TextureHandle& tex) = 0;
-		virtual void set_framebuffer_stencil_texture(const FramebufferHandle& fbo, const TextureHandle& tex) = 0;
+		virtual void SetFramebufferDepthTexture(const FramebufferHandle& fbo, const TextureHandle& tex) = 0;
+		virtual void SetFramebufferStencilTexture(const FramebufferHandle& fbo, const TextureHandle& tex) = 0;
 
-		virtual void clear_framebuffer(FramebufferHandle fbo, glm::vec4 color, float32 depth) = 0;
-		virtual void delete_framebuffer(FramebufferHandle& fbo) = 0;
+		virtual void ClearFramebuffer(FramebufferHandle fbo, glm::vec4 color, float32 depth) = 0;
+		virtual void DeleteFramebuffer(FramebufferHandle& fbo) = 0;
 
-		virtual void bind_framebuffer(const FramebufferHandle& fbo) = 0;
+		virtual void BindFramebuffer(const FramebufferHandle& fbo) = 0;
 
-		virtual void unbind_framebuffer() = 0;
+		virtual void UnbindFramebuffer() = 0;
 
 
 
@@ -168,14 +168,14 @@ namespace lum::rhi {
 		*
 		*/
 		LUM_NODISCARD
-		virtual VertexLayoutHandle create_vertex_layout( const VertexLayoutDescriptor& desc, const BufferHandle& vbo ) = 0;
+		virtual VertexLayoutHandle CreateVertexLayout( const VertexLayoutDescriptor& desc, const BufferHandle& vbo ) = 0;
 		
 		/*! @brief Deletes vertex layout.
 		*
 		*  @param layout Layout handle to delete.
 		*
 		*/
-		virtual void delete_vertex_layout( VertexLayoutHandle& layout ) = 0;
+		virtual void DeleteVertexLayout( VertexLayoutHandle& layout ) = 0;
 
 
 
@@ -193,7 +193,7 @@ namespace lum::rhi {
 		* 
 		*/
 		LUM_NODISCARD
-		virtual ShaderHandle create_shader( const ShaderDescriptor& desc)	= 0;
+		virtual ShaderHandle CreateShader( const ShaderDescriptor& desc)	= 0;
 		
 		/*! @brief Binds a shader for rendering.
 		*
@@ -201,7 +201,7 @@ namespace lum::rhi {
 		*  @param shader Shader handle to bind.
 		* 
 		*/
-		virtual void bind_shader( const ShaderHandle& shader ) = 0;
+		virtual void BindShader( const ShaderHandle& shader ) = 0;
 		
 		/*! @brief Deletes a shader.
 		*
@@ -209,7 +209,7 @@ namespace lum::rhi {
 		*  @param shader Shader handle to delete.
 		* 
 		*/
-		virtual void delete_shader( ShaderHandle& shader ) = 0;
+		virtual void DeleteShader( ShaderHandle& shader ) = 0;
 		
 		/*! @brief Sets a 4x4 matrix uniform in a shader.
 		* 
@@ -218,32 +218,32 @@ namespace lum::rhi {
 		*  @param mat Matrix to set.
 		* 
 		*/
-		virtual void set_mat4( const ShaderHandle& shader, ccharptr location, const glm::mat4& mat ) = 0;
+		virtual void SetMat4( const ShaderHandle& shader, ccharptr location, const glm::mat4& mat ) = 0;
 		
 		/*!
 		* @brief Sets a float uniform in a shader.
 		*/
-		virtual void set_f( const ShaderHandle& shader, ccharptr location, float32 value )	= 0;
+		virtual void Setf( const ShaderHandle& shader, ccharptr location, float32 value )	= 0;
 		
 		/*!
 		* @brief Sets an int uniform in a shader.
 		*/
-		virtual void set_i( const ShaderHandle& shader, ccharptr location, int32 value )	= 0;
+		virtual void Seti( const ShaderHandle& shader, ccharptr location, int32 value )	= 0;
 		
 		/*!
 		* @brief Sets a vec4 uniform in a shader.
 		*/
-		virtual void set_vec4( const ShaderHandle& shader, ccharptr location, const glm::vec4& vec ) = 0;
+		virtual void SetVec4( const ShaderHandle& shader, ccharptr location, const glm::vec4& vec ) = 0;
 		
 		/*!
 		* @brief Sets a vec3 uniform in a shader.
 		*/
-		virtual void set_vec3( const ShaderHandle& shader, ccharptr location, const glm::vec3& vec ) = 0;
+		virtual void SetVec3( const ShaderHandle& shader, ccharptr location, const glm::vec3& vec ) = 0;
 		
 		/*!
 		* @brief Sets a vec2 uniform in a shader.
 		*/
-		virtual void set_vec2( const ShaderHandle& shader, ccharptr location, const glm::vec2& vec ) = 0;
+		virtual void SetVec2( const ShaderHandle& shader, ccharptr location, const glm::vec2& vec ) = 0;
 
 
 
@@ -260,7 +260,7 @@ namespace lum::rhi {
 		* 
 		*/
 		LUM_NODISCARD 
-		virtual TextureHandle create_texture_2d( const TextureDescriptor& desc ) = 0;
+		virtual TextureHandle CreateTexture2D( const TextureDescriptor& desc ) = 0;
 
 		/*! @brief Creates a 3D texture.
 		*
@@ -270,7 +270,7 @@ namespace lum::rhi {
 		* 
 		*/
 		LUM_NODISCARD 
-		virtual TextureHandle create_texture_3d( const TextureDescriptor& desc ) = 0;
+		virtual TextureHandle CreateTexture3D( const TextureDescriptor& desc ) = 0;
 		
 		/*! @brief Deletes a texture.
 		*
@@ -278,7 +278,7 @@ namespace lum::rhi {
 		*  @param texture Handle of the texture to delete.
 		* 
 		*/
-		virtual void delete_texture( TextureHandle& texture ) = 0;
+		virtual void DeleteTexture( TextureHandle& texture ) = 0;
 		
 		/*! @brief Binds a texture to the active slot/unit.
 		*
@@ -286,8 +286,8 @@ namespace lum::rhi {
 		*  @param texture Texture to bind.
 		* 
 		*/
-		virtual void set_texture_binding( const TextureHandle& texture, uint16 binding ) = 0;
-		virtual void bind_texture( const TextureHandle& texture, uint16 binding = LUM_NULL_BINDING ) = 0;
+		virtual void SetTextureBinding( const TextureHandle& texture, uint16 binding ) = 0;
+		virtual void BindTexture( const TextureHandle& texture, uint16 binding = LUM_NULL_BINDING ) = 0;
 
 
 
@@ -303,7 +303,7 @@ namespace lum::rhi {
 		*
 		*/
 		LUM_NODISCARD
-		virtual SamplerHandle create_sampler( const SamplerDescriptor& desc ) = 0;
+		virtual SamplerHandle CreateSampler( const SamplerDescriptor& desc ) = 0;
 		
 		/*!
 		*  @brief Binds a sampler to a GPU slot.
@@ -313,9 +313,9 @@ namespace lum::rhi {
 		*  @param sampler  Sampler handle to bind.
 		*  @param binding  GPU binding slot index.
 		*/
-		virtual void set_sampler_binding( const SamplerHandle& sampler, uint16 binding ) = 0;
-		virtual void bind_sampler( const SamplerHandle& sampler, uint16 binding = LUM_NULL_BINDING )	= 0;
-		virtual void delete_sampler( SamplerHandle sampler ) = 0;
+		virtual void SetSamplerBinding( const SamplerHandle& sampler, uint16 binding ) = 0;
+		virtual void BindSampler( const SamplerHandle& sampler, uint16 binding = LUM_NULL_BINDING )	= 0;
+		virtual void DeleteSampler( SamplerHandle sampler ) = 0;
 
 
 
@@ -324,39 +324,51 @@ namespace lum::rhi {
 		/// Pipelines
 		///////////////////////////////////////////////////
 
-		virtual PipelineHandle create_pipeline(const PipelineDescriptor& desc) = 0;
-		virtual void delete_pipeline(PipelineHandle& pipeline) = 0;
-		virtual void bind_pipeline(const PipelineHandle& pipeline) = 0;
+		virtual PipelineHandle CreatePipeline(const PipelineDescriptor& desc) = 0;
+		virtual void DeletePipeline(PipelineHandle& pipeline) = 0;
+		virtual void BindPipeline(const PipelineHandle& pipeline) = 0;
 
 
 		///////////////////////////////////////////////////
 		/// Other
 		///////////////////////////////////////////////////
 
-		virtual void draw				( const VertexLayoutHandle& vao, uint32 vertex_count )		= 0;
-		virtual void draw_elements		( const VertexLayoutHandle&, uint32 indices_count )			= 0;
-		virtual void begin_frame		( )															= 0;
-		virtual void end_frame			( )															= 0;
+		virtual void Draw				( const VertexLayoutHandle& vao, uint32 vertex_count )		= 0;
+		virtual void DrawElements		( const VertexLayoutHandle&, uint32 indices_count )			= 0;
+		virtual void BeginFrame			( )															= 0;
+		virtual void EndFrame			( )															= 0;
 
+		virtual void SetBlendConstantColor(glm::vec4 rgba) = 0;
+		virtual void SetScissor(int32 x, int32 y, int32 width, int32 height) = 0;
+		virtual void SetViewport(int32 x, int32 y, int32 width, int32 height) = 0;
+		virtual void SetStencilReference(int32 ref) = 0;
+		virtual void SetDepthBias(float32 factor, float32 units) = 0;
 
-		/*
-		virtual void SetBlendConstantColor(glm::vec4 rgba);
-		virtual void SetScissor(int32 x, int32 y, int32 width, int32 height);
-		virtual void SetViewport(int32 x, int32 y, int32 width, int32 height);
-		virutal void SetStencilReference(int32 ref);
-		virtual void SetDepthBias(float32 factor, float32 units);
-		*/
+		virtual void SetBlendColorFactors(BlendFactor srcFactor, BlendFactor dstFactor) = 0;
+		virtual void SetBlendAlphaFactors(BlendFactor srcFactor, BlendFactor dstFactor) = 0;
+		virtual void SetBlendColorOp(BlendOp op) = 0;
+		virtual void SetBlendAlphaOp(BlendOp op) = 0;
+
+		virtual void SetDepthCompare(CompareFlag) = 0;
+		virtual void SetDepthWrite(bool) = 0;
 
 	protected:
 
-		CullState			mCullState		{};
-		ScissorState		mScissorState	{};
-		DepthStencilState	mDepthStencilState		{};
+		// Handle for currently used pipeline
+		PipelineHandle mCurrentPipeline{};
+
+		// Cache of current states
+
+		BlendState			mBlendState{};
+		CullState			mCullState{};
+		ScissorState		mScissorState{};
+		DepthStencilState	mDepthStencilState{};
 		RasterizerState		mRasterizerState{};
+
 		Flags<State>		mEnabledStates	{};
 		
 		LUM_CONST_VAR_QUALIFIER
-		static uint8 skMaxShaders = 8;
+		static uint32 skMaxShaders = 8;
 
 		LUM_CONST_VAR_QUALIFIER
 		static uint32 skMaxSamplers = 500;
@@ -395,6 +407,6 @@ namespace lum::rhi {
 	*  @return Pointer to the device.
 	*
 	*/
-	RHI_Device* create_device(Window* window);
+	RenderDevice* create_device(Window* window);
 
 }

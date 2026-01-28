@@ -4,8 +4,6 @@
 #include "core/types.hpp"
 namespace lum {
 
-	// GLOBAL ALIAS
-
 	/// Generates ID for any type
 	/// @tparam T object Type to generate an ID
 	/// @tparam NULL_VAL Null value for ID's
@@ -108,6 +106,15 @@ namespace lum {
 	inline constexpr usize bytesize(const T* arr, usize size) {
 		return sizeof(T) * size;
 	}
+
+	/// @return Underlying type of enum.
+	/// @param e Enum.
+	template<typename T>
+		requires std::is_enum_v<T>
+	inline constexpr std::underlying_type_t<T> to_underlying(T e){
+		return static_cast<std::underlying_type_t<T>>(e);
+	}
+
 
 	namespace settings {
 
