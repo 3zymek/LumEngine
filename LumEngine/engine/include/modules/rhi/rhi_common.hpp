@@ -38,7 +38,8 @@ namespace lum {
 		using FramebufferID		= uint32;
 		using PipelineID		= uint32;
 		using ShaderID			= uint8;
-		using EnumFlag	= uint16;
+		using EnumFlag			= uint16;
+		using DepthBiasVal		= float32;
 
 		enum class DataFormat : EnumFlag {
 			Float1,
@@ -100,11 +101,12 @@ namespace lum {
 		enum class State : EnumFlag {
 			None			= 1 << 0,
 			DepthTest		= 1 << 1,
-			StencilTest		= 1 << 2,
-			Scissor			= 1 << 3,
-			Blend			= 1 << 4,
-			CullFace		= 1 << 5,
-			DepthBias		= 1 << 6
+			DepthWrite		= 1 << 2,
+			StencilTest		= 1 << 3,
+			Scissor			= 1 << 4,
+			Blend			= 1 << 5,
+			Cull			= 1 << 6,
+			DepthBias		= 1 << 7
 		};
 
 		namespace detail {

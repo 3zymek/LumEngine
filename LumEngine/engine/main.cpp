@@ -349,12 +349,12 @@ int main() {
     pipeline_desc.depthStencil.depth.bWriteToZBuffer = true;
     pipeline_desc.depthStencil.depth.compareFlag = CompareFlag::Less;
     
-    pipeline_desc.blend.bEnabled = true;
+    //pipeline_desc.blend.bEnabled = true;
     pipeline_desc.blend.srcAlphaFactor = BlendFactor::SrcAlpha;
     pipeline_desc.blend.srcColorFactor = BlendFactor::SrcAlpha;
     pipeline_desc.blend.dstColorFactor = BlendFactor::OneMinusSrcColor;
     pipeline_desc.blend.dstAlphaFactor = BlendFactor::OneMinusSrcColor;
-
+    pipeline_desc.blend.alphaOp = BlendOp::Max;
     pipeline_desc.blend.colorOp = BlendOp::Max;
 
     //pipeline_desc.cull.bEnabled = true;
@@ -439,17 +439,21 @@ int main() {
         
         // ---- Render FBO
         device->BindFramebuffer(FBO);
-        device->ClearFramebuffer(FBO, { 0.2f,0.2f,0.2f,1.f }, 1.0f);
+        device->ClearFramebuffer(FBO, { 0.f,0.f,0.f,1.f }, 1.0f);
         device->BindPipeline(topologyChanged ? debug_pipeline2 : debug_pipeline);
         //device->SetScissor(0, 0, window->GetWidth() / 2.f, window->GetHeight() / 2.f);
         device->BindSampler(grassSampler);
         device->BindTexture(grassTexture);
-        glDepthMask(GL_FALSE);
+
+        device->EnableDepthWrite(false);
+
         device->DrawElements(VAO, indices.size());
-        glDepthMask(GL_TRUE);
+        
+        device->EnableDepthWrite(true);
 
         if (input::KeyPressedOnce(input::Key::SPACE))
             topologyChanged = !topologyChanged;
+
 
         device->UnbindFramebuffer();
 

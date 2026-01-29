@@ -13,34 +13,34 @@
 	#include "imgui_impl_glfw.h"
 	#include "imgui_impl_opengl3.h"
 #endif
-namespace lum::gl {
+namespace lum::rhi::gl {
 
 	///////////////////////////////////////////////////
 	/// Buffers
 	///////////////////////////////////////////////////
 
-	rhi::BufferHandle GLDevice::CreateVertexBuffer(const BufferDescriptor& desc) {
+	BufferHandle GLDevice::CreateVertexBuffer(const BufferDescriptor& desc) {
 		if (!_IsValidBufferDescriptor(desc))
-			return rhi::BufferHandle{};
+			return BufferHandle{};
 
 		if (mBuffers.dense_size() >= skMaxBuffers) {
 			LUM_LOG_ERROR("Max buffers reached");
-			return rhi::BufferHandle{};
+			return BufferHandle{};
 		}
 
 		if (desc.size <= 0) {
 			LUM_LOG_WARN("Invalid buffer size");
-			return rhi::BufferHandle{};
+			return BufferHandle{};
 		}
 
-		rhi::Buffer buffer;
+		Buffer buffer;
 		buffer.size = desc.size;
 		buffer.flags = desc.mapFlags;
-		buffer.type = rhi::BufferType::Vertex;
+		buffer.type = BufferType::Vertex;
 		buffer.usage = desc.bufferUsage;
 
 		GLbitfield init_flags =
-			((desc.bufferUsage == rhi::BufferUsage::Dynamic) ? GL_DYNAMIC_STORAGE_BIT : 0)
+			((desc.bufferUsage == BufferUsage::Dynamic) ? GL_DYNAMIC_STORAGE_BIT : 0)
 			| _TranslateMappingFlags(desc.mapFlags);
 
 		glCreateBuffers(1, &buffer.handle.glHandle);
@@ -54,28 +54,28 @@ namespace lum::gl {
 		LUM_LOG_INFO(std::format("Created vertex buffer {}", buffer.handle.glHandle));
 		return mBuffers.create_handle(std::move(buffer));
 	}
-	rhi::BufferHandle GLDevice::CreateElementBuffer(const BufferDescriptor& desc) {
+	BufferHandle GLDevice::CreateElementBuffer(const BufferDescriptor& desc) {
 		if (!_IsValidBufferDescriptor(desc))
-			return rhi::BufferHandle{};
+			return BufferHandle{};
 
 		if (mBuffers.dense_size() >= skMaxBuffers) {
 			LUM_LOG_ERROR("Max buffers reached");
-			return rhi::BufferHandle{};
+			return BufferHandle{};
 		}
 
 		if (desc.size <= 0) {
 			LUM_LOG_WARN("Invalid buffer size");
-			return rhi::BufferHandle{};
+			return BufferHandle{};
 		}
 
-		rhi::Buffer buffer;
+		Buffer buffer;
 		buffer.size = desc.size;
 		buffer.flags = desc.mapFlags;
-		buffer.type = rhi::BufferType::Element;
+		buffer.type = BufferType::Element;
 		buffer.usage = desc.bufferUsage;
 
 		GLbitfield init_flags =
-			((buffer.usage == rhi::BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
+			((buffer.usage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
 			| _TranslateMappingFlags(desc.mapFlags);
 
 		glCreateBuffers(1, &buffer.handle.glHandle);
@@ -89,28 +89,28 @@ namespace lum::gl {
 		LUM_LOG_INFO(std::format("Created element buffer {}", buffer.handle.glHandle));
 		return mBuffers.create_handle(std::move(buffer));
 	}
-	rhi::BufferHandle GLDevice::CreateUniformBuffer(const BufferDescriptor& desc) {
+	BufferHandle GLDevice::CreateUniformBuffer(const BufferDescriptor& desc) {
 		if (!_IsValidBufferDescriptor(desc))
-			return rhi::BufferHandle{};
+			return BufferHandle{};
 
 		if (mBuffers.dense_size() >= skMaxBuffers) {
 			LUM_LOG_ERROR("Max buffers reached");
-			return rhi::BufferHandle{};
+			return BufferHandle{};
 		}
 
 		if (desc.size <= 0) {
 			LUM_LOG_WARN("Invalid buffer size");
-			return rhi::BufferHandle{};
+			return BufferHandle{};
 		}
 
-		rhi::Buffer buffer;
+		Buffer buffer;
 		buffer.size = desc.size;
 		buffer.flags = desc.mapFlags;
-		buffer.type = rhi::BufferType::Uniform;
+		buffer.type = BufferType::Uniform;
 		buffer.usage = desc.bufferUsage;
 
 		GLbitfield init_flags =
-			((buffer.usage == rhi::BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
+			((buffer.usage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
 			| _TranslateMappingFlags(desc.mapFlags);
 
 		glCreateBuffers(1, &buffer.handle.glHandle);
@@ -128,16 +128,16 @@ namespace lum::gl {
 
 		LUM_HOTPATH_ASSERT_VOID(!mBuffers.exists(vbo), "Buffer does not exist");
 
-		rhi::Buffer& buffer = mBuffers[vbo];
+		Buffer& buffer = mBuffers[vbo];
 
 		LUM_HOTPATH_ASSERT_VOID(offset + size > buffer.size, "Invalid offset or size");
 		if (size == 0) size = buffer.size;
 		LUM_HOTPATH_ASSERT_VOID(
-			buffer.usage == rhi::BufferUsage::Static,
+			buffer.usage == BufferUsage::Static,
 			std::format("Buffer {} is static, cannot be updated", buffer.handle.glHandle)
 		);
 		LUM_HOTPATH_ASSERT_VOID(
-			!(buffer.flags & rhi::Mapflag::Write),
+			!(buffer.flags & Mapflag::Write),
 			std::format("Buffer {} has no write flags enabled", buffer.handle.glHandle)
 		);
 
@@ -172,7 +172,7 @@ namespace lum::gl {
 
 		LUM_HOTPATH_ASSERT_NULLPTR(!mBuffers.exists(vbo), "Handle doesn't exist");
 
-		rhi::Buffer& buffer = mBuffers[vbo];
+		Buffer& buffer = mBuffers[vbo];
 
 		LUM_HOTPATH_ASSERT_NULLPTR(offset + size > buffer.size || size > buffer.size, "Invalid offset or size");
 		if (size <= 0) size = buffer.size;
@@ -188,7 +188,7 @@ namespace lum::gl {
 
 		LUM_HOTPATH_ASSERT_VOID(!mBuffers.exists(vbo), "Handle does not exist");
 
-		rhi::Buffer& buffer = mBuffers[vbo];
+		Buffer& buffer = mBuffers[vbo];
 		LUM_HOTPATH_ASSERT_VOID(!buffer.mapped, "Buffer is already unmapped");
 		glUnmapNamedBuffer(buffer.handle.glHandle);
 
@@ -214,7 +214,7 @@ namespace lum::gl {
 	/// Framebuffers
 	///////////////////////////////////////////////////
 
-	rhi::FramebufferHandle GLDevice::CreateFramebuffer() {
+	FramebufferHandle GLDevice::CreateFramebuffer() {
 		LUM_HOTPATH_ASSERT_CUSTOM(
 			mFramebuffers.dense_size() >= skMaxFramebuffers,
 			"Max framebuffers reached",
@@ -228,7 +228,7 @@ namespace lum::gl {
 		return mFramebuffers.create_handle(std::move(fbo));
 
 	}
-	rhi::TextureHandle GLDevice::CreateFramebufferTexture(const FramebufferTextureDescriptor& desc) {
+	TextureHandle GLDevice::CreateFramebufferTexture(const FramebufferTextureDescriptor& desc) {
 		LUM_HOTPATH_ASSERT_CUSTOM(
 			mTextures.dense_size() >= skMaxTextures || desc.height <= 0 || desc.width <= 0,
 			"Max textures reached",
@@ -292,13 +292,13 @@ namespace lum::gl {
 	/// Layouts
 	///////////////////////////////////////////////////
 
-	rhi::VertexLayoutHandle GLDevice::CreateVertexLayout(const VertexLayoutDescriptor& desc, const BufferHandle& vbo) {
+	VertexLayoutHandle GLDevice::CreateVertexLayout(const VertexLayoutDescriptor& desc, const BufferHandle& vbo) {
 
-		LUM_HOTPATH_ASSERT_CUSTOM(!mBuffers.exists(vbo), "Buffer doesn't exists", rhi::VertexLayoutHandle{});
-		LUM_HOTPATH_ASSERT_CUSTOM(desc.attributes.size() <= 0, "VertexLayout has no attributes", rhi::VertexLayoutHandle{});
+		LUM_HOTPATH_ASSERT_CUSTOM(!mBuffers.exists(vbo), "Buffer doesn't exists", VertexLayoutHandle{});
+		LUM_HOTPATH_ASSERT_CUSTOM(desc.attributes.size() <= 0, "VertexLayout has no attributes", VertexLayoutHandle{});
 
-		rhi::VertexLayout layout;
-		rhi::Buffer& buffer = mBuffers[vbo];
+		VertexLayout layout;
+		Buffer& buffer = mBuffers[vbo];
 
 		glCreateVertexArrays(1, &layout.vao);
 		glVertexArrayVertexBuffer(
@@ -314,7 +314,7 @@ namespace lum::gl {
 			glVertexArrayAttribFormat(
 				layout.vao,
 				desc.attributes[i].shaderLocation,
-				rhi::detail::skDataFormatLookup[rhi::lookup_cast(desc.attributes[i].format)],
+				detail::skDataFormatLookup[lookup_cast(desc.attributes[i].format)],
 				GL_FLOAT,
 				GL_FALSE,
 				desc.attributes[i].relativeOffset
@@ -334,7 +334,10 @@ namespace lum::gl {
 
 	}
 	void GLDevice::DeleteVertexLayout(VertexLayoutHandle& layout) {
+		LUM_HOTPATH_ASSERT_VOID(!mLayouts.exists(layout), "Layout doesn't exist");
 
+		glDeleteVertexArrays(1, &mLayouts[layout].vao);
+		mLayouts.delete_handle(layout);
 
 	}
 
@@ -344,11 +347,11 @@ namespace lum::gl {
 	/// Shaders
 	///////////////////////////////////////////////////
 
-	rhi::ShaderHandle GLDevice::CreateShader(const ShaderDescriptor& desc) {
+	ShaderHandle GLDevice::CreateShader(const ShaderDescriptor& desc) {
 		LUM_HOTPATH_ASSERT_CUSTOM(
 			mShaders.dense_size() >= skMaxShaders,
 			"Max shaders reached",
-			rhi::ShaderHandle{}
+			ShaderHandle{}
 		);
 
 		std::string&& vfile = AssetService::LoadInternalShader(desc.vertex_source);
@@ -357,7 +360,7 @@ namespace lum::gl {
 		std::string&& ffile = AssetService::LoadInternalShader(desc.fragment_source);
 		ccharptr fcstr = ffile.c_str();
 
-		rhi::Shader shader;
+		Shader shader;
 
 		GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
 		GLuint fshader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -438,11 +441,11 @@ namespace lum::gl {
 	/// Textures
 	///////////////////////////////////////////////////
 
-	rhi::TextureHandle GLDevice::CreateTexture2D(const TextureDescriptor& desc) {
+	TextureHandle GLDevice::CreateTexture2D(const TextureDescriptor& desc) {
 		LUM_HOTPATH_ASSERT_CUSTOM(
 			mTextures.dense_size() >= skMaxTextures,
 			"Max textures reached",
-			rhi::TextureHandle{}
+			TextureHandle{}
 		);
 
 		Texture texture;
@@ -456,7 +459,7 @@ namespace lum::gl {
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &texture.handle.glHandle);
 
-		int mipmaps = rhi::mipmap_lvls(width, height);
+		int mipmaps = mipmap_lvls(width, height);
 
 		glTextureStorage2D(
 			texture.handle.glHandle,
@@ -484,9 +487,9 @@ namespace lum::gl {
 		return mTextures.create_handle(std::move(texture));
 	}
 	// TO IMPLEMENT:
-	rhi::TextureHandle GLDevice::CreateTexture3D(const TextureDescriptor& desc) {
+	TextureHandle GLDevice::CreateTexture3D(const TextureDescriptor& desc) {
 
-		rhi::Texture texture;
+		Texture texture;
 		return mTextures.create_handle(std::move(texture));
 	}
 	void GLDevice::DeleteTexture(TextureHandle& texture) {
@@ -523,21 +526,21 @@ namespace lum::gl {
 	/// Samplers
 	///////////////////////////////////////////////////
 
-	rhi::SamplerHandle GLDevice::CreateSampler(const SamplerDescriptor& desc) {
+	SamplerHandle GLDevice::CreateSampler(const SamplerDescriptor& desc) {
 		LUM_HOTPATH_ASSERT_CUSTOM(
 			mSamplers.dense_size() >= skMaxSamplers,
 			"Max samplers reached",
-			rhi::SamplerHandle{}
+			SamplerHandle{}
 		);
 
 		Sampler sampler;
 
 		glCreateSamplers(1, &sampler.handle);
-		glSamplerParameteri(sampler.handle, GL_TEXTURE_MAG_FILTER, (desc.magFilter == rhi::SamplerMagFilter::Nearest) ? GL_NEAREST : GL_LINEAR);
-		glSamplerParameteri(sampler.handle, GL_TEXTURE_MIN_FILTER, skTextureMinFilterLookup[rhi::lookup_cast(desc.minFilter)]);
+		glSamplerParameteri(sampler.handle, GL_TEXTURE_MAG_FILTER, (desc.magFilter == SamplerMagFilter::Nearest) ? GL_NEAREST : GL_LINEAR);
+		glSamplerParameteri(sampler.handle, GL_TEXTURE_MIN_FILTER, skTextureMinFilterLookup[lookup_cast(desc.minFilter)]);
 
-		glSamplerParameteri(sampler.handle, GL_TEXTURE_WRAP_S, skSamplerWrapLookup[rhi::lookup_cast(desc.wrapS)]);
-		glSamplerParameteri(sampler.handle, GL_TEXTURE_WRAP_T, skSamplerWrapLookup[rhi::lookup_cast(desc.wrapT)]);
+		glSamplerParameteri(sampler.handle, GL_TEXTURE_WRAP_S, skSamplerWrapLookup[lookup_cast(desc.wrapS)]);
+		glSamplerParameteri(sampler.handle, GL_TEXTURE_WRAP_T, skSamplerWrapLookup[lookup_cast(desc.wrapT)]);
 
 		GLfloat max_anisotropy = 1.0f;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &max_anisotropy);
@@ -582,7 +585,7 @@ namespace lum::gl {
 	/// Pipelines
 	///////////////////////////////////////////////////
 
-	rhi::PipelineHandle GLDevice::CreatePipeline(const PipelineDescriptor& desc) {
+	PipelineHandle GLDevice::CreatePipeline(const PipelineDescriptor& desc) {
 		LUM_HOTPATH_ASSERT_CUSTOM(
 			mPipelines.dense_size() >= skMaxPipelines,
 			"Max pipelines reached",
@@ -673,13 +676,34 @@ namespace lum::gl {
 
 	}
 
-	void GLDevice::SetBlendConstantColor(glm::vec4 rgba) {
+	// FINISHED
+	void GLDevice::EnableScissors(bool enable) {
+
+		if (enable == mEnabledStates.has(State::Scissor))
+			return;
+
+		if (enable) {
+
+			glEnable(GL_SCISSOR_TEST);
+			mEnabledStates.enable(State::Scissor);
+
+		}
+		else {
+
+			glDisable(GL_SCISSOR_TEST);
+			mEnabledStates.disable(State::Scissor);
+
+		}
+
 
 	}
+
+	// FINISHED
 	void GLDevice::SetScissor(int32 x, int32 y, int32 width, int32 height) {
 		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Scissor), "Scissor state not enabled");
 
-		if (mScissorState.x == x && mScissorState.y == y && mScissorState.width == width && mScissorState.height == height) return;
+		if (mScissorState.x == x && mScissorState.y == y && mScissorState.width == width && mScissorState.height == height) 
+			return;
 
 		mScissorState.x = x;
 		mScissorState.y = y;
@@ -689,76 +713,247 @@ namespace lum::gl {
 		glScissor(x, y, width, height);
 
 	}
+
+	// FINISHED
 	void GLDevice::SetViewport(int32 x, int32 y, int32 width, int32 height) {
 
-	}
-	void GLDevice::SetStencilReference(int32 ref) {
-
-	}
-	void GLDevice::SetDepthBias(float32 factor, float32 units) {
+		glViewport(x, y, width, height);
 
 	}
 
-	void GLDevice::SetBlendColorFactors(BlendFactor srcFactor, BlendFactor dstFactor) {
+
+	// Cull setters (FINISHED)
+
+	// FINISHED
+	void GLDevice::EnableCull(bool enable) {
+
+		if (enable == mEnabledStates.has(State::Cull))
+			return;
+
+		if (enable) {
+			glEnable(GL_CULL_FACE);
+			mEnabledStates.enable(State::Cull);
+		}
+		else {
+			glDisable(GL_CULL_FACE);
+			mEnabledStates.disable(State::Cull);
+		}
+
+
+	}
+
+	// FINISHED
+	void GLDevice::SetCullFace(Face face) {
+		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Cull), "Cull not enabled");
+
+		if (face == mCullState.face)
+			return;
+
+		glCullFace(skFacesLookup[lookup_cast(face)]);
+		mEnabledStates.enable(State::Cull);
+
+		mCullState.face = face;
+
+	}
+
+	// FINISHED
+	void GLDevice::SetCullWindingOrder(WindingOrder order) {
+		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Cull), "Cull not enabled");
+
+		if (order == mCullState.windingOrder)
+			return;
+
+		glFrontFace((order == WindingOrder::Clockwise) ? GL_CW : GL_CCW);
+
+		mCullState.windingOrder = order;
+
+	}
+
+	
+	// Blend setters
+
+	// FINISHED
+	void GLDevice::EnableBlend(bool enable) {
+
+		if (enable == mEnabledStates.has(State::Blend))
+			return;
+
+		if (enable) {
+			glEnable(GL_BLEND);
+			mEnabledStates.enable(State::Blend);
+		}
+		else {
+			glDisable(GL_BLEND);
+			mEnabledStates.disable(State::Blend);
+		}
+
+	}
+
+	//virtual void SetBlendConstantColor(glm::vec4 rgba) = 0; IMPLEMENT
+	
+	// FINISHED
+	void GLDevice::SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha) {
 		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Blend), "Blend not enabled");
+
+		if (mBlendState.srcColorFactor == srcColor && mBlendState.dstColorFactor == dstColor && 
+			mBlendState.srcAlphaFactor == srcAlpha && mBlendState.dstAlphaFactor == dstAlpha)
+			return;
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[rhi::lookup_cast(srcFactor)],
-			skBlendFactorLookup[rhi::lookup_cast(dstFactor)],
-			skBlendFactorLookup[rhi::lookup_cast(mBlendState.srcAlphaFactor)],
-			skBlendFactorLookup[rhi::lookup_cast(mBlendState.dstAlphaFactor)]
+			skBlendFactorLookup[lookup_cast(srcColor)],
+			skBlendFactorLookup[lookup_cast(dstColor)],
+			skBlendFactorLookup[lookup_cast(srcAlpha)],
+			skBlendFactorLookup[lookup_cast(dstAlpha)]
 		);
 
-		mBlendState.srcColorFactor = srcFactor;
-		mBlendState.dstColorFactor = dstFactor;
+		mBlendState.srcColorFactor = srcColor;
+		mBlendState.dstColorFactor = dstColor;
+		mBlendState.srcAlphaFactor = srcAlpha;
+		mBlendState.dstAlphaFactor = dstAlpha;
 
 	}
-	void GLDevice::SetBlendAlphaFactors(BlendFactor srcFactor, BlendFactor dstFactor) {
+
+	// FINISHED
+	void GLDevice::SetBlendOp(BlendOp colorOp, BlendOp alphaOp) {
 		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Blend), "Blend not enabled");
 
-		glBlendFuncSeparate(
-			skBlendFactorLookup[rhi::lookup_cast(mBlendState.srcColorFactor)],
-			skBlendFactorLookup[rhi::lookup_cast(mBlendState.dstColorFactor)],
-			skBlendFactorLookup[rhi::lookup_cast(srcFactor)],
-			skBlendFactorLookup[rhi::lookup_cast(dstFactor)]
-		);
-
-		mBlendState.srcAlphaFactor = srcFactor;
-		mBlendState.dstAlphaFactor = dstFactor;
-
-	}
-	void GLDevice::SetBlendColorOp(BlendOp op) {
-		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Blend), "Blend not enabled");
+		if (mBlendState.alphaOp == alphaOp && mBlendState.colorOp == colorOp)
+			return;
 
 		glBlendEquationSeparate(
-			skBlendOpLookup[rhi::lookup_cast(op)],
-			skBlendOpLookup[rhi::lookup_cast(mBlendState.alphaOp)]
-			);
-
-		mBlendState.colorOp = op;
-
-	}
-	void GLDevice::SetBlendAlphaOp(BlendOp op) {
-		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Blend), "Blend not enabled");
-
-		glBlendEquationSeparate(
-			skBlendOpLookup[rhi::lookup_cast(mBlendState.colorOp)],
-			skBlendOpLookup[rhi::lookup_cast(op)]
+			skBlendOpLookup[lookup_cast(colorOp)],
+			skBlendOpLookup[lookup_cast(alphaOp)]
 		);
 
-		mBlendState.alphaOp = op;
+	}
+
+
+	// Depth setters
+
+	// FINISHED
+	void GLDevice::EnableDepthWrite(bool enable) {
+
+		if (enable == mEnabledStates.has(State::DepthWrite))
+			return;
+
+		if (enable) {
+
+			glDepthMask((GLboolean)enable);
+			mEnabledStates.enable(State::DepthWrite);
+
+		}
+		else {
+
+			glDepthMask((GLboolean)enable);
+			mEnabledStates.disable(State::DepthWrite);
+
+		}
 
 	}
 
-	void GLDevice::SetDepthCompare(CompareFlag compare) {
-		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::DepthTest), "Depth test not enabled");
+	// FINISHED
+	void GLDevice::EnableDepthTest(bool enable) {
 
-		glDepthFunc(skCompareFlagLookup[rhi::lookup_cast(compare)]);
+		if (enable == mEnabledStates.has(State::DepthTest))
+			return;
+
+		if (enable) {
+
+			glEnable(GL_DEPTH_TEST);
+			mEnabledStates.enable(State::DepthTest);
+
+		}
+		else {
+
+			glDisable(GL_DEPTH_TEST);
+			mEnabledStates.disable(State::DepthTest);
+
+		}
 
 	}
-	void GLDevice::SetDepthWrite(bool) {
+
+	// FINISHED
+	void GLDevice::SetDepthFunc(CompareFlag func) {
+		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::DepthTest), "Depth not enabled");
+
+		if (func == mDepthStencilState.depth.compareFlag)
+			return;
+
+		glDepthFunc(skCompareFlagLookup[lookup_cast(func)]);
 
 	}
+
+	// FINISHED
+	void GLDevice::EnableStencilTest(bool enable) {
+
+		if (enable == mEnabledStates.has(State::StencilTest))
+			return;
+
+		if (enable) {
+
+			glEnable(GL_STENCIL_TEST);
+			mEnabledStates.enable(State::StencilTest);
+
+		}
+		else {
+
+			glDisable(GL_STENCIL_TEST);
+			mEnabledStates.disable(State::StencilTest);
+
+		}
+
+
+	}
+
+
+	void GLDevice::SetStencilReference(int32 ref, Face face = Face::FrontBack) {
+
+
+	}
+
+
+	// Rasterizer setters
+
+	// FINISHED
+	void GLDevice::EnableDepthBias(bool enable) {
+
+		if (enable == mEnabledStates.has(State::DepthBias))
+			return;
+
+		if (enable) {
+
+			glEnable(GL_POLYGON_OFFSET_FILL);
+			mEnabledStates.enable(State::DepthBias);
+
+		}
+		else {
+
+			glDisable(GL_POLYGON_OFFSET_FILL);
+			mEnabledStates.disable(State::DepthBias);
+
+		}
+
+	}
+
+	// FINISHED
+	void GLDevice::SetDepthBias(float32 slopFactor, float32 constantBias) {
+		LUM_HOTPATH_ASSERT(!mEnabledStates.has(State::DepthBias), "Depth bias not enabled");
+
+		if (slopFactor == mRasterizerState.depthBias.slopeFactor && constantBias == mRasterizerState.depthBias.constantBias)
+			return;
+
+		if (slopFactor == max_val<float32>())
+			slopFactor = mRasterizerState.depthBias.slopeFactor;
+
+		if (constantBias == max_val<float32>())
+			constantBias = mRasterizerState.depthBias.constantBias;
+
+		glPolygonOffset(slopFactor, constantBias);
+		mRasterizerState.depthBias.slopeFactor = slopFactor;
+		mRasterizerState.depthBias.constantBias = constantBias;
+
+	}
+
 
 	///////////////////////////////////////////////////
 	/// Private helpers
@@ -769,14 +964,18 @@ namespace lum::gl {
 
 		if (rast.topologyMode != mRasterizerState.topologyMode || rast.topologyModeFaces != mRasterizerState.topologyModeFaces) {
 			glPolygonMode(
-				skFacesLookup[rhi::lookup_cast(rast.topologyModeFaces)],
-				skPolygonModeLookup[rhi::lookup_cast(rast.topologyMode)]
+				skFacesLookup[lookup_cast(rast.topologyModeFaces)],
+				skPolygonModeLookup[lookup_cast(rast.topologyMode)]
 			);
 			mRasterizerState = rast;
 		}
-		if (rast.bEnableDepthBias) {
 
-			mRasterizerState = rast;
+		EnableDepthBias(rast.depthBias.bEnable);
+
+		if (rast.depthBias.bEnable) {
+
+			SetDepthBias(rast.depthBias.slopeFactor, rast.depthBias.constantBias);
+
 		}
 
 	}
@@ -785,38 +984,14 @@ namespace lum::gl {
 		const auto& depth = pip.depthStencil.depth;
 		const auto& stencil = pip.depthStencil.stencil;
 
-		if (depth.bEnabled != mDepthStencilState.depth.bEnabled) {
-
-			if (depth.bEnabled) {
-
-				glEnable(GL_DEPTH_TEST);
-				mEnabledStates.enable(State::DepthTest);
-
-			}
-			else {
-
-				glDisable(GL_DEPTH_TEST);
-				mEnabledStates.disable(State::DepthTest);
-
-			}
-
-		}
-
+		EnableDepthTest(depth.bEnabled);
+		
 		if (depth.bEnabled) {
 
-			if (depth.compareFlag != mDepthStencilState.depth.compareFlag) {
-
-				glDepthFunc(skCompareFlagLookup[rhi::lookup_cast(depth.compareFlag)]);
-
-			}
-
-			if (depth.bWriteToZBuffer != mDepthStencilState.depth.bWriteToZBuffer) {
-
-				glDepthMask((pip.depthStencil.depth.bWriteToZBuffer) ? GL_TRUE : GL_FALSE);
-
-			}
+			SetDepthFunc(depth.compareFlag);
 
 		}
+		
 
 		if (stencil.bEnabled != mDepthStencilState.stencil.bEnabled) {
 
@@ -833,9 +1008,6 @@ namespace lum::gl {
 
 			}
 
-
-		}
-		if (stencil.back != mDepthStencilState.stencil.back || stencil.front != mDepthStencilState.stencil.front) {
 
 		}
 
@@ -867,24 +1039,12 @@ namespace lum::gl {
 
 		const auto& blend = pip.blend;
 
-		if (blend.bEnabled != mEnabledStates.has(State::Blend)) {
+		EnableBlend(blend.bEnabled);
 
-			if (blend.bEnabled) {
+		if (blend.bEnabled) {
 
-				glEnable(GL_BLEND);
-				mEnabledStates.enable(State::Blend);
-				SetBlendAlphaFactors(blend.srcAlphaFactor, blend.dstAlphaFactor);
-				SetBlendColorFactors(blend.srcColorFactor, blend.dstColorFactor);
-				SetBlendAlphaOp(blend.alphaOp);
-				SetBlendColorOp(blend.colorOp);
-
-			}
-			else {
-
-				glDisable(GL_BLEND);
-				mEnabledStates.disable(State::Blend);
-
-			}
+			SetBlendFactors(blend.srcColorFactor, blend.dstColorFactor, blend.srcAlphaFactor, blend.dstAlphaFactor);
+			SetBlendOp(blend.colorOp, blend.alphaOp);
 
 		}
 
@@ -892,33 +1052,13 @@ namespace lum::gl {
 	void GLDevice::_BindCheckCull(const Pipeline& pip) noexcept {
 
 		const auto& cull = pip.cull;
-		bool cullEnabled = mEnabledStates.has(State::CullFace);
 
-		if (cull.bEnabled != cullEnabled) {
-			if (cull.bEnabled) {
+		EnableCull(cull.bEnabled);
 
-				glEnable(GL_CULL_FACE);
-				mEnabledStates.enable(State::CullFace);
-
-			}
-			else {
-
-				glDisable(GL_CULL_FACE);
-				mEnabledStates.disable(State::CullFace);
-
-			}
-		}
 		if (cull.bEnabled) {
-
-			if (cull.face != mCullState.face) {
-				glCullFace(skFacesLookup[rhi::lookup_cast(cull.face)]);
-			}
-
-			if (cull.windingOrder != mCullState.windingOrder) {
-				glFrontFace(cull.windingOrder == rhi::WindingOrder::CounterClockwise ? GL_CCW : GL_CW);
-			}
-
-			mCullState = cull;
+	
+			SetCullFace(cull.face);
+			SetCullWindingOrder(cull.windingOrder);
 
 		}
 
@@ -931,17 +1071,17 @@ namespace lum::gl {
 
 
 	}
-	bool GLDevice::_IsValidBufferDescriptor(const rhi::BufferDescriptor& desc) noexcept {
+	bool GLDevice::_IsValidBufferDescriptor(const BufferDescriptor& desc) noexcept {
 
-		if (desc.bufferUsage == rhi::BufferUsage::Static) {
+		if (desc.bufferUsage == BufferUsage::Static) {
 
-			if ((desc.mapFlags & ~(rhi::Mapflag::Coherent | rhi::Mapflag::Read)) != 0) {
+			if ((desc.mapFlags & ~(Mapflag::Coherent | Mapflag::Read)) != 0) {
 				LUM_LOG_ERROR("Invalid buffer descriptor");
 				return false;
 			}
 
 		}
-		else if ((desc.mapFlags & rhi::Mapflag::Coherent) && !(desc.mapFlags & rhi::Mapflag::Persistent)) {
+		else if ((desc.mapFlags &Mapflag::Coherent) && !(desc.mapFlags & Mapflag::Persistent)) {
 			LUM_LOG_ERROR("Invalid buffer descriptor");
 			return false;
 		}
@@ -949,16 +1089,16 @@ namespace lum::gl {
 		return true;
 
 	}
-	GLbitfield	GLDevice::_TranslateMappingFlags(Mapflag flags) noexcept {
+	GLbitfield GLDevice::_TranslateMappingFlags(Mapflag flags) noexcept {
 		GLbitfield flag = 0;
 
-		if (flags & rhi::Mapflag::Persistent)			flag |= GL_MAP_PERSISTENT_BIT;
-		if (flags & rhi::Mapflag::Write)				flag |= GL_MAP_WRITE_BIT;
-		if (flags & rhi::Mapflag::Read)					flag |= GL_MAP_READ_BIT;
-		if (flags & rhi::Mapflag::Coherent)				flag |= GL_MAP_COHERENT_BIT;
-		if (flags & rhi::Mapflag::Invalidate_Buffer)	flag |= GL_MAP_INVALIDATE_BUFFER_BIT;
-		if (flags & rhi::Mapflag::Invalidate_Range)		flag |= GL_MAP_INVALIDATE_RANGE_BIT;
-		if (flags & rhi::Mapflag::Unsynchronized)		flag |= GL_MAP_UNSYNCHRONIZED_BIT;
+		if (flags & Mapflag::Persistent)			flag |= GL_MAP_PERSISTENT_BIT;
+		if (flags & Mapflag::Write)					flag |= GL_MAP_WRITE_BIT;
+		if (flags & Mapflag::Read)					flag |= GL_MAP_READ_BIT;
+		if (flags & Mapflag::Coherent)				flag |= GL_MAP_COHERENT_BIT;
+		if (flags & Mapflag::Invalidate_Buffer)		flag |= GL_MAP_INVALIDATE_BUFFER_BIT;
+		if (flags & Mapflag::Invalidate_Range)		flag |= GL_MAP_INVALIDATE_RANGE_BIT;
+		if (flags & Mapflag::Unsynchronized)		flag |= GL_MAP_UNSYNCHRONIZED_BIT;
 
 		return flag;
 	}

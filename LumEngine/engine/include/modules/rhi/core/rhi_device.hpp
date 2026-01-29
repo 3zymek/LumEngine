@@ -137,20 +137,62 @@ namespace lum::rhi {
 		LUM_NODISCARD
 		virtual FramebufferHandle CreateFramebuffer() = 0;
 
-		// TO LOOK:
+		/*! @brief Creates a texture for use in a framebuffer.
+		*
+		*  Allocates a 2D texture based on the given descriptor. The texture format
+		*  depends on the type of attachment: depth or color.
+		*
+		*  @param desc Specifies the width, height, and attachment type of the texture.
+		*
+		*  @return A handle representing the created texture. Returns an empty handle
+		*          if the requested size is invalid or the maximum number of textures is reached.
+		*/
+		LUM_NODISCARD
 		virtual TextureHandle CreateFramebufferTexture(const FramebufferTextureDescriptor& desc) = 0;
+
 		// TO FIX:
 		virtual void SetFramebufferColorTexture(const FramebufferHandle& fbo, const TextureHandle& tex, uint8 index) = 0;
 		// TO IMPLEMENT:
 		virtual void SetFramebufferDepthTexture(const FramebufferHandle& fbo, const TextureHandle& tex) = 0;
 		virtual void SetFramebufferStencilTexture(const FramebufferHandle& fbo, const TextureHandle& tex) = 0;
 
+		/*! @brief Clears the specified framebuffer with the given color and depth values.
+		*
+		* This function sets the clear color and depth, then clears the color and depth
+		* buffers of the framebuffer. The framebuffer is automatically bound during this operation.
+		*
+		* @param fbo Handle to the framebuffer to clear.
+		* @param color RGBA color used to clear the color buffer.
+		* @param depth Depth value used to clear the depth buffer (clamped between 0.0 and 1.0).
+		*/
 		virtual void ClearFramebuffer(FramebufferHandle fbo, glm::vec4 color, float32 depth) = 0;
+
+		/*! @brief Deletes the specified framebuffer and releases its resources.
+		*	
+		* After calling this function, the framebuffer handle becomes invalid and should
+		* not be used in subsequent rendering operations.
+		* 
+		* @param buff Handle to the framebuffer to delete.
+		*
+		*/
 		virtual void DeleteFramebuffer(FramebufferHandle& fbo) = 0;
 
+		/*! @brief Sets the current framebuffer for rendering.
+		*
+		* This makes the given framebuffer the target for all subsequent draw operations.
+		* 
+		* @param buff Handle to the framebuffer to bind.
+		*
+		*/
 		virtual void BindFramebuffer(const FramebufferHandle& fbo) = 0;
 
+		/*! @brief Unbinds any currently bound framebuffer.
+		*
+		*  After calling this, rendering will target the default framebuffer
+		*  (typically the screen) instead of any previously bound framebuffer.
+		*/
 		virtual void UnbindFramebuffer() = 0;
+
 
 
 
@@ -287,6 +329,18 @@ namespace lum::rhi {
 		* 
 		*/
 		virtual void SetTextureBinding( const TextureHandle& texture, uint16 binding ) = 0;
+
+		/*! @brief Binds a texture to a given binding slot.
+		*
+		* This function associates the specified texture with a shader binding slot.
+		* If no binding is provided, a default or previously assigned binding is used.
+		* Each implementation of the rendering backend must define how the binding is applied.
+		*
+		* @param texture Handle to the texture to bind.
+		* @param binding Optional binding slot index for the texture. If not provided,
+		*                a default or pre-assigned slot will be used (LUM_NULL_BINDING).
+		*
+		*/
 		virtual void BindTexture( const TextureHandle& texture, uint16 binding = LUM_NULL_BINDING ) = 0;
 
 
@@ -338,19 +392,57 @@ namespace lum::rhi {
 		virtual void BeginFrame			( )															= 0;
 		virtual void EndFrame			( )															= 0;
 
-		virtual void SetBlendConstantColor(glm::vec4 rgba) = 0;
+
+
+		virtual void EnableScissors(bool) = 0;
 		virtual void SetScissor(int32 x, int32 y, int32 width, int32 height) = 0;
 		virtual void SetViewport(int32 x, int32 y, int32 width, int32 height) = 0;
-		virtual void SetStencilReference(int32 ref) = 0;
-		virtual void SetDepthBias(float32 factor, float32 units) = 0;
 
-		virtual void SetBlendColorFactors(BlendFactor srcFactor, BlendFactor dstFactor) = 0;
-		virtual void SetBlendAlphaFactors(BlendFactor srcFactor, BlendFactor dstFactor) = 0;
-		virtual void SetBlendColorOp(BlendOp op) = 0;
-		virtual void SetBlendAlphaOp(BlendOp op) = 0;
 
-		virtual void SetDepthCompare(CompareFlag) = 0;
-		virtual void SetDepthWrite(bool) = 0;
+
+		/*
+		* 
+		*  TO DO TOMMOROW
+		*		- Stencil functions
+		*		- Optymalize functions below
+		*		- Maybe try to create skybox ( but finish this first )
+		* 
+		*/
+
+
+		// Cull setters
+
+		virtual void EnableCull(bool) = 0;
+		virtual void SetCullFace(Face face) = 0;
+		virtual void SetCullWindingOrder(WindingOrder) = 0;
+
+
+		// Blend setters
+
+		virtual void EnableBlend(bool enabled) = 0;
+		//virtual void SetBlendConstantColor(glm::vec4 rgba) = 0; IMPLEMENT
+		virtual void SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha) = 0;
+		virtual void SetBlendOp(BlendOp colorOp, BlendOp alphaOp) = 0;
+
+
+		// Depth setters
+
+		virtual void EnableDepthWrite(bool) = 0;
+		virtual void EnableDepthTest(bool) = 0;
+		virtual void SetDepthFunc(CompareFlag) = 0;
+
+
+		// Stencil setters
+
+		virtual void EnableStencilTest(bool) = 0;
+		virtual void SetStencilReference(int32 ref, Face = Face::FrontBack) = 0;
+
+
+		// Rasterizer setters
+
+		virtual void EnableDepthBias(bool) = 0;
+		virtual void SetDepthBias(float32 slopFactor = max_val<float32>(), float32 constantBias = max_val<float32>()) = 0;
+
 
 	protected:
 

@@ -2,6 +2,7 @@
 #include "rhi/rhi_common.hpp"
 namespace lum::rhi {
 
+	// Specifies the comparison function used in LumEngine RHI.
 	enum class CompareFlag : bitfield {
 		Equal,			// Passes if the incoming depth value is equal to the stored depth value.
 		NotEqual,		// Passes if the incoming depth value is not equal to the stored depth value.
@@ -13,27 +14,18 @@ namespace lum::rhi {
 		Never,			// Never passes.
 	};
 
-	// +
+	// Represents the rasterization state of the pipeline.
+	// Includes polygon mode, face culling topology, and depth bias settings.
 	struct RasterizerState {
 
 		PolygonMode topologyMode = PolygonMode::Fill;
 		Face		topologyModeFaces = Face::FrontBack;
 
-		bool	bEnableDepthBias = false;
-		float32 depthBiasFactor = 0.f;
-		float32 depthBiasUnits = 0.f;
-
-		constexpr bool operator==(const RasterizerState& other) const noexcept {
-			return
-				topologyMode == other.topologyMode &&
-				topologyModeFaces == other.topologyModeFaces &&
-				bEnableDepthBias == other.bEnableDepthBias &&
-				depthBiasFactor == other.depthBiasFactor &&
-				depthBiasUnits == other.depthBiasUnits;
-		}
-		constexpr bool operator!=(const RasterizerState& other) const noexcept {
-			return !(*this == other);
-		}
+		struct DepthBiasState {
+			bool	bEnable = false;
+			float32 slopeFactor = 0.f;
+			float32 constantBias = 0.f;
+		} depthBias;
 
 	};
 
@@ -50,6 +42,8 @@ namespace lum::rhi {
 		Invert			// Bitwise inverts the current stencil buffer value.
 	};
 
+	// Represents the stencil state for a single face (front or back) in the pipeline.
+	// Includes reference value, read/write masks, comparison function, and stencil operations.
 	struct StencilFaceState {
 
 		// Specifies the reference value for the stencil test. 
@@ -57,14 +51,14 @@ namespace lum::rhi {
 		// The initial value is 0. 
 		int32 reference = 0;
 
-		// Specifies a mask that is ANDed with both the reference value 
-		// and the stored stencil value when the test is done. 
-		// The initial value is all 1's. 
-		uint32 readMask = 1;
+		// Specifies a mask that is ANDed with both the reference value
+		// and the stored stencil value when the test is done.
+		// The initial value is all 1's ( 0xFFFFFFFF ).
+		uint32 readMask = 0xFFFFFFFF;
 
-		// Specifies a bit mask to enable and disable writing of individual bits in the stencil planes. 
-		// Initially, the mask is all 1's. 
-		uint32 writeMask = 1;
+		// Specifies a bit mask to enable and disable writing of individual bits in the stencil planes.
+		// Initially, the mask is all 1's ( 0xFFFFFFFF ).
+		uint32 writeMask = 0xFFFFFFFF;
 
 		// Specifies the test function. 
 		// The initial value is CompareFlag::Always. 
@@ -84,13 +78,10 @@ namespace lum::rhi {
 		// The initial value is StencilOp::Keep. 
 		StencilOp dpPass = StencilOp::Keep;
 
-
-		constexpr bool operator==(const StencilFaceState& a) {
-			return reference == a.reference && readMask == a.readMask && writeMask == a.writeMask && compareFlag == a.compareFlag && stencilFailOp == a.stencilFailOp && depthFailOp == a.depthFailOp && dpPass == a.dpPass;
-		}
-
 	};
 
+	// Represents the depth and stencil state of the pipeline.
+	// Includes depth test enable/write, comparison function, and stencil face operations.
 	struct DepthStencilState {
 
 		struct Depth {
@@ -109,12 +100,6 @@ namespace lum::rhi {
 			// The initial value is CompareFlag::Less. 
 			CompareFlag	compareFlag = CompareFlag::Less;
 
-			constexpr bool operator==(const Depth& other) const noexcept {
-				return bWriteToZBuffer == other.bWriteToZBuffer && compareFlag == other.compareFlag;
-			}
-			constexpr bool operator!=(const Depth& other) const noexcept {
-				return !(*this == other);
-			}
 		} depth;
 
 		struct Stencil {
@@ -139,87 +124,102 @@ namespace lum::rhi {
 
 	};
 
+	// Represents the face culling state of the pipeline.
+	// Includes cull enable, which face to cull, and front face winding order.
 	struct CullState {
 
 		// Defines if cull is enabled.
 		// The initial value is false.
 		bool bEnabled = false;
 		
+		// Specifies whether front- or back-facing facets are candidates for culling. 
+		// The initial value is Face::Back. 
 		Face face = Face::Back;
 		
+		// Specifies the orientation of front-facing polygons. 
+		// The initial value is WindingOrder::CounterClockwise. 
 		WindingOrder windingOrder = WindingOrder::CounterClockwise;
 
-		constexpr bool operator==(const CullState& other) const noexcept {
-			return face == other.face && windingOrder != other.windingOrder;
-		}
-		constexpr bool operator!=(const CullState& other) const noexcept {
-			return !(*this == other);
-		}
-
 	};
 
-	// +
+	// Represents the scissor test state of the pipeline.
+	// Includes enable flag and scissor rectangle dimensions.
 	struct ScissorState {
 
+		// Defines if scissor test is enabled.
+		// The initial value is false.
 		bool	bEnabled = false;
+		
+		// Specify the lower left corner of the scissor box on x axis.
+		// Initially 0. 
 		int32	x = 0;
+		
+		// Specify the lower left corner of the scissor box on y axis.
+		// Initially 0. 
 		int32	y = 0;
+
+		// Specify the width of the scissor box.
 		int32	width = 0;
+		
+		// Specify the height of the scissor box.
 		int32	height = 0;
 
-		constexpr bool operator==(const ScissorState& other) const noexcept {
-			return x == other.x && y == other.y && width == other.width && height == other.height;
-		}
-		constexpr bool operator!=(const ScissorState& other) const noexcept {
-			return !(*this == other);
-		}
-
-
 	};
 
+	// Specifies the blending factor used for source or destination color in blending operations.
 	enum class BlendFactor : bitfield {
 
-		Zero,
-		One,
+		Zero,					// Multiply by 0, effectively ignoring this component.
+		One,					// Multiply by 1, use full value of this component.
 
-		SrcColor,
-		OneMinusSrcColor,
-		SrcAlpha,
-		OneMinusSrcAlpha,
+		SrcColor,				// Multiply by source color.
+		OneMinusSrcColor,		// Multiply by ( 1 - source color ).
+		SrcAlpha,				// Multiply by source alpha.
+		OneMinusSrcAlpha,		// Multiply by ( 1 - source alpha ).
 
-		DstColor,
-		OneMinusDstColor,
-		DstAlpha,
-		OneMinusDstAlpha,
+		DstColor,				// Multiply by destination color.
+		OneMinusDstColor,		// Multiply by ( 1 - destination color ).
+		DstAlpha,				// Multiply by destination alpha.
+		OneMinusDstAlpha,		// Multiply by ( 1 - destination alpha ).
 
-		ConstantColor,
-		OneMinusConstantColor,
-		ConstantAlpha,
-		OneMinusConstantAlpha,
+		ConstantColor,			// Multiply by a constant color set via glBlendColor.
+		OneMinusConstantColor,	// Multiply by ( 1 - constant color ).
+		ConstantAlpha,			// Multiply by constant alpha value.
+		OneMinusConstantAlpha,	// Multiply by ( 1 - constant alpha value ).
 
-		SrcAlphaSaturate,
+		SrcAlphaSaturate,		// Multiply by min( source alpha, 1 - destination alpha ), typically for antialiasing.
 
-		Src1Color,
-		OneMinusSrc1Color,
-		Src1Alpha,
-		OneMinusSrc1Alpha,
+		Src1Color,				// Multiply by secondary source color ( multi-source blending ).
+		OneMinusSrc1Color,		// Multiply by ( 1 - secondary source color ).
+		Src1Alpha,				// Multiply by secondary source alpha.
+		OneMinusSrc1Alpha,		// Multiply by ( 1 - secondary source alpha ).
 
-		Default,
+		Default,				// Default placeholder; uses value that's currently enabled ( no changes ).
 
 	};
 
+	// Specifies the operation used to combine source and destination colors in blending.
 	enum class BlendOp : bitfield {
-		
+
+		// Add the weighted source and destination colors.
+		//( C_out = C_src * F_src + C_dst * F_dst )
 		Add,
+		// Subtract the weighted destination from the source. 
+		// ( C_out = C_src * F_src - C_dst * F_dst )
 		Substract,
+		// Subtract the weighted source from the destination. 
+		// ( C_out = C_dst * F_dst - C_src * F_src )
 		ReverseSubstract,
+		// Take the component-wise minimum of the weighted source and destination colors.
 		Min,
+		// Take the component-wise maximum of the weighted source and destination colors.
 		Max,
 
-		Default
-
+		Default // Default placeholder; uses value that's currently enabled ( no changes ).
 	};
 
+	// Represents the blending state of the pipeline.
+	// Includes enable flag, source/destination factors, and blend operations for color and alpha.
 	struct BlendState {
 
 		// Defines if blending is enabled.

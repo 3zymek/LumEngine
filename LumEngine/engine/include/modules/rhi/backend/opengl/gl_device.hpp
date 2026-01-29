@@ -6,46 +6,9 @@
 #include "rhi/core/rhi_vertex_layout.hpp"
 #include "core/asset_service.hpp"
 #include "core/utils/sparse_set.hpp"
-namespace lum::gl {
+namespace lum::rhi::gl {
 
-	class GLDevice : public rhi::RenderDevice {
-
-		using BufferHandle		= rhi::BufferHandle;
-		using BufferDescriptor	= rhi::BufferDescriptor;
-		using Mapflag			= rhi::Mapflag;
-
-		using VertexLayout				= rhi::VertexLayout;
-		using VertexLayoutHandle		= rhi::VertexLayoutHandle;
-		using VertexLayoutDescriptor	= rhi::VertexLayoutDescriptor;
-
-		using ShaderHandle		= rhi::ShaderHandle;
-		using ShaderDescriptor	= rhi::ShaderDescriptor;
-
-		using Texture			= rhi::Texture;
-		using TextureHandle		= rhi::TextureHandle;
-		using TextureDescriptor = rhi::TextureDescriptor;
-
-		using Sampler			= rhi::Sampler;
-		using SamplerHandle		= rhi::SamplerHandle;
-		using SamplerDescriptor = rhi::SamplerDescriptor;
-
-		using Framebuffer					= rhi::Framebuffer;
-		using FramebufferHandle				= rhi::FramebufferHandle;
-		using FramebufferTextureDescriptor	= rhi::FramebufferTextureDescriptor;
-		using FramebufferAttachment			= rhi::FramebufferAttachment;
-
-		using Pipeline				= rhi::Pipeline;
-		using PipelineHandle		= rhi::PipelineHandle;
-		using PipelineDescriptor	= rhi::PipelineDescriptor;
-
-		using State			= rhi::State;
-		using PolygonMode	= rhi::PolygonMode;
-		using Face			= rhi::Face;
-
-		using BlendFactor = rhi::BlendFactor;
-		using BlendOp = rhi::BlendOp;
-		using CompareFlag = rhi::CompareFlag;
-
+	class GLDevice : public RenderDevice {
 	public:
 
 		LUM_CONST_VAR_QUALIFIER
@@ -152,20 +115,42 @@ namespace lum::gl {
 		void BeginFrame		( )										override;
 		void EndFrame		( )										override;
 
-		void SetBlendConstantColor	( glm::vec4 rgba )								override;
-		void SetStencilReference	( int32 ref )									override;
-		void SetDepthBias			( float32 factor, float32 units )				override;
+		void EnableScissors(bool) override;
 		void SetScissor				( int32 x, int32 y, int32 width, int32 height )	override;
 		void SetViewport			( int32 x, int32 y, int32 width, int32 height )	override;
 
-		void SetBlendColorFactors	( BlendFactor srcFactor, BlendFactor dstFactor) override;
-		void SetBlendAlphaFactors	( BlendFactor srcFactor, BlendFactor dstFactor) override;
-		void SetBlendColorOp		( BlendOp op) override;
-		void SetBlendAlphaOp		( BlendOp op) override;
+
+		// Cull setters
+
+		void EnableCull(bool) override;
+		void SetCullFace(Face face) override;
+		void SetCullWindingOrder(WindingOrder) override;
 
 
-		void SetDepthCompare(CompareFlag)	override;
-		void SetDepthWrite	(bool)			override;
+		// Blend setters
+
+		void EnableBlend(bool enabled) override;
+		//virtual void SetBlendConstantColor(glm::vec4 rgba) = 0; IMPLEMENT
+		void SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha) override;
+		void SetBlendOp(BlendOp colorOp, BlendOp alphaOp) override;
+
+
+		// Depth setters
+
+		void EnableDepthWrite(bool) override;
+		void EnableDepthTest(bool) override;
+		void SetDepthFunc(CompareFlag) override;
+
+		// Stencil setters
+
+		void EnableStencilTest(bool) override;
+		void SetStencilReference(int32 ref, Face) override;
+
+
+		// Rasterizer setters
+		void EnableDepthBias(bool) override;
+		void SetDepthBias(float32 slopFactor, float32 constantBias) override;
+
 
 	protected:
 
@@ -264,10 +249,19 @@ namespace lum::gl {
 		/// Private helpers ( !!! REPAIR TYPE CASTING !!! )
 		///////////////////////////////////////////////////
 
+		LUM_FORCEINLINE
 		void _BindCheckRasterizer(const Pipeline&) noexcept;
+
+		LUM_FORCEINLINE
 		void _BindCheckDepthStencil(const Pipeline&) noexcept;
+
+		LUM_FORCEINLINE
 		void _BindCheckScissors(const Pipeline&) noexcept;
+
+		LUM_FORCEINLINE
 		void _BindCheckBlend(const Pipeline&) noexcept;
+
+		LUM_FORCEINLINE
 		void _BindCheckCull(const Pipeline&) noexcept;
 
 		void		_CacheUniformsLocations		( );
