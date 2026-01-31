@@ -7,6 +7,5 @@ in vec2 fragUV;
 out vec4 FinalColor;
 
 void main() {
-	//FinalColor = vec4(fragColor, 1.0);
 	FinalColor = texture(uTexture, fragUV);
 }

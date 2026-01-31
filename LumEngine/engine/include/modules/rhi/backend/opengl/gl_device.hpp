@@ -77,11 +77,12 @@ namespace lum::rhi::gl {
 		/// Textures
 		///////////////////////////////////////////////////
 
-		TextureHandle	CreateTexture2D		( const TextureDescriptor& )		override;
-		TextureHandle	CreateTexture3D		( const TextureDescriptor& )		override;
-		void			DeleteTexture		( TextureHandle& )					override;
-		void			SetTextureBinding	( const TextureHandle&, uint16)		override;
-		void			BindTexture			( const TextureHandle&, uint16 )	override;
+		TextureHandle	CreateTexture2D		( const TextureDescriptor& )			override;
+		TextureHandle	CreateTexture3D		( const TextureDescriptor& )			override;
+		TextureHandle	CreateCubemapTexture( const TextureCubemapDescriptor& desc ) override;
+		void			DeleteTexture		( TextureHandle& )						override;
+		void			SetTextureBinding	( const TextureHandle&, uint16)			override;
+		void			BindTexture			( const TextureHandle&, uint16 )		override;
 
 
 

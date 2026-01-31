@@ -314,6 +314,9 @@ namespace lum::rhi {
 		LUM_NODISCARD 
 		virtual TextureHandle CreateTexture3D( const TextureDescriptor& desc ) = 0;
 		
+		LUM_NODISCARD
+		virtual TextureHandle CreateCubemapTexture(const TextureCubemapDescriptor& desc) = 0;
+
 		/*! @brief Deletes a texture.
 		*
 		*  Frees GPU memory and invalidates the handle.

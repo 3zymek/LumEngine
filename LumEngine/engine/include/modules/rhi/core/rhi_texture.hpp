@@ -25,6 +25,19 @@ namespace lum::rhi {
 
 	};
 
+#define LUM_CUBEMAP_POSITIVE_X 0
+#define LUM_CUBEMAP_NEGATIVE_X 1
+#define LUM_CUBEMAP_POSITIVE_Y 2
+#define LUM_CUBEMAP_NEGATIVE_Y 3
+#define LUM_CUBEMAP_POSITIVE_Z 4
+#define LUM_CUBEMAP_NEGATIVE_Z 5
+
+	struct TextureCubemapDescriptor {
+		
+		ccharptr faces[6]{};
+
+	};
+
 	struct Texture {
 
 		uint32 width = 0;

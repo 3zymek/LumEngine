@@ -123,7 +123,7 @@ private:
         lastY = mouse_pos.y;
     }
     
-    float32 move_speed = 0.1f;
+    float32 move_speed = 0.07f;
     float32 aspect_ratio = 0;
     float32 lastX = 0;
     float32 lastY = 0;
@@ -131,7 +131,7 @@ private:
     float32 fov = 45.f;
     float32 min_plane = 0.1f;
     float32 max_plane = 1000.f;
-    float32 sensivity = 0.2f;
+    float32 sensivity = 0.1f;
     bool mouse_locked = false;
 
     bool saveMousePos = false;
@@ -142,12 +142,10 @@ private:
 LUM_UNIFORM_BUFFER_STRUCT CameraUBO {
     glm::mat4 view;
     glm::mat4 proj;
+    glm::vec3 pos;
 };
 LUM_UNIFORM_BUFFER_STRUCT ModelUBO {
     glm::mat4 model;
-    glm::vec3 pos;
-    glm::vec3 scale;
-    glm::vec3 rot;
 };
 
 glm::vec3 model_pos = { 0,0,0 };
@@ -156,6 +154,8 @@ glm::vec3 model_scale = { 1,1,1, };
 
 void UpdateCamera(RenderDevice* dev, Camera& cam, rhi::BufferHandle& ubo, CameraUBO& camstruct, rhi::BufferHandle& modelubo, ModelUBO modelstruct) {
     
+    cam.Update();
+
     glm::quat rot = glm::quat(glm::radians(model_rot));
     glm::mat4 rotation = glm::mat4_cast(rot);
     modelstruct.model = glm::mat4(1.f);
@@ -165,12 +165,38 @@ void UpdateCamera(RenderDevice* dev, Camera& cam, rhi::BufferHandle& ubo, Camera
     
     camstruct.proj = cam.projection;
     camstruct.view = cam.view;
+    camstruct.pos = cam.position;
 
     dev->UpdateBuffer(ubo, &camstruct, 0, 0);
     dev->UpdateBuffer(modelubo, &modelstruct, 0, 0);
     
-    cam.Update();
 }
+
+std::vector<Vertex> skyboxVerts = {
+    {{-1.0f,  1.0f, -1.0f}}, {{-1.0f, -1.0f, -1.0f}},
+    {{ 1.0f, -1.0f, -1.0f}}, {{ 1.0f, -1.0f, -1.0f}},
+    {{ 1.0f,  1.0f, -1.0f}}, {{-1.0f,  1.0f, -1.0f}},
+
+    {{-1.0f, -1.0f,  1.0f}}, {{-1.0f, -1.0f, -1.0f}},
+    {{-1.0f,  1.0f, -1.0f}}, {{-1.0f,  1.0f, -1.0f}},
+    {{-1.0f,  1.0f,  1.0f}}, {{-1.0f, -1.0f,  1.0f}},
+
+    {{ 1.0f, -1.0f, -1.0f}}, {{ 1.0f, -1.0f,  1.0f}},
+    {{ 1.0f,  1.0f,  1.0f}}, {{ 1.0f,  1.0f,  1.0f}},
+    {{ 1.0f,  1.0f, -1.0f}}, {{ 1.0f, -1.0f, -1.0f}},
+
+    {{-1.0f, -1.0f,  1.0f}}, {{-1.0f,  1.0f,  1.0f}},
+    {{ 1.0f,  1.0f,  1.0f}}, {{ 1.0f,  1.0f,  1.0f}},
+    {{ 1.0f, -1.0f,  1.0f}}, {{-1.0f, -1.0f,  1.0f}},
+
+    {{-1.0f,  1.0f, -1.0f}}, {{ 1.0f,  1.0f, -1.0f}},
+    {{ 1.0f,  1.0f,  1.0f}}, {{ 1.0f,  1.0f,  1.0f}},
+    {{-1.0f,  1.0f,  1.0f}}, {{-1.0f,  1.0f, -1.0f}},
+
+    {{-1.0f, -1.0f, -1.0f}}, {{-1.0f, -1.0f,  1.0f}},
+    {{ 1.0f, -1.0f, -1.0f}}, {{ 1.0f, -1.0f, -1.0f}},
+    {{-1.0f, -1.0f,  1.0f}}, {{ 1.0f, -1.0f,  1.0f}}
+};
 
 std::vector<Vertex> verts = {
     // Front face (z = 0.5)
@@ -239,8 +265,9 @@ int main() {
 
     WindowDescriptor window_desc;
     window_desc.MSAA_samples = 4;
-    window_desc.height = 1000;
-    window_desc.width = 2000;
+    window_desc.fullscreen = false;
+    window_desc.height = 920;
+    window_desc.width = 1280;
 
     Window* window = CreateWindow(window_desc);
     RenderDevice* device = create_device(window);
@@ -349,7 +376,7 @@ int main() {
     pipeline_desc.depthStencil.depth.bWriteToZBuffer = true;
     pipeline_desc.depthStencil.depth.compareFlag = CompareFlag::Less;
     
-    //pipeline_desc.blend.bEnabled = true;
+    pipeline_desc.blend.bEnabled = true;
     pipeline_desc.blend.srcAlphaFactor = BlendFactor::SrcAlpha;
     pipeline_desc.blend.srcColorFactor = BlendFactor::SrcAlpha;
     pipeline_desc.blend.dstColorFactor = BlendFactor::OneMinusSrcColor;
@@ -409,8 +436,8 @@ int main() {
     // =====================
     TextureDescriptor grass_desc;
     grass_desc.filename = "stone.png";
-    grass_desc.height = 100;
-    grass_desc.width = 100;
+    //grass_desc.height = 100;
+    //grass_desc.width = 100;
     auto grassTexture = device->CreateTexture2D(grass_desc);
 
     SamplerDescriptor grass_sampler_desc;
@@ -420,10 +447,44 @@ int main() {
     device->SetSamplerBinding(grassSampler, LUM_TEXTURE_BINDING_01);
     device->SetTextureBinding(grassTexture, LUM_TEXTURE_BINDING_01);
 
+
+
+
+
+    BufferDescriptor skyboxVBODesc;
+    skyboxVBODesc.data = skyboxVerts.data();
+    skyboxVBODesc.size = bytesize(skyboxVerts);
+    skyboxVBODesc.bufferUsage = BufferUsage::Dynamic;
+    auto skyboxVBO = device->CreateVertexBuffer(skyboxVBODesc);
+
+
+    std::vector<VertexAttribute> skyboxattribs = {
+        {DataFormat::Vec3, offsetof(Vertex, position), LUM_LAYOUT_POSITION}
+    };
+
+    VertexLayoutDescriptor skyboxVAODesc;
+    skyboxVAODesc.stride = sizeof(Vertex);
+    skyboxVAODesc.attributes = skyboxattribs;
+    auto skyboxVAO = device->CreateVertexLayout(skyboxVAODesc, skyboxVBO);
+
+
+    TextureCubemapDescriptor skyboxDesc;
+    skyboxDesc.faces[LUM_CUBEMAP_POSITIVE_X] = "px.png";
+    skyboxDesc.faces[LUM_CUBEMAP_NEGATIVE_X] = "nx.png";
+    skyboxDesc.faces[LUM_CUBEMAP_POSITIVE_Y] = "py.png";
+    skyboxDesc.faces[LUM_CUBEMAP_NEGATIVE_Y] = "ny.png";
+    skyboxDesc.faces[LUM_CUBEMAP_POSITIVE_Z] = "pz.png";
+    skyboxDesc.faces[LUM_CUBEMAP_NEGATIVE_Z] = "nz.png";
+    auto skyboxTex = device->CreateCubemapTexture(skyboxDesc);
+
+    auto skyboxShader = device->CreateShader({ "skybox_pass.vert", "skybox_pass.frag" });
+
+
     // =====================
     // Render loop
-    // =====================
+    // ====================
     while (window->IsOpen()) {
+
         device->BeginFrame();
 
         // ---- ImGui Transform
@@ -433,276 +494,39 @@ int main() {
         ImGui::DragFloat3("rotation", glm::value_ptr(model_rot), 0.1f, -1000, 1000);
         ImGui::End();
 
-        // ---- Camera update
-        device->BindShader(basic_shader);
-        UpdateCamera(device, c, cameraUniform, camera_ubo_struct, modelUniform, model_ubo_struct);
-        
-        // ---- Render FBO
         device->BindFramebuffer(FBO);
-        device->ClearFramebuffer(FBO, { 0.f,0.f,0.f,1.f }, 1.0f);
+        device->ClearFramebuffer(FBO, { 0,0,0,1 }, 1.0f);
+
+        // --- Camera update
+        UpdateCamera(device, c, cameraUniform, camera_ubo_struct, modelUniform, model_ubo_struct);
+
+        // --- Skybox
+        device->EnableDepthTest(true);
+        device->BindShader(skyboxShader);
+        device->SetDepthFunc(CompareFlag::LessEqual);
+        device->EnableDepthWrite(false);
+        device->BindTexture(skyboxTex, LUM_CUBEMAP_BINDING);
+        device->Draw(skyboxVAO, skyboxVerts.size());
+        device->EnableDepthWrite(true);
+        device->SetDepthFunc(CompareFlag::Less);
+        device->EnableDepthTest(true);
+
+        // --- Scena
+        device->BindShader(basic_shader);
         device->BindPipeline(topologyChanged ? debug_pipeline2 : debug_pipeline);
-        //device->SetScissor(0, 0, window->GetWidth() / 2.f, window->GetHeight() / 2.f);
         device->BindSampler(grassSampler);
         device->BindTexture(grassTexture);
-
-        device->EnableDepthWrite(false);
-
         device->DrawElements(VAO, indices.size());
-        
-        device->EnableDepthWrite(true);
-
-        if (input::KeyPressedOnce(input::Key::SPACE))
-            topologyChanged = !topologyChanged;
-
 
         device->UnbindFramebuffer();
 
-        device->BindPipeline(basic_pipeline);
+        // --- Render FBO to screen
         device->BindShader(screen_shader);
         device->BindTexture(FBO_TEX, 7);
+        device->BindPipeline(basic_pipeline);
         device->Draw(FBO_VAO, 6);
 
-        device->EndFrame();
-    }
-}
-
-/*
-int main() {
-
-    Logger::Get().EnableLog(LogSeverity::ALL);
-    //Logger::Get().DisableLog(LogSeverity::DEBUG);
-
-    ///////////////////////////////////////////
-    // Init
-    ///////////////////////////////////////////
-    WindowDescriptor desc;
-    desc.MSAA_samples = 4;
-    desc.height = 1440;
-    desc.width = 5440;
-    auto* window = CreateWindow(desc);
-    auto* device = CreateDevice(window);
-    input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
-    Camera c{ window };
-
-    ///////////////////////////////////////////
-    // Attributes
-    ///////////////////////////////////////////
-    std::vector<VertexAttribute> attrib(2);
-    auto& pos = attrib[0];
-    pos.format = DataFormat::Float3;
-    pos.relative_offset = offsetof(Vertex, position);
-    pos.shader_location = LUM_LAYOUT_POSITION;
-
-    auto& color = attrib[1];
-    color.format = DataFormat::Float3;
-    color.relative_offset = offsetof(Vertex, color);
-    color.shader_location = LUM_LAYOUT_COLOR;
-
-    auto& uv = attrib[2];
-    uv.format = DataFormat::Float2;
-    uv.relative_offset = offsetof(Vertex, uv);
-    uv.shader_location = LUM_LAYOUT_UV;
-
-    VertexLayoutDescriptor vao_description;
-    vao_description.stride = sizeof(Vertex);
-    vao_description.attributes = attrib;
-
-    std::vector<Vertex> verts = {
-        {{ 10, 10, 0}, {0,0,1}, {2, 2}}, // top-right
-        {{-10, 10, 0}, {0,0,1}, {0, 2}}, // top-left
-        {{-10,-10, 0}, {0,1,0}, {0, 0}}, // bottom-left
-        {{ 10,-10, 0}, {0,1,0}, {2, 0}}  // bottom-right
-    };
-    std::vector<unsigned int> indices = {
-        0,1,2, 0,2,3
-    };
-
-    rhi::BufferDescriptor vbo_description{
-        .buffer_usage = BufferUsage::Dynamic,
-        .size = verts.size() * sizeof(Vertex),
-        .data = verts.data()
-    };
-    rhi::BufferDescriptor ebo_description{
-        .buffer_usage = BufferUsage::Dynamic,
-        .size = bytesize(indices),
-        .data = indices.data()
-    };
-    CameraUBO cubo;
-    cubo.view = c.view;
-    cubo.proj = c.projection;
-    rhi::BufferDescriptor ubo_description{
-        .buffer_usage = BufferUsage::Dynamic,
-        .size = sizeof(cubo),
-        .map_flags = map_flags::Write,
-        .data = &cubo
-    };
-    ModelUBO UBO_model;
-    rhi::BufferDescriptor ubo_description_2{
-        .buffer_usage = BufferUsage::Dynamic,
-        .size = sizeof(UBO_model),
-        .map_flags = map_flags::Write,
-        .data = nullptr
-    };
-    SamplerDescriptor samplerdesc{
-        .mag_filter = SamplerMagFilter::Nearest,
-        .min_filter = SamplerMinFilter::Linear_mipmap_linear,
-        .anisotropy = 16,
-    };
-
-    ///////////////////////////////////////////
-    // Buffers
-    ///////////////////////////////////////////
-    auto vbo = device->CreateVertexBuffer(vbo_description);
-    auto ebo = device->CreateElementBuffer(ebo_description);
-    auto ubo = device->CreateUniformBuffer(ubo_description);
-    auto sampler = device->CreateSampler(samplerdesc);
-    auto model_ubo = device->CreateUniformBuffer(ubo_description_2);
-    device->SetUniformBufferBinding(model_ubo, LUM_UBO_MODEL_BINDING);
-    device->SetUniformBufferBinding(ubo, LUM_UBO_CAMERA_BINDING);
-    device->SetSamplerBinding(sampler, LUM_TEXTURE_BINDING_01);
-
-    auto vao = device->CreateVertexLayout(vao_description, vbo);
-    device->AttachElementBufferToLayout(ebo, vao);
-    auto shader = device->CreateShader({ "basic.vert", "basic.frag" });
-    
-    TextureDescriptor texture_description;
-    texture_description.filename = "test.jpg";
-    texture_description.mipmaping = true;
-    auto texture = device->CreateTexture2D(texture_description);
-    device->SetTextureBinding(texture, LUM_TEXTURE_BINDING_01);
-
-    glm::vec3 model_position    = { 0,0,0 };
-    glm::vec3 model_scale       = { 1,1,1 };
-    glm::vec3 model_rotation    = { 0,0,0 };
-
-    ShaderDescriptor shaderdesc;
-    shaderdesc.fragment_source = "screen.frag";
-    shaderdesc.vertex_source = "screen.vert";
-    auto screenshader = device->CreateShader(shaderdesc);
-
-    /*
-    GLuint quadVBO, quadVAO;
-    
-    glCreateVertexArrays(1, &quadVAO);
-    
-    glCreateBuffers(1, &quadVBO);
-    
-    glNamedBufferData(quadVBO, sizeof(quad), quad, GL_STATIC_DRAW);
-
-    glVertexArrayVertexBuffer(quadVAO, 0, quadVBO, 0, 4 * sizeof(float));
-
-    glEnableVertexArrayAttrib(quadVAO, 0);
-    glVertexArrayAttribFormat(quadVAO, 0, 2, GL_FLOAT, GL_FALSE, 0);
-    glVertexArrayAttribBinding(quadVAO, 0, 0);
-
-    glEnableVertexArrayAttrib(quadVAO, 1);
-    glVertexArrayAttribFormat(quadVAO, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float));
-    glVertexArrayAttribBinding(quadVAO, 1, 0);
-
-        GLuint fbo, fbot, depth;
-    glCreateFramebuffers(1, &fbo);
-    glCreateTextures(GL_TEXTURE_2D, 1, &fbot);
-    glCreateTextures(GL_TEXTURE_2D, 1, &depth);
-    glTextureStorage2D(fbot, 1, GL_RGB8, window->GetWidth(), window->GetHeight());
-    glTextureStorage2D(depth, 1, GL_DEPTH_COMPONENT24, window->GetWidth(), window->GetHeight());
-
-    glFramebufferTexture(fbo, GL_DEPTH_ATTACHMENT, depth, 0);
-    glFramebufferTexture(fbo, GL_COLOR_ATTACHMENT0, fbot, 0);
-
-    float quad[] = {
-        // pos      // uv
-        -1, -1,     0, 0,
-         1, -1,     1, 0,
-         1,  1,     1, 1,
-
-        -1, -1,     0, 0,
-         1,  1,     1, 1,
-        -1,  1,     0, 1,
-    };
-
-    BufferDescriptor quadvbodesc;
-    quadvbodesc.buffer_usage = BufferUsage::Dynamic;
-    quadvbodesc.map_flags = map_flags::Write;
-    quadvbodesc.size = sizeof(quad);
-    quadvbodesc.data = quad;
-
-    auto quadVbo = device->CreateVertexBuffer(quadvbodesc);
-
-    std::vector<VertexAttribute> at(1);
-    auto& pos = at[0];
-    pos.format = DataFormat::Float2;
-    pos.relative_offset = 0;
-    pos.shader_location = 0;
-
-    auto& uv = at[1];
-    uv.format = DataFormat::Float2;
-    pos.relative_offset = 2 * sizeof(float);
-    pos.shader_location = 1;
-
-    VertexLayoutDescriptor quadvaodesc;
-
-    quadvaodesc.stride = 4 * sizeof(float);
-    quadvaodesc.attributes = at;
-
-    auto quadVao = device->CreateVertexLayout(quadvaodesc, quadVbo);
-
-    FramebufferTextureDescriptor tfbodesc;
-    tfbodesc.width = window->GetWidth();
-    tfbodesc.height = window->GetHeight();
-
-    auto fbocoltexture = device->CreateFramebufferTexture(tfbodesc);
-
-    FramebufferDescriptor fbodesc;
-    auto fbo = device->CreateFramebuffer(fbodesc);
-
-    device->SetFramebufferColorTexture(fbo, fbocoltexture, 0);
-
-
-
-
-
-
-    while (window->IsOpen()) {
-
-        glm::quat rot = glm::quat(glm::radians(model_rotation));
-        glm::mat4 rotation = glm::mat4_cast(rot);
-        UBO_model.model = glm::mat4(1.f);
-        UBO_model.model = glm::translate(UBO_model.model, model_position);
-        UBO_model.model = UBO_model.model * rotation;
-        UBO_model.model = glm::scale(UBO_model.model, model_scale);
-
-        device->BeginFrame();
-        
-        ImGui::Begin("Transform");
-        ImGui::DragFloat3("position", glm::value_ptr(model_position), 0.1f, -1000, 1000);
-        ImGui::DragFloat3("scale", glm::value_ptr(model_scale), 0.1f, -1000, 1000);
-        ImGui::DragFloat3("rotation", glm::value_ptr(model_rotation), 0.1f, -1000, 1000);
-        ImGui::End();
-
-        c.Update();
-
-        device->BindFramebuffer(fbo);
-        glClear(GL_COLOR_BUFFER_BIT);
-        device->BindShader(shader);
-
-        cubo.view = c.view;
-        cubo.proj = c.projection;
-        device->UpdateBuffer(model_ubo, &UBO_model, 0, 0);
-        device->UpdateBuffer(ubo, &cubo, 0, 0);
-
-        device->BindSampler(sampler);
-        device->BindTexture(texture);
-        device->DrawElements(vao, indices.size());
-
-        device->UnbindFramebuffer();
-
-        glBindVertexArray(quadVAO);
-        device->BindShader(screenshader);
-        glBindTextureUnit(7, fbot);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         device->EndFrame();
     }
-
 }
-*/
