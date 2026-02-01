@@ -2,9 +2,9 @@
 
 namespace lum::rhi::gl {
 
-///////////////////////////////////////////////////
-/// Private helpers
-///////////////////////////////////////////////////
+	///////////////////////////////////////////////////
+	/// Private helpers
+	///////////////////////////////////////////////////
 
 	void GLDevice::_BindCheckRasterizer(const Pipeline& pip) noexcept {
 		const auto& rast = pip.rasterizer;
@@ -111,51 +111,13 @@ namespace lum::rhi::gl {
 
 	}
 
-	// TO IMPLEMENT:
-	void GLDevice::_CacheUniformsLocations() {
-
-
-
-
-	}
-	bool GLDevice::_IsValidBufferDescriptor(const BufferDescriptor& desc) noexcept {
-
-		if (desc.bufferUsage == BufferUsage::Static) {
-
-			if ((desc.mapFlags & ~(Mapflag::Coherent | Mapflag::Read)) != 0) {
-				LUM_LOG_ERROR("Invalid buffer descriptor");
-				return false;
-			}
-
-		}
-		else if ((desc.mapFlags & Mapflag::Coherent) && !(desc.mapFlags & Mapflag::Persistent)) {
-			LUM_LOG_ERROR("Invalid buffer descriptor");
-			return false;
-		}
-
-		return true;
-
-	}
-	GLbitfield GLDevice::_TranslateMappingFlags(Mapflag flags) noexcept {
-		GLbitfield flag = 0;
-
-		if (flags & Mapflag::Persistent)			flag |= GL_MAP_PERSISTENT_BIT;
-		if (flags & Mapflag::Write)					flag |= GL_MAP_WRITE_BIT;
-		if (flags & Mapflag::Read)					flag |= GL_MAP_READ_BIT;
-		if (flags & Mapflag::Coherent)				flag |= GL_MAP_COHERENT_BIT;
-		if (flags & Mapflag::Invalidate_Buffer)		flag |= GL_MAP_INVALIDATE_BUFFER_BIT;
-		if (flags & Mapflag::Invalidate_Range)		flag |= GL_MAP_INVALIDATE_RANGE_BIT;
-		if (flags & Mapflag::Unsynchronized)		flag |= GL_MAP_UNSYNCHRONIZED_BIT;
-
-		return flag;
-	}
 
 	///////////////////////////////////////////////////
 	/// Pipelines
 	///////////////////////////////////////////////////
 
 	PipelineHandle GLDevice::CreatePipeline(const PipelineDescriptor& desc) {
-		LUM_HOTPATH_ASSERT_CUSTOM(
+		LUM_HOTCHK_RETURN_CUSTOM(
 			mPipelines.dense_size() >= skMaxPipelines,
 			"Max pipelines reached",
 			PipelineHandle{}
@@ -167,12 +129,12 @@ namespace lum::rhi::gl {
 		return mPipelines.create_handle(std::move(pipeline));
 	}
 	void GLDevice::DeletePipeline(PipelineHandle& pipeline) {
-		LUM_HOTPATH_ASSERT_VOID(!mPipelines.exists(pipeline), "Pipeline doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(!mPipelines.exist(pipeline), "Pipeline doesn't exist");
 
 		mPipelines.delete_handle(pipeline);
 	}
 	void GLDevice::BindPipeline(const PipelineHandle& pipeline) {
-		LUM_HOTPATH_ASSERT_VOID(!mPipelines.exists(pipeline), "Pipeline doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(!mPipelines.exist(pipeline), "Pipeline doesn't exist");
 
 		if (pipeline.id != mCurrentPipeline.id && pipeline.generation != mCurrentPipeline.generation) return;
 		mCurrentPipeline = pipeline;
@@ -195,4 +157,5 @@ namespace lum::rhi::gl {
 		_BindCheckBlend(pip);
 
 	}
+
 }

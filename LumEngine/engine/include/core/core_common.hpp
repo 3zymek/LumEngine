@@ -2,6 +2,7 @@
 #include "core/core_pch.hpp"
 #include "core/core_defines.hpp"
 #include "core/types.hpp"
+#include "core/utils/string_hasher.hpp"
 namespace lum {
 
 	/// Generates ID for any type
@@ -113,6 +114,18 @@ namespace lum {
 		requires std::is_enum_v<T>
 	inline constexpr std::underlying_type_t<T> to_underlying(T e){
 		return static_cast<std::underlying_type_t<T>>(e);
+	}
+
+	/// @brief Hashes a UTF-8 string literal to a 64-bit unsigned integer.
+	/// @tparam L Size of the string literal (including null terminator).
+	/// @param str String literal to hash.
+	/// @return 64-bit hash of the input string.
+	template<usize L>
+	inline constexpr uint64 hash(const char8 (&str)[L]) noexcept {
+		return cstd::StringHasher::Hash(str);
+	}
+	inline uint64 hash(std::string_view str) noexcept {
+		return cstd::StringHasher::Hash(str);
 	}
 
 

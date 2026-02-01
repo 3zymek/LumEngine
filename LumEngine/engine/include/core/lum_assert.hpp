@@ -2,32 +2,39 @@
 #include "logger.hpp"
 #include "setup.hpp"
 
+#if !defined(NDEBUG)
+#   define LUM_ASSERT(expr, msg) \
+        do { if(!(expr)) { LUM_LOG_FATAL(msg); LUM_DEBUGBREAK(); } } while(0)
+#else
+#   define LUM_ASSERT(expr, msg) ((void)0)
+#endif
+
 #if LUM_ENABLE_HOTPATH_VALIDATION == 1
-#define LUM_HOTPATH_ASSERT(expr, msg) \
-        do { if(expr) { LUM_LOG_WARN(msg); } } while(0)
+#define LUM_HOTCHK(expr, msg) \
+        do { if(!(expr)) { LUM_LOG_WARN(msg); } } while(0)
 
-#define LUM_HOTPATH_ASSERT_VOID(expr, msg) \
-        do { if (expr) { LUM_LOG_WARN(msg); return; } } while (0)
+#define LUM_HOTCHK_RETURN_VOID(expr, msg) \
+        do { if (!(expr)) { LUM_LOG_WARN(msg); return; } } while (0)
 
-#define LUM_HOTPATH_ASSERT_NULLPTR(expr, msg) \
-        do { if (expr) { LUM_LOG_WARN(msg); return nullptr; } } while (0)
+#define LUM_HOTCHK_RETURN_NPTR(expr, msg) \
+        do { if (!(expr)) { LUM_LOG_WARN(msg); return nullptr; } } while (0)
 
-#define LUM_HOTPATH_ASSERT_0(expr, msg) \
-        do { if (expr) { LUM_LOG_WARN(msg); return 0; } } while (0)
+#define LUM_HOTCHK_RETURN_0(expr, msg) \
+        do { if (!(expr)) { LUM_LOG_WARN(msg); return 0; } } while (0)
 
-#define LUM_HOTPATH_ASSERT_CUSTOM(expr, msg, retival) \
-        do { if(expr) { LUM_LOG_WARN(msg); return retival; } } while(0)
+#define LUM_HOTCHK_RETURN_CUSTOM(expr, msg, retival) \
+        do { if(!(expr)) { LUM_LOG_WARN(msg); return retival; } } while(0)
 
 #else
-#define LUM_HOTPATH_ASSERT(expr, msg) ((void)0)
+#define LUM_HOTCHK(expr, msg) ((void)0)
 
-#define LUM_HOTPATH_ASSERT_VOID(expr, msg) ((void)0)
+#define LUM_HOTCHK_RETURN_VOID(expr, msg) ((void)0)
 
-#define LUM_HOTPATH_ASSERT_NULLPTR(expr, msg) ((void)0)
+#define LUM_HOTCHK_RETURN_NPTR(expr, msg) ((void)0)
 
-#define LUM_HOTPATH_ASSERT_0(expr, msg) ((void)0)
+#define LUM_HOTCHK_RETURN_0(expr, msg) ((void)0)
 
-#define LUM_HOTPATH_ASSERT_CUSTOM(expr, msg, retival) ((void)0)
+#define LUM_HOTCHK_RETURN_CUSTOM(expr, msg, retival) ((void)0)
 #endif
 
 

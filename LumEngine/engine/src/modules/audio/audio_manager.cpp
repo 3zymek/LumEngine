@@ -38,7 +38,7 @@ namespace lum {
 
 		}
 
-		void AudioManager::LoadSound(fixedstring_view alias_name, fixedstring_view path, FMOD_MODE mode) {
+		void AudioManager::LoadSound(std::string_view alias_name, std::string_view path, FMOD_MODE mode) {
 
 			if (NameExists(alias_name)) {
 				LUM_LOG_ERROR(std::format("Audio Clip with name {} already exists", alias_name.data()));
@@ -46,7 +46,7 @@ namespace lum {
 			}
 
 			auto id = GenerateID<AudioHandle, detail::AUDIO_ID_NULL>::get();
-			auto hashed_new_id = cstd::StringHasher::Hash(alias_name);
+			auto hashed_new_id = hash(alias_name);
 
 			AudioClip clip;
 			FMOD_ASSERT(
@@ -281,8 +281,8 @@ namespace lum {
 			return m_listener.get();
 		}
 
-		std::optional<AudioHandle> AudioManager::GetIDByName(fixedstring_view name) {
-			auto it = m_name_to_id.find(cstd::StringHasher::Hash(name));
+		std::optional<AudioHandle> AudioManager::GetIDByName(std::string_view name) {
+			auto it = m_name_to_id.find(hash(name));
 			if (it == m_name_to_id.end()) {
 				LUM_LOG_WARN(std::format("Audio file named {} does not exists", name));
 				return std::nullopt;
@@ -290,8 +290,8 @@ namespace lum {
 			return it->second;
 		}
 
-		bool AudioManager::NameExists(fixedstring_view name) {
-			return m_name_to_id.find(cstd::StringHasher::Hash(name)) != m_name_to_id.end();
+		bool AudioManager::NameExists(std::string_view name) {
+			return m_name_to_id.find(hash(name)) != m_name_to_id.end();
 		}
 	};
 }

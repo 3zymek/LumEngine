@@ -9,7 +9,7 @@ namespace lum {
 		/// Public API
 		////////////////////////////////////
 
-		AudioEmitterWrapper& AudioEmitterWrapper::Add(fixedstring_view name) {
+		AudioEmitterWrapper& AudioEmitterWrapper::Add(std::string_view name) {
 
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value()) return *this;
@@ -23,7 +23,7 @@ namespace lum {
 
 			return *this;
 		}
-		AudioEmitterWrapper& AudioEmitterWrapper::Play(fixedstring_view name) {
+		AudioEmitterWrapper& AudioEmitterWrapper::Play(std::string_view name) {
 
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value()) return *this;
@@ -37,7 +37,7 @@ namespace lum {
 
 			return *this;
 		}
-		AudioEmitterWrapper& AudioEmitterWrapper::Stop(fixedstring_view name) {
+		AudioEmitterWrapper& AudioEmitterWrapper::Stop(std::string_view name) {
 
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value()) return *this;
@@ -52,7 +52,7 @@ namespace lum {
 			return *this;
 
 		}
-		AudioEmitterWrapper& AudioEmitterWrapper::SetVolume(fixedstring_view name, float volume) {
+		AudioEmitterWrapper& AudioEmitterWrapper::SetVolume(std::string_view name, float volume) {
 
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value()) return *this;
@@ -67,7 +67,7 @@ namespace lum {
 
 			return *this;
 		}
-		AudioEmitterWrapper& AudioEmitterWrapper::SetPitch(fixedstring_view name, float pitch) {
+		AudioEmitterWrapper& AudioEmitterWrapper::SetPitch(std::string_view name, float pitch) {
 
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value()) return *this;
@@ -82,7 +82,7 @@ namespace lum {
 
 			return *this;
 		}
-		AudioEmitterWrapper& AudioEmitterWrapper::SetPaused(fixedstring_view name, bool paused) {
+		AudioEmitterWrapper& AudioEmitterWrapper::SetPaused(std::string_view name, bool paused) {
 
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value()) return *this;
@@ -98,7 +98,7 @@ namespace lum {
 			return *this;
 
 		}
-		AudioEmitterWrapper& AudioEmitterWrapper::SetLoop(fixedstring_view name, bool loop) {
+		AudioEmitterWrapper& AudioEmitterWrapper::SetLoop(std::string_view name, bool loop) {
 
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value()) return *this;
@@ -115,7 +115,7 @@ namespace lum {
 
 		}
 
-		void AudioEmitterWrapper::Remove(fixedstring_view name) {
+		void AudioEmitterWrapper::Remove(std::string_view name) {
 
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value())
@@ -129,28 +129,28 @@ namespace lum {
 			manager.m_commands.Push(std::move(cmd));
 		}
 
-		float AudioEmitterWrapper::GetVolume(fixedstring_view name) {
+		float AudioEmitterWrapper::GetVolume(std::string_view name) {
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value())
 				return std::numeric_limits<float>::max();
 			return manager.GetEmitterClipVolume(emitterID, *id);
 		}
 
-		float AudioEmitterWrapper::GetPitch(fixedstring_view name) {
+		float AudioEmitterWrapper::GetPitch(std::string_view name) {
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value())
 				return std::numeric_limits<float>::max();
 			return manager.GetEmitterClipPitch(emitterID, *id);
 		}
 
-		bool AudioEmitterWrapper::GetPaused(fixedstring_view name) {
+		bool AudioEmitterWrapper::GetPaused(std::string_view name) {
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value())
 				return std::numeric_limits<float>::max();
 			return manager.GetEmitterClipPaused(emitterID, *id);
 		}
 
-		bool AudioEmitterWrapper::GetLooped(fixedstring_view name) {
+		bool AudioEmitterWrapper::GetLooped(std::string_view name) {
 			auto id = manager.GetIDByName(name);
 			if (!id.has_value())
 				return std::numeric_limits<float>::max();

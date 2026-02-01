@@ -4,41 +4,44 @@ namespace lum {
 
 	void Logger::Log(LogSeverity sev, const char* file, const char* func, int line, const std::string& msg) {
 		if (!(g_severity & sev)) return;
+		if (lastLog == hash(msg)) return;
 
-		OutputTime();
+		_OutputTime();
 
 		std::filesystem::path p = file;
 		std::string filename = p.filename().string();
-		std::string severity = ToString(sev);
+		std::string severity = _ToString(sev);
 		std::string info = filename + ":" + cmdcolor::cyan + std::to_string(line) + cmdcolor::reset + " " + func;
 
 		std::cout
 			<< "["
-			<< ToColor(sev)
-			<< CenterCustom(severity, 1, 6)
+			<< _ToColor(sev)
+			<< _CenterCustom(severity, 1, 6)
 			<< cmdcolor::reset
 			<< "]["
-			<< CenterCustom(info, 2, 52)
+			<< _CenterCustom(info, 2, 52)
 			<< "] "
 			<< msg
 			<< '\n';
 
+		lastLog = hash(msg);
+
 	}
 
-	std::string Logger::Center(const std::string& s, size_t width) {
+	std::string Logger::_Center(const std::string& s, size_t width) {
 		if (s.size() >= width) return s;
 		size_t padding = (width - s.size()) / 2;
 		size_t padding_right = width - padding - s.size();
 		return std::string(padding, ' ') + s + std::string(padding_right, ' ');
 	}
 
-	std::string Logger::CenterCustom(const std::string& s, size_t left_width, size_t right_width) {
+	std::string Logger::_CenterCustom(const std::string& s, size_t left_width, size_t right_width) {
 		if (s.size() >= right_width) return s;
 		size_t right_pad = right_width - s.size();
 		return std::string(left_width, ' ') + s + std::string(right_pad, ' ');
 	}
 
-	void Logger::OutputTime() {
+	void Logger::_OutputTime() {
 
 		auto now = std::chrono::system_clock::now();
 
@@ -54,7 +57,7 @@ namespace lum {
 
 	}
 
-	std::string Logger::ToString(LogSeverity sev) {
+	std::string Logger::_ToString(LogSeverity sev) {
 		switch (sev) {
 		case LogSeverity::FATAL: return "FATAL";
 		case LogSeverity::ERROR: return "ERROR";
@@ -65,7 +68,7 @@ namespace lum {
 		return "";
 	}
 
-	std::string Logger::ToColor(LogSeverity sev) {
+	std::string Logger::_ToColor(LogSeverity sev) {
 		switch (sev) {
 		case LogSeverity::FATAL: return cmdcolor::magenta;
 		case LogSeverity::ERROR: return cmdcolor::red;
@@ -76,14 +79,14 @@ namespace lum {
 		return "";
 	}
 
-	std::string Logger::ToString(InitStatus stat) {
+	std::string Logger::_ToString(InitStatus stat) {
 		switch (stat) {
 		case InitStatus::OK:	return "   OK   ";
 		case InitStatus::FAIL:	return "  FAIL  ";
 		}
 		return "";
 	}
-	std::string Logger::ToColor(InitStatus stat) {
+	std::string Logger::_ToColor(InitStatus stat) {
 		switch (stat) {
 		case InitStatus::OK:	return cmdcolor::green;
 		case InitStatus::FAIL:	return cmdcolor::red;

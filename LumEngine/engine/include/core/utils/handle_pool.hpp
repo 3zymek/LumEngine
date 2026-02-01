@@ -99,12 +99,12 @@ namespace cstd {
 
 		inline Hsize_t dense_size() const { return m_dense.size(); }
 
-		inline bool exists(const HandleType& handle) const noexcept {
+		inline bool exist(const HandleType& handle) const noexcept {
 			return handle.id < m_generations.size() && handle.generation == m_generations[handle.id];
 		}
 
 		inline DenseType* get(const HandleType& handle) {
-			if (exists(handle))
+			if (exist(handle))
 				return &m_dense[m_sparse[handle.id]];
 			else
 				return nullptr;

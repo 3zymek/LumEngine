@@ -150,7 +150,7 @@ LUM_UNIFORM_BUFFER_STRUCT ModelUBO {
 
 glm::vec3 model_pos = { 0,0,0 };
 glm::vec3 model_rot = { 0,0,0 };
-glm::vec3 model_scale = { 1,1,1, };
+glm::vec3 model_scale = { 1,1,1 };
 
 void UpdateCamera(RenderDevice* dev, Camera& cam, rhi::BufferHandle& ubo, CameraUBO& camstruct, rhi::BufferHandle& modelubo, ModelUBO modelstruct) {
     
@@ -197,8 +197,7 @@ std::vector<Vertex> skyboxVerts = {
     {{ 1.0f, -1.0f, -1.0f}}, {{ 1.0f, -1.0f, -1.0f}},
     {{-1.0f, -1.0f,  1.0f}}, {{ 1.0f, -1.0f,  1.0f}}
 };
-
-std::vector<Vertex> verts = {
+std::vector<Vertex> cubeVerts = {
     // Front face (z = 0.5)
     {{-0.5, -0.5,  0.5}, {0, 0, 1}, {0, 0}},
     {{ 0.5, -0.5,  0.5}, {0, 0, 1}, {1, 0}},
@@ -235,8 +234,7 @@ std::vector<Vertex> verts = {
     {{ 0.5, -0.5, -0.5}, {0, -1, 0}, {0, 1}},
     {{ 0.5, -0.5,  0.5}, {0, -1, 0}, {0, 0}}
 };
-
-std::vector<uint32> indices = {
+std::vector<uint32> cubeIndices = {
     0,1,2, 2,3,0,         // front
     4,5,6, 6,7,4,         // back
     8,9,10, 10,11,8,      // left
@@ -245,7 +243,47 @@ std::vector<uint32> indices = {
     20,21,22, 22,23,20    // bottom
 };
 
-float quad[] = {
+RenderDevice* device = nullptr;
+
+auto CreateShader(ccharptr vert, ccharptr frag) {
+    return device->CreateShader({vert, frag});
+}
+auto CreateCubeEBO() {
+    BufferDescriptor cubeEBODesc;
+    cubeEBODesc.bufferUsage = BufferUsage::Static;
+    cubeEBODesc.data = cubeIndices.data();
+    cubeEBODesc.size = bytesize(cubeIndices);
+    return device->CreateElementBuffer(cubeEBODesc);
+}
+auto CreateCubeVAO(auto vbo) {
+    std::vector<VertexAttribute> attributes(3);
+    attributes[0].format = DataFormat::Vec3;
+    attributes[0].relativeOffset = offsetof(Vertex, position);
+    attributes[0].shaderLocation = LUM_LAYOUT_POSITION;
+
+    attributes[1].format = DataFormat::Vec3;
+    attributes[1].relativeOffset = offsetof(Vertex, color);
+    attributes[1].shaderLocation = LUM_LAYOUT_COLOR;
+
+    attributes[2].format = DataFormat::Vec2;
+    attributes[2].relativeOffset = offsetof(Vertex, uv);
+    attributes[2].shaderLocation = LUM_LAYOUT_COLOR;
+
+    VertexLayoutDescriptor cubeVAODesc;
+    cubeVAODesc.stride = sizeof(Vertex);
+    cubeVAODesc.attributes = attributes;
+    return device->CreateVertexLayout(cubeVAODesc, vbo);
+}
+auto CreateCubeVBO() {
+    BufferDescriptor cubeVBODesc;
+    cubeVBODesc.bufferUsage = BufferUsage::Dynamic;
+    cubeVBODesc.data = cubeVerts.data();
+    cubeVBODesc.mapFlags = Mapflag::Write;
+    cubeVBODesc.size = bytesize(cubeVerts);
+    return device->CreateVertexBuffer(cubeVBODesc);
+}
+
+float32 quad[] = {
     // pos      // uv
     -1.0f, -1.0f, 0.0f, 0.0f,
      1.0f, -1.0f, 1.0f, 0.0f,
@@ -256,6 +294,48 @@ float quad[] = {
      1.0f,  1.0f, 1.0f, 1.0f
 };
 
+int main() {
+    Logger::Get().EnableLog(LogSeverity::ALL);
+
+    WindowDescriptor windowDesc;
+    windowDesc.MSAA_samples = 4;
+    windowDesc.fullscreen = false;
+    windowDesc.height = 920;
+    windowDesc.width = 1280;
+
+    Window* window = CreateWindow(windowDesc);
+    device = create_device(window);
+    input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
+
+    auto basicShader = CreateShader("basic.vert", "basic.frag");
+
+    auto cubeVBO = CreateCubeVBO();
+    auto cubeEBO = CreateCubeEBO();
+    auto cubeVAO = CreateCubeVAO(cubeVBO);
+
+    TextureDescriptor textureDesc;
+    textureDesc.filename = "grass.jpg";
+    auto texture = device->CreateTexture2D(textureDesc);
+    device->SetTextureBinding(texture, LUM_TEXTURE_BINDING_01);
+
+    auto sampler = device->CreateSampler(SamplerDescriptor{});
+
+    device->AttachElementBufferToLayout(cubeEBO, cubeVAO);
+
+    while (window->IsOpen()) {
+        device->BeginFrame();
+
+        device->BindSampler(sampler, LUM_TEXTURE_BINDING_01);
+        device->BindShader(basicShader);
+        device->BindTexture(texture);
+        device->DrawElements(cubeVAO, cubeIndices.size());
+
+        device->EndFrame();
+    }
+
+}
+
+/*
 int main() {
 
     // =====================
@@ -530,3 +610,4 @@ int main() {
         device->EndFrame();
     }
 }
+*/

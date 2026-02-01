@@ -54,24 +54,25 @@ namespace lum {
 			g_severity &= ~static_cast<SeverityMask>(sev);
 		}
 		inline void LogInit		( InitStatus stat, const char* msg ) {
-			std::cout << "[" << ToColor(stat) << ToString(stat) << cmdcolor::reset << "] " << msg << '\n';
+			std::cout << "[" << _ToColor(stat) << _ToString(stat) << cmdcolor::reset << "] " << msg << '\n';
 		}
 
 		void Log( LogSeverity, const char*, const char*, int, const std::string& );
 
 	private:
 
+		uint64 lastLog = 0;
 		SeverityMask g_severity = LogSeverity::FATAL | LogSeverity::DEBUG | LogSeverity::WARN | LogSeverity::ERROR;
 
-		std::string Center		( const std::string& s, size_t width );
-		std::string CenterCustom( const std::string& s, size_t left_width, size_t right_width );
+		std::string _Center		( const std::string& s, size_t width );
+		std::string _CenterCustom( const std::string& s, size_t left_width, size_t right_width );
 
-		void OutputTime();
+		void _OutputTime();
 
-		std::string ToString	( LogSeverity sev );
-		std::string ToColor		( LogSeverity sev );
-		std::string ToString	( InitStatus stat );
-		std::string ToColor		( InitStatus stat );
+		std::string _ToString	( LogSeverity sev );
+		std::string _ToColor		( LogSeverity sev );
+		std::string _ToString	( InitStatus stat );
+		std::string _ToColor		( InitStatus stat );
 
 		Logger() = default;
 

@@ -6,7 +6,7 @@ namespace lum::rhi::gl {
 ///////////////////////////////////////////////////
 
 	FramebufferHandle GLDevice::CreateFramebuffer() {
-		LUM_HOTPATH_ASSERT_CUSTOM(
+		LUM_HOTCHK_RETURN_CUSTOM(
 			mFramebuffers.dense_size() >= skMaxFramebuffers,
 			"Max framebuffers reached",
 			FramebufferHandle{}
@@ -21,7 +21,7 @@ namespace lum::rhi::gl {
 	}
 
 	TextureHandle GLDevice::CreateFramebufferTexture(const FramebufferTextureDescriptor& desc) {
-		LUM_HOTPATH_ASSERT_CUSTOM(
+		LUM_HOTCHK_RETURN_CUSTOM(
 			mTextures.dense_size() >= skMaxTextures || desc.height <= 0 || desc.width <= 0,
 			"Max textures reached",
 			TextureHandle{}
@@ -38,14 +38,14 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::SetFramebufferColorTexture(const FramebufferHandle& fbo, const TextureHandle& tex, uint8 index) {
-		LUM_HOTPATH_ASSERT_VOID(!mFramebuffers.exists(fbo) || !mTextures.exists(tex), "Framebuffer doesn't exists");
+		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.exist(fbo) || !mTextures.exist(tex), "Framebuffer doesn't exists");
 
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTextures[tex].handle.glHandle, 0);
 
 	}
 
 	void GLDevice::SetFramebufferDepthTexture(const FramebufferHandle& fbo, const TextureHandle& tex) {
-		LUM_HOTPATH_ASSERT_VOID(!mFramebuffers.exists(fbo), "Framebuffer doesn't exists");
+		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.exist(fbo), "Framebuffer doesn't exists");
 
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, mTextures[tex].handle.glHandle, 0);
 
@@ -63,7 +63,7 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::DeleteFramebuffer(FramebufferHandle& buff) {
-		LUM_HOTPATH_ASSERT_VOID(!mFramebuffers.exists(buff), "Framebuffer doesn't exists");
+		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.exist(buff), "Framebuffer doesn't exists");
 
 		Framebuffer& fbo = mFramebuffers[buff];
 		glDeleteFramebuffers(1, &fbo.handle);
@@ -72,7 +72,7 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::BindFramebuffer(const FramebufferHandle& buff) {
-		LUM_HOTPATH_ASSERT_VOID(!mFramebuffers.exists(buff), "Framebuffer doesn't exists");
+		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.exist(buff), "Framebuffer doesn't exists");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[buff].handle);
 

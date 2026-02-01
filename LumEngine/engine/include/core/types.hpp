@@ -17,15 +17,19 @@ namespace lum {
 	using uint16	= uint16_t;
 	using uint8		= uint8_t;
 
-	using usize = size_t;
-	using byte	= uint8_t;
+	using char8		= char8_t;
+	using char16	= char16_t;
+	using char32	= char32_t;
 
-	using bitfield	= uint32_t;
+	using ucharptr	= unsigned char*;
 	using ccharptr	= const char*;
 	using charptr	= char*;
 
-	using fixedstring		= std::string;
-	using fixedstring_view	= std::string_view;
+	using usize = size_t;
+	using isize = ptrdiff_t;
+	using byte	= char;
+
+	using bitfield	= uint32_t;
 
 	using vptr	= void*;
 	using cvptr = const void*;

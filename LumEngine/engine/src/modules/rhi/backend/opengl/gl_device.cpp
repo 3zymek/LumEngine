@@ -15,22 +15,20 @@
 #endif
 namespace lum::rhi::gl {
 
-
-
-
 	///////////////////////////////////////////////////
 	/// Other
 	///////////////////////////////////////////////////
 
 	void GLDevice::Draw(const VertexLayoutHandle& vao, uint32 vertex_count) {
-		LUM_HOTPATH_ASSERT_VOID(!mLayouts.exists(vao), "Cannot draw, invalid vertex layout");
+
+		LUM_HOTCHK_RETURN_VOID(mLayouts.exist(vao), "Cannot draw, invalid vertex layout");
 
 		glBindVertexArray(mLayouts[vao].vao);
 		glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
 	}
 	void GLDevice::DrawElements(const VertexLayoutHandle& vao, uint32 indices_count) {
-		LUM_HOTPATH_ASSERT_VOID(!mLayouts.exists(vao), "Cannot draw, invalid vertex layout");
+		LUM_HOTCHK_RETURN_VOID(mLayouts.exist(vao), "Cannot draw, invalid vertex layout");
 
 		glBindVertexArray(mLayouts[vao].vao);
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices_count), GL_UNSIGNED_INT, nullptr);

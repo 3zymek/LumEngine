@@ -33,7 +33,7 @@ namespace lum {
 				}
 
 				T* Add( EntityID entityID ) {
-					LUM_HOTPATH_ASSERT_NULLPTR(
+					LUM_HOTCHK_RETURN_NPTR(
 						m_components.contains(entityID), std::format("Entity {} already have {} component", entityID, typeid(T).name())
 					);
 					T component;
@@ -42,14 +42,14 @@ namespace lum {
 				}
 
 				inline void Remove( EntityID entityID ) {
-					LUM_HOTPATH_ASSERT_VOID(
+					LUM_HOTCHK_RETURN_VOID(
 						!m_components.contains(entityID), std::format("Entity doesn't have {} component to remove", typeid(T).name())
 					);
 					m_components.remove(entityID);
 				}
 
 				inline T* Get( EntityID entityID ) {
-					LUM_HOTPATH_ASSERT_NULLPTR(
+					LUM_HOTCHK_RETURN_NPTR(
 						!m_components.contains(entityID), std::format("Entity doesn't have {} component", typeid(T).name())
 					);
 					return &m_components[entityID];

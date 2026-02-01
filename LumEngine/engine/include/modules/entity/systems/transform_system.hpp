@@ -16,7 +16,7 @@ namespace lum::systems {
 
 		void SetPosition( const Entity& e, const glm::vec3 position ) {
 			auto* transform = ecs_manager.GetComponent<TransformComponent>( e.GetID() );
-			LUM_HOTPATH_ASSERT_VOID(!transform, "Entity doesn't have transform component");
+			LUM_HOTCHK_RETURN_VOID(transform, "Entity doesn't have transform component");
 			transform->position = position;
 			if (m_dirty_entities.size() < MAX_DIRTY_TRANSFORMS_PER_FRAME && !transform->dirty) {
 				m_dirty_entities.push_back(e.GetID());
@@ -26,7 +26,7 @@ namespace lum::systems {
 
 		void SetRotation(const Entity& e, const glm::vec3 rotation) {
 			auto* transform = ecs_manager.GetComponent<TransformComponent>(e.GetID());
-			LUM_HOTPATH_ASSERT_VOID(!transform, "Entity doesn't have transform component");
+			LUM_HOTCHK_RETURN_VOID(transform, "Entity doesn't have transform component");
 			transform->rotation = rotation;
 			if (m_dirty_entities.size() < MAX_DIRTY_TRANSFORMS_PER_FRAME && !transform->dirty) {
 				m_dirty_entities.push_back(e.GetID());
@@ -36,7 +36,7 @@ namespace lum::systems {
 
 		void SetScale(const Entity& e, const glm::vec3 scale) {
 			auto* transform = ecs_manager.GetComponent<TransformComponent>(e.GetID());
-			LUM_HOTPATH_ASSERT_VOID(!transform, "Entity doesn't have transform component");
+			LUM_HOTCHK_RETURN_VOID(transform, "Entity doesn't have transform component");
 			transform->scale = scale;
 			if (m_dirty_entities.size() < MAX_DIRTY_TRANSFORMS_PER_FRAME && !transform->dirty) {
 				m_dirty_entities.push_back(e.GetID());

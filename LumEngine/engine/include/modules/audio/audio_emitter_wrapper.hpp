@@ -28,7 +28,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& Add( fixedstring_view name );
+			AudioEmitterWrapper& Add( std::string_view name );
 
 			/*! @brief Plays the sound on emitter.
 			*
@@ -39,7 +39,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& Play( fixedstring_view name );
+			AudioEmitterWrapper& Play( std::string_view name );
 
 			/*! @brief Stops the sound.
 			*
@@ -50,7 +50,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& Stop( fixedstring_view name );
+			AudioEmitterWrapper& Stop( std::string_view name );
 
 			/*! @brief Sets the volume of a sound.
 			*
@@ -60,7 +60,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& SetVolume( fixedstring_view name, float32 value );
+			AudioEmitterWrapper& SetVolume( std::string_view name, float32 value );
 
 			/*! @brief Sets the pitch of a sound.
 			*
@@ -70,7 +70,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& SetPitch( fixedstring_view name, float32 value );
+			AudioEmitterWrapper& SetPitch( std::string_view name, float32 value );
 
 			/*! @brief Pauses or resumes a sound.
 			*
@@ -80,7 +80,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& SetPaused( fixedstring_view name, bool value );
+			AudioEmitterWrapper& SetPaused( std::string_view name, bool value );
 
 			/*! @brief Sets looping for a sound.
 			*
@@ -90,7 +90,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& SetLoop( fixedstring_view name, bool value );
+			AudioEmitterWrapper& SetLoop( std::string_view name, bool value );
 
 			/*! @brief Gets the unique ID of this emitter.
 			*
@@ -108,7 +108,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			void Remove( fixedstring_view name );
+			void Remove( std::string_view name );
 
 			/*! @brief Removes a sound by name.
 			*
@@ -118,7 +118,7 @@ namespace lum {
 			*  @return volume value of a clip on this emitter.
 			*
 			*/
-			float GetVolume	( fixedstring_view name );
+			float GetVolume	( std::string_view name );
 
 			/*! @brief Removes a sound by name.
 			*
@@ -128,7 +128,7 @@ namespace lum {
 			*  @return pitch value of a clip on this emitter.
 			*
 			*/
-			float GetPitch	( fixedstring_view name );
+			float GetPitch	( std::string_view name );
 
 			/*! @brief Removes a sound by name.
 			*
@@ -138,7 +138,7 @@ namespace lum {
 			*  @return paused value of a clip on this emitter.
 			*
 			*/
-			bool GetPaused	( fixedstring_view name );
+			bool GetPaused	( std::string_view name );
 
 			/*! @brief Removes a sound by name.
 			*
@@ -148,7 +148,7 @@ namespace lum {
 			*  @return looped value of a clip on this emitter.
 			*
 			*/
-			bool GetLooped	( fixedstring_view name );
+			bool GetLooped	( std::string_view name );
 
 
 		private:

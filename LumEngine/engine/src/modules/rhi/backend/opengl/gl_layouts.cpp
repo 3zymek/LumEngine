@@ -7,8 +7,8 @@ namespace lum::rhi::gl {
 
 	VertexLayoutHandle GLDevice::CreateVertexLayout(const VertexLayoutDescriptor& desc, const BufferHandle& vbo) {
 
-		LUM_HOTPATH_ASSERT_CUSTOM(!mBuffers.exists(vbo), "Buffer doesn't exists", VertexLayoutHandle{});
-		LUM_HOTPATH_ASSERT_CUSTOM(desc.attributes.size() <= 0, "VertexLayout has no attributes", VertexLayoutHandle{});
+		LUM_HOTCHK_RETURN_CUSTOM(mBuffers.exist(vbo), "Buffer doesn't exists", VertexLayoutHandle{});
+		LUM_HOTCHK_RETURN_CUSTOM(desc.attributes.size() > 0, "VertexLayout has no attributes", VertexLayoutHandle{});
 
 		VertexLayout layout;
 		Buffer& buffer = mBuffers[vbo];
@@ -43,11 +43,12 @@ namespace lum::rhi::gl {
 
 		}
 
+		LUM_LOG_INFO(std::format("Created vertex layout {}", layout.vao));
 		return mLayouts.create_handle(std::move(layout));
 
 	}
 	void GLDevice::DeleteVertexLayout(VertexLayoutHandle& layout) {
-		LUM_HOTPATH_ASSERT_VOID(!mLayouts.exists(layout), "Layout doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(!mLayouts.exist(layout), "Layout doesn't exist");
 
 		glDeleteVertexArrays(1, &mLayouts[layout].vao);
 		mLayouts.delete_handle(layout);

@@ -22,7 +22,6 @@ namespace lum {
 		)
 		{
 
-			if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return; // disable unnecessary spam 
 			if (severity == GL_DEBUG_SEVERITY_LOW)
 				LUM_LOG_INFO(msg);
 			if (severity == GL_DEBUG_SEVERITY_MEDIUM)
@@ -35,10 +34,10 @@ namespace lum {
 	}
 
 	///  OpenGL window
-	unsigned int OpenGL_Window::GetWidth( ) {
+	uint32 OpenGL_Window::GetWidth( ) {
 		return width;
 	}
-	unsigned int OpenGL_Window::GetHeight( ) {
+	uint32 OpenGL_Window::GetHeight( ) {
 		return height;
 	}
 	void* OpenGL_Window::GetNativeWindow( ) {

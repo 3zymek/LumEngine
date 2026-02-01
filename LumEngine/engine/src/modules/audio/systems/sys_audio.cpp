@@ -82,8 +82,8 @@ namespace lum {
 
 			auto* listener = manager.GetListener();
 
-			LUM_HOTPATH_ASSERT_VOID(!listener, "Listener doesn't exists");
-			LUM_HOTPATH_ASSERT_VOID(!listener->transform_component, "Listener doesn't have transform component");
+			LUM_HOTCHK_RETURN_VOID(!listener, "Listener doesn't exists");
+			LUM_HOTCHK_RETURN_VOID(!listener->transform_component, "Listener doesn't have transform component");
 
 			FMOD_VECTOR transfered_pos = TransferListenerCoordsToFMOD(listener->transform_component->position);
 

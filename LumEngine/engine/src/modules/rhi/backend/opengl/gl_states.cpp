@@ -25,7 +25,7 @@ namespace lum::rhi::gl {
 
 	// FINISHED
 	void GLDevice::SetScissor(int32 x, int32 y, int32 width, int32 height) {
-		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Scissor), "Scissor state not enabled");
+		LUM_HOTCHK_RETURN_VOID(!mEnabledStates.has(State::Scissor), "Scissor state not enabled");
 
 		if (mScissorState.x == x && mScissorState.y == y && mScissorState.width == width && mScissorState.height == height)
 			return;
@@ -69,7 +69,7 @@ namespace lum::rhi::gl {
 
 	// FINISHED
 	void GLDevice::SetCullFace(Face face) {
-		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Cull), "Cull not enabled");
+		LUM_HOTCHK_RETURN_VOID(!mEnabledStates.has(State::Cull), "Cull not enabled");
 
 		if (face == mCullState.face)
 			return;
@@ -83,7 +83,7 @@ namespace lum::rhi::gl {
 
 	// FINISHED
 	void GLDevice::SetCullWindingOrder(WindingOrder order) {
-		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Cull), "Cull not enabled");
+		LUM_HOTCHK_RETURN_VOID(!mEnabledStates.has(State::Cull), "Cull not enabled");
 
 		if (order == mCullState.windingOrder)
 			return;
@@ -118,7 +118,7 @@ namespace lum::rhi::gl {
 
 	// FINISHED
 	void GLDevice::SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha) {
-		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Blend), "Blend not enabled");
+		LUM_HOTCHK_RETURN_VOID(!mEnabledStates.has(State::Blend), "Blend not enabled");
 
 		if (mBlendState.srcColorFactor == srcColor && mBlendState.dstColorFactor == dstColor &&
 			mBlendState.srcAlphaFactor == srcAlpha && mBlendState.dstAlphaFactor == dstAlpha)
@@ -140,7 +140,7 @@ namespace lum::rhi::gl {
 
 	// FINISHED
 	void GLDevice::SetBlendOp(BlendOp colorOp, BlendOp alphaOp) {
-		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::Blend), "Blend not enabled");
+		LUM_HOTCHK_RETURN_VOID(!mEnabledStates.has(State::Blend), "Blend not enabled");
 
 		if (mBlendState.alphaOp == alphaOp && mBlendState.colorOp == colorOp)
 			return;
@@ -199,7 +199,7 @@ namespace lum::rhi::gl {
 
 	// FINISHED
 	void GLDevice::SetDepthFunc(CompareFlag func) {
-		LUM_HOTPATH_ASSERT_VOID(!mEnabledStates.has(State::DepthTest), "Depth not enabled");
+		LUM_HOTCHK_RETURN_VOID(!mEnabledStates.has(State::DepthTest), "Depth not enabled");
 
 		if (func == mDepthStencilState.depth.compareFlag)
 			return;
@@ -262,7 +262,7 @@ namespace lum::rhi::gl {
 
 	// FINISHED
 	void GLDevice::SetDepthBias(float32 slopFactor, float32 constantBias) {
-		LUM_HOTPATH_ASSERT(!mEnabledStates.has(State::DepthBias), "Depth bias not enabled");
+		LUM_HOTCHK(!mEnabledStates.has(State::DepthBias), "Depth bias not enabled");
 
 		if (slopFactor == mRasterizerState.depthBias.slopeFactor && constantBias == mRasterizerState.depthBias.constantBias)
 			return;
