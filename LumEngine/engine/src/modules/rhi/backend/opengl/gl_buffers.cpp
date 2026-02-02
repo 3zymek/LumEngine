@@ -39,7 +39,7 @@ namespace lum::rhi::gl {
 			init_flags
 		);
 
-		LUM_LOG_INFO(std::format("Created vertex buffer {}", buffer.handle.glHandle));
+		LUM_LOG_INFO("Created vertex buffer {}");
 		return mBuffers.create_handle(std::move(buffer));
 	}
 
@@ -76,7 +76,7 @@ namespace lum::rhi::gl {
 			init_flags
 		);
 
-		LUM_LOG_INFO(std::format("Created element buffer {}", buffer.handle.glHandle));
+		LUM_LOG_INFO("Created element buffer {}");
 		return mBuffers.create_handle(std::move(buffer));
 	}
 
@@ -114,7 +114,7 @@ namespace lum::rhi::gl {
 
 		auto createdBuffer = mBuffers.create_handle(std::move(buffer));
 
-		LUM_LOG_INFO(std::format("Created uniform buffer {}", createdBuffer.id));
+		LUM_LOG_INFO("Created uniform buffer {}");
 
 		return createdBuffer;
 
@@ -132,12 +132,12 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK_RETURN_VOID(
 			buffer.usage != BufferUsage::Static,
-			std::format("Buffer {} is static, cannot be updated", buffer.handle.glHandle)
+			"Buffer {} is static, cannot be updated"
 		);
 
 		LUM_HOTCHK_RETURN_VOID(
 			(buffer.flags & Mapflag::Write),
-			std::format("Buffer {} has no write flags enabled", buffer.handle.glHandle)
+			"Buffer {} has no write flags enabled"
 		);
 
 		void* ptr =
@@ -154,7 +154,7 @@ namespace lum::rhi::gl {
 
 		glUnmapNamedBuffer(buffer.handle.glHandle);
 
-		LUM_LOG_DEBUG(std::format("Updated buffer {}", buffer.handle.glHandle));
+		LUM_LOG_DEBUG("Updated buffer {}");
 	}
 
 	void GLDevice::DeleteBuffer(BufferHandle& vbo) {
@@ -168,7 +168,7 @@ namespace lum::rhi::gl {
 		
 		mBuffers.delete_handle(vbo);
 
-		LUM_LOG_INFO(std::format("Deleted buffer {}", buffer.handle.glHandle));
+		LUM_LOG_INFO("Deleted buffer {}");
 	}
 
 	vptr GLDevice::MapBuffer(const BufferHandle& vbo, Mapflag flags, usize offset, usize size) {
@@ -184,7 +184,7 @@ namespace lum::rhi::gl {
 
 		LUM_ASSERT(ptr, "Failed to map buffer");
 
-		LUM_LOG_DEBUG(std::format("Mapped buffer {}", buffer.handle.glHandle));
+		LUM_LOG_DEBUG("Mapped buffer {}");
 		return ptr;
 	}
 
@@ -196,7 +196,7 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(buffer.mapped, "Buffer is already unmapped");
 		glUnmapNamedBuffer(buffer.handle.glHandle);
 
-		LUM_LOG_DEBUG(std::format("Unmapped buffer {}", buffer.handle.glHandle));
+		LUM_LOG_DEBUG("Unmapped buffer {}");
 	}
 
 	void GLDevice::AttachElementBufferToLayout(const BufferHandle& ebo, const VertexLayoutHandle& vao) {
@@ -212,7 +212,7 @@ namespace lum::rhi::gl {
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, mBuffers[ubo].handle.glHandle);
 
-		LUM_LOG_INFO(std::format("Attached ubo {} to binding {}", ubo.id, binding));
+		LUM_LOG_INFO("Attached ubo {} to binding {}");
 
 	}
 }

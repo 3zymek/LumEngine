@@ -43,7 +43,7 @@ namespace lum::rhi::gl {
 
 		}
 
-		LUM_LOG_INFO(std::format("Created vertex layout {}", layout.vao));
+		LUM_LOG_INFO("Created vertex layout {}");
 		return mLayouts.create_handle(std::move(layout));
 
 	}

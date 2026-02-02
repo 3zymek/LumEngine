@@ -17,7 +17,7 @@ namespace lum::rhi::gl {
 		bool success;
 		TextureData data = AssetService::load_texture(desc.filename, success);
 		if (!success) {
-			LUM_LOG_ERROR(std::format("Failed to load texture {}", desc.filename));
+			LUM_LOG_ERROR("Failed to load texture {}");
 			return TextureHandle{};
 		}
 
@@ -56,7 +56,7 @@ namespace lum::rhi::gl {
 
 		auto createdTexture = mTextures.create_handle(std::move(texture));
 
-		LUM_LOG_INFO(std::format("Created texture {}", createdTexture.id));
+		LUM_LOG_INFO("Created texture {}");
 
 		return createdTexture;
 	}
@@ -81,7 +81,7 @@ namespace lum::rhi::gl {
 		bool success;
 		texData = AssetService::load_texture(desc.faces[0], success);
 		if (!success) {
-			LUM_LOG_ERROR(std::format("Failed to load texture {}", desc.faces[0]));
+			LUM_LOG_ERROR("Failed to load texture {}");
 		}
 
 		int32 width = texData.width;
@@ -94,7 +94,7 @@ namespace lum::rhi::gl {
 			TextureData texture = AssetService::load_texture(desc.faces[i], success);
 			
 			if (!success) {
-				LUM_LOG_ERROR(std::format("Failed to load texture {}", desc.faces[i]));
+				LUM_LOG_ERROR("Failed to load texture {}");
 				continue;
 			}
 			
@@ -111,7 +111,7 @@ namespace lum::rhi::gl {
 
 	}
 	void GLDevice::DeleteTexture(TextureHandle& texture) {
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), std::format("Texture {} doesn't exist", texture.id));
+		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture {} doesn't exist");
 
 		glDeleteTextures(1, &mTextures[texture].handle.glHandle);
 
@@ -120,7 +120,7 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetTextureBinding(const TextureHandle& texture, uint16 binding) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), std::format("Texture {} doesn't exist", texture.id));
+		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture {} doesn't exist");
 
 		mTextures[texture].binding = binding;
 
@@ -130,7 +130,7 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(
 			mTextures[texture].binding != LUM_NULL_BINDING &&
 			binding == LUM_NULL_BINDING,
-			std::format("Binding has not been given to texture {}", texture.id)
+			"Binding has not been given to texture {}"
 		);
 
 		uint16 bind = (binding == LUM_NULL_BINDING) ? mTextures[texture].binding : binding;

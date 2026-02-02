@@ -22,12 +22,12 @@ namespace lum {
 		)
 		{
 
-			if (severity == GL_DEBUG_SEVERITY_LOW)
-				LUM_LOG_INFO(msg);
-			if (severity == GL_DEBUG_SEVERITY_MEDIUM)
-				LUM_LOG_WARN(msg);
-			if (severity == GL_DEBUG_SEVERITY_HIGH)
-				LUM_LOG_FATAL(msg);
+			if (severity == GL_DEBUG_SEVERITY_LOW);
+				//LUM_LOG_INFO(msg);
+			if (severity == GL_DEBUG_SEVERITY_MEDIUM);
+					//LUM_LOG_WARN(msg);
+			if (severity == GL_DEBUG_SEVERITY_HIGH);
+				//LUM_LOG_FATAL(msg);
 
 		}
 #		endif
@@ -53,7 +53,6 @@ namespace lum {
 	void OpenGL_Window::Init( const WindowDescriptor& desc ) {
 
 		if (!glfwInit()) {
-			LUM_LOG_INIT_FAIL("Failed to initialize GLFW");
 			return;
 		}
 
@@ -75,7 +74,6 @@ namespace lum {
 		height = desc.height;
 
 		if (!m_window) {
-			LUM_LOG_INIT_FAIL("Failed to initialize window");
 			glfwTerminate();
 			return;
 		}
@@ -83,7 +81,6 @@ namespace lum {
 		glfwMakeContextCurrent(m_window);
 
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-			LUM_LOG_INIT_FAIL("Failed to initialize GLAD");
 			glfwTerminate();
 			return;
 		}

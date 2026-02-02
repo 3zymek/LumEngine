@@ -22,6 +22,7 @@
 #include <string_view>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 
 #include "math/backend/glm.hpp"
 #include "math/backend/gtc/matrix_transform.hpp"

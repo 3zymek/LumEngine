@@ -38,7 +38,7 @@ namespace lum {
 			tx.colorChannels = 4;
 
 			if (!data) {
-				LUM_LOG_ERROR(std::format("Failed to load texture {}", file_name));
+				LUM_LOG_ERROR("Failed to load texture {}");
 				success = false;
 				return tx;
 			}
@@ -59,7 +59,7 @@ namespace lum {
 
 			detail::fs::path file = audio_path / file_name;
 			if (!detail::fs::exists(file)) {
-				LUM_LOG_ERROR(std::format("Couldn't localize audio file named {}", file_name.data()));
+				LUM_LOG_ERROR("Couldn't localize audio file named {}");
 				return "";
 			}
 
@@ -71,14 +71,14 @@ namespace lum {
 			std::string file = (internal_shader_path / file_name).lexically_normal().string();
 
 			if (!detail::fs::exists(file)) {
-				LUM_LOG_ERROR(std::format("Couldn't localize shader file named {}", file_name.data()));
+				LUM_LOG_ERROR("Couldn't localize shader file named {}");
 				return "";
 			}
 
 			std::ifstream loaded_file(file);
 			std::ifstream defines(shader_define);
 			if (!loaded_file.is_open() || !defines.is_open()) {
-				LUM_LOG_ERROR(std::format("Couldn't open shader file named {}", file_name.data()));
+				LUM_LOG_ERROR("Couldn't open shader file named {}");
 				return "";
 			}
 
@@ -98,14 +98,14 @@ namespace lum {
 			std::string file = (external_shader_path / file_name).lexically_normal().string();
 
 			if (!detail::fs::exists(file)) {
-				LUM_LOG_ERROR(std::format("Couldn't localize shader file named {}", file_name.data()));
+				LUM_LOG_ERROR("Couldn't localize shader file named {}");
 				return "";
 			}
 
 			std::ifstream loaded_file(file);
 			std::ifstream defines(shader_define);
 			if (!loaded_file.is_open() || !defines.is_open()) {
-				LUM_LOG_ERROR(std::format("Couldn't open shader file named {}", file_name.data()));
+				LUM_LOG_ERROR("Couldn't open shader file named {}");
 				return "";
 			}
 

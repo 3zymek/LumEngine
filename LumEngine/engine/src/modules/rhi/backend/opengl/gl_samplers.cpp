@@ -29,25 +29,25 @@ namespace lum::rhi::gl {
 		glSamplerParameterf(sampler.handle, GL_TEXTURE_MAX_ANISOTROPY, final_anisotropy);
 
 		SamplerHandle createdSampler = mSamplers.create_handle(std::move(sampler));
-		LUM_LOG_INFO(std::format("Created sampler {}", createdSampler.id));
+		LUM_LOG_INFO("Created sampler {}");
 
 		return createdSampler;
 	}
 
 	void GLDevice::SetSamplerBinding(const SamplerHandle& sampler, uint16 binding) {
 
-		LUM_HOTCHK_RETURN_VOID(!mSamplers.exist(sampler), std::format("Sampler {} doesn't exist", sampler.id));
+		LUM_HOTCHK_RETURN_VOID(!mSamplers.exist(sampler), "Sampler {} doesn't exist");
 
 		mSamplers[sampler].binding = binding;
 
 	}
 	void GLDevice::BindSampler(const SamplerHandle& sampler, uint16 binding) {
 		
-		LUM_HOTCHK_RETURN_VOID(mSamplers.exist(sampler), std::format("Sampler {} doesn't exist", sampler.id));
+		LUM_HOTCHK_RETURN_VOID(mSamplers.exist(sampler), "Sampler {} doesn't exist");
 		LUM_HOTCHK_RETURN_VOID(
 			(mSamplers[sampler].binding != LUM_NULL_BINDING && binding == LUM_NULL_BINDING) || 
 			(mSamplers[sampler].binding == LUM_NULL_BINDING && binding != LUM_NULL_BINDING),
-			std::format("Binding was not been given to sampler {}", sampler.id)
+			"Binding was not been given to sampler {}"
 		);
 
 		uint16 bind = (binding == LUM_NULL_BINDING) ? mSamplers[sampler].binding : binding;
@@ -57,13 +57,13 @@ namespace lum::rhi::gl {
 
 	}
 	void GLDevice::DeleteSampler(SamplerHandle sampler) {
-		LUM_HOTCHK_RETURN_VOID(!mSamplers.exist(sampler), std::format("Sampler {} doesn't exists", sampler.id));
+		LUM_HOTCHK_RETURN_VOID(!mSamplers.exist(sampler), "Sampler {} doesn't exist");
 
 		glDeleteSamplers(1, &mSamplers[sampler].handle);
 
 		mSamplers.delete_handle(sampler);
 
-		LUM_LOG_INFO(std::format("Deleted sampler {}", sampler.id));
+		LUM_LOG_INFO("Deleted sampler {}");
 
 	}
 

@@ -26,4 +26,4 @@
 
 #define LUM_NOEXCEPT      noexcept
 
-#define LUM_CONST_VAR_QUALIFIER inline constexpr
+#define LUM_COMPILE_VARIABLE inline constexpr

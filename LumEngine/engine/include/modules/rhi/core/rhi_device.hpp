@@ -462,25 +462,25 @@ namespace lum::rhi {
 
 		Flags<State>		mEnabledStates	{};
 		
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static uint32 skMaxShaders = 8;
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static uint32 skMaxSamplers = 500;
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static uint32 skMaxBuffers = 10000;
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static uint32 skMaxLayouts = 10000;
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static uint32 skMaxTextures = 1000;
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static uint32 skMaxFramebuffers = 100;
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static uint32 skMaxPipelines = 100;
 
 		cstd::handle_pool<Sampler, SamplerHandle>			mSamplers		{ skMaxSamplers };
@@ -490,6 +490,8 @@ namespace lum::rhi {
 		cstd::handle_pool<Texture, TextureHandle>			mTextures		{ skMaxTextures };
 		cstd::handle_pool<Framebuffer, FramebufferHandle>	mFramebuffers	{ skMaxFramebuffers };
 		cstd::handle_pool<Pipeline, PipelineHandle>			mPipelines		{ skMaxPipelines };
+
+
 
 	};
 

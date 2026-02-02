@@ -111,7 +111,7 @@ namespace lum {
 
 		namespace detail {
 
-			LUM_CONST_VAR_QUALIFIER
+			LUM_COMPILE_VARIABLE
 			static uint8 skDataFormatLookup[] = { 1, 2, 3, 4, 9, 16 };
 
 		}

@@ -295,7 +295,7 @@ float32 quad[] = {
 };
 
 int main() {
-    Logger::Get().EnableLog(LogSeverity::ALL);
+    Logger::Get().enable_log(LogSeverity::ALL);
 
     WindowDescriptor windowDesc;
     windowDesc.MSAA_samples = 4;

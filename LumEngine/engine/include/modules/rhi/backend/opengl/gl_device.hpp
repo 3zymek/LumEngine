@@ -11,7 +11,7 @@ namespace lum::rhi::gl {
 	class GLDevice : public RenderDevice {
 	public:
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static bool rhiDevice = true;
 
 		GLDevice(Window* win) : window(win) {}
@@ -155,7 +155,7 @@ namespace lum::rhi::gl {
 
 	protected:
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static GLenum skPolygonModeLookup[] = 
 		{ 
 			GL_POINT, 
@@ -163,7 +163,7 @@ namespace lum::rhi::gl {
 			GL_FILL 
 		};
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static GLenum skFacesLookup[] =
 		{ 
 			GL_FRONT, 
@@ -171,7 +171,7 @@ namespace lum::rhi::gl {
 			GL_FRONT_AND_BACK 
 		};
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static GLenum skTextureMinFilterLookup[] =
 		{
 			GL_LINEAR,
@@ -183,7 +183,7 @@ namespace lum::rhi::gl {
 			GL_NEAREST_MIPMAP_LINEAR
 		};
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static GLenum skSamplerWrapLookup[] =
 		{
 			GL_REPEAT,
@@ -193,7 +193,7 @@ namespace lum::rhi::gl {
 			GL_CLAMP_TO_BORDER
 		};
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static GLenum skCompareFlagLookup[] =
 		{
 			GL_LESS,
@@ -205,7 +205,7 @@ namespace lum::rhi::gl {
 			GL_NEVER
 		};
 
-		LUM_CONST_VAR_QUALIFIER
+		LUM_COMPILE_VARIABLE
 		static GLenum skBlendFactorLookup[] =
 		{
 			GL_ZERO,
@@ -234,7 +234,8 @@ namespace lum::rhi::gl {
 			GL_ONE_MINUS_SRC1_ALPHA,
 
 		};
-		LUM_CONST_VAR_QUALIFIER
+
+		LUM_COMPILE_VARIABLE
 		static GLenum skBlendOpLookup[] =
 		{
 			GL_FUNC_ADD,
@@ -264,6 +265,13 @@ namespace lum::rhi::gl {
 
 		LUM_FORCEINLINE
 		void _BindCheckCull(const Pipeline&) noexcept;
+
+		LUM_FORCEINLINE
+		void _CompileShader(GLuint shader) noexcept;
+
+		LUM_FORCEINLINE
+		void _LinkProgram(GLuint program) noexcept;
+
 
 		void		_CacheUniformsLocations		( );
 		bool		_IsValidBufferDescriptor	( const BufferDescriptor&)		noexcept;

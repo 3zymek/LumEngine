@@ -40,27 +40,21 @@
 
 #if LUM_ENABLE_LOGGER == 1
 #define LUM_LOG_FATAL(msg) \
-    do { lum::Logger::Get().Log(lum::LogSeverity::FATAL, __FILE__, __func__, __LINE__, msg); } while (0)
+    do { lum::Logger::Get().log_cmd(lum::LogSeverity::FATAL, __FILE__, __func__, __LINE__, msg); } while (0)
 
 #define LUM_LOG_ERROR(msg) \
-    do { lum::Logger::Get().Log(lum::LogSeverity::ERROR, __FILE__, __func__, __LINE__, msg); } while (0)
+    do { lum::Logger::Get().log_cmd(lum::LogSeverity::ERROR, __FILE__, __func__, __LINE__, msg); } while (0)
 
 #define LUM_LOG_WARN(msg) \
-    do { lum::Logger::Get().Log(lum::LogSeverity::WARN, __FILE__, __func__, __LINE__, msg); } while (0)
+    do { lum::Logger::Get().log_cmd(lum::LogSeverity::WARN, __FILE__, __func__, __LINE__, msg); } while (0)
 
-#define LUM_LOG_INFO(msg) \
-    do { lum::Logger::Get().Log(lum::LogSeverity::INFO, __FILE__, __func__, __LINE__, msg); } while (0)
+#define LUM_LOG_INFO(msg, ...) \
+    do { lum::Logger::Get().log_cmd(lum::LogSeverity::INFO, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
 
 
 #define LUM_LOG_DEBUG(msg) \
-    do { lum::Logger::Get().Log(lum::LogSeverity::DEBUG, __FILE__, __func__, __LINE__, msg); } while (0)
+    do { lum::Logger::Get().log_cmd(lum::LogSeverity::DEBUG, __FILE__, __func__, __LINE__, msg); } while (0)
 
-
-#define LUM_LOG_INIT_OK(msg) \
-    do { lum::Logger::Get().LogInit(lum::InitStatus::OK, msg); } while (0)
-
-#define LUM_LOG_INIT_FAIL(msg) \
-    do { lum::Logger::Get().LogInit(lum::InitStatus::FAIL, msg); } while (0)
 
 
 #else
@@ -74,9 +68,5 @@
 #define LUM_LOG_INFO(msg) ((void)0)
 
 #define LUM_LOG_DEBUG(msg) ((void)0)
-
-#define LUM_LOG_INIT_OK(msg) ((void)0)
-
-#define LUM_LOG_INIT_FAIL(msg) ((void)0)
 
 #endif // ENABLE_LOGGER

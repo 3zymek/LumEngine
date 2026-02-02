@@ -26,7 +26,7 @@ namespace lum {
 
 					SetupCallback(std::forward<Lambda>(lambda), callbacks[current_callbacks_id]);
 
-					LUM_LOG_DEBUG(std::format("Subscribed at slot {}", current_callbacks_id));
+					LUM_LOG_DEBUG("Subscribed at slot {}");
 					return current_callbacks_id++;
 
 				}
@@ -45,7 +45,7 @@ namespace lum {
 
 					SetupCallback(std::forward<Lambda>(lambda), perm_callbacks[slot]);
 
-					LUM_LOG_DEBUG(std::format("Subscribed permamently at slot {}", slot));
+					LUM_LOG_DEBUG("Subscribed permamently at slot {}");
 					return slot;
 
 				}
@@ -53,7 +53,7 @@ namespace lum {
 				void Unsubscribe(SubscribtionID id) {
 
 					if (current_callbacks_id < id) {
-						LUM_LOG_WARN(std::format("Subscribtion at id {} does not exists", id));
+						LUM_LOG_WARN("Subscribtion at id {} does not exists");
 						return;
 					}
 
@@ -63,7 +63,7 @@ namespace lum {
 
 					callback.Destroy();
 
-					LUM_LOG_DEBUG(std::format("Unsubscribed callback at slot {}", id));
+					LUM_LOG_DEBUG("Unsubscribed callback at slot {}");
 
 				}
 				void UnsubscribePermanent(SubscribtionID id) {

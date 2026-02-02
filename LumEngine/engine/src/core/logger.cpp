@@ -2,45 +2,6 @@
 #include "core/core_common.hpp"
 namespace lum {
 
-	void Logger::Log(LogSeverity sev, const char* file, const char* func, int line, const std::string& msg) {
-		if (!(g_severity & sev)) return;
-		if (lastLog == hash(msg)) return;
-
-		_OutputTime();
-
-		std::filesystem::path p = file;
-		std::string filename = p.filename().string();
-		std::string severity = _ToString(sev);
-		std::string info = filename + ":" + cmdcolor::cyan + std::to_string(line) + cmdcolor::reset + " " + func;
-
-		std::cout
-			<< "["
-			<< _ToColor(sev)
-			<< _CenterCustom(severity, 1, 6)
-			<< cmdcolor::reset
-			<< "]["
-			<< _CenterCustom(info, 2, 52)
-			<< "] "
-			<< msg
-			<< '\n';
-
-		lastLog = hash(msg);
-
-	}
-
-	std::string Logger::_Center(const std::string& s, size_t width) {
-		if (s.size() >= width) return s;
-		size_t padding = (width - s.size()) / 2;
-		size_t padding_right = width - padding - s.size();
-		return std::string(padding, ' ') + s + std::string(padding_right, ' ');
-	}
-
-	std::string Logger::_CenterCustom(const std::string& s, size_t left_width, size_t right_width) {
-		if (s.size() >= right_width) return s;
-		size_t right_pad = right_width - s.size();
-		return std::string(left_width, ' ') + s + std::string(right_pad, ' ');
-	}
-
 	void Logger::_OutputTime() {
 
 		auto now = std::chrono::system_clock::now();
@@ -50,48 +11,71 @@ namespace lum {
 
 		localtime_s(&now_tm, &now_t);
 
-		char buff[80];
+		char buff[64];
 		strftime(buff, sizeof(buff), "%T", &now_tm);
 
-		std::cout << "[" << buff << "]";
+		printf("[%s]", buff);
 
 	}
 
-	std::string Logger::_ToString(LogSeverity sev) {
+	void Logger::_ToString(charptr out, LogSeverity sev) {
 		switch (sev) {
-		case LogSeverity::FATAL: return "FATAL";
-		case LogSeverity::ERROR: return "ERROR";
-		case LogSeverity::WARN:  return "WARN";
-		case LogSeverity::INFO:  return "INFO";
-		case LogSeverity::DEBUG: return "DEBUG";
+		case LogSeverity::FATAL: {
+			std::memcpy(out, "FATAL\0", 5);
+			break;
 		}
-		return "";
+		case LogSeverity::ERROR: {
+			std::memcpy(out, "ERROR\0", 6);
+			break;
+		}
+		case LogSeverity::WARN: {
+			std::memcpy(out, "WARN\0", 5);
+			break;
+		}
+		case LogSeverity::INFO: {
+			std::memcpy(out, "INFO\0", 5);
+			break;
+		}
+		case LogSeverity::DEBUG: {
+			std::memcpy(out, "DEBUG\0", 6);
+			break;
+		}
+		}
 	}
 
-	std::string Logger::_ToColor(LogSeverity sev) {
+	void Logger::_ToColor(charptr out, LogSeverity sev) {
 		switch (sev) {
-		case LogSeverity::FATAL: return cmdcolor::magenta;
-		case LogSeverity::ERROR: return cmdcolor::red;
-		case LogSeverity::WARN:  return cmdcolor::yellow;
-		case LogSeverity::INFO:  return cmdcolor::green;
-		case LogSeverity::DEBUG: return cmdcolor::blue;
+		case LogSeverity::FATAL: {
+			constexpr usize len = sizeof(cmdcolor::magenta) - 1;
+			std::memcpy(out, cmdcolor::magenta, len);
+			out[len] = '\0';
+			break;
 		}
-		return "";
-	}
-
-	std::string Logger::_ToString(InitStatus stat) {
-		switch (stat) {
-		case InitStatus::OK:	return "   OK   ";
-		case InitStatus::FAIL:	return "  FAIL  ";
+		case LogSeverity::ERROR: {
+			constexpr usize len = sizeof(cmdcolor::red) - 1;
+			std::memcpy(out, cmdcolor::red, len);
+			out[len] = '\0';
+			break;
 		}
-		return "";
-	}
-	std::string Logger::_ToColor(InitStatus stat) {
-		switch (stat) {
-		case InitStatus::OK:	return cmdcolor::green;
-		case InitStatus::FAIL:	return cmdcolor::red;
+		case LogSeverity::WARN: {
+			constexpr usize len = sizeof(cmdcolor::yellow) - 1;
+			std::memcpy(out, cmdcolor::yellow, len);
+			out[len] = '\0';
+			break;
 		}
-		return "";
+		case LogSeverity::INFO: {
+			constexpr usize len = sizeof(cmdcolor::green) - 1;
+			std::memcpy(out, cmdcolor::green, len);
+			out[len] = '\0';
+			break;
+		}
+		case LogSeverity::DEBUG: {
+			constexpr usize len = sizeof(cmdcolor::blue) - 1;
+			std::memcpy(out, cmdcolor::blue, len);
+			out[len] = '\0';
+			break;
+		}
+		}
 	}
 
 
