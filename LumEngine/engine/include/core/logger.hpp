@@ -31,6 +31,7 @@ namespace lum {
 
 	class Logger {
 	public:
+
 		inline static Logger& Get( ) {
 			static Logger log;
 			return log;
@@ -49,26 +50,13 @@ namespace lum {
 			gSeverity &= ~static_cast<SeverityMask>(sev);
 		}
 
-		template<usize fileL>
-		const char* filename_from_path(const char(&file)[fileL]) {
-			const char* lastSlash = nullptr;
-
-			for (size_t i = 0; i < fileL - 1; ++i) {
-				if (file[i] == '/' || file[i] == '\\') {
-					lastSlash = &file[i];
-				}
-			}
-
-			return lastSlash ? lastSlash + 1 : file;
-		}
-
 		template<usize fileL, usize funcL, typename... Args>
 		void log_cmd(
-			LogSeverity sev, 
-			const char(&file)[fileL], 
-			const char(&func)[funcL], 
-			int32 line, 
-			ccharptr msg, 
+			LogSeverity sev,
+			const char(&file)[fileL],
+			const char(&func)[funcL],
+			int32 line,
+			ccharptr msg,
 			Args&&... args
 		) 
 		{
@@ -76,24 +64,24 @@ namespace lum {
 			if (lastLog == hash(msg)) return;
 
 			// Cleanup
-			std::memset(descFinalBuffer, 0, sizeof(descFinalBuffer));
 			std::memset(descBuffer, 0, sizeof(descBuffer));
+			std::memset(descTempBuffer, 0, sizeof(descTempBuffer));
 			std::memset(centertedSeverity, 0, sizeof(centertedSeverity));
 			std::memset(sevColorBuffer, 0, sizeof(sevColorBuffer));
-			std::memset(severityBuffer, 0, sizeof(severityBuffer));
+			std::memset(severityTempBuffer, 0, sizeof(severityTempBuffer));
 
 			_OutputTime();
 			
-			_ToString(severityBuffer, sev);
-			_CenterCustom(centertedSeverity, 8, severityBuffer, 1, 6);
+			_ToString(severityTempBuffer, sev);
+			_CenterCustom(centertedSeverity, 8, severityTempBuffer, 1, 6);
 			_ToColor(sevColorBuffer, sev);
 
-			const char* filename = filename_from_path(file);
+			const char* filename = _ExtractFilename(file);
 
 			int32 descLen = 
 				std::snprintf(
-					descBuffer, 
-					sizeof(descBuffer), 
+					descTempBuffer, 
+					sizeof(descTempBuffer), 
 					"%s:%s%d%s %s", 
 					filename, 
 					cmdcolor::cyan, 
@@ -102,12 +90,11 @@ namespace lum {
 					func
 				);
 
-			_CenterCustom(descFinalBuffer, sizeof(descFinalBuffer), descBuffer, 2, 52);
+			_CenterCustom(descBuffer, sizeof(descBuffer), descTempBuffer, 2, 52);
 
-			std::printf("[%s%s%s][%s] ", sevColorBuffer, centertedSeverity, cmdcolor::reset, descFinalBuffer);
+			std::printf("[%s%s%s][%s] ", sevColorBuffer, centertedSeverity, cmdcolor::reset, descBuffer);
 			std::printf(msg, std::forward<Args>(args)...);
 			std::printf("%c", '\n');
-
 
 			lastLog = hash(msg);
 
@@ -124,9 +111,9 @@ namespace lum {
 		LUM_COMPILE_VARIABLE
 		static uint32 skDescriptionLength = 128;
 
-		char descFinalBuffer	[skDescriptionLength]	{};
 		char descBuffer			[skDescriptionLength]	{};
-		char severityBuffer		[skMaxSeverityLength]	{};
+		char descTempBuffer		[skDescriptionLength]	{};
+		char severityTempBuffer	[skMaxSeverityLength]	{};
 		char centertedSeverity	[16]					{};
 		char sevColorBuffer		[skMaxColorLength]		{};
 
@@ -149,6 +136,19 @@ namespace lum {
 			std::memcpy(out + left_width, s, copy_len);
 			std::memset(out + left_width + copy_len, ' ', pad_right);
 
+		}
+
+		template<usize fileL>
+		const char* _ExtractFilename(const char(&path)[fileL]) {
+			const char* lastSlash = nullptr;
+
+			for (size_t i = 0; i < fileL - 1; ++i) {
+				if (path[i] == '/' || path[i] == '\\') {
+					lastSlash = &path[i];
+				}
+			}
+
+			return lastSlash ? lastSlash + 1 : path;
 		}
 
 		void _OutputTime();

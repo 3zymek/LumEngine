@@ -8,8 +8,8 @@ namespace lum::rhi::gl {
 	TextureHandle GLDevice::CreateTexture2D(const TextureDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mTextures.dense_size() <= skMaxTextures,
-			"Max textures reached",
-			TextureHandle{}
+			TextureHandle{},
+			"Max textures reached"
 		);
 
 		Texture texture;
@@ -17,7 +17,7 @@ namespace lum::rhi::gl {
 		bool success;
 		TextureData data = AssetService::load_texture(desc.filename, success);
 		if (!success) {
-			LUM_LOG_ERROR("Failed to load texture {}");
+			LUM_LOG_ERROR("Failed to load texture %s", desc.filename);
 			return TextureHandle{};
 		}
 
@@ -54,11 +54,11 @@ namespace lum::rhi::gl {
 		if (mipmaps > 1)
 			glGenerateTextureMipmap(texture.handle.glHandle);
 
-		auto createdTexture = mTextures.create_handle(std::move(texture));
+		auto textureHandle = mTextures.create_handle(std::move(texture));
 
-		LUM_LOG_INFO("Created texture {}");
+		LUM_LOG_INFO("Created texture %d", textureHandle.id);
 
-		return createdTexture;
+		return textureHandle;
 	}
 	// TO IMPLEMENT:
 	TextureHandle GLDevice::CreateTexture3D(const TextureDescriptor& desc) {
@@ -69,8 +69,8 @@ namespace lum::rhi::gl {
 	TextureHandle GLDevice::CreateCubemapTexture(const TextureCubemapDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mTextures.dense_size() <= skMaxTextures,
-			"Max textures reached",
-			TextureHandle{}
+			TextureHandle{},
+			"Max textures reached"
 		);
 
 		Texture tex;
@@ -81,7 +81,7 @@ namespace lum::rhi::gl {
 		bool success;
 		texData = AssetService::load_texture(desc.faces[0], success);
 		if (!success) {
-			LUM_LOG_ERROR("Failed to load texture {}");
+			LUM_LOG_ERROR("Failed to load texture %s", desc.faces[0]);
 		}
 
 		int32 width = texData.width;
@@ -94,7 +94,7 @@ namespace lum::rhi::gl {
 			TextureData texture = AssetService::load_texture(desc.faces[i], success);
 			
 			if (!success) {
-				LUM_LOG_ERROR("Failed to load texture {}");
+				LUM_LOG_ERROR("Failed to load texture %s", desc.faces[i]);
 				continue;
 			}
 			
@@ -111,7 +111,8 @@ namespace lum::rhi::gl {
 
 	}
 	void GLDevice::DeleteTexture(TextureHandle& texture) {
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture {} doesn't exist");
+
+		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture %d doesn't exist", texture.id);
 
 		glDeleteTextures(1, &mTextures[texture].handle.glHandle);
 
@@ -120,17 +121,18 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetTextureBinding(const TextureHandle& texture, uint16 binding) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture {} doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture %d doesn't exist", texture.id);
 
 		mTextures[texture].binding = binding;
 
 	}
 	void GLDevice::BindTexture(const TextureHandle& texture, uint16 binding) {
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture %d doesn't exist", texture.id);
 		LUM_HOTCHK_RETURN_VOID(
 			mTextures[texture].binding != LUM_NULL_BINDING &&
 			binding == LUM_NULL_BINDING,
-			"Binding has not been given to texture {}"
+			"Binding has not been given to texture %d",
+			texture.id
 		);
 
 		uint16 bind = (binding == LUM_NULL_BINDING) ? mTextures[texture].binding : binding;

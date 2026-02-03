@@ -267,7 +267,7 @@ namespace lum::rhi::gl {
 		void _BindCheckCull(const Pipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void _CompileShader(GLuint shader) noexcept;
+		bool _CompileShader(GLuint shader) noexcept;
 
 		LUM_FORCEINLINE
 		void _LinkProgram(GLuint program) noexcept;

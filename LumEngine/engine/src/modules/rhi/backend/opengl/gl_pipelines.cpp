@@ -119,8 +119,8 @@ namespace lum::rhi::gl {
 	PipelineHandle GLDevice::CreatePipeline(const PipelineDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mPipelines.dense_size() >= skMaxPipelines,
-			"Max pipelines reached",
-			PipelineHandle{}
+			PipelineHandle{},
+			"Max pipelines reached"
 		);
 
 		Pipeline pipeline;

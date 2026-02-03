@@ -11,8 +11,8 @@ namespace lum::rhi {
 	};
 
 	struct ShaderDescriptor {
-		std::string vertex_source;
-		std::string fragment_source;
+		ccharptr vertex_source;
+		ccharptr fragment_source;
 	};
 
 	struct Shader {

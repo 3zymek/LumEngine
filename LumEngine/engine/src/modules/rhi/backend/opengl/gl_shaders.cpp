@@ -8,8 +8,8 @@ namespace lum::rhi::gl {
 	ShaderHandle GLDevice::CreateShader(const ShaderDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mShaders.dense_size() < skMaxShaders,
-			"Max shaders reached",
-			ShaderHandle{}
+			ShaderHandle{},
+			"Max shaders reached"
 		);
 
 		std::string&& vfile = AssetService::load_internal_shader(desc.vertex_source);
@@ -26,23 +26,10 @@ namespace lum::rhi::gl {
 		glShaderSource(vshader, 1, &vcstr, nullptr);
 		glShaderSource(fshader, 1, &fcstr, nullptr);
 
-		glCompileShader(vshader);
-		GLint success;
-		glGetShaderiv(vshader, GL_COMPILE_STATUS, &success);
-		if (!success) {
-			char buff[2048];
-			glGetShaderInfoLog(vshader, 2048, nullptr, buff);
-			LUM_LOG_ERROR(buff);
-		}
-
-
-		glCompileShader(fshader);
-		glGetShaderiv(fshader, GL_COMPILE_STATUS, &success);
-		if (!success) {
-			char buff[2048];
-			glGetShaderInfoLog(fshader, 2048, nullptr, buff);
-			LUM_LOG_ERROR(buff);
-		}
+		if (!_CompileShader(vshader))
+			return ShaderHandle{};
+		if (!_CompileShader(fshader))
+			return ShaderHandle{};
 
 		shader.handle = glCreateProgram();
 
@@ -54,7 +41,7 @@ namespace lum::rhi::gl {
 
 		glLinkProgram(shader.handle);
 
-		LUM_LOG_INFO("Created shader {} - {}");
+		LUM_LOG_INFO("Created shader %s - %s", desc.vertex_source, desc.fragment_source);
 		return mShaders.create_handle(std::move(shader));
 	}
 	void GLDevice::BindShader(const ShaderHandle& shader) {
@@ -110,7 +97,7 @@ namespace lum::rhi::gl {
 
 	}
 	
-	void GLDevice::_CompileShader(GLuint shader) noexcept {
+	bool GLDevice::_CompileShader(GLuint shader) noexcept {
 
 		glCompileShader(shader);
 		int32 success;
@@ -120,8 +107,10 @@ namespace lum::rhi::gl {
 			char buff[2048];
 			glGetShaderInfoLog(shader, 2048, nullptr, buff);
 			LUM_LOG_FATAL("Failed to compile shader: {}");
+			return false;
 
 		}
 
+		return true;
 	}
 }

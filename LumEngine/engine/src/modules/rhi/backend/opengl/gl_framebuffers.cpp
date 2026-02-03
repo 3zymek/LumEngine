@@ -8,8 +8,8 @@ namespace lum::rhi::gl {
 	FramebufferHandle GLDevice::CreateFramebuffer() {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mFramebuffers.dense_size() >= skMaxFramebuffers,
-			"Max framebuffers reached",
-			FramebufferHandle{}
+			FramebufferHandle{},
+			"Max framebuffers reached"
 		);
 
 		Framebuffer fbo;
@@ -23,8 +23,8 @@ namespace lum::rhi::gl {
 	TextureHandle GLDevice::CreateFramebufferTexture(const FramebufferTextureDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mTextures.dense_size() >= skMaxTextures || desc.height <= 0 || desc.width <= 0,
-			"Max textures reached",
-			TextureHandle{}
+			TextureHandle{},
+			"Max textures reached"
 		);
 
 		Texture tex;

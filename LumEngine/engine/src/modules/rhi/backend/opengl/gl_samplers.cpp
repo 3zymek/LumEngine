@@ -8,8 +8,8 @@ namespace lum::rhi::gl {
 	SamplerHandle GLDevice::CreateSampler(const SamplerDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mSamplers.dense_size() <= skMaxSamplers,
-			"Max samplers reached",
-			SamplerHandle{}
+			SamplerHandle{},
+			"Max samplers reached"
 		);
 
 		Sampler sampler;
@@ -28,10 +28,11 @@ namespace lum::rhi::gl {
 		GLfloat final_anisotropy = std::clamp((float32)desc.anisotropy, 1.0f, (float32)max_anisotropy);
 		glSamplerParameterf(sampler.handle, GL_TEXTURE_MAX_ANISOTROPY, final_anisotropy);
 
-		SamplerHandle createdSampler = mSamplers.create_handle(std::move(sampler));
-		LUM_LOG_INFO("Created sampler {}");
+		SamplerHandle samplerHandle = mSamplers.create_handle(std::move(sampler));
 
-		return createdSampler;
+		LUM_LOG_INFO("Created sampler %d", samplerHandle.id);
+
+		return samplerHandle;
 	}
 
 	void GLDevice::SetSamplerBinding(const SamplerHandle& sampler, uint16 binding) {
@@ -47,7 +48,8 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(
 			(mSamplers[sampler].binding != LUM_NULL_BINDING && binding == LUM_NULL_BINDING) || 
 			(mSamplers[sampler].binding == LUM_NULL_BINDING && binding != LUM_NULL_BINDING),
-			"Binding was not been given to sampler {}"
+			"Binding was not been given to sampler %d",
+			sampler.id
 		);
 
 		uint16 bind = (binding == LUM_NULL_BINDING) ? mSamplers[sampler].binding : binding;
@@ -63,7 +65,7 @@ namespace lum::rhi::gl {
 
 		mSamplers.delete_handle(sampler);
 
-		LUM_LOG_INFO("Deleted sampler {}");
+		LUM_LOG_INFO("Deleted sampler %d", sampler.id);
 
 	}
 

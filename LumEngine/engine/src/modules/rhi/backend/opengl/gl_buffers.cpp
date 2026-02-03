@@ -39,8 +39,11 @@ namespace lum::rhi::gl {
 			init_flags
 		);
 
-		LUM_LOG_INFO("Created vertex buffer {}");
-		return mBuffers.create_handle(std::move(buffer));
+		auto createdBuffer = mBuffers.create_handle(std::move(buffer));
+
+		LUM_LOG_INFO("Created vertex buffer %d", createdBuffer.id);
+
+		return createdBuffer;
 	}
 
 	BufferHandle GLDevice::CreateElementBuffer(const BufferDescriptor& desc) {
@@ -76,8 +79,12 @@ namespace lum::rhi::gl {
 			init_flags
 		);
 
-		LUM_LOG_INFO("Created element buffer {}");
-		return mBuffers.create_handle(std::move(buffer));
+
+		auto createdBuffer = mBuffers.create_handle(std::move(buffer));
+
+		LUM_LOG_INFO("Created element buffer %d", createdBuffer.id);
+		
+		return createdBuffer;
 	}
 
 	BufferHandle GLDevice::CreateUniformBuffer(const BufferDescriptor& desc) {
@@ -114,7 +121,7 @@ namespace lum::rhi::gl {
 
 		auto createdBuffer = mBuffers.create_handle(std::move(buffer));
 
-		LUM_LOG_INFO("Created uniform buffer {}");
+		LUM_LOG_INFO("Created uniform buffer %d", createdBuffer.id);
 
 		return createdBuffer;
 
@@ -132,12 +139,14 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK_RETURN_VOID(
 			buffer.usage != BufferUsage::Static,
-			"Buffer {} is static, cannot be updated"
+			"Buffer %d is static, cannot be updated",
+			vbo.id
 		);
 
 		LUM_HOTCHK_RETURN_VOID(
 			(buffer.flags & Mapflag::Write),
-			"Buffer {} has no write flags enabled"
+			"Buffer %d has no write flags enabled",
+			vbo.id
 		);
 
 		void* ptr =
@@ -154,7 +163,7 @@ namespace lum::rhi::gl {
 
 		glUnmapNamedBuffer(buffer.handle.glHandle);
 
-		LUM_LOG_DEBUG("Updated buffer {}");
+		LUM_LOG_DEBUG("Updated buffer %d", vbo.id);
 	}
 
 	void GLDevice::DeleteBuffer(BufferHandle& vbo) {
@@ -168,7 +177,7 @@ namespace lum::rhi::gl {
 		
 		mBuffers.delete_handle(vbo);
 
-		LUM_LOG_INFO("Deleted buffer {}");
+		LUM_LOG_INFO("Deleted buffer %d", vbo.id);
 	}
 
 	vptr GLDevice::MapBuffer(const BufferHandle& vbo, Mapflag flags, usize offset, usize size) {
@@ -184,7 +193,7 @@ namespace lum::rhi::gl {
 
 		LUM_ASSERT(ptr, "Failed to map buffer");
 
-		LUM_LOG_DEBUG("Mapped buffer {}");
+		LUM_LOG_DEBUG("Mapped buffer %d", vbo.id);
 		return ptr;
 	}
 
