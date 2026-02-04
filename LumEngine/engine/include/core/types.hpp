@@ -34,4 +34,7 @@ namespace lum {
 	using vptr	= void*;
 	using cvptr = const void*;
 
+	using string = std::string;
+	using string_view = std::string_view;
+
 }

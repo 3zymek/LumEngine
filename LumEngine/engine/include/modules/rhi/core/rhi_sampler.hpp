@@ -5,7 +5,7 @@ namespace lum::rhi {
 
 	struct alignas(8) SamplerHandle {
 
-		SamplerID id = max_val<SamplerID>();
+		SamplerID id = null_id<SamplerID>();
 		SamplerID generation = 0;
 
 	};
@@ -50,9 +50,6 @@ namespace lum::rhi {
 
 		// Level of anisotropic filtering ( sharpens textures at steep viewing angles, prevents blur and stretch )
 		float32 anisotropy = 0.0f;
-
-		bool bEnabled = false;
-		bool b_enabled = false;
 
 	};
 

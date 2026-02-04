@@ -5,7 +5,7 @@ namespace lum::rhi {
 
 	struct alignas(8) VertexLayoutHandle {
 
-		LayoutID id = std::numeric_limits<LayoutID>::max();
+		LayoutID id = null_id<LayoutID>();
 		LayoutID generation = 0;
 
 	};

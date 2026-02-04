@@ -5,7 +5,7 @@ namespace lum::rhi {
 
 	struct alignas(2) ShaderHandle {
 
-		ShaderID id = max_val<ShaderID>();
+		ShaderID id = null_id<ShaderID>();
 		ShaderID generation = 0;
 
 	};

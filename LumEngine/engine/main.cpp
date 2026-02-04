@@ -110,7 +110,7 @@ private:
     }
 
     void RecalculateMVP() {
-
+        aspect_ratio = (float32)m_window->GetWidth() / (float32)m_window->GetHeight();
         view = glm::lookAt(position, front + position, up);
         projection = glm::perspective(glm::radians(fov), aspect_ratio, min_plane, max_plane);
 
@@ -284,10 +284,71 @@ auto CreateCubeVBO() {
 }
 auto CreateCubeTexture() {
     TextureDescriptor textureDesc;
-    textureDesc.filename = "glass.jpg";
+    textureDesc.filename = "glass2.jpg";
     auto texture = device->CreateTexture2D(textureDesc);
     device->SetTextureBinding(texture, LUM_TEXTURE_BINDING_01);
     return texture;
+}
+auto CreateCubePipeline(auto shader) {
+    PipelineDescriptor cubePipeline;
+    cubePipeline.blend.bEnabled = true;
+    cubePipeline.blend.dstAlphaFactor = BlendFactor::SrcAlpha;
+    cubePipeline.blend.srcAlphaFactor = BlendFactor::SrcAlpha;
+    cubePipeline.blend.dstColorFactor = BlendFactor::SrcAlpha;
+    cubePipeline.blend.srcColorFactor = BlendFactor::SrcAlpha;
+    cubePipeline.blend.alphaOp = BlendOp::Max;
+    cubePipeline.blend.colorOp = BlendOp::Max;
+
+    cubePipeline.depthStencil.depth.bEnabled = true;
+    cubePipeline.depthStencil.depth.bWriteToZBuffer = false;
+    cubePipeline.depthStencil.depth.compareFlag = CompareFlag::Less;
+
+    //cubePipeline.rasterizer.topologyMode = TopologyMode::Line;
+
+    //cubePipeline.cull.bEnabled = true;
+
+    cubePipeline.shader = shader;
+    return device->CreatePipeline(cubePipeline);
+}
+
+auto CreateSkyboxVAO(auto vbo) {
+    VertexLayoutDescriptor vaoDesc;
+    std::vector<VertexAttribute> attr(1);
+    attr[0].format = DataFormat::Vec3;
+    attr[0].relativeOffset = offsetof(Vertex, position);
+    attr[0].shaderLocation = LUM_LAYOUT_POSITION;
+
+    vaoDesc.attributes = attr;
+    vaoDesc.stride = sizeof(Vertex);
+    return device->CreateVertexLayout(vaoDesc, vbo);
+}
+auto CreateSkyboxVBO() {
+    BufferDescriptor vboDesc;
+    vboDesc.bufferUsage = BufferUsage::Static;
+    vboDesc.data = skyboxVerts.data();
+    vboDesc.size = bytesize(skyboxVerts);
+    return device->CreateVertexBuffer(vboDesc);
+}
+auto CreateSkyboxTexture() {
+    TextureCubemapDescriptor cubemapTexDesc;
+    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_X] = "nx.png";
+    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_Y] = "ny.png";
+    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_Z] = "nz.png";
+    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_X] = "px.png";
+    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_Y] = "py.png";
+    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_Z] = "pz.png";
+    return device->CreateCubemapTexture(cubemapTexDesc);
+}
+auto CreateSkyboxPipeline(auto shader) {
+    PipelineDescriptor skyboxPipeline;
+    skyboxPipeline.depthStencil.depth.bEnabled = true;
+    skyboxPipeline.depthStencil.depth.bWriteToZBuffer = false;
+    skyboxPipeline.depthStencil.depth.compareFlag = CompareFlag::LessEqual;
+
+    skyboxPipeline.cull.bEnabled = true;
+
+    skyboxPipeline.shader = shader;
+    return device->CreatePipeline(skyboxPipeline);
 }
 
 float32 quad[] = {
@@ -300,9 +361,8 @@ float32 quad[] = {
      1.0f, -1.0f, 1.0f, 0.0f,
      1.0f,  1.0f, 1.0f, 1.0f
 };
-
 int main() {
-    Logger::Get().enable_log(LogSeverity::Info);
+    //Logger::Get().enable_log(LogSeverity::Info);
     Logger::Get().disable_log(LogSeverity::Debug);
     WindowDescriptor windowDesc;
     windowDesc.MSAA_samples = 4;
@@ -320,38 +380,12 @@ int main() {
     auto cubeVBO = CreateCubeVBO();
     auto cubeEBO = CreateCubeEBO();
     auto cubeVAO = CreateCubeVAO(cubeVBO);
-    
-    auto sampler = device->CreateSampler(SamplerDescriptor{});
     auto cubeTexture = CreateCubeTexture();
-
     device->AttachElementBufferToLayout(cubeEBO, cubeVAO);
 
-    BufferDescriptor vboDesc;
-    vboDesc.bufferUsage = BufferUsage::Static;
-    vboDesc.data = skyboxVerts.data();
-    vboDesc.size = bytesize(skyboxVerts);
-
-    auto skyVBO = device->CreateVertexBuffer(vboDesc);
-
-    VertexLayoutDescriptor vaoDesc;
-    std::vector<VertexAttribute> attr(1);
-    attr[0].format = DataFormat::Vec3;
-    attr[0].relativeOffset = offsetof(Vertex, position);
-    attr[0].shaderLocation = LUM_LAYOUT_POSITION;
-    
-    vaoDesc.attributes = attr;
-    vaoDesc.stride = sizeof(Vertex);
-    auto skyVAO = device->CreateVertexLayout(vaoDesc, skyVBO);
-
-    TextureCubemapDescriptor cubemapTexDesc;
-    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_X] = "nx.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_Y] = "ny.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_Z] = "nz.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_X] = "px.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_Y] = "py.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_Z] = "pz.png";
-
-    auto skyboxTexture = device->CreateCubemapTexture(cubemapTexDesc);
+    auto skyVBO = CreateSkyboxVBO();
+    auto skyVAO = CreateSkyboxVAO(skyVBO);
+    auto skyboxTexture = CreateSkyboxTexture();
 
     Camera c{ window };
     CameraUBO camUBO{};
@@ -372,33 +406,48 @@ int main() {
     device->SetUniformBufferBinding(cameraUBO, LUM_UBO_CAMERA_BINDING);
     device->SetUniformBufferBinding(modelUBO, LUM_UBO_MODEL_BINDING);
 
-    while (window->IsOpen()) {
+    SamplerDescriptor sdesc;
+    sdesc.magFilter = SamplerMagFilter::Linear;
+    sdesc.minFilter = SamplerMinFilter::LinearMipmapLinear;
+    sdesc.anisotropy = 16;
+    sdesc.wrapS = SamplerWrap::ClampEdge;
+    sdesc.wrapT = SamplerWrap::ClampEdge;
+    sdesc.wrapR = SamplerWrap::ClampEdge;
+
+    auto sampler = device->CreateSampler(sdesc);
+
+    auto cubePip = CreateCubePipeline(basicShader);
+    auto skyboxPip = CreateSkyboxPipeline(skyboxShader);
+    
+    do {
 
         UpdateCamera(device, c, cameraUBO, camUBO, modelUBO, mUBO);
         c.Update();
 
-        device->BeginFrame();
+        int x, y;
+        glfwGetWindowSize(static_cast<GLFWwindow*>(window->GetNativeWindow()), &x, &y);
+        window->SetWidth(x);
+        window->SetHeight(y);
 
-        device->EnableDepthTest(true);
+        device->BeginFrame();
+        
+        device->BindPipeline(cubePip);
         device->BindSampler(sampler, LUM_TEXTURE_BINDING_01);
-        device->BindShader(basicShader);
+        device->SetTopology(TopologyMode::Line);
         device->BindTexture(cubeTexture);
         device->DrawElements(cubeVAO, cubeIndices.size());
 
-        device->EnableDepthWrite(false);
-        device->SetDepthFunc(CompareFlag::LessEqual);
+        device->BindPipeline(skyboxPip);
 
-        device->BindShader(skyboxShader);
+        device->SetTopology(TopologyMode::Line);
+        device->BindSampler(sampler, LUM_CUBEMAP_BINDING);
         device->BindTexture(skyboxTexture, LUM_CUBEMAP_BINDING);
         device->Draw(skyVAO, skyboxVerts.size());
 
-        device->SetDepthFunc(CompareFlag::Less);
-        device->EnableDepthWrite(true);
-        
         device->EndFrame();
 
-    }
-    
+    } while (window->IsOpen());
+
 
 }
 

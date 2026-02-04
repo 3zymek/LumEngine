@@ -14,7 +14,7 @@ namespace lum::rhi::gl {
 		);
 
 		bool success{};
-		std::string&& vfile = AssetService::load_internal_shader(desc.vertexSource, success);
+		string&& vfile = AssetService::load_internal_shader(desc.vertexSource, success);
 		ccharptr vcstr = vfile.c_str();
 
 		if (!success) {
@@ -22,7 +22,7 @@ namespace lum::rhi::gl {
 			return ShaderHandle{};
 		}
 
-		std::string&& ffile = AssetService::load_internal_shader(desc.fragmentSource, success);
+		string&& ffile = AssetService::load_internal_shader(desc.fragmentSource, success);
 		ccharptr fcstr = ffile.c_str();
 
 		if (!success) {
@@ -47,24 +47,41 @@ namespace lum::rhi::gl {
 
 		glAttachShader(shader.handle, vshader);
 		glAttachShader(shader.handle, fshader);
-
+		
 		glDeleteShader(vshader);
 		glDeleteShader(fshader);
 
-		glLinkProgram(shader.handle);
+		_LinkProgram(shader.handle);
 
 		LUM_LOG_INFO("Created shader %s - %s", desc.vertexSource, desc.fragmentSource);
 		return mShaders.create_handle(std::move(shader));
 	}
 	void GLDevice::BindShader(const ShaderHandle& shader) {
 
-		LUM_HOTCHK_RETURN_VOID(mShaders.exist(shader), "Shader doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(
+			mShaders.exist(shader), 
+			"Shader %d doesn't exist", 
+			shader.id
+		);
 
 		glUseProgram(mShaders[shader].handle);
+
+		LUM_LOG_DEBUG("Shader %d binded", shader.id);
 
 	}
 	void GLDevice::DeleteShader(ShaderHandle& shader) {
 
+		LUM_HOTCHK_RETURN_VOID(
+			mShaders.exist(shader),
+			"Shader %d doesn't exist",
+			shader.id
+		);
+
+		glDeleteProgram(mShaders[shader].handle);
+
+		mShaders.delete_handle(shader);
+
+		LUM_LOG_DEBUG("Shader %d deleted", shader.id);
 	}
 	void GLDevice::SetMat4(const ShaderHandle& shader, ccharptr location, const glm::mat4& mat) {
 
@@ -109,7 +126,7 @@ namespace lum::rhi::gl {
 
 	}
 	
-	bool GLDevice::_CompileShader(GLuint shader) noexcept {
+	bool GLDevice::_CompileShader(GLuint shader) {
 
 		glCompileShader(shader);
 		int32 success;
@@ -119,6 +136,23 @@ namespace lum::rhi::gl {
 			char buff[2048];
 			glGetShaderInfoLog(shader, 2048, nullptr, buff);
 			LUM_LOG_FATAL("Failed to compile shader: %s", buff);
+			return false;
+
+		}
+
+		return true;
+	}
+
+	bool GLDevice::_LinkProgram(GLuint program) {
+
+		glLinkProgram(program);
+		int32 success;
+		glGetProgramiv(program, GL_LINK_STATUS, &success);
+		if (!success) {
+
+			char buff[2048];
+			glGetProgramInfoLog(program, 2048, nullptr, buff);
+			LUM_LOG_FATAL("Failed to link program: %s", buff);
 			return false;
 
 		}

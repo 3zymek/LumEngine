@@ -6,22 +6,31 @@ namespace lum::rhi::gl {
 	/// Private helpers
 	///////////////////////////////////////////////////
 
+	void GLDevice::_BindCheckShader(const Pipeline& pip) noexcept {
+		
+		if (pip.shader.id == null_id<ShaderID>())
+			return;
+
+		BindShader(pip.shader);
+
+	}
+
 	void GLDevice::_BindCheckRasterizer(const Pipeline& pip) noexcept {
 		const auto& rast = pip.rasterizer;
 
 		if (rast.topologyMode != mRasterizerState.topologyMode || rast.topologyModeFaces != mRasterizerState.topologyModeFaces) {
 			glPolygonMode(
 				skFacesLookup[lookup_cast(rast.topologyModeFaces)],
-				skPolygonModeLookup[lookup_cast(rast.topologyMode)]
+				skTopologyModeLookup[lookup_cast(rast.topologyMode)]
 			);
 			mRasterizerState = rast;
 		}
 
-		EnableDepthBias(rast.depthBias.bEnable);
+		ToggleDepthBias(rast.depthBias.bEnable);
 
 		if (rast.depthBias.bEnable) {
 
-			SetDepthBias(rast.depthBias.slopeFactor, rast.depthBias.constantBias);
+			SetDepthBiasFactors(rast.depthBias.slopeFactor, rast.depthBias.constantBias);
 
 		}
 
@@ -31,7 +40,7 @@ namespace lum::rhi::gl {
 		const auto& depth = pip.depthStencil.depth;
 		const auto& stencil = pip.depthStencil.stencil;
 
-		EnableDepthTest(depth.bEnabled);
+		ToggleDepthTest(depth.bEnabled);
 
 		if (depth.bEnabled) {
 
@@ -86,7 +95,7 @@ namespace lum::rhi::gl {
 
 		const auto& blend = pip.blend;
 
-		EnableBlend(blend.bEnabled);
+		ToggleBlend(blend.bEnabled);
 
 		if (blend.bEnabled) {
 
@@ -100,7 +109,7 @@ namespace lum::rhi::gl {
 
 		const auto& cull = pip.cull;
 
-		EnableCull(cull.bEnabled);
+		ToggleCull(cull.bEnabled);
 
 		if (cull.bEnabled) {
 
@@ -123,13 +132,17 @@ namespace lum::rhi::gl {
 			"Max pipelines reached"
 		);
 
+		if (desc.shader.id != null_id<PipelineID>() && !mShaders.exist(desc.shader)) {
+			LUM_LOG_ERROR("Shader %d doesn't exist", desc.shader.id);
+		}
+
 		Pipeline pipeline;
 		std::memcpy(&pipeline, &desc, sizeof(desc));
 
 		return mPipelines.create_handle(std::move(pipeline));
 	}
 	void GLDevice::DeletePipeline(PipelineHandle& pipeline) {
-		LUM_HOTCHK_RETURN_VOID(!mPipelines.exist(pipeline), "Pipeline doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mPipelines.exist(pipeline), "Pipeline doesn't exist");
 
 		mPipelines.delete_handle(pipeline);
 	}
@@ -140,6 +153,8 @@ namespace lum::rhi::gl {
 		mCurrentPipeline = pipeline;
 
 		Pipeline& pip = mPipelines[pipeline];
+
+		_BindCheckShader(pip);
 
 		// Topology
 		_BindCheckRasterizer(pip);

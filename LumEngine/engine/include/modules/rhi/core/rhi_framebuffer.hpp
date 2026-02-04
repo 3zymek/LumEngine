@@ -4,7 +4,7 @@ namespace lum::rhi {
 
 	struct alignas(8) FramebufferHandle {
 
-		FramebufferID id = max_val<FramebufferID>();
+		FramebufferID id = null_id<FramebufferID>();
 		FramebufferID generation = 0;
 
 	};

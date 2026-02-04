@@ -30,7 +30,7 @@ namespace lum {
 
 		static TextureData load_texture(ccharptr file_name, bool& success) {
 
-			std::string absolute_path = (texture_path / std::string(file_name)).lexically_normal().string();
+			string absolute_path = (texture_path / string(file_name)).lexically_normal().string();
 
 			TextureData tx;
 			int32 ignore;
@@ -54,7 +54,7 @@ namespace lum {
 			return tx;
 		}
 		
-		inline static std::string load_audio(std::string_view file_name) {
+		inline static string load_audio(string_view file_name) {
 
 			detail::fs::path file = audio_path / file_name;
 			if (!detail::fs::exists(file)) {
@@ -65,9 +65,9 @@ namespace lum {
 			return file.lexically_normal().string();
 		}
 
-		static std::string load_internal_shader(std::string_view file_name, bool& success) {
+		static string load_internal_shader(string_view file_name, bool& success) {
 
-			std::string file = (internal_shader_path / file_name).lexically_normal().string();
+			string file = (internal_shader_path / file_name).lexically_normal().string();
 
 			if (!detail::fs::exists(file)) {
 				success = false;
@@ -81,7 +81,7 @@ namespace lum {
 				return "";
 			}
 
-			std::string version;
+			string version;
 			std::getline(loaded_file, version);
 
 			std::stringstream ss;
@@ -93,9 +93,9 @@ namespace lum {
 			return ss.str();
 		}
 
-		static std::string load_external_shader(std::string_view file_name) {
+		static string load_external_shader(string_view file_name) {
 
-			std::string file = (external_shader_path / file_name).lexically_normal().string();
+			string file = (external_shader_path / file_name).lexically_normal().string();
 
 			if (!detail::fs::exists(file)) {
 				LUM_LOG_ERROR("Couldn't localize shader file named {}");
@@ -109,7 +109,7 @@ namespace lum {
 				return "";
 			}
 
-			std::string version;
+			string version;
 			std::getline(loaded_file, version);
 
 			std::stringstream ss;
@@ -123,7 +123,7 @@ namespace lum {
 	private:
 
 		static inline detail::fs::path internal_shader_path = detail::fs::current_path().parent_path() / "lumengine" / "engine" / "include" / "modules" / "rhi" / "shaders";
-		static inline std::string shader_define = (detail::fs::current_path().parent_path() / "lumengine" / "engine" / "include" / "core" / "shaders_define.h").lexically_normal().string();
+		static inline string shader_define = (detail::fs::current_path().parent_path() / "lumengine" / "engine" / "include" / "core" / "shaders_define.h").lexically_normal().string();
 		static inline detail::fs::path external_shader_path	= detail::g_assets_root	/ "shader";
 		static inline detail::fs::path audio_path	= detail::g_assets_root	/ "audio";
 		static inline detail::fs::path texture_path	= detail::g_assets_root	/ "texture";

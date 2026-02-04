@@ -397,7 +397,7 @@ namespace lum::rhi {
 
 
 
-		virtual void EnableScissors(bool) = 0;
+		virtual void ToggleScissors(bool) = 0;
 		virtual void SetScissor(int32 x, int32 y, int32 width, int32 height) = 0;
 		virtual void SetViewport(int32 x, int32 y, int32 width, int32 height) = 0;
 
@@ -415,14 +415,14 @@ namespace lum::rhi {
 
 		// Cull setters
 
-		virtual void EnableCull(bool) = 0;
+		virtual void ToggleCull(bool) = 0;
 		virtual void SetCullFace(Face face) = 0;
 		virtual void SetCullWindingOrder(WindingOrder) = 0;
 
 
 		// Blend setters
 
-		virtual void EnableBlend(bool enabled) = 0;
+		virtual void ToggleBlend(bool enabled) = 0;
 		//virtual void SetBlendConstantColor(glm::vec4 rgba) = 0; IMPLEMENT
 		virtual void SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha) = 0;
 		virtual void SetBlendOp(BlendOp colorOp, BlendOp alphaOp) = 0;
@@ -430,22 +430,44 @@ namespace lum::rhi {
 
 		// Depth setters
 
-		virtual void EnableDepthWrite(bool) = 0;
-		virtual void EnableDepthTest(bool) = 0;
+		virtual void ToggleDepthWrite(bool) = 0;
+		virtual void ToggleDepthTest(bool) = 0;
 		virtual void SetDepthFunc(CompareFlag) = 0;
 
 
 		// Stencil setters
 
-		virtual void EnableStencilTest(bool) = 0;
+		virtual void ToggleStencilTest(bool) = 0;
 		virtual void SetStencilReference(int32 ref, Face = Face::FrontBack) = 0;
 
 
 		// Rasterizer setters
 
-		virtual void EnableDepthBias(bool) = 0;
-		virtual void SetDepthBias(float32 slopFactor = max_val<float32>(), float32 constantBias = max_val<float32>()) = 0;
+		virtual void ToggleDepthBias(bool) = 0;
 
+		/*!
+		*  @brief Sets the scale and units used to calculate depth values.
+		*
+		*  Keeps the binding until changed. Used by shaders on next draw/dispatch.
+		*
+		*  @param slopFactor Specifies a scale factor that is used to create a variable depth offset for each polygon. Leave if don't change.
+		*  @param constantBias Is multiplied by an implementation-specific value to create a constant depth offset. Leave if don't change.
+		*/
+		virtual void SetDepthBiasFactors(float32 slopeFactor = max_val<float32>(), float32 constantBias = max_val<float32>()) = 0;
+		/*!
+		*  @brief Controls the interpretation of polygons for rasterization.
+		*	face describes which polygons mode applies to: 
+		*	both front and back-facing polygons.
+		*	The polygon mode affects only the final rasterization of polygons. 
+		*	In particular, a polygon's vertices are lit and the polygon is clipped and possibly culled before these modes are applied. 
+		*
+		*
+		*  @param mode Specifies how polygons will be rasterized.
+		*	The initial value is TopologyMode::Fill for both front- and back-facing polygons. 
+		*  @param face Specifies the polygons that mode applies to. 
+		*	The initial value is Face::FrontBack. 
+		*/
+		virtual void SetTopology(TopologyMode mode, Face face = Face::FrontBack) = 0;
 
 	protected:
 

@@ -6,7 +6,7 @@ namespace lum::rhi {
 
 	struct alignas(8) BufferHandle {
 		
-		BufferID id = max_val<BufferID>();
+		BufferID id = null_id<BufferID>();
 		BufferID generation = 0;
 
 	};
@@ -17,7 +17,7 @@ namespace lum::rhi {
 		BufferUsage	bufferUsage	= BufferUsage::Static;
 
 		// Size of data that's assigned.
-		size_t		size			= 0;
+		usize		size			= 0;
 
 		// Flags defines what operations can be done on a buffer and which not.
 		Mapflag		mapFlags		{};
@@ -31,7 +31,7 @@ namespace lum::rhi {
 		BufferType	type	{};
 		BufferUsage usage	{};
 		Mapflag		flags	{};
-		size_t		size	= 0;
+		usize		size	= 0;
 		bool		mapped	= false;
 
 		union {

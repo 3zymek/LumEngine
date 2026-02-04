@@ -2,7 +2,7 @@
 
 namespace lum::rhi::gl {
 	// FINISHED
-	void GLDevice::EnableScissors(bool enable) {
+	void GLDevice::ToggleScissors(bool enable) {
 
 		if (enable == mEnabledStates.has(State::Scissor))
 			return;
@@ -50,7 +50,7 @@ namespace lum::rhi::gl {
 	// Cull setters (FINISHED)
 
 	// FINISHED
-	void GLDevice::EnableCull(bool enable) {
+	void GLDevice::ToggleCull(bool enable) {
 
 		if (enable == mEnabledStates.has(State::Cull))
 			return;
@@ -98,7 +98,7 @@ namespace lum::rhi::gl {
 	// Blend setters
 
 	// FINISHED
-	void GLDevice::EnableBlend(bool enable) {
+	void GLDevice::ToggleBlend(bool enable) {
 
 		if (enable == mEnabledStates.has(State::Blend))
 			return;
@@ -106,10 +106,12 @@ namespace lum::rhi::gl {
 		if (enable) {
 			glEnable(GL_BLEND);
 			mEnabledStates.enable(State::Blend);
+			LUM_LOG_DEBUG("Blend enabled");
 		}
 		else {
 			glDisable(GL_BLEND);
 			mEnabledStates.disable(State::Blend);
+			LUM_LOG_DEBUG("Blend disabled");
 		}
 
 	}
@@ -156,7 +158,7 @@ namespace lum::rhi::gl {
 	// Depth setters
 
 	// FINISHED
-	void GLDevice::EnableDepthWrite(bool enable) {
+	void GLDevice::ToggleDepthWrite(bool enable) {
 
 		if (enable == mEnabledStates.has(State::DepthWrite))
 			return;
@@ -165,19 +167,21 @@ namespace lum::rhi::gl {
 
 			glDepthMask((GLboolean)enable);
 			mEnabledStates.enable(State::DepthWrite);
+			LUM_LOG_DEBUG("Depth write enabled");
 
 		}
 		else {
 
 			glDepthMask((GLboolean)enable);
 			mEnabledStates.disable(State::DepthWrite);
+			LUM_LOG_DEBUG("Depth write disabled");
 
 		}
 
 	}
 
 	// FINISHED
-	void GLDevice::EnableDepthTest(bool enable) {
+	void GLDevice::ToggleDepthTest(bool enable) {
 
 		if (enable == mEnabledStates.has(State::DepthTest))
 			return;
@@ -186,12 +190,14 @@ namespace lum::rhi::gl {
 
 			glEnable(GL_DEPTH_TEST);
 			mEnabledStates.enable(State::DepthTest);
+			LUM_LOG_DEBUG("Depth test enabled");
 
 		}
 		else {
 
 			glDisable(GL_DEPTH_TEST);
 			mEnabledStates.disable(State::DepthTest);
+			LUM_LOG_DEBUG("Depth test disabled");
 
 		}
 
@@ -209,7 +215,7 @@ namespace lum::rhi::gl {
 	}
 
 	// FINISHED
-	void GLDevice::EnableStencilTest(bool enable) {
+	void GLDevice::ToggleStencilTest(bool enable) {
 
 		if (enable == mEnabledStates.has(State::StencilTest))
 			return;
@@ -218,12 +224,14 @@ namespace lum::rhi::gl {
 
 			glEnable(GL_STENCIL_TEST);
 			mEnabledStates.enable(State::StencilTest);
+			LUM_LOG_DEBUG("Stencil test enabled");
 
 		}
 		else {
 
 			glDisable(GL_STENCIL_TEST);
 			mEnabledStates.disable(State::StencilTest);
+			LUM_LOG_DEBUG("Stencil test disabled");
 
 		}
 
@@ -239,8 +247,7 @@ namespace lum::rhi::gl {
 
 	// Rasterizer setters
 
-	// FINISHED
-	void GLDevice::EnableDepthBias(bool enable) {
+	void GLDevice::ToggleDepthBias(bool enable) {
 
 		if (enable == mEnabledStates.has(State::DepthBias))
 			return;
@@ -249,19 +256,21 @@ namespace lum::rhi::gl {
 
 			glEnable(GL_POLYGON_OFFSET_FILL);
 			mEnabledStates.enable(State::DepthBias);
+			LUM_LOG_DEBUG("Depth bias enabled");
 
 		}
 		else {
 
 			glDisable(GL_POLYGON_OFFSET_FILL);
 			mEnabledStates.disable(State::DepthBias);
+			LUM_LOG_DEBUG("Depth bias disabled");
 
 		}
 
 	}
 
 	// FINISHED
-	void GLDevice::SetDepthBias(float32 slopFactor, float32 constantBias) {
+	void GLDevice::SetDepthBiasFactors(float32 slopFactor, float32 constantBias) {
 		LUM_HOTCHK(mEnabledStates.has(State::DepthBias), "Depth bias not enabled");
 
 		if (slopFactor == mRasterizerState.depthBias.slopeFactor && constantBias == mRasterizerState.depthBias.constantBias)
@@ -276,6 +285,21 @@ namespace lum::rhi::gl {
 		glPolygonOffset(slopFactor, constantBias);
 		mRasterizerState.depthBias.slopeFactor = slopFactor;
 		mRasterizerState.depthBias.constantBias = constantBias;
+
+	}
+
+	void GLDevice::SetTopology(TopologyMode mode, Face face) {
+
+		if (mRasterizerState.topologyMode == mode && mRasterizerState.topologyModeFaces == face)
+			return;
+
+		glPolygonMode(
+			skFacesLookup[lookup_cast(face)],
+			skTopologyModeLookup[lookup_cast(mode)]
+		);
+
+		mRasterizerState.topologyMode = mode;
+		mRasterizerState.topologyModeFaces = face;
 
 	}
 }

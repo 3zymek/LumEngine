@@ -18,12 +18,17 @@ namespace lum::rhi {
 	// Includes polygon mode, face culling topology, and depth bias settings.
 	struct RasterizerState {
 
-		PolygonMode topologyMode = PolygonMode::Fill;
-		Face		topologyModeFaces = Face::FrontBack;
+		TopologyMode	topologyMode = TopologyMode::Fill;
+		Face			topologyModeFaces = Face::FrontBack;
 
 		struct DepthBiasState {
-			bool	bEnable = false;
+			// Specifies whether the depth bias is enabled.
+			// If flag is false, depth bias is disabled. Otherwise, it is enabled. 
+			// The initial value is false.
+			bool bEnable = false;
+			// Specifies a scale factor that is used to create a variable depth offset for each polygon. The initial value is 0.
 			float32 slopeFactor = 0.f;
+			// Is multiplied by an implementation-specific value to create a constant depth offset. The initial value is 0. 
 			float32 constantBias = 0.f;
 		} depthBias;
 

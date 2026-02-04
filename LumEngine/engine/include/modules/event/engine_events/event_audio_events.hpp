@@ -1,18 +1,19 @@
 #pragma once
 #include "core/core_pch.hpp"
-#include "event/ev_common.hpp"
+#include "event/event_common.hpp"
 #include "audio/audio_common.hpp"
 namespace lum {
 	namespace ev {
 		struct AddClipToEmitter
 		{
 			LumEventTag;
+			
 
 			audio::EmitterHandle emitterID;
-			std::string name;
+			string name;
 
-			float		volume;
-			float		pitch;
+			float32		volume;
+			float32		pitch;
 			bool		loop;
 
 		};
@@ -22,7 +23,7 @@ namespace lum {
 			LumEventTag;
 
 			audio::EmitterHandle emitterID;
-			std::string name;
+			string name;
 
 		};
 		struct PlaySound
@@ -30,10 +31,10 @@ namespace lum {
 			LumEventTag;
 
 			audio::EmitterHandle emitterID;
-			std::string name;
+			string name;
 
-			float		volume;
-			float		pitch;
+			float32		volume;
+			float32		pitch;
 			bool		loop;
 		};
 

@@ -27,6 +27,12 @@ namespace lum {
 			return to_underlying(e);
 		}
 
+		template<typename T>
+			requires std::is_arithmetic_v<T>
+		inline constexpr T null_id() {
+			return max_val<T>();
+		}
+
 		struct BufferHandle;
 		struct VertexLayoutHandle;
 		struct ShaderHandle;
@@ -61,10 +67,11 @@ namespace lum {
 			Dynamic // Data can be updated during runtime (slower performance).
 		};
 
-		enum class PolygonMode : EnumFlag {
-			Point,
-			Line,
-			Fill
+		// Specifies how polygons will be rasterized.
+		enum class TopologyMode : EnumFlag {
+			Point,	// Polygon vertices that are marked as the start of a boundary edge are drawn as points.
+			Line,	// Boundary edges of the polygon are drawn as line segments.
+			Fill	// The interior of the polygon is filled.
 		};
 
 		enum class Mapflag : EnumFlag {

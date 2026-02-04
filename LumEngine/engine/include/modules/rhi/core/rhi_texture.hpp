@@ -7,7 +7,7 @@ namespace lum::rhi {
 
 	struct alignas(8) TextureHandle {
 
-		TextureID id = max_val<TextureID>();
+		TextureID id = null_id<TextureID>();
 		TextureID generation = 0;
 
 	};

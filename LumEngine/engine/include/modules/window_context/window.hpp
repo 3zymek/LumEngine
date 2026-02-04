@@ -17,6 +17,8 @@ namespace lum {
 	class Window {
 	public:
 
+		virtual void	SetWidth		( uint32 ) = 0;
+		virtual void	SetHeight		( uint32 ) = 0;
 		virtual uint32	GetWidth		( ) = 0;
 		virtual uint32	GetHeight		( ) = 0;
 		virtual vptr	GetNativeWindow	( ) = 0;
@@ -30,11 +32,13 @@ namespace lum {
 
 	};
 
-	class OpenGL_Window : public Window {
+	class OpenGLWindow : public Window {
 	public:
 
-		OpenGL_Window( const WindowDescriptor& desc ) { Init(desc); }
+		OpenGLWindow( const WindowDescriptor& desc ) { Init(desc); }
 
+		void					SetWidth		( uint32 ) override;
+		void					SetHeight		( uint32 ) override;
 		uint32					GetWidth		( ) override;
 		uint32					GetHeight		( ) override;
 		vptr					GetNativeWindow	( ) override;
@@ -43,10 +47,10 @@ namespace lum {
 
 	private:
 
-		uint32 width = 0;
-		uint32 height = 0;
+		uint32 mWidth = 0;
+		uint32 mHeight = 0;
 		
-		GLFWwindow* m_window = nullptr;
+		GLFWwindow* mWindow = nullptr;
 
 		void Init( const WindowDescriptor& ) override;
 

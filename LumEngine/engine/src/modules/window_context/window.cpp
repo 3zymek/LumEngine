@@ -35,23 +35,30 @@ namespace lum {
 	}
 
 	///  OpenGL window
-	uint32 OpenGL_Window::GetWidth( ) {
-		return width;
+
+	void OpenGLWindow::SetWidth(uint32 width) {
+		mWidth = width;
 	}
-	uint32 OpenGL_Window::GetHeight( ) {
-		return height;
+	void OpenGLWindow::SetHeight(uint32 height) {
+		mHeight = height;
 	}
-	void* OpenGL_Window::GetNativeWindow( ) {
-		return m_window;
+	uint32 OpenGLWindow::GetWidth( ) {
+		return mWidth;
 	}
-	bool OpenGL_Window::IsOpen( ) {
-		return !glfwWindowShouldClose(m_window);
+	uint32 OpenGLWindow::GetHeight( ) {
+		return mHeight;
 	}
-	RenderBackend OpenGL_Window::GetBackend( ) {
+	void* OpenGLWindow::GetNativeWindow( ) {
+		return mWindow;
+	}
+	bool OpenGLWindow::IsOpen( ) {
+		return !glfwWindowShouldClose(mWindow);
+	}
+	RenderBackend OpenGLWindow::GetBackend( ) {
 		return backend;
 	}
 
-	void OpenGL_Window::Init( const WindowDescriptor& desc ) {
+	void OpenGLWindow::Init( const WindowDescriptor& desc ) {
 
 		if (!glfwInit()) {
 			return;
@@ -67,19 +74,19 @@ namespace lum {
 			glfwWindowHint(GLFW_SAMPLES, desc.MSAA_samples);
 
 		if (desc.fullscreen) {
-			m_window = glfwCreateWindow(desc.width, desc.height, desc.title, glfwGetPrimaryMonitor(), nullptr);
+			mWindow = glfwCreateWindow(desc.width, desc.height, desc.title, glfwGetPrimaryMonitor(), nullptr);
 		}
-		else m_window = glfwCreateWindow(desc.width, desc.height, desc.title, nullptr, nullptr);
+		else mWindow = glfwCreateWindow(desc.width, desc.height, desc.title, nullptr, nullptr);
 
-		width = desc.width;
-		height = desc.height;
+		mWidth = desc.width;
+		mHeight = desc.height;
 
-		if (!m_window) {
+		if (!mWindow) {
 			glfwTerminate();
 			return;
 		}
 
-		glfwMakeContextCurrent(m_window);
+		glfwMakeContextCurrent(mWindow);
 
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 			glfwTerminate();
@@ -89,7 +96,7 @@ namespace lum {
 #		if LUM_ENABLE_IMGUI == 1
 			IMGUI_CHECKVERSION();
 			ImGui::CreateContext();
-			ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+			ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
 			ImGui_ImplOpenGL3_Init("#version 450");
 #		endif
 #		if LUM_ENABLE_DEBUG_RENDER == 1
@@ -105,7 +112,7 @@ namespace lum {
 
 	Window* CreateWindow( const WindowDescriptor& desc ) {
 		switch (desc.render) {
-		case RenderBackend::OpenGL: return new OpenGL_Window(desc);
+		case RenderBackend::OpenGL: return new OpenGLWindow(desc);
 		}
 		return nullptr;
 	}

@@ -116,21 +116,24 @@ namespace lum::rhi::gl {
 		void BeginFrame		( )										override;
 		void EndFrame		( )										override;
 
-		void EnableScissors(bool) override;
+		// Scissors setters
+
+
+		void ToggleScissors			( bool )										override;
 		void SetScissor				( int32 x, int32 y, int32 width, int32 height )	override;
 		void SetViewport			( int32 x, int32 y, int32 width, int32 height )	override;
 
 
 		// Cull setters
 
-		void EnableCull(bool) override;
-		void SetCullFace(Face face) override;
-		void SetCullWindingOrder(WindingOrder) override;
+		void ToggleCull			( bool )			override;
+		void SetCullFace		( Face face )		override;
+		void SetCullWindingOrder( WindingOrder )	override;
 
 
 		// Blend setters
 
-		void EnableBlend(bool enabled) override;
+		void ToggleBlend(bool enabled) override;
 		//virtual void SetBlendConstantColor(glm::vec4 rgba) = 0; IMPLEMENT
 		void SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha) override;
 		void SetBlendOp(BlendOp colorOp, BlendOp alphaOp) override;
@@ -138,25 +141,26 @@ namespace lum::rhi::gl {
 
 		// Depth setters
 
-		void EnableDepthWrite(bool) override;
-		void EnableDepthTest(bool) override;
+		void ToggleDepthWrite(bool) override;
+		void ToggleDepthTest(bool) override;
 		void SetDepthFunc(CompareFlag) override;
 
 		// Stencil setters
 
-		void EnableStencilTest(bool) override;
+		void ToggleStencilTest(bool) override;
 		void SetStencilReference(int32 ref, Face) override;
 
 
 		// Rasterizer setters
-		void EnableDepthBias(bool) override;
-		void SetDepthBias(float32 slopFactor, float32 constantBias) override;
+		void ToggleDepthBias(bool) override;
+		void SetDepthBiasFactors(float32 slopFactor, float32 constantBias) override;
+		void SetTopology(TopologyMode mode, Face face)				override;
 
 
 	protected:
 
 		LUM_COMPILE_VARIABLE
-		static GLenum skPolygonModeLookup[] = 
+		static GLenum skTopologyModeLookup[] = 
 		{ 
 			GL_POINT, 
 			GL_LINE, 
@@ -253,6 +257,9 @@ namespace lum::rhi::gl {
 		///////////////////////////////////////////////////
 
 		LUM_FORCEINLINE
+		void _BindCheckShader(const Pipeline&) noexcept;
+
+		LUM_FORCEINLINE
 		void _BindCheckRasterizer(const Pipeline&) noexcept;
 
 		LUM_FORCEINLINE
@@ -268,10 +275,10 @@ namespace lum::rhi::gl {
 		void _BindCheckCull(const Pipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		bool _CompileShader(GLuint shader) noexcept;
+		bool _CompileShader(GLuint shader);
 
 		LUM_FORCEINLINE
-		void _LinkProgram(GLuint program) noexcept;
+		bool _LinkProgram(GLuint program);
 
 
 		void		_CacheUniformsLocations		( );

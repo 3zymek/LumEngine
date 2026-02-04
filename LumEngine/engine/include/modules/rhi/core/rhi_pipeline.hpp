@@ -5,7 +5,7 @@ namespace lum::rhi {
 
 	struct alignas(8) PipelineHandle {
 
-		PipelineID id = max_val<PipelineID>();
+		PipelineID id = null_id<PipelineID>();
 		PipelineID generation = 0;
 
 	};
@@ -18,6 +18,8 @@ namespace lum::rhi {
 		CullState				cull		{};
 		BlendState				blend		{};
 
+		ShaderHandle			shader{};
+
 	};
 
 	struct Pipeline {
@@ -27,6 +29,8 @@ namespace lum::rhi {
 		ScissorState			scissor		{};
 		CullState				cull		{};
 		BlendState				blend		{};
+
+		ShaderHandle			shader{};
 
 	};
 

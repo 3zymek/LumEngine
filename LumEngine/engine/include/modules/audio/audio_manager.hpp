@@ -40,8 +40,6 @@ namespace lum {
 			using AudioChannel			= detail::AudioChannel;
 			using EntityID				= ecs::EntityID;
 			using FDestructor			= detail::FMODDestructor;
-			using string_view			= std::string_view;
-			using string				= std::string;
 
 		public:
 
@@ -79,7 +77,7 @@ namespace lum {
 			 *  @remark Replaces any existing sound with the same name. 3D sounds require a listener.
 			 *  @thread_safety Call from main audio thread or FMOD-safe thread.
 			 */
-			void LoadSound( std::string_view alias_name, std::string_view path, FMOD_MODE mode = FMOD_3D );
+			void LoadSound( string_view alias_name, string_view path, FMOD_MODE mode = FMOD_3D );
 
 
 			/*! @brief Creates an audio listener attached to an entity.
@@ -123,8 +121,8 @@ namespace lum {
 			bool	GetEmitterClipPaused( EmitterHandle, AudioHandle );
 
 			AudioListenerWrapper*		GetListener	( );
-			std::optional<AudioHandle>	GetIDByName	( std::string_view );
-			bool						NameExists	( std::string_view );
+			std::optional<AudioHandle>	GetIDByName	( string_view );
+			bool						NameExists	( string_view );
 
 		private:
 
