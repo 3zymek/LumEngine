@@ -17,17 +17,18 @@ namespace lum {
 			GLuint id,
 			GLenum severity,
 			GLsizei length,
-			const GLchar* msg,
+			const char* msg,
 			const void* usrParam
 		)
 		{
-
+			if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+				LUM_LOG_DEBUG(msg);
 			if (severity == GL_DEBUG_SEVERITY_LOW);
-				//LUM_LOG_INFO(msg);
+				LUM_LOG_INFO(msg);
 			if (severity == GL_DEBUG_SEVERITY_MEDIUM);
-					//LUM_LOG_WARN(msg);
+				LUM_LOG_WARN(msg);
 			if (severity == GL_DEBUG_SEVERITY_HIGH);
-				//LUM_LOG_FATAL(msg);
+				LUM_LOG_ERROR(msg);
 
 		}
 #		endif

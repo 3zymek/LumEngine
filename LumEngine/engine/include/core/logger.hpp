@@ -5,12 +5,12 @@ namespace lum {
 
 	using SeverityMask = bitfield;
 	enum class LogSeverity : SeverityMask {
-		FATAL = 0b0000'0001,
-		ERROR = 0b0000'0010,
-		WARN = 0b0000'0100,
-		INFO = 0b0000'1000,
-		DEBUG = 0b0001'0000,
-		ALL = FATAL | ERROR | WARN | INFO | DEBUG
+		Fatal = 0b0000'0001,
+		Error = 0b0000'0010,
+		Warn = 0b0000'0100,
+		Info = 0b0000'1000,
+		Debug = 0b0001'0000,
+		All = Fatal | Error | Warn | Info | Debug
 	};
 	inline constexpr SeverityMask operator|(LogSeverity a, LogSeverity b) {
 		return static_cast<SeverityMask>(a) | static_cast<SeverityMask>(b);
@@ -90,8 +90,8 @@ namespace lum {
 					func
 				);
 
-			_CenterCustom(descBuffer, sizeof(descBuffer), descTempBuffer, 2, 52);
-
+			_CenterCustom(descBuffer, sizeof(descBuffer), descTempBuffer, 2, 64);
+			
 			std::printf("[%s%s%s][%s] ", sevColorBuffer, centertedSeverity, cmdcolor::reset, descBuffer);
 			std::printf(msg, std::forward<Args>(args)...);
 			std::printf("%c", '\n');
@@ -118,7 +118,7 @@ namespace lum {
 		char sevColorBuffer		[skMaxColorLength]		{};
 
 		uint64 lastLog = 0;
-		SeverityMask gSeverity = LogSeverity::FATAL | LogSeverity::DEBUG | LogSeverity::WARN | LogSeverity::ERROR;
+		SeverityMask gSeverity = LogSeverity::Fatal | LogSeverity::Debug | LogSeverity::Warn | LogSeverity::Error;
 		
 		template<usize L>
 		void _CenterCustom(charptr out, usize out_size, const char(&s)[L], usize left_width, usize right_width) {

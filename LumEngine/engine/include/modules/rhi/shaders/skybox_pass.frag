@@ -2,11 +2,11 @@
 
 layout(binding = LUM_CUBEMAP_BINDING) uniform samplerCube skybox;
 
-in vec3 viewDir;
+in vec3 V;
 out vec4 finalColor;
 
 void main() {
 	
-	finalColor = texture(skybox, viewDir);
+	finalColor = texture(skybox, V);
 
 }

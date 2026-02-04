@@ -38,7 +38,6 @@ namespace lum {
 			tx.colorChannels = 4;
 
 			if (!data) {
-				LUM_LOG_ERROR("Failed to load texture {}");
 				success = false;
 				return tx;
 			}
@@ -66,19 +65,19 @@ namespace lum {
 			return file.lexically_normal().string();
 		}
 
-		static std::string load_internal_shader(std::string_view file_name) {
+		static std::string load_internal_shader(std::string_view file_name, bool& success) {
 
 			std::string file = (internal_shader_path / file_name).lexically_normal().string();
 
 			if (!detail::fs::exists(file)) {
-				LUM_LOG_ERROR("Couldn't localize shader file named {}");
+				success = false;
 				return "";
 			}
 
 			std::ifstream loaded_file(file);
 			std::ifstream defines(shader_define);
 			if (!loaded_file.is_open() || !defines.is_open()) {
-				LUM_LOG_ERROR("Couldn't open shader file named {}");
+				success = false;
 				return "";
 			}
 
@@ -90,10 +89,11 @@ namespace lum {
 			ss << defines.rdbuf() << '\n';
 			ss << loaded_file.rdbuf();
 
+			success = true;
 			return ss.str();
 		}
 
-		static std::string LoadExternalShader(std::string_view file_name) {
+		static std::string load_external_shader(std::string_view file_name) {
 
 			std::string file = (external_shader_path / file_name).lexically_normal().string();
 

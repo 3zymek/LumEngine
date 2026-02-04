@@ -12,9 +12,17 @@ namespace lum::rhi {
 	};
 
 	struct BufferDescriptor {
+
+		// Defines if buffer is static ( data cannot be changed in runtime ) or dynamic.
 		BufferUsage	bufferUsage	= BufferUsage::Static;
+
+		// Size of data that's assigned.
 		size_t		size			= 0;
+
+		// Flags defines what operations can be done on a buffer and which not.
 		Mapflag		mapFlags		{};
+
+		// Pointer to data.
 		cvptr		data			= nullptr;
 	};
 

@@ -133,7 +133,7 @@ namespace lum::rhi::gl {
 
 		Buffer& buffer = mBuffers[vbo];
 
-		LUM_HOTCHK_RETURN_VOID(offset + size > buffer.size, "Invalid offset or size");
+		LUM_HOTCHK_RETURN_VOID(offset + size < buffer.size, "Invalid offset or size");
 
 		if (size == 0) size = buffer.size;
 
@@ -205,7 +205,7 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(buffer.mapped, "Buffer is already unmapped");
 		glUnmapNamedBuffer(buffer.handle.glHandle);
 
-		LUM_LOG_DEBUG("Unmapped buffer {}");
+		LUM_LOG_DEBUG("Unmapped buffer %d", vbo.id);
 	}
 
 	void GLDevice::AttachElementBufferToLayout(const BufferHandle& ebo, const VertexLayoutHandle& vao) {
@@ -214,14 +214,15 @@ namespace lum::rhi::gl {
 
 		glVertexArrayElementBuffer(mLayouts[vao].vao, mBuffers[ebo].handle.glHandle);
 
+		LUM_LOG_DEBUG("Attached EBO %d to VAO %d", ebo.id, vao.id);
 	}
 
 	void GLDevice::SetUniformBufferBinding(const BufferHandle& ubo, int32 binding) {
-		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(ubo), "Uniform buffer doesn't exists");
+		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(ubo), "Uniform buffer doesn't exist");
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, mBuffers[ubo].handle.glHandle);
 
-		LUM_LOG_INFO("Attached ubo {} to binding {}");
+		LUM_LOG_DEBUG("Attached UBO %d to binding %d", ubo.id, binding);
 
 	}
 }

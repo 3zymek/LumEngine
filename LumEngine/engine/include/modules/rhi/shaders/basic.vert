@@ -16,15 +16,14 @@ out vec2 fragUV;
 
 void main() {
 
-	/*
-		gl_Position =
+	gl_Position =
 		LUM_CAMERA_PROJECTION_MAT4 * 
 		LUM_CAMERA_VIEW_MAT4 * 
 		LUM_MODEL_MAT4 * 
 		vec4(aPos, 1.0);
-	*/
+	
 
-	gl_Position = vec4(aPos, 1.0);
+	//gl_Position = vec4(aPos, 1.0);
 
 	fragColor = aColor;
 	fragUV = aUV;

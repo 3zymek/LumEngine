@@ -8,16 +8,15 @@ layout(std140, binding = LUM_UBO_CAMERA_BINDING) uniform CameraUniforms {
 	vec3 LUM_CAMERA_POSITION;
 };
 
-out vec3 viewDir;
 out vec3 V;
 
 void main() {
 	
-	viewDir = aPos;
+	V = aPos;
 
 	mat4 view = mat4(mat3(LUM_CAMERA_VIEW_MAT4));
 
 	vec4 pos = LUM_CAMERA_PROJECTION_MAT4 * view * vec4(aPos, 1.0);
 
-	gl_Position = pos;
+	gl_Position = pos.xyww;
 }

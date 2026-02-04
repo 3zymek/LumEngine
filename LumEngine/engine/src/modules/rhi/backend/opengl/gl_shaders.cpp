@@ -6,17 +6,29 @@ namespace lum::rhi::gl {
 	///////////////////////////////////////////////////
 
 	ShaderHandle GLDevice::CreateShader(const ShaderDescriptor& desc) {
+
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mShaders.dense_size() < skMaxShaders,
 			ShaderHandle{},
 			"Max shaders reached"
 		);
 
-		std::string&& vfile = AssetService::load_internal_shader(desc.vertex_source);
+		bool success{};
+		std::string&& vfile = AssetService::load_internal_shader(desc.vertexSource, success);
 		ccharptr vcstr = vfile.c_str();
 
-		std::string&& ffile = AssetService::load_internal_shader(desc.fragment_source);
+		if (!success) {
+			LUM_LOG_ERROR("Couldn't load shader %s", desc.vertexSource);
+			return ShaderHandle{};
+		}
+
+		std::string&& ffile = AssetService::load_internal_shader(desc.fragmentSource, success);
 		ccharptr fcstr = ffile.c_str();
+
+		if (!success) {
+			LUM_LOG_ERROR("Couldn't load shader %s", desc.fragmentSource);
+			return ShaderHandle{};
+		}
 
 		Shader shader;
 
@@ -41,7 +53,7 @@ namespace lum::rhi::gl {
 
 		glLinkProgram(shader.handle);
 
-		LUM_LOG_INFO("Created shader %s - %s", desc.vertex_source, desc.fragment_source);
+		LUM_LOG_INFO("Created shader %s - %s", desc.vertexSource, desc.fragmentSource);
 		return mShaders.create_handle(std::move(shader));
 	}
 	void GLDevice::BindShader(const ShaderHandle& shader) {
@@ -106,7 +118,7 @@ namespace lum::rhi::gl {
 			
 			char buff[2048];
 			glGetShaderInfoLog(shader, 2048, nullptr, buff);
-			LUM_LOG_FATAL("Failed to compile shader: {}");
+			LUM_LOG_FATAL("Failed to compile shader: %s", buff);
 			return false;
 
 		}

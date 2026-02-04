@@ -87,7 +87,7 @@ namespace lum::rhi::gl {
 		int32 width = texData.width;
 		int32 height = texData.height;
 
-		glTextureStorage2D(tex.handle.glHandle, 1, GL_RGBA8, texData.width, texData.height);
+		glTextureStorage2D(tex.handle.glHandle, 1, GL_RGBA8, width, height);
 
 		for (usize i = 0; i < 6; i++) {
 
@@ -103,7 +103,19 @@ namespace lum::rhi::gl {
 				continue;
 			}
 
-			glTextureSubImage3D(tex.handle.glHandle, 0, 0, 0, i, texture.width, texture.height, 1, GL_RGBA, GL_UNSIGNED_BYTE, texture.pixels.data());
+			glTextureSubImage3D(
+				tex.handle.glHandle, 
+				0, 
+				0, 
+				0, 
+				i, 
+				texture.width, 
+				texture.height, 
+				1, 
+				GL_RGBA, 
+				GL_UNSIGNED_BYTE, 
+				texture.pixels.data()
+			);
 		
 		}
 
@@ -125,19 +137,23 @@ namespace lum::rhi::gl {
 
 		mTextures[texture].binding = binding;
 
+		LUM_LOG_DEBUG("Attached binding %d to texture %d", binding, texture.id);
+
 	}
 	void GLDevice::BindTexture(const TextureHandle& texture, uint16 binding) {
+
 		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture %d doesn't exist", texture.id);
-		LUM_HOTCHK_RETURN_VOID(
-			mTextures[texture].binding != LUM_NULL_BINDING &&
-			binding == LUM_NULL_BINDING,
-			"Binding has not been given to texture %d",
-			texture.id
-		);
+		
+		if (mTextures[texture].binding == LUM_NULL_BINDING && binding == LUM_NULL_BINDING) {
+			LUM_LOG_ERROR("Binding has not been given to texture %d", texture.id);
+			return;
+		}
 
 		uint16 bind = (binding == LUM_NULL_BINDING) ? mTextures[texture].binding : binding;
 
 		glBindTextureUnit(bind, mTextures[texture].handle.glHandle);
+
+		LUM_LOG_DEBUG("Binded texture %d to binding %d", texture.id, bind);
 
 	}
 }

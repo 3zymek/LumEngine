@@ -194,13 +194,14 @@ namespace lum::rhi::gl {
 		};
 
 		LUM_COMPILE_VARIABLE
-		static GLenum skCompareFlagLookup[] =
+			static GLenum skCompareFlagLookup[] =
 		{
-			GL_LESS,
-			GL_LEQUAL,
-			GL_GREATER,
-			GL_GEQUAL,
+			GL_EQUAL,
 			GL_NOTEQUAL,
+			GL_LEQUAL,
+			GL_GEQUAL,
+			GL_LESS,
+			GL_GREATER,
 			GL_ALWAYS,
 			GL_NEVER
 		};

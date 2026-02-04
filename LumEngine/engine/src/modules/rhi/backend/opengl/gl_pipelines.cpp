@@ -118,7 +118,7 @@ namespace lum::rhi::gl {
 
 	PipelineHandle GLDevice::CreatePipeline(const PipelineDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
-			mPipelines.dense_size() >= skMaxPipelines,
+			mPipelines.dense_size() <= skMaxPipelines,
 			PipelineHandle{},
 			"Max pipelines reached"
 		);
@@ -134,7 +134,7 @@ namespace lum::rhi::gl {
 		mPipelines.delete_handle(pipeline);
 	}
 	void GLDevice::BindPipeline(const PipelineHandle& pipeline) {
-		LUM_HOTCHK_RETURN_VOID(!mPipelines.exist(pipeline), "Pipeline doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mPipelines.exist(pipeline), "Pipeline doesn't exist");
 
 		if (pipeline.id != mCurrentPipeline.id && pipeline.generation != mCurrentPipeline.generation) return;
 		mCurrentPipeline = pipeline;

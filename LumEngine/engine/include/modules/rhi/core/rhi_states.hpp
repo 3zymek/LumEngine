@@ -11,7 +11,7 @@ namespace lum::rhi {
 		Less,			// Passes if the incoming depth value is less than the stored depth value.
 		Greater,		// Passes if the incoming depth value is greater than the stored depth value.
 		Always,			// Always passes.
-		Never,			// Never passes.
+		Never			// Never passes.
 	};
 
 	// Represents the rasterization state of the pipeline.
