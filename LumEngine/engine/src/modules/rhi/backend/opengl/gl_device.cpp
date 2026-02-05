@@ -27,6 +27,7 @@ namespace lum::rhi::gl {
 		glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
 	}
+
 	void GLDevice::DrawElements(const VertexLayoutHandle& vao, uint32 indices_count) {
 		LUM_HOTCHK_RETURN_VOID(mLayouts.exist(vao), "Cannot draw, invalid vertex layout");
 
@@ -34,9 +35,10 @@ namespace lum::rhi::gl {
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices_count), GL_UNSIGNED_INT, nullptr);
 
 	}
+
 	void GLDevice::BeginFrame() {
 
-		glViewport(0, 0, window->GetWidth(), window->GetHeight());
+		glViewport(0, 0, window->get_width(), window->get_height());
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -49,6 +51,7 @@ namespace lum::rhi::gl {
 		glfwPollEvents();
 
 	}
+
 	void GLDevice::EndFrame() {
 
 #		if LUM_ENABLE_IMGUI == 1
@@ -58,7 +61,25 @@ namespace lum::rhi::gl {
 
 #		endif
 
-		glfwSwapBuffers(static_cast<GLFWwindow*>(window->GetNativeWindow()));
+		glfwSwapBuffers(static_cast<GLFWwindow*>(window->get_native_window()));
+
+	}
+
+	void GLDevice::SetViewport(int32 x, int32 y, int32 width, int32 height) {
+
+		glViewport(x, y, width, height);
+
+	}
+	void GLDevice::SetViewportX(int32 x) {
+
+	}
+	void GLDevice::SetViewportY(int32 y) {
+
+	}
+	void GLDevice::SetViewportWidth(int32 width) {
+
+	}
+	void GLDevice::SetViewportHeight(int32 height) {
 
 	}
 

@@ -12,11 +12,11 @@ namespace lum::rhi {
 
 	struct PipelineDescriptor {
 
-		RasterizerState			rasterizer	{};
-		DepthStencilState		depthStencil{};
-		ScissorState			scissor		{};
-		CullState				cull		{};
-		BlendState				blend		{};
+		RasterizerState			mRasterizer		{};
+		DepthStencilState		mDepthStencil	{};
+		ScissorState			mScissor		{};
+		CullState				mCull			{};
+		BlendState				mBlend			{};
 
 		ShaderHandle			shader{};
 
@@ -24,11 +24,11 @@ namespace lum::rhi {
 
 	struct Pipeline {
 
-		RasterizerState			rasterizer	{};
-		DepthStencilState		depthStencil{};
-		ScissorState			scissor		{};
-		CullState				cull		{};
-		BlendState				blend		{};
+		RasterizerState			mRasterizer		{};
+		DepthStencilState		mDepthStencil	{};
+		ScissorState			mScissor		{};
+		CullState				mCull			{};
+		BlendState				mBlend			{};
 
 		ShaderHandle			shader{};
 

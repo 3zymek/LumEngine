@@ -118,7 +118,7 @@ namespace lum {
 			}
 
 			void Init( ) {
-				for (size_t i = 0; i < detail::MAX_EVENT_TYPES; i++) {
+				for (usize i = 0; i < detail::MAX_EVENT_TYPES; i++) {
 					m_pools[i] = nullptr;
 				}
 			}

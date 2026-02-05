@@ -2,14 +2,14 @@
 
 namespace lum::rhi::gl {
 	// TO IMPLEMENT:
-	void GLDevice::_CacheUniformsLocations() {
+	void GLDevice::cache_uniforms_locations() {
 
 
 
 
 	}
 
-	bool GLDevice::_IsValidBufferDescriptor(const BufferDescriptor& desc) noexcept {
+	bool GLDevice::is_valid_buffer_descriptor(const BufferDescriptor& desc) noexcept {
 
 		if (desc.bufferUsage == BufferUsage::Static) {
 
@@ -28,7 +28,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	GLbitfield GLDevice::_TranslateMappingFlags(Mapflag flags) noexcept {
+	GLbitfield GLDevice::translate_mapping_flags(Mapflag flags) noexcept {
 		GLbitfield flag = 0;
 
 		if (flags & Mapflag::Persistent)			flag |= GL_MAP_PERSISTENT_BIT;

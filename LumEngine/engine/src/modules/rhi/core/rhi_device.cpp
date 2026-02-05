@@ -3,8 +3,8 @@
 #include "rhi/backend/opengl/gl_device.hpp"
 namespace lum::rhi {
 
-	RenderDevice* create_device(Window* window) {
-		RenderBackend backend = window->GetBackend();
+	RenderDevice* CreateDevice(Window* window) {
+		RenderBackend backend = window->get_backend();
 		switch (backend) {
 		case RenderBackend::OpenGL: return new gl::GLDevice(window);
 		}

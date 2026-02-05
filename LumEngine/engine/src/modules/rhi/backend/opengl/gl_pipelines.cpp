@@ -6,7 +6,7 @@ namespace lum::rhi::gl {
 	/// Private helpers
 	///////////////////////////////////////////////////
 
-	void GLDevice::_BindCheckShader(const Pipeline& pip) noexcept {
+	void GLDevice::bind_check_shader(const Pipeline& pip) noexcept {
 		
 		if (pip.shader.id == null_id<ShaderID>())
 			return;
@@ -15,8 +15,8 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::_BindCheckRasterizer(const Pipeline& pip) noexcept {
-		const auto& rast = pip.rasterizer;
+	void GLDevice::bind_check_rasterizer(const Pipeline& pip) noexcept {
+		const auto& rast = pip.mRasterizer;
 
 		if (rast.topologyMode != mRasterizerState.topologyMode || rast.topologyModeFaces != mRasterizerState.topologyModeFaces) {
 			glPolygonMode(
@@ -30,15 +30,15 @@ namespace lum::rhi::gl {
 
 		if (rast.depthBias.bEnable) {
 
-			SetDepthBiasFactors(rast.depthBias.slopeFactor, rast.depthBias.constantBias);
+			SetDepthBiasSlope(rast.depthBias.slopeFactor);
 
 		}
 
 	}
-	void GLDevice::_BindCheckDepthStencil(const Pipeline& pip) noexcept {
+	void GLDevice::bind_check_depth_stencil(const Pipeline& pip) noexcept {
 
-		const auto& depth = pip.depthStencil.depth;
-		const auto& stencil = pip.depthStencil.stencil;
+		const auto& depth = pip.mDepthStencil.depth;
+		const auto& stencil = pip.mDepthStencil.stencil;
 
 		ToggleDepthTest(depth.bEnabled);
 
@@ -68,9 +68,9 @@ namespace lum::rhi::gl {
 		}
 
 	}
-	void GLDevice::_BindCheckScissors(const Pipeline& pip) noexcept {
+	void GLDevice::bind_check_scissors(const Pipeline& pip) noexcept {
 
-		const auto& scissors = pip.scissor;
+		const auto& scissors = pip.mScissor;
 
 		if (scissors.bEnabled != mEnabledStates.has(State::Scissor)) {
 
@@ -79,7 +79,7 @@ namespace lum::rhi::gl {
 				glEnable(GL_SCISSOR_TEST);
 				mEnabledStates.enable(State::Scissor);
 
-				SetScissor(scissors.x, scissors.y, scissors.width, scissors.height); // Default options
+				SetScissors(scissors.x, scissors.y, scissors.width, scissors.height); // Default options
 
 			}
 			else {
@@ -91,9 +91,9 @@ namespace lum::rhi::gl {
 		}
 
 	}
-	void GLDevice::_BindCheckBlend(const Pipeline& pip) noexcept {
+	void GLDevice::bind_check_blend(const Pipeline& pip) noexcept {
 
-		const auto& blend = pip.blend;
+		const auto& blend = pip.mBlend;
 
 		ToggleBlend(blend.bEnabled);
 
@@ -105,9 +105,9 @@ namespace lum::rhi::gl {
 		}
 
 	}
-	void GLDevice::_BindCheckCull(const Pipeline& pip) noexcept {
+	void GLDevice::bind_check_cull(const Pipeline& pip) noexcept {
 
-		const auto& cull = pip.cull;
+		const auto& cull = pip.mCull;
 
 		ToggleCull(cull.bEnabled);
 
@@ -154,22 +154,22 @@ namespace lum::rhi::gl {
 
 		Pipeline& pip = mPipelines[pipeline];
 
-		_BindCheckShader(pip);
+		bind_check_shader(pip);
 
 		// Topology
-		_BindCheckRasterizer(pip);
+		bind_check_rasterizer(pip);
 
 		// Depth & Stencil
-		_BindCheckDepthStencil(pip);
+		bind_check_depth_stencil(pip);
 
 		// Scissors
-		_BindCheckScissors(pip);
+		bind_check_scissors(pip);
 
 		// Cull
-		_BindCheckCull(pip);
+		bind_check_cull(pip);
 
 		// Blend
-		_BindCheckBlend(pip);
+		bind_check_blend(pip);
 
 	}
 

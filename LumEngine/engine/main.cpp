@@ -102,22 +102,22 @@ private:
         if (input::KeyPressedOnce(input::Key::LEFT_CONTROL)) {
             mouse_locked = !mouse_locked;
             if (mouse_locked) {
-                glfwSetInputMode(static_cast<GLFWwindow*>(m_window->GetNativeWindow()), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                glfwSetInputMode(static_cast<GLFWwindow*>(m_window->get_native_window()), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             }
-            else glfwSetInputMode(static_cast<GLFWwindow*>(m_window->GetNativeWindow()), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            else glfwSetInputMode(static_cast<GLFWwindow*>(m_window->get_native_window()), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
 
     }
 
     void RecalculateMVP() {
-        aspect_ratio = (float32)m_window->GetWidth() / (float32)m_window->GetHeight();
+        aspect_ratio = (float32)m_window->get_width() / (float32)m_window->get_height();
         view = glm::lookAt(position, front + position, up);
         projection = glm::perspective(glm::radians(fov), aspect_ratio, min_plane, max_plane);
 
     }
 
     void Init(Window* wind) {
-        aspect_ratio = (double)wind->GetWidth() / (double)wind->GetHeight();
+        aspect_ratio = (double)wind->get_width() / (double)wind->get_height();
         glm::vec2 mouse_pos = input::GetMousePos();
         lastX = mouse_pos.x;
         lastY = mouse_pos.y;
@@ -291,17 +291,17 @@ auto CreateCubeTexture() {
 }
 auto CreateCubePipeline(auto shader) {
     PipelineDescriptor cubePipeline;
-    cubePipeline.blend.bEnabled = true;
-    cubePipeline.blend.dstAlphaFactor = BlendFactor::SrcAlpha;
-    cubePipeline.blend.srcAlphaFactor = BlendFactor::SrcAlpha;
-    cubePipeline.blend.dstColorFactor = BlendFactor::SrcAlpha;
-    cubePipeline.blend.srcColorFactor = BlendFactor::SrcAlpha;
-    cubePipeline.blend.alphaOp = BlendOp::Max;
-    cubePipeline.blend.colorOp = BlendOp::Max;
+    cubePipeline.mBlend.bEnabled = true;
+    cubePipeline.mBlend.dstAlphaFactor = BlendFactor::SrcAlpha;
+    cubePipeline.mBlend.srcAlphaFactor = BlendFactor::SrcAlpha;
+    cubePipeline.mBlend.dstColorFactor = BlendFactor::SrcAlpha;
+    cubePipeline.mBlend.srcColorFactor = BlendFactor::SrcAlpha;
+    cubePipeline.mBlend.alphaOp = BlendOp::Max;
+    cubePipeline.mBlend.colorOp = BlendOp::Max;
 
-    cubePipeline.depthStencil.depth.bEnabled = true;
-    cubePipeline.depthStencil.depth.bWriteToZBuffer = false;
-    cubePipeline.depthStencil.depth.compareFlag = CompareFlag::Less;
+    cubePipeline.mDepthStencil.depth.bEnabled = true;
+    cubePipeline.mDepthStencil.depth.bWriteToZBuffer = false;
+    cubePipeline.mDepthStencil.depth.compareFlag = CompareFlag::Less;
 
     //cubePipeline.rasterizer.topologyMode = TopologyMode::Line;
 
@@ -341,11 +341,11 @@ auto CreateSkyboxTexture() {
 }
 auto CreateSkyboxPipeline(auto shader) {
     PipelineDescriptor skyboxPipeline;
-    skyboxPipeline.depthStencil.depth.bEnabled = true;
-    skyboxPipeline.depthStencil.depth.bWriteToZBuffer = false;
-    skyboxPipeline.depthStencil.depth.compareFlag = CompareFlag::LessEqual;
+    skyboxPipeline.mDepthStencil.depth.bEnabled = true;
+    skyboxPipeline.mDepthStencil.depth.bWriteToZBuffer = false;
+    skyboxPipeline.mDepthStencil.depth.compareFlag = CompareFlag::LessEqual;
 
-    skyboxPipeline.cull.bEnabled = true;
+    skyboxPipeline.mCull.bEnabled = true;
 
     skyboxPipeline.shader = shader;
     return device->CreatePipeline(skyboxPipeline);
@@ -365,14 +365,14 @@ int main() {
     //Logger::Get().enable_log(LogSeverity::Info);
     Logger::Get().disable_log(LogSeverity::Debug);
     WindowDescriptor windowDesc;
-    windowDesc.MSAA_samples = 4;
-    windowDesc.fullscreen = false;
+    windowDesc.msaaSamples = 4;
+    windowDesc.bFullscreen = false;
     windowDesc.height = 920;
     windowDesc.width = 1280;
 
     Window* window = CreateWindow(windowDesc);
-    device = create_device(window);
-    input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
+    device = CreateDevice(window);
+    input::SetActiveWindow(static_cast<GLFWwindow*>(window->get_native_window()));
 
     auto basicShader = CreateShader("basic.vert", "basic.frag");
     auto skyboxShader = CreateShader("skybox_pass.vert", "skybox_pass.frag");
@@ -425,28 +425,25 @@ int main() {
         c.Update();
 
         int x, y;
-        glfwGetWindowSize(static_cast<GLFWwindow*>(window->GetNativeWindow()), &x, &y);
-        window->SetWidth(x);
-        window->SetHeight(y);
+        glfwGetWindowSize(static_cast<GLFWwindow*>(window->get_native_window()), &x, &y);
+        window->set_width(x);
+        window->set_height(y);
 
         device->BeginFrame();
         
         device->BindPipeline(cubePip);
         device->BindSampler(sampler, LUM_TEXTURE_BINDING_01);
-        device->SetTopology(TopologyMode::Line);
         device->BindTexture(cubeTexture);
         device->DrawElements(cubeVAO, cubeIndices.size());
 
         device->BindPipeline(skyboxPip);
-
-        device->SetTopology(TopologyMode::Line);
         device->BindSampler(sampler, LUM_CUBEMAP_BINDING);
         device->BindTexture(skyboxTexture, LUM_CUBEMAP_BINDING);
         device->Draw(skyVAO, skyboxVerts.size());
 
         device->EndFrame();
 
-    } while (window->IsOpen());
+    } while (window->is_open());
 
 
 }

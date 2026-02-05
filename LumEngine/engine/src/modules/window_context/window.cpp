@@ -36,29 +36,29 @@ namespace lum {
 
 	///  OpenGL window
 
-	void OpenGLWindow::SetWidth(uint32 width) {
+	void OpenGLWindow::set_width(uint32 width) noexcept {
 		mWidth = width;
 	}
-	void OpenGLWindow::SetHeight(uint32 height) {
+	void OpenGLWindow::set_height(uint32 height) noexcept {
 		mHeight = height;
 	}
-	uint32 OpenGLWindow::GetWidth( ) {
+	uint32 OpenGLWindow::get_width( ) const noexcept {
 		return mWidth;
 	}
-	uint32 OpenGLWindow::GetHeight( ) {
+	uint32 OpenGLWindow::get_height( ) const noexcept {
 		return mHeight;
 	}
-	void* OpenGLWindow::GetNativeWindow( ) {
+	void* OpenGLWindow::get_native_window( ) const noexcept {
 		return mWindow;
 	}
-	bool OpenGLWindow::IsOpen( ) {
+	bool OpenGLWindow::is_open( ) const noexcept {
 		return !glfwWindowShouldClose(mWindow);
 	}
-	RenderBackend OpenGLWindow::GetBackend( ) {
+	RenderBackend OpenGLWindow::get_backend( ) const noexcept {
 		return backend;
 	}
 
-	void OpenGLWindow::Init( const WindowDescriptor& desc ) {
+	void OpenGLWindow::init( const WindowDescriptor& desc ) {
 
 		if (!glfwInit()) {
 			return;
@@ -67,13 +67,15 @@ namespace lum {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 #		if LUM_ENABLE_DEBUG_RENDER == 1
 			glfwWindowHint(GLFW_CONTEXT_DEBUG, GLFW_OPENGL_DEBUG_CONTEXT);
 #		endif
-		if (desc.MSAA_samples > 0)
-			glfwWindowHint(GLFW_SAMPLES, desc.MSAA_samples);
 
-		if (desc.fullscreen) {
+		if (desc.msaaSamples > 0)
+			glfwWindowHint(GLFW_SAMPLES, desc.msaaSamples);
+
+		if (desc.bFullscreen) {
 			mWindow = glfwCreateWindow(desc.width, desc.height, desc.title, glfwGetPrimaryMonitor(), nullptr);
 		}
 		else mWindow = glfwCreateWindow(desc.width, desc.height, desc.title, nullptr, nullptr);
@@ -111,7 +113,7 @@ namespace lum {
 
 
 	Window* CreateWindow( const WindowDescriptor& desc ) {
-		switch (desc.render) {
+		switch (desc.backend) {
 		case RenderBackend::OpenGL: return new OpenGLWindow(desc);
 		}
 		return nullptr;

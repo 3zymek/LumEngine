@@ -38,9 +38,9 @@ namespace lum::rhi::gl {
 		glShaderSource(vshader, 1, &vcstr, nullptr);
 		glShaderSource(fshader, 1, &fcstr, nullptr);
 
-		if (!_CompileShader(vshader))
+		if (!compile_shader(vshader))
 			return ShaderHandle{};
-		if (!_CompileShader(fshader))
+		if (!compile_shader(fshader))
 			return ShaderHandle{};
 
 		shader.handle = glCreateProgram();
@@ -51,10 +51,11 @@ namespace lum::rhi::gl {
 		glDeleteShader(vshader);
 		glDeleteShader(fshader);
 
-		_LinkProgram(shader.handle);
+		link_program(shader.handle);
 
 		LUM_LOG_INFO("Created shader %s - %s", desc.vertexSource, desc.fragmentSource);
 		return mShaders.create_handle(std::move(shader));
+
 	}
 	void GLDevice::BindShader(const ShaderHandle& shader) {
 
@@ -82,6 +83,7 @@ namespace lum::rhi::gl {
 		mShaders.delete_handle(shader);
 
 		LUM_LOG_DEBUG("Shader %d deleted", shader.id);
+
 	}
 	void GLDevice::SetMat4(const ShaderHandle& shader, ccharptr location, const glm::mat4& mat) {
 
@@ -126,7 +128,7 @@ namespace lum::rhi::gl {
 
 	}
 	
-	bool GLDevice::_CompileShader(GLuint shader) {
+	bool GLDevice::compile_shader(GLuint shader) {
 
 		glCompileShader(shader);
 		int32 success;
@@ -143,7 +145,7 @@ namespace lum::rhi::gl {
 		return true;
 	}
 
-	bool GLDevice::_LinkProgram(GLuint program) {
+	bool GLDevice::link_program(GLuint program) {
 
 		glLinkProgram(program);
 		int32 success;

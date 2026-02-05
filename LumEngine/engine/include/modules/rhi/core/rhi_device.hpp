@@ -395,65 +395,346 @@ namespace lum::rhi {
 		virtual void BeginFrame			( )															= 0;
 		virtual void EndFrame			( )															= 0;
 
-
-
-		virtual void ToggleScissors(bool) = 0;
-		virtual void SetScissor(int32 x, int32 y, int32 width, int32 height) = 0;
-		virtual void SetViewport(int32 x, int32 y, int32 width, int32 height) = 0;
-
-
-
-		/*
-		* 
-		*  TO DO TOMMOROW
-		*		- Stencil functions
-		*		- Optymalize functions below
-		*		- Maybe try to create skybox ( but finish this first )
-		* 
+		/*!
+		* @brief Sets the active viewport.
+		*
+		* Defines the transformation from normalized device coordinates
+		* to window-space pixels for subsequent draw calls.
+		*
+		* The viewport remains bound until explicitly changed.
+		*
+		* @param x Left coordinate of the viewport.
+		* @param y Bottom coordinate of the viewport.
+		* @param width Width of the viewport.
+		* @param height Height of the viewport.
 		*/
+		virtual void SetViewport(int32 x, int32 y, int32 width, int32 height) = 0;
+		virtual void SetViewportX(int32 x) = 0;
+		virtual void SetViewportY(int32 y) = 0;
+		virtual void SetViewportWidth(int32 width) = 0;
+		virtual void SetViewportHeight(int32 height) = 0;
+
+
+		/*!
+		* @brief Enables or disables the scissor test.
+		*
+		* When enabled, fragments outside the defined scissor rectangle
+		* are discarded during rasterization.
+		* State is persistent until changed.
+		*
+		* Commonly used for UI, split-screen, and render region clipping.
+		*
+		* @param enable True to enable the scissor test, false to disable it.
+		*/
+		virtual void ToggleScissors(bool) = 0;
+		virtual bool IsScissorEnabled() const noexcept = 0;
+
+		/*!
+		* @brief Sets the active scissor rectangle.
+		*
+		* Defines the rectangular region, in screen-space pixels,
+		* that limits fragment rendering when the scissor test is enabled.
+		*
+		* The rectangle remains bound until explicitly changed.
+		*
+		* @param x Left coordinate of the scissor rectangle.
+		* @param y Bottom coordinate of the scissor rectangle.
+		* @param width Width of the scissor rectangle.
+		* @param height Height of the scissor rectangle.
+		*/
+		virtual void SetScissors(int32 x, int32 y, int32 width, int32 height) = 0;
+		virtual void SetScissorX(int32 x) = 0;
+		virtual void SetScissorY(int32 y) = 0;
+		virtual void SetScissorWidth(int32 width) = 0;
+		virtual void SetScissorHeight(int32 height) = 0;
+
 
 
 		// Cull setters
 
+		/*!
+		* @brief Enables or disables face culling.
+		*
+		* Controls whether the rasterizer discards back-facing (or front-facing,
+		* depending on current cull mode) primitives.
+		* State is persistent until changed.
+		*
+		* Used to reduce overdraw and improve rendering performance.
+		*
+		* @param enable True to enable face culling, false to disable it.
+		*/
 		virtual void ToggleCull(bool) = 0;
+		virtual bool IsCullEnabled() const noexcept = 0;
+
+		/*!
+		* @brief Selects which polygon faces are culled.
+		*
+		* Controls the rasterizer culling mode used to discard primitives
+		* based on their winding order.
+		*
+		* Requires face culling to be enabled.
+		*
+		* @param face Cull face selection (Front or Back).
+		*/
 		virtual void SetCullFace(Face face) = 0;
+
+		/*!
+		* @brief Sets the front-face winding order.
+		*
+		* Defines which vertex winding order is considered front-facing
+		* during rasterization.
+		*
+		* Used in combination with face culling to determine which
+		* primitives are discarded.
+		*
+		* @param order Vertex winding order defining front-facing polygons
+		*              (e.g. Clockwise or CounterClockwise).
+		*/
 		virtual void SetCullWindingOrder(WindingOrder) = 0;
+
+
 
 
 		// Blend setters
 
+		/*!
+		* @brief Enables or disables color blending.
+		*
+		* Controls whether fragment shader outputs are blended with the
+		* current contents of the render target.
+		*
+		* Affects all subsequent draw calls until the state is changed.
+		*
+		* Commonly used for transparency, particles, and UI rendering.
+		*
+		* @param enabled True to enable blending, false to disable it.
+		*/
 		virtual void ToggleBlend(bool enabled) = 0;
+		virtual bool IsBlendEnabled() const noexcept = 0;
+
 		//virtual void SetBlendConstantColor(glm::vec4 rgba) = 0; IMPLEMENT
+		
+		/*!
+		* @brief Sets all blend factors for both color and alpha channels.
+		*
+		* Configures how source and destination colors are combined during blending.
+		* The source factor is multiplied with the fragment shader output, and the
+		* destination factor is multiplied with the current framebuffer color.
+		* The results are then combined using the blend operation.
+		*
+		* Blending must be enabled via toggle_blend() before this takes effect.
+		* Blend factors persist until explicitly changed.
+		*
+		* Common combinations:
+		* - Alpha blending: (SrcAlpha, OneMinusSrcAlpha, One, OneMinusSrcAlpha)
+		* - Additive: (One, One, One, One)
+		* - Multiplicative: (DstColor, Zero, DstAlpha, Zero)
+		*
+		* @param srcColor Source blend factor for RGB channels.
+		* @param dstColor Destination blend factor for RGB channels.
+		* @param srcAlpha Source blend factor for alpha channel.
+		* @param dstAlpha Destination blend factor for alpha channel.
+		*/
 		virtual void SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha) = 0;
+
+		/*!
+		* @brief Sets blend factors for color channels only.
+		*
+		* Configures how source and destination RGB values are weighted during blending.
+		* Alpha channel blend factors remain unchanged.
+		*
+		* Blending must be enabled via toggle_blend() before this takes effect.
+		* The setting persists until explicitly changed.
+		*
+		* Useful when you need different blending behavior for color and alpha,
+		* or when updating only color blending without affecting alpha.
+		*
+		* @param srcColor Source blend factor for RGB channels.
+		* @param dstColor Destination blend factor for RGB channels.
+		*/
+		virtual void SetBlendColorFactors(BlendFactor srcColor, BlendFactor dstColor) = 0;
+
+		/*!
+		* @brief Sets blend factors for alpha channel only.
+		*
+		* Configures how source and destination alpha values are weighted during blending.
+		* RGB channel blend factors remain unchanged.
+		*
+		* Blending must be enabled via toggle_blend() before this takes effect.
+		* The setting persists until explicitly changed.
+		*
+		* Commonly used to preserve alpha coverage in transparent materials
+		* while using different color blending.
+		*
+		* @param srcAlpha Source blend factor for alpha channel.
+		* @param dstAlpha Destination blend factor for alpha channel.
+		*/
+		virtual void SetBlendAlphaFactors(BlendFactor srcAlpha, BlendFactor dstAlpha) = 0;
+		virtual void SetBlendSrcColorFactor(BlendFactor factor) = 0;
+		virtual void SetBlendDstColorFactor(BlendFactor factor) = 0;
+		virtual void SetBlendSrcAlphaFactor(BlendFactor factor) = 0;
+		virtual void SetBlendDstAlphaFactor(BlendFactor factor) = 0;
+		/*!
+		* @brief Sets the blend operation for color and alpha channels.
+		*
+		* Defines how the source and destination values (after applying blend factors)
+		* are mathematically combined to produce the final color.
+		*
+		* Blending must be enabled via toggle_blend() before this takes effect.
+		* The blend operation persists until explicitly changed.
+		*
+		* @param colorOp Blend operation for RGB channels (e.g., Add, Subtract, Min, Max).
+		* @param alphaOp Blend operation for alpha channel (e.g., Add, Subtract, Min, Max).
+		*/
 		virtual void SetBlendOp(BlendOp colorOp, BlendOp alphaOp) = 0;
+		virtual void SetBlendColorOp(BlendOp op) = 0;
+		virtual void SetBlendAlphaOp(BlendOp op) = 0;
+
 
 
 		// Depth setters
 
+		/*!
+		* @brief Enables or disables depth buffer writes.
+		*
+		* Controls whether fragment depth values are written to the
+		* depth buffer during depth testing.
+		*
+		* Depth testing may still occur when depth writes are disabled.
+		*
+		* State is persistent until changed.
+		*	
+		* Commonly disabled for transparent objects and overlays.
+		*
+		* @param enable True to enable depth writes, false to disable them.
+		*/
 		virtual void ToggleDepthWrite(bool) = 0;
-		virtual void ToggleDepthTest(bool) = 0;
-		virtual void SetDepthFunc(CompareFlag) = 0;
+		virtual bool IsDepthWriteEnabled() const noexcept = 0;
+
+		/*!
+		 * @brief Enables or disables depth testing.
+		 *
+		 * When enabled, the depth test compares each fragment's depth value against
+		 * the current depth buffer value using the comparison function set by SetDepthFunc().
+		 * Fragments that fail the test are discarded before blending.
+		 *
+		 * State is persistent until changed.
+		 *
+		 * Essential for correct rendering of 3D scenes with overlapping geometry.
+		 *
+		 * @param enable True to enable depth testing, false to disable it.
+		 */
+		virtual void ToggleDepthTest(bool enable) = 0;
+		virtual bool IsDepthTestEnabled() const noexcept = 0;
+
+		/*!
+		 * @brief Sets the depth comparison function.
+		 *
+		 * Determines the condition under which a fragment passes the depth test.
+		 * The test compares the incoming fragment's depth value against the value
+		 * currently stored in the depth buffer.
+		 *
+		 * Depth testing must be enabled via toggle_depth_test() before this takes effect.
+		 * The comparison function remains active until explicitly changed.
+		 *
+		 * Common modes: Less (default, typical 3D), LessOrEqual, Greater, Always.
+		 *
+		 * @param func Comparison function used for depth testing
+		 *             (e.g., CompareFlag::Less, CompareFlag::LessOrEqual).
+		 */
+		virtual void SetDepthFunc(CompareFlag func) = 0;
+
+
 
 
 		// Stencil setters
 
-		virtual void ToggleStencilTest(bool) = 0;
-		virtual void SetStencilReference(int32 ref, Face = Face::FrontBack) = 0;
+		/*!
+		* @brief Enables or disables stencil testing.
+		*
+		* When enabled, the stencil test compares a reference value against the value
+		* stored in the stencil buffer using a comparison function. Fragments that fail
+		* the test are discarded before color and depth processing.
+		*
+		* State is persistent until changed.
+		*
+		* Commonly used for masking, outlining, shadow volumes, and portal rendering.
+		*
+		* @param enable True to enable stencil testing, false to disable it.
+		*/
+		virtual void ToggleStencilTest(bool enable) = 0;
+		virtual bool IsStencilTestEnabled() const noexcept = 0;
+
+		/*!
+		* @brief Sets the reference value for stencil testing and operations.
+		*
+		* Defines the reference value used in stencil comparison functions and
+		* write operations. This value is compared against stencil buffer contents
+		* when stencil testing is enabled.
+		*
+		* Can be set separately for front-facing and back-facing polygons, or
+		* applied to both simultaneously.
+		*
+		* Stencil testing must be enabled via ToggleStencilTest() before this takes effect.
+		* The reference value persists until explicitly changed.
+		*
+		* @param ref Reference value for stencil comparisons (typically 0-255).
+		* @param face Specifies which polygon faces the reference applies to
+		*             (Front, Back, or FrontBack).
+		*/ // TODO ------------------------------------------------------------------------
+		virtual void SetStencilReference(int32 ref, Face face = Face::FrontBack) = 0;
+		virtual void SetStencilOp(StencilOp sfail, StencilOp dpfail, StencilOp dppass, Face face = Face::FrontBack) = 0;
+		virtual void SetStencilOpOnStencilFail(StencilOp op, Face face = Face::FrontBack) = 0;
+		virtual void SetStencilOpOnDepthFail(StencilOp op, Face face = Face::FrontBack) = 0;
+		virtual void SetStencilOpOnDepthPass(StencilOp op, Face face = Face::FrontBack) = 0;
+
 
 
 		// Rasterizer setters
 
+		/*!
+		* @brief Enables or disables depth bias during rasterization.
+		*
+		* When enabled, applies the currently configured depth bias
+		* to subsequent draw calls. State is persistent until changed.
+		*
+		* Used to prevent depth fighting (e.g. shadow mapping, decals).
+		*
+		* @param enable True to enable depth bias, false to disable it.
+		*/
 		virtual void ToggleDepthBias(bool) = 0;
+		virtual bool IsDepthBiasEnabled() const noexcept = 0;
+
+		virtual void SetDepthBiasFactors(float32 slope, float32 constant);
+		virtual void SetDepthBiasClamp(float32 clamp);
 
 		/*!
 		*  @brief Sets the scale and units used to calculate depth values.
 		*
 		*  Keeps the binding until changed. Used by shaders on next draw/dispatch.
 		*
-		*  @param slopFactor Specifies a scale factor that is used to create a variable depth offset for each polygon. Leave if don't change.
-		*  @param constantBias Is multiplied by an implementation-specific value to create a constant depth offset. Leave if don't change.
+		*  @param slopFactor Specifies a scale factor that is used to create a variable depth offset for each polygon.
+		*  @param constantBias Is multiplied by an implementation-specific value to create a constant depth offset.
 		*/
-		virtual void SetDepthBiasFactors(float32 slopeFactor = max_val<float32>(), float32 constantBias = max_val<float32>()) = 0;
+		virtual void SetDepthBiasSlope(float32 slopeFactor) = 0;
+		
+		/*!
+		* @brief Sets the constant depth bias offset.
+		*
+		* Defines a fixed depth offset added to each fragment, independent of polygon slope.
+		* The value is scaled by an implementation-specific constant that guarantees a minimum
+		* resolvable difference in depth buffer values.
+		*	
+		* Depth bias must be enabled via ToggleDepthBias() before this takes effect.
+		* The setting persists until explicitly changed.
+		*
+		* Used in combination with slope factor to fine-tune depth offset behavior.
+		*
+		* @param constantBias Implementation-scaled constant depth offset.
+		*                     Typical values range from 1.0 to 10.0 for shadows.
+		*/
+		virtual void SetDepthBiasConstant(float32 constantBias) = 0;
+
 		/*!
 		*  @brief Controls the interpretation of polygons for rasterization.
 		*	face describes which polygons mode applies to: 
@@ -468,6 +749,12 @@ namespace lum::rhi {
 		*	The initial value is Face::FrontBack. 
 		*/
 		virtual void SetTopology(TopologyMode mode, Face face = Face::FrontBack) = 0;
+
+		virtual BlendState GetBlendState() const noexcept = 0;
+		virtual CullState GetCullState() const noexcept = 0;
+		virtual ScissorState GetScissorState() const noexcept = 0;
+		virtual DepthStencilState GetDepthStencilState() const noexcept = 0;
+		virtual RasterizerState GetRasterizerState() const noexcept = 0;
 
 	protected:
 
@@ -526,6 +813,6 @@ namespace lum::rhi {
 	*  @return Pointer to the device.
 	*
 	*/
-	RenderDevice* create_device(Window* window);
+	RenderDevice* CreateDevice(Window* window);
 
 }

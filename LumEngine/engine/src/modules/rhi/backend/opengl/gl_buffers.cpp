@@ -8,7 +8,7 @@ namespace lum::rhi::gl {
 
 	BufferHandle GLDevice::CreateVertexBuffer(const BufferDescriptor& desc) {
 
-		if (!_IsValidBufferDescriptor(desc))
+		if (!is_valid_buffer_descriptor(desc))
 			return BufferHandle{};
 
 		if (mBuffers.dense_size() >= skMaxBuffers) {
@@ -29,7 +29,7 @@ namespace lum::rhi::gl {
 
 		GLbitfield init_flags =
 			((desc.bufferUsage == BufferUsage::Dynamic) ? GL_DYNAMIC_STORAGE_BIT : 0)
-			| _TranslateMappingFlags(desc.mapFlags);
+			| translate_mapping_flags(desc.mapFlags);
 
 		glCreateBuffers(1, &buffer.handle.glHandle);
 		glNamedBufferStorage(
@@ -48,7 +48,7 @@ namespace lum::rhi::gl {
 
 	BufferHandle GLDevice::CreateElementBuffer(const BufferDescriptor& desc) {
 
-		if (!_IsValidBufferDescriptor(desc))
+		if (!is_valid_buffer_descriptor(desc))
 			return BufferHandle{};
 
 		if (mBuffers.dense_size() >= skMaxBuffers) {
@@ -69,7 +69,7 @@ namespace lum::rhi::gl {
 
 		GLbitfield init_flags =
 			((buffer.usage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
-			| _TranslateMappingFlags(desc.mapFlags);
+			| translate_mapping_flags(desc.mapFlags);
 
 		glCreateBuffers(1, &buffer.handle.glHandle);
 		glNamedBufferStorage(
@@ -88,7 +88,7 @@ namespace lum::rhi::gl {
 	}
 
 	BufferHandle GLDevice::CreateUniformBuffer(const BufferDescriptor& desc) {
-		if (!_IsValidBufferDescriptor(desc))
+		if (!is_valid_buffer_descriptor(desc))
 			return BufferHandle{};
 
 		if (mBuffers.dense_size() >= skMaxBuffers) {
@@ -109,7 +109,7 @@ namespace lum::rhi::gl {
 
 		GLbitfield init_flags =
 			((buffer.usage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
-			| _TranslateMappingFlags(desc.mapFlags);
+			| translate_mapping_flags(desc.mapFlags);
 
 		glCreateBuffers(1, &buffer.handle.glHandle);
 		glNamedBufferStorage(
@@ -189,7 +189,7 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_NPTR(offset + size < buffer.size || size < buffer.size, "Invalid offset or size");
 		if (size <= 0) size = buffer.size;
 
-		vptr ptr = glMapNamedBufferRange(buffer.handle.glHandle, offset, size, _TranslateMappingFlags(flags));
+		vptr ptr = glMapNamedBufferRange(buffer.handle.glHandle, offset, size, translate_mapping_flags(flags));
 
 		LUM_ASSERT(ptr, "Failed to map buffer");
 
@@ -209,8 +209,9 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::AttachElementBufferToLayout(const BufferHandle& ebo, const VertexLayoutHandle& vao) {
-		LUM_HOTCHK_RETURN_VOID(mLayouts.exist(vao), "Layout doesn't exists");
-		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(ebo), "Buffer doesn't exists");
+
+		LUM_HOTCHK_RETURN_VOID(mLayouts.exist(vao), "Layout doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(ebo), "Buffer doesn't exist");
 
 		glVertexArrayElementBuffer(mLayouts[vao].vao, mBuffers[ebo].handle.glHandle);
 
