@@ -3,6 +3,7 @@
 #include "core/core_defines.hpp"
 #include "core/types.hpp"
 #include "core/utils/string_hasher.hpp"
+#include "core/math/types.hpp"
 namespace lum {
 
 	/// Generates ID for any type
@@ -177,7 +178,7 @@ namespace lum {
 		LUM_COMPILE_VARIABLE ccharptr black		= "\033[30m";
 		LUM_COMPILE_VARIABLE ccharptr red		= "\033[31m";
 		LUM_COMPILE_VARIABLE ccharptr green		= "\033[32m";
-		LUM_COMPILE_VARIABLE ccharptr yellow		= "\033[33m";
+		LUM_COMPILE_VARIABLE ccharptr yellow	= "\033[33m";
 		LUM_COMPILE_VARIABLE ccharptr blue		= "\033[34m";
 		LUM_COMPILE_VARIABLE ccharptr magenta	= "\033[35m";
 		LUM_COMPILE_VARIABLE ccharptr cyan		= "\033[36m";
@@ -187,31 +188,31 @@ namespace lum {
 		LUM_COMPILE_VARIABLE ccharptr light_red		= "\033[91m";
 		LUM_COMPILE_VARIABLE ccharptr light_green	= "\033[92m";
 		LUM_COMPILE_VARIABLE ccharptr light_yellow	= "\033[93m";
-		LUM_COMPILE_VARIABLE ccharptr light_blue		= "\033[94m";
+		LUM_COMPILE_VARIABLE ccharptr light_blue	= "\033[94m";
 		LUM_COMPILE_VARIABLE ccharptr light_magenta	= "\033[95m";
-		LUM_COMPILE_VARIABLE ccharptr light_cyan		= "\033[96m";
+		LUM_COMPILE_VARIABLE ccharptr light_cyan	= "\033[96m";
 		LUM_COMPILE_VARIABLE ccharptr light_white	= "\033[97m";
 
 		LUM_COMPILE_VARIABLE ccharptr bg_black		= "\033[40m";
-		LUM_COMPILE_VARIABLE ccharptr bg_red			= "\033[41m";
+		LUM_COMPILE_VARIABLE ccharptr bg_red		= "\033[41m";
 		LUM_COMPILE_VARIABLE ccharptr bg_green		= "\033[42m";
 		LUM_COMPILE_VARIABLE ccharptr bg_yellow		= "\033[43m";
 		LUM_COMPILE_VARIABLE ccharptr bg_blue		= "\033[44m";
-		LUM_COMPILE_VARIABLE ccharptr bg_magenta		= "\033[45m";
+		LUM_COMPILE_VARIABLE ccharptr bg_magenta	= "\033[45m";
 		LUM_COMPILE_VARIABLE ccharptr bg_cyan		= "\033[46m";
 		LUM_COMPILE_VARIABLE ccharptr bg_white		= "\033[47m";
 
-		LUM_COMPILE_VARIABLE ccharptr bg_light_black		= "\033[100m";
+		LUM_COMPILE_VARIABLE ccharptr bg_light_black	= "\033[100m";
 		LUM_COMPILE_VARIABLE ccharptr bg_light_red		= "\033[101m";
-		LUM_COMPILE_VARIABLE ccharptr bg_light_green		= "\033[102m";
+		LUM_COMPILE_VARIABLE ccharptr bg_light_green	= "\033[102m";
 		LUM_COMPILE_VARIABLE ccharptr bg_light_yellow	= "\033[103m";
 		LUM_COMPILE_VARIABLE ccharptr bg_light_blue		= "\033[104m";
 		LUM_COMPILE_VARIABLE ccharptr bg_light_magenta	= "\033[105m";
 		LUM_COMPILE_VARIABLE ccharptr bg_light_cyan		= "\033[106m";
-		LUM_COMPILE_VARIABLE ccharptr bg_light_white		= "\033[107m";
+		LUM_COMPILE_VARIABLE ccharptr bg_light_white	= "\033[107m";
 
 		LUM_COMPILE_VARIABLE ccharptr bold			= "\033[1m";
-		LUM_COMPILE_VARIABLE ccharptr italic			= "\033[3m";
+		LUM_COMPILE_VARIABLE ccharptr italic		= "\033[3m";
 		LUM_COMPILE_VARIABLE ccharptr underline		= "\033[4m";
 		LUM_COMPILE_VARIABLE ccharptr strikethrough	= "\033[9m";
 		LUM_COMPILE_VARIABLE ccharptr reverse		= "\033[7m";

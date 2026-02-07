@@ -4,9 +4,9 @@
 namespace lum {
 
 	struct alignas(16) Vertex {
-		glm::vec3 position;
-		glm::vec3 color;
-		glm::vec2 uv;
+		math::Vec3 position;
+		math::Vec3 color;
+		math::Vec2 uv;
 	};
 
 	namespace rhi {
@@ -44,8 +44,17 @@ namespace lum {
 		using FramebufferID		= uint32;
 		using PipelineID		= uint32;
 		using ShaderID			= uint8;
+
 		using EnumFlag			= uint16;
 		using DepthBiasVal		= float32;
+
+		using ChannelRGBA = math::Vec4;
+
+		enum class ClearFlags : EnumFlag {
+			Color = 1 << 0,
+			Depth = 1 << 1,
+			Stencil = 1 << 2
+		};
 
 		enum class DataFormat : EnumFlag {
 			Float1,
@@ -114,6 +123,13 @@ namespace lum {
 			Blend			= 1 << 5,
 			Cull			= 1 << 6,
 			DepthBias		= 1 << 7
+		};
+
+		struct ColorMask {
+			bool r : 1 = true;
+			bool g : 1 = true;
+			bool b : 1 = true;
+			bool a : 1 = true;
 		};
 
 		namespace detail {

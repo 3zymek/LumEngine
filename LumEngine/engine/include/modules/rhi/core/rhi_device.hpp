@@ -1,17 +1,27 @@
+// LumEngine Copyright (C) 2026 3zymek
+// All rights reserved.
+// Core of Render Hardware Interface
 #pragma once
+
 #include "core/core_pch.hpp"
 #include "core/core_defines.hpp"
 #include "core/utils/handle_pool.hpp"
+#include "core/shaders_define.h"
+#include "core/flags.hpp"
+#include "core/setup.hpp"
+
 #include "rhi/core/rhi_buffer.hpp"
 #include "rhi/core/rhi_vertex_layout.hpp"
 #include "rhi/core/rhi_shader.hpp"
 #include "rhi/rhi_common.hpp"
 #include "rhi/core/rhi_texture.hpp"
 #include "rhi/core/rhi_sampler.hpp"
-#include "core/shaders_define.h"
 #include "rhi/core/rhi_framebuffer.hpp"
 #include "rhi/core/rhi_pipeline.hpp"
-#include "core/flags.hpp"
+#if LUM_ENABLE_RENDER_PROFILER == 1
+#	include "rhi/rhi_profiler.hpp"
+#endif
+
 namespace lum { class Window; }
 namespace lum::rhi {
 
@@ -165,7 +175,7 @@ namespace lum::rhi {
 		* @param color RGBA color used to clear the color buffer.
 		* @param depth Depth value used to clear the depth buffer (clamped between 0.0 and 1.0).
 		*/
-		virtual void ClearFramebuffer(FramebufferHandle fbo, glm::vec4 color, float32 depth) = 0;
+		virtual void ClearFramebuffer(FramebufferHandle fbo, ChannelRGBA color, float32 depth) = 0;
 
 		/*! @brief Deletes the specified framebuffer and releases its resources.
 		*	
@@ -260,7 +270,7 @@ namespace lum::rhi {
 		*  @param mat Matrix to set.
 		* 
 		*/
-		virtual void SetMat4( const ShaderHandle& shader, ccharptr location, const glm::mat4& mat ) = 0;
+		virtual void SetMat4( const ShaderHandle& shader, ccharptr location, const math::Mat4& mat ) = 0;
 		
 		/*!
 		* @brief Sets a float uniform in a shader.
@@ -275,17 +285,17 @@ namespace lum::rhi {
 		/*!
 		* @brief Sets a vec4 uniform in a shader.
 		*/
-		virtual void SetVec4( const ShaderHandle& shader, ccharptr location, const glm::vec4& vec ) = 0;
+		virtual void SetVec4( const ShaderHandle& shader, ccharptr location, const math::Vec4& vec ) = 0;
 		
 		/*!
 		* @brief Sets a vec3 uniform in a shader.
 		*/
-		virtual void SetVec3( const ShaderHandle& shader, ccharptr location, const glm::vec3& vec ) = 0;
+		virtual void SetVec3( const ShaderHandle& shader, ccharptr location, const math::Vec3& vec ) = 0;
 		
 		/*!
 		* @brief Sets a vec2 uniform in a shader.
 		*/
-		virtual void SetVec2( const ShaderHandle& shader, ccharptr location, const glm::vec2& vec ) = 0;
+		virtual void SetVec2( const ShaderHandle& shader, ccharptr location, const math::Vec2& vec ) = 0;
 
 
 
@@ -390,11 +400,6 @@ namespace lum::rhi {
 		/// Other
 		///////////////////////////////////////////////////
 
-		virtual void Draw				( const VertexLayoutHandle& vao, uint32 vertex_count )		= 0;
-		virtual void DrawElements		( const VertexLayoutHandle&, uint32 indices_count )			= 0;
-		virtual void BeginFrame			( )															= 0;
-		virtual void EndFrame			( )															= 0;
-
 		/*!
 		* @brief Sets the active viewport.
 		*
@@ -409,9 +414,61 @@ namespace lum::rhi {
 		* @param height Height of the viewport.
 		*/
 		virtual void SetViewport(int32 x, int32 y, int32 width, int32 height) = 0;
+
+		/*!
+		* @brief Sets the left coordinate of the viewport.
+		*
+		* Updates only the X coordinate while preserving the current Y position,
+		* width, and height of the viewport.
+		*
+		* The viewport defines the transformation from normalized device coordinates
+		* to window-space pixels. This change takes effect immediately for all
+		* subsequent draw calls.
+		*
+		* @param x Left coordinate of the viewport in screen-space pixels.
+		*/
 		virtual void SetViewportX(int32 x) = 0;
+
+		/*!
+		 * @brief Sets the bottom coordinate of the viewport.
+		 *
+		 * Updates only the Y coordinate while preserving the current X position,
+		 * width, and height of the viewport.
+		 *
+		 * The viewport defines the transformation from normalized device coordinates
+		 * to window-space pixels. This change takes effect immediately for all
+		 * subsequent draw calls.
+		 *
+		 * @param y Bottom coordinate of the viewport in screen-space pixels.
+		 */
 		virtual void SetViewportY(int32 y) = 0;
+
+		/*!
+		* @brief Sets the width of the viewport.
+		*
+		* Updates only the viewport width while preserving the current X and Y
+		* coordinates and height.
+		*
+		* The viewport defines the transformation from normalized device coordinates
+		* to window-space pixels. This change takes effect immediately for all
+		* subsequent draw calls.
+		*
+		* @param width Width of the viewport in pixels. Must be greater than 0.
+		*/
 		virtual void SetViewportWidth(int32 width) = 0;
+
+		/*!
+		* @brief Sets the height of the viewport.
+		*
+		* Updates only the viewport height while preserving the current X and Y
+		* coordinates and width.
+		*
+		* The viewport defines the transformation from normalized device coordinates
+		* to window-space pixels. This change takes effect immediately for all
+		* subsequent draw calls.
+		*
+		* @param height Height of the viewport in pixels. Must be greater than 0.
+		*/
 		virtual void SetViewportHeight(int32 height) = 0;
 
 
@@ -427,6 +484,18 @@ namespace lum::rhi {
 		* @param enable True to enable the scissor test, false to disable it.
 		*/
 		virtual void ToggleScissors(bool) = 0;
+
+		/*!
+		* @brief Checks whether the scissor test is currently enabled.
+		*
+		* Returns the current state of the scissor test without modifying it.
+		* When the scissor test is enabled, fragments outside the defined scissor
+		* rectangle are discarded during rasterization.
+		*
+		* This query reflects the state set by the most recent ToggleScissor() call.
+		*
+		* @return True if scissor testing is enabled, false otherwise.
+		*/
 		virtual bool IsScissorEnabled() const noexcept = 0;
 
 		/*!
@@ -443,9 +512,65 @@ namespace lum::rhi {
 		* @param height Height of the scissor rectangle.
 		*/
 		virtual void SetScissors(int32 x, int32 y, int32 width, int32 height) = 0;
+		
+		/*!
+		* @brief Sets the left coordinate of the scissor rectangle.
+		*
+		* Updates only the X coordinate while preserving the current Y position,
+		* width, and height of the scissor rectangle.
+		*
+		* The scissor test must be enabled via ToggleScissor() for this to take effect.
+		* Fragments outside the scissor rectangle will be discarded during rasterization.
+		*
+		* The setting persists until explicitly changed.
+		*
+		* @param x Left coordinate of the scissor rectangle in screen-space pixels.
+		*/
 		virtual void SetScissorX(int32 x) = 0;
+		
+		/*!
+		* @brief Sets the bottom coordinate of the scissor rectangle.
+		*
+		* Updates only the Y coordinate while preserving the current X position,
+		* width, and height of the scissor rectangle.
+		*
+		* The scissor test must be enabled via ToggleScissor() for this to take effect.
+		* Fragments outside the scissor rectangle will be discarded during rasterization.
+		*
+		* The setting persists until explicitly changed.
+		*
+		* @param y Bottom coordinate of the scissor rectangle in screen-space pixels.
+		*/
 		virtual void SetScissorY(int32 y) = 0;
+		
+		/*!
+		* @brief Sets the width of the scissor rectangle.
+		*
+		* Updates only the width while preserving the current X and Y coordinates
+		* and height of the scissor rectangle.
+		*
+		* The scissor test must be enabled via ToggleScissor() for this to take effect.
+		* Fragments outside the scissor rectangle will be discarded during rasterization.
+		*
+		* The setting persists until explicitly changed.
+		*
+		* @param width Width of the scissor rectangle in pixels. Must be greater than 0.
+		*/
 		virtual void SetScissorWidth(int32 width) = 0;
+
+		/*!
+		* @brief Sets the height of the scissor rectangle.
+		*
+		* Updates only the height while preserving the current X and Y coordinates
+		* and width of the scissor rectangle.
+		*
+		* The scissor test must be enabled via ToggleScissor() for this to take effect.
+		* Fragments outside the scissor rectangle will be discarded during rasterization.
+		*
+		* The setting persists until explicitly changed.
+		*
+		* @param height Height of the scissor rectangle in pixels. Must be greater than 0.
+		*/
 		virtual void SetScissorHeight(int32 height) = 0;
 
 
@@ -464,6 +589,18 @@ namespace lum::rhi {
 		* @param enable True to enable face culling, false to disable it.
 		*/
 		virtual void ToggleCull(bool) = 0;
+
+		/*!
+		* @brief Checks whether face culling is currently enabled.
+		*
+		* Returns the current state of face culling without modifying it.
+		* When face culling is enabled, the rasterizer discards primitives based
+		* on their winding order and the configured cull mode.
+		*
+		* This query reflects the state set by the most recent ToggleCull() call.
+		*
+		* @return True if face culling is enabled, false otherwise.
+		*/
 		virtual bool IsCullEnabled() const noexcept = 0;
 
 		/*!
@@ -490,7 +627,7 @@ namespace lum::rhi {
 		* @param order Vertex winding order defining front-facing polygons
 		*              (e.g. Clockwise or CounterClockwise).
 		*/
-		virtual void SetCullWindingOrder(WindingOrder) = 0;
+		virtual void SetFrontFace(WindingOrder) = 0;
 
 
 
@@ -510,9 +647,22 @@ namespace lum::rhi {
 		* @param enabled True to enable blending, false to disable it.
 		*/
 		virtual void ToggleBlend(bool enabled) = 0;
+
+		/*!
+		* @brief Checks whether color blending is currently enabled.
+		*
+		* Returns the current state of blending without modifying it.
+		* When blending is enabled, fragment shader outputs are combined with
+		* the current contents of the render target according to the configured
+		* blend factors and operations.
+		*
+		* This query reflects the state set by the most recent ToggleBlend() call.
+		*
+		* @return True if blending is enabled, false otherwise.
+		*/
 		virtual bool IsBlendEnabled() const noexcept = 0;
 
-		//virtual void SetBlendConstantColor(glm::vec4 rgba) = 0; IMPLEMENT
+		virtual void SetBlendConstantColor(ChannelRGBA rgba) = 0;
 		
 		/*!
 		* @brief Sets all blend factors for both color and alpha channels.
@@ -570,10 +720,75 @@ namespace lum::rhi {
 		* @param dstAlpha Destination blend factor for alpha channel.
 		*/
 		virtual void SetBlendAlphaFactors(BlendFactor srcAlpha, BlendFactor dstAlpha) = 0;
+
+		/*!
+		* @brief Sets the blend factor for the source color component.
+		*
+		* Configures how the source RGB values are weighted during color blending.
+		* This controls the multiplier applied to the incoming fragment's color
+		* before combining it with the destination color in the framebuffer.
+		*
+		* Blending must be enabled via toggle_blend() before this takes effect.
+		* The setting persists until explicitly changed.
+		*
+		* Commonly used in combination with SetBlendDstColorFactor() to achieve
+		* effects like transparency, additive blending, or multiplicative blending.
+		*
+		* @param factor Source blend factor for RGB channels.
+		*/
 		virtual void SetBlendSrcColorFactor(BlendFactor factor) = 0;
+
+		/*!
+		* @brief Sets the blend factor for the destination color component.
+		*
+		* Configures how the destination RGB values (already in framebuffer) are
+		* weighted during color blending. This controls the multiplier applied to
+		* the existing color before combining it with the incoming fragment's color.
+		*
+		* Blending must be enabled via toggle_blend() before this takes effect.
+		* The setting persists until explicitly changed.
+		*
+		* Commonly paired with SetBlendSrcColorFactor() to control how new pixels
+		* blend with existing framebuffer content.
+		*
+		* @param factor Destination blend factor for RGB channels.
+		*/
 		virtual void SetBlendDstColorFactor(BlendFactor factor) = 0;
+
+		/*!
+		* @brief Sets the blend factor for the source alpha component.
+		*
+		* Configures how the source alpha value is weighted during alpha blending.
+		* This controls the multiplier applied to the incoming fragment's alpha
+		* before combining it with the destination alpha in the framebuffer.
+		*
+		* Blending must be enabled via toggle_blend() before this takes effect.
+		* The setting persists until explicitly changed.
+		*
+		* Allows independent control of alpha blending separate from color blending,
+		* useful for preserving alpha coverage while using different color blend modes.
+		*
+		* @param factor Source blend factor for alpha channel.
+		*/
 		virtual void SetBlendSrcAlphaFactor(BlendFactor factor) = 0;
+
+		/*!
+		* @brief Sets the blend factor for the destination alpha component.
+		*
+		* Configures how the destination alpha value (already in framebuffer) is
+		* weighted during alpha blending. This controls the multiplier applied to
+		* the existing alpha before combining it with the incoming fragment's alpha.
+		*
+		* Blending must be enabled via toggle_blend() before this takes effect.
+		* The setting persists until explicitly changed.
+		*
+		* Commonly used with SetBlendSrcAlphaFactor() to control alpha composition
+		* independently from RGB color blending.
+		*
+		* @param factor Destination blend factor for alpha channel.
+		*/
 		virtual void SetBlendDstAlphaFactor(BlendFactor factor) = 0;
+
 		/*!
 		* @brief Sets the blend operation for color and alpha channels.
 		*
@@ -587,8 +802,47 @@ namespace lum::rhi {
 		* @param alphaOp Blend operation for alpha channel (e.g., Add, Subtract, Min, Max).
 		*/
 		virtual void SetBlendOp(BlendOp colorOp, BlendOp alphaOp) = 0;
+
+		/*!
+		* @brief Sets the blend operation for RGB color channels.
+		*
+		* Configures the mathematical operation used to combine source and destination
+		* RGB values after they have been multiplied by their respective blend factors.
+		* This determines how the weighted colors are actually merged together.
+		*
+		* Blending must be enabled via toggle_blend() before this takes effect.
+		* The setting persists until explicitly changed.
+		*
+		* Common operations include ADD (standard blending), SUBTRACT (darkening effects),
+		* REVERSE_SUBTRACT (inverted darkening), MIN, and MAX.
+		*
+		* The final color is computed as: ColorOp(SrcColor * SrcFactor, DstColor * DstFactor)
+		*
+		* @param op Blend operation for RGB channels.
+		*/
 		virtual void SetBlendColorOp(BlendOp op) = 0;
+
+		/*!
+		* @brief Sets the blend operation for alpha channel.
+		*
+		* Configures the mathematical operation used to combine source and destination
+		* alpha values after they have been multiplied by their respective blend factors.
+		* This determines how the weighted alpha values are actually merged together.
+		*
+		* Blending must be enabled via toggle_blend() before this takes effect.
+		* The setting persists until explicitly changed.
+		*
+		* Allows independent control of alpha composition separate from color blending.
+		* Useful for specialized alpha coverage techniques or compositing operations.
+		*
+		* The final alpha is computed as: AlphaOp(SrcAlpha * SrcFactor, DstAlpha * DstFactor)
+		*
+		* @param op Blend operation for alpha channel.
+		*/
 		virtual void SetBlendAlphaOp(BlendOp op) = 0;
+
+		virtual void SetBlendFactorsForTarget(uint8 target) = 0;
+		virtual void ToggleBlendForTarget(uint8 target, bool enable) = 0;
 
 
 
@@ -609,6 +863,19 @@ namespace lum::rhi {
 		* @param enable True to enable depth writes, false to disable them.
 		*/
 		virtual void ToggleDepthWrite(bool) = 0;
+		
+		/*!
+		* @brief Checks whether depth buffer writes are currently enabled.
+		*
+		* Returns the current state of depth writing without modifying it.
+		* When depth writes are enabled, fragment depth values are written to
+		* the depth buffer. Depth testing may still occur even when writes
+		* are disabled.
+		*
+		* This query reflects the state set by the most recent ToggleDepthWrite() call.
+		*
+		* @return True if depth writes are enabled, false otherwise.
+		*/
 		virtual bool IsDepthWriteEnabled() const noexcept = 0;
 
 		/*!
@@ -625,6 +892,19 @@ namespace lum::rhi {
 		 * @param enable True to enable depth testing, false to disable it.
 		 */
 		virtual void ToggleDepthTest(bool enable) = 0;
+
+		/*!
+		* @brief Checks whether depth testing is currently enabled.
+		*
+		* Returns the current state of depth testing without modifying it.
+		* When depth testing is enabled, each fragment's depth value is compared
+		* against the current depth buffer value using the configured comparison
+		* function. Fragments that fail the test are discarded.
+		*
+		* This query reflects the state set by the most recent ToggleDepthTest() call.
+		*
+		* @return True if depth testing is enabled, false otherwise.
+		*/
 		virtual bool IsDepthTestEnabled() const noexcept = 0;
 
 		/*!
@@ -663,6 +943,20 @@ namespace lum::rhi {
 		* @param enable True to enable stencil testing, false to disable it.
 		*/
 		virtual void ToggleStencilTest(bool enable) = 0;
+
+		/*!
+		* @brief Queries whether stencil testing is currently enabled.
+		*
+		* Returns true if stencil testing is active and fragments are being
+		* compared against the stencil buffer according to the set stencil state.
+		* Returns false if stencil testing is disabled and all fragments bypass
+		* the stencil stage.
+		*
+		* Useful for checking render state before performing operations that
+		* depend on stencil masking, like outlining, shadow volumes, or portal rendering.
+		*
+		* @return True if stencil test is enabled, false otherwise.
+		*/
 		virtual bool IsStencilTestEnabled() const noexcept = 0;
 
 		/*!
@@ -705,8 +999,8 @@ namespace lum::rhi {
 		virtual void ToggleDepthBias(bool) = 0;
 		virtual bool IsDepthBiasEnabled() const noexcept = 0;
 
-		virtual void SetDepthBiasFactors(float32 slope, float32 constant);
-		virtual void SetDepthBiasClamp(float32 clamp);
+		virtual void SetDepthBiasFactors(float32 slope, float32 constant) = 0;
+		virtual void SetDepthBiasClamp(float32 clamp) = 0;
 
 		/*!
 		*  @brief Sets the scale and units used to calculate depth values.
@@ -750,11 +1044,105 @@ namespace lum::rhi {
 		*/
 		virtual void SetTopology(TopologyMode mode, Face face = Face::FrontBack) = 0;
 
-		virtual BlendState GetBlendState() const noexcept = 0;
-		virtual CullState GetCullState() const noexcept = 0;
-		virtual ScissorState GetScissorState() const noexcept = 0;
-		virtual DepthStencilState GetDepthStencilState() const noexcept = 0;
-		virtual RasterizerState GetRasterizerState() const noexcept = 0;
+
+
+
+		/*!
+		* @brief Returns the current blend state.
+		*
+		* Provides read-only access to the blend configuration, including
+		* blend enable, source/destination factors, and blend operations.
+		* Useful for checking if transparent objects, particle systems, or
+		* post-processing effects are configured correctly.
+		*
+		* @return Reference to the current BlendState.
+		*/
+		virtual const BlendState& GetBlendState() const noexcept = 0;
+
+		/*!
+		* @brief Returns the current face culling state.
+		*
+		* Allows querying which faces are culled (front/back) and the winding order.
+		* Useful for validating render state before drawing opaque geometry or
+		* performing custom cull logic.
+		*
+		* @return Reference to the current CullState.
+		*/
+		virtual const CullState& GetCullState() const noexcept = 0;
+
+		/*!
+		* @brief Returns the current scissor state.
+		*
+		* Provides access to scissor rectangle configuration.
+		* Fragments outside the scissor rect are discarded.
+		* Commonly used for UI clipping, minimap rendering, or split-screen.
+		*
+		* @return Reference to the current ScissorState.
+		*/
+		virtual const ScissorState& GetScissorState() const noexcept = 0;
+
+		/*!
+		* @brief Returns the current depth and stencil state.
+		*
+		* Provides access to depth test, depth write, stencil enable,
+		* and stencil operations.
+		* Useful for debugging rendering issues involving occlusion,
+		* shadow volumes, or stencil masking.
+		*
+		* @return Reference to the current DepthStencilState.
+		*/
+		virtual const DepthStencilState& GetDepthStencilState() const noexcept = 0;
+
+		/*!
+		* @brief Returns the current rasterizer state.
+		*
+		* Exposes configuration such as polygon fill mode, cull face,
+		* depth bias, and slope-scaled bias.
+		* Important for debugging wireframe rendering, shadow acne,
+		* or rendering to offscreen targets.
+		*
+		* @return Reference to the current RasterizerState.
+		*/
+		virtual const RasterizerState& GetRasterizerState() const noexcept = 0;
+
+		/*!
+		* @brief Returns the current viewport state.
+		*
+		* Provides access to viewport dimensions and depth range.
+		* Essential for rendering to multiple render targets, split-screen,
+		* or handling window resize events.
+		*
+		* @return Reference to the current ViewportState.
+		*/
+		virtual const ViewportState& GetViewport() const noexcept = 0;
+
+		virtual bool IsValid(BufferHandle handle) const = 0;
+		virtual bool IsValid(TextureHandle handle) const = 0;
+		virtual bool IsValid(ShaderHandle handle) const = 0;
+		virtual bool IsValid(FramebufferHandle handle) const = 0;
+		virtual bool IsValid(VertexLayoutHandle handle) const = 0;
+		virtual bool IsValid(PipelineHandle handle) const = 0;
+		virtual bool IsValid(SamplerHandle handle) const = 0;
+
+		virtual void SetColorMask(bool r, bool g, bool b, bool a) = 0;
+		virtual void SetColorMask(ColorMask rgba) = 0;
+
+		virtual void ClearColor(ChannelRGBA color) = 0;
+		virtual void ClearDepth() = 0;
+		virtual void ClearStencil() = 0;
+		virtual void Clear(uint32 flags) = 0;
+
+		virtual void Draw(const VertexLayoutHandle& vao, uint32 vertex_count) = 0;
+		virtual void DrawElements(const VertexLayoutHandle&, uint32 indices_count) = 0;
+		virtual void BeginFrame() = 0;
+		virtual void EndFrame() = 0;
+
+
+#if LUM_ENABLE_RENDER_PROFILER == 1
+		inline void GetProfilerInfo() {
+			std::cout << mProfiler.GetCacheHitRate() << '\n';
+		}
+#endif
 
 	protected:
 
@@ -768,8 +1156,30 @@ namespace lum::rhi {
 		ScissorState		mScissorState{};
 		DepthStencilState	mDepthStencilState{};
 		RasterizerState		mRasterizerState{};
+		ViewportState		mViewportState{};
+		ColorMask			mColorMask{};
 
-		Flags<State>		mEnabledStates	{};
+		// SOURCE OF TRUST - enabled states ( don't look at bEnabled at states )
+		Flags<State>		mEnabledStates{};
+
+#		if LUM_ENABLE_RENDER_PROFILER == 1
+			performance::Profiler mProfiler{};
+
+#			define LUM_PROFILER_BEGIN_FRAME() mProfiler.BeginFrame()
+#			define LUM_PROFILER_END_FRAME() mProfiler.EndFrame()
+#			define LUM_PROFILER_DRAW_CALL() mProfiler.RegisterDrawCall()
+#			define LUM_PROFILER_CACHE_MISS() mProfiler.RegisterCacheMiss()
+#			define LUM_PROFILER_CACHE_HIT() mProfiler.RegisterCacheHit()
+
+#		else
+
+#			define LUM_PROFILER_BEGIN_FRAME() ((void)0)
+#			define LUM_PROFILER_END_FRAME() ((void)0)
+#			define LUM_PROFILER_DRAW_CALL() ((void)0)
+#			define LUM_PROFILER_CACHE_MISS() ((void)0)
+#			define LUM_PROFILER_CACHE_HIT() ((void)0)
+
+#		endif
 		
 		LUM_COMPILE_VARIABLE
 		static uint32 skMaxShaders = 8;

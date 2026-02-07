@@ -102,7 +102,7 @@ namespace lum {
 
 		}
 
-		FMOD_VECTOR AudioSystem::TransferEmitterCoordsToFMOD(const glm::vec3 v) noexcept {
+		FMOD_VECTOR AudioSystem::TransferEmitterCoordsToFMOD(const math::Vec3 v) noexcept {
 
 			FMOD_VECTOR fmodv;
 			fmodv.x = v.x;
@@ -112,7 +112,7 @@ namespace lum {
 
 		}
 
-		FMOD_VECTOR AudioSystem::TransferListenerCoordsToFMOD(const glm::vec3 v) noexcept {
+		FMOD_VECTOR AudioSystem::TransferListenerCoordsToFMOD(const math::Vec3 v) noexcept {
 
 			FMOD_VECTOR fmodv;
 			fmodv.x = -v.x;

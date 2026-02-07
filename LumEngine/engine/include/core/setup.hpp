@@ -9,5 +9,7 @@
 // Defines if debug logging in backend rendering API is used.
 #define LUM_ENABLE_DEBUG_RENDER 0
 
+#define LUM_ENABLE_RENDER_PROFILER 1
+
 // Defines if validation statements are used in hotpath ( render, ecs, etc... )
 #define LUM_ENABLE_HOTPATH_VALIDATION 1

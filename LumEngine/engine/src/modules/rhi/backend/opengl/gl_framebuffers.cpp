@@ -55,7 +55,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::ClearFramebuffer(FramebufferHandle fbo, glm::vec4 color, float32 depth) {
+	void GLDevice::ClearFramebuffer(FramebufferHandle fbo, ChannelRGBA color, float32 depth) {
 		BindFramebuffer(fbo);
 		glClearColor(color.r, color.g, color.b, color.a);
 		glClearDepth(std::clamp(depth, 0.0f, 1.0f));

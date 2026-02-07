@@ -17,6 +17,7 @@ namespace lum::rhi {
 		ScissorState			mScissor		{};
 		CullState				mCull			{};
 		BlendState				mBlend			{};
+		ColorMask				mColorMask		{};
 
 		ShaderHandle			shader{};
 
@@ -29,6 +30,7 @@ namespace lum::rhi {
 		ScissorState			mScissor		{};
 		CullState				mCull			{};
 		BlendState				mBlend			{};
+		ColorMask				mColorMask		{};
 
 		ShaderHandle			shader{};
 

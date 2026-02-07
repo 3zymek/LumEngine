@@ -41,7 +41,7 @@ namespace lum::rhi::gl {
 		void				SetFramebufferColorTexture	( const FramebufferHandle&, const TextureHandle&, uint8 )	override;
 		void				SetFramebufferDepthTexture	( const FramebufferHandle&, const TextureHandle&)			override;
 		void				SetFramebufferStencilTexture( const FramebufferHandle&, const TextureHandle&)			override;
-		void				ClearFramebuffer			( FramebufferHandle, glm::vec4, float32)					override;
+		void				ClearFramebuffer			( FramebufferHandle, ChannelRGBA, float32)					override;
 		void				DeleteFramebuffer			( FramebufferHandle& )										override;
 		void				BindFramebuffer				( const FramebufferHandle& )								override;
 		void				UnbindFramebuffer			( )															override;
@@ -64,12 +64,12 @@ namespace lum::rhi::gl {
 		ShaderHandle	CreateShader( const ShaderDescriptor& )							override;
 		void			BindShader	( const ShaderHandle& )								override;
 		void			DeleteShader( ShaderHandle& )									override;
-		void			SetMat4		( const ShaderHandle&, ccharptr, const glm::mat4& )	override;
+		void			SetMat4		( const ShaderHandle&, ccharptr, const math::Mat4& )override;
 		void			Setf		( const ShaderHandle&, ccharptr, float32 )			override;
 		void			Seti		( const ShaderHandle&, ccharptr, int32 )			override;
-		void			SetVec4		( const ShaderHandle&, ccharptr, const glm::vec4& )	override;
-		void			SetVec3		( const ShaderHandle&, ccharptr, const glm::vec3& )	override;
-		void			SetVec2		( const ShaderHandle&, ccharptr, const glm::vec2& )	override;
+		void			SetVec4		( const ShaderHandle&, ccharptr, const math::Vec4& )	override;
+		void			SetVec3		( const ShaderHandle&, ccharptr, const math::Vec3& )	override;
+		void			SetVec2		( const ShaderHandle&, ccharptr, const math::Vec2& )	override;
 
 
 
@@ -111,68 +111,101 @@ namespace lum::rhi::gl {
 		/// Other
 		///////////////////////////////////////////////////
 
-		void Draw			( const VertexLayoutHandle&, uint32 )	override;
-		void DrawElements	( const VertexLayoutHandle&, uint32 )	override;
-		void BeginFrame		( )										override;
-		void EndFrame		( )										override;
-
-
-		void SetViewport(int32 x, int32 y, int32 width, int32 height)	override;
-		void SetViewportX(int32 x) override;
-		void SetViewportY(int32 y) override;
-		void SetViewportWidth(int32 width) override;
-		void SetViewportHeight(int32 height) override;
+		void SetViewport		( int32 x, int32 y, int32 width, int32 height )	override;
+		void SetViewportX		( int32 x )			override;
+		void SetViewportY		( int32 y )			override;
+		void SetViewportWidth	( int32 width )		override;
+		void SetViewportHeight	( int32 height )	override;
 
 		// Scissors setters
 		void ToggleScissors			( bool )										override;
+		bool IsScissorEnabled		( )												const noexcept override;
 		void SetScissors			( int32 x, int32 y, int32 width, int32 height )	override;
-		void SetScissorX			( int32 x ) override;
-		void SetScissorY			( int32 y ) override;
-		void SetScissorWidth		( int32 width ) override;
-		void SetScissorHeight		( int32 height ) override;
+		void SetScissorX			( int32 x )			override;
+		void SetScissorY			( int32 y )			override;
+		void SetScissorWidth		( int32 width )		override;
+		void SetScissorHeight		( int32 height )	override;
 
 
 		// Cull setters
-		void ToggleCull			( bool )			override;
-		void SetCullFace		( Face face )		override;
-		void SetCullWindingOrder( WindingOrder )	override;
+		void ToggleCull		( bool )			override;
+		bool IsCullEnabled	( )					const noexcept override;
+		void SetCullFace	( Face face )		override;
+		void SetFrontFace	( WindingOrder )	override;
 
 
 		// Blend setters
-		void ToggleBlend			( bool enabled ) override;
-		//virtual void SetBlendConstantColor(glm::vec4 rgba) = 0; IMPLEMENT
-		void SetBlendFactors		( BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha ) override;
-		void SetBlendColorFactors	( BlendFactor srcColor, BlendFactor dstColor )	override;
-		void SetBlendAlphaFactors	( BlendFactor srcAlpha, BlendFactor dstAlpha )	override;
-		void SetBlendSrcColorFactor	( BlendFactor factor ) override;
-		void SetBlendDstColorFactor	( BlendFactor factor ) override;
-		void SetBlendSrcAlphaFactor	( BlendFactor factor ) override;
-		void SetBlendDstAlphaFactor	( BlendFactor factor ) override;
-		void SetBlendOp				( BlendOp colorOp, BlendOp alphaOp )			override;
-		void SetBlendColorOp		( BlendOp op ) override;
-		void SetBlendAlphaOp		( BlendOp op ) override;
+		void ToggleBlend				( bool enabled )		override;
+		bool IsBlendEnabled				( )						const noexcept override;
+		void SetBlendConstantColor		( ChannelRGBA rgba )	override;
+		void SetBlendFactors			( BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha ) override;
+		void SetBlendColorFactors		( BlendFactor srcColor, BlendFactor dstColor )	override;
+		void SetBlendAlphaFactors		( BlendFactor srcAlpha, BlendFactor dstAlpha )	override;
+		void SetBlendSrcColorFactor		( BlendFactor factor )							override;
+		void SetBlendDstColorFactor		( BlendFactor factor )							override;
+		void SetBlendSrcAlphaFactor		( BlendFactor factor )							override;
+		void SetBlendDstAlphaFactor		( BlendFactor factor )							override;
+		void SetBlendOp					( BlendOp colorOp, BlendOp alphaOp )			override;
+		void SetBlendColorOp			( BlendOp op )									override;
+		void SetBlendAlphaOp			( BlendOp op )									override;
+		void SetBlendFactorsForTarget	( uint8 target )								override;
+		void ToggleBlendForTarget		( uint8 target, bool enable )					override;
 
 		// Depth setters
-		void ToggleDepthWrite	( bool )		override;
+		void ToggleDepthWrite	 ( bool )		override;
+		bool IsDepthWriteEnabled ( )			const noexcept override;
+
 		void ToggleDepthTest	( bool )		override;
+		bool IsDepthTestEnabled	( )				const noexcept override;
 		void SetDepthFunc		( CompareFlag ) override;
 
 		// Stencil setters
-		void ToggleStencilTest	( bool )			override;
-		void SetStencilReference( int32 ref, Face )	override;
-		void SetStencilOp(StencilOp sfail, StencilOp dpfail, StencilOp dppass, Face face) override;
-		void SetStencilOpOnStencilFail(StencilOp op, Face face) override;
-		void SetStencilOpOnDepthFail(StencilOp op, Face face) override;
-		void SetStencilOpOnDepthPass(StencilOp op, Face face) override;
+		void ToggleStencilTest			( bool )			override;
+		bool IsStencilTestEnabled		( )					const noexcept override;
+		void SetStencilReference		( int32 ref, Face )	override;
+		void SetStencilOp				( StencilOp sfail, StencilOp dpfail, StencilOp dppass, Face face)	override;
+		void SetStencilOpOnStencilFail	( StencilOp op, Face face )	override;
+		void SetStencilOpOnDepthFail	( StencilOp op, Face face )	override;
+		void SetStencilOpOnDepthPass	( StencilOp op, Face face )	override;
 
 
 		// Rasterizer setters
 		void ToggleDepthBias		( bool )							override;
+		bool IsDepthBiasEnabled		( )									const noexcept override;
 		void SetDepthBiasFactors	( float32 slope, float32 constant ) override;
 		void SetDepthBiasClamp		( float32 clamp )					override;
 		void SetDepthBiasSlope		( float32 )							override;
 		void SetDepthBiasConstant	( float32 )							override;
 		void SetTopology			( TopologyMode mode, Face face )	override;
+
+		const BlendState&			GetBlendState		( ) const noexcept override;
+		const CullState&			GetCullState		( ) const noexcept override;
+		const ScissorState&			GetScissorState		( ) const noexcept override;
+		const DepthStencilState&	GetDepthStencilState( ) const noexcept override;
+		const RasterizerState&		GetRasterizerState	( ) const noexcept override;
+		const ViewportState&		GetViewport			( ) const noexcept override;
+
+		bool IsValid ( BufferHandle handle )		const override;
+		bool IsValid ( TextureHandle handle )		const override;
+		bool IsValid ( ShaderHandle handle )		const override;
+		bool IsValid ( FramebufferHandle handle )	const override;
+		bool IsValid ( VertexLayoutHandle handle )  const override;
+		bool IsValid ( PipelineHandle handle )		const override;
+		bool IsValid ( SamplerHandle handle )		const override;
+
+		void SetColorMask ( bool r, bool g, bool b, bool a )	override;
+		void SetColorMask ( ColorMask rgba )					override;
+
+		void ClearColor		( ChannelRGBA color )	override;
+		void ClearDepth		( )						override;
+		void ClearStencil	( )						override;
+		void Clear			( uint32 flags )		override;
+
+		void Draw			( const VertexLayoutHandle&, uint32 )	override;
+		void DrawElements	( const VertexLayoutHandle&, uint32 )	override;
+
+		void BeginFrame	( )	override;
+		void EndFrame	( )	override;
 
 
 	protected:
@@ -291,6 +324,11 @@ namespace lum::rhi::gl {
 
 		LUM_FORCEINLINE
 		void bind_check_cull(const Pipeline&) noexcept;
+
+		LUM_FORCEINLINE
+		void bind_check_color_mask(const Pipeline&) noexcept;
+
+
 
 		LUM_FORCEINLINE
 		bool compile_shader(GLuint shader);

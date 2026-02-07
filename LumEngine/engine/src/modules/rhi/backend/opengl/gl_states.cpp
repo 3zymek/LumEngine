@@ -5,8 +5,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::ToggleScissors(bool enable) {
 
-		if (enable == mEnabledStates.has(State::Scissor))
+		if (enable == mEnabledStates.has(State::Scissor)) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		if (enable) {
 
@@ -21,14 +23,20 @@ namespace lum::rhi::gl {
 
 		}
 
+		LUM_PROFILER_CACHE_MISS();
 
+	}
+	bool GLDevice::IsScissorEnabled() const noexcept {
+		return mEnabledStates.has(State::Scissor);
 	}
 	void GLDevice::SetScissors(int32 x, int32 y, int32 width, int32 height) {
 
-		LUM_HOTCHK_RETURN_VOID(!mEnabledStates.has(State::Scissor), "Scissor state not enabled");
+		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Scissor), "Scissor state not enabled");
 
-		if (mScissorState.x == x && mScissorState.y == y && mScissorState.width == width && mScissorState.height == height)
+		if (mScissorState.x == x && mScissorState.y == y && mScissorState.width == width && mScissorState.height == height) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		mScissorState.x = x;
 		mScissorState.y = y;
@@ -37,17 +45,91 @@ namespace lum::rhi::gl {
 
 		glScissor(x, y, width, height);
 
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	void GLDevice::SetScissorX(int32 x) {
+
+		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Scissor), "Scissor not enabled");
+
+		if (mScissorState.x == x) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glScissor(
+			x,
+			mScissorState.y,
+			mScissorState.width,
+			mScissorState.height
+		);
+
+		mScissorState.x = x;
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::SetScissorY(int32 y) {
 
+		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Scissor), "Scissor not enabled");
+
+		if (mScissorState.y == y) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glScissor(
+			mScissorState.x,
+			y,
+			mScissorState.width,
+			mScissorState.height
+		);
+
+		mScissorState.y = y;
+
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	void GLDevice::SetScissorWidth(int32 width) {
 
+		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Scissor), "Scissor not enabled");
+
+		if (mScissorState.width == width) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glScissor(
+			mScissorState.x,
+			mScissorState.y,
+			width,
+			mScissorState.height
+		);
+
+		mScissorState.width = width;
+
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	void GLDevice::SetScissorHeight(int32 height) {
+
+		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Scissor), "Scissor not enabled");
+
+		if (mScissorState.height == height) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glScissor(
+			mScissorState.x,
+			mScissorState.y,
+			mScissorState.width,
+			height
+		);
+
+		mScissorState.height = height;
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 
@@ -57,8 +139,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::ToggleCull(bool enable) {
 
-		if (enable == mEnabledStates.has(State::Cull))
+		if (enable == mEnabledStates.has(State::Cull)) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		if (enable) {
 			glEnable(GL_CULL_FACE);
@@ -69,30 +153,42 @@ namespace lum::rhi::gl {
 			mEnabledStates.disable(State::Cull);
 		}
 
+		LUM_PROFILER_CACHE_MISS();
 
+	}
+	bool GLDevice::IsCullEnabled() const noexcept {
+		return mEnabledStates.has(State::Cull);
 	}
 	void GLDevice::SetCullFace(Face face) {
 
 		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Cull), "Cull not enabled");
 
-		if (face == mCullState.face)
+		if (face == mCullState.face) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		glCullFace(skFacesLookup[lookup_cast(face)]);
 
 		mCullState.face = face;
 
+		LUM_PROFILER_CACHE_MISS();
+
 	}
-	void GLDevice::SetCullWindingOrder(WindingOrder order) {
+	void GLDevice::SetFrontFace(WindingOrder order) {
 
 		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Cull), "Cull not enabled");
 
-		if (order == mCullState.windingOrder)
+		if (order == mCullState.windingOrder) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		glFrontFace((order == WindingOrder::Clockwise) ? GL_CW : GL_CCW);
 
 		mCullState.windingOrder = order;
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 
@@ -103,8 +199,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::ToggleBlend(bool enable) {
 
-		if (enable == mEnabledStates.has(State::Blend))
+		if (enable == mEnabledStates.has(State::Blend)) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		if (enable) {
 			glEnable(GL_BLEND);
@@ -117,15 +215,25 @@ namespace lum::rhi::gl {
 			LUM_LOG_DEBUG("Blend disabled");
 		}
 
+		LUM_PROFILER_CACHE_MISS();
+
 	}
-	//virtual void SetBlendConstantColor(glm::vec4 rgba) = 0; IMPLEMENT
+	bool GLDevice::IsBlendEnabled() const noexcept {
+		return mEnabledStates.has(State::Blend);
+	}
+	void GLDevice::SetBlendConstantColor(ChannelRGBA rgba) {
+
+	}
 	void GLDevice::SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha) {
 
 		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), "Blend not enabled");
 
 		if (mBlendState.srcColorFactor == srcColor && mBlendState.dstColorFactor == dstColor &&
-			mBlendState.srcAlphaFactor == srcAlpha && mBlendState.dstAlphaFactor == dstAlpha)
+			mBlendState.srcAlphaFactor == srcAlpha && mBlendState.dstAlphaFactor == dstAlpha) 
+		{
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		glBlendFuncSeparate(
 			skBlendFactorLookup[lookup_cast(srcColor)],
@@ -139,13 +247,17 @@ namespace lum::rhi::gl {
 		mBlendState.srcAlphaFactor = srcAlpha;
 		mBlendState.dstAlphaFactor = dstAlpha;
 
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	void GLDevice::SetBlendColorFactors(BlendFactor srcColor, BlendFactor dstColor) {
 
 		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), "Blend not enabled");
 
-		if (mBlendState.srcColorFactor == srcColor && mBlendState.dstColorFactor == dstColor)
+		if (mBlendState.srcColorFactor == srcColor && mBlendState.dstColorFactor == dstColor) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		glBlendFuncSeparate(
 			skBlendFactorLookup[lookup_cast(srcColor)],
@@ -157,13 +269,17 @@ namespace lum::rhi::gl {
 		mBlendState.srcColorFactor = srcColor;
 		mBlendState.dstColorFactor = dstColor;
 
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	void GLDevice::SetBlendAlphaFactors(BlendFactor srcAlpha, BlendFactor dstAlpha) {
 
 		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), "Blend not enabled");
 
-		if (mBlendState.srcAlphaFactor == srcAlpha && mBlendState.dstAlphaFactor == dstAlpha)
+		if (mBlendState.srcAlphaFactor == srcAlpha && mBlendState.dstAlphaFactor == dstAlpha) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		glBlendFuncSeparate(
 			skBlendFactorLookup[lookup_cast(mBlendState.srcColorFactor)],
@@ -175,47 +291,164 @@ namespace lum::rhi::gl {
 		mBlendState.srcAlphaFactor = srcAlpha;
 		mBlendState.dstAlphaFactor = dstAlpha;
 
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	void GLDevice::SetBlendSrcColorFactor(BlendFactor factor) {
+
+		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), "Blend not enabled");
+
+		if (mBlendState.srcColorFactor == factor) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glBlendFuncSeparate(
+			skBlendFactorLookup[lookup_cast(factor)],
+			skBlendFactorLookup[lookup_cast(mBlendState.dstColorFactor)],
+			skBlendFactorLookup[lookup_cast(mBlendState.srcAlphaFactor)],
+			skBlendFactorLookup[lookup_cast(mBlendState.dstAlphaFactor)]
+		);
+
+		mBlendState.srcColorFactor = factor;
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::SetBlendDstColorFactor(BlendFactor factor) {
 
+		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), "Blend not enabled");
+
+		if (mBlendState.dstColorFactor == factor) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glBlendFuncSeparate(
+			skBlendFactorLookup[lookup_cast(mBlendState.srcColorFactor)],
+			skBlendFactorLookup[lookup_cast(factor)],
+			skBlendFactorLookup[lookup_cast(mBlendState.srcAlphaFactor)],
+			skBlendFactorLookup[lookup_cast(mBlendState.dstAlphaFactor)]
+		);
+
+		mBlendState.dstColorFactor = factor;
+
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	void GLDevice::SetBlendSrcAlphaFactor(BlendFactor factor) {
 
+		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), "Blend not enabled");
+
+		if (mBlendState.srcAlphaFactor == factor) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glBlendFuncSeparate(
+			skBlendFactorLookup[lookup_cast(mBlendState.srcColorFactor)],
+			skBlendFactorLookup[lookup_cast(mBlendState.dstColorFactor)],
+			skBlendFactorLookup[lookup_cast(factor)],
+			skBlendFactorLookup[lookup_cast(mBlendState.dstAlphaFactor)]
+		);
+
+		mBlendState.srcAlphaFactor = factor;
+
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	void GLDevice::SetBlendDstAlphaFactor(BlendFactor factor) {
+
+		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), "Blend not enabled");
+
+		if (mBlendState.dstAlphaFactor == factor) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glBlendFuncSeparate(
+			skBlendFactorLookup[lookup_cast(mBlendState.srcColorFactor)],
+			skBlendFactorLookup[lookup_cast(mBlendState.dstColorFactor)],
+			skBlendFactorLookup[lookup_cast(mBlendState.srcAlphaFactor)],
+			skBlendFactorLookup[lookup_cast(factor)]
+		);
+
+		mBlendState.dstAlphaFactor = factor;
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::SetBlendOp(BlendOp colorOp, BlendOp alphaOp) {
 
 		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), "Blend not enabled");
 
-		if (mBlendState.alphaOp == alphaOp && mBlendState.colorOp == colorOp)
+		if (mBlendState.alphaOp == alphaOp && mBlendState.colorOp == colorOp) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		glBlendEquationSeparate(
 			skBlendOpLookup[lookup_cast(colorOp)],
 			skBlendOpLookup[lookup_cast(alphaOp)]
 		);
 
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	void GLDevice::SetBlendColorOp(BlendOp op) {
+
+		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), "Blend not enabled");
+
+		if (mBlendState.colorOp == op) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glBlendEquationSeparate(
+			skBlendOpLookup[lookup_cast(op)],
+			skBlendOpLookup[lookup_cast(mBlendState.alphaOp)]
+		);
+
+		mBlendState.colorOp = op;
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::SetBlendAlphaOp(BlendOp op) {
 
-	}
+		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), "Blend not enabled");
 
+		if (mBlendState.alphaOp == op) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glBlendEquationSeparate(
+			skBlendOpLookup[lookup_cast(mBlendState.colorOp)],
+			skBlendOpLookup[lookup_cast(op)]
+		);
+
+		mBlendState.alphaOp = op;
+
+		LUM_PROFILER_CACHE_MISS();
+
+	}
+	void GLDevice::SetBlendFactorsForTarget(uint8 target) {
+
+	}
+	void GLDevice::ToggleBlendForTarget(uint8 target, bool enable) {
+
+	}
 
 
 	// Depth setters
 
 	void GLDevice::ToggleDepthWrite(bool enable) {
 
-		if (enable == mEnabledStates.has(State::DepthWrite))
+		if (enable == mEnabledStates.has(State::DepthWrite)) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		if (enable) {
 
@@ -232,7 +465,13 @@ namespace lum::rhi::gl {
 
 		}
 
+		LUM_PROFILER_CACHE_MISS();
+
 	}
+	bool GLDevice::IsDepthWriteEnabled() const noexcept {
+		return mEnabledStates.has(State::DepthWrite);
+	}
+
 	void GLDevice::ToggleDepthTest(bool enable) {
 
 		if (enable == mEnabledStates.has(State::DepthTest))
@@ -254,6 +493,9 @@ namespace lum::rhi::gl {
 		}
 
 	}
+	bool GLDevice::IsDepthTestEnabled()	const noexcept {
+		return mEnabledStates.has(State::DepthTest);
+	}
 	void GLDevice::SetDepthFunc(CompareFlag func) {
 
 		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::DepthTest), "Depth not enabled");
@@ -272,8 +514,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::ToggleStencilTest(bool enable) {
 
-		if (enable == mEnabledStates.has(State::StencilTest))
+		if (enable == mEnabledStates.has(State::StencilTest)) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		if (enable) {
 
@@ -290,7 +534,11 @@ namespace lum::rhi::gl {
 
 		}
 
+		LUM_PROFILER_CACHE_MISS();
 
+	}
+	bool GLDevice::IsStencilTestEnabled() const noexcept {
+		return mEnabledStates.has(State::StencilTest);
 	}
 	void GLDevice::SetStencilReference(int32 ref, Face face = Face::FrontBack) {
 
@@ -313,8 +561,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::ToggleDepthBias(bool enable) {
 
-		if (enable == mEnabledStates.has(State::DepthBias))
+		if (enable == mEnabledStates.has(State::DepthBias)) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		if (enable) {
 
@@ -331,6 +581,11 @@ namespace lum::rhi::gl {
 
 		}
 
+		LUM_PROFILER_CACHE_MISS();
+	
+	}
+	bool GLDevice::IsDepthBiasEnabled() const noexcept {
+		return mEnabledStates.has(State::DepthBias);
 	}
 	void GLDevice::SetDepthBiasFactors(float32 slope, float32 constant) {
 
@@ -342,28 +597,38 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK(mEnabledStates.has(State::DepthBias), "Depth bias not enabled");
 
-		if (mRasterizerState.depthBias.slopeFactor == slopeFactor)
+		if (mRasterizerState.depthBias.slopeFactor == slopeFactor) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		glPolygonOffset(slopeFactor, mRasterizerState.depthBias.constantBias);
 		mRasterizerState.depthBias.slopeFactor = slopeFactor;
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::SetDepthBiasConstant(float32 constantBias) {
 
 		LUM_HOTCHK(mEnabledStates.has(State::DepthBias), "Depth bias not enabled");
 
-		if (mRasterizerState.depthBias.constantBias == constantBias)
+		if (mRasterizerState.depthBias.constantBias == constantBias) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		glPolygonOffset(mRasterizerState.depthBias.slopeFactor, constantBias);
 		mRasterizerState.depthBias.constantBias = constantBias;
 
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	void GLDevice::SetTopology(TopologyMode mode, Face face) {
 
-		if (mRasterizerState.topologyMode == mode && mRasterizerState.topologyModeFaces == face)
+		if (mRasterizerState.topologyMode == mode && mRasterizerState.topologyModeFaces == face) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		glPolygonMode(
 			skFacesLookup[lookup_cast(face)],
@@ -372,6 +637,8 @@ namespace lum::rhi::gl {
 
 		mRasterizerState.topologyMode = mode;
 		mRasterizerState.topologyModeFaces = face;
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 }

@@ -153,21 +153,21 @@ namespace lum::rhi {
 
 		// Defines if scissor test is enabled.
 		// The initial value is false.
-		bool	bEnabled = false;
+		bool bEnabled = false;
 		
 		// Specify the lower left corner of the scissor box on x axis.
 		// Initially 0. 
-		int32	x = 0;
+		int32 x = 0;
 		
 		// Specify the lower left corner of the scissor box on y axis.
 		// Initially 0. 
-		int32	y = 0;
+		int32 y = 0;
 
 		// Specify the width of the scissor box.
-		int32	width = 0;
+		int32 width = 0;
 		
 		// Specify the height of the scissor box.
-		int32	height = 0;
+		int32 height = 0;
 
 	};
 
@@ -254,6 +254,15 @@ namespace lum::rhi {
 		// Specifies the RGB blend equation, how the red, green, and blue components of the source and destination colors are combined.
 		// The initial value is BlendOp::Add.
 		BlendOp colorOp = BlendOp::Add;
+
+	};
+	
+	struct ViewportState {
+
+		int32 x{};
+		int32 y{};
+		int32 width{};
+		int32 height{};
 
 	};
 

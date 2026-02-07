@@ -18,13 +18,7 @@ namespace lum::rhi::gl {
 	void GLDevice::bind_check_rasterizer(const Pipeline& pip) noexcept {
 		const auto& rast = pip.mRasterizer;
 
-		if (rast.topologyMode != mRasterizerState.topologyMode || rast.topologyModeFaces != mRasterizerState.topologyModeFaces) {
-			glPolygonMode(
-				skFacesLookup[lookup_cast(rast.topologyModeFaces)],
-				skTopologyModeLookup[lookup_cast(rast.topologyMode)]
-			);
-			mRasterizerState = rast;
-		}
+		SetTopology(rast.topologyMode, rast.topologyModeFaces);
 
 		ToggleDepthBias(rast.depthBias.bEnable);
 
@@ -114,9 +108,16 @@ namespace lum::rhi::gl {
 		if (cull.bEnabled) {
 
 			SetCullFace(cull.face);
-			SetCullWindingOrder(cull.windingOrder);
+			SetFrontFace(cull.windingOrder);
 
 		}
+
+	}
+	void GLDevice::bind_check_color_mask(const Pipeline& pip) noexcept {
+
+		const auto& mask = pip.mColorMask;
+
+		SetColorMask(mask);
 
 	}
 
@@ -155,6 +156,8 @@ namespace lum::rhi::gl {
 		Pipeline& pip = mPipelines[pipeline];
 
 		bind_check_shader(pip);
+
+		bind_check_color_mask(pip);
 
 		// Topology
 		bind_check_rasterizer(pip);
