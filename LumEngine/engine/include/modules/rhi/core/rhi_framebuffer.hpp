@@ -2,13 +2,6 @@
 #include "rhi/rhi_common.hpp"
 namespace lum::rhi {
 
-	struct alignas(8) FramebufferHandle {
-
-		FramebufferID id = null_id<FramebufferID>();
-		FramebufferID generation = 0;
-
-	};
-
 	enum class FramebufferAttachment : uint8 {
 		DepthAttach,
 		StencilAttach,
@@ -22,7 +15,7 @@ namespace lum::rhi {
 
 		DataFormat format{};
 
-		bool mipmaps = false;
+		bool bMipmaps = false;
 
 		FramebufferAttachment attachment{};
 

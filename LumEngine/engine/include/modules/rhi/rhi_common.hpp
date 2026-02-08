@@ -36,7 +36,15 @@ namespace lum {
 		struct BufferHandle;
 		struct VertexLayoutHandle;
 		struct ShaderHandle;
-		
+
+		struct PipelineHandle		: cstd::BaseHandle {};
+		struct FramebufferHandle	: cstd::BaseHandle {};
+		struct SamplerHandle		: cstd::BaseHandle {};
+		struct ShaderHandle			: cstd::BaseHandle {};
+		struct TextureHandle		: cstd::BaseHandle {};
+		struct BufferHandle			: cstd::BaseHandle {};
+		struct VertexLayoutHandle	: cstd::BaseHandle {};
+
 		using BufferID			= uint32;
 		using LayoutID			= uint32;
 		using TextureID			= uint32;
@@ -50,9 +58,9 @@ namespace lum {
 
 		using ChannelRGBA = math::Vec4;
 
-		enum class ClearFlags : EnumFlag {
-			Color = 1 << 0,
-			Depth = 1 << 1,
+		enum class ClearFlag : EnumFlag {
+			Color	= 1 << 0,
+			Depth	= 1 << 1,
 			Stencil = 1 << 2
 		};
 
@@ -92,16 +100,6 @@ namespace lum {
 			Invalidate_Buffer	= 1 << 5, // GPU creates new buffer, destroys the old one.
 			Unsynchronized		= 1 << 6, // GPU maps buffer with no backend conditions.
 		};
-
-		constexpr Mapflag operator|(Mapflag a, Mapflag b) noexcept {
-			return static_cast<Mapflag>(static_cast<EnumFlag>(a) | static_cast<EnumFlag>(b));
-		}
-		constexpr bool operator&(Mapflag a, Mapflag b) noexcept {
-			return static_cast<EnumFlag>(a) & static_cast<EnumFlag>(b);
-		}
-		constexpr Mapflag operator~(Mapflag a) noexcept {
-			return static_cast<Mapflag>(~static_cast<EnumFlag>(a));
-		}
 
 		enum class Face : EnumFlag {
 			Front,

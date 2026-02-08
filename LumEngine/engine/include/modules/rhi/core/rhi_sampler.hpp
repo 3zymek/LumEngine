@@ -3,13 +3,6 @@
 #include "core/shaders_define.h"
 namespace lum::rhi {
 
-	struct alignas(8) SamplerHandle {
-
-		SamplerID id = null_id<SamplerID>();
-		SamplerID generation = 0;
-
-	};
-
 	// Filter that applies to texture, when texture is magnified ( scaled up )
 	enum class SamplerMagFilter : byte {
 		Linear,	// Takes 4 neighbouring texels and calculates it weighted average value (Effect: Smoothness, Fuzzy, no sharp edges).

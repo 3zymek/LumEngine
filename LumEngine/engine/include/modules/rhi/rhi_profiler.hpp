@@ -11,12 +11,13 @@ namespace lum::rhi::performance {
 	class Profiler {
 	public:
 
-		void BeginFrame() {
+		void StartRecording() {
+			bRecording = true;
 			cacheHits = 0;
 			cacheMisses = 0;
 		}
-		void EndFrame() {
-
+		void EndRecording() {
+			bRecording = false;
 		}
 
 		void RegisterDrawCall() {
@@ -37,6 +38,8 @@ namespace lum::rhi::performance {
 		}
 
 	private:
+
+		bool bRecording = false;
 
 		uint32 drawCalls = 0;
 		uint32 cacheHits = 0;

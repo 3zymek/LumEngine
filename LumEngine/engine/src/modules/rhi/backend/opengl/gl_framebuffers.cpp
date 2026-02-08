@@ -38,20 +38,31 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::SetFramebufferColorTexture(const FramebufferHandle& fbo, const TextureHandle& tex, uint8 index) {
-		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.exist(fbo) || !mTextures.exist(tex), "Framebuffer doesn't exists");
 
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTextures[tex].handle.glHandle, 0);
+		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.exist(fbo), "Framebuffer doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(!mTextures.exist(tex), "Texture doesn't exist");
+
+		if(index > GL_COLOR_ATTACHMENT0)
+
+		glNamedFramebufferTexture(mFramebuffers[fbo].handle, GL_COLOR_ATTACHMENT0, mTextures[tex].handle.glHandle, 0);
 
 	}
 
 	void GLDevice::SetFramebufferDepthTexture(const FramebufferHandle& fbo, const TextureHandle& tex) {
-		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.exist(fbo), "Framebuffer doesn't exists");
 
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, mTextures[tex].handle.glHandle, 0);
+		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.exist(fbo), "Framebuffer doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(!mTextures.exist(tex), "Texture doesn't exist");
+
+		glNamedFramebufferTexture(mFramebuffers[fbo].handle, GL_DEPTH_ATTACHMENT, mTextures[tex].handle.glHandle, 0);
 
 	}
 
 	void GLDevice::SetFramebufferStencilTexture(const FramebufferHandle& fbo, const TextureHandle& tex) {
+
+		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.exist(fbo), "Framebuffer doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(!mTextures.exist(tex), "Texture doesn't exist");
+
+		glNamedFramebufferTexture(mFramebuffers[fbo].handle, GL_STENCIL_ATTACHMENT, mTextures[tex].handle.glHandle, 0);
 
 	}
 
@@ -74,13 +85,31 @@ namespace lum::rhi::gl {
 	void GLDevice::BindFramebuffer(const FramebufferHandle& buff) {
 		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.exist(buff), "Framebuffer doesn't exists");
 
+		if (mCurrentFramebuffer == buff) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		mCurrentFramebuffer = buff;
+
 		glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[buff].handle);
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 
 	void GLDevice::UnbindFramebuffer() {
 
+		if (mCurrentFramebuffer == FramebufferHandle{}) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		mCurrentFramebuffer = FramebufferHandle{};
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 }

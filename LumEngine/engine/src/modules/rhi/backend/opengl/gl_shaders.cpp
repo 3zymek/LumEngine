@@ -65,9 +65,18 @@ namespace lum::rhi::gl {
 			shader.id
 		);
 
+		if (mCurrentShader == shader) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+		
+		mCurrentShader = shader;
+
 		glUseProgram(mShaders[shader].handle);
 
 		LUM_LOG_DEBUG("Shader %d binded", shader.id);
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::DeleteShader(ShaderHandle& shader) {

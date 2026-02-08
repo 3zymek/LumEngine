@@ -22,14 +22,24 @@ namespace lum::rhi {
 		Face			topologyModeFaces = Face::FrontBack;
 
 		struct DepthBiasState {
+
 			// Specifies whether the depth bias is enabled.
 			// If flag is false, depth bias is disabled. Otherwise, it is enabled. 
 			// The initial value is false.
 			bool bEnable = false;
+
 			// Specifies a scale factor that is used to create a variable depth offset for each polygon. The initial value is 0.
 			float32 slopeFactor = 0.f;
+
 			// Is multiplied by an implementation-specific value to create a constant depth offset. The initial value is 0. 
-			float32 constantBias = 0.f;
+			float32 units = 0.f;
+
+			// Specifies the maximum (or minimum if negative) depth offset value.
+			// If clamp is positive, the calculated offset is clamped to at most this value.
+			// If clamp is negative, the calculated offset is clamped to at least this value.
+			// If clamp is zero, no clamping is applied. The initial value is 0.
+			float32 clamp = 0.f;
+
 		} depthBias;
 
 	};
@@ -263,6 +273,10 @@ namespace lum::rhi {
 		int32 y{};
 		int32 width{};
 		int32 height{};
+
+	};
+
+	struct ClearState {
 
 	};
 

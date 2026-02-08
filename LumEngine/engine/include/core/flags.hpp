@@ -24,8 +24,16 @@ namespace lum {
 		constexpr bool has(T flag) const noexcept {
 			return (mFlags & static_cast<U>(flag)) != 0;
 		}
+		constexpr bool has_only(Flags<T> allowed) const noexcept {
+			return (mFlags & ~allowed.mFlags) == 0;
+		}
 		constexpr void clear() noexcept {
 			mFlags = 0;
+		}
+
+		constexpr Flags& operator=(T flag) noexcept {
+			mFlags = static_cast<U>(flag);
+			return *this;
 		}
 
 	};

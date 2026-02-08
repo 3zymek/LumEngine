@@ -144,7 +144,7 @@ namespace lum::rhi::gl {
 		);
 
 		LUM_HOTCHK_RETURN_VOID(
-			(buffer.flags & Mapflag::Write),
+			buffer.flags.has(Mapflag::Write),
 			"Buffer %d has no write flags enabled",
 			vbo.id
 		);
@@ -171,7 +171,7 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(vbo), "Buffer doesn't exist");
 
 		Buffer& buffer = mBuffers[vbo];
-		LUM_HOTCHK_RETURN_VOID(buffer.mapped, "Unable to delete buffer - still mapped");
+		LUM_HOTCHK_RETURN_VOID(buffer.bMapped, "Unable to delete buffer - still mapped");
 
 		glDeleteBuffers(1, &buffer.handle.glHandle);
 		
@@ -180,9 +180,9 @@ namespace lum::rhi::gl {
 		LUM_LOG_INFO("Deleted buffer %d", vbo.id);
 	}
 
-	vptr GLDevice::MapBuffer(const BufferHandle& vbo, Mapflag flags, usize offset, usize size) {
+	vptr GLDevice::MapBuffer(const BufferHandle& vbo, Flags<Mapflag> flags, usize offset, usize size) {
 
-		LUM_HOTCHK_RETURN_NPTR(mBuffers.exist(vbo), "Handle doesn't exist");
+		LUM_HOTCHK_RETURN_NPTR(mBuffers.exist(vbo), "Buffer doesn't exist");
 
 		Buffer& buffer = mBuffers[vbo];
 
@@ -199,10 +199,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::UnmapBuffer(const BufferHandle& vbo) {
 
-		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(vbo), "Handle does not exist");
+		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(vbo), "Buffer does not exist");
 
 		Buffer& buffer = mBuffers[vbo];
-		LUM_HOTCHK_RETURN_VOID(buffer.mapped, "Buffer is already unmapped");
+		LUM_HOTCHK_RETURN_VOID(buffer.bMapped, "Buffer is already unmapped");
 		glUnmapNamedBuffer(buffer.handle.glHandle);
 
 		LUM_LOG_DEBUG("Unmapped buffer %d", vbo.id);
@@ -216,6 +216,7 @@ namespace lum::rhi::gl {
 		glVertexArrayElementBuffer(mLayouts[vao].vao, mBuffers[ebo].handle.glHandle);
 
 		LUM_LOG_DEBUG("Attached EBO %d to VAO %d", ebo.id, vao.id);
+
 	}
 
 	void GLDevice::SetUniformBufferBinding(const BufferHandle& ubo, int32 binding) {

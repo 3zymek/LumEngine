@@ -3,13 +3,6 @@
 #include "rhi/core/rhi_states.hpp"
 namespace lum::rhi {
 
-	struct alignas(8) PipelineHandle {
-
-		PipelineID id = null_id<PipelineID>();
-		PipelineID generation = 0;
-
-	};
-
 	struct PipelineDescriptor {
 
 		RasterizerState			mRasterizer		{};

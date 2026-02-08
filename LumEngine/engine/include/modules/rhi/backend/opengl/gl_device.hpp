@@ -20,15 +20,15 @@ namespace lum::rhi::gl {
 		/// Buffers
 		///////////////////////////////////////////////////
 
-		BufferHandle	CreateVertexBuffer			( const BufferDescriptor& )							override;
-		BufferHandle	CreateElementBuffer			( const BufferDescriptor& )							override;
-		BufferHandle	CreateUniformBuffer			( const BufferDescriptor& )							override;
-		void			UpdateBuffer				( const BufferHandle&, cvptr, usize, usize )		override;
-		void			DeleteBuffer				( BufferHandle& )									override;
-		vptr			MapBuffer					( const BufferHandle&, Mapflag, usize, usize )		override;
-		void			UnmapBuffer					( const BufferHandle& )								override;
-		void			AttachElementBufferToLayout	( const BufferHandle&, const VertexLayoutHandle& )	override;
-		void			SetUniformBufferBinding		( const BufferHandle&, int32 )						override;
+		BufferHandle	CreateVertexBuffer			( const BufferDescriptor& )								override;
+		BufferHandle	CreateElementBuffer			( const BufferDescriptor& )								override;
+		BufferHandle	CreateUniformBuffer			( const BufferDescriptor& )								override;
+		void			UpdateBuffer				( const BufferHandle&, cvptr, usize, usize )			override;
+		void			DeleteBuffer				( BufferHandle& )										override;
+		vptr			MapBuffer					( const BufferHandle&, Flags<Mapflag>, usize, usize )	override;
+		void			UnmapBuffer					( const BufferHandle& )									override;
+		void			AttachElementBufferToLayout	( const BufferHandle&, const VertexLayoutHandle& )		override;
+		void			SetUniformBufferBinding		( const BufferHandle&, int32 )							override;
 
 
 
@@ -81,7 +81,6 @@ namespace lum::rhi::gl {
 		TextureHandle	CreateTexture3D		( const TextureDescriptor& )				override;
 		TextureHandle	CreateCubemapTexture( const TextureCubemapDescriptor& desc )	override;
 		void			DeleteTexture		( TextureHandle& )							override;
-		void			SetTextureBinding	( const TextureHandle&, uint16 )			override;
 		void			BindTexture			( const TextureHandle&, uint16 )			override;
 
 
@@ -91,7 +90,6 @@ namespace lum::rhi::gl {
 		///////////////////////////////////////////////////
 
 		SamplerHandle	CreateSampler		( const SamplerDescriptor& )		override;
-		void			SetSamplerBinding	( const SamplerHandle&, uint16 )	override;
 		void			BindSampler			( const SamplerHandle&, uint16)		override;
 		void			DeleteSampler		( SamplerHandle )					override;
 
@@ -196,10 +194,12 @@ namespace lum::rhi::gl {
 		void SetColorMask ( bool r, bool g, bool b, bool a )	override;
 		void SetColorMask ( ColorMask rgba )					override;
 
+		void SetClearColor	( ChannelRGBA color )	override;
+		void ClearColor		( )						override;
 		void ClearColor		( ChannelRGBA color )	override;
 		void ClearDepth		( )						override;
 		void ClearStencil	( )						override;
-		void Clear			( uint32 flags )		override;
+		void Clear			( Flags<ClearFlag> )	override;
 
 		void Draw			( const VertexLayoutHandle&, uint32 )	override;
 		void DrawElements	( const VertexLayoutHandle&, uint32 )	override;
@@ -301,6 +301,14 @@ namespace lum::rhi::gl {
 			GL_MAX
 		};
 
+		LUM_COMPILE_VARIABLE
+		static GLenum skClearOpLookup[] =
+		{
+			GL_COLOR_BUFFER_BIT,
+			GL_DEPTH_BUFFER_BIT,
+			GL_STENCIL_BUFFER_BIT
+		};
+
 		Window* window = nullptr;
 
 		///////////////////////////////////////////////////
@@ -339,7 +347,7 @@ namespace lum::rhi::gl {
 
 		void		cache_uniforms_locations	( );
 		bool		is_valid_buffer_descriptor	( const BufferDescriptor&)		noexcept;
-		GLbitfield	translate_mapping_flags		( Mapflag )						noexcept;
+		GLbitfield	translate_mapping_flags		( Flags<Mapflag> )				noexcept;
 
 	};
 

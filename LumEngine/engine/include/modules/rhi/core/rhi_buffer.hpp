@@ -4,35 +4,28 @@
 #include "rhi/rhi_common.hpp"
 namespace lum::rhi {
 
-	struct alignas(8) BufferHandle {
-		
-		BufferID id = null_id<BufferID>();
-		BufferID generation = 0;
-
-	};
-
 	struct BufferDescriptor {
 
 		// Defines if buffer is static ( data cannot be changed in runtime ) or dynamic.
 		BufferUsage	bufferUsage	= BufferUsage::Static;
 
 		// Size of data that's assigned.
-		usize		size			= 0;
+		usize size			= 0;
 
 		// Flags defines what operations can be done on a buffer and which not.
-		Mapflag		mapFlags		{};
+		Flags<Mapflag>	mapFlags{};
 
 		// Pointer to data.
-		cvptr		data			= nullptr;
+		cvptr data			= nullptr;
 	};
 
 	struct Buffer {
 
-		BufferType	type	{};
-		BufferUsage usage	{};
-		Mapflag		flags	{};
-		usize		size	= 0;
-		bool		mapped	= false;
+		BufferType		type	{};
+		BufferUsage		usage	{};
+		Flags<Mapflag>	flags	{};
+		usize			size	= 0;
+		bool			bMapped	= false;
 
 		union {
 			BufferID glHandle = 0;

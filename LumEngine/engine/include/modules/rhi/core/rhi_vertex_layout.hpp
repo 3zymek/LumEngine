@@ -3,13 +3,6 @@
 
 namespace lum::rhi {
 
-	struct alignas(8) VertexLayoutHandle {
-
-		LayoutID id = null_id<LayoutID>();
-		LayoutID generation = 0;
-
-	};
-
 	// Attributes for single vertex in vertex layout
 	struct VertexAttribute {
 		// Data in buffer format (Float, Float2, Mat4, etc.)

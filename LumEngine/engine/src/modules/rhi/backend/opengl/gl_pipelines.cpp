@@ -16,6 +16,7 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::bind_check_rasterizer(const Pipeline& pip) noexcept {
+
 		const auto& rast = pip.mRasterizer;
 
 		SetTopology(rast.topologyMode, rast.topologyModeFaces);
@@ -25,6 +26,7 @@ namespace lum::rhi::gl {
 		if (rast.depthBias.bEnable) {
 
 			SetDepthBiasSlope(rast.depthBias.slopeFactor);
+			SetDepthBiasClamp(rast.depthBias.clamp);
 
 		}
 
@@ -150,7 +152,10 @@ namespace lum::rhi::gl {
 	void GLDevice::BindPipeline(const PipelineHandle& pipeline) {
 		LUM_HOTCHK_RETURN_VOID(mPipelines.exist(pipeline), "Pipeline doesn't exist");
 
-		if (pipeline.id != mCurrentPipeline.id && pipeline.generation != mCurrentPipeline.generation) return;
+		if (pipeline == mCurrentPipeline) { 
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
 		mCurrentPipeline = pipeline;
 
 		Pipeline& pip = mPipelines[pipeline];

@@ -5,13 +5,6 @@
 #include "core/shaders_define.h"
 namespace lum::rhi {
 
-	struct alignas(8) TextureHandle {
-
-		TextureID id = null_id<TextureID>();
-		TextureID generation = 0;
-
-	};
-
 	struct TextureDescriptor {
 
 		// Path/Name of the texture
@@ -24,13 +17,6 @@ namespace lum::rhi {
 		uint32 height = 0;
 
 	};
-
-#define LUM_CUBEMAP_POSITIVE_X 0
-#define LUM_CUBEMAP_NEGATIVE_X 1
-#define LUM_CUBEMAP_POSITIVE_Y 2
-#define LUM_CUBEMAP_NEGATIVE_Y 3
-#define LUM_CUBEMAP_POSITIVE_Z 4
-#define LUM_CUBEMAP_NEGATIVE_Z 5
 
 	struct TextureCubemapDescriptor {
 		

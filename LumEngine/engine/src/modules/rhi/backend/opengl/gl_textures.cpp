@@ -124,36 +124,28 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::DeleteTexture(TextureHandle& texture) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture %d doesn't exist", texture.id);
+		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture doesn't exist");
 
 		glDeleteTextures(1, &mTextures[texture].handle.glHandle);
 
 		mTextures.delete_handle(texture);
 
 	}
-	void GLDevice::SetTextureBinding(const TextureHandle& texture, uint16 binding) {
-
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture %d doesn't exist", texture.id);
-
-		mTextures[texture].binding = binding;
-
-		LUM_LOG_DEBUG("Attached binding %d to texture %d", binding, texture.id);
-
-	}
 	void GLDevice::BindTexture(const TextureHandle& texture, uint16 binding) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture %d doesn't exist", texture.id);
-		
-		if (mTextures[texture].binding == LUM_NULL_BINDING && binding == LUM_NULL_BINDING) {
-			LUM_LOG_ERROR("Binding has not been given to texture %d", texture.id);
+		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture) && binding < MAX_TEXTURE_UNITS, "Texture doesn't exist");
+
+		if (mCurrentTextures[binding] == texture) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
 
-		uint16 bind = (binding == LUM_NULL_BINDING) ? mTextures[texture].binding : binding;
+		mCurrentTextures[binding] = texture;
+		glBindTextureUnit(binding, mTextures[texture].handle.glHandle);
 
-		glBindTextureUnit(bind, mTextures[texture].handle.glHandle);
+		LUM_LOG_DEBUG("Binded texture %d to binding %d", texture.id, binding);
 
-		LUM_LOG_DEBUG("Binded texture %d to binding %d", texture.id, bind);
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 }

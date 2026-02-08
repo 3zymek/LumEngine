@@ -392,6 +392,9 @@ namespace lum::rhi::gl {
 			skBlendOpLookup[lookup_cast(alphaOp)]
 		);
 
+		mBlendState.alphaOp = alphaOp;
+		mBlendState.colorOp = colorOp;
+
 		LUM_PROFILER_CACHE_MISS();
 
 	}
@@ -474,8 +477,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::ToggleDepthTest(bool enable) {
 
-		if (enable == mEnabledStates.has(State::DepthTest))
+		if (enable == mEnabledStates.has(State::DepthTest)) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		if (enable) {
 
@@ -492,6 +497,8 @@ namespace lum::rhi::gl {
 
 		}
 
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	bool GLDevice::IsDepthTestEnabled()	const noexcept {
 		return mEnabledStates.has(State::DepthTest);
@@ -500,10 +507,14 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::DepthTest), "Depth not enabled");
 
-		if (mDepthStencilState.depth.compareFlag == func)
+		if (mDepthStencilState.depth.compareFlag == func) {
+			LUM_PROFILER_CACHE_HIT();
 			return;
+		}
 
 		glDepthFunc(skCompareFlagLookup[lookup_cast(func)]);
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 	
@@ -587,10 +598,41 @@ namespace lum::rhi::gl {
 	bool GLDevice::IsDepthBiasEnabled() const noexcept {
 		return mEnabledStates.has(State::DepthBias);
 	}
-	void GLDevice::SetDepthBiasFactors(float32 slope, float32 constant) {
+	void GLDevice::SetDepthBiasFactors(float32 slope, float32 units) {
+
+		LUM_HOTCHK(mEnabledStates.has(State::DepthBias), "Depth bias not enabled");
+
+		if (mRasterizerState.depthBias.slopeFactor == slope && mRasterizerState.depthBias.units == units) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glPolygonOffset(slope, units);
+
+		mRasterizerState.depthBias.slopeFactor = slope;
+		mRasterizerState.depthBias.units = units;
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::SetDepthBiasClamp(float32 clamp) {
+
+		LUM_HOTCHK(mEnabledStates.has(State::DepthBias), "Depth bias not enabled");
+
+		if (mRasterizerState.depthBias.clamp == clamp) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glPolygonOffsetClamp(
+			mRasterizerState.depthBias.slopeFactor,
+			mRasterizerState.depthBias.units,
+			clamp
+		); 
+
+		mRasterizerState.depthBias.clamp = clamp;
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::SetDepthBiasSlope(float32 slopeFactor) {
@@ -602,7 +644,7 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		glPolygonOffset(slopeFactor, mRasterizerState.depthBias.constantBias);
+		glPolygonOffset(slopeFactor, mRasterizerState.depthBias.units);
 		mRasterizerState.depthBias.slopeFactor = slopeFactor;
 
 		LUM_PROFILER_CACHE_MISS();
@@ -612,13 +654,13 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK(mEnabledStates.has(State::DepthBias), "Depth bias not enabled");
 
-		if (mRasterizerState.depthBias.constantBias == constantBias) {
+		if (mRasterizerState.depthBias.units == constantBias) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
 
 		glPolygonOffset(mRasterizerState.depthBias.slopeFactor, constantBias);
-		mRasterizerState.depthBias.constantBias = constantBias;
+		mRasterizerState.depthBias.units = constantBias;
 
 		LUM_PROFILER_CACHE_MISS();
 

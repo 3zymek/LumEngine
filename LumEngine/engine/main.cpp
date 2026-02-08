@@ -42,7 +42,7 @@ public:
     glm::vec3 up    = { 0,1,0 };
     glm::vec3 right = { 1,0,0 };
     Window* m_window = nullptr;
-
+    float32 move_speed = 0.07f;
 private:
 
     void RecalculateDirection() {
@@ -123,7 +123,6 @@ private:
         lastY = mouse_pos.y;
     }
     
-    float32 move_speed = 0.07f;
     float32 aspect_ratio = 0;
     float32 lastX = 0;
     float32 lastY = 0;
@@ -152,7 +151,7 @@ glm::vec3 model_pos = { 0,0,0 };
 glm::vec3 model_rot = { 0,0,0 };
 glm::vec3 model_scale = { 1,1,1 };
 
-void UpdateCamera(RenderDevice* dev, Camera& cam, rhi::BufferHandle& ubo, CameraUBO& camstruct, rhi::BufferHandle& modelubo, ModelUBO modelstruct) {
+void UpdateCamera(RenderDevice* dev, Camera& cam, const rhi::BufferHandle& ubo, CameraUBO& camstruct, rhi::BufferHandle& modelubo, ModelUBO modelstruct) {
     
     cam.Update();
 
@@ -263,7 +262,7 @@ auto CreateCubeVAO(auto vbo) {
 
     attributes[1].format = DataFormat::Vec3;
     attributes[1].relativeOffset = offsetof(Vertex, color);
-    attributes[1].shaderLocation = LUM_LAYOUT_COLOR;
+    attributes[1].shaderLocation = LUM_LAYOUT_NORMAL;
 
     attributes[2].format = DataFormat::Vec2;
     attributes[2].relativeOffset = offsetof(Vertex, uv);
@@ -286,12 +285,11 @@ auto CreateCubeTexture() {
     TextureDescriptor textureDesc;
     textureDesc.filename = "glass2.jpg";
     auto texture = device->CreateTexture2D(textureDesc);
-    device->SetTextureBinding(texture, LUM_TEXTURE_BINDING_01);
     return texture;
 }
 auto CreateCubePipeline(auto shader) {
     PipelineDescriptor cubePipeline;
-    cubePipeline.mBlend.bEnabled = true;
+    //cubePipeline.mBlend.bEnabled = true;
     cubePipeline.mBlend.dstAlphaFactor = BlendFactor::SrcAlpha;
     cubePipeline.mBlend.srcAlphaFactor = BlendFactor::SrcAlpha;
     cubePipeline.mBlend.dstColorFactor = BlendFactor::SrcAlpha;
@@ -350,7 +348,11 @@ auto CreateSkyboxPipeline(auto shader) {
     skyboxPipeline.shader = shader;
     return device->CreatePipeline(skyboxPipeline);
 }
-
+float32 scrollX = 0.0, scrollY = 0.0;
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    scrollX += xoffset;
+    scrollY += yoffset;
+}
 float32 quad[] = {
     // pos      // uv
     -1.0f, -1.0f, 0.0f, 0.0f,
@@ -419,32 +421,35 @@ int main() {
     auto cubePip = CreateCubePipeline(basicShader);
     auto skyboxPip = CreateSkyboxPipeline(skyboxShader);
     
+    glfwSetScrollCallback(static_cast<GLFWwindow*>(window->get_native_window()), scroll_callback);
+
     do {
 
         UpdateCamera(device, c, cameraUBO, camUBO, modelUBO, mUBO);
         c.Update();
 
-        int x, y;
+        int32 x, y;
         glfwGetWindowSize(static_cast<GLFWwindow*>(window->get_native_window()), &x, &y);
         window->set_width(x);
         window->set_height(y);
 
         device->BeginFrame();
         
+        c.move_speed = std::clamp((scrollY * 0.0005f), 0.0f, 100.f);
+
         device->BindPipeline(cubePip);
-        device->BindSampler(sampler, LUM_TEXTURE_BINDING_01);
-        device->BindTexture(cubeTexture);
-        //device->SetColorMask(false, false, false, false);
+        device->BindSampler(sampler, LUM_TEX_ALBEDO);
+        device->BindTexture(cubeTexture, LUM_SAMPLER_ALBEDO);
         device->DrawElements(cubeVAO, cubeIndices.size());
 
         device->BindPipeline(skyboxPip);
-        device->BindSampler(sampler, LUM_CUBEMAP_BINDING);
-        device->BindTexture(skyboxTexture, LUM_CUBEMAP_BINDING);
+        device->BindSampler(sampler, LUM_SAMPLER_CUBEMAP);
+        device->BindTexture(skyboxTexture, LUM_TEX_CUBEMAP);
         device->Draw(skyVAO, skyboxVerts.size());
 
         device->EndFrame();
 
-    } while (false);
+    } while (window->is_open());
 
     device->GetProfilerInfo();
 

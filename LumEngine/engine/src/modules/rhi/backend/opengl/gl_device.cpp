@@ -155,6 +155,7 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::SetColorMask(bool r, bool g, bool b, bool a) {
+
 		if (r == mColorMask.r &&
 			g == mColorMask.g &&
 			b == mColorMask.b &&
@@ -180,6 +181,7 @@ namespace lum::rhi::gl {
 
 	}
 	void GLDevice::SetColorMask(ColorMask rgba) {
+
 		if (rgba.r == mColorMask.r &&
 			rgba.g == mColorMask.g &&
 			rgba.b == mColorMask.b &&
@@ -205,16 +207,59 @@ namespace lum::rhi::gl {
 
 	}
 
+	void GLDevice::SetClearColor(ChannelRGBA color) {
+
+		if (mClearColor == color) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glClearColor(color.r, color.g, color.b, color.a);
+
+		LUM_PROFILER_CACHE_MISS();
+
+	}
+	void GLDevice::ClearColor() {
+
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		LUM_PROFILER_CACHE_MISS();
+
+	}
+
 	void GLDevice::ClearColor(ChannelRGBA color) {
+
+		SetClearColor(color);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::ClearDepth() {
 
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		LUM_PROFILER_CACHE_MISS();
+
 	}
 	void GLDevice::ClearStencil() {
 
+		glClear(GL_STENCIL_BUFFER_BIT);
+
+		LUM_PROFILER_CACHE_MISS();
+
 	}
-	void GLDevice::Clear(uint32 flags) {
+	void GLDevice::Clear(Flags<ClearFlag> flags) {
+		
+		GLbitfield mask = 0;
+
+		mask |= (flags.has(ClearFlag::Color)) ? GL_COLOR_BUFFER_BIT : 0;
+		mask |= (flags.has(ClearFlag::Depth)) ? GL_DEPTH_BUFFER_BIT : 0;
+		mask |= (flags.has(ClearFlag::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0;
+
+		glClear(mask);
+
+		LUM_PROFILER_CACHE_MISS();
 
 	}
 
@@ -244,8 +289,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_BEGIN_FRAME();
 
 		SetViewport(0, 0, window->get_width(), window->get_height());
-		glClearColor(0.0, 0.0, 0.0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		Clear(ClearFlag::Color | ClearFlag::Depth | ClearFlag::Stencil);
 
 #		if LUM_ENABLE_IMGUI == 1
 		ImGui_ImplOpenGL3_NewFrame();

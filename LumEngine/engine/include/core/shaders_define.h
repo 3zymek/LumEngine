@@ -1,48 +1,49 @@
 #pragma once
 
-///////////////////////////////////////////
-// Shaders locations
-///////////////////////////////////////////
-
 // Shader location for position
 #define LUM_LAYOUT_POSITION 0
 
-// Shader location for color
-#define LUM_LAYOUT_COLOR 1
+// Shader location for normal
+#define LUM_LAYOUT_NORMAL 1
 
 // Shader location for uv
 #define LUM_LAYOUT_UV 2
 
-// Shader location for normal
-#define LUM_LAYOUT_NORMAL 3
-
-
-///////////////////////////////////////////
-// Uniform buffers
-///////////////////////////////////////////
-
-// Uniform buffer binding for camera ( mat4 uProjection, mat4 uView );
+// Uniform buffer binding for camera matrices ( projection and view ).
 #define LUM_UBO_CAMERA_BINDING 1
 
-// Uniform buffer binding for camera ( mat4 uModel );
+// Uniform buffer binding for model matrix.
 #define LUM_UBO_MODEL_BINDING 2
 
+// Sampler slots for material textures.
+#define LUM_SAMPLER_ALBEDO		0 // Albedo texture sampler.
+#define LUM_SAMPLER_NORMAL		1 // Normal map sampler.
+#define LUM_SAMPLER_ROUGNESS	2 // Roughness map sampler.
+#define LUM_SAMPLER_METALNESS	3 // Metalness map sampler.
 
-#define LUM_TEXTURE_BINDING_01 1
+// Cubemap sampler binding slot
+#define LUM_SAMPLER_CUBEMAP 8 // Sampler slot for cubemap
 
+// Texture slots for material textures.
+#define LUM_TEX_ALBEDO		0 // Albedo texture binding.
+#define LUM_TEX_NORMAL		1 // Normal map binding.
+#define LUM_TEX_ROUGNESS	2 // Roughness map binding.
+#define LUM_TEX_METALNESS	3 // Metalness map binding.
 
-// Cubemap Texture
+// Cubemap face indices
+#define LUM_CUBEMAP_POSITIVE_X 0 // Positive X face.
+#define LUM_CUBEMAP_NEGATIVE_X 1 // Negative X face.
+#define LUM_CUBEMAP_POSITIVE_Y 2 // Positive Y face.
+#define LUM_CUBEMAP_NEGATIVE_Y 3 // Negative Y face.
+#define LUM_CUBEMAP_POSITIVE_Z 4 // Positive Z face.
+#define LUM_CUBEMAP_NEGATIVE_Z 5 // Negative Z face.
 
-#define LUM_CUBEMAP_POSITIVE_X 0
-#define LUM_CUBEMAP_NEGATIVE_X 1
-#define LUM_CUBEMAP_POSITIVE_Y 2
-#define LUM_CUBEMAP_NEGATIVE_Y 3
-#define LUM_CUBEMAP_POSITIVE_Z 4
-#define LUM_CUBEMAP_NEGATIVE_Z 5
-#define LUM_CUBEMAP_BINDING 3
+// Cubemap texture binding slot.
+#define LUM_TEX_CUBEMAP 8 // Cubemap texture binding.
 
+// Null/default binding value.
+#define LUM_NULL_BINDING max_val<uint16_t>() // Invalid/null binding.
 
-#define LUM_NULL_BINDING max_val<uint16_t>()
 
 ///////////////////////////////////////////
 // Instance names

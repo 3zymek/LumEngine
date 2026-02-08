@@ -103,7 +103,7 @@ namespace lum::rhi {
 		*	
 		*/
 		LUM_NODISCARD 
-		virtual vptr MapBuffer( const BufferHandle& buff, Mapflag flags, usize offset = 0, usize size = 0 ) = 0;
+		virtual vptr MapBuffer( const BufferHandle& buff, Flags<Mapflag> flags, usize offset = 0, usize size = 0 ) = 0;
 		
 		/*! @brief Unmaps buffer.
 		*
@@ -334,14 +334,6 @@ namespace lum::rhi {
 		* 
 		*/
 		virtual void DeleteTexture( TextureHandle& texture ) = 0;
-		
-		/*! @brief Binds a texture to the active slot/unit.
-		*
-		*  The bound texture will be used by shaders on the next draw/dispatch.
-		*  @param texture Texture to bind.
-		* 
-		*/
-		virtual void SetTextureBinding( const TextureHandle& texture, uint16 binding ) = 0;
 
 		/*! @brief Binds a texture to a given binding slot.
 		*
@@ -354,7 +346,7 @@ namespace lum::rhi {
 		*                a default or pre-assigned slot will be used (LUM_NULL_BINDING).
 		*
 		*/
-		virtual void BindTexture( const TextureHandle& texture, uint16 binding = LUM_NULL_BINDING ) = 0;
+		virtual void BindTexture( const TextureHandle& texture, uint16 binding ) = 0;
 
 
 
@@ -372,16 +364,7 @@ namespace lum::rhi {
 		LUM_NODISCARD
 		virtual SamplerHandle CreateSampler( const SamplerDescriptor& desc ) = 0;
 		
-		/*!
-		*  @brief Binds a sampler to a GPU slot.
-		*
-		*  Keeps the binding until changed. Used by shaders on next draw/dispatch.
-		*
-		*  @param sampler  Sampler handle to bind.
-		*  @param binding  GPU binding slot index.
-		*/
-		virtual void SetSamplerBinding( const SamplerHandle& sampler, uint16 binding ) = 0;
-		virtual void BindSampler( const SamplerHandle& sampler, uint16 binding = LUM_NULL_BINDING )	= 0;
+		virtual void BindSampler( const SamplerHandle& sampler, uint16 binding ) = 0;
 		virtual void DeleteSampler( SamplerHandle sampler ) = 0;
 
 
@@ -996,10 +979,39 @@ namespace lum::rhi {
 		*
 		* @param enable True to enable depth bias, false to disable it.
 		*/
-		virtual void ToggleDepthBias(bool) = 0;
+		virtual void ToggleDepthBias( bool ) = 0;
+		
+		/*!
+		* @brief Checks if depth bias (polygon offset) is currently enabled.
+		*
+		* Query function to determine whether depth bias calculations are active.
+		* Depth bias must be enabled before setting bias factors or clamp values.
+		*
+		* @return True if depth bias is enabled, false otherwise.
+		*/
 		virtual bool IsDepthBiasEnabled() const noexcept = 0;
 
+		/*!
+		* @brief Sets the depth bias scale factors for polygon offset.
+		*
+		* Configures how depth values are offset to prevent z-fighting artifacts.
+		* The actual offset is calculated as: offset = slope * dZ + constant,
+		* where dZ is the depth slope of the polygon.
+		*
+		* @param slope Scale factor applied to polygon's depth slope. The initial value is 0.
+		* @param constant Constant depth offset multiplied by implementation-specific value. The initial value is 0.
+		*/
 		virtual void SetDepthBiasFactors(float32 slope, float32 constant) = 0;
+
+		/*!
+		* @brief Sets the maximum depth offset clamp value.
+		*
+		* Limits the calculated depth bias to prevent excessive offset values.
+		* Positive values clamp from above, negative values clamp from below.
+		* If zero, no clamping is applied. Requires depth bias to be enabled.
+		*
+		* @param clamp Maximum (or minimum if negative) depth offset limit. The initial value is 0.
+		*/
 		virtual void SetDepthBiasClamp(float32 clamp) = 0;
 
 		/*!
@@ -1010,7 +1022,7 @@ namespace lum::rhi {
 		*  @param slopFactor Specifies a scale factor that is used to create a variable depth offset for each polygon.
 		*  @param constantBias Is multiplied by an implementation-specific value to create a constant depth offset.
 		*/
-		virtual void SetDepthBiasSlope(float32 slopeFactor) = 0;
+		virtual void SetDepthBiasSlope( float32 slopeFactor ) = 0;
 		
 		/*!
 		* @brief Sets the constant depth bias offset.
@@ -1027,7 +1039,7 @@ namespace lum::rhi {
 		* @param constantBias Implementation-scaled constant depth offset.
 		*                     Typical values range from 1.0 to 10.0 for shadows.
 		*/
-		virtual void SetDepthBiasConstant(float32 constantBias) = 0;
+		virtual void SetDepthBiasConstant( float32 constantBias ) = 0;
 
 		/*!
 		*  @brief Controls the interpretation of polygons for rasterization.
@@ -1042,7 +1054,7 @@ namespace lum::rhi {
 		*  @param face Specifies the polygons that mode applies to. 
 		*	The initial value is Face::FrontBack. 
 		*/
-		virtual void SetTopology(TopologyMode mode, Face face = Face::FrontBack) = 0;
+		virtual void SetTopology( TopologyMode mode, Face face = Face::FrontBack ) = 0;
 
 
 
@@ -1057,7 +1069,7 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current BlendState.
 		*/
-		virtual const BlendState& GetBlendState() const noexcept = 0;
+		virtual const BlendState& GetBlendState( ) const noexcept = 0;
 
 		/*!
 		* @brief Returns the current face culling state.
@@ -1068,7 +1080,7 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current CullState.
 		*/
-		virtual const CullState& GetCullState() const noexcept = 0;
+		virtual const CullState& GetCullState( ) const noexcept = 0;
 
 		/*!
 		* @brief Returns the current scissor state.
@@ -1079,7 +1091,7 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current ScissorState.
 		*/
-		virtual const ScissorState& GetScissorState() const noexcept = 0;
+		virtual const ScissorState& GetScissorState( ) const noexcept = 0;
 
 		/*!
 		* @brief Returns the current depth and stencil state.
@@ -1091,7 +1103,7 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current DepthStencilState.
 		*/
-		virtual const DepthStencilState& GetDepthStencilState() const noexcept = 0;
+		virtual const DepthStencilState& GetDepthStencilState( ) const noexcept = 0;
 
 		/*!
 		* @brief Returns the current rasterizer state.
@@ -1103,7 +1115,7 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current RasterizerState.
 		*/
-		virtual const RasterizerState& GetRasterizerState() const noexcept = 0;
+		virtual const RasterizerState& GetRasterizerState( ) const noexcept = 0;
 
 		/*!
 		* @brief Returns the current viewport state.
@@ -1114,23 +1126,136 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current ViewportState.
 		*/
-		virtual const ViewportState& GetViewport() const noexcept = 0;
+		virtual const ViewportState& GetViewport( ) const noexcept = 0;
 
+		/*!
+		* @brief Checks if a buffer handle is valid.
+		*
+		* @param handle Buffer handle to validate.
+		* @return True if the handle refers to an existing buffer, false otherwise.
+		*/
 		virtual bool IsValid(BufferHandle handle) const = 0;
+
+		/*!
+		* @brief Checks if a texture handle is valid.
+		*
+		* @param handle Texture handle to validate.
+		* @return True if the handle refers to an existing texture, false otherwise.
+		*/
 		virtual bool IsValid(TextureHandle handle) const = 0;
+
+		/*!
+		* @brief Checks if a shader handle is valid.
+		*
+		* @param handle Shader handle to validate.
+		* @return True if the handle refers to an existing shader, false otherwise.
+		*/
 		virtual bool IsValid(ShaderHandle handle) const = 0;
+
+		/*!
+		* @brief Checks if a framebuffer handle is valid.
+		*
+		* @param handle Framebuffer handle to validate.
+		* @return True if the handle refers to an existing framebuffer, false otherwise.
+		*/
 		virtual bool IsValid(FramebufferHandle handle) const = 0;
+
+		/*!
+		* @brief Checks if a vertex layout handle is valid.
+		*
+		* @param handle Vertex layout handle to validate.
+		* @return True if the handle refers to an existing vertex layout, false otherwise.
+		*/
 		virtual bool IsValid(VertexLayoutHandle handle) const = 0;
+
+		/*!
+		* @brief Checks if a pipeline handle is valid.
+		*
+		* @param handle Pipeline handle to validate.
+		* @return True if the handle refers to an existing pipeline, false otherwise.
+		*/
 		virtual bool IsValid(PipelineHandle handle) const = 0;
+
+		/*!
+		* @brief Checks if a sampler handle is valid.
+		*
+		* @param handle Sampler handle to validate.
+		* @return True if the handle refers to an existing sampler, false otherwise.
+		*/
 		virtual bool IsValid(SamplerHandle handle) const = 0;
 
+		/*!
+		* @brief Sets the color write mask for individual RGBA channels.
+		*
+		* Controls which color components are written to the framebuffer.
+		* Useful for masking specific channels during rendering operations
+		* like stencil-only passes or specific post-processing effects.
+		*
+		* @param r Enable/disable red channel writes.
+		* @param g Enable/disable green channel writes.
+		* @param b Enable/disable blue channel writes.
+		* @param a Enable/disable alpha channel writes.
+		*/
 		virtual void SetColorMask(bool r, bool g, bool b, bool a) = 0;
+
+		/*!
+		* @brief Sets the color write mask using a ColorMask structure.
+		*
+		* Convenience overload for setting all channel masks at once.
+		*
+		* @param rgba ColorMask structure containing all channel enable flags.
+		*/
 		virtual void SetColorMask(ColorMask rgba) = 0;
 
-		virtual void ClearColor(ChannelRGBA color) = 0;
+		/*!
+		* @brief Sets the clear color for subsequent clear operations.
+		*
+		* Defines the RGBA color used when clearing the color buffer.
+		* Does not perform the clear operation itself.
+		*
+		* @param color RGBA color value to use for clearing.
+		*/
+		virtual void SetClearColor(ChannelRGBA color) = 0;
+
+		/*!
+		* @brief Clears the color buffer using the current clear color.
+		*
+		* Fills the entire color buffer with the previously set clear color.
+		*/
+		virtual void ClearColor() = 0;
+
+		/*!
+		* @brief Sets the clear color and immediately clears the color buffer.
+		*
+		* Convenience function combining SetClearColor and ClearColor.
+		*
+		* @param color RGBA color value to clear with.
+		*/
+		virtual void ClearColor( ChannelRGBA color ) = 0;
+
+		/*!
+		* @brief Clears the depth buffer to its default value (typically 1.0).
+		*
+		* Resets depth information for subsequent depth-tested rendering.
+		*/
 		virtual void ClearDepth() = 0;
+
+		/*!
+		* @brief Clears the stencil buffer to zero.
+		*
+		* Resets stencil values for subsequent stencil operations.
+		*/
 		virtual void ClearStencil() = 0;
-		virtual void Clear(uint32 flags) = 0;
+
+		/*!
+		* @brief Clears specified buffers in a single operation.
+		*
+		* Efficiently clears multiple buffers (color, depth, stencil) simultaneously.
+		* More efficient than calling individual clear functions separately.
+		*
+		* @param flags Combination of ClearFlag values (Color, Depth, Stencil).
+		*/
+		virtual void Clear(Flags<ClearFlag> flags) = 0;
 
 		virtual void Draw(const VertexLayoutHandle& vao, uint32 vertex_count) = 0;
 		virtual void DrawElements(const VertexLayoutHandle&, uint32 indices_count) = 0;
@@ -1138,16 +1263,26 @@ namespace lum::rhi {
 		virtual void EndFrame() = 0;
 
 
-#if LUM_ENABLE_RENDER_PROFILER == 1
-		inline void GetProfilerInfo() {
-			std::cout << mProfiler.GetCacheHitRate() << '\n';
-		}
-#endif
+#		if LUM_ENABLE_RENDER_PROFILER == 1
+			inline void GetProfilerInfo() {
+				std::cout << "Cache hit rate: " << mProfiler.GetCacheHitRate() << '\n';
+			}
+#		endif
 
 	protected:
+		
+		LUM_COMPILE_VARIABLE
+		static uint32 MAX_TEXTURE_UNITS = 32;
 
-		// Handle for currently used pipeline
-		PipelineHandle mCurrentPipeline{};
+		LUM_COMPILE_VARIABLE
+		static uint32 MAX_SAMPLER_UNITS = 32;
+
+		std::array<TextureHandle, MAX_TEXTURE_UNITS> mCurrentTextures{};
+		std::array<SamplerHandle, MAX_SAMPLER_UNITS> mCurrentSamplers{};
+
+		ShaderHandle		mCurrentShader{};
+		FramebufferHandle	mCurrentFramebuffer{};
+		PipelineHandle		mCurrentPipeline{};
 
 		// Cache of current states
 
@@ -1162,22 +1297,24 @@ namespace lum::rhi {
 		// SOURCE OF TRUST - enabled states ( don't look at bEnabled at states )
 		Flags<State>		mEnabledStates{};
 
+		ChannelRGBA			mClearColor{};
+		
 #		if LUM_ENABLE_RENDER_PROFILER == 1
 			performance::Profiler mProfiler{};
 
-#			define LUM_PROFILER_BEGIN_FRAME() mProfiler.BeginFrame()
-#			define LUM_PROFILER_END_FRAME() mProfiler.EndFrame()
-#			define LUM_PROFILER_DRAW_CALL() mProfiler.RegisterDrawCall()
-#			define LUM_PROFILER_CACHE_MISS() mProfiler.RegisterCacheMiss()
-#			define LUM_PROFILER_CACHE_HIT() mProfiler.RegisterCacheHit()
+#			define LUM_PROFILER_BEGIN_FRAME()	mProfiler.StartRecording()
+#			define LUM_PROFILER_END_FRAME()		mProfiler.EndRecording()
+#			define LUM_PROFILER_DRAW_CALL()		mProfiler.RegisterDrawCall()
+#			define LUM_PROFILER_CACHE_MISS()	mProfiler.RegisterCacheMiss()
+#			define LUM_PROFILER_CACHE_HIT()		mProfiler.RegisterCacheHit()
 
 #		else
 
-#			define LUM_PROFILER_BEGIN_FRAME() ((void)0)
-#			define LUM_PROFILER_END_FRAME() ((void)0)
-#			define LUM_PROFILER_DRAW_CALL() ((void)0)
-#			define LUM_PROFILER_CACHE_MISS() ((void)0)
-#			define LUM_PROFILER_CACHE_HIT() ((void)0)
+#			define LUM_PROFILER_BEGIN_FRAME()	((void)0)
+#			define LUM_PROFILER_END_FRAME()		((void)0)
+#			define LUM_PROFILER_DRAW_CALL()		((void)0)
+#			define LUM_PROFILER_CACHE_MISS()	((void)0)
+#			define LUM_PROFILER_CACHE_HIT()		((void)0)
 
 #		endif
 		
