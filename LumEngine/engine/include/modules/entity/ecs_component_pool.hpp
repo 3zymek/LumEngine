@@ -34,7 +34,7 @@ namespace lum {
 
 				T* Add( EntityID entityID ) {
 					LUM_HOTCHK_RETURN_NPTR(
-						m_components.contains(entityID), "Entity {} already have {} component"
+						m_components.contains(entityID), LUM_SEV_DEBUG, "Entity {} already have {} component"
 					);
 					T component;
 					m_components.emplace(component, entityID);
@@ -43,14 +43,14 @@ namespace lum {
 
 				inline void Remove( EntityID entityID ) {
 					LUM_HOTCHK_RETURN_VOID(
-						!m_components.contains(entityID), "Entity doesn't have {} component to remove"
+						!m_components.contains(entityID), LUM_SEV_DEBUG, "Entity doesn't have {} component to remove"
 					);
 					m_components.remove(entityID);
 				}
 
 				inline T* Get( EntityID entityID ) {
 					LUM_HOTCHK_RETURN_NPTR(
-						!m_components.contains(entityID), "Entity doesn't have {} component"
+						!m_components.contains(entityID), LUM_SEV_DEBUG, "Entity doesn't have {} component"
 					);
 					return &m_components[entityID];
 				}

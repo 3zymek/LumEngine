@@ -9,11 +9,13 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mBuffers.exist(vbo),
+			LUM_SEV_WARN,
 			VertexLayoutHandle{},
 			"Buffer doesn't exist"
 		);
 		LUM_HOTCHK_RETURN_CUSTOM(
 			desc.attributes.size() > 0,
+			LUM_SEV_WARN,
 			VertexLayoutHandle{},
 			"VertexLayout has no attributes",
 		);
@@ -59,7 +61,7 @@ namespace lum::rhi::gl {
 
 	}
 	void GLDevice::DeleteVertexLayout(VertexLayoutHandle& layout) {
-		LUM_HOTCHK_RETURN_VOID(!mLayouts.exist(layout), "Layout doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(!mLayouts.exist(layout), LUM_SEV_WARN, "Layout doesn't exist");
 
 		glDeleteVertexArrays(1, &mLayouts[layout].vao);
 		mLayouts.delete_handle(layout);

@@ -19,7 +19,9 @@ namespace lum::rhi::gl {
 
 		const auto& rast = pip.mRasterizer;
 
-		SetTopology(rast.topologyMode, rast.topologyModeFaces);
+		SetTopology(rast.polygon.topologyMode, rast.polygon.topologyModeFaces);
+		SetLineWidth(rast.polygon.lineWidth);
+		SetPointSize(rast.polygon.pointSize);
 
 		ToggleDepthBias(rast.depthBias.bEnable);
 
@@ -68,23 +70,8 @@ namespace lum::rhi::gl {
 
 		const auto& scissors = pip.mScissor;
 
-		if (scissors.bEnabled != mEnabledStates.has(State::Scissor)) {
-
-			if (scissors.bEnabled) {
-
-				glEnable(GL_SCISSOR_TEST);
-				mEnabledStates.enable(State::Scissor);
-
-				SetScissors(scissors.x, scissors.y, scissors.width, scissors.height); // Default options
-
-			}
-			else {
-
-				glDisable(GL_SCISSOR_TEST);
-				mEnabledStates.disable(State::Scissor);
-
-			}
-		}
+		ToggleScissors(pip.mScissor.bEnabled);
+		SetScissors(scissors.x, scissors.y, scissors.width, scissors.height); // Default options
 
 	}
 	void GLDevice::bind_check_blend(const Pipeline& pip) noexcept {
@@ -131,6 +118,7 @@ namespace lum::rhi::gl {
 	PipelineHandle GLDevice::CreatePipeline(const PipelineDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mPipelines.dense_size() <= skMaxPipelines,
+			LUM_SEV_WARN,
 			PipelineHandle{},
 			"Max pipelines reached"
 		);
@@ -145,12 +133,12 @@ namespace lum::rhi::gl {
 		return mPipelines.create_handle(std::move(pipeline));
 	}
 	void GLDevice::DeletePipeline(PipelineHandle& pipeline) {
-		LUM_HOTCHK_RETURN_VOID(mPipelines.exist(pipeline), "Pipeline doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mPipelines.exist(pipeline), LUM_SEV_WARN, "Pipeline doesn't exist");
 
 		mPipelines.delete_handle(pipeline);
 	}
 	void GLDevice::BindPipeline(const PipelineHandle& pipeline) {
-		LUM_HOTCHK_RETURN_VOID(mPipelines.exist(pipeline), "Pipeline doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mPipelines.exist(pipeline), LUM_SEV_WARN, "Pipeline doesn't exist");
 
 		if (pipeline == mCurrentPipeline) { 
 			LUM_PROFILER_CACHE_HIT();

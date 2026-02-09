@@ -8,6 +8,7 @@ namespace lum::rhi::gl {
 	TextureHandle GLDevice::CreateTexture2D(const TextureDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mTextures.dense_size() <= skMaxTextures,
+			LUM_SEV_WARN,
 			TextureHandle{},
 			"Max textures reached"
 		);
@@ -69,6 +70,7 @@ namespace lum::rhi::gl {
 	TextureHandle GLDevice::CreateCubemapTexture(const TextureCubemapDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mTextures.dense_size() <= skMaxTextures,
+			LUM_SEV_WARN,
 			TextureHandle{},
 			"Max textures reached"
 		);
@@ -124,7 +126,7 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::DeleteTexture(TextureHandle& texture) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), LUM_SEV_WARN, "Texture doesn't exist");
 
 		glDeleteTextures(1, &mTextures[texture].handle.glHandle);
 
@@ -133,7 +135,7 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::BindTexture(const TextureHandle& texture, uint16 binding) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture) && binding < MAX_TEXTURE_UNITS, "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture) && binding < MAX_TEXTURE_UNITS, LUM_SEV_WARN, "Texture doesn't exist");
 
 		if (mCurrentTextures[binding] == texture) {
 			LUM_PROFILER_CACHE_HIT();

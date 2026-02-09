@@ -10,13 +10,13 @@ namespace lum::rhi {
 		BufferUsage	bufferUsage	= BufferUsage::Static;
 
 		// Size of data that's assigned.
-		usize size			= 0;
+		usize size = 0;
 
 		// Flags defines what operations can be done on a buffer and which not.
 		Flags<Mapflag>	mapFlags{};
 
 		// Pointer to data.
-		cvptr data			= nullptr;
+		cvptr data = nullptr;
 	};
 
 	struct Buffer {

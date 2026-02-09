@@ -4,140 +4,139 @@
 namespace lum {
 
 	struct alignas(16) Vertex {
-		math::Vec3 position;
-		math::Vec3 color;
-		math::Vec2 uv;
+		math::Vec3 position;	// Vertex position in 3D space
+		math::Vec3 normal;		// Vertex normal
+		math::Vec2 uv;			// Texture coordinates (UV)
 	};
 
 	namespace rhi {
 
-		/// Returns amount of mipmap levels count for image.
-		/// @param width Width of an image.
-		/// @param height Height of an image.
-		/// @return Mipmap levels count.
-		inline uint32 mipmap_lvls( uint32 width, uint32 height ) {
+		// Returns number of mipmap levels for an image given width and height.
+		// @param width Width of the image.
+		// @param height Height of the image.
+		// @return Number of mipmap levels (>= 1).
+		inline uint32 mipmap_lvls(uint32 width, uint32 height) {
 			return 1 + std::floor(std::log2(std::max(width, height)));
 		}
 
-		/// @return Value of enum to lookup array.
-		/// @param e Enum.
+		// Casts enum to its underlying integer type for array lookups or bitmasks.
+		// @param e Enum value.
+		// @return Underlying integer representation.
 		template<typename E>
 			requires std::is_enum_v<E>
 		constexpr inline std::underlying_type_t<E> lookup_cast(E e) {
 			return to_underlying(e);
 		}
 
+		// Returns a special "null" value for arithmetic types (usually max value).
+		// Useful for invalid IDs or handles.
 		template<typename T>
 			requires std::is_arithmetic_v<T>
 		inline constexpr T null_id() {
 			return max_val<T>();
 		}
 
-		struct BufferHandle;
-		struct VertexLayoutHandle;
-		struct ShaderHandle;
+		struct PipelineHandle		: cstd::BaseHandle {}; // Pipeline state handle
+		struct FramebufferHandle	: cstd::BaseHandle {}; // Framebuffer handle
+		struct SamplerHandle		: cstd::BaseHandle {}; // Texture sampler handle
+		struct ShaderHandle			: cstd::BaseHandle {}; // Shader handle
+		struct TextureHandle		: cstd::BaseHandle {}; // Texture handle
+		struct BufferHandle			: cstd::BaseHandle {}; // Buffer handle
+		struct VertexLayoutHandle	: cstd::BaseHandle {}; // Vertex layout handle
 
-		struct PipelineHandle		: cstd::BaseHandle {};
-		struct FramebufferHandle	: cstd::BaseHandle {};
-		struct SamplerHandle		: cstd::BaseHandle {};
-		struct ShaderHandle			: cstd::BaseHandle {};
-		struct TextureHandle		: cstd::BaseHandle {};
-		struct BufferHandle			: cstd::BaseHandle {};
-		struct VertexLayoutHandle	: cstd::BaseHandle {};
+		using BufferID		= uint32; // Numeric ID for buffer
+		using LayoutID		= uint32; // Numeric ID for vertex layout
+		using TextureID		= uint32; // Numeric ID for texture
+		using SamplerID		= uint32; // Numeric ID for sampler
+		using FramebufferID = uint32; // Numeric ID for framebuffer
+		using PipelineID	= uint32; // Numeric ID for pipeline
+		using ShaderID		= uint8;  // Numeric ID for shader (compact)
 
-		using BufferID			= uint32;
-		using LayoutID			= uint32;
-		using TextureID			= uint32;
-		using SamplerID			= uint32;
-		using FramebufferID		= uint32;
-		using PipelineID		= uint32;
-		using ShaderID			= uint8;
+		using EnumFlag = uint16;        // Bitmask storage type
+		using DepthBiasVal = float32;   // Depth bias value type
 
-		using EnumFlag			= uint16;
-		using DepthBiasVal		= float32;
-
-		using ChannelRGBA = math::Vec4;
+		using ChannelRGBA = math::Vec4; // RGBA color channel type
 
 		enum class ClearFlag : EnumFlag {
-			Color	= 1 << 0,
-			Depth	= 1 << 1,
-			Stencil = 1 << 2
+			Color = 1 << 0,     // Clear color buffer
+			Depth = 1 << 1,     // Clear depth buffer
+			Stencil = 1 << 2    // Clear stencil buffer
 		};
 
 		enum class DataFormat : EnumFlag {
-			Float1,
-			Vec2,
-			Vec3,
-			Vec4,
-			Mat3,
-			Mat4
+			Float1, // Single float
+			Vec2,   // 2-component vector (x,y)
+			Vec3,   // 3-component vector (x,y,z)
+			Vec4,   // 4-component vector (x,y,z,w)
+			Mat3,   // 3x3 matrix
+			Mat4    // 4x4 matrix
 		};
 
 		enum class BufferType : EnumFlag {
-			Vertex, // Buffer contains vertices.
-			Element,// Buffer contains indices (elements).
-			Uniform	// Buffer contains uniforms.
+			Vertex,        // Vertex buffer (VBO)
+			Element,       // Element / index buffer (EBO)
+			Uniform,       // Uniform buffer (UBO)
+			ShaderStorage, // Shader storage buffer (SSBO)
 		};
 
 		enum class BufferUsage : EnumFlag {
-			Static, // Data cannot be updated during runtime (better performance).
-			Dynamic // Data can be updated during runtime (slower performance).
+			Static,  // Data does not change during runtime (fast)
+			Dynamic  // Data updated during runtime (slower)
 		};
 
-		// Specifies how polygons will be rasterized.
 		enum class TopologyMode : EnumFlag {
-			Point,	// Polygon vertices that are marked as the start of a boundary edge are drawn as points.
-			Line,	// Boundary edges of the polygon are drawn as line segments.
-			Fill	// The interior of the polygon is filled.
+			Point, // Draw vertices as points
+			Line,  // Draw edges as lines
+			Fill   // Fill polygon interiors
 		};
 
 		enum class Mapflag : EnumFlag {
-			Persistent			= 1 << 0, // Pointer to the mapped data can be available all the time.
-			Write				= 1 << 1, // CPU can only write data through mapping.
-			Read				= 1 << 2, // CPU can only read data through mapping.
-			Coherent			= 1 << 3, // CPU changes instantly are available for GPU.
-			Invalidate_Range	= 1 << 4, // GPU creates new range in buffer, old data is still available.
-			Invalidate_Buffer	= 1 << 5, // GPU creates new buffer, destroys the old one.
-			Unsynchronized		= 1 << 6, // GPU maps buffer with no backend conditions.
+			Persistent = 1 << 0,        // Pointer remains valid across frames
+			Write = 1 << 1,             // CPU can write
+			Read = 1 << 2,              // CPU can read
+			Coherent = 1 << 3,          // Changes instantly visible to GPU
+			Invalidate_Range = 1 << 4,  // GPU allocates new range, old still valid
+			Invalidate_Buffer = 1 << 5, // GPU allocates new buffer, old discarded
+			Unsynchronized = 1 << 6,    // Map without GPU sync guarantees
 		};
 
 		enum class Face : EnumFlag {
-			Front,
-			Back,
-			FrontBack,
+			Front,      // Front-facing polygon
+			Back,       // Back-facing polygon
+			FrontBack,  // Both faces
 		};
 
 		enum class WindingOrder : EnumFlag {
-			CounterClockwise, // Front-facing triangles are defined in counter-clockwise order ( CCW)
-			Clockwise         // Front-facing triangles are defined in clockwise order ( CW )
+			CounterClockwise, // Triangles front-facing if CCW
+			Clockwise         // Triangles front-facing if CW
 		};
 
 		enum class State : EnumFlag {
-			None			= 1 << 0,
-			DepthTest		= 1 << 1,
-			DepthWrite		= 1 << 2,
-			StencilTest		= 1 << 3,
-			Scissor			= 1 << 4,
-			Blend			= 1 << 5,
-			Cull			= 1 << 6,
-			DepthBias		= 1 << 7
+			None						= 1 << 0, // No state
+			DepthTest					= 1 << 1, // Depth testing enabled
+			DepthWrite					= 1 << 2, // Depth writes enabled
+			StencilTest					= 1 << 3, // Stencil testing enabled
+			Scissor						= 1 << 4, // Scissor test enabled
+			Blend						= 1 << 5, // Blending enabled
+			Cull						= 1 << 6, // Backface culling enabled
+			DepthBias					= 1 << 7, // Depth bias enabled
+			Multisample					= 1 << 8, // MSAA enabled
+			MultisampleCoverage			= 1 << 9, // Sample coverage enabled
+			MultisampleAlphaToOne		= 1 << 10,// Alpha-to-one enabled
+			MultisampleAlphaToCoverage	= 1 << 11,// Alpha-to-coverage enabled
 		};
 
 		struct ColorMask {
-			bool r : 1 = true;
-			bool g : 1 = true;
-			bool b : 1 = true;
-			bool a : 1 = true;
+			bool r : 1 = true; // Red channel write enabled
+			bool g : 1 = true; // Green channel write enabled
+			bool b : 1 = true; // Blue channel write enabled
+			bool a : 1 = true; // Alpha channel write enabled
 		};
 
 		namespace detail {
-
 			LUM_COMPILE_VARIABLE
-			static uint8 skDataFormatLookup[] = { 1, 2, 3, 4, 9, 16 };
-
+				static uint8 skDataFormatLookup[] = { 1, 2, 3, 4, 9, 16 }; // Lookup for data format sizes
 		}
 
-	}
-
-
-}
+	} // namespace rhi
+} // namespace lum

@@ -261,7 +261,7 @@ auto CreateCubeVAO(auto vbo) {
     attributes[0].shaderLocation = LUM_LAYOUT_POSITION;
 
     attributes[1].format = DataFormat::Vec3;
-    attributes[1].relativeOffset = offsetof(Vertex, color);
+    attributes[1].relativeOffset = offsetof(Vertex, normal);
     attributes[1].shaderLocation = LUM_LAYOUT_NORMAL;
 
     attributes[2].format = DataFormat::Vec2;
@@ -446,7 +446,7 @@ int main() {
         device->BindSampler(sampler, LUM_SAMPLER_CUBEMAP);
         device->BindTexture(skyboxTexture, LUM_TEX_CUBEMAP);
         device->Draw(skyVAO, skyboxVerts.size());
-
+        
         device->EndFrame();
 
     } while (window->is_open());

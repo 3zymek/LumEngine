@@ -52,8 +52,8 @@ namespace lum::rhi::gl {
 		/// Layouts
 		///////////////////////////////////////////////////
 
-		VertexLayoutHandle	CreateVertexLayout( const VertexLayoutDescriptor&, const BufferHandle&)	override;
-		void				DeleteVertexLayout( VertexLayoutHandle& )								override;
+		VertexLayoutHandle	CreateVertexLayout ( const VertexLayoutDescriptor&, const BufferHandle&)	override;
+		void				DeleteVertexLayout ( VertexLayoutHandle& )								override;
 
 
 
@@ -61,15 +61,15 @@ namespace lum::rhi::gl {
 		/// Shaders ( !!! ADD CACHE LOCATIONS !!! )
 		///////////////////////////////////////////////////
 
-		ShaderHandle	CreateShader( const ShaderDescriptor& )							override;
-		void			BindShader	( const ShaderHandle& )								override;
-		void			DeleteShader( ShaderHandle& )									override;
-		void			SetMat4		( const ShaderHandle&, ccharptr, const math::Mat4& )override;
-		void			Setf		( const ShaderHandle&, ccharptr, float32 )			override;
-		void			Seti		( const ShaderHandle&, ccharptr, int32 )			override;
-		void			SetVec4		( const ShaderHandle&, ccharptr, const math::Vec4& )	override;
-		void			SetVec3		( const ShaderHandle&, ccharptr, const math::Vec3& )	override;
-		void			SetVec2		( const ShaderHandle&, ccharptr, const math::Vec2& )	override;
+		ShaderHandle	CreateShader ( const ShaderDescriptor& )							override;
+		void			BindShader	 ( const ShaderHandle& )								override;
+		void			DeleteShader ( ShaderHandle& )									override;
+		void			SetMat4		 ( const ShaderHandle&, ccharptr, const math::Mat4& )override;
+		void			Setf		 ( const ShaderHandle&, ccharptr, float32 )			override;
+		void			Seti		 ( const ShaderHandle&, ccharptr, int32 )			override;
+		void			SetVec4		 ( const ShaderHandle&, ccharptr, const math::Vec4& )	override;
+		void			SetVec3		 ( const ShaderHandle&, ccharptr, const math::Vec3& )	override;
+		void			SetVec2		 ( const ShaderHandle&, ccharptr, const math::Vec2& )	override;
 
 
 
@@ -77,11 +77,11 @@ namespace lum::rhi::gl {
 		/// Textures
 		///////////////////////////////////////////////////
 
-		TextureHandle	CreateTexture2D		( const TextureDescriptor& )				override;
-		TextureHandle	CreateTexture3D		( const TextureDescriptor& )				override;
-		TextureHandle	CreateCubemapTexture( const TextureCubemapDescriptor& desc )	override;
-		void			DeleteTexture		( TextureHandle& )							override;
-		void			BindTexture			( const TextureHandle&, uint16 )			override;
+		TextureHandle	CreateTexture2D		 ( const TextureDescriptor& )				override;
+		TextureHandle	CreateTexture3D		 ( const TextureDescriptor& )				override;
+		TextureHandle	CreateCubemapTexture ( const TextureCubemapDescriptor& desc )	override;
+		void			DeleteTexture		 ( TextureHandle& )							override;
+		void			BindTexture			 ( const TextureHandle&, uint16 )			override;
 
 
 
@@ -89,9 +89,9 @@ namespace lum::rhi::gl {
 		/// Samplers
 		///////////////////////////////////////////////////
 
-		SamplerHandle	CreateSampler		( const SamplerDescriptor& )		override;
-		void			BindSampler			( const SamplerHandle&, uint16)		override;
-		void			DeleteSampler		( SamplerHandle )					override;
+		SamplerHandle	CreateSampler	( const SamplerDescriptor& )		override;
+		void			BindSampler		( const SamplerHandle&, uint16)		override;
+		void			DeleteSampler	( SamplerHandle )					override;
 
 
 
@@ -176,12 +176,12 @@ namespace lum::rhi::gl {
 		void SetDepthBiasConstant	( float32 )							override;
 		void SetTopology			( TopologyMode mode, Face face )	override;
 
-		const BlendState&			GetBlendState		( ) const noexcept override;
-		const CullState&			GetCullState		( ) const noexcept override;
-		const ScissorState&			GetScissorState		( ) const noexcept override;
-		const DepthStencilState&	GetDepthStencilState( ) const noexcept override;
-		const RasterizerState&		GetRasterizerState	( ) const noexcept override;
-		const ViewportState&		GetViewport			( ) const noexcept override;
+		const BlendState&			GetBlendState		 ( ) const noexcept override;
+		const CullState&			GetCullState		 ( ) const noexcept override;
+		const ScissorState&			GetScissorState		 ( ) const noexcept override;
+		const DepthStencilState&	GetDepthStencilState ( ) const noexcept override;
+		const RasterizerState&		GetRasterizerState	 ( ) const noexcept override;
+		const ViewportState&		GetViewport			 ( ) const noexcept override;
 
 		bool IsValid ( BufferHandle handle )		const override;
 		bool IsValid ( TextureHandle handle )		const override;
@@ -201,8 +201,21 @@ namespace lum::rhi::gl {
 		void ClearStencil	( )						override;
 		void Clear			( Flags<ClearFlag> )	override;
 
-		void Draw			( const VertexLayoutHandle&, uint32 )	override;
-		void DrawElements	( const VertexLayoutHandle&, uint32 )	override;
+		void SetPointSize ( float32 size )	override;
+		void SetLineWidth ( float32 width )	override;
+
+		void ToggleMultisample(bool toggle) override;
+		void ToggleSampleCoverage(bool toggle) override;
+		void ToggleSampleAlphaToCoverage(bool toggle) override;
+		void ToggleSampleAlphaToOne(bool toggle) override;
+		void SetSampleCoverage(float32 value, bool invert) override;
+
+		void Draw ( const VertexLayoutHandle&, uint32 )	override;
+		void DrawInstanced( const VertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount ) override;
+		void DrawInstancedBase(const VertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount, uint32 baseInstance ) override;
+		void DrawElements ( const VertexLayoutHandle&, uint32 )	override;
+		void DrawElementsInstanced ( const VertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount ) override;
+		void DrawElementsInstancedBase ( const VertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance ) override;
 
 		void BeginFrame	( )	override;
 		void EndFrame	( )	override;
@@ -249,7 +262,7 @@ namespace lum::rhi::gl {
 		};
 
 		LUM_COMPILE_VARIABLE
-			static GLenum skCompareFlagLookup[] =
+		static GLenum skCompareFlagLookup[] =
 		{
 			GL_EQUAL,
 			GL_NOTEQUAL,
@@ -299,6 +312,20 @@ namespace lum::rhi::gl {
 			GL_FUNC_REVERSE_SUBTRACT,
 			GL_MIN,
 			GL_MAX
+		};
+
+		LUM_COMPILE_VARIABLE
+		static GLenum skStencilOpLookup[] =
+		{
+			GL_ZERO,
+			GL_ONE,
+			GL_KEEP,
+			GL_REPLACE,
+			GL_INCR,
+			GL_INCR_WRAP,
+			GL_DECR,
+			GL_DECR_WRAP,
+			GL_INVERT
 		};
 
 		LUM_COMPILE_VARIABLE

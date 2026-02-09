@@ -9,6 +9,7 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mShaders.dense_size() < skMaxShaders,
+			LUM_SEV_WARN,
 			ShaderHandle{},
 			"Max shaders reached"
 		);
@@ -60,7 +61,8 @@ namespace lum::rhi::gl {
 	void GLDevice::BindShader(const ShaderHandle& shader) {
 
 		LUM_HOTCHK_RETURN_VOID(
-			mShaders.exist(shader), 
+			mShaders.exist(shader),
+			LUM_SEV_WARN,
 			"Shader %d doesn't exist", 
 			shader.id
 		);
@@ -83,6 +85,7 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK_RETURN_VOID(
 			mShaders.exist(shader),
+			LUM_SEV_WARN,
 			"Shader %d doesn't exist",
 			shader.id
 		);
@@ -97,42 +100,42 @@ namespace lum::rhi::gl {
 	void GLDevice::SetMat4(const ShaderHandle& shader, ccharptr location, const math::Mat4& mat) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
-		LUM_HOTCHK_RETURN_VOID(loc != -1, "Couldn't localize uniform named {}");
+		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
 		glUniformMatrix4fv(loc, 1, GL_FALSE, math::value_ptr(mat));
 
 	}
 	void GLDevice::Setf(const ShaderHandle& shader, ccharptr location, float32 value) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
-		LUM_HOTCHK_RETURN_VOID(loc != -1, "Couldn't localize uniform named {}");
+		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
 		glUniform1f(loc, value);
 
 	}
 	void GLDevice::Seti(const ShaderHandle& shader, ccharptr location, int32 value) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
-		LUM_HOTCHK_RETURN_VOID(loc != -1, "Couldn't localize uniform named {}");
+		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
 		glUniform1i(loc, value);
 
 	}
 	void GLDevice::SetVec4(const ShaderHandle& shader, ccharptr location, const math::Vec4& vec) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
-		LUM_HOTCHK_RETURN_VOID(loc != -1, "Couldn't localize uniform named {}");
+		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
 		glUniform4fv(loc, 1, math::value_ptr(vec));
 
 	}
 	void GLDevice::SetVec3(const ShaderHandle& shader, ccharptr location, const math::Vec3& vec) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
-		LUM_HOTCHK_RETURN_VOID(loc != -1, "Couldn't localize uniform named {}");
+		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
 		glUniform3fv(loc, 1, math::value_ptr(vec));
 
 	}
 	void GLDevice::SetVec2(const ShaderHandle& shader, ccharptr location, const math::Vec2& vec) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
-		LUM_HOTCHK_RETURN_VOID(loc != -1, "Couldn't localize uniform named {}");
+		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
 		glUniform2fv(loc, 1, math::value_ptr(vec));
 
 	}

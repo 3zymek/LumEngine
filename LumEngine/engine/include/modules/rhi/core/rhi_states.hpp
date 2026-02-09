@@ -14,13 +14,41 @@ namespace lum::rhi {
 		Never			// Never passes.
 	};
 
-	// Represents the rasterization state of the pipeline.
-	// Includes polygon mode, face culling topology, and depth bias settings.
+	/*!
+	* @brief Rasterizer state configuration for pipeline.
+	*
+	* Defines polygon rasterization settings and depth bias for rendering.
+	* Can be applied to the graphics pipeline to control culling, fill mode,
+	* line/point size, and polygon offset.
+	*/
 	struct RasterizerState {
 
-		TopologyMode	topologyMode = TopologyMode::Fill;
-		Face			topologyModeFaces = Face::FrontBack;
+		/*!
+		* @brief Polygon rasterization settings.
+		*
+		* Controls how polygons are drawn, which faces are affected, and
+		* the size of points/lines when rendering point or line topology.
+		*/
+		struct PolygonState {
+			// Polygon rasterization mode (fill, wireframe, or points)
+			TopologyMode topologyMode = TopologyMode::Fill;
 
+			// Faces affected by the rasterization mode
+			Face topologyModeFaces = Face::FrontBack;
+
+			// Point size for point topology
+			float32 pointSize = 1.f;
+
+			// Line width for line topology
+			float32 lineWidth = 1.f;
+		} polygon;
+
+		/*!
+		* @brief Depth bias configuration.
+		*
+		* Used to offset polygon depth values to avoid z-fighting or to
+		* render decals, shadows, or polygons slightly in front/back of surfaces.
+		*/
 		struct DepthBiasState {
 
 			// Specifies whether the depth bias is enabled.
@@ -91,7 +119,7 @@ namespace lum::rhi {
 		// Specifies the stencil action when both the stencil test and the depth test pass, or when the stencil test passes and 
 		// either there is no depth buffer or depth testing is not enabled. dppass accepts the same symbolic constants as sfail. 
 		// The initial value is StencilOp::Keep. 
-		StencilOp dpPass = StencilOp::Keep;
+		StencilOp passOp = StencilOp::Keep;
 
 	};
 
@@ -265,6 +293,11 @@ namespace lum::rhi {
 		// The initial value is BlendOp::Add.
 		BlendOp colorOp = BlendOp::Add;
 
+		// Constant blend color used when blend factors are set to BlendFactor::ConstantColor or BlendFactor::OneMinusConstantColor.
+		// This color is independent of source and destination and acts as a fixed reference value in the blend equation.
+		// The initial value is (0, 0, 0, 0) - transparent black.
+		ChannelRGBA blendColor = { 0.f, 0.f, 0.f, 0.f };
+
 	};
 	
 	struct ViewportState {
@@ -276,8 +309,17 @@ namespace lum::rhi {
 
 	};
 
-	struct ClearState {
+	struct MultisampleState {
+
+		bool bEnable = false;
+		bool bEnableSampleCoverage = false;
+		bool bEnableSampleAlphaToCoverage = false;
+		bool bEnableSampleAlphaToOne = false;
+
+		float32 sampleCoverage = 0.0f;
+		bool bCoverageInvert = false;
 
 	};
+
 
 }
