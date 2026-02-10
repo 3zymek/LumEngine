@@ -1,11 +1,8 @@
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
 namespace lum::rhi::gl {
-	///////////////////////////////////////////////////
-/// Samplers
-///////////////////////////////////////////////////
 
-	SamplerHandle GLDevice::CreateSampler( const SamplerDescriptor& desc ) {
+	SamplerHandle GLDevice::CreateSampler ( const SamplerDescriptor& desc ) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mSamplers.dense_size() <= skMaxSamplers,
 			LUM_SEV_WARN,
@@ -36,7 +33,7 @@ namespace lum::rhi::gl {
 		return samplerHandle;
 	}
 
-	void GLDevice::BindSampler( const SamplerHandle& sampler, uint16 binding ) {
+	void GLDevice::BindSampler ( const SamplerHandle& sampler, uint16 binding ) {
 		
 		LUM_HOTCHK_RETURN_VOID(mSamplers.exist(sampler) && binding < MAX_SAMPLER_UNITS, LUM_SEV_WARN, "Sampler doesn't exist");
 
@@ -52,7 +49,8 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::DeleteSampler( SamplerHandle sampler ) {
+
+	void GLDevice::DeleteSampler ( SamplerHandle sampler ) {
 		LUM_HOTCHK_RETURN_VOID( mSamplers.exist(sampler), LUM_SEV_WARN, "Sampler doesn't exist" );
 
 		glDeleteSamplers ( 1, &mSamplers[sampler].handle );

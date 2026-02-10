@@ -1,11 +1,8 @@
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
 namespace lum::rhi::gl {
-///////////////////////////////////////////////////
-/// Layouts
-///////////////////////////////////////////////////
 
-	VertexLayoutHandle GLDevice::CreateVertexLayout(const VertexLayoutDescriptor& desc, const BufferHandle& vbo) {
+	VertexLayoutHandle GLDevice::CreateVertexLayout ( const VertexLayoutDescriptor& desc, const BufferHandle& vbo ) {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mBuffers.exist(vbo),
@@ -60,7 +57,7 @@ namespace lum::rhi::gl {
 		return layoutHandle;
 
 	}
-	void GLDevice::DeleteVertexLayout(VertexLayoutHandle& layout) {
+	void GLDevice::DeleteVertexLayout ( VertexLayoutHandle& layout ) {
 		LUM_HOTCHK_RETURN_VOID(!mLayouts.exist(layout), LUM_SEV_WARN, "Layout doesn't exist");
 
 		glDeleteVertexArrays(1, &mLayouts[layout].vao);

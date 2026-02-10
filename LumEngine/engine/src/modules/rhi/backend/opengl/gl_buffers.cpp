@@ -127,6 +127,10 @@ namespace lum::rhi::gl {
 
 	}
 
+	BufferHandle GLDevice::CreateShaderStorageBuffer(const BufferDescriptor&) {
+		return {};
+	}
+
 	void GLDevice::UpdateBuffer(const BufferHandle& vbo, cvptr data, usize offset, usize size) {
 
 		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(vbo), LUM_SEV_DEBUG, "Buffer does not exist");

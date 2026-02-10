@@ -18,7 +18,6 @@
 #define LUM_SEV_ERROR LogSeverity::Error
 #define LUM_SEV_FATAL LogSeverity::Fatal
 
-
 #if LUM_ENABLE_HOTPATH_VALIDATION == 1
 #define LUM_HOTCHK(expr, sev, msg, ...) \
         do { if(!(expr)) { LUM_LOG(msg, sev, ##__VA_ARGS__); } } while(0)

@@ -1,11 +1,8 @@
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
 namespace lum::rhi::gl {
-	///////////////////////////////////////////////////
-	/// Shaders
-	///////////////////////////////////////////////////
 
-	ShaderHandle GLDevice::CreateShader(const ShaderDescriptor& desc) {
+	ShaderHandle GLDevice::CreateShader ( const ShaderDescriptor& desc ) {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mShaders.dense_size() < skMaxShaders,
@@ -58,7 +55,7 @@ namespace lum::rhi::gl {
 		return mShaders.create_handle(std::move(shader));
 
 	}
-	void GLDevice::BindShader(const ShaderHandle& shader) {
+	void GLDevice::BindShader ( const ShaderHandle& shader ) {
 
 		LUM_HOTCHK_RETURN_VOID(
 			mShaders.exist(shader),
@@ -81,7 +78,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::DeleteShader(ShaderHandle& shader) {
+	void GLDevice::DeleteShader ( ShaderHandle& shader ) {
 
 		LUM_HOTCHK_RETURN_VOID(
 			mShaders.exist(shader),
@@ -97,42 +94,42 @@ namespace lum::rhi::gl {
 		LUM_LOG_DEBUG("Shader %d deleted", shader.id);
 
 	}
-	void GLDevice::SetMat4(const ShaderHandle& shader, ccharptr location, const math::Mat4& mat) {
+	void GLDevice::SetMat4 ( const ShaderHandle& shader, ccharptr location, const math::Mat4& mat ) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
 		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
 		glUniformMatrix4fv(loc, 1, GL_FALSE, math::value_ptr(mat));
 
 	}
-	void GLDevice::Setf(const ShaderHandle& shader, ccharptr location, float32 value) {
+	void GLDevice::Setf ( const ShaderHandle& shader, ccharptr location, float32 value ) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
 		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
 		glUniform1f(loc, value);
 
 	}
-	void GLDevice::Seti(const ShaderHandle& shader, ccharptr location, int32 value) {
+	void GLDevice::Seti ( const ShaderHandle& shader, ccharptr location, int32 value ) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
 		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
 		glUniform1i(loc, value);
 
 	}
-	void GLDevice::SetVec4(const ShaderHandle& shader, ccharptr location, const math::Vec4& vec) {
+	void GLDevice::SetVec4 (const ShaderHandle& shader, ccharptr location, const math::Vec4& vec ) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
 		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
 		glUniform4fv(loc, 1, math::value_ptr(vec));
 
 	}
-	void GLDevice::SetVec3(const ShaderHandle& shader, ccharptr location, const math::Vec3& vec) {
+	void GLDevice::SetVec3 ( const ShaderHandle& shader, ccharptr location, const math::Vec3& vec ) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
 		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
 		glUniform3fv(loc, 1, math::value_ptr(vec));
 
 	}
-	void GLDevice::SetVec2(const ShaderHandle& shader, ccharptr location, const math::Vec2& vec) {
+	void GLDevice::SetVec2 ( const ShaderHandle& shader, ccharptr location, const math::Vec2& vec ) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
 		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
@@ -140,7 +137,7 @@ namespace lum::rhi::gl {
 
 	}
 	
-	bool GLDevice::compile_shader(GLuint shader) {
+	bool GLDevice::compile_shader ( GLuint shader ) {
 
 		glCompileShader(shader);
 		int32 success;
@@ -156,7 +153,7 @@ namespace lum::rhi::gl {
 
 		return true;
 	}
-	bool GLDevice::link_program(GLuint program) {
+	bool GLDevice::link_program ( GLuint program ) {
 
 		glLinkProgram(program);
 		int32 success;

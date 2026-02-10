@@ -143,31 +143,47 @@ LUM_UNIFORM_BUFFER_STRUCT CameraUBO {
     glm::mat4 proj;
     glm::vec3 pos;
 };
-LUM_UNIFORM_BUFFER_STRUCT ModelUBO {
-    glm::mat4 model;
+
+RenderDevice* device = nullptr;
+
+struct BaseObject {
+
+    math::Vec3 modelPos = { 0, 0, 0 };
+    math::Vec3 modelRot = { 0,0,0 };
+    math::Vec3 modelScale = { 1, 1, 1 };
+
+    TextureHandle texture{};
+    BufferHandle VBO{};
+    BufferHandle EBO{};
+    VertexLayoutHandle VAO{};
+
+    void Draw(uint16 texbinding, uint32 indices) {
+
+        device->BindTexture(texture, texbinding);
+        device->DrawElements(VAO, indices);
+
+    }
+
 };
 
-glm::vec3 model_pos = { 0,0,0 };
-glm::vec3 model_rot = { 0,0,0 };
-glm::vec3 model_scale = { 1,1,1 };
-
-void UpdateCamera(RenderDevice* dev, Camera& cam, const rhi::BufferHandle& ubo, CameraUBO& camstruct, rhi::BufferHandle& modelubo, ModelUBO modelstruct) {
+void UpdateCamera(RenderDevice* dev, Camera& cam, const rhi::BufferHandle& ubo, CameraUBO& camstruct, rhi::BufferHandle& modelubo, BaseObject obj) {
     
     cam.Update();
 
-    glm::quat rot = glm::quat(glm::radians(model_rot));
+    glm::quat rot = glm::quat(glm::radians(obj.modelRot));
     glm::mat4 rotation = glm::mat4_cast(rot);
-    modelstruct.model = glm::mat4(1.f);
-    modelstruct.model = glm::translate(modelstruct.model, model_pos);
-    modelstruct.model = modelstruct.model * rotation;
-    modelstruct.model = glm::scale(modelstruct.model, model_scale);
+    math::Mat4 model = math::Mat4(1.f);
+    model = glm::mat4(1.f);
+    model = glm::translate(model, obj.modelPos);
+    model = model * rotation;
+    model = glm::scale(model, obj.modelScale);
     
     camstruct.proj = cam.projection;
     camstruct.view = cam.view;
     camstruct.pos = cam.position;
 
     dev->UpdateBuffer(ubo, &camstruct, 0, 0);
-    dev->UpdateBuffer(modelubo, &modelstruct, 0, 0);
+    dev->UpdateBuffer(modelubo, &model, 0, 0);
     
 }
 
@@ -196,6 +212,15 @@ std::vector<Vertex> skyboxVerts = {
     {{ 1.0f, -1.0f, -1.0f}}, {{ 1.0f, -1.0f, -1.0f}},
     {{-1.0f, -1.0f,  1.0f}}, {{ 1.0f, -1.0f,  1.0f}}
 };
+std::vector<uint32_t> skyboxIndices = {
+    0, 1, 2, 3, 4, 5,
+    6, 7, 8, 9, 10, 11,
+    12, 13, 14, 15, 16, 17,
+    18, 19, 20, 21, 22, 23,
+    24, 25, 26, 27, 28, 29,
+    30, 31, 32, 33, 34, 35
+};
+
 std::vector<Vertex> cubeVerts = {
     // Front face (z = 0.5)
     {{-0.5, -0.5,  0.5}, {0, 0, 1}, {0, 0}},
@@ -242,8 +267,6 @@ std::vector<uint32> cubeIndices = {
     20,21,22, 22,23,20    // bottom
 };
 
-RenderDevice* device = nullptr;
-
 auto CreateShader(ccharptr vert, ccharptr frag) {
     return device->CreateShader({vert, frag});
 }
@@ -284,6 +307,7 @@ auto CreateCubeVBO() {
 auto CreateCubeTexture() {
     TextureDescriptor textureDesc;
     textureDesc.filename = "glass2.jpg";
+    textureDesc.bGenerateMipmaps = true;
     auto texture = device->CreateTexture2D(textureDesc);
     return texture;
 }
@@ -309,6 +333,13 @@ auto CreateCubePipeline(auto shader) {
     return device->CreatePipeline(cubePipeline);
 }
 
+auto CreateSkyboxEBO() {
+    BufferDescriptor cubeEBODesc;
+    cubeEBODesc.bufferUsage = BufferUsage::Static;
+    cubeEBODesc.data = skyboxIndices.data();
+    cubeEBODesc.size = bytesize(skyboxIndices);
+    return device->CreateElementBuffer(cubeEBODesc);
+}
 auto CreateSkyboxVAO(auto vbo) {
     VertexLayoutDescriptor vaoDesc;
     std::vector<VertexAttribute> attr(1);
@@ -348,11 +379,14 @@ auto CreateSkyboxPipeline(auto shader) {
     skyboxPipeline.shader = shader;
     return device->CreatePipeline(skyboxPipeline);
 }
+
 float32 scrollX = 0.0, scrollY = 0.0;
+
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     scrollX += xoffset;
     scrollY += yoffset;
 }
+
 float32 quad[] = {
     // pos      // uv
     -1.0f, -1.0f, 0.0f, 0.0f,
@@ -363,9 +397,10 @@ float32 quad[] = {
      1.0f, -1.0f, 1.0f, 0.0f,
      1.0f,  1.0f, 1.0f, 1.0f
 };
+
 int main() {
-    //Logger::Get().enable_log(LogSeverity::Info);
-    Logger::Get().disable_log(LogSeverity::Debug);
+    Logger::Get().enable_log(LogSeverity::All);
+    //Logger::Get().disable_log(LogSeverity::Debug);
     WindowDescriptor windowDesc;
     windowDesc.msaaSamples = 4;
     windowDesc.bFullscreen = false;
@@ -379,19 +414,23 @@ int main() {
     auto basicShader = CreateShader("basic.vert", "basic.frag");
     auto skyboxShader = CreateShader("skybox_pass.vert", "skybox_pass.frag");
     
-    auto cubeVBO = CreateCubeVBO();
-    auto cubeEBO = CreateCubeEBO();
-    auto cubeVAO = CreateCubeVAO(cubeVBO);
-    auto cubeTexture = CreateCubeTexture();
-    device->AttachElementBufferToLayout(cubeEBO, cubeVAO);
+    BaseObject cube;
+    BaseObject skybox;
 
-    auto skyVBO = CreateSkyboxVBO();
-    auto skyVAO = CreateSkyboxVAO(skyVBO);
-    auto skyboxTexture = CreateSkyboxTexture();
+    cube.VBO        = CreateCubeVBO();
+    cube.VAO        = CreateCubeVAO(cube.VBO);
+    cube.EBO        = CreateCubeEBO();
+    cube.texture    = CreateCubeTexture();
+    device->AttachElementBufferToLayout(cube.EBO, cube.VAO);
+
+    skybox.VBO = CreateSkyboxVBO();
+    skybox.VAO = CreateSkyboxVAO(skybox.VBO);
+    skybox.EBO = CreateSkyboxEBO();
+    skybox.texture = CreateSkyboxTexture();
+    device->AttachElementBufferToLayout(skybox.EBO, skybox.VAO);
 
     Camera c{ window };
     CameraUBO camUBO{};
-    ModelUBO mUBO{};
 
     BufferDescriptor uboDesc;
     uboDesc.bufferUsage = BufferUsage::Dynamic;
@@ -402,7 +441,7 @@ int main() {
     BufferDescriptor muboDesc;
     muboDesc.bufferUsage = BufferUsage::Dynamic;
     muboDesc.mapFlags = Mapflag::Write;
-    muboDesc.size = sizeof(ModelUBO);
+    muboDesc.size = sizeof(math::Mat4);
     auto modelUBO = device->CreateUniformBuffer(muboDesc);
 
     device->SetUniformBufferBinding(cameraUBO, LUM_UBO_CAMERA_BINDING);
@@ -420,12 +459,18 @@ int main() {
 
     auto cubePip = CreateCubePipeline(basicShader);
     auto skyboxPip = CreateSkyboxPipeline(skyboxShader);
+
+    TextureDescriptor newdesc;
+    newdesc.filename = "grass.jpg";
+
+    bool success;
+    auto data = AssetService::load_texture(newdesc.filename, success);
     
     glfwSetScrollCallback(static_cast<GLFWwindow*>(window->get_native_window()), scroll_callback);
 
     do {
 
-        UpdateCamera(device, c, cameraUBO, camUBO, modelUBO, mUBO);
+        UpdateCamera(device, c, cameraUBO, camUBO, modelUBO, cube);
         c.Update();
 
         int32 x, y;
@@ -437,15 +482,17 @@ int main() {
         
         c.move_speed = std::clamp((scrollY * 0.0005f), 0.0f, 100.f);
 
+        if (input::KeyPressedOnce(input::Key::SPACE)) {
+            device->UpdateTexture(cube.texture, newdesc);
+        }
+
         device->BindPipeline(cubePip);
-        device->BindSampler(sampler, LUM_TEX_ALBEDO);
-        device->BindTexture(cubeTexture, LUM_SAMPLER_ALBEDO);
-        device->DrawElements(cubeVAO, cubeIndices.size());
+        device->BindSampler(sampler, LUM_SAMPLER_ALBEDO);
+        cube.Draw(LUM_TEX_ALBEDO, cubeIndices.size());
 
         device->BindPipeline(skyboxPip);
         device->BindSampler(sampler, LUM_SAMPLER_CUBEMAP);
-        device->BindTexture(skyboxTexture, LUM_TEX_CUBEMAP);
-        device->Draw(skyVAO, skyboxVerts.size());
+        skybox.Draw(LUM_TEX_CUBEMAP, skyboxIndices.size());
         
         device->EndFrame();
 

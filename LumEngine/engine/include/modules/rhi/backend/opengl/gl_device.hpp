@@ -11,9 +11,6 @@ namespace lum::rhi::gl {
 	class GLDevice : public RenderDevice {
 	public:
 
-		LUM_COMPILE_VARIABLE
-		static bool rhiDevice = true;
-
 		GLDevice(Window* win) : window(win) {}
 
 		///////////////////////////////////////////////////
@@ -23,6 +20,7 @@ namespace lum::rhi::gl {
 		BufferHandle	CreateVertexBuffer			( const BufferDescriptor& )								override;
 		BufferHandle	CreateElementBuffer			( const BufferDescriptor& )								override;
 		BufferHandle	CreateUniformBuffer			( const BufferDescriptor& )								override;
+		BufferHandle	CreateShaderStorageBuffer	( const BufferDescriptor& )								override;
 		void			UpdateBuffer				( const BufferHandle&, cvptr, usize, usize )			override;
 		void			DeleteBuffer				( BufferHandle& )										override;
 		vptr			MapBuffer					( const BufferHandle&, Flags<Mapflag>, usize, usize )	override;
@@ -53,7 +51,7 @@ namespace lum::rhi::gl {
 		///////////////////////////////////////////////////
 
 		VertexLayoutHandle	CreateVertexLayout ( const VertexLayoutDescriptor&, const BufferHandle&)	override;
-		void				DeleteVertexLayout ( VertexLayoutHandle& )								override;
+		void				DeleteVertexLayout ( VertexLayoutHandle& )									override;
 
 
 
@@ -63,10 +61,10 @@ namespace lum::rhi::gl {
 
 		ShaderHandle	CreateShader ( const ShaderDescriptor& )							override;
 		void			BindShader	 ( const ShaderHandle& )								override;
-		void			DeleteShader ( ShaderHandle& )									override;
-		void			SetMat4		 ( const ShaderHandle&, ccharptr, const math::Mat4& )override;
-		void			Setf		 ( const ShaderHandle&, ccharptr, float32 )			override;
-		void			Seti		 ( const ShaderHandle&, ccharptr, int32 )			override;
+		void			DeleteShader ( ShaderHandle& )										override;
+		void			SetMat4		 ( const ShaderHandle&, ccharptr, const math::Mat4& )	override;
+		void			Setf		 ( const ShaderHandle&, ccharptr, float32 )				override;
+		void			Seti		 ( const ShaderHandle&, ccharptr, int32 )				override;
 		void			SetVec4		 ( const ShaderHandle&, ccharptr, const math::Vec4& )	override;
 		void			SetVec3		 ( const ShaderHandle&, ccharptr, const math::Vec3& )	override;
 		void			SetVec2		 ( const ShaderHandle&, ccharptr, const math::Vec2& )	override;
@@ -80,6 +78,8 @@ namespace lum::rhi::gl {
 		TextureHandle	CreateTexture2D		 ( const TextureDescriptor& )				override;
 		TextureHandle	CreateTexture3D		 ( const TextureDescriptor& )				override;
 		TextureHandle	CreateCubemapTexture ( const TextureCubemapDescriptor& desc )	override;
+		// DEFINETLY TODO
+		void			UpdateTexture		 ( const TextureHandle& tex, const TextureDescriptor& desc ) override;
 		void			DeleteTexture		 ( TextureHandle& )							override;
 		void			BindTexture			 ( const TextureHandle&, uint16 )			override;
 
@@ -334,6 +334,75 @@ namespace lum::rhi::gl {
 			GL_COLOR_BUFFER_BIT,
 			GL_DEPTH_BUFFER_BIT,
 			GL_STENCIL_BUFFER_BIT
+		};
+
+		LUM_COMPILE_VARIABLE
+		static GLenum skTextureTypeLookup[] =
+		{
+			GL_TEXTURE_1D,
+			GL_TEXTURE_2D,
+			GL_TEXTURE_3D,
+			GL_TEXTURE_2D_ARRAY,
+			GL_TEXTURE_2D_MULTISAMPLE,
+			GL_TEXTURE_CUBE_MAP,
+			GL_TEXTURE_CUBE_MAP_ARRAY
+		};
+
+		LUM_COMPILE_VARIABLE
+		static GLenum skInternalImageFormatLookup[] =
+		{
+			GL_RGBA8,
+			GL_SRGB8_ALPHA8,
+			GL_RGB8,
+			GL_RG8,
+			GL_R8,
+
+			GL_RGBA16F,
+			GL_RGB16F,
+			GL_RG16F,
+			GL_R16F,
+
+			GL_RGBA32F,
+			GL_RGB32F,
+			GL_RG32F,
+			GL_R32F,
+			
+			GL_DEPTH_COMPONENT24,
+			GL_DEPTH_COMPONENT32F,
+			GL_DEPTH24_STENCIL8,
+			GL_DEPTH32F_STENCIL8,
+
+		};
+
+		LUM_COMPILE_VARIABLE
+		static GLenum skLoadedImageFormatLookup[] =
+		{
+			GL_RGBA,
+			GL_RGB,
+			GL_RG,
+			GL_RED,
+			GL_BGRA,
+			GL_DEPTH_COMPONENT,
+			GL_DEPTH_STENCIL
+		};
+
+		LUM_COMPILE_VARIABLE
+		static GLenum skTextureDataTypeLookup[] =
+		{
+			GL_UNSIGNED_BYTE,
+			GL_BYTE,
+
+			GL_UNSIGNED_SHORT,
+			GL_SHORT,
+
+			GL_UNSIGNED_INT,
+			GL_INT,
+
+			GL_HALF_FLOAT,
+			GL_FLOAT,
+
+			GL_UNSIGNED_INT_24_8,
+			GL_FLOAT_32_UNSIGNED_INT_24_8_REV
 		};
 
 		Window* window = nullptr;
