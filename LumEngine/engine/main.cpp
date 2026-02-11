@@ -212,7 +212,7 @@ std::vector<Vertex> skyboxVerts = {
     {{ 1.0f, -1.0f, -1.0f}}, {{ 1.0f, -1.0f, -1.0f}},
     {{-1.0f, -1.0f,  1.0f}}, {{ 1.0f, -1.0f,  1.0f}}
 };
-std::vector<uint32_t> skyboxIndices = {
+std::vector<uint32> skyboxIndices = {
     0, 1, 2, 3, 4, 5,
     6, 7, 8, 9, 10, 11,
     12, 13, 14, 15, 16, 17,
@@ -222,49 +222,14 @@ std::vector<uint32_t> skyboxIndices = {
 };
 
 std::vector<Vertex> cubeVerts = {
-    // Front face (z = 0.5)
-    {{-0.5, -0.5,  0.5}, {0, 0, 1}, {0, 0}},
-    {{ 0.5, -0.5,  0.5}, {0, 0, 1}, {1, 0}},
-    {{ 0.5,  0.5,  0.5}, {0, 0, 1}, {1, 1}},
-    {{-0.5,  0.5,  0.5}, {0, 0, 1}, {0, 1}},
-
-    // Back face (z = -0.5)
-    {{-0.5, -0.5, -0.5}, {0, 0, -1}, {1, 0}},
-    {{-0.5,  0.5, -0.5}, {0, 0, -1}, {1, 1}},
-    {{ 0.5,  0.5, -0.5}, {0, 0, -1}, {0, 1}},
-    {{ 0.5, -0.5, -0.5}, {0, 0, -1}, {0, 0}},
-
-    // Left face (x = -0.5)
-    {{-0.5, -0.5, -0.5}, {-1, 0, 0}, {0, 0}},
-    {{-0.5, -0.5,  0.5}, {-1, 0, 0}, {1, 0}},
-    {{-0.5,  0.5,  0.5}, {-1, 0, 0}, {1, 1}},
-    {{-0.5,  0.5, -0.5}, {-1, 0, 0}, {0, 1}},
-
-    // Right face (x = 0.5)
-    {{ 0.5, -0.5, -0.5}, {1, 0, 0}, {1, 0}},
-    {{ 0.5,  0.5, -0.5}, {1, 0, 0}, {1, 1}},
-    {{ 0.5,  0.5,  0.5}, {1, 0, 0}, {0, 1}},
-    {{ 0.5, -0.5,  0.5}, {1, 0, 0}, {0, 0}},
-
-    // Top face (y = 0.5)
-    {{-0.5,  0.5,  0.5}, {0, 1, 0}, {0, 0}},
-    {{ 0.5,  0.5,  0.5}, {0, 1, 0}, {1, 0}},
-    {{ 0.5,  0.5, -0.5}, {0, 1, 0}, {1, 1}},
-    {{-0.5,  0.5, -0.5}, {0, 1, 0}, {0, 1}},
-
-    // Bottom face (y = -0.5)
-    {{-0.5, -0.5,  0.5}, {0, -1, 0}, {1, 0}},
-    {{-0.5, -0.5, -0.5}, {0, -1, 0}, {1, 1}},
-    {{ 0.5, -0.5, -0.5}, {0, -1, 0}, {0, 1}},
-    {{ 0.5, -0.5,  0.5}, {0, -1, 0}, {0, 0}}
+    { { -500, 0, -500 }, {0,1,0}, {0,0} }, // 0
+    { {  500, 0, -500 }, {0,1,0}, {1,0} }, // 1
+    { {  500, 0,  500 }, {0,1,0}, {1,1} }, // 2
+    { { -500, 0,  500 }, {0,1,0}, {0,1} }  // 3
 };
 std::vector<uint32> cubeIndices = {
-    0,1,2, 2,3,0,         // front
-    4,5,6, 6,7,4,         // back
-    8,9,10, 10,11,8,      // left
-    12,13,14, 14,15,12,   // right
-    16,17,18, 18,19,16,   // top
-    20,21,22, 22,23,20    // bottom
+    0, 1, 2,
+    0, 2, 3
 };
 
 auto CreateShader(ccharptr vert, ccharptr frag) {
@@ -306,7 +271,7 @@ auto CreateCubeVBO() {
 }
 auto CreateCubeTexture() {
     TextureDescriptor textureDesc;
-    textureDesc.filename = "glass2.jpg";
+    textureDesc.filename = "grass.jpg";
     textureDesc.bGenerateMipmaps = true;
     auto texture = device->CreateTexture2D(textureDesc);
     return texture;
@@ -320,6 +285,9 @@ auto CreateCubePipeline(auto shader) {
     cubePipeline.mBlend.srcColorFactor = BlendFactor::SrcAlpha;
     cubePipeline.mBlend.alphaOp = BlendOp::Max;
     cubePipeline.mBlend.colorOp = BlendOp::Max;
+
+    cubePipeline.mCull.bEnabled = true;
+    cubePipeline.mCull.face = Face::Front;
 
     cubePipeline.mDepthStencil.depth.bEnabled = true;
     cubePipeline.mDepthStencil.depth.bWriteToZBuffer = false;
@@ -360,12 +328,12 @@ auto CreateSkyboxVBO() {
 }
 auto CreateSkyboxTexture() {
     TextureCubemapDescriptor cubemapTexDesc;
-    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_X] = "nx.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_Y] = "ny.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_Z] = "nz.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_X] = "px.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_Y] = "py.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_Z] = "pz.png";
+    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_X] = "back.png";
+    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_Y] = "bottom.png";
+    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_Z] = "front.png";
+    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_X] = "left.png";
+    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_Y] = "right.png";
+    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_Z] = "top.png";
     return device->CreateCubemapTexture(cubemapTexDesc);
 }
 auto CreateSkyboxPipeline(auto shader) {
@@ -398,9 +366,11 @@ float32 quad[] = {
      1.0f,  1.0f, 1.0f, 1.0f
 };
 
+PointLight gLights[LUM_MAX_LIGHTS];
+
 int main() {
-    Logger::Get().enable_log(LogSeverity::All);
-    //Logger::Get().disable_log(LogSeverity::Debug);
+    Logger::Get().disable_log(LogSeverity::All);
+    Logger::Get().enable_log(LUM_SEV_INFO);
     WindowDescriptor windowDesc;
     windowDesc.msaaSamples = 4;
     windowDesc.bFullscreen = false;
@@ -411,7 +381,7 @@ int main() {
     device = CreateDevice(window);
     input::SetActiveWindow(static_cast<GLFWwindow*>(window->get_native_window()));
 
-    auto basicShader = CreateShader("basic.vert", "basic.frag");
+    auto basicShader = CreateShader("geometry_pass.vert", "geometry_pass.frag");
     auto skyboxShader = CreateShader("skybox_pass.vert", "skybox_pass.frag");
     
     BaseObject cube;
@@ -451,9 +421,9 @@ int main() {
     sdesc.magFilter = SamplerMagFilter::Linear;
     sdesc.minFilter = SamplerMinFilter::LinearMipmapLinear;
     sdesc.anisotropy = 16;
-    sdesc.wrapS = SamplerWrap::ClampEdge;
-    sdesc.wrapT = SamplerWrap::ClampEdge;
-    sdesc.wrapR = SamplerWrap::ClampEdge;
+    sdesc.wrapS = SamplerWrap::Repeat;
+    sdesc.wrapT = SamplerWrap::Repeat;
+    sdesc.wrapR = SamplerWrap::Repeat;
 
     auto sampler = device->CreateSampler(sdesc);
 
@@ -461,12 +431,18 @@ int main() {
     auto skyboxPip = CreateSkyboxPipeline(skyboxShader);
 
     TextureDescriptor newdesc;
-    newdesc.filename = "grass.jpg";
+    newdesc.bGenerateMipmaps = true;
+    newdesc.filename = "default.png";
 
     bool success;
     auto data = AssetService::load_texture(newdesc.filename, success);
     
     glfwSetScrollCallback(static_cast<GLFWwindow*>(window->get_native_window()), scroll_callback);
+
+    BufferDescriptor ssbodesc;
+    ssbodesc.bufferUsage = BufferUsage::Dynamic;
+    ssbodesc.mapFlags = Mapflag::Write;
+    ssbodesc.size = sizeof(PointLight) * LUM_MAX_LIGHTS;
 
     do {
 
@@ -480,7 +456,7 @@ int main() {
 
         device->BeginFrame();
         
-        c.move_speed = std::clamp((scrollY * 0.0005f), 0.0f, 100.f);
+        c.move_speed = std::clamp((scrollY * 0.005f), 0.0f, 100.f);
 
         if (input::KeyPressedOnce(input::Key::SPACE)) {
             device->UpdateTexture(cube.texture, newdesc);

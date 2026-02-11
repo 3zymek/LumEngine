@@ -146,6 +146,8 @@ namespace lum::rhi {
 		*/
 		virtual void UnmapBuffer ( const BufferHandle& buff ) = 0;
 
+		virtual void SetShaderStorageBinding(const BufferHandle& ssbo, uint32 binding) = 0;
+
 		/*!
 		* @brief Attaches an element buffer (EBO) to a vertex layout (VAO).
 		*
@@ -371,6 +373,7 @@ namespace lum::rhi {
 		virtual TextureHandle CreateCubemapTexture ( const TextureCubemapDescriptor& desc ) = 0;
 
 		virtual void UpdateTexture ( const TextureHandle& tex, const TextureDescriptor& desc ) = 0;
+		virtual void UpdateTexture ( const TextureHandle& tex, const TextureRect&, const void* data ) = 0;
 
 		/*! @brief Deletes a texture.
 		*

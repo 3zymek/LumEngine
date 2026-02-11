@@ -5,6 +5,17 @@
 #include "core/shaders_define.h"
 namespace lum::rhi {
 
+	struct TextureRect {
+		uint32 x = 0;
+		uint32 y = 0;
+		
+		uint32 width = 0;
+		uint32 height = 0;
+		uint32 depth = 1;
+
+		uint32 mip = 0;
+	};
+
 	enum class TextureType : uint8 {
 		Texture1D,
 		Texture2D,
@@ -93,23 +104,7 @@ namespace lum::rhi {
 
 		uint32 samples = 0;
 
-		uint32 width = 0; // leave 0 if width needs to be loaded from texture
-		uint32 height = 0; // leave 0 if height needs to be loaded from texture
-		uint32 depth = 1;
-
-	};
-
-	struct TextureRegion {
-
-		uint32 x = 0;
-		uint32 y = 0;
-		uint32 z = 0;
-
-		uint32 width = 0;
-		uint32 height = 0;
-		uint32 depth = 1;
-
-		uint32 mip = 0;
+		TextureRect rect;
 
 	};
 
@@ -132,11 +127,15 @@ namespace lum::rhi {
 
 	struct Texture {
 
-		uint32 width = 0;
-		uint32 height = 0;
-		uint32 depth = 1;
+		TextureRect rect;
 
 		TextureType type;
+
+		InternalImageFormat internalFormat = InternalImageFormat::RGBA8;
+		LoadedImageFormat dataFormat = LoadedImageFormat::RGBA;
+		TextureDataType dataType = TextureDataType::UnsignedByte;
+
+		uint32 mipmapLevels = 0;
 
 		union {
 			TextureID glHandle = 0;

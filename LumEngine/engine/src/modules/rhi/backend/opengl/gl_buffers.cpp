@@ -101,25 +101,25 @@ namespace lum::rhi::gl {
 			return BufferHandle{};
 		}
 
-		Buffer buffer;
-		buffer.size = desc.size;
-		buffer.flags = desc.mapFlags;
-		buffer.type = BufferType::Uniform;
-		buffer.usage = desc.bufferUsage;
+		Buffer ubo;
+		ubo.size = desc.size;
+		ubo.flags = desc.mapFlags;
+		ubo.type = BufferType::Uniform;
+		ubo.usage = desc.bufferUsage;
 
-		GLbitfield init_flags =
-			((buffer.usage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
+		GLbitfield initFlags =
+			((ubo.usage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
 			| translate_mapping_flags(desc.mapFlags);
 
-		glCreateBuffers(1, &buffer.handle.glHandle);
+		glCreateBuffers(1, &ubo.handle.glHandle);
 		glNamedBufferStorage(
-			buffer.handle.glHandle,
+			ubo.handle.glHandle,
 			desc.size,
 			desc.data,
-			init_flags
+			initFlags
 		);
 
-		auto createdBuffer = mBuffers.create_handle(std::move(buffer));
+		auto createdBuffer = mBuffers.create_handle(std::move(ubo));
 
 		LUM_LOG_INFO("Created uniform buffer %d", createdBuffer.id);
 
@@ -127,8 +127,47 @@ namespace lum::rhi::gl {
 
 	}
 
-	BufferHandle GLDevice::CreateShaderStorageBuffer(const BufferDescriptor&) {
-		return {};
+	BufferHandle GLDevice::CreateShaderStorageBuffer(const BufferDescriptor& desc) {
+
+		if (!is_valid_buffer_descriptor(desc))
+			return BufferHandle{};
+
+		if (mBuffers.dense_size() >= skMaxBuffers) {
+			LUM_LOG_ERROR("Max buffers reached");
+			return BufferHandle{};
+		}
+
+		if (desc.size <= 0) {
+			LUM_LOG_WARN("Invalid buffer size");
+			return BufferHandle{};
+		}
+
+
+		Buffer ssbo;
+		glCreateBuffers(1, &ssbo.handle.glHandle);
+
+		ssbo.size = desc.size;
+		ssbo.flags = desc.mapFlags;
+		ssbo.type = BufferType::ShaderStorage;
+		ssbo.usage = desc.bufferUsage;
+
+		GLbitfield initFlags =
+			((ssbo.usage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
+			| translate_mapping_flags(desc.mapFlags);
+
+		glNamedBufferStorage(
+			ssbo.handle.glHandle,
+			ssbo.size,
+			nullptr,
+			initFlags
+		);
+
+		auto createdBuffer = mBuffers.create_handle(std::move(ssbo));
+
+		LUM_LOG_INFO("Created shader storage buffer %d", createdBuffer.id);
+
+		return createdBuffer;
+
 	}
 
 	void GLDevice::UpdateBuffer(const BufferHandle& vbo, cvptr data, usize offset, usize size) {
@@ -205,13 +244,23 @@ namespace lum::rhi::gl {
 
 	void GLDevice::UnmapBuffer(const BufferHandle& vbo) {
 
-		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(vbo), LUM_SEV_DEBUG, "Buffer does not exist");
+		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(vbo), LUM_SEV_WARN, "Buffer does not exist");
 
 		Buffer& buffer = mBuffers[vbo];
 		LUM_HOTCHK_RETURN_VOID(buffer.bMapped, LUM_SEV_WARN, "Buffer is already unmapped");
 		glUnmapNamedBuffer(buffer.handle.glHandle);
 
 		LUM_LOG_DEBUG("Unmapped buffer %d", vbo.id);
+	}
+
+	void GLDevice::SetShaderStorageBinding(const BufferHandle& ssbo, uint32 binding) {
+
+		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(ssbo), LUM_SEV_WARN, "Buffer does not exist");
+
+		const auto& buffer = mBuffers[ssbo];
+
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, buffer.handle.glHandle);
+
 	}
 
 	void GLDevice::AttachElementBufferToLayout(const BufferHandle& ebo, const VertexLayoutHandle& vao) {

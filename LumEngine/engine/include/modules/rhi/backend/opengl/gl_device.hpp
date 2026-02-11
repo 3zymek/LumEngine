@@ -25,6 +25,7 @@ namespace lum::rhi::gl {
 		void			DeleteBuffer				( BufferHandle& )										override;
 		vptr			MapBuffer					( const BufferHandle&, Flags<Mapflag>, usize, usize )	override;
 		void			UnmapBuffer					( const BufferHandle& )									override;
+		void			SetShaderStorageBinding		( const BufferHandle& ssbo, uint32 binding )			override;
 		void			AttachElementBufferToLayout	( const BufferHandle&, const VertexLayoutHandle& )		override;
 		void			SetUniformBufferBinding		( const BufferHandle&, int32 )							override;
 
@@ -80,6 +81,7 @@ namespace lum::rhi::gl {
 		TextureHandle	CreateCubemapTexture ( const TextureCubemapDescriptor& desc )	override;
 		// DEFINETLY TODO
 		void			UpdateTexture		 ( const TextureHandle& tex, const TextureDescriptor& desc ) override;
+		void			UpdateTexture		 ( const TextureHandle& tex, const TextureRect&, const void* data ) override;
 		void			DeleteTexture		 ( TextureHandle& )							override;
 		void			BindTexture			 ( const TextureHandle&, uint16 )			override;
 

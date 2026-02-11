@@ -1,4 +1,14 @@
 #pragma once
+#include "core/core_pch.hpp"
+
+namespace lum {
+    struct PointLight {
+        math::Vec3 position;
+        float32 intensity;
+        math::Vec3 color;
+        float32 radius;
+    };
+}
 
 // Shader location for position
 #define LUM_LAYOUT_POSITION 0
@@ -15,6 +25,9 @@
 // Uniform buffer binding for model matrix.
 #define LUM_UBO_MODEL_BINDING 2
 
+#define LUM_SSBO_LIGHTS_BINDING 3
+#define LUM_MAX_LIGHTS 64
+
 // Sampler slots for material textures.
 #define LUM_SAMPLER_ALBEDO		0 // Albedo texture sampler.
 #define LUM_SAMPLER_NORMAL		1 // Normal map sampler.
@@ -27,16 +40,16 @@
 // Texture slots for material textures.
 #define LUM_TEX_ALBEDO		0 // Albedo texture binding.
 #define LUM_TEX_NORMAL		1 // Normal map binding.
-#define LUM_TEX_ROUGNESS	2 // Roughness map binding.
+#define LUM_TEX_ROUGHNESS	2 // Roughness map binding.
 #define LUM_TEX_METALNESS	3 // Metalness map binding.
 
 // Cubemap face indices
-#define LUM_CUBEMAP_POSITIVE_X 0 // Positive X face.
-#define LUM_CUBEMAP_NEGATIVE_X 1 // Negative X face.
-#define LUM_CUBEMAP_POSITIVE_Y 2 // Positive Y face.
-#define LUM_CUBEMAP_NEGATIVE_Y 3 // Negative Y face.
-#define LUM_CUBEMAP_POSITIVE_Z 4 // Positive Z face.
-#define LUM_CUBEMAP_NEGATIVE_Z 5 // Negative Z face.
+#define LUM_CUBEMAP_POSITIVE_X 0 // Positive X face texture.
+#define LUM_CUBEMAP_NEGATIVE_X 1 // Negative X face texture.
+#define LUM_CUBEMAP_POSITIVE_Y 2 // Positive Y face texture.
+#define LUM_CUBEMAP_NEGATIVE_Y 3 // Negative Y face texture.
+#define LUM_CUBEMAP_POSITIVE_Z 4 // Positive Z face texture.
+#define LUM_CUBEMAP_NEGATIVE_Z 5 // Negative Z face texture.
 
 // Cubemap texture binding slot.
 #define LUM_TEX_CUBEMAP 8 // Cubemap texture binding.

@@ -47,7 +47,7 @@ namespace lum {
 			tx.pixels.resize(size);
 
 			LUM_ASSERT(size > 0 && data != nullptr, "Texture source data is null");
-			
+
 			std::memcpy(tx.pixels.data(), data, size);
 
 			stbi_image_free(data);
