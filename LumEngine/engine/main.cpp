@@ -366,7 +366,11 @@ float32 quad[] = {
      1.0f,  1.0f, 1.0f, 1.0f
 };
 
-PointLight gLights[LUM_MAX_LIGHTS];
+// Max 16 œwiate³, ale zero kombinowania
+struct SimpleLight {
+    math::Vec4 positionAndRadius;  // xyz = pos, w = radius
+    math::Vec4 colorAndIntensity;  // rgb = color, a = intensity
+};
 
 int main() {
     Logger::Get().disable_log(LogSeverity::All);
@@ -444,6 +448,29 @@ int main() {
     ssbodesc.mapFlags = Mapflag::Write;
     ssbodesc.size = sizeof(PointLight) * LUM_MAX_LIGHTS;
 
+
+
+    
+    SimpleLight lights[16];
+    lights[0] = {
+    {2.0f, 2.0f, 0.0f, 5.0f},      // pos + radius
+    {1.0f, 0.0f, 0.0f, 2.0f}       // color + intensity
+    };
+
+    lights[1] = {
+        {-2.0f, 2.0f, 0.0f, 5.0f},
+        {0.0f, 0.0f, 1.0f, 2.0f}
+    };
+
+    lights[2] = {
+        {0.0f, 3.0f, 2.0f, 8.0f},
+        {1.0f, 1.0f, 1.0f, 1.5f}
+    };
+    auto ubo = device->CreateUniformBuffer({ .size = sizeof(lights), .data = lights });
+    device->SetUniformBufferBinding(ubo, 12);
+   
+    auto lightningShader = device->CreateShader({ "light_pass.vert", "light_pass.frag" });
+
     do {
 
         UpdateCamera(device, c, cameraUBO, camUBO, modelUBO, cube);
@@ -465,6 +492,8 @@ int main() {
         device->BindPipeline(cubePip);
         device->BindSampler(sampler, LUM_SAMPLER_ALBEDO);
         cube.Draw(LUM_TEX_ALBEDO, cubeIndices.size());
+
+        device->BindShader(lightningShader);
 
         device->BindPipeline(skyboxPip);
         device->BindSampler(sampler, LUM_SAMPLER_CUBEMAP);

@@ -158,7 +158,7 @@ namespace lum::rhi::gl {
 		glNamedBufferStorage(
 			ssbo.handle.glHandle,
 			ssbo.size,
-			nullptr,
+			desc.data,
 			initFlags
 		);
 

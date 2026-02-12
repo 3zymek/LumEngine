@@ -49,7 +49,7 @@
 
 #if LUM_ENABLE_LOGGER == 1
 #define LUM_LOG_FATAL(msg, ...) \
-    do { lum::Logger::Get().log_cmd(lum::LogSeverity::Fatal, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); LUM_DEBUGBREAK(); } while (0)
+    do { lum::Logger::Get().log_cmd(lum::LogSeverity::Fatal, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
 
 #define LUM_LOG_ERROR(msg, ...) \
     do { lum::Logger::Get().log_cmd(lum::LogSeverity::Error, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
