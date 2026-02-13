@@ -1,8 +1,8 @@
-#include "core/logger.hpp"
+#include "core/utils/logger.hpp"
 #include "core/core_common.hpp"
 namespace lum {
 
-	void Logger::_OutputTime() {
+	void Logger::output_time() {
 
 		auto now = std::chrono::system_clock::now();
 
@@ -18,7 +18,7 @@ namespace lum {
 
 	}
 
-	void Logger::_ToString(charptr out, LogSeverity sev) {
+	void Logger::to_string(charptr out, LogSeverity sev) {
 		switch (sev) {
 		case LogSeverity::Fatal: {
 			std::memcpy(out, "FATAL\0", 5);
@@ -43,7 +43,7 @@ namespace lum {
 		}
 	}
 
-	void Logger::_ToColor(charptr out, LogSeverity sev) {
+	void Logger::to_color(charptr out, LogSeverity sev) {
 		switch (sev) {
 		case LogSeverity::Fatal: {
 			constexpr usize len = sizeof(cmdcolor::magenta) - 1;
@@ -52,25 +52,25 @@ namespace lum {
 			break;
 		}
 		case LogSeverity::Error: {
-			constexpr usize len = sizeof(cmdcolor::red) - 1;
-			std::memcpy(out, cmdcolor::red, len);
+			constexpr usize len = sizeof(cmdcolor::gRed) - 1;
+			std::memcpy(out, cmdcolor::gRed, len);
 			out[len] = '\0';
 			break;
 		}
 		case LogSeverity::Warn: {
-			constexpr usize len = sizeof(cmdcolor::yellow) - 1;
-			std::memcpy(out, cmdcolor::yellow, len);
+			constexpr usize len = sizeof(cmdcolor::gYellow) - 1;
+			std::memcpy(out, cmdcolor::gYellow, len);
 			out[len] = '\0';
 			break;
 		}
 		case LogSeverity::Info: {
-			constexpr usize len = sizeof(cmdcolor::green) - 1;
-			std::memcpy(out, cmdcolor::green, len);
+			constexpr usize len = sizeof(cmdcolor::gGreen) - 1;
+			std::memcpy(out, cmdcolor::gGreen, len);
 			out[len] = '\0';
 			break;
 		}
 		case LogSeverity::Debug: {
-			constexpr usize len = sizeof(cmdcolor::blue) - 1;
+			constexpr usize len = sizeof(cmdcolor::gBlue) - 1;
 			std::memcpy(out, cmdcolor::cyan, len);
 			out[len] = '\0';
 			break;

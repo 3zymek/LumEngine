@@ -25,14 +25,14 @@ namespace lum {
 
 		template<usize new_L>
 		bool operator==(const char(&src)[new_L]) const noexcept {
-			if(hash(src) == hash(buff))
+			if(HashStr(src) == HashStr(buff))
 				return true;
 			return false;
 		}
 
 		template<usize new_L>
 		bool operator==(const fstring& oth) const noexcept {
-			if (hash(oth.buff) == hash(buff))
+			if (HashStr(oth.buff) == HashStr(buff))
 				return true;
 			return false;
 		}

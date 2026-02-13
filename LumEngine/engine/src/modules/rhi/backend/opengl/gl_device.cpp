@@ -4,7 +4,7 @@
 #include "rhi/rhi_pch.hpp"
 #include "core/core_defines.hpp"
 #include "rhi/core/rhi_vertex_layout.hpp"
-#include "core/asset_service.hpp"
+#include "core/utils/asset_service.hpp"
 #include "window_context/window.hpp"
 #include "rhi/rhi_common.hpp"
 #include "core/core_pch.hpp"
@@ -301,7 +301,7 @@ namespace lum::rhi::gl {
 
 		LUM_PROFILER_BEGIN_FRAME();
 
-		SetViewport(0, 0, window->get_width(), window->get_height());
+		SetViewport(0, 0, window->GetWidth(), window->GetHeight());
 		Clear(ClearFlag::Color | ClearFlag::Depth | ClearFlag::Stencil);
 
 #		if LUM_ENABLE_IMGUI == 1
@@ -323,7 +323,7 @@ namespace lum::rhi::gl {
 
 #		endif
 
-		glfwSwapBuffers(static_cast<GLFWwindow*>(window->get_native_window()));
+		glfwSwapBuffers(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
 		LUM_PROFILER_END_FRAME();
 

@@ -4,7 +4,7 @@
 namespace lum::rhi {
 
 	RenderDevice* CreateDevice(Window* window) {
-		RenderBackend backend = window->get_backend();
+		RenderBackend backend = window->GetBackend();
 		switch (backend) {
 		case RenderBackend::OpenGL: return new gl::GLDevice(window);
 		}

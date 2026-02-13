@@ -4,18 +4,19 @@
 #include "lum_packages/lum_events.hpp"
 #include "lum_packages/lum_render.hpp"
 #include "window_context/input_common.hpp"
-#include "core/logger.hpp"
+#include "core/utils/logger.hpp"
 #include "editor.hpp"
 #include "audio/components/c_audio_listener.hpp"
 #include "window_context/window.hpp"
 #include "rhi/core/rhi_device.hpp"
-#include "core/asset_service.hpp"
+#include "core/utils/asset_service.hpp"
 #include "rhi/rhi_common.hpp"
 #include "core/shaders_define.h"
 #include "core/math/backend/gtx/string_cast.hpp"
 #include "imgui.h"
-#include "core/flags.hpp"
-#include "core/fixed_string.hpp"
+#include "core/utils/flags.hpp"
+#include "core/utils/fixed_string.hpp"
+#include "assimp/Importer.hpp"
 using namespace lum;
 using namespace lum::rhi;
 #define LUM_UNIFORM_BUFFER_STRUCT struct alignas(16)
@@ -102,22 +103,22 @@ private:
         if (input::KeyPressedOnce(input::Key::LEFT_CONTROL)) {
             mouse_locked = !mouse_locked;
             if (mouse_locked) {
-                glfwSetInputMode(static_cast<GLFWwindow*>(m_window->get_native_window()), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                glfwSetInputMode(static_cast<GLFWwindow*>(m_window->GetNativeWindow()), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             }
-            else glfwSetInputMode(static_cast<GLFWwindow*>(m_window->get_native_window()), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            else glfwSetInputMode(static_cast<GLFWwindow*>(m_window->GetNativeWindow()), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
 
     }
 
     void RecalculateMVP() {
-        aspect_ratio = (float32)m_window->get_width() / (float32)m_window->get_height();
+        aspect_ratio = (float32)m_window->GetWidth() / (float32)m_window->GetHeight();
         view = glm::lookAt(position, front + position, up);
         projection = glm::perspective(glm::radians(fov), aspect_ratio, min_plane, max_plane);
 
     }
 
     void Init(Window* wind) {
-        aspect_ratio = (double)wind->get_width() / (double)wind->get_height();
+        aspect_ratio = (double)wind->GetWidth() / (double)wind->GetHeight();
         glm::vec2 mouse_pos = input::GetMousePos();
         lastX = mouse_pos.x;
         lastY = mouse_pos.y;
@@ -239,7 +240,7 @@ auto CreateCubeEBO() {
     BufferDescriptor cubeEBODesc;
     cubeEBODesc.bufferUsage = BufferUsage::Static;
     cubeEBODesc.data = cubeIndices.data();
-    cubeEBODesc.size = bytesize(cubeIndices);
+    cubeEBODesc.size = ByteSize(cubeIndices);
     return device->CreateElementBuffer(cubeEBODesc);
 }
 auto CreateCubeVAO(auto vbo) {
@@ -266,12 +267,12 @@ auto CreateCubeVBO() {
     cubeVBODesc.bufferUsage = BufferUsage::Dynamic;
     cubeVBODesc.data = cubeVerts.data();
     cubeVBODesc.mapFlags = Mapflag::Write;
-    cubeVBODesc.size = bytesize(cubeVerts);
+    cubeVBODesc.size = ByteSize(cubeVerts);
     return device->CreateVertexBuffer(cubeVBODesc);
 }
 auto CreateCubeTexture() {
     TextureDescriptor textureDesc;
-    textureDesc.filename = "grass.jpg";
+    textureDesc.filename = "default.png";
     textureDesc.bGenerateMipmaps = true;
     auto texture = device->CreateTexture2D(textureDesc);
     return texture;
@@ -305,7 +306,7 @@ auto CreateSkyboxEBO() {
     BufferDescriptor cubeEBODesc;
     cubeEBODesc.bufferUsage = BufferUsage::Static;
     cubeEBODesc.data = skyboxIndices.data();
-    cubeEBODesc.size = bytesize(skyboxIndices);
+    cubeEBODesc.size = ByteSize(skyboxIndices);
     return device->CreateElementBuffer(cubeEBODesc);
 }
 auto CreateSkyboxVAO(auto vbo) {
@@ -323,7 +324,7 @@ auto CreateSkyboxVBO() {
     BufferDescriptor vboDesc;
     vboDesc.bufferUsage = BufferUsage::Static;
     vboDesc.data = skyboxVerts.data();
-    vboDesc.size = bytesize(skyboxVerts);
+    vboDesc.size = ByteSize(skyboxVerts);
     return device->CreateVertexBuffer(vboDesc);
 }
 auto CreateSkyboxTexture() {
@@ -366,15 +367,9 @@ float32 quad[] = {
      1.0f,  1.0f, 1.0f, 1.0f
 };
 
-// Max 16 œwiate³, ale zero kombinowania
-struct SimpleLight {
-    math::Vec4 positionAndRadius;  // xyz = pos, w = radius
-    math::Vec4 colorAndIntensity;  // rgb = color, a = intensity
-};
-
 int main() {
-    Logger::Get().disable_log(LogSeverity::All);
-    Logger::Get().enable_log(LUM_SEV_INFO);
+    Logger::Get().enable_log(LogSeverity::All);
+    //Logger::Get().enable_log(LUM_SEV_INFO);
     WindowDescriptor windowDesc;
     windowDesc.msaaSamples = 4;
     windowDesc.bFullscreen = false;
@@ -383,7 +378,7 @@ int main() {
 
     Window* window = CreateWindow(windowDesc);
     device = CreateDevice(window);
-    input::SetActiveWindow(static_cast<GLFWwindow*>(window->get_native_window()));
+    input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
     auto basicShader = CreateShader("geometry_pass.vert", "geometry_pass.frag");
     auto skyboxShader = CreateShader("skybox_pass.vert", "skybox_pass.frag");
@@ -439,37 +434,9 @@ int main() {
     newdesc.filename = "default.png";
 
     bool success;
-    auto data = AssetService::load_texture(newdesc.filename, success);
+    auto data = AssetService::LoadTexture(newdesc.filename, success);
     
-    glfwSetScrollCallback(static_cast<GLFWwindow*>(window->get_native_window()), scroll_callback);
-
-    BufferDescriptor ssbodesc;
-    ssbodesc.bufferUsage = BufferUsage::Dynamic;
-    ssbodesc.mapFlags = Mapflag::Write;
-    ssbodesc.size = sizeof(PointLight) * LUM_MAX_LIGHTS;
-
-
-
-    
-    SimpleLight lights[16];
-    lights[0] = {
-    {2.0f, 2.0f, 0.0f, 5.0f},      // pos + radius
-    {1.0f, 0.0f, 0.0f, 2.0f}       // color + intensity
-    };
-
-    lights[1] = {
-        {-2.0f, 2.0f, 0.0f, 5.0f},
-        {0.0f, 0.0f, 1.0f, 2.0f}
-    };
-
-    lights[2] = {
-        {0.0f, 3.0f, 2.0f, 8.0f},
-        {1.0f, 1.0f, 1.0f, 1.5f}
-    };
-    auto ubo = device->CreateUniformBuffer({ .size = sizeof(lights), .data = lights });
-    device->SetUniformBufferBinding(ubo, 12);
-   
-    auto lightningShader = device->CreateShader({ "light_pass.vert", "light_pass.frag" });
+    glfwSetScrollCallback(static_cast<GLFWwindow*>(window->GetNativeWindow()), scroll_callback);
 
     do {
 
@@ -477,9 +444,9 @@ int main() {
         c.Update();
 
         int32 x, y;
-        glfwGetWindowSize(static_cast<GLFWwindow*>(window->get_native_window()), &x, &y);
-        window->set_width(x);
-        window->set_height(y);
+        glfwGetWindowSize(static_cast<GLFWwindow*>(window->GetNativeWindow()), &x, &y);
+        window->SetWidth(x);
+        window->SetHeight(y);
 
         device->BeginFrame();
         
@@ -493,15 +460,13 @@ int main() {
         device->BindSampler(sampler, LUM_SAMPLER_ALBEDO);
         cube.Draw(LUM_TEX_ALBEDO, cubeIndices.size());
 
-        device->BindShader(lightningShader);
-
         device->BindPipeline(skyboxPip);
         device->BindSampler(sampler, LUM_SAMPLER_CUBEMAP);
         skybox.Draw(LUM_TEX_CUBEMAP, skyboxIndices.size());
         
         device->EndFrame();
 
-    } while (window->is_open());
+    } while (window->IsOpen());
 
     device->GetProfilerInfo();
 

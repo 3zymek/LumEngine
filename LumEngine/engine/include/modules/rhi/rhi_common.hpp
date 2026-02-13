@@ -25,7 +25,7 @@ namespace lum {
 		template<typename E>
 			requires std::is_enum_v<E>
 		constexpr inline std::underlying_type_t<E> lookup_cast(E e) {
-			return to_underlying(e);
+			return ToUnderlyingEnum(e);
 		}
 
 		// Returns a special "null" value for arithmetic types (usually max value).
@@ -33,7 +33,7 @@ namespace lum {
 		template<typename T>
 			requires std::is_arithmetic_v<T>
 		inline constexpr T null_id() {
-			return max_val<T>();
+			return MaxVal<T>();
 		}
 
 		struct PipelineHandle		: cstd::BaseHandle {}; // Pipeline state handle

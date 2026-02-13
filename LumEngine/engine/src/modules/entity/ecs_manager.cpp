@@ -4,7 +4,7 @@
 namespace lum {
 	namespace ecs {
 		Entity EntityManager::CreateEntity() {
-			EntityID entityID = GenerateID<Entity, 0>::get();
+			EntityID entityID = GenerateID<Entity, 0>::Get();
 
 			LUM_LOG_INFO("Created entity");
 

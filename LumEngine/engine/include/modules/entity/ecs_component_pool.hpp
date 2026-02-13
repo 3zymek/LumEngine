@@ -2,7 +2,7 @@
 #include "entity/ecs_common.hpp"
 #include "core/utils/sparse_set.hpp"
 #include "core/core_pch.hpp"
-#include "core/lum_assert.hpp"
+#include "core/utils/lum_assert.hpp"
 namespace lum {
 	namespace ecs {
 		namespace detail {

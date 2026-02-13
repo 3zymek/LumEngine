@@ -1,14 +1,17 @@
 #pragma once
 #include "core/core_pch.hpp"
 #include "stb_image.h"
-#include "core/lum_assert.hpp"
+#include "core/utils/lum_assert.hpp"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 namespace lum {
 
 	namespace detail {
 
 		namespace fs = std::filesystem;
 		
-		inline fs::path g_assets_root = fs::current_path().parent_path() / "lumengine" / "assets";
+		inline fs::path gAssetsRoot = fs::current_path().parent_path() / "LumEngine" / "assets";
 
 	}
 
@@ -19,18 +22,20 @@ namespace lum {
 	};
 
 	struct TextureData {
+
 		int32 width = 0;
 		int32 height = 0;
 		int32 colorChannels = 0;
 		std::vector<uint8> pixels;
+
 	};
 	
 	class AssetService {
 	public:
 
-		static TextureData load_texture(ccharptr file_name, bool& success) {
+		static TextureData LoadTexture(ccharptr filename, bool& success) {
 
-			string absolute_path = (texture_path / string(file_name)).lexically_normal().string();
+			string absolute_path = (texturePath / string(filename)).lexically_normal().string();
 
 			TextureData tx;
 			int32 ignore;
@@ -54,9 +59,15 @@ namespace lum {
 			return tx;
 		}
 		
-		inline static string load_audio(string_view file_name) {
+		static void LoadMesh(ccharptr filename, bool& success) {
+			
+			// TODO Implement this function
 
-			detail::fs::path file = audio_path / file_name;
+		}
+
+		static string LoadAudio(string_view filename) {
+
+			detail::fs::path file = audioPath / filename;
 			if (!detail::fs::exists(file)) {
 				LUM_LOG_ERROR("Couldn't localize audio file named {}");
 				return "";
@@ -65,9 +76,9 @@ namespace lum {
 			return file.lexically_normal().string();
 		}
 
-		static string load_internal_shader(string_view file_name, bool& success) {
+		static string LoadInternalShader(string_view filename, bool& success) {
 
-			string file = (internal_shader_path / file_name).lexically_normal().string();
+			string file = (internalShaderPath / filename).lexically_normal().string();
 
 			if (!detail::fs::exists(file)) {
 				success = false;
@@ -75,7 +86,7 @@ namespace lum {
 			}
 
 			std::ifstream loaded_file(file);
-			std::ifstream defines(shader_define);
+			std::ifstream defines(shaderDefine);
 			if (!loaded_file.is_open() || !defines.is_open()) {
 				success = false;
 				return "";
@@ -93,9 +104,9 @@ namespace lum {
 			return ss.str();
 		}
 
-		static string load_external_shader(string_view file_name) {
+		static string LoadExternalShader(string_view filename) {
 
-			string file = (external_shader_path / file_name).lexically_normal().string();
+			string file = (externalShadersPath / filename).lexically_normal().string();
 
 			if (!detail::fs::exists(file)) {
 				LUM_LOG_ERROR("Couldn't localize shader file named {}");
@@ -103,7 +114,7 @@ namespace lum {
 			}
 
 			std::ifstream loaded_file(file);
-			std::ifstream defines(shader_define);
+			std::ifstream defines(shaderDefine);
 			if (!loaded_file.is_open() || !defines.is_open()) {
 				LUM_LOG_ERROR("Couldn't open shader file named {}");
 				return "";
@@ -122,11 +133,12 @@ namespace lum {
 
 	private:
 
-		static inline detail::fs::path internal_shader_path = detail::fs::current_path().parent_path() / "lumengine" / "engine" / "include" / "modules" / "rhi" / "shaders";
-		static inline string shader_define = (detail::fs::current_path().parent_path() / "lumengine" / "engine" / "include" / "core" / "shaders_define.h").lexically_normal().string();
-		static inline detail::fs::path external_shader_path	= detail::g_assets_root	/ "shader";
-		static inline detail::fs::path audio_path	= detail::g_assets_root	/ "audio";
-		static inline detail::fs::path texture_path	= detail::g_assets_root	/ "texture";
+		static inline detail::fs::path	internalShaderPath	= detail::fs::current_path().parent_path() / "LumEngine" / "engine" / "include" / "modules" / "rhi" / "shaders";
+		static inline string			shaderDefine		= (detail::fs::current_path().parent_path() / "LumEngine" / "engine" / "include" / "core" / "shaders_define.h").lexically_normal().string();
+		static inline detail::fs::path	externalShadersPath	= detail::gAssetsRoot	/ "shader";
+		static inline detail::fs::path	audioPath			= detail::gAssetsRoot	/ "audio";
+		static inline detail::fs::path	texturePath			= detail::gAssetsRoot	/ "texture";
+		static inline detail::fs::path	modelPath			= detail::gAssetsRoot / "models";
 
 		AssetService(const AssetService&)	= delete;
 		AssetService(AssetService&&)		= delete;

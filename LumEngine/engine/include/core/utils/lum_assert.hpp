@@ -1,6 +1,6 @@
 #pragma once
 #include "logger.hpp"
-#include "setup.hpp"
+#include "core/setup.hpp"
 
 #if !defined(NDEBUG)
 #   define LUM_ASSERT(expr, msg) \

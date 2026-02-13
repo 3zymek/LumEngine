@@ -7,7 +7,7 @@
 #include "core/core_defines.hpp"
 #include "core/utils/handle_pool.hpp"
 #include "core/shaders_define.h"
-#include "core/flags.hpp"
+#include "core/utils/flags.hpp"
 #include "core/setup.hpp"
 
 #include "rhi/core/rhi_buffer.hpp"

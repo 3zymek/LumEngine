@@ -4,7 +4,7 @@
 
 namespace cstd {
 	struct alignas(8) BaseHandle {
-		lum::uint32 id = lum::max_val<lum::uint32>();
+		lum::uint32 id = lum::MaxVal<lum::uint32>();
 		lum::uint32 generation = 0;
 
 		bool operator==(const BaseHandle& other) const noexcept {
@@ -25,7 +25,7 @@ namespace cstd {
 		using iterator = typename std::vector<DenseType>::iterator;
 		using const_iterator = typename std::vector<DenseType>::const_iterator;
 		
-		static constexpr SparseType NULL_HANDLE = lum::max_val<SparseType>();
+		static constexpr SparseType NULL_HANDLE = lum::MaxVal<SparseType>();
 
 	public:
 

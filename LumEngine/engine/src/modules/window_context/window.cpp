@@ -1,7 +1,7 @@
 #pragma once
 #include "window_context/window.hpp"
 #include "core/core_defines.hpp"
-#include "core/lum_assert.hpp"
+#include "core/utils/lum_assert.hpp"
 #if LUM_ENABLE_IMGUI == 1
 	#include "imgui.h"
 	#include "imgui_impl_glfw.h"
@@ -36,29 +36,29 @@ namespace lum {
 
 	///  OpenGL window
 
-	void OpenGLWindow::set_width(uint32 width) noexcept {
+	void OpenGLWindow::SetWidth(uint32 width) noexcept {
 		mWidth = width;
 	}
-	void OpenGLWindow::set_height(uint32 height) noexcept {
+	void OpenGLWindow::SetHeight(uint32 height) noexcept {
 		mHeight = height;
 	}
-	uint32 OpenGLWindow::get_width( ) const noexcept {
+	uint32 OpenGLWindow::GetWidth( ) const noexcept {
 		return mWidth;
 	}
-	uint32 OpenGLWindow::get_height( ) const noexcept {
+	uint32 OpenGLWindow::GetHeight( ) const noexcept {
 		return mHeight;
 	}
-	void* OpenGLWindow::get_native_window( ) const noexcept {
+	void* OpenGLWindow::GetNativeWindow( ) const noexcept {
 		return mWindow;
 	}
-	bool OpenGLWindow::is_open( ) const noexcept {
+	bool OpenGLWindow::IsOpen( ) const noexcept {
 		return !glfwWindowShouldClose(mWindow);
 	}
-	RenderBackend OpenGLWindow::get_backend( ) const noexcept {
+	RenderBackend OpenGLWindow::GetBackend( ) const noexcept {
 		return backend;
 	}
 
-	void OpenGLWindow::init( const WindowDescriptor& desc ) {
+	void OpenGLWindow::Init( const WindowDescriptor& desc ) {
 
 		if (!glfwInit()) {
 			return;

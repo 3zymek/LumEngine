@@ -6,35 +6,35 @@ import urllib.request
 from pathlib import Path
 
 def setup_fmod():
-    script_dir = Path(__file__).parent
-    root_dir = script_dir.parent
-    fmod_dir = root_dir / "LumEngine" / "external" / "fmod"
-    fmod_zip = fmod_dir / "fmod.zip"
-    debug_dir = root_dir / "build" / "Debug"
-    release_dir = root_dir / "build" / "Release"
+    scriptDir = Path(__file__).parent
+    rootDir = scriptDir.parent
+    fmodDir = rootDir / "LumEngine" / "external" / "fmod"
+    fmodZip = fmodDir / "fmod.zip"
+    debugDir = rootDir / "build" / "Debug"
+    releaseDir = rootDir / "build" / "Release"
 
-    fmod_dir.mkdir(parents=True, exist_ok=True)
+    fmodDir.mkdir(parents=True, exist_ok=True)
 
     print("Downloading FMOD...")
     url = "https://github.com/3zymek/LumEngineExternal/releases/download/v0.1.0/fmod.zip"
-    urllib.request.urlretrieve(url, fmod_zip)
+    urllib.request.urlretrieve(url, fmodZip)
 
     print("Unpacking FMOD")
-    with zipfile.ZipFile(fmod_zip, 'r') as zip_ref:
-        zip_ref.extractall(fmod_dir)
+    with zipfile.ZipFile(fmodZip, 'r') as zip_ref:
+        zip_ref.extractall(fmodDir)
 
     print("Moving FMOD...")
-    debug_dir.mkdir(parents=True, exist_ok=True)
-    release_dir.mkdir(parents=True, exist_ok=True)
+    debugDir.mkdir(parents=True, exist_ok=True)
+    releaseDir.mkdir(parents=True, exist_ok=True)
 
-    dll_dir = fmod_dir / "dll"
+    dll_dir = fmodDir / "dll"
     if dll_dir.exists():
         for dll_file in dll_dir.glob("*.dll"):
-            shutil.copy2(dll_file, debug_dir)
-            shutil.copy2(dll_file, release_dir)
+            shutil.copy2(dll_file, debugDir)
+            shutil.copy2(dll_file, releaseDir)
 
     print("Cleaning up...")
-    if fmod_zip.exists():
-        fmod_zip.unlink()
+    if fmodZip.exists():
+        fmodZip.unlink()
     if dll_dir.exists():
         shutil.rmtree(dll_dir)

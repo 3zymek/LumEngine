@@ -61,7 +61,7 @@ namespace lum {
 		) 
 		{
 			if (!(gSeverity & sev)) return;
-			if (lastLog == hash(msg)) return;
+			if (lastLog == HashStr(msg)) return;
 
 			// Cleanup
 			std::memset(descBuffer, 0, sizeof(descBuffer));
@@ -70,13 +70,13 @@ namespace lum {
 			std::memset(sevColorBuffer, 0, sizeof(sevColorBuffer));
 			std::memset(severityTempBuffer, 0, sizeof(severityTempBuffer));
 
-			_OutputTime();
+			output_time();
 			
-			_ToString(severityTempBuffer, sev);
-			_CenterCustom(centertedSeverity, 8, severityTempBuffer, 1, 6);
-			_ToColor(sevColorBuffer, sev);
+			to_string(severityTempBuffer, sev);
+			center_custom(centertedSeverity, 8, severityTempBuffer, 1, 6);
+			to_color(sevColorBuffer, sev);
 
-			const char* filename = _ExtractFilename(file);
+			const char* filename = extract_filename(file);
 
 			int32 descLen = 
 				std::snprintf(
@@ -86,17 +86,17 @@ namespace lum {
 					filename, 
 					cmdcolor::cyan, 
 					line, 
-					cmdcolor::reset, 
+					cmdcolor::gReset, 
 					func
 				);
 
-			_CenterCustom(descBuffer, sizeof(descBuffer), descTempBuffer, 2, 64);
+			center_custom(descBuffer, sizeof(descBuffer), descTempBuffer, 2, 64);
 			
-			std::printf("[%s%s%s][%s] ", sevColorBuffer, centertedSeverity, cmdcolor::reset, descBuffer);
+			std::printf("[%s%s%s][%s] ", sevColorBuffer, centertedSeverity, cmdcolor::gReset, descBuffer);
 			std::printf(msg, std::forward<Args>(args)...);
 			std::printf("%c", '\n');
 
-			lastLog = hash(msg);
+			lastLog = HashStr(msg);
 
 		}
 
@@ -121,7 +121,7 @@ namespace lum {
 		SeverityMask gSeverity = LogSeverity::Fatal | LogSeverity::Debug | LogSeverity::Warn | LogSeverity::Error;
 		
 		template<usize L>
-		void _CenterCustom(charptr out, usize out_size, const char(&s)[L], usize left_width, usize right_width) {
+		void center_custom(charptr out, usize out_size, const char(&s)[L], usize left_width, usize right_width) {
 
 			if (L <= 1) return;
 
@@ -139,7 +139,7 @@ namespace lum {
 		}
 
 		template<usize fileL>
-		const char* _ExtractFilename(const char(&path)[fileL]) {
+		const char* extract_filename(const char(&path)[fileL]) {
 			const char* lastSlash = nullptr;
 
 			for (size_t i = 0; i < fileL - 1; ++i) {
@@ -151,10 +151,10 @@ namespace lum {
 			return lastSlash ? lastSlash + 1 : path;
 		}
 
-		void _OutputTime();
+		void output_time();
 
-		void _ToString	( charptr out, LogSeverity sev );
-		void _ToColor	( charptr out, LogSeverity sev );
+		void to_string	( charptr out, LogSeverity sev );
+		void to_color	( charptr out, LogSeverity sev );
 
 		Logger() = default;
 

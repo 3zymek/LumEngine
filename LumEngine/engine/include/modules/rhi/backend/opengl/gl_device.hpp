@@ -4,7 +4,7 @@
 #include "rhi/rhi_pch.hpp"
 #include "core/core_defines.hpp"
 #include "rhi/core/rhi_vertex_layout.hpp"
-#include "core/asset_service.hpp"
+#include "core/utils/asset_service.hpp"
 #include "core/utils/sparse_set.hpp"
 namespace lum::rhi::gl {
 

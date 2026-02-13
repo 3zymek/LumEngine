@@ -12,7 +12,7 @@ namespace lum::rhi::gl {
 		);
 
 		bool success{};
-		string&& vfile = AssetService::load_internal_shader(desc.vertexSource, success);
+		string&& vfile = AssetService::LoadInternalShader(desc.vertexSource, success);
 		ccharptr vcstr = vfile.c_str();
 
 		if (!success) {
@@ -20,7 +20,7 @@ namespace lum::rhi::gl {
 			return ShaderHandle{};
 		}
 
-		string&& ffile = AssetService::load_internal_shader(desc.fragmentSource, success);
+		string&& ffile = AssetService::LoadInternalShader(desc.fragmentSource, success);
 		ccharptr fcstr = ffile.c_str();
 
 		if (!success) {

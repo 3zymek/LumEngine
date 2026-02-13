@@ -8,7 +8,7 @@
 #include "audio/audio_listener_wrapper.hpp"
 #include "core/utils/string_hasher.hpp"
 
-#include "core/asset_service.hpp"
+#include "core/utils/asset_service.hpp"
 #include "modules/audio/audio_system.hpp"
 #include "modules/audio/components/c_audio_emitter.hpp"
 #include "modules/audio/components/c_audio_listener.hpp"
@@ -38,13 +38,13 @@ namespace lum {
 				return;
 			}
 
-			auto id = GenerateID<AudioHandle, detail::AUDIO_ID_NULL>::get();
-			auto hashed_new_id = hash(alias_name);
+			auto id = GenerateID<AudioHandle, detail::AUDIO_ID_NULL>::Get();
+			auto hashed_new_id = HashStr(alias_name);
 
 			AudioClip clip;
 			FMOD_ASSERT(
 				m_audio_system->createSound(
-					lum::AssetService::load_audio(path).c_str(),
+					lum::AssetService::LoadAudio(path).c_str(),
 					mode,
 					nullptr,
 					&clip.sound
@@ -82,7 +82,7 @@ namespace lum {
 			if (!entity.Has<AudioEmitterComponent>())
 				entity.AddComponent<AudioEmitterComponent>();
 
-			auto id = GenerateID<EmitterHandle, detail::EMITTER_ID_NULL>::get();
+			auto id = GenerateID<EmitterHandle, detail::EMITTER_ID_NULL>::Get();
 			entity.GetComponent<AudioEmitterComponent>()->emitterID = id;
 			detail::AudioEmitter emitter;
 			emitter.transform = m_entity_manager.GetComponent<ecs::components::TransformComponent>(entity.GetID());
@@ -275,7 +275,7 @@ namespace lum {
 		}
 
 		std::optional<AudioHandle> AudioManager::GetIDByName(string_view name) {
-			auto it = m_name_to_id.find(hash(name));
+			auto it = m_name_to_id.find(HashStr(name));
 			if (it == m_name_to_id.end()) {
 				LUM_LOG_WARN("Audio file named {} does not exists");
 				return std::nullopt;
@@ -284,7 +284,7 @@ namespace lum {
 		}
 
 		bool AudioManager::NameExists(string_view name) {
-			return m_name_to_id.find(hash(name)) != m_name_to_id.end();
+			return m_name_to_id.find(HashStr(name)) != m_name_to_id.end();
 		}
 	};
 }

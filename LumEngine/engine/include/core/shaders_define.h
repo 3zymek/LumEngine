@@ -1,14 +1,4 @@
 #pragma once
-#include "core/core_pch.hpp"
-
-namespace lum {
-    struct PointLight {
-        math::Vec3 position;
-        float32 intensity;
-        math::Vec3 color;
-        float32 radius;
-    };
-}
 
 // Shader location for position
 #define LUM_LAYOUT_POSITION 0

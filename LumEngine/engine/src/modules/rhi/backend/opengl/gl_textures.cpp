@@ -24,7 +24,7 @@ namespace lum::rhi::gl {
 			}
 
 			bool success;
-			TextureData data = AssetService::load_texture(desc.filename, success);
+			TextureData data = AssetService::LoadTexture(desc.filename, success);
 			if (!success) {
 				LUM_LOG_ERROR("Something went wrong during loading texture: %s", desc.filename);
 				return {};
@@ -141,7 +141,7 @@ namespace lum::rhi::gl {
 
 		TextureData texData;
 		bool success;
-		texData = AssetService::load_texture(desc.faces[0], success);
+		texData = AssetService::LoadTexture(desc.faces[0], success);
 		if (!success) {
 			LUM_LOG_ERROR("Failed to load texture %s", desc.faces[0]);
 		}
@@ -153,7 +153,7 @@ namespace lum::rhi::gl {
 
 		for (usize i = 0; i < 6; i++) {
 
-			TextureData texture = AssetService::load_texture(desc.faces[i], success);
+			TextureData texture = AssetService::LoadTexture(desc.faces[i], success);
 			
 			if (!success) {
 				LUM_LOG_ERROR("Failed to load texture %s", desc.faces[i]);
@@ -189,7 +189,7 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(mTextures.exist(tex), LUM_SEV_WARN, "Texture doesn't exist");
 
 		bool success;
-		auto data = AssetService::load_texture(desc.filename, success);
+		auto data = AssetService::LoadTexture(desc.filename, success);
 
 		if (!success) {
 			LUM_LOG_ERROR("Failed to load image %s", desc.filename);

@@ -17,17 +17,17 @@ namespace lum {
 	class Window {
 	public:
 
-		virtual void	set_width		( uint32 ) noexcept = 0;
-		virtual void	set_height		( uint32 ) noexcept = 0;
-		virtual uint32	get_width		( ) const noexcept = 0;
-		virtual uint32	get_height		( ) const noexcept = 0;
-		virtual vptr	get_native_window	( ) const noexcept = 0;
-		virtual bool	is_open				( ) const noexcept = 0;
-		virtual RenderBackend	get_backend	( )	const noexcept = 0;
+		virtual void	SetWidth		( uint32 ) noexcept = 0;
+		virtual void	SetHeight		( uint32 ) noexcept = 0;
+		virtual uint32	GetWidth		( ) const noexcept = 0;
+		virtual uint32	GetHeight		( ) const noexcept = 0;
+		virtual vptr	GetNativeWindow	( ) const noexcept = 0;
+		virtual bool	IsOpen				( ) const noexcept = 0;
+		virtual RenderBackend	GetBackend	( )	const noexcept = 0;
 
 	protected:
 
-		virtual void init( const WindowDescriptor& ) = 0;
+		virtual void Init( const WindowDescriptor& ) = 0;
 		RenderBackend backend{};
 
 	};
@@ -35,15 +35,15 @@ namespace lum {
 	class OpenGLWindow : public Window {
 	public:
 
-		OpenGLWindow( const WindowDescriptor& desc ) { init(desc); }
+		OpenGLWindow( const WindowDescriptor& desc ) { Init(desc); }
 
-		void					set_width		( uint32	) noexcept override ;
-		void					set_height		( uint32	) noexcept override;
-		uint32					get_width		(			) const noexcept override;
-		uint32					get_height		(			) const noexcept override;
-		vptr					get_native_window(			) const noexcept override;
-		bool					is_open			(			) const noexcept override;
-		RenderBackend			get_backend		(			) const noexcept override;
+		void					SetWidth		( uint32	) noexcept override ;
+		void					SetHeight		( uint32	) noexcept override;
+		uint32					GetWidth		(			) const noexcept override;
+		uint32					GetHeight		(			) const noexcept override;
+		vptr					GetNativeWindow(			) const noexcept override;
+		bool					IsOpen			(			) const noexcept override;
+		RenderBackend			GetBackend		(			) const noexcept override;
 
 	private:
 
@@ -52,7 +52,7 @@ namespace lum {
 		
 		GLFWwindow* mWindow = nullptr;
 
-		void init( const WindowDescriptor& ) override;
+		void Init( const WindowDescriptor& ) override;
 
 	};
 

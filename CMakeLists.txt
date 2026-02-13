@@ -33,6 +33,7 @@ target_include_directories(LumEngine PRIVATE
     "${CMAKE_SOURCE_DIR}/lumengine/external/fmod/inc"
     "${CMAKE_SOURCE_DIR}/lumengine/external/glfw/inc"
     "${CMAKE_SOURCE_DIR}/lumengine/external/imgui/inc"
+    "${CMAKE_SOURCE_DIR}/lumengine/external/assimp/inc"
     "${CMAKE_SOURCE_DIR}/lumengine/external/stb/inc"
 )
 
@@ -41,4 +42,5 @@ target_link_libraries(LumEngine PRIVATE
 "${CMAKE_SOURCE_DIR}/lumengine/external/glfw/lib/glfw3.lib"
 "${CMAKE_SOURCE_DIR}/lumengine/external/glfw/lib/glfw3_mt.lib"
 "${CMAKE_SOURCE_DIR}/lumengine/external/glfw/lib/glfw3dll.lib"
+"${CMAKE_SOURCE_DIR}/lumengine/external/assimp/lib/assimp-vc143-mt.lib"
 )

@@ -1,6 +1,5 @@
 #pragma once
 #include "core/core_pch.hpp"
-#include "core/core_defines.hpp"
 #include "core/types.hpp"
 #include "core/utils/string_hasher.hpp"
 #include "core/math/types.hpp"
@@ -11,11 +10,11 @@ namespace lum {
 	/// @tparam NULL_VAL Null value for ID's
 	template<typename T, int NULL_VAL>
 	struct GenerateID {
-		static uint32 get() {
-			return globalID++;
+		static uint32 Get() {
+			return gID++;
 		}
 	private:
-		inline static uint32 globalID = NULL_VAL + 1;
+		inline static uint32 gID = NULL_VAL + 1;
 	};
 	
 	/// Converts any arithmetic type to float at compile-time.
@@ -23,73 +22,62 @@ namespace lum {
 	/// @return The value casted to float.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr float32 to_f(T value) { return static_cast<float32>(value); }
+	inline constexpr float32 ToF(T value) { return static_cast<float32>(value); }
 
 	/// Converts any arithmetic type to uint8 at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to uint8.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr uint8 to_u8(T value) { return static_cast<uint8>(value); }
+	inline constexpr uint8 ToU8(T value) { return static_cast<uint8>(value); }
 
 	/// Converts any arithmetic type to uint16 at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to uint16.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr uint16 to_u16(T value) { return static_cast<uint16>(value); }
+	inline constexpr uint16 ToU16(T value) { return static_cast<uint16>(value); }
 
 	/// Converts any arithmetic type to uint32_t at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to uint32_t.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr uint32 to_u32(T value) { return static_cast<uint32>(value); }
+	inline constexpr uint32 ToU32(T value) { return static_cast<uint32>(value); }
 
 	/// Converts any arithmetic type to uint64_t at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to uint64_t.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr uint64_t to_u64(T value) { return static_cast<uint64_t>(value); }
+	inline constexpr uint64_t ToU64(T value) { return static_cast<uint64_t>(value); }
 
 	/// Converts any arithmetic type to double at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to double.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr float64 to_d(T value) { return static_cast<float64>(value); }
+	inline constexpr float64 ToD(T value) { return static_cast<float64>(value); }
 
 	/// Converts any arithmetic type to int32 at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to int32.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr int32 to_i(T value) { return static_cast<int32>(value); }
-
-	/// Calculates linear interpolation in time
-	/// @tparam T Arithmetic type of calculations
-	/// @param a First value
-	/// @param b Second value
-	/// @param t Time
-	template<typename T>
-		requires std::is_arithmetic_v<T>
-	inline constexpr T lerp(T a, T b, float32 t) {
-		return a + (b - a) * t;
-	}
+	inline constexpr int32 ToI(T value) { return static_cast<int32>(value); }
 
 	/// Returns max value of arithmetic type.
 	/// @tparam T arithmetic type.
 	template<typename T>
 	requires std::is_arithmetic_v<T>
-	inline constexpr T max_val() {
+	inline constexpr T MaxVal() {
 		return std::numeric_limits<T>::max();
 	}
 
 	/// @return Returns definitive size of vector in bytes.
 	/// @param vector Vector to calculate size.
 	template<typename T>
-	inline constexpr usize bytesize(const std::vector<T>& vector) {
+	inline constexpr usize ByteSize(const std::vector<T>& vector) {
 		return sizeof(T) * vector.size();
 	}
 
@@ -97,7 +85,7 @@ namespace lum {
 	/// @param arr Pointer to the data.
 	/// @param size How much elements.
 	template<typename T, usize L>
-	inline constexpr usize bytesize(const T (&arr)[L]) {
+	inline constexpr usize ByteSize(const T (&arr)[L]) {
 		return sizeof(T) * L;
 	}
 
@@ -105,7 +93,7 @@ namespace lum {
 	/// @param arr Pointer to the data.
 	/// @param size How much elements.
 	template<typename T>
-	inline constexpr usize bytesize(const T* arr, usize size) {
+	inline constexpr usize ByteSize(const T* arr, usize size) {
 		return sizeof(T) * size;
 	}
 
@@ -113,7 +101,7 @@ namespace lum {
 	/// @param e Enum.
 	template<typename T>
 		requires std::is_enum_v<T>
-	inline constexpr std::underlying_type_t<T> to_underlying(T e){
+	inline constexpr std::underlying_type_t<T> ToUnderlyingEnum(T e){
 		return static_cast<std::underlying_type_t<T>>(e);
 	}
 
@@ -122,10 +110,10 @@ namespace lum {
 	/// @param str String literal to hash.
 	/// @return 64-bit hash of the input string.
 	template<usize L>
-	inline constexpr uint64 hash(const char8 (&str)[L]) noexcept {
+	inline constexpr uint64 HashStr(const char8 (&str)[L]) noexcept {
 		return cstd::StringHasher::Hash(str);
 	}
-	inline uint64 hash(std::string_view str) noexcept {
+	inline uint64 HashStr(std::string_view str) noexcept {
 		return cstd::StringHasher::Hash(str);
 	}
 
@@ -172,14 +160,14 @@ namespace lum {
 
 
 	}
-
+	// TODO change names below with -g
 	namespace cmdcolor {
-		LUM_COMPILE_VARIABLE ccharptr reset		= "\033[0m";
-		LUM_COMPILE_VARIABLE ccharptr black		= "\033[30m";
-		LUM_COMPILE_VARIABLE ccharptr red		= "\033[31m";
-		LUM_COMPILE_VARIABLE ccharptr green		= "\033[32m";
-		LUM_COMPILE_VARIABLE ccharptr yellow	= "\033[33m";
-		LUM_COMPILE_VARIABLE ccharptr blue		= "\033[34m";
+		LUM_COMPILE_VARIABLE ccharptr gReset	= "\033[0m";
+		LUM_COMPILE_VARIABLE ccharptr gBlack	= "\033[30m";
+		LUM_COMPILE_VARIABLE ccharptr gRed		= "\033[31m";
+		LUM_COMPILE_VARIABLE ccharptr gGreen	= "\033[32m";
+		LUM_COMPILE_VARIABLE ccharptr gYellow	= "\033[33m";
+		LUM_COMPILE_VARIABLE ccharptr gBlue		= "\033[34m";
 		LUM_COMPILE_VARIABLE ccharptr magenta	= "\033[35m";
 		LUM_COMPILE_VARIABLE ccharptr cyan		= "\033[36m";
 		LUM_COMPILE_VARIABLE ccharptr white		= "\033[37m";
