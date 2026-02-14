@@ -1,3 +1,8 @@
+// ************************************
+// LumEngine Copyright (C) 2026 3zymek
+// All rights reserved.
+// LumEngine setup defines
+// ************************************
 #pragma once
 
 // Defines if ImGui library is enabled and can be used.
@@ -9,6 +14,7 @@
 // Defines if debug logging in backend rendering API is used.
 #define LUM_ENABLE_DEBUG_RENDER 0
 
+// Defines if render hardware interface profile is enabled
 #define LUM_ENABLE_RENDER_PROFILER 1
 
 // Defines if validation statements are used in hotpath ( render, ecs, etc... )

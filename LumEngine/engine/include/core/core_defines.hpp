@@ -1,3 +1,8 @@
+// ************************************
+// LumEngine Copyright (C) 2026 3zymek
+// All rights reserved.
+// Core defines for multi-platform code
+// ************************************
 #pragma once
 
 #if defined(_MSC_VER)

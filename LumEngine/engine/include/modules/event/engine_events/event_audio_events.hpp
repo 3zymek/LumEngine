@@ -10,7 +10,7 @@ namespace lum {
 			
 
 			audio::EmitterHandle emitterID;
-			string name;
+			String name;
 
 			float32		volume;
 			float32		pitch;
@@ -23,7 +23,7 @@ namespace lum {
 			LumEventTag;
 
 			audio::EmitterHandle emitterID;
-			string name;
+			String name;
 
 		};
 		struct PlaySound
@@ -31,7 +31,7 @@ namespace lum {
 			LumEventTag;
 
 			audio::EmitterHandle emitterID;
-			string name;
+			String name;
 
 			float32		volume;
 			float32		pitch;

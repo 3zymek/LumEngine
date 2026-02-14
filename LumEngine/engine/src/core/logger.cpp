@@ -46,32 +46,32 @@ namespace lum {
 	void Logger::to_color(charptr out, LogSeverity sev) {
 		switch (sev) {
 		case LogSeverity::Fatal: {
-			constexpr usize len = sizeof(cmdcolor::magenta) - 1;
-			std::memcpy(out, cmdcolor::magenta, len);
+			constexpr usize len = sizeof(cmdcolor::Magenta) - 1;
+			std::memcpy(out, cmdcolor::Magenta, len);
 			out[len] = '\0';
 			break;
 		}
 		case LogSeverity::Error: {
-			constexpr usize len = sizeof(cmdcolor::gRed) - 1;
-			std::memcpy(out, cmdcolor::gRed, len);
+			constexpr usize len = sizeof(cmdcolor::Red) - 1;
+			std::memcpy(out, cmdcolor::Red, len);
 			out[len] = '\0';
 			break;
 		}
 		case LogSeverity::Warn: {
-			constexpr usize len = sizeof(cmdcolor::gYellow) - 1;
-			std::memcpy(out, cmdcolor::gYellow, len);
+			constexpr usize len = sizeof(cmdcolor::Yellow) - 1;
+			std::memcpy(out, cmdcolor::Yellow, len);
 			out[len] = '\0';
 			break;
 		}
 		case LogSeverity::Info: {
-			constexpr usize len = sizeof(cmdcolor::gGreen) - 1;
-			std::memcpy(out, cmdcolor::gGreen, len);
+			constexpr usize len = sizeof(cmdcolor::Green) - 1;
+			std::memcpy(out, cmdcolor::Green, len);
 			out[len] = '\0';
 			break;
 		}
 		case LogSeverity::Debug: {
-			constexpr usize len = sizeof(cmdcolor::gBlue) - 1;
-			std::memcpy(out, cmdcolor::cyan, len);
+			constexpr usize len = sizeof(cmdcolor::Blue) - 1;
+			std::memcpy(out, cmdcolor::Cyan, len);
 			out[len] = '\0';
 			break;
 		}

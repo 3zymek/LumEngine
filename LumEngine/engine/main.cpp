@@ -45,7 +45,7 @@ public:
     Window* m_window = nullptr;
     float32 move_speed = 0.07f;
 private:
-
+    
     void RecalculateDirection() {
 
         glm::vec2 mouse_pos = input::GetMousePos();

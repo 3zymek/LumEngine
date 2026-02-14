@@ -1,3 +1,8 @@
+// ************************************
+// LumEngine Copyright (C) 2026 3zymek
+// All rights reserved.
+// Precompiled headers with initial libraries
+// ************************************
 #pragma once
 
 #include <iostream>

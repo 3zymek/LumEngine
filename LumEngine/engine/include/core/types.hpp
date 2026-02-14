@@ -1,7 +1,10 @@
-////////////////////////////////
-/// Types for LumEngine
-////////////////////////////////
+// ************************************
+// LumEngine Copyright (C) 2026 3zymek
+// All rights reserved.
+// Types used in LumEngine
+// ************************************
 #pragma once
+
 namespace lum {
 
 	using float32 = float;
@@ -34,7 +37,7 @@ namespace lum {
 	using vptr	= void*;
 	using cvptr = const void*;
 
-	using string = std::string;
-	using string_view = std::string_view;
+	using String = std::string;
+	using StringView = std::string_view;
 
 }

@@ -31,7 +31,7 @@ namespace lum {
 
 		}
 
-		void AudioManager::LoadSound(string_view alias_name, string_view path, FMOD_MODE mode) {
+		void AudioManager::LoadSound(StringView alias_name, StringView path, FMOD_MODE mode) {
 
 			if (NameExists(alias_name)) {
 				LUM_LOG_ERROR("Audio Clip with name {} already exist");
@@ -274,7 +274,7 @@ namespace lum {
 			return m_listener.get();
 		}
 
-		std::optional<AudioHandle> AudioManager::GetIDByName(string_view name) {
+		std::optional<AudioHandle> AudioManager::GetIDByName(StringView name) {
 			auto it = m_name_to_id.find(HashStr(name));
 			if (it == m_name_to_id.end()) {
 				LUM_LOG_WARN("Audio file named {} does not exists");
@@ -283,7 +283,7 @@ namespace lum {
 			return it->second;
 		}
 
-		bool AudioManager::NameExists(string_view name) {
+		bool AudioManager::NameExists(StringView name) {
 			return m_name_to_id.find(HashStr(name)) != m_name_to_id.end();
 		}
 	};

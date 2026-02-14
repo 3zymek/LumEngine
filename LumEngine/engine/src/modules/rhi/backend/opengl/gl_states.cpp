@@ -1,3 +1,9 @@
+// ************************************
+// LumEngine Copyright (C) 2026 3zymek
+// All rights reserved.
+// Implementation of state managements from RHI
+// ************************************
+
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
 namespace lum::rhi::gl {
@@ -32,7 +38,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetScissors ( int32 x, int32 y, int32 width, int32 height ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Scissor), LUM_SEV_DEBUG, "Scissor state not enabled");
+		if (!mEnabledStates.has(State::Scissor)) {
+			return;
+		}
 
 		if (mScissorState.x == x && mScissorState.y == y && mScissorState.width == width && mScissorState.height == height) {
 			LUM_PROFILER_CACHE_HIT();
@@ -51,7 +59,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetScissorX ( int32 x ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Scissor), LUM_SEV_DEBUG, "Scissor not enabled");
+		if (!mEnabledStates.has(State::Scissor)) {
+			return;
+		}
 
 		if (mScissorState.x == x) {
 			LUM_PROFILER_CACHE_HIT();
@@ -72,7 +82,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetScissorY ( int32 y ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Scissor), LUM_SEV_DEBUG, "Scissor not enabled");
+		if (!mEnabledStates.has(State::Scissor)) {
+			return;
+		}
 
 		if (mScissorState.y == y) {
 			LUM_PROFILER_CACHE_HIT();
@@ -93,7 +105,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetScissorWidth ( int32 width ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Scissor), LUM_SEV_DEBUG, "Scissor not enabled");
+		if (!mEnabledStates.has(State::Scissor)) {
+			return;
+		}
 
 		if (mScissorState.width == width) {
 			LUM_PROFILER_CACHE_HIT();
@@ -114,7 +128,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetScissorHeight ( int32 height ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Scissor), LUM_SEV_DEBUG, "Scissor not enabled");
+		if (!mEnabledStates.has(State::Scissor)) {
+			return;
+		}
 
 		if (mScissorState.height == height) {
 			LUM_PROFILER_CACHE_HIT();
@@ -161,7 +177,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetCullFace ( Face face ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Cull), LUM_SEV_DEBUG, "Cull not enabled");
+		if (!mEnabledStates.has(State::Cull)) {
+			return;
+		}
 
 		if (face == mCullState.face) {
 			LUM_PROFILER_CACHE_HIT();
@@ -177,7 +195,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetFrontFace ( WindingOrder order ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Cull), LUM_SEV_DEBUG, "Cull not enabled");
+		if (!mEnabledStates.has(State::Cull)) {
+			return;
+		}
 
 		if (order == mCullState.windingOrder) {
 			LUM_PROFILER_CACHE_HIT();
@@ -221,7 +241,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetBlendConstantColor ( ChannelRGBA rgba ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), LUM_SEV_DEBUG, "Blend not enabled");
+		if (!mEnabledStates.has(State::Blend)) {
+			return;
+		}
 
 		if (mBlendState.blendColor == rgba) {
 			LUM_PROFILER_CACHE_HIT();
@@ -236,7 +258,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetBlendFactors ( BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), LUM_SEV_DEBUG, "Blend not enabled");
+		if (!mEnabledStates.has(State::Blend)) {
+			return;
+		}
 
 		if (mBlendState.srcColorFactor == srcColor && mBlendState.dstColorFactor == dstColor &&
 			mBlendState.srcAlphaFactor == srcAlpha && mBlendState.dstAlphaFactor == dstAlpha) 
@@ -262,7 +286,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetBlendColorFactors ( BlendFactor srcColor, BlendFactor dstColor ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), LUM_SEV_DEBUG, "Blend not enabled");
+		if (!mEnabledStates.has(State::Blend)) {
+			return;
+		}
 
 		if (mBlendState.srcColorFactor == srcColor && mBlendState.dstColorFactor == dstColor) {
 			LUM_PROFILER_CACHE_HIT();
@@ -284,7 +310,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetBlendAlphaFactors ( BlendFactor srcAlpha, BlendFactor dstAlpha ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), LUM_SEV_DEBUG, "Blend not enabled");
+		if (!mEnabledStates.has(State::Blend)) {
+			return;
+		}
 
 		if (mBlendState.srcAlphaFactor == srcAlpha && mBlendState.dstAlphaFactor == dstAlpha) {
 			LUM_PROFILER_CACHE_HIT();
@@ -306,7 +334,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetBlendSrcColorFactor ( BlendFactor factor ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), LUM_SEV_DEBUG, "Blend not enabled");
+		if (!mEnabledStates.has(State::Blend)) {
+			return;
+		}
 
 		if (mBlendState.srcColorFactor == factor) {
 			LUM_PROFILER_CACHE_HIT();
@@ -327,7 +357,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetBlendDstColorFactor ( BlendFactor factor ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), LUM_SEV_DEBUG, "Blend not enabled");
+		if (!mEnabledStates.has(State::Blend)) {
+			return;
+		}
 
 		if (mBlendState.dstColorFactor == factor) {
 			LUM_PROFILER_CACHE_HIT();
@@ -348,7 +380,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetBlendSrcAlphaFactor ( BlendFactor factor ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), LUM_SEV_DEBUG, "Blend not enabled");
+		if (!mEnabledStates.has(State::Blend)) {
+			return;
+		}
 
 		if (mBlendState.srcAlphaFactor == factor) {
 			LUM_PROFILER_CACHE_HIT();
@@ -369,7 +403,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetBlendDstAlphaFactor ( BlendFactor factor ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), LUM_SEV_DEBUG, "Blend not enabled");
+		if (!mEnabledStates.has(State::Blend)) {
+			return;
+		}
 
 		if (mBlendState.dstAlphaFactor == factor) {
 			LUM_PROFILER_CACHE_HIT();
@@ -390,7 +426,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetBlendOp ( BlendOp colorOp, BlendOp alphaOp ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), LUM_SEV_DEBUG, "Blend not enabled");
+		if (!mEnabledStates.has(State::Blend)) {
+			return;
+		}
 
 		if (mBlendState.alphaOp == alphaOp && mBlendState.colorOp == colorOp) {
 			LUM_PROFILER_CACHE_HIT();
@@ -410,7 +448,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetBlendColorOp ( BlendOp op) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), LUM_SEV_DEBUG, "Blend not enabled");
+		if (!mEnabledStates.has(State::Blend)) {
+			return;
+		}
 
 		if (mBlendState.colorOp == op) {
 			LUM_PROFILER_CACHE_HIT();
@@ -429,7 +469,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetBlendAlphaOp ( BlendOp op) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::Blend), LUM_SEV_DEBUG, "Blend not enabled");
+		if (!mEnabledStates.has(State::Blend)) {
+			return;
+		}
 
 		if (mBlendState.alphaOp == op) {
 			LUM_PROFILER_CACHE_HIT();
@@ -446,6 +488,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
+	// TODO implement:
 	void GLDevice::SetBlendFactorsForTarget ( uint8 target ) {
 
 	}
@@ -515,7 +558,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetDepthFunc ( CompareFlag func ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::DepthTest), LUM_SEV_DEBUG, "Depth not enabled");
+		if (!mEnabledStates.has(State::DepthTest)) {
+			return;
+		}
 
 		if (mDepthStencilState.depth.compareFlag == func) {
 			LUM_PROFILER_CACHE_HIT();
@@ -561,7 +606,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetStencilReference ( int32 ref, Face face = Face::FrontBack ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::StencilTest), LUM_SEV_DEBUG, "Stencil not enabled");
+		if (!mEnabledStates.has(State::StencilTest)) {
+			return;
+		}
 
 		if (face == Face::Front) {
 
@@ -614,7 +661,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetStencilOp ( StencilOp sfail, StencilOp dpfail, StencilOp dppass, Face face ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::StencilTest), LUM_SEV_DEBUG, "Stencil not enabled");
+		if (!mEnabledStates.has(State::StencilTest)) {
+			return;
+		}
 
 		auto& stencil = mDepthStencilState.stencil;
 
@@ -675,7 +724,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetStencilOpOnStencilFail ( StencilOp op, Face face ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::StencilTest), LUM_SEV_DEBUG, "Stencil not enabled");
+		if (!mEnabledStates.has(State::StencilTest)) {
+			return;
+		}
 
 		auto& stencil = mDepthStencilState.stencil;
 
@@ -731,7 +782,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetStencilOpOnDepthFail ( StencilOp op, Face face ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::StencilTest), LUM_SEV_DEBUG, "Stencil not enabled");
+		if (!mEnabledStates.has(State::StencilTest)) {
+			return;
+		}
 
 		auto& stencil = mDepthStencilState.stencil;
 
@@ -787,7 +840,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetStencilOpOnDepthPass ( StencilOp op, Face face ) {
 
-		LUM_HOTCHK_RETURN_VOID(mEnabledStates.has(State::StencilTest), LUM_SEV_DEBUG, "Stencil not enabled");
+		if (!mEnabledStates.has(State::StencilTest)) {
+			return;
+		}
 
 		auto& stencil = mDepthStencilState.stencil;
 
@@ -873,7 +928,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetDepthBiasFactors ( float32 slope, float32 units ) {
 
-		LUM_HOTCHK(mEnabledStates.has(State::DepthBias), LUM_SEV_DEBUG, "Depth bias not enabled");
+		if (!mEnabledStates.has(State::DepthBias)) {
+			return;
+		}
 
 		if (mRasterizerState.depthBias.slopeFactor == slope && mRasterizerState.depthBias.units == units) {
 			LUM_PROFILER_CACHE_HIT();
@@ -890,7 +947,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetDepthBiasClamp ( float32 clamp ) {
 
-		LUM_HOTCHK(mEnabledStates.has(State::DepthBias), LUM_SEV_DEBUG, "Depth bias not enabled");
+		if (!mEnabledStates.has(State::DepthBias)) {
+			return;
+		}
 
 		if (mRasterizerState.depthBias.clamp == clamp) {
 			LUM_PROFILER_CACHE_HIT();
@@ -910,7 +969,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetDepthBiasSlope ( float32 slopeFactor ) {
 
-		LUM_HOTCHK(mEnabledStates.has(State::DepthBias), LUM_SEV_DEBUG, "Depth bias not enabled");
+		if (!mEnabledStates.has(State::DepthBias)) {
+			return;
+		}
 
 		if (mRasterizerState.depthBias.slopeFactor == slopeFactor) {
 			LUM_PROFILER_CACHE_HIT();
@@ -925,7 +986,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetDepthBiasConstant ( float32 constantBias ) {
 
-		LUM_HOTCHK(mEnabledStates.has(State::DepthBias), LUM_SEV_DEBUG, "Depth bias not enabled");
+		if (!mEnabledStates.has(State::DepthBias)) {
+			return;
+		}
 
 		if (mRasterizerState.depthBias.units == constantBias) {
 			LUM_PROFILER_CACHE_HIT();

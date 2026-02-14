@@ -1,11 +1,18 @@
+// ************************************
+// LumEngine Copyright (C) 2026 3zymek
+// All rights reserved.
+// OpenGL header of RHI
+// ************************************
 #pragma once
+
 #include "rhi/core/rhi_device.hpp"
 #include "rhi/core/rhi_buffer.hpp"
 #include "rhi/rhi_pch.hpp"
+
 #include "core/core_defines.hpp"
-#include "rhi/core/rhi_vertex_layout.hpp"
 #include "core/utils/asset_service.hpp"
 #include "core/utils/sparse_set.hpp"
+
 namespace lum::rhi::gl {
 
 	class GLDevice : public RenderDevice {
@@ -79,7 +86,6 @@ namespace lum::rhi::gl {
 		TextureHandle	CreateTexture2D		 ( const TextureDescriptor& )				override;
 		TextureHandle	CreateTexture3D		 ( const TextureDescriptor& )				override;
 		TextureHandle	CreateCubemapTexture ( const TextureCubemapDescriptor& desc )	override;
-		// DEFINETLY TODO
 		void			UpdateTexture		 ( const TextureHandle& tex, const TextureDescriptor& desc ) override;
 		void			UpdateTexture		 ( const TextureHandle& tex, const TextureRect&, const void* data ) override;
 		void			DeleteTexture		 ( TextureHandle& )							override;
@@ -206,18 +212,18 @@ namespace lum::rhi::gl {
 		void SetPointSize ( float32 size )	override;
 		void SetLineWidth ( float32 width )	override;
 
-		void ToggleMultisample(bool toggle) override;
-		void ToggleSampleCoverage(bool toggle) override;
-		void ToggleSampleAlphaToCoverage(bool toggle) override;
-		void ToggleSampleAlphaToOne(bool toggle) override;
-		void SetSampleCoverage(float32 value, bool invert) override;
+		void ToggleMultisample			 ( bool toggle ) override;
+		void ToggleSampleCoverage		 ( bool toggle ) override;
+		void ToggleSampleAlphaToCoverage ( bool toggle ) override;
+		void ToggleSampleAlphaToOne		 ( bool toggle ) override;
+		void SetSampleCoverage			 ( float32 value, bool invert ) override;
 
-		void Draw ( const VertexLayoutHandle&, uint32 )	override;
-		void DrawInstanced( const VertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount ) override;
-		void DrawInstancedBase(const VertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount, uint32 baseInstance ) override;
-		void DrawElements ( const VertexLayoutHandle&, uint32 )	override;
-		void DrawElementsInstanced ( const VertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount ) override;
-		void DrawElementsInstancedBase ( const VertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance ) override;
+		void Draw						( const VertexLayoutHandle&, uint32 )	override;
+		void DrawInstanced				( const VertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount ) override;
+		void DrawInstancedBase			( const VertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount, uint32 baseInstance ) override;
+		void DrawElements				( const VertexLayoutHandle&, uint32 )	override;
+		void DrawElementsInstanced		( const VertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount ) override;
+		void DrawElementsInstancedBase	( const VertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance ) override;
 
 		void BeginFrame	( )	override;
 		void EndFrame	( )	override;

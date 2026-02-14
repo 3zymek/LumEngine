@@ -84,15 +84,15 @@ namespace lum {
 					sizeof(descTempBuffer), 
 					"%s:%s%d%s %s", 
 					filename, 
-					cmdcolor::cyan, 
+					cmdcolor::Cyan, 
 					line, 
-					cmdcolor::gReset, 
+					cmdcolor::Reset, 
 					func
 				);
 
 			center_custom(descBuffer, sizeof(descBuffer), descTempBuffer, 2, 64);
 			
-			std::printf("[%s%s%s][%s] ", sevColorBuffer, centertedSeverity, cmdcolor::gReset, descBuffer);
+			std::printf("[%s%s%s][%s] ", sevColorBuffer, centertedSeverity, cmdcolor::Reset, descBuffer);
 			std::printf(msg, std::forward<Args>(args)...);
 			std::printf("%c", '\n');
 

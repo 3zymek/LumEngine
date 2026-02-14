@@ -1,6 +1,8 @@
+// ************************************
 // LumEngine Copyright (C) 2026 3zymek
 // All rights reserved.
 // Core math API and backend abstraction.
+// ************************************
 #pragma once
 
 #include "core/core_pch.hpp"

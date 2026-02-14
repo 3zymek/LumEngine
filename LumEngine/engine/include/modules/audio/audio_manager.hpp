@@ -77,7 +77,7 @@ namespace lum {
 			 *  @remark Replaces any existing sound with the same name. 3D sounds require a listener.
 			 *  @thread_safety Call from main audio thread or FMOD-safe thread.
 			 */
-			void LoadSound( string_view alias_name, string_view path, FMOD_MODE mode = FMOD_3D );
+			void LoadSound( StringView alias_name, StringView path, FMOD_MODE mode = FMOD_3D );
 
 
 			/*! @brief Creates an audio listener attached to an entity.
@@ -121,8 +121,8 @@ namespace lum {
 			bool	GetEmitterClipPaused( EmitterHandle, AudioHandle );
 
 			AudioListenerWrapper*		GetListener	( );
-			std::optional<AudioHandle>	GetIDByName	( string_view );
-			bool						NameExists	( string_view );
+			std::optional<AudioHandle>	GetIDByName	( StringView );
+			bool						NameExists	( StringView );
 
 		private:
 
@@ -175,7 +175,7 @@ namespace lum {
 
 			std::unordered_map< uint64_t, AudioHandle >		m_name_to_id;
 			#ifdef LUM_ENABLE_LOGGER
-				std::unordered_map< AudioHandle, string >	m_id_to_name;
+				std::unordered_map< AudioHandle, String >	m_id_to_name;
 			#endif
 		};
 

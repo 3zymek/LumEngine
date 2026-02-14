@@ -1,3 +1,8 @@
+// ************************************
+// LumEngine Copyright (C) 2026 3zymek
+// All rights reserved.
+// Shader contract API
+// ************************************
 #pragma once
 
 // Shader location for position
@@ -45,7 +50,7 @@
 #define LUM_TEX_CUBEMAP 8 // Cubemap texture binding.
 
 // Null/default binding value.
-#define LUM_NULL_BINDING max_val<uint16_t>() // Invalid/null binding.
+#define LUM_NULL_BINDING MaxVal<uint16>() // Invalid/null binding.
 
 
 ///////////////////////////////////////////

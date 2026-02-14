@@ -1,3 +1,9 @@
+// ************************************
+// LumEngine Copyright (C) 2026 3zymek
+// All rights reserved.
+// Shaders implementation for OpenGL RHI
+// ************************************
+
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
 namespace lum::rhi::gl {
@@ -11,22 +17,22 @@ namespace lum::rhi::gl {
 			"Max shaders reached"
 		);
 
-		bool success{};
-		string&& vfile = AssetService::LoadInternalShader(desc.vertexSource, success);
-		ccharptr vcstr = vfile.c_str();
+		bool success;
 
+		String&& vfile = AssetService::LoadInternalShader ( desc.vertexSource, success );
 		if (!success) {
 			LUM_LOG_ERROR("Couldn't load shader %s", desc.vertexSource);
 			return ShaderHandle{};
 		}
 
-		string&& ffile = AssetService::LoadInternalShader(desc.fragmentSource, success);
-		ccharptr fcstr = ffile.c_str();
-
+		String&& ffile = AssetService::LoadInternalShader ( desc.fragmentSource, success );
 		if (!success) {
 			LUM_LOG_ERROR("Couldn't load shader %s", desc.fragmentSource);
 			return ShaderHandle{};
 		}
+
+		ccharptr vcstr = vfile.c_str();
+		ccharptr fcstr = ffile.c_str();
 
 		Shader shader;
 
@@ -36,9 +42,9 @@ namespace lum::rhi::gl {
 		glShaderSource(vshader, 1, &vcstr, nullptr);
 		glShaderSource(fshader, 1, &fcstr, nullptr);
 
-		if (!compile_shader(vshader))
+		if (!compile_shader( vshader ))
 			return ShaderHandle{};
-		if (!compile_shader(fshader))
+		if (!compile_shader( fshader ))
 			return ShaderHandle{};
 
 		shader.handle = glCreateProgram();

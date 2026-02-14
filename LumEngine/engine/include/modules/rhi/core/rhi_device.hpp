@@ -1,6 +1,8 @@
+// ************************************
 // LumEngine Copyright (C) 2026 3zymek
 // All rights reserved.
 // Core of Render Hardware Interface
+// ************************************
 #pragma once
 
 #include "core/core_pch.hpp"
@@ -18,6 +20,7 @@
 #include "rhi/core/rhi_sampler.hpp"
 #include "rhi/core/rhi_framebuffer.hpp"
 #include "rhi/core/rhi_pipeline.hpp"
+
 #if LUM_ENABLE_RENDER_PROFILER == 1
 #	include "rhi/rhi_profiler.hpp"
 #endif
@@ -89,7 +92,7 @@ namespace lum::rhi {
 		LUM_NODISCARD
 		virtual BufferHandle CreateUniformBuffer ( const BufferDescriptor& desc ) = 0;
 
-		// TODO
+		// TODO implement
 		LUM_NODISCARD
 		virtual BufferHandle CreateShaderStorageBuffer ( const BufferDescriptor& desc ) = 0;
 

@@ -1,9 +1,16 @@
+//========= Copyright 2026 3zymek, All rights reserved. ============//
+//
+// Purpose: OpenGL device state management
+//
+//=============================================================================//
 #pragma once
 #include "core/core_pch.hpp"
 #include "core/types.hpp"
 #include "core/utils/string_hasher.hpp"
 #include "core/math/types.hpp"
 namespace lum {
+
+
 
 	/// Generates ID for any type
 	/// @tparam T object Type to generate an ID
@@ -16,6 +23,8 @@ namespace lum {
 	private:
 		inline static uint32 gID = NULL_VAL + 1;
 	};
+
+
 	
 	/// Converts any arithmetic type to float at compile-time.
 	/// @param value The numeric value to cast.
@@ -24,12 +33,16 @@ namespace lum {
 		requires std::is_arithmetic_v<T>
 	inline constexpr float32 ToF(T value) { return static_cast<float32>(value); }
 
+
+
 	/// Converts any arithmetic type to uint8 at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to uint8.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
 	inline constexpr uint8 ToU8(T value) { return static_cast<uint8>(value); }
+
+
 
 	/// Converts any arithmetic type to uint16 at compile-time.
 	/// @param value The numeric value to cast.
@@ -38,12 +51,16 @@ namespace lum {
 		requires std::is_arithmetic_v<T>
 	inline constexpr uint16 ToU16(T value) { return static_cast<uint16>(value); }
 
+
+
 	/// Converts any arithmetic type to uint32_t at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to uint32_t.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
 	inline constexpr uint32 ToU32(T value) { return static_cast<uint32>(value); }
+
+
 
 	/// Converts any arithmetic type to uint64_t at compile-time.
 	/// @param value The numeric value to cast.
@@ -52,6 +69,8 @@ namespace lum {
 		requires std::is_arithmetic_v<T>
 	inline constexpr uint64_t ToU64(T value) { return static_cast<uint64_t>(value); }
 
+
+
 	/// Converts any arithmetic type to double at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to double.
@@ -59,12 +78,16 @@ namespace lum {
 		requires std::is_arithmetic_v<T>
 	inline constexpr float64 ToD(T value) { return static_cast<float64>(value); }
 
+
+
 	/// Converts any arithmetic type to int32 at compile-time.
 	/// @param value The numeric value to cast.
 	/// @return The value casted to int32.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
 	inline constexpr int32 ToI(T value) { return static_cast<int32>(value); }
+
+
 
 	/// Returns max value of arithmetic type.
 	/// @tparam T arithmetic type.
@@ -74,12 +97,16 @@ namespace lum {
 		return std::numeric_limits<T>::max();
 	}
 
+
+
 	/// @return Returns definitive size of vector in bytes.
 	/// @param vector Vector to calculate size.
 	template<typename T>
 	inline constexpr usize ByteSize(const std::vector<T>& vector) {
 		return sizeof(T) * vector.size();
 	}
+
+
 
 	/// @return Returns definitive size of type in bytes multiplied by size.
 	/// @param arr Pointer to the data.
@@ -89,6 +116,8 @@ namespace lum {
 		return sizeof(T) * L;
 	}
 
+
+
 	/// @return Returns definitive size of type in bytes multiplied by size.
 	/// @param arr Pointer to the data.
 	/// @param size How much elements.
@@ -97,6 +126,8 @@ namespace lum {
 		return sizeof(T) * size;
 	}
 
+
+
 	/// @return Underlying type of enum.
 	/// @param e Enum.
 	template<typename T>
@@ -104,6 +135,8 @@ namespace lum {
 	inline constexpr std::underlying_type_t<T> ToUnderlyingEnum(T e){
 		return static_cast<std::underlying_type_t<T>>(e);
 	}
+
+
 
 	/// @brief Hashes a UTF-8 string literal to a 64-bit unsigned integer.
 	/// @tparam L Size of the string literal (including null terminator).
@@ -116,6 +149,8 @@ namespace lum {
 	inline uint64 HashStr(std::string_view str) noexcept {
 		return cstd::StringHasher::Hash(str);
 	}
+
+
 
 
 	namespace settings {
@@ -160,49 +195,51 @@ namespace lum {
 
 
 	}
-	// TODO change names below with -g
+
 	namespace cmdcolor {
-		LUM_COMPILE_VARIABLE ccharptr gReset	= "\033[0m";
-		LUM_COMPILE_VARIABLE ccharptr gBlack	= "\033[30m";
-		LUM_COMPILE_VARIABLE ccharptr gRed		= "\033[31m";
-		LUM_COMPILE_VARIABLE ccharptr gGreen	= "\033[32m";
-		LUM_COMPILE_VARIABLE ccharptr gYellow	= "\033[33m";
-		LUM_COMPILE_VARIABLE ccharptr gBlue		= "\033[34m";
-		LUM_COMPILE_VARIABLE ccharptr magenta	= "\033[35m";
-		LUM_COMPILE_VARIABLE ccharptr cyan		= "\033[36m";
-		LUM_COMPILE_VARIABLE ccharptr white		= "\033[37m";
+	
+		LUM_COMPILE_VARIABLE ccharptr Reset		= "\033[0m";
+		LUM_COMPILE_VARIABLE ccharptr Black		= "\033[30m";
+		LUM_COMPILE_VARIABLE ccharptr Red		= "\033[31m";
+		LUM_COMPILE_VARIABLE ccharptr Green		= "\033[32m";
+		LUM_COMPILE_VARIABLE ccharptr Yellow	= "\033[33m";
+		LUM_COMPILE_VARIABLE ccharptr Blue		= "\033[34m";
+		LUM_COMPILE_VARIABLE ccharptr Magenta	= "\033[35m";
+		LUM_COMPILE_VARIABLE ccharptr Cyan		= "\033[36m";
+		LUM_COMPILE_VARIABLE ccharptr White		= "\033[37m";
 
-		LUM_COMPILE_VARIABLE ccharptr light_black	= "\033[90m";
-		LUM_COMPILE_VARIABLE ccharptr light_red		= "\033[91m";
-		LUM_COMPILE_VARIABLE ccharptr light_green	= "\033[92m";
-		LUM_COMPILE_VARIABLE ccharptr light_yellow	= "\033[93m";
-		LUM_COMPILE_VARIABLE ccharptr light_blue	= "\033[94m";
-		LUM_COMPILE_VARIABLE ccharptr light_magenta	= "\033[95m";
-		LUM_COMPILE_VARIABLE ccharptr light_cyan	= "\033[96m";
-		LUM_COMPILE_VARIABLE ccharptr light_white	= "\033[97m";
+		LUM_COMPILE_VARIABLE ccharptr LightBlack	= "\033[90m";
+		LUM_COMPILE_VARIABLE ccharptr LightRed		= "\033[91m";
+		LUM_COMPILE_VARIABLE ccharptr LightGreen	= "\033[92m";
+		LUM_COMPILE_VARIABLE ccharptr LightYellow	= "\033[93m";
+		LUM_COMPILE_VARIABLE ccharptr LightBlue		= "\033[94m";
+		LUM_COMPILE_VARIABLE ccharptr LightMagenta	= "\033[95m";
+		LUM_COMPILE_VARIABLE ccharptr LightCyan		= "\033[96m";
+		LUM_COMPILE_VARIABLE ccharptr LightWhite	= "\033[97m";
 
-		LUM_COMPILE_VARIABLE ccharptr bg_black		= "\033[40m";
-		LUM_COMPILE_VARIABLE ccharptr bg_red		= "\033[41m";
-		LUM_COMPILE_VARIABLE ccharptr bg_green		= "\033[42m";
-		LUM_COMPILE_VARIABLE ccharptr bg_yellow		= "\033[43m";
-		LUM_COMPILE_VARIABLE ccharptr bg_blue		= "\033[44m";
-		LUM_COMPILE_VARIABLE ccharptr bg_magenta	= "\033[45m";
-		LUM_COMPILE_VARIABLE ccharptr bg_cyan		= "\033[46m";
-		LUM_COMPILE_VARIABLE ccharptr bg_white		= "\033[47m";
+		LUM_COMPILE_VARIABLE ccharptr BgBlack		= "\033[40m";
+		LUM_COMPILE_VARIABLE ccharptr BgRed			= "\033[41m";
+		LUM_COMPILE_VARIABLE ccharptr BgGreen		= "\033[42m";
+		LUM_COMPILE_VARIABLE ccharptr BgYellow		= "\033[43m";
+		LUM_COMPILE_VARIABLE ccharptr BgBlue		= "\033[44m";
+		LUM_COMPILE_VARIABLE ccharptr BgMagenta		= "\033[45m";
+		LUM_COMPILE_VARIABLE ccharptr BgCyan		= "\033[46m";
+		LUM_COMPILE_VARIABLE ccharptr BgWhite		= "\033[47m";
 
-		LUM_COMPILE_VARIABLE ccharptr bg_light_black	= "\033[100m";
-		LUM_COMPILE_VARIABLE ccharptr bg_light_red		= "\033[101m";
-		LUM_COMPILE_VARIABLE ccharptr bg_light_green	= "\033[102m";
-		LUM_COMPILE_VARIABLE ccharptr bg_light_yellow	= "\033[103m";
-		LUM_COMPILE_VARIABLE ccharptr bg_light_blue		= "\033[104m";
-		LUM_COMPILE_VARIABLE ccharptr bg_light_magenta	= "\033[105m";
-		LUM_COMPILE_VARIABLE ccharptr bg_light_cyan		= "\033[106m";
-		LUM_COMPILE_VARIABLE ccharptr bg_light_white	= "\033[107m";
+		LUM_COMPILE_VARIABLE ccharptr BgLightBlack		= "\033[100m";
+		LUM_COMPILE_VARIABLE ccharptr BgLightRed		= "\033[101m";
+		LUM_COMPILE_VARIABLE ccharptr BgLightGreen		= "\033[102m";
+		LUM_COMPILE_VARIABLE ccharptr BgLightYellow		= "\033[103m";
+		LUM_COMPILE_VARIABLE ccharptr BgLightBlue		= "\033[104m";
+		LUM_COMPILE_VARIABLE ccharptr BgLightMagenta	= "\033[105m";
+		LUM_COMPILE_VARIABLE ccharptr BgLightCyan		= "\033[106m";
+		LUM_COMPILE_VARIABLE ccharptr BgLightWhite		= "\033[107m";
 
-		LUM_COMPILE_VARIABLE ccharptr bold			= "\033[1m";
-		LUM_COMPILE_VARIABLE ccharptr italic		= "\033[3m";
-		LUM_COMPILE_VARIABLE ccharptr underline		= "\033[4m";
-		LUM_COMPILE_VARIABLE ccharptr strikethrough	= "\033[9m";
-		LUM_COMPILE_VARIABLE ccharptr reverse		= "\033[7m";
+		LUM_COMPILE_VARIABLE ccharptr FontBold			= "\033[1m";
+		LUM_COMPILE_VARIABLE ccharptr FontItalic		= "\033[3m";
+		LUM_COMPILE_VARIABLE ccharptr FontUnderline		= "\033[4m";
+		LUM_COMPILE_VARIABLE ccharptr FontStrikethrough	= "\033[9m";
+		LUM_COMPILE_VARIABLE ccharptr FontReserve		= "\033[7m";
+	
 	}
 }

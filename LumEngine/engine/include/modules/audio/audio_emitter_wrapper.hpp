@@ -28,7 +28,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& Add( string_view name );
+			AudioEmitterWrapper& Add( StringView name );
 
 			/*! @brief Plays the sound on emitter.
 			*
@@ -39,7 +39,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& Play( string_view name );
+			AudioEmitterWrapper& Play( StringView name );
 
 			/*! @brief Stops the sound.
 			*
@@ -50,7 +50,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& Stop( string_view name );
+			AudioEmitterWrapper& Stop( StringView name );
 
 			/*! @brief Sets the volume of a sound.
 			*
@@ -60,7 +60,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& SetVolume( string_view name, float32 value );
+			AudioEmitterWrapper& SetVolume( StringView name, float32 value );
 
 			/*! @brief Sets the pitch of a sound.
 			*
@@ -70,7 +70,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& SetPitch( string_view name, float32 value );
+			AudioEmitterWrapper& SetPitch( StringView name, float32 value );
 
 			/*! @brief Pauses or resumes a sound.
 			*
@@ -80,7 +80,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& SetPaused( string_view name, bool value );
+			AudioEmitterWrapper& SetPaused( StringView name, bool value );
 
 			/*! @brief Sets looping for a sound.
 			*
@@ -90,7 +90,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			AudioEmitterWrapper& SetLoop( string_view name, bool value );
+			AudioEmitterWrapper& SetLoop( StringView name, bool value );
 
 			/*! @brief Gets the unique ID of this emitter.
 			*
@@ -108,7 +108,7 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or audio system context.
 			*/
-			void Remove( string_view name );
+			void Remove( StringView name );
 
 			/*! @brief Removes a sound by name.
 			*
@@ -118,7 +118,7 @@ namespace lum {
 			*  @return volume value of a clip on this emitter.
 			*
 			*/
-			float GetVolume	( string_view name );
+			float GetVolume	( StringView name );
 
 			/*! @brief Removes a sound by name.
 			*
@@ -128,7 +128,7 @@ namespace lum {
 			*  @return pitch value of a clip on this emitter.
 			*
 			*/
-			float GetPitch	( string_view name );
+			float GetPitch	( StringView name );
 
 			/*! @brief Removes a sound by name.
 			*
@@ -138,7 +138,7 @@ namespace lum {
 			*  @return paused value of a clip on this emitter.
 			*
 			*/
-			bool GetPaused	( string_view name );
+			bool GetPaused	( StringView name );
 
 			/*! @brief Removes a sound by name.
 			*
@@ -148,7 +148,7 @@ namespace lum {
 			*  @return looped value of a clip on this emitter.
 			*
 			*/
-			bool GetLooped	( string_view name );
+			bool GetLooped	( StringView name );
 
 
 		private:
