@@ -11,15 +11,15 @@ namespace lum::rhi::gl {
 
 	bool GLDevice::is_valid_buffer_descriptor(const BufferDescriptor& desc) noexcept {
 
-		if (desc.bufferUsage == BufferUsage::Static) {
+		if (desc.mBufferUsage == BufferUsage::Static) {
 
-			if (!desc.mapFlags.has_only(Mapflag::Read | Mapflag::Coherent)) {
+			if (!desc.mMapFlags.HasOnly(Mapflag::Read | Mapflag::Coherent)) {
 				LUM_LOG_ERROR("Invalid buffer descriptor - Static buffers only allow Read and Coherent flags");
 				return false;
 			}
 
 		}
-		else if ((desc.mapFlags.has(Mapflag::Coherent)) && !(desc.mapFlags.has(Mapflag::Persistent))) {
+		else if ((desc.mMapFlags.Has(Mapflag::Coherent)) && !(desc.mMapFlags.Has(Mapflag::Persistent))) {
 			LUM_LOG_ERROR("Invalid buffer descriptor");
 			return false;
 		}
@@ -31,13 +31,13 @@ namespace lum::rhi::gl {
 	GLbitfield GLDevice::translate_mapping_flags(Flags<Mapflag> flags) noexcept {
 		GLbitfield flag = 0;
 
-		if (flags.has(Mapflag::Persistent))				flag |= GL_MAP_PERSISTENT_BIT;
-		if (flags.has(Mapflag::Write))					flag |= GL_MAP_WRITE_BIT;
-		if (flags.has(Mapflag::Read))					flag |= GL_MAP_READ_BIT;
-		if (flags.has(Mapflag::Coherent))				flag |= GL_MAP_COHERENT_BIT;
-		if (flags.has(Mapflag::Invalidate_Buffer))		flag |= GL_MAP_INVALIDATE_BUFFER_BIT;
-		if (flags.has(Mapflag::Invalidate_Range))		flag |= GL_MAP_INVALIDATE_RANGE_BIT;
-		if (flags.has(Mapflag::Unsynchronized))			flag |= GL_MAP_UNSYNCHRONIZED_BIT;
+		if (flags.Has(Mapflag::Persistent))				flag |= GL_MAP_PERSISTENT_BIT;
+		if (flags.Has(Mapflag::Write))					flag |= GL_MAP_WRITE_BIT;
+		if (flags.Has(Mapflag::Read))					flag |= GL_MAP_READ_BIT;
+		if (flags.Has(Mapflag::Coherent))				flag |= GL_MAP_COHERENT_BIT;
+		if (flags.Has(Mapflag::Invalidate_Buffer))		flag |= GL_MAP_INVALIDATE_BUFFER_BIT;
+		if (flags.Has(Mapflag::Invalidate_Range))		flag |= GL_MAP_INVALIDATE_RANGE_BIT;
+		if (flags.Has(Mapflag::Unsynchronized))			flag |= GL_MAP_UNSYNCHRONIZED_BIT;
 
 		return flag;
 	}

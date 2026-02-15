@@ -11,7 +11,7 @@ namespace lum::rhi::gl {
 			"Buffer doesn't exist"
 		);
 		LUM_HOTCHK_RETURN_CUSTOM(
-			desc.attributes.size() > 0,
+			desc.mAttributes.size() > 0,
 			LUM_SEV_WARN,
 			VertexLayoutHandle{},
 			"VertexLayout has no attributes",
@@ -20,33 +20,33 @@ namespace lum::rhi::gl {
 		VertexLayout layout;
 		Buffer& buffer = mBuffers[vbo];
 
-		glCreateVertexArrays(1, &layout.vao);
+		glCreateVertexArrays(1, &layout.mHandle);
 		glVertexArrayVertexBuffer(
-			layout.vao,
-			desc.binding,
-			buffer.handle.glHandle,
-			desc.offset,
-			desc.stride
+			layout.mHandle,
+			desc.mBinding,
+			buffer.mHandle.gl,
+			desc.mOffset,
+			desc.mStride
 		);
 
-		for (int i = 0; i < desc.attributes.size(); i++) {
+		for (int i = 0; i < desc.mAttributes.size(); i++) {
 
 			glVertexArrayAttribFormat(
-				layout.vao,
-				desc.attributes[i].shaderLocation,
-				detail::skDataFormatLookup[lookup_cast(desc.attributes[i].format)],
+				layout.mHandle,
+				desc.mAttributes[i].mShaderLocation,
+				detail::skDataFormatLookup[lookup_cast(desc.mAttributes[i].mFormat)],
 				GL_FLOAT,
 				GL_FALSE,
-				desc.attributes[i].relativeOffset
+				desc.mAttributes[i].mRelativeOffset
 			);
 
 			glVertexArrayAttribBinding(
-				layout.vao,
-				desc.attributes[i].shaderLocation,
-				desc.binding
+				layout.mHandle,
+				desc.mAttributes[i].mShaderLocation,
+				desc.mBinding
 			);
 
-			glEnableVertexArrayAttrib(layout.vao, desc.attributes[i].shaderLocation);
+			glEnableVertexArrayAttrib(layout.mHandle, desc.mAttributes[i].mShaderLocation);
 
 		}
 
@@ -60,7 +60,7 @@ namespace lum::rhi::gl {
 	void GLDevice::DeleteVertexLayout ( VertexLayoutHandle& layout ) {
 		LUM_HOTCHK_RETURN_VOID(!mLayouts.exist(layout), LUM_SEV_WARN, "Layout doesn't exist");
 
-		glDeleteVertexArrays(1, &mLayouts[layout].vao);
+		glDeleteVertexArrays(1, &mLayouts[layout].mHandle);
 		mLayouts.delete_handle(layout);
 
 	}

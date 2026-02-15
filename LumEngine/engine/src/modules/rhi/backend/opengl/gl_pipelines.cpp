@@ -10,10 +10,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::bind_check_shader ( const Pipeline& pip ) noexcept {
 		
-		if (pip.shader.id == null_id<ShaderID>())
+		if (pip.mShader.id == null_id<ShaderID>())
 			return;
 
-		BindShader(pip.shader);
+		BindShader(pip.mShader);
 
 	}
 
@@ -38,13 +38,13 @@ namespace lum::rhi::gl {
 
 		ToggleDepthTest(depth.bEnabled);
 
-		SetDepthFunc(depth.compareFlag);
+		SetDepthFunc(depth.mCompare);
 
 		ToggleStencilTest(stencil.bEnabled);
-		SetStencilReference(stencil.front.reference, Face::Front);
-		SetStencilReference(stencil.back.reference, Face::Back);
-		SetStencilOp(stencil.front.stencilFailOp, stencil.front.depthFailOp, stencil.front.passOp, Face::Front);
-		SetStencilOp(stencil.back.stencilFailOp, stencil.back.depthFailOp, stencil.back.passOp, Face::Back);
+		SetStencilReference(stencil.mFront.reference, Face::Front);
+		SetStencilReference(stencil.mBack.reference, Face::Back);
+		SetStencilOp(stencil.mFront.stencilFailOp, stencil.mFront.depthFailOp, stencil.mFront.passOp, Face::Front);
+		SetStencilOp(stencil.mBack.stencilFailOp, stencil.mBack.depthFailOp, stencil.mBack.passOp, Face::Back);
 		
 	}
 	void GLDevice::bind_check_scissors ( const Pipeline& pip ) noexcept {
@@ -52,7 +52,7 @@ namespace lum::rhi::gl {
 		const auto& scissors = pip.mScissor;
 
 		ToggleScissors(pip.mScissor.bEnabled);
-		SetScissors(scissors.x, scissors.y, scissors.width, scissors.height); // Default options
+		SetScissors(scissors.x, scissors.y, scissors.mWidth, scissors.mHeight); // Default options
 
 	}
 	void GLDevice::bind_check_blend ( const Pipeline& pip ) noexcept {
@@ -61,8 +61,8 @@ namespace lum::rhi::gl {
 
 		ToggleBlend(blend.bEnabled);
 
-		SetBlendFactors(blend.srcColorFactor, blend.dstColorFactor, blend.srcAlphaFactor, blend.dstAlphaFactor);
-		SetBlendOp(blend.colorOp, blend.alphaOp);
+		SetBlendFactors(blend.mSrcColorFactor, blend.mDstColorFactor, blend.mSrcAlphaFactor, blend.mDstAlphaFactor);
+		SetBlendOp(blend.mColorOp, blend.mAlphaOp);
 
 	}
 	void GLDevice::bind_check_cull ( const Pipeline& pip ) noexcept {
@@ -71,8 +71,8 @@ namespace lum::rhi::gl {
 
 		ToggleCull(cull.bEnabled);
 
-		SetCullFace(cull.face);
-		SetFrontFace(cull.windingOrder);
+		SetCullFace(cull.mFace);
+		SetFrontFace(cull.mWindingOrder);
 
 	}
 	void GLDevice::bind_check_color_mask ( const Pipeline& pip ) noexcept {
@@ -97,8 +97,8 @@ namespace lum::rhi::gl {
 			"Max pipelines reached"
 		);
 
-		if (desc.shader.id != null_id<PipelineID>() && !mShaders.exist(desc.shader)) {
-			LUM_LOG_ERROR("Shader %d doesn't exist", desc.shader.id);
+		if (desc.mShader.id != null_id<PipelineID>() && !mShaders.exist(desc.mShader)) {
+			LUM_LOG_ERROR("Shader %d doesn't exist", desc.mShader.id);
 		}
 
 		Pipeline pipeline;

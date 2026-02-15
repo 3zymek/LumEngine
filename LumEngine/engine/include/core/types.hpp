@@ -1,8 +1,8 @@
-// ************************************
-// LumEngine Copyright (C) 2026 3zymek
-// All rights reserved.
-// Types used in LumEngine
-// ************************************
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Types used in LumEngine
+// 
+//=============================================================================//
 #pragma once
 
 namespace lum {

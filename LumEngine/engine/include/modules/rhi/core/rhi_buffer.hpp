@@ -1,3 +1,8 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Buffer configuration for the Rendering Hardware Interface
+//
+//=============================================================================//
 #pragma once
 #include "core/core_pch.hpp"
 #include "core/core_common.hpp"
@@ -7,29 +12,29 @@ namespace lum::rhi {
 	struct BufferDescriptor {
 
 		// Defines if buffer is static ( data cannot be changed in runtime ) or dynamic.
-		BufferUsage	bufferUsage	= BufferUsage::Static;
+		BufferUsage	mBufferUsage = BufferUsage::Static;
 
 		// Size of data that's assigned.
-		usize size = 0;
+		usize mSize = 0;
 
 		// Flags defines what operations can be done on a buffer and which not.
-		Flags<Mapflag>	mapFlags{};
+		Flags<Mapflag> mMapFlags{};
 
 		// Pointer to data.
-		cvptr data = nullptr;
+		cvptr mData = nullptr;
 	};
 
 	struct Buffer {
 
-		BufferType		type	{};
-		BufferUsage		usage	{};
-		Flags<Mapflag>	flags	{};
-		usize			size	= 0;
+		BufferType		mType	{};
+		BufferUsage		mUsage	{};
+		Flags<Mapflag>	mFlags	{};
+		usize			mSize	= 0;
 		bool			bMapped	= false;
 
 		union {
-			BufferID glHandle = 0;
-		} handle{};
+			BufferID gl = 0;
+		} mHandle{};
 
 	};
 

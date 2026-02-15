@@ -43,7 +43,7 @@ namespace lum {
 
 		public:
 
-			AudioManager(ecs::EntityManager& ecs_m, ev::EventBus& ev_bus) : m_entity_manager(ecs_m), m_event_bus(ev_bus) {}
+			AudioManager(ecs::EntityManager& ecs_m, ev::EventBus& ev_bus) : mEntityManager(ecs_m), mEventBus(ev_bus) {}
 			~AudioManager() = default;
 
 
@@ -138,9 +138,9 @@ namespace lum {
 
 			void SubscribeEvents		( );
 
-			inline bool ValidateEmitterID	( EmitterHandle id ) noexcept {
+			inline bool validate_emitter_id	( EmitterHandle id ) noexcept {
 
-				if (!m_emitters.contains(id)) {
+				if (!mEmitters.contains(id)) {
 					LUM_LOG_WARN("Emitter does not exist");
 					return false;
 				}
@@ -149,7 +149,7 @@ namespace lum {
 			}
 			inline bool ValidateAudioID		( AudioHandle id ) noexcept {
 
-				if (!m_sounds.contains(id)) {
+				if (!mSounds.contains(id)) {
 					LUM_LOG_WARN("Sound does not exist");
 					return false;
 				}
@@ -158,24 +158,24 @@ namespace lum {
 			}
 			inline bool ValidateEmitterAndAudioID( EmitterHandle emitterID, AudioHandle audioID ) noexcept {
 
-				return ValidateEmitterID(emitterID) && ValidateAudioID(audioID);
+				return validate_emitter_id(emitterID) && ValidateAudioID(audioID);
 
 			}
 
-			ev::EventBus& m_event_bus;
-			ecs::EntityManager& m_entity_manager;
+			ev::EventBus& mEventBus;
+			ecs::EntityManager& mEntityManager;
 
-			cmd::CommandBuffer< cmd::AudioCmd, 100 > m_commands;
+			cmd::CommandBuffer< cmd::AudioCmd, 100 > mCmdBuffer;
 
-			std::unique_ptr< AudioListenerWrapper >			m_listener;
-			std::unique_ptr< FMOD::System, FDestructor >	m_audio_system;
+			std::unique_ptr< AudioListenerWrapper >			mListener;
+			std::unique_ptr< FMOD::System, FDestructor >	mAudioSystem;
 
-			cstd::sparse_set< AudioClip, AudioHandle >		m_sounds{ MAX_SOUNDS_COUNT };
-			cstd::sparse_set< AudioEmitter, EmitterHandle >	m_emitters{ ecs::detail::MAX_ENTITY_COUNT };
+			cstd::sparse_set< AudioClip, AudioHandle >		mSounds{ MAX_SOUNDS_COUNT };
+			cstd::sparse_set< AudioEmitter, EmitterHandle >	mEmitters{ ecs::detail::MAX_ENTITY_COUNT };
 
-			std::unordered_map< uint64_t, AudioHandle >		m_name_to_id;
+			std::unordered_map< uint64_t, AudioHandle >		mNameToID;
 			#ifdef LUM_ENABLE_LOGGER
-				std::unordered_map< AudioHandle, String >	m_id_to_name;
+				std::unordered_map< AudioHandle, String >	mIDToName;
 			#endif
 		};
 

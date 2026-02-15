@@ -1,19 +1,27 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Texture configuration for the Rendering Hardware Interface
+//
+//=============================================================================//
 #pragma once
+
 #include "rhi/rhi_pch.hpp"
 #include "rhi/rhi_common.hpp"
+
 #include "core/core_common.hpp"
 #include "core/shaders_define.h"
+
 namespace lum::rhi {
 
 	struct TextureRect {
 		uint32 x = 0;
 		uint32 y = 0;
 		
-		uint32 width = 0;
-		uint32 height = 0;
-		uint32 depth = 1;
+		uint32 mWidth = 0;
+		uint32 mHeight = 0;
+		uint32 mDepth = 1;
 
-		uint32 mip = 0;
+		uint32 mMipLevel = 0;
 	};
 
 	enum class TextureType : uint8 {
@@ -85,61 +93,61 @@ namespace lum::rhi {
 	struct TextureDescriptor {
 
 		// Path/Name of the texture
-		ccharptr filename = nullptr;
-		cvptr data = nullptr; // Data with texture ( higher priority than 'filename' )
+		ccharptr mFilename = nullptr;
+		cvptr mData = nullptr; // Data with texture ( higher priority than 'filename' )
 
-		InternalImageFormat internalFormat = InternalImageFormat::RGBA8; // GPU storage format
+		InternalImageFormat mInternalFormat = InternalImageFormat::RGBA8; // GPU storage format
 
-		LoadedImageFormat dataFormat = LoadedImageFormat::RGBA; // CPU layout
-		TextureDataType dataType = TextureDataType::UnsignedByte; // CPU channel type
+		LoadedImageFormat mDataFormat = LoadedImageFormat::RGBA; // CPU layout
+		TextureDataType mDataType = TextureDataType::UnsignedByte; // CPU channel type
 
 		bool bCompressed = false;
 
 		bool bFlipVertically = false;
-		bool premultiplyAlpha = false;
+		bool bPremultiplyAlpha = false;
 
 		// Can texture have LOD ( Level Of Detail )
 		bool bGenerateMipmaps = false;
-		uint32 mipmapLevels = 0; // If 0 - calculate automatically
+		uint32 mMipmapLevels = 0; // If 0 - calculate automatically
 
-		uint32 samples = 0;
+		uint32 mSamples = 0;
 
-		TextureRect rect;
+		TextureRect mRect;
 
 	};
 
 	struct TextureCubemapDescriptor {
 		
-		InternalImageFormat internalFormat = InternalImageFormat::RGBA8;
+		InternalImageFormat mInternalFormat = InternalImageFormat::RGBA8;
 
-		LoadedImageFormat dataFormat = LoadedImageFormat::RGBA;
-		TextureDataType dataType = TextureDataType::UnsignedByte;
+		LoadedImageFormat mDataFormat = LoadedImageFormat::RGBA;
+		TextureDataType mDataType = TextureDataType::UnsignedByte;
 
 		bool bGenerateMipmaps = false;
-		uint32 mipmapLevels = 1;
+		uint32 mMipmapLevels = 1;
 
 		bool bFlipVertically = false;
 		bool bPremultiplyAlpha = false;
 
-		ccharptr faces[6]{};
+		ccharptr mFaces[6]{};
 
 	};
 
 	struct Texture {
 
-		TextureRect rect;
+		TextureRect mRect;
 
-		TextureType type;
+		TextureType mType;
 
-		InternalImageFormat internalFormat = InternalImageFormat::RGBA8;
-		LoadedImageFormat dataFormat = LoadedImageFormat::RGBA;
-		TextureDataType dataType = TextureDataType::UnsignedByte;
+		InternalImageFormat mInternalFormat = InternalImageFormat::RGBA8;
+		LoadedImageFormat mDataFormat = LoadedImageFormat::RGBA;
+		TextureDataType mDataType = TextureDataType::UnsignedByte;
 
-		uint32 mipmapLevels = 0;
+		uint32 mMipmapLevels = 0;
 
 		union {
-			TextureID glHandle = 0;
-		} handle{};
+			TextureID mGlHandle = 0;
+		} mHandle{};
 
 	};
 

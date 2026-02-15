@@ -19,7 +19,7 @@ namespace lum {
 			cmd.emitterID = emitterID;
 			cmd.data.addClip.audioID = *id;
 
-			manager.m_commands.Push(std::move(cmd));
+			manager.mCmdBuffer.Push(std::move(cmd));
 
 			return *this;
 		}
@@ -33,7 +33,7 @@ namespace lum {
 			cmd.emitterID = emitterID;
 			cmd.data.play.audioID = *id;
 
-			manager.m_commands.Push(std::move(cmd));
+			manager.mCmdBuffer.Push(std::move(cmd));
 
 			return *this;
 		}
@@ -47,7 +47,7 @@ namespace lum {
 			cmd.emitterID = emitterID;
 			cmd.data.stop.audioID = *id;
 
-			manager.m_commands.Push(std::move(cmd));
+			manager.mCmdBuffer.Push(std::move(cmd));
 
 			return *this;
 
@@ -63,7 +63,7 @@ namespace lum {
 			cmd.data.setVolume.audioID = *id;
 			cmd.data.setVolume.volume = std::clamp(volume, 0.f, 1.f);
 
-			manager.m_commands.Push(std::move(cmd));
+			manager.mCmdBuffer.Push(std::move(cmd));
 
 			return *this;
 		}
@@ -78,7 +78,7 @@ namespace lum {
 			cmd.data.setPitch.audioID = *id;
 			cmd.data.setPitch.pitch = std::clamp(pitch, 0.f, 1.f);
 
-			manager.m_commands.Push(std::move(cmd));
+			manager.mCmdBuffer.Push(std::move(cmd));
 
 			return *this;
 		}
@@ -93,7 +93,7 @@ namespace lum {
 			cmd.data.setPause.audioID = *id;
 			cmd.data.setPause.paused = paused;
 
-			manager.m_commands.Push(std::move(cmd));
+			manager.mCmdBuffer.Push(std::move(cmd));
 
 			return *this;
 
@@ -109,7 +109,7 @@ namespace lum {
 			cmd.data.setLoop.audioID = *id;
 			cmd.data.setLoop.loop = loop;
 
-			manager.m_commands.Push(std::move(cmd));
+			manager.mCmdBuffer.Push(std::move(cmd));
 
 			return *this;
 
@@ -126,7 +126,7 @@ namespace lum {
 			cmd.emitterID = emitterID;
 			cmd.data.removeClip.audioID = *id;
 
-			manager.m_commands.Push(std::move(cmd));
+			manager.mCmdBuffer.Push(std::move(cmd));
 		}
 
 		float AudioEmitterWrapper::GetVolume(StringView name) {

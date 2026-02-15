@@ -21,7 +21,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetViewport ( int32 x, int32 y, int32 width, int32 height ) {
 
-		if (mViewportState.x == x && mViewportState.y == y && mViewportState.width == width && mViewportState.height == height) {
+		if (mViewportState.x == x && mViewportState.y == y && mViewportState.mWidth == width && mViewportState.mHeight == height) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
@@ -30,8 +30,8 @@ namespace lum::rhi::gl {
 
 		mViewportState.x = x;
 		mViewportState.y = y;
-		mViewportState.width = width;
-		mViewportState.height = height;
+		mViewportState.mWidth = width;
+		mViewportState.mHeight = height;
 
 		LUM_PROFILER_CACHE_MISS();
 
@@ -46,8 +46,8 @@ namespace lum::rhi::gl {
 		glViewport(
 			x,
 			mViewportState.y,
-			mViewportState.width,
-			mViewportState.height
+			mViewportState.mWidth,
+			mViewportState.mHeight
 		);
 
 		mViewportState.x = x;
@@ -65,8 +65,8 @@ namespace lum::rhi::gl {
 		glViewport(
 			mViewportState.x,
 			y,
-			mViewportState.width,
-			mViewportState.height
+			mViewportState.mWidth,
+			mViewportState.mHeight
 		);
 
 		mViewportState.y = y;
@@ -76,7 +76,7 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetViewportWidth ( int32 width ) {
 
-		if (mViewportState.width == width) {
+		if (mViewportState.mWidth == width) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
@@ -85,17 +85,17 @@ namespace lum::rhi::gl {
 			mViewportState.x,
 			mViewportState.y,
 			width,
-			mViewportState.height
+			mViewportState.mHeight
 		);
 
-		mViewportState.width = width;
+		mViewportState.mWidth = width;
 
 		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::SetViewportHeight ( int32 height ) {
 
-		if (mViewportState.height == height) {
+		if (mViewportState.mHeight == height) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
@@ -103,11 +103,11 @@ namespace lum::rhi::gl {
 		glViewport(
 			mViewportState.x,
 			mViewportState.y,
-			mViewportState.width,
+			mViewportState.mWidth,
 			height
 		);
 		
-		mViewportState.height = height;
+		mViewportState.mHeight = height;
 
 		LUM_PROFILER_CACHE_MISS();
 
@@ -252,9 +252,9 @@ namespace lum::rhi::gl {
 		
 		GLbitfield mask = 0;
 
-		mask |= (flags.has(ClearFlag::Color)) ? GL_COLOR_BUFFER_BIT : 0;
-		mask |= (flags.has(ClearFlag::Depth)) ? GL_DEPTH_BUFFER_BIT : 0;
-		mask |= (flags.has(ClearFlag::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0;
+		mask |= (flags.Has(ClearFlag::Color)) ? GL_COLOR_BUFFER_BIT : 0;
+		mask |= (flags.Has(ClearFlag::Depth)) ? GL_DEPTH_BUFFER_BIT : 0;
+		mask |= (flags.Has(ClearFlag::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0;
 
 		glClear(mask);
 
@@ -266,7 +266,7 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK_RETURN_VOID(mLayouts.exist(vao), LUM_SEV_WARN, "Cannot draw, invalid vertex layout");
 
-		glBindVertexArray(mLayouts[vao].vao);
+		glBindVertexArray(mLayouts[vao].mHandle);
 		glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
 		LUM_PROFILER_DRAW_CALL();
@@ -283,7 +283,7 @@ namespace lum::rhi::gl {
 	void GLDevice::DrawElements(const VertexLayoutHandle& vao, uint32 indices_count) {
 		LUM_HOTCHK_RETURN_VOID(mLayouts.exist(vao), LUM_SEV_WARN, "Cannot draw, invalid vertex layout");
 
-		glBindVertexArray(mLayouts[vao].vao);
+		glBindVertexArray(mLayouts[vao].mHandle);
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices_count), GL_UNSIGNED_INT, nullptr);
 
 		//LUM_PROFILER_DRAW_CALL();
@@ -305,9 +305,9 @@ namespace lum::rhi::gl {
 		Clear(ClearFlag::Color | ClearFlag::Depth | ClearFlag::Stencil);
 
 #		if LUM_ENABLE_IMGUI == 1
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
 #		endif
 
 		glfwPollEvents();

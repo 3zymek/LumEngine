@@ -1,13 +1,15 @@
-//========= Copyright 2026 3zymek, All rights reserved. ============//
+//========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: OpenGL device state management
+// Purpose: Core helpers in LumEngine
 //
 //=============================================================================//
 #pragma once
+
 #include "core/core_pch.hpp"
 #include "core/types.hpp"
 #include "core/utils/string_hasher.hpp"
 #include "core/math/types.hpp"
+
 namespace lum {
 
 

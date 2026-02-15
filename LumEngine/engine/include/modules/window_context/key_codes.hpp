@@ -1,5 +1,12 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Keyboard input abstraction layer for GLFW
+// 
+//=============================================================================//
 #pragma once
+
 #include "glfw3.h"
+
 namespace lum {
 	namespace input {
 

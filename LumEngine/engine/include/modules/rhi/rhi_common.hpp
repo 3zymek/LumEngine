@@ -1,6 +1,14 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Render Hardware Interface helpers and types
+// 
+//=============================================================================//
 #pragma once
+
 #include "core/core_pch.hpp"
 #include "core/core_common.hpp"
+#include "core/utils/handle_pool.hpp"
+
 namespace lum {
 
 	struct alignas(16) Vertex {
@@ -11,6 +19,8 @@ namespace lum {
 
 	namespace rhi {
 
+
+
 		// Returns number of mipmap levels for an image given width and height.
 		// @param width Width of the image.
 		// @param height Height of the image.
@@ -18,6 +28,8 @@ namespace lum {
 		inline uint32 mipmap_lvls(uint32 width, uint32 height) {
 			return 1 + std::floor(std::log2(std::max(width, height)));
 		}
+
+
 
 		// Casts enum to its underlying integer type for array lookups or bitmasks.
 		// @param e Enum value.
@@ -28,6 +40,8 @@ namespace lum {
 			return ToUnderlyingEnum(e);
 		}
 
+
+
 		// Returns a special "null" value for arithmetic types (usually max value).
 		// Useful for invalid IDs or handles.
 		template<typename T>
@@ -35,6 +49,8 @@ namespace lum {
 		inline constexpr T null_id() {
 			return MaxVal<T>();
 		}
+
+
 
 		struct PipelineHandle		: cstd::BaseHandle {}; // Pipeline state handle
 		struct FramebufferHandle	: cstd::BaseHandle {}; // Framebuffer handle
@@ -52,8 +68,7 @@ namespace lum {
 		using PipelineID	= uint32; // Numeric ID for pipeline
 		using ShaderID		= uint8;  // Numeric ID for shader (compact)
 
-		using EnumFlag = uint16;        // Bitmask storage type
-		using DepthBiasVal = float32;   // Depth bias value type
+		using EnumFlag		= uint16;    // Bitmask storage type
 
 		using ChannelRGBA = math::Vec4; // RGBA color channel type
 
@@ -91,13 +106,13 @@ namespace lum {
 		};
 
 		enum class Mapflag : EnumFlag {
-			Persistent = 1 << 0,        // Pointer remains valid across frames
-			Write = 1 << 1,             // CPU can write
-			Read = 1 << 2,              // CPU can read
-			Coherent = 1 << 3,          // Changes instantly visible to GPU
-			Invalidate_Range = 1 << 4,  // GPU allocates new range, old still valid
-			Invalidate_Buffer = 1 << 5, // GPU allocates new buffer, old discarded
-			Unsynchronized = 1 << 6,    // Map without GPU sync guarantees
+			Persistent			= 1 << 0, // Pointer remains valid across frames
+			Write				= 1 << 1, // CPU can write
+			Read				= 1 << 2, // CPU can read
+			Coherent			= 1 << 3, // Changes instantly visible to GPU
+			Invalidate_Range	= 1 << 4, // GPU allocates new range, old still valid
+			Invalidate_Buffer	= 1 << 5, // GPU allocates new buffer, old discarded
+			Unsynchronized		= 1 << 6, // Map without GPU sync guarantees
 		};
 
 		enum class Face : EnumFlag {
@@ -109,21 +124,6 @@ namespace lum {
 		enum class WindingOrder : EnumFlag {
 			CounterClockwise, // Triangles front-facing if CCW
 			Clockwise         // Triangles front-facing if CW
-		};
-
-		enum class State : EnumFlag {
-			None						= 1 << 0, // No state
-			DepthTest					= 1 << 1, // Depth testing enabled
-			DepthWrite					= 1 << 2, // Depth writes enabled
-			StencilTest					= 1 << 3, // Stencil testing enabled
-			Scissor						= 1 << 4, // Scissor test enabled
-			Blend						= 1 << 5, // Blending enabled
-			Cull						= 1 << 6, // Backface culling enabled
-			DepthBias					= 1 << 7, // Depth bias enabled
-			Multisample					= 1 << 8, // MSAA enabled
-			MultisampleCoverage			= 1 << 9, // Sample coverage enabled
-			MultisampleAlphaToOne		= 1 << 10,// Alpha-to-one enabled
-			MultisampleAlphaToCoverage	= 1 << 11,// Alpha-to-coverage enabled
 		};
 
 		struct ColorMask {

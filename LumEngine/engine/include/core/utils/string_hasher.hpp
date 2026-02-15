@@ -1,5 +1,12 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Hash strings based on FNV-1a algorythm
+//
+//=============================================================================//
 #pragma once
+
 #include "core/core_pch.hpp"
+
 namespace cstd {
 
 	class StringHasher {

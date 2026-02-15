@@ -1,8 +1,8 @@
-// ************************************
-// LumEngine Copyright (C) 2026 3zymek
-// All rights reserved.
-// Core of Render Hardware Interface
-// ************************************
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Core of Render Hardware Interface
+// 
+//=============================================================================//
 #pragma once
 
 #include "core/core_pch.hpp"
@@ -38,11 +38,6 @@ namespace lum::rhi {
 	*  @brief All operations are GPU-aware and should be used according to the
 	*  current command buffer / pipeline state.
 	*
-	*  @brief Typical usage:
-	*  @brief  - Create resources (textures, shaders, buffers)
-	*  @brief  - Bind resources (shaders, textures, samplers)
-	*  @brief  - Update uniforms or descriptors
-	*  @brief  - Issue draw/dispatch commands
 	*/
 	class RenderDevice {
 	public:

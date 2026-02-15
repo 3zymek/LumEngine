@@ -16,104 +16,104 @@ namespace lum::rhi::gl {
 		uint32 width = 0;
 		uint32 height = 0;
 
-		if (desc.data == nullptr) {
+		if (desc.mData == nullptr) {
 
-			if (!desc.filename) {
+			if (!desc.mFilename) {
 				LUM_LOG_WARN("No info gained about texture data or filename");
 				return {};
 			}
 
 			bool success;
-			TextureData data = AssetService::LoadTexture(desc.filename, success);
+			TextureData data = AssetService::LoadTexture(desc.mFilename, success);
 			if (!success) {
-				LUM_LOG_ERROR("Something went wrong during loading texture: %s", desc.filename);
+				LUM_LOG_ERROR("Something went wrong during loading texture: %s", desc.mFilename);
 				return {};
 			}
 
-			width = (desc.rect.width == 0) ? data.width : desc.rect.width;
-			height = (desc.rect.height == 0) ? data.height : desc.rect.height;
+			width = (desc.mRect.mWidth == 0) ? data.mWidth : desc.mRect.mWidth;
+			height = (desc.mRect.mHeight == 0) ? data.mHeight : desc.mRect.mHeight;
 			if (desc.bGenerateMipmaps) {
-				if (desc.mipmapLevels == 0) {
+				if (desc.mMipmapLevels == 0) {
 					mipmapLevels = mipmap_lvls(width, height);
 				}
 			}
 			else {
-				if (desc.mipmapLevels == 0) {
+				if (desc.mMipmapLevels == 0) {
 					mipmapLevels = 1;
 				}
 			}
 
-			glCreateTextures(GL_TEXTURE_2D, 1, &texture.handle.glHandle);
+			glCreateTextures(GL_TEXTURE_2D, 1, &texture.mHandle.mGlHandle);
 
 			glTextureStorage2D(
-				texture.handle.glHandle,
+				texture.mHandle.mGlHandle,
 				mipmapLevels,
-				skInternalImageFormatLookup[lookup_cast(desc.internalFormat)],
+				skInternalImageFormatLookup[lookup_cast(desc.mInternalFormat)],
 				width,
 				height
 			);
 
 			glTextureSubImage2D(
-				texture.handle.glHandle,
+				texture.mHandle.mGlHandle,
 				0,
 				0, 0,
 				width,
 				height,
-				skLoadedImageFormatLookup[lookup_cast(desc.dataFormat)],
-				skTextureDataTypeLookup[lookup_cast(desc.dataType)],
-				data.pixels.data()
+				skLoadedImageFormatLookup[lookup_cast(desc.mDataFormat)],
+				skTextureDataTypeLookup[lookup_cast(desc.mDataType)],
+				data.mPixels.data()
 			);
 
 		}
 		else {
 
-			width = desc.rect.width;
-			height = desc.rect.height;
+			width = desc.mRect.mWidth;
+			height = desc.mRect.mHeight;
 			if (desc.bGenerateMipmaps) {
-				if (desc.mipmapLevels == 0) {
+				if (desc.mMipmapLevels == 0) {
 					mipmapLevels = mipmap_lvls(width, height);
 				}
 			}
 			else {
-				if (desc.mipmapLevels == 0) {
+				if (desc.mMipmapLevels == 0) {
 					mipmapLevels = 1;
 				}
 			}
 
-			glCreateTextures(GL_TEXTURE_2D, 1, &texture.handle.glHandle);
+			glCreateTextures(GL_TEXTURE_2D, 1, &texture.mHandle.mGlHandle);
 
 			glTextureStorage2D(
-				texture.handle.glHandle,
+				texture.mHandle.mGlHandle,
 				mipmapLevels,
-				skInternalImageFormatLookup[lookup_cast(desc.internalFormat)],
+				skInternalImageFormatLookup[lookup_cast(desc.mInternalFormat)],
 				width,
 				height
 			);
 
 			glTextureSubImage2D(
-				texture.handle.glHandle,
+				texture.mHandle.mGlHandle,
 				0,
 				0, 0,
 				width,
 				height,
-				skLoadedImageFormatLookup[lookup_cast(desc.dataFormat)],
-				skTextureDataTypeLookup[lookup_cast(desc.dataType)],
-				desc.data
+				skLoadedImageFormatLookup[lookup_cast(desc.mDataFormat)],
+				skTextureDataTypeLookup[lookup_cast(desc.mDataType)],
+				desc.mData
 			);
 
 		}
 
 		if (mipmapLevels > 1) {
-			glGenerateTextureMipmap(texture.handle.glHandle);
+			glGenerateTextureMipmap(texture.mHandle.mGlHandle);
 		}
 
-		texture.dataFormat = desc.dataFormat;
-		texture.dataType = desc.dataType;
-		texture.internalFormat = desc.internalFormat;
-		texture.rect.width = width;
-		texture.rect.height = height;
-		texture.type = TextureType::Texture2D;
-		texture.mipmapLevels = mipmapLevels;
+		texture.mDataFormat = desc.mDataFormat;
+		texture.mDataType = desc.mDataType;
+		texture.mInternalFormat = desc.mInternalFormat;
+		texture.mRect.mWidth = width;
+		texture.mRect.mHeight = height;
+		texture.mType = TextureType::Texture2D;
+		texture.mMipmapLevels = mipmapLevels;
 
 		auto textureHandle = mTextures.create_handle(std::move(texture));
 
@@ -137,46 +137,46 @@ namespace lum::rhi::gl {
 
 		Texture tex;
 
-		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &tex.handle.glHandle);
+		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &tex.mHandle.mGlHandle);
 
 		TextureData texData;
 		bool success;
-		texData = AssetService::LoadTexture(desc.faces[0], success);
+		texData = AssetService::LoadTexture(desc.mFaces[0], success);
 		if (!success) {
-			LUM_LOG_ERROR("Failed to load texture %s", desc.faces[0]);
+			LUM_LOG_ERROR("Failed to load texture %s", desc.mFaces[0]);
 		}
 
-		int32 width = texData.width;
-		int32 height = texData.height;
+		int32 width = texData.mWidth;
+		int32 height = texData.mHeight;
 
-		glTextureStorage2D(tex.handle.glHandle, 1, GL_RGBA8, width, height);
+		glTextureStorage2D(tex.mHandle.mGlHandle, 1, GL_RGBA8, width, height);
 
 		for (usize i = 0; i < 6; i++) {
 
-			TextureData texture = AssetService::LoadTexture(desc.faces[i], success);
+			TextureData texture = AssetService::LoadTexture(desc.mFaces[i], success);
 			
 			if (!success) {
-				LUM_LOG_ERROR("Failed to load texture %s", desc.faces[i]);
+				LUM_LOG_ERROR("Failed to load texture %s", desc.mFaces[i]);
 				continue;
 			}
 			
-			if (texture.width != width || texture.height != height) {
+			if (texture.mWidth != width || texture.mHeight != height) {
 				LUM_LOG_ERROR("Invalid cubemap height or width");
 				continue;
 			}
 
 			glTextureSubImage3D(
-				tex.handle.glHandle, 
+				tex.mHandle.mGlHandle, 
 				0, 
 				0, 
 				0, 
 				i, 
-				texture.width, 
-				texture.height, 
+				texture.mWidth, 
+				texture.mHeight, 
 				1, 
 				GL_RGBA, 
 				GL_UNSIGNED_BYTE, 
-				texture.pixels.data()
+				texture.mPixels.data()
 			);
 		
 		}
@@ -189,49 +189,49 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(mTextures.exist(tex), LUM_SEV_WARN, "Texture doesn't exist");
 
 		bool success;
-		auto data = AssetService::LoadTexture(desc.filename, success);
+		auto data = AssetService::LoadTexture(desc.mFilename, success);
 
 		if (!success) {
-			LUM_LOG_ERROR("Failed to load image %s", desc.filename);
+			LUM_LOG_ERROR("Failed to load image %s", desc.mFilename);
 			return;
 		}
 		
 		const auto& texture = mTextures[tex];
 
-		uint32 width = (desc.rect.width == 0) ? data.width : desc.rect.width;
-		uint32 height = (desc.rect.height == 0) ? data.height : desc.rect.height;
+		uint32 width = (desc.mRect.mWidth == 0) ? data.mWidth : desc.mRect.mWidth;
+		uint32 height = (desc.mRect.mHeight == 0) ? data.mHeight : desc.mRect.mHeight;
 
-		width = std::clamp(width, 0u, texture.rect.width - desc.rect.x);
-		height = std::clamp(height, 0u, texture.rect.height - desc.rect.y);
+		width = std::clamp(width, 0u, texture.mRect.mWidth - desc.mRect.x);
+		height = std::clamp(height, 0u, texture.mRect.mHeight - desc.mRect.y);
 
 
 		glTextureSubImage2D(
-			texture.handle.glHandle,
+			texture.mHandle.mGlHandle,
 			0,
-			desc.rect.x,
-			desc.rect.y,
+			desc.mRect.x,
+			desc.mRect.y,
 			width,
 			height,
-			skLoadedImageFormatLookup[lookup_cast(mTextures[tex].dataFormat)],
-			skTextureDataTypeLookup[lookup_cast(mTextures[tex].dataType)],
-			data.pixels.data()
+			skLoadedImageFormatLookup[lookup_cast(mTextures[tex].mDataFormat)],
+			skTextureDataTypeLookup[lookup_cast(mTextures[tex].mDataType)],
+			data.mPixels.data()
 		);
 
 		uint32 mipmapLevels = 0;
 
 		if (desc.bGenerateMipmaps) {
-			if (desc.mipmapLevels == 0) {
-				mipmapLevels = mipmap_lvls(texture.rect.width, texture.rect.height);
+			if (desc.mMipmapLevels == 0) {
+				mipmapLevels = mipmap_lvls(texture.mRect.mWidth, texture.mRect.mHeight);
 			}
 		}
 		else {
-			if (desc.mipmapLevels == 0) {
+			if (desc.mMipmapLevels == 0) {
 				mipmapLevels = 1;
 			}
 		}
 
 		if (mipmapLevels > 1) {
-			glGenerateTextureMipmap(texture.handle.glHandle);
+			glGenerateTextureMipmap(texture.mHandle.mGlHandle);
 		}
 
 	}
@@ -245,14 +245,14 @@ namespace lum::rhi::gl {
 		}
 
 		glTextureSubImage2D(
-			mTextures[tex].handle.glHandle,
-			rect.mip,
+			mTextures[tex].mHandle.mGlHandle,
+			rect.mMipLevel,
 			rect.x,
 			rect.y,
-			rect.width,
-			rect.height,
-			skLoadedImageFormatLookup[lookup_cast(mTextures[tex].dataFormat)],
-			skTextureDataTypeLookup[lookup_cast(mTextures[tex].dataType)],
+			rect.mWidth,
+			rect.mHeight,
+			skLoadedImageFormatLookup[lookup_cast(mTextures[tex].mDataFormat)],
+			skTextureDataTypeLookup[lookup_cast(mTextures[tex].mDataType)],
 			data
 		);
 
@@ -261,7 +261,7 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), LUM_SEV_WARN, "Texture doesn't exist");
 
-		glDeleteTextures(1, &mTextures[texture].handle.glHandle);
+		glDeleteTextures(1, &mTextures[texture].mHandle.mGlHandle);
 
 		mTextures.delete_handle(texture);
 
@@ -276,7 +276,7 @@ namespace lum::rhi::gl {
 		}
 
 		mCurrentTextures[binding] = texture;
-		glBindTextureUnit(binding, mTextures[texture].handle.glHandle);
+		glBindTextureUnit(binding, mTextures[texture].mHandle.mGlHandle);
 
 		LUM_LOG_DEBUG("Binded texture %d to binding %d", texture.id, binding);
 

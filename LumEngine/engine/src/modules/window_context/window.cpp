@@ -55,7 +55,7 @@ namespace lum {
 		return !glfwWindowShouldClose(mWindow);
 	}
 	RenderBackend OpenGLWindow::GetBackend( ) const noexcept {
-		return backend;
+		return mBackend;
 	}
 
 	void OpenGLWindow::Init( const WindowDescriptor& desc ) {
@@ -72,16 +72,13 @@ namespace lum {
 			glfwWindowHint(GLFW_CONTEXT_DEBUG, GLFW_OPENGL_DEBUG_CONTEXT);
 #		endif
 
-		if (desc.msaaSamples > 0)
-			glfwWindowHint(GLFW_SAMPLES, desc.msaaSamples);
-
 		if (desc.bFullscreen) {
-			mWindow = glfwCreateWindow(desc.width, desc.height, desc.title, glfwGetPrimaryMonitor(), nullptr);
+			mWindow = glfwCreateWindow(desc.mWidth, desc.mHeight, desc.mTitle, glfwGetPrimaryMonitor(), nullptr);
 		}
-		else mWindow = glfwCreateWindow(desc.width, desc.height, desc.title, nullptr, nullptr);
+		else mWindow = glfwCreateWindow(desc.mWidth, desc.mHeight, desc.mTitle, nullptr, nullptr);
 
-		mWidth = desc.width;
-		mHeight = desc.height;
+		mWidth = desc.mWidth;
+		mHeight = desc.mHeight;
 
 		if (!mWindow) {
 			glfwTerminate();
@@ -107,13 +104,13 @@ namespace lum {
 			glDebugMessageCallback(rhi::detail::GLDebugCallback, nullptr);
 #		endif
 
-		backend = RenderBackend::OpenGL;
+		mBackend = RenderBackend::OpenGL;
 
 	}
 
 
 	Window* CreateWindow( const WindowDescriptor& desc ) {
-		switch (desc.backend) {
+		switch (desc.mBackend) {
 		case RenderBackend::OpenGL: return new OpenGLWindow(desc);
 		}
 		return nullptr;

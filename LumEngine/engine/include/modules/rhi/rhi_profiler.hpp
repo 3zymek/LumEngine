@@ -1,6 +1,8 @@
-// LumEngine Copyright (C) 2026 3zymek
-// All rights reserved.
-// Performance profiler for Render Hardware Interface
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Performance profiler for Render Hardware Interface
+// 
+//=============================================================================//
 #pragma once
 
 #include "core/setup.hpp"

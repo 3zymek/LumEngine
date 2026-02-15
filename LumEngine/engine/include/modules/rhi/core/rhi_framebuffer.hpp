@@ -1,5 +1,12 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Framebuffer configuration for the Rendering Hardware Interface
+//
+//=============================================================================//
 #pragma once
+
 #include "rhi/rhi_common.hpp"
+
 namespace lum::rhi {
 
 	enum class FramebufferAttachment : uint8 {
@@ -10,20 +17,20 @@ namespace lum::rhi {
 
 	struct FramebufferTextureDescriptor {
 
-		uint32 width = 0;
-		uint32 height = 0;
+		uint32 mWidth = 0;
+		uint32 mHeight = 0;
 
-		DataFormat format{};
+		DataFormat mFormat{};
 
-		bool bMipmaps = false;
+		bool bGenerateMipmaps = false;
 
-		FramebufferAttachment attachment{};
+		FramebufferAttachment mAttachment{};
 
 	};
 
 	struct Framebuffer {
 
-		FramebufferID handle = 0;
+		FramebufferID mHandle = 0;
 
 	};
 

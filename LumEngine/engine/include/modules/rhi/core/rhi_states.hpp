@@ -1,6 +1,28 @@
-﻿#pragma once
+﻿//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: States configuration for the Rendering Hardware Interface
+//
+//=============================================================================//
+#pragma once
+
 #include "rhi/rhi_common.hpp"
+
 namespace lum::rhi {
+
+	enum class State : EnumFlag {
+		None = 1 << 0, // No state
+		DepthTest = 1 << 1, // Depth testing enabled
+		DepthWrite = 1 << 2, // Depth writes enabled
+		StencilTest = 1 << 3, // Stencil testing enabled
+		Scissor = 1 << 4, // Scissor test enabled
+		Blend = 1 << 5, // Blending enabled
+		Cull = 1 << 6, // Backface culling enabled
+		DepthBias = 1 << 7, // Depth bias enabled
+		Multisample = 1 << 8, // MSAA enabled
+		MultisampleCoverage = 1 << 9, // Sample coverage enabled
+		MultisampleAlphaToOne = 1 << 10,// Alpha-to-one enabled
+		MultisampleAlphaToCoverage = 1 << 11,// Alpha-to-coverage enabled
+	};
 
 	// Specifies the comparison function used in LumEngine RHI.
 	enum class CompareFlag : bitfield {
@@ -141,7 +163,7 @@ namespace lum::rhi {
 
 			// Specifies the depth comparison function. 
 			// The initial value is CompareFlag::Less. 
-			CompareFlag	compareFlag = CompareFlag::Less;
+			CompareFlag	mCompare = CompareFlag::Less;
 
 		} depth;
 
@@ -152,14 +174,14 @@ namespace lum::rhi {
 			bool bEnabled = false;
 
 			// Stencil state for front
-			StencilFaceState front{};
+			StencilFaceState mFront{};
 
 			// Stencil state for back
-			StencilFaceState back{};
+			StencilFaceState mBack{};
 
 			// Helper for creating same stencil face state for both sides.
 			static Stencil CreateBothSides(const StencilFaceState& state) {
-				return { .bEnabled = true, .front = state, .back = state };
+				return { .bEnabled = true, .mFront = state, .mBack = state };
 			}
 
 
@@ -177,11 +199,11 @@ namespace lum::rhi {
 		
 		// Specifies whether front- or back-facing facets are candidates for culling. 
 		// The initial value is Face::Back. 
-		Face face = Face::Back;
+		Face mFace = Face::Back;
 		
 		// Specifies the orientation of front-facing polygons. 
 		// The initial value is WindingOrder::CounterClockwise. 
-		WindingOrder windingOrder = WindingOrder::CounterClockwise;
+		WindingOrder mWindingOrder = WindingOrder::CounterClockwise;
 
 	};
 
@@ -202,10 +224,10 @@ namespace lum::rhi {
 		int32 y = 0;
 
 		// Specify the width of the scissor box.
-		int32 width = 0;
+		int32 mWidth = 0;
 		
 		// Specify the height of the scissor box.
-		int32 height = 0;
+		int32 mHeight = 0;
 
 	};
 
@@ -271,32 +293,32 @@ namespace lum::rhi {
 
 		// Specified how the alpha source blending factor is computed.
 		// The initial value is BlendFactor::One.
-		BlendFactor srcAlphaFactor = BlendFactor::One;
+		BlendFactor mSrcAlphaFactor = BlendFactor::One;
 
 		// Specified how the alpha destination blending factor is computed.
 		// The initial value is BlendFactor::Zero.
-		BlendFactor dstAlphaFactor = BlendFactor::Zero;
+		BlendFactor mDstAlphaFactor = BlendFactor::Zero;
 
 		// specifies the alpha blend equation, how the alpha component of the source and destination colors are combined.
 		// The initial value is BlendOp::Add.
-		BlendOp alphaOp = BlendOp::Add;
+		BlendOp mAlphaOp = BlendOp::Add;
 
 		// Specifies how the red, green, and blue blending factors are computed.
 		// The initial value is BlendFactor::One.
-		BlendFactor srcColorFactor = BlendFactor::One;
+		BlendFactor mSrcColorFactor = BlendFactor::One;
 
 		// Specifies how the red, green, and blue destination blending factors are computed.
 		// The initial value is BlendFactor::Zero.
-		BlendFactor dstColorFactor = BlendFactor::Zero;
+		BlendFactor mDstColorFactor = BlendFactor::Zero;
 
 		// Specifies the RGB blend equation, how the red, green, and blue components of the source and destination colors are combined.
 		// The initial value is BlendOp::Add.
-		BlendOp colorOp = BlendOp::Add;
+		BlendOp mColorOp = BlendOp::Add;
 
 		// Constant blend color used when blend factors are set to BlendFactor::ConstantColor or BlendFactor::OneMinusConstantColor.
 		// This color is independent of source and destination and acts as a fixed reference value in the blend equation.
 		// The initial value is (0, 0, 0, 0) - transparent black.
-		ChannelRGBA blendColor = { 0.f, 0.f, 0.f, 0.f };
+		ChannelRGBA mBlendColor = { 0.f, 0.f, 0.f, 0.f };
 
 	};
 	
@@ -304,8 +326,8 @@ namespace lum::rhi {
 
 		int32 x{};
 		int32 y{};
-		int32 width{};
-		int32 height{};
+		int32 mWidth{};
+		int32 mHeight{};
 
 	};
 
@@ -316,7 +338,7 @@ namespace lum::rhi {
 		bool bEnableSampleAlphaToCoverage = false;
 		bool bEnableSampleAlphaToOne = false;
 
-		float32 sampleCoverage = 0.0f;
+		float32 mSampleCoverage = 0.0f;
 		bool bCoverageInvert = false;
 
 	};

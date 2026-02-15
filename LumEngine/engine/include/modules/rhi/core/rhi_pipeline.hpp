@@ -1,6 +1,13 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Pipeline configuration for the Rendering Hardware Interface
+//
+//=============================================================================//
 #pragma once
+
 #include "rhi/rhi_common.hpp"
 #include "rhi/core/rhi_states.hpp"
+
 namespace lum::rhi {
 
 	struct PipelineDescriptor {
@@ -12,7 +19,7 @@ namespace lum::rhi {
 		BlendState				mBlend			{};
 		ColorMask				mColorMask		{};
 
-		ShaderHandle			shader{};
+		ShaderHandle			mShader{};
 
 	};
 
@@ -25,7 +32,7 @@ namespace lum::rhi {
 		BlendState				mBlend			{};
 		ColorMask				mColorMask		{};
 
-		ShaderHandle			shader{};
+		ShaderHandle			mShader{};
 
 	};
 

@@ -3,20 +3,20 @@
 namespace lum {
 
 	template<usize L>
-	struct fstring {
+	struct FString {
 
 		template<usize new_L>
-		explicit fstring(const char (&src)[new_L]) noexcept {
+		explicit FString(const char (&src)[new_L]) noexcept {
 			static_assert(new_L <= L && "string is too big");
 			size = new_L - 1;
 			std::memcpy(buff, src, new_L);
 		}
-		explicit fstring() noexcept {
+		explicit FString() noexcept {
 			buff[0] = '\0';
 		}
 
 		template<usize new_L>
-		fstring& operator=(const char(&src)[new_L]) noexcept {
+		FString& operator=(const char(&src)[new_L]) noexcept {
 			static_assert(new_L <= L && "string is too big");
 			size = new_L - 1;
 			std::memcpy(buff, src, new_L);
@@ -31,7 +31,7 @@ namespace lum {
 		}
 
 		template<usize new_L>
-		bool operator==(const fstring& oth) const noexcept {
+		bool operator==(const FString& oth) const noexcept {
 			if (HashStr(oth.buff) == HashStr(buff))
 				return true;
 			return false;
@@ -59,7 +59,7 @@ namespace lum {
 	};
 
 	// TO IMPLEMENT:
-	struct fstring_view {
+	struct FStringView {
 
 	};
 

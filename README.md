@@ -4,7 +4,7 @@
 
 # LumEngine
 
-Building a game engine from scratch in C++20.
+Learning game engine project from scratch in C++.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![C++](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
@@ -36,26 +36,21 @@ This is my personal project where I'm learning game engine architecture by build
 ## Project Structure
 ````
 LumEngine/
-├── core/              # Core engine functionality
+├──engine
+│   ├── core/              # Core engine functionality
 │   ├── math/          # Math library and backend
 │   ├── scene/         # Scene management (not implemented yet)
-│   └── utils/         # Utility functions/helpers
-├── modules/
+│   ├── utils/         # Utility functions/helpers
+│   modules/
 │   ├── rhi/           # Rendering Hardware Interface
 │   │   └── backend/   # OpenGL implementation
 │   ├── ecs/           # Entity Component System
 │   ├── audio/         # Audio system
-│   └── events/        # Event system
-└── sandbox/           # Test application
+│   ├── events/        # Event system
+│   testfield/         # Testing field (dirty classes etc.)
 ````
 
 ## Building
-
-### Prerequisites
-
-- C++20 compiler (GCC 11+, Clang 14+, MSVC 2022+)
-- CMake 3.20+
-- OpenGL 4.5+
 
 ### Build Steps
 ````bash

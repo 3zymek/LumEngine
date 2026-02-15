@@ -2,7 +2,7 @@
 #include "key_codes.hpp"
 #include "core/core_pch.hpp"
 
-// THIS IS NOT AN CLASS FOR THIS MOMENT BUT WILL BE
+// ! THIS IS NOT AN CLASS FOR THIS MOMENT BUT WILL BE
 
 namespace lum {
 	namespace input {

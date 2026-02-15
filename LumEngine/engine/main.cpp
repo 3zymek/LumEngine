@@ -22,7 +22,6 @@ using namespace lum::rhi;
 #define LUM_UNIFORM_BUFFER_STRUCT struct alignas(16)
 class Camera {
 public:
-
     
     Camera(Window* wind) : m_window(wind) { Init(wind); }
     
@@ -238,114 +237,115 @@ auto CreateShader(ccharptr vert, ccharptr frag) {
 }
 auto CreateCubeEBO() {
     BufferDescriptor cubeEBODesc;
-    cubeEBODesc.bufferUsage = BufferUsage::Static;
-    cubeEBODesc.data = cubeIndices.data();
-    cubeEBODesc.size = ByteSize(cubeIndices);
+    cubeEBODesc.mBufferUsage = BufferUsage::Static;
+    cubeEBODesc.mData = cubeIndices.data();
+    cubeEBODesc.mSize = ByteSize(cubeIndices);
     return device->CreateElementBuffer(cubeEBODesc);
 }
 auto CreateCubeVAO(auto vbo) {
     std::vector<VertexAttribute> attributes(3);
-    attributes[0].format = DataFormat::Vec3;
-    attributes[0].relativeOffset = offsetof(Vertex, position);
-    attributes[0].shaderLocation = LUM_LAYOUT_POSITION;
+    attributes[0].mFormat = DataFormat::Vec3;
+    attributes[0].mRelativeOffset = offsetof(Vertex, position);
+    attributes[0].mShaderLocation = LUM_LAYOUT_POSITION;
 
-    attributes[1].format = DataFormat::Vec3;
-    attributes[1].relativeOffset = offsetof(Vertex, normal);
-    attributes[1].shaderLocation = LUM_LAYOUT_NORMAL;
+    attributes[1].mFormat = DataFormat::Vec3;
+    attributes[1].mRelativeOffset = offsetof(Vertex, normal);
+    attributes[1].mShaderLocation = LUM_LAYOUT_NORMAL;
 
-    attributes[2].format = DataFormat::Vec2;
-    attributes[2].relativeOffset = offsetof(Vertex, uv);
-    attributes[2].shaderLocation = LUM_LAYOUT_UV;
+    attributes[2].mFormat = DataFormat::Vec2;
+    attributes[2].mRelativeOffset = offsetof(Vertex, uv);
+    attributes[2].mShaderLocation = LUM_LAYOUT_UV;
 
     VertexLayoutDescriptor cubeVAODesc;
-    cubeVAODesc.stride = sizeof(Vertex);
-    cubeVAODesc.attributes = attributes;
+    cubeVAODesc.mStride = sizeof(Vertex);
+    cubeVAODesc.mAttributes = attributes;
     return device->CreateVertexLayout(cubeVAODesc, vbo);
 }
 auto CreateCubeVBO() {
     BufferDescriptor cubeVBODesc;
-    cubeVBODesc.bufferUsage = BufferUsage::Dynamic;
-    cubeVBODesc.data = cubeVerts.data();
-    cubeVBODesc.mapFlags = Mapflag::Write;
-    cubeVBODesc.size = ByteSize(cubeVerts);
+    cubeVBODesc.mBufferUsage = BufferUsage::Dynamic;
+    cubeVBODesc.mData = cubeVerts.data();
+    cubeVBODesc.mMapFlags = Mapflag::Write;
+    cubeVBODesc.mSize = ByteSize(cubeVerts);
     return device->CreateVertexBuffer(cubeVBODesc);
 }
 auto CreateCubeTexture() {
     TextureDescriptor textureDesc;
-    textureDesc.filename = "default.png";
+    textureDesc.mFilename = "textures/scene.png";
     textureDesc.bGenerateMipmaps = true;
+    textureDesc.mMipmapLevels = 0;
     auto texture = device->CreateTexture2D(textureDesc);
     return texture;
 }
 auto CreateCubePipeline(auto shader) {
     PipelineDescriptor cubePipeline;
     //cubePipeline.mBlend.bEnabled = true;
-    cubePipeline.mBlend.dstAlphaFactor = BlendFactor::SrcAlpha;
-    cubePipeline.mBlend.srcAlphaFactor = BlendFactor::SrcAlpha;
-    cubePipeline.mBlend.dstColorFactor = BlendFactor::SrcAlpha;
-    cubePipeline.mBlend.srcColorFactor = BlendFactor::SrcAlpha;
-    cubePipeline.mBlend.alphaOp = BlendOp::Max;
-    cubePipeline.mBlend.colorOp = BlendOp::Max;
+    cubePipeline.mBlend.mDstAlphaFactor = BlendFactor::SrcAlpha;
+    cubePipeline.mBlend.mSrcAlphaFactor = BlendFactor::SrcAlpha;
+    cubePipeline.mBlend.mDstColorFactor = BlendFactor::SrcAlpha;
+    cubePipeline.mBlend.mSrcColorFactor = BlendFactor::SrcAlpha;
+    cubePipeline.mBlend.mAlphaOp = BlendOp::Max;
+    cubePipeline.mBlend.mColorOp = BlendOp::Max;
 
     cubePipeline.mCull.bEnabled = true;
-    cubePipeline.mCull.face = Face::Front;
+    cubePipeline.mCull.mFace = Face::Back;
 
     cubePipeline.mDepthStencil.depth.bEnabled = true;
     cubePipeline.mDepthStencil.depth.bWriteToZBuffer = false;
-    cubePipeline.mDepthStencil.depth.compareFlag = CompareFlag::Less;
+    cubePipeline.mDepthStencil.depth.mCompare = CompareFlag::Less;
 
     //cubePipeline.rasterizer.topologyMode = TopologyMode::Line;
 
     //cubePipeline.cull.bEnabled = true;
 
-    cubePipeline.shader = shader;
+    cubePipeline.mShader = shader;
     return device->CreatePipeline(cubePipeline);
 }
 
 auto CreateSkyboxEBO() {
     BufferDescriptor cubeEBODesc;
-    cubeEBODesc.bufferUsage = BufferUsage::Static;
-    cubeEBODesc.data = skyboxIndices.data();
-    cubeEBODesc.size = ByteSize(skyboxIndices);
+    cubeEBODesc.mBufferUsage = BufferUsage::Static;
+    cubeEBODesc.mData = skyboxIndices.data();
+    cubeEBODesc.mSize = ByteSize(skyboxIndices);
     return device->CreateElementBuffer(cubeEBODesc);
 }
 auto CreateSkyboxVAO(auto vbo) {
     VertexLayoutDescriptor vaoDesc;
     std::vector<VertexAttribute> attr(1);
-    attr[0].format = DataFormat::Vec3;
-    attr[0].relativeOffset = offsetof(Vertex, position);
-    attr[0].shaderLocation = LUM_LAYOUT_POSITION;
+    attr[0].mFormat = DataFormat::Vec3;
+    attr[0].mRelativeOffset = offsetof(Vertex, position);
+    attr[0].mShaderLocation = LUM_LAYOUT_POSITION;
 
-    vaoDesc.attributes = attr;
-    vaoDesc.stride = sizeof(Vertex);
+    vaoDesc.mAttributes = attr;
+    vaoDesc.mStride = sizeof(Vertex);
     return device->CreateVertexLayout(vaoDesc, vbo);
 }
 auto CreateSkyboxVBO() {
     BufferDescriptor vboDesc;
-    vboDesc.bufferUsage = BufferUsage::Static;
-    vboDesc.data = skyboxVerts.data();
-    vboDesc.size = ByteSize(skyboxVerts);
+    vboDesc.mBufferUsage = BufferUsage::Static;
+    vboDesc.mData = skyboxVerts.data();
+    vboDesc.mSize = ByteSize(skyboxVerts);
     return device->CreateVertexBuffer(vboDesc);
 }
 auto CreateSkyboxTexture() {
     TextureCubemapDescriptor cubemapTexDesc;
-    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_X] = "back.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_Y] = "bottom.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_NEGATIVE_Z] = "front.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_X] = "left.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_Y] = "right.png";
-    cubemapTexDesc.faces[LUM_CUBEMAP_POSITIVE_Z] = "top.png";
+    cubemapTexDesc.mFaces[LUM_CUBEMAP_NEGATIVE_X] = "textures/left.png";
+    cubemapTexDesc.mFaces[LUM_CUBEMAP_NEGATIVE_Y] = "textures/right.png";
+    cubemapTexDesc.mFaces[LUM_CUBEMAP_NEGATIVE_Z] = "textures/top.png";
+    cubemapTexDesc.mFaces[LUM_CUBEMAP_POSITIVE_X] = "textures/bottom.png";
+    cubemapTexDesc.mFaces[LUM_CUBEMAP_POSITIVE_Y] = "textures/front.png";
+    cubemapTexDesc.mFaces[LUM_CUBEMAP_POSITIVE_Z] = "textures/back.png";
     return device->CreateCubemapTexture(cubemapTexDesc);
 }
 auto CreateSkyboxPipeline(auto shader) {
     PipelineDescriptor skyboxPipeline;
     skyboxPipeline.mDepthStencil.depth.bEnabled = true;
     skyboxPipeline.mDepthStencil.depth.bWriteToZBuffer = false;
-    skyboxPipeline.mDepthStencil.depth.compareFlag = CompareFlag::LessEqual;
+    skyboxPipeline.mDepthStencil.depth.mCompare = CompareFlag::LessEqual;
 
     skyboxPipeline.mCull.bEnabled = true;
 
-    skyboxPipeline.shader = shader;
+    skyboxPipeline.mShader = shader;
     return device->CreatePipeline(skyboxPipeline);
 }
 
@@ -368,13 +368,13 @@ float32 quad[] = {
 };
 
 int main() {
-    Logger::Get().enable_log(LogSeverity::All);
-    //Logger::Get().enable_log(LUM_SEV_INFO);
+    
+    Logger::Get().EnableLog(LogSeverity::All);
+
     WindowDescriptor windowDesc;
-    windowDesc.msaaSamples = 4;
     windowDesc.bFullscreen = false;
-    windowDesc.height = 920;
-    windowDesc.width = 1280;
+    windowDesc.mHeight = 920;
+    windowDesc.mWidth = 1280;
 
     Window* window = CreateWindow(windowDesc);
     device = CreateDevice(window);
@@ -383,6 +383,12 @@ int main() {
     auto basicShader = CreateShader("geometry_pass.vert", "geometry_pass.frag");
     auto skyboxShader = CreateShader("skybox_pass.vert", "skybox_pass.frag");
     
+    AssetService::SetProjectRoot("C:/Users/szymek/Desktop/lumen_assets");
+    bool s;
+    ModelData model = AssetService::LoadMesh("models/scene.gltf", s);
+    cubeIndices = model.mIndices;
+    cubeVerts = model.mVertices;
+
     BaseObject cube;
     BaseObject skybox;
 
@@ -402,27 +408,27 @@ int main() {
     CameraUBO camUBO{};
 
     BufferDescriptor uboDesc;
-    uboDesc.bufferUsage = BufferUsage::Dynamic;
-    uboDesc.mapFlags = Mapflag::Write;
-    uboDesc.size = sizeof(CameraUBO);
+    uboDesc.mBufferUsage = BufferUsage::Dynamic;
+    uboDesc.mMapFlags = Mapflag::Write;
+    uboDesc.mSize = sizeof(CameraUBO);
     auto cameraUBO = device->CreateUniformBuffer(uboDesc);
 
     BufferDescriptor muboDesc;
-    muboDesc.bufferUsage = BufferUsage::Dynamic;
-    muboDesc.mapFlags = Mapflag::Write;
-    muboDesc.size = sizeof(math::Mat4);
+    muboDesc.mBufferUsage = BufferUsage::Dynamic;
+    muboDesc.mMapFlags = Mapflag::Write;
+    muboDesc.mSize = sizeof(math::Mat4);
     auto modelUBO = device->CreateUniformBuffer(muboDesc);
-
+    
     device->SetUniformBufferBinding(cameraUBO, LUM_UBO_CAMERA_BINDING);
     device->SetUniformBufferBinding(modelUBO, LUM_UBO_MODEL_BINDING);
 
     SamplerDescriptor sdesc;
-    sdesc.magFilter = SamplerMagFilter::Linear;
-    sdesc.minFilter = SamplerMinFilter::LinearMipmapLinear;
-    sdesc.anisotropy = 16;
-    sdesc.wrapS = SamplerWrap::Repeat;
-    sdesc.wrapT = SamplerWrap::Repeat;
-    sdesc.wrapR = SamplerWrap::Repeat;
+    sdesc.mMagFilter = SamplerMagFilter::Linear;
+    sdesc.mMinFilter = SamplerMinFilter::LinearMipmapLinear;
+    
+    sdesc.mAnisotropy = 16;
+    sdesc.mWrapS = SamplerWrap::Repeat;
+    sdesc.mWrapT = SamplerWrap::Repeat;
 
     auto sampler = device->CreateSampler(sdesc);
 
@@ -431,10 +437,10 @@ int main() {
 
     TextureDescriptor newdesc;
     newdesc.bGenerateMipmaps = true;
-    newdesc.filename = "default.png";
+    newdesc.mFilename = "textures/default.png";
 
     bool success;
-    auto data = AssetService::LoadTexture(newdesc.filename, success);
+    auto data = AssetService::LoadTexture(newdesc.mFilename, success);
     
     glfwSetScrollCallback(static_cast<GLFWwindow*>(window->GetNativeWindow()), scroll_callback);
 

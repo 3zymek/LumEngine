@@ -1,8 +1,8 @@
-// ************************************
-// LumEngine Copyright (C) 2026 3zymek
-// All rights reserved.
-// Shader contract API
-// ************************************
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Defines which gets pasted into every shader
+// 
+//=============================================================================//
 #pragma once
 
 // Shader location for position

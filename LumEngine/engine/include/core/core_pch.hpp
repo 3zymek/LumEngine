@@ -1,8 +1,8 @@
-// ************************************
-// LumEngine Copyright (C) 2026 3zymek
-// All rights reserved.
-// Precompiled headers with initial libraries
-// ************************************
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Precompiled headers with initial libraries
+// 
+//=============================================================================//
 #pragma once
 
 #include <iostream>
@@ -32,3 +32,7 @@
 #include "math/backend/glm.hpp"
 #include "math/backend/gtc/matrix_transform.hpp"
 #include "math/backend/gtc/type_ptr.hpp"
+
+#include "core/core_defines.hpp"
+#include "core/utils/logger.hpp"
+#include "core/utils/lum_assert.hpp"

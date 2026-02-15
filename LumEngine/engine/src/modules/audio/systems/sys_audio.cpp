@@ -10,16 +10,16 @@ namespace lum {
 
 			UpdateEmitterActions();
 
-			for (auto& emitter : manager.m_emitters) {
+			for (auto& emitter : manager.mEmitters) {
 
 				for (auto& active_clip : emitter.active_clips) {
 
-					auto& clip = emitter.clips[active_clip.audio_clip];
+					auto& clip = emitter.clips[active_clip.audioClip];
 
 					bool isPlaying;
 					active_clip.channel->isPlaying(&isPlaying);
 					if (!isPlaying) {
-						manager.StopEmitterClip(active_clip.emitter_id, active_clip.audio_clip);
+						manager.StopEmitterClip(active_clip.emitterID, active_clip.audioClip);
 					}
 
 					FMOD_VECTOR transfered_pos = TransferEmitterCoordsToFMOD(emitter.transform->position);
@@ -40,8 +40,8 @@ namespace lum {
 		}
 		void AudioSystem::UpdateEmitterActions() noexcept {
 
-			for (size_t i = 0; i < manager.m_commands.Count(); i++) {
-				auto& cmd = manager.m_commands[i];
+			for (size_t i = 0; i < manager.mCmdBuffer.Count(); i++) {
+				auto& cmd = manager.mCmdBuffer[i];
 				switch (cmd.type) {
 
 				case Type::AddClip: {
@@ -75,7 +75,7 @@ namespace lum {
 				}
 			}
 
-			manager.m_commands.Clear();
+			manager.mCmdBuffer.Clear();
 
 		}
 		void AudioSystem::UpdateListener() noexcept {
@@ -92,7 +92,7 @@ namespace lum {
 
 			FMOD_VECTOR vel = { 0, 0, 0 };
 
-			manager.m_audio_system->set3DListenerAttributes(
+			manager.mAudioSystem->set3DListenerAttributes(
 				0,				// id
 				&transfered_pos,// position
 				&vel,			// velocity

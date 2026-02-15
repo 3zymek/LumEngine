@@ -1,6 +1,13 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Records and plays RHI functions
+//
+//=============================================================================//
 #pragma once
+
 #include "rhi/rhi_common.hpp"
 #include "rhi/backend/opengl/gl_device.hpp"
+
 namespace lum::rhi {
 
 	template<typename T>

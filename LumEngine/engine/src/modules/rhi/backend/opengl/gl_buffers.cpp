@@ -16,26 +16,26 @@ namespace lum::rhi::gl {
 			return BufferHandle{};
 		}
 
-		if (desc.size <= 0) {
+		if (desc.mSize <= 0) {
 			LUM_LOG_WARN("Invalid buffer size");
 			return BufferHandle{};
 		}
 
 		Buffer buffer;
-		buffer.size = desc.size;
-		buffer.flags = desc.mapFlags;
-		buffer.type = BufferType::Vertex;
-		buffer.usage = desc.bufferUsage;
+		buffer.mSize = desc.mSize;
+		buffer.mFlags = desc.mMapFlags;
+		buffer.mType = BufferType::Vertex;
+		buffer.mUsage = desc.mBufferUsage;
 
 		GLbitfield init_flags =
-			((desc.bufferUsage == BufferUsage::Dynamic) ? GL_DYNAMIC_STORAGE_BIT : 0)
-			| translate_mapping_flags(desc.mapFlags);
+			((desc.mBufferUsage == BufferUsage::Dynamic) ? GL_DYNAMIC_STORAGE_BIT : 0)
+			| translate_mapping_flags(desc.mMapFlags);
 
-		glCreateBuffers(1, &buffer.handle.glHandle);
+		glCreateBuffers(1, &buffer.mHandle.gl);
 		glNamedBufferStorage(
-			buffer.handle.glHandle,
-			desc.size,
-			desc.data,
+			buffer.mHandle.gl,
+			desc.mSize,
+			desc.mData,
 			init_flags
 		);
 
@@ -56,26 +56,26 @@ namespace lum::rhi::gl {
 			return BufferHandle{};
 		}
 
-		if (desc.size <= 0) {
+		if (desc.mSize <= 0) {
 			LUM_LOG_WARN("Invalid buffer size");
 			return BufferHandle{};
 		}
 
 		Buffer buffer;
-		buffer.size = desc.size;
-		buffer.flags = desc.mapFlags;
-		buffer.type = BufferType::Element;
-		buffer.usage = desc.bufferUsage;
+		buffer.mSize = desc.mSize;
+		buffer.mFlags = desc.mMapFlags;
+		buffer.mType = BufferType::Element;
+		buffer.mUsage = desc.mBufferUsage;
 
 		GLbitfield init_flags =
-			((buffer.usage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
-			| translate_mapping_flags(desc.mapFlags);
+			((buffer.mUsage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
+			| translate_mapping_flags(desc.mMapFlags);
 
-		glCreateBuffers(1, &buffer.handle.glHandle);
+		glCreateBuffers(1, &buffer.mHandle.gl);
 		glNamedBufferStorage(
-			buffer.handle.glHandle,
-			desc.size,
-			desc.data,
+			buffer.mHandle.gl,
+			desc.mSize,
+			desc.mData,
 			init_flags
 		);
 
@@ -96,26 +96,26 @@ namespace lum::rhi::gl {
 			return BufferHandle{};
 		}
 
-		if (desc.size <= 0) {
+		if (desc.mSize <= 0) {
 			LUM_LOG_WARN("Invalid buffer size");
 			return BufferHandle{};
 		}
 
 		Buffer ubo;
-		ubo.size = desc.size;
-		ubo.flags = desc.mapFlags;
-		ubo.type = BufferType::Uniform;
-		ubo.usage = desc.bufferUsage;
+		ubo.mSize = desc.mSize;
+		ubo.mFlags = desc.mMapFlags;
+		ubo.mType = BufferType::Uniform;
+		ubo.mUsage = desc.mBufferUsage;
 
 		GLbitfield initFlags =
-			((ubo.usage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
-			| translate_mapping_flags(desc.mapFlags);
+			((ubo.mUsage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
+			| translate_mapping_flags(desc.mMapFlags);
 
-		glCreateBuffers(1, &ubo.handle.glHandle);
+		glCreateBuffers(1, &ubo.mHandle.gl);
 		glNamedBufferStorage(
-			ubo.handle.glHandle,
-			desc.size,
-			desc.data,
+			ubo.mHandle.gl,
+			desc.mSize,
+			desc.mData,
 			initFlags
 		);
 
@@ -137,28 +137,28 @@ namespace lum::rhi::gl {
 			return BufferHandle{};
 		}
 
-		if (desc.size <= 0) {
+		if (desc.mSize <= 0) {
 			LUM_LOG_WARN("Invalid buffer size");
 			return BufferHandle{};
 		}
 
 
 		Buffer ssbo;
-		glCreateBuffers(1, &ssbo.handle.glHandle);
+		glCreateBuffers(1, &ssbo.mHandle.gl);
 
-		ssbo.size = desc.size;
-		ssbo.flags = desc.mapFlags;
-		ssbo.type = BufferType::ShaderStorage;
-		ssbo.usage = desc.bufferUsage;
+		ssbo.mSize = desc.mSize;
+		ssbo.mFlags = desc.mMapFlags;
+		ssbo.mType = BufferType::ShaderStorage;
+		ssbo.mUsage = desc.mBufferUsage;
 
 		GLbitfield initFlags =
-			((ssbo.usage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
-			| translate_mapping_flags(desc.mapFlags);
+			((ssbo.mUsage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
+			| translate_mapping_flags(desc.mMapFlags);
 
 		glNamedBufferStorage(
-			ssbo.handle.glHandle,
-			ssbo.size,
-			desc.data,
+			ssbo.mHandle.gl,
+			ssbo.mSize,
+			desc.mData,
 			initFlags
 		);
 
@@ -176,19 +176,19 @@ namespace lum::rhi::gl {
 
 		Buffer& buffer = mBuffers[vbo];
 
-		LUM_HOTCHK_RETURN_VOID(offset + size < buffer.size, LUM_SEV_WARN, "Invalid offset or size");
+		LUM_HOTCHK_RETURN_VOID(offset + size < buffer.mSize, LUM_SEV_WARN, "Invalid offset or size");
 
-		if (size == 0) size = buffer.size;
+		if (size == 0) size = buffer.mSize;
 
 		LUM_HOTCHK_RETURN_VOID(
-			buffer.usage != BufferUsage::Static,
+			buffer.mUsage != BufferUsage::Static,
 			LUM_SEV_WARN,
 			"Buffer %d is static, cannot be updated",
 			vbo.id
 		);
 
 		LUM_HOTCHK_RETURN_VOID(
-			buffer.flags.has(Mapflag::Write),
+			buffer.mFlags.Has(Mapflag::Write),
 			LUM_SEV_WARN,
 			"Buffer %d has no write flags enabled",
 			vbo.id
@@ -196,7 +196,7 @@ namespace lum::rhi::gl {
 
 		void* ptr =
 			glMapNamedBufferRange(
-				buffer.handle.glHandle,
+				buffer.mHandle.gl,
 				offset,
 				size,
 				GL_MAP_WRITE_BIT
@@ -204,9 +204,9 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK_RETURN_VOID(ptr, LUM_SEV_WARN, "Failed during buffer mapping");
 
-		std::memcpy(ptr, data, buffer.size);
+		std::memcpy(ptr, data, buffer.mSize);
 
-		glUnmapNamedBuffer(buffer.handle.glHandle);
+		glUnmapNamedBuffer(buffer.mHandle.gl);
 
 		LUM_LOG_DEBUG("Updated buffer %d", vbo.id);
 	}
@@ -218,7 +218,7 @@ namespace lum::rhi::gl {
 		Buffer& buffer = mBuffers[vbo];
 		LUM_HOTCHK_RETURN_VOID(buffer.bMapped, LUM_SEV_WARN, "Unable to delete buffer - still mapped");
 
-		glDeleteBuffers(1, &buffer.handle.glHandle);
+		glDeleteBuffers(1, &buffer.mHandle.gl);
 		
 		mBuffers.delete_handle(vbo);
 
@@ -231,10 +231,10 @@ namespace lum::rhi::gl {
 
 		Buffer& buffer = mBuffers[vbo];
 
-		LUM_HOTCHK_RETURN_NPTR(offset + size < buffer.size || size < buffer.size, LUM_SEV_WARN, "Invalid offset or size");
-		if (size <= 0) size = buffer.size;
+		LUM_HOTCHK_RETURN_NPTR(offset + size < buffer.mSize || size < buffer.mSize, LUM_SEV_WARN, "Invalid offset or size");
+		if (size <= 0) size = buffer.mSize;
 
-		vptr ptr = glMapNamedBufferRange(buffer.handle.glHandle, offset, size, translate_mapping_flags(flags));
+		vptr ptr = glMapNamedBufferRange(buffer.mHandle.gl, offset, size, translate_mapping_flags(flags));
 
 		LUM_ASSERT(ptr, "Failed to map buffer");
 
@@ -248,7 +248,7 @@ namespace lum::rhi::gl {
 
 		Buffer& buffer = mBuffers[vbo];
 		LUM_HOTCHK_RETURN_VOID(buffer.bMapped, LUM_SEV_WARN, "Buffer is already unmapped");
-		glUnmapNamedBuffer(buffer.handle.glHandle);
+		glUnmapNamedBuffer(buffer.mHandle.gl);
 
 		LUM_LOG_DEBUG("Unmapped buffer %d", vbo.id);
 	}
@@ -259,7 +259,7 @@ namespace lum::rhi::gl {
 
 		const auto& buffer = mBuffers[ssbo];
 
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, buffer.handle.glHandle);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, buffer.mHandle.gl);
 
 	}
 
@@ -268,7 +268,7 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(mLayouts.exist(vao), LUM_SEV_DEBUG, "Layout doesn't exist");
 		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(ebo), LUM_SEV_DEBUG, "Buffer doesn't exist");
 
-		glVertexArrayElementBuffer(mLayouts[vao].vao, mBuffers[ebo].handle.glHandle);
+		glVertexArrayElementBuffer(mLayouts[vao].mHandle, mBuffers[ebo].mHandle.gl);
 
 		LUM_LOG_DEBUG("Attached EBO %d to VAO %d", ebo.id, vao.id);
 
@@ -277,7 +277,7 @@ namespace lum::rhi::gl {
 	void GLDevice::SetUniformBufferBinding(const BufferHandle& ubo, int32 binding) {
 		LUM_HOTCHK_RETURN_VOID(mBuffers.exist(ubo), LUM_SEV_DEBUG, "Uniform buffer doesn't exist");
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, binding, mBuffers[ubo].handle.glHandle);
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, mBuffers[ubo].mHandle.gl);
 
 		LUM_LOG_DEBUG("Attached UBO %d to binding %d", ubo.id, binding);
 

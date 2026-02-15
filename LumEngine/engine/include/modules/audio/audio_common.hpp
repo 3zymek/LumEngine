@@ -53,8 +53,8 @@ namespace lum {
 
 			struct AudioChannel {
 				FMOD::Channel*	channel = nullptr;
-				EmitterHandle	emitter_id{};
-				AudioHandle		audio_clip{};
+				EmitterHandle	emitterID{};
+				AudioHandle		audioClip{};
 			};
 
 			#define FMOD_ASSERT(x) \

@@ -25,7 +25,7 @@ void main() {
 
 	mat3 normalMatrix = transpose(inverse(mat3(LUM_MODEL_MAT4)));
 	fragNormal = normalize(normalMatrix * aNormal);
-	fragUv = aUV * 1000.0;
+	fragUv = aUV;
 	fragPos = (LUM_MODEL_MAT4 * vec4(aPos, 1.0)).xyz;
 
 }

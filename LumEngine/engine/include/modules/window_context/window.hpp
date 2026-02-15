@@ -6,12 +6,11 @@ namespace lum {
 	enum class RenderBackend : bitfield { OpenGL, /*Vulkan*/ };
 
 	struct WindowDescriptor {
-		ccharptr title			= "LumEngine";
-		bool bFullscreen			= false;
-		uint32 height			= 500;
-		uint32 width			= 500;
-		uint32 msaaSamples		= 0;
-		RenderBackend backend	= RenderBackend::OpenGL;
+		ccharptr mTitle			= "LumEngine";
+		bool bFullscreen		= false;
+		uint32 mHeight			= 500;
+		uint32 mWidth			= 500;
+		RenderBackend mBackend	= RenderBackend::OpenGL;
 	};
 
 	class Window {
@@ -28,7 +27,7 @@ namespace lum {
 	protected:
 
 		virtual void Init( const WindowDescriptor& ) = 0;
-		RenderBackend backend{};
+		RenderBackend mBackend{};
 
 	};
 

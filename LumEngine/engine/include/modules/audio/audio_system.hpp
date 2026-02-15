@@ -16,7 +16,7 @@ namespace lum {
 
 			inline void Update() noexcept {
 
-				manager.m_audio_system->update();
+				manager.mAudioSystem->update();
 
 				UpdateEmitters();
 
