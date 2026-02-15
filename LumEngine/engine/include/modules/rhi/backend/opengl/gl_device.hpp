@@ -1,8 +1,8 @@
-// ************************************
-// LumEngine Copyright (C) 2026 3zymek
-// All rights reserved.
-// OpenGL header of RHI
-// ************************************
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: OpenGL implementation of Render Hardware Interface
+//
+//=============================================================================//
 #pragma once
 
 #include "rhi/core/rhi_device.hpp"
@@ -20,9 +20,9 @@ namespace lum::rhi::gl {
 
 		GLDevice(Window* win) : window(win) {}
 
-		///////////////////////////////////////////////////
-		/// Buffers
-		///////////////////////////////////////////////////
+		//=================================================
+		// Buffers
+		//=================================================
 
 		BufferHandle	CreateVertexBuffer			( const BufferDescriptor& )								override;
 		BufferHandle	CreateElementBuffer			( const BufferDescriptor& )								override;
@@ -38,9 +38,9 @@ namespace lum::rhi::gl {
 
 
 
-		///////////////////////////////////////////////////
-		/// Framebuffers
-		///////////////////////////////////////////////////
+		//=================================================
+		// Framebuffers
+		//=================================================
 
 		FramebufferHandle	CreateFramebuffer			( )															override;
 		TextureHandle		CreateFramebufferTexture	( const FramebufferTextureDescriptor& )						override;
@@ -54,18 +54,18 @@ namespace lum::rhi::gl {
 
 
 
-		///////////////////////////////////////////////////
-		/// Layouts
-		///////////////////////////////////////////////////
+		//=================================================
+		// Layouts
+		//=================================================
 
 		VertexLayoutHandle	CreateVertexLayout ( const VertexLayoutDescriptor&, const BufferHandle&)	override;
 		void				DeleteVertexLayout ( VertexLayoutHandle& )									override;
 
 
 
-		///////////////////////////////////////////////////
-		/// Shaders ( !!! ADD CACHE LOCATIONS !!! )
-		///////////////////////////////////////////////////
+		//=================================================
+		// TODO Shaders ( !!! ADD CACHE LOCATIONS !!! )
+		//=================================================
 
 		ShaderHandle	CreateShader ( const ShaderDescriptor& )							override;
 		void			BindShader	 ( const ShaderHandle& )								override;
@@ -79,9 +79,9 @@ namespace lum::rhi::gl {
 
 
 
-		///////////////////////////////////////////////////
-		/// Textures
-		///////////////////////////////////////////////////
+		//=================================================
+		// Textures
+		//=================================================
 
 		TextureHandle	CreateTexture2D		 ( const TextureDescriptor& )				override;
 		TextureHandle	CreateTexture3D		 ( const TextureDescriptor& )				override;
@@ -93,9 +93,9 @@ namespace lum::rhi::gl {
 
 
 
-		///////////////////////////////////////////////////
-		/// Samplers
-		///////////////////////////////////////////////////
+		//=================================================
+		// Samplers
+		//=================================================
 
 		SamplerHandle	CreateSampler	( const SamplerDescriptor& )		override;
 		void			BindSampler		( const SamplerHandle&, uint16)		override;
@@ -103,9 +103,9 @@ namespace lum::rhi::gl {
 
 
 
-		///////////////////////////////////////////////////
-		/// Pipelines
-		///////////////////////////////////////////////////
+		//=================================================
+		// Pipelines
+		//=================================================
 
 		PipelineHandle		CreatePipeline	( const PipelineDescriptor& )	override;
 		void				DeletePipeline	( PipelineHandle& )				override;
@@ -113,9 +113,9 @@ namespace lum::rhi::gl {
 
 
 
-		///////////////////////////////////////////////////
-		/// Other
-		///////////////////////////////////////////////////
+		//=================================================
+		// Other
+		//=================================================
 
 		void SetViewport		( int32 x, int32 y, int32 width, int32 height )	override;
 		void SetViewportX		( int32 x )			override;
@@ -415,9 +415,9 @@ namespace lum::rhi::gl {
 
 		Window* window = nullptr;
 
-		///////////////////////////////////////////////////
-		/// Private helpers ( !!! REPAIR TYPE CASTING !!! )
-		///////////////////////////////////////////////////
+		//=================================================
+		// Private helpers
+		//=================================================
 
 		LUM_FORCEINLINE
 		void bind_check_shader(const Pipeline&) noexcept;

@@ -53,17 +53,17 @@ namespace lum::rhi {
 		*/
 		struct PolygonState {
 			// Polygon rasterization mode (fill, wireframe, or points)
-			TopologyMode topologyMode = TopologyMode::Fill;
+			TopologyMode mTopologyMode = TopologyMode::Fill;
 
 			// Faces affected by the rasterization mode
-			Face topologyModeFaces = Face::FrontBack;
+			Face mTopologyModeFaces = Face::FrontBack;
 
 			// Point size for point topology
-			float32 pointSize = 1.f;
+			float32 mPointSize = 1.f;
 
 			// Line width for line topology
-			float32 lineWidth = 1.f;
-		} polygon;
+			float32 mLineWidth = 1.f;
+		} mPolygon;
 
 		/*!
 		* @brief Depth bias configuration.
@@ -79,18 +79,18 @@ namespace lum::rhi {
 			bool bEnable = false;
 
 			// Specifies a scale factor that is used to create a variable depth offset for each polygon. The initial value is 0.
-			float32 slopeFactor = 0.f;
+			float32 mSlopeFactor = 0.f;
 
 			// Is multiplied by an implementation-specific value to create a constant depth offset. The initial value is 0. 
-			float32 units = 0.f;
+			float32 mUnits = 0.f;
 
 			// Specifies the maximum (or minimum if negative) depth offset value.
 			// If clamp is positive, the calculated offset is clamped to at most this value.
 			// If clamp is negative, the calculated offset is clamped to at least this value.
 			// If clamp is zero, no clamping is applied. The initial value is 0.
-			float32 clamp = 0.f;
+			float32 mClamp = 0.f;
 
-		} depthBias;
+		} mDepthBias;
 
 	};
 
@@ -114,34 +114,34 @@ namespace lum::rhi {
 		// Specifies the reference value for the stencil test. 
 		// ref is clamped to the range [0,2n−1], where n is the number of bitplanes in the stencil buffer. 
 		// The initial value is 0. 
-		int32 reference = 0;
+		int32 mReference = 0;
 
 		// Specifies a mask that is ANDed with both the reference value
 		// and the stored stencil value when the test is done.
 		// The initial value is all 1's ( 0xFFFFFFFF ).
-		uint32 readMask = 0xFFFFFFFF;
+		uint32 mReadMask = 0xFFFFFFFF;
 
 		// Specifies a bit mask to enable and disable writing of individual bits in the stencil planes.
 		// Initially, the mask is all 1's ( 0xFFFFFFFF ).
-		uint32 writeMask = 0xFFFFFFFF;
+		uint32 mWriteMask = 0xFFFFFFFF;
 
 		// Specifies the test function. 
 		// The initial value is CompareFlag::Always. 
-		CompareFlag compareFlag = CompareFlag::Always;
+		CompareFlag mCompareFlag = CompareFlag::Always;
 
 		// Specifies the action to take when the stencil test fails. 
 		// The initial value is StencilOp::Keep. 
-		StencilOp stencilFailOp = StencilOp::Keep;
+		StencilOp mStencilFailOp = StencilOp::Keep;
 
 		// Specifies the stencil action when the stencil test passes, but the depth test fails. dpfail accepts the same symbolic 
 		// constants as sfail. 
 		// The initial value is StencilOp::Keep.
-		StencilOp depthFailOp = StencilOp::Keep;
+		StencilOp mDepthFailOp = StencilOp::Keep;
 
 		// Specifies the stencil action when both the stencil test and the depth test pass, or when the stencil test passes and 
 		// either there is no depth buffer or depth testing is not enabled. dppass accepts the same symbolic constants as sfail. 
 		// The initial value is StencilOp::Keep. 
-		StencilOp passOp = StencilOp::Keep;
+		StencilOp mPassOp = StencilOp::Keep;
 
 	};
 
@@ -165,7 +165,7 @@ namespace lum::rhi {
 			// The initial value is CompareFlag::Less. 
 			CompareFlag	mCompare = CompareFlag::Less;
 
-		} depth;
+		} mDepth;
 
 		struct Stencil {
 
@@ -185,7 +185,7 @@ namespace lum::rhi {
 			}
 
 
-		} stencil;
+		} mStencil;
 
 	};
 

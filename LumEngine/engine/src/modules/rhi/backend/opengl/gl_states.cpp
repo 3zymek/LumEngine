@@ -1,8 +1,8 @@
-// ************************************
-// LumEngine Copyright (C) 2026 3zymek
-// All rights reserved.
-// Implementation of state managements from RHI
-// ************************************
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: RHI OpenGL implementation of state setters operations and management
+//
+//=============================================================================//
 
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
@@ -562,7 +562,7 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		if (mDepthStencilState.depth.mCompare == func) {
+		if (mDepthStencilState.mDepth.mCompare == func) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
@@ -604,7 +604,7 @@ namespace lum::rhi::gl {
 	bool GLDevice::IsStencilTestEnabled ( ) const noexcept {
 		return mEnabledStates.Has(State::StencilTest);
 	}
-	void GLDevice::SetStencilReference ( int32 ref, Face face = Face::FrontBack ) {
+	void GLDevice::SetStencilReference ( int32 ref, Face face ) {
 
 		if (!mEnabledStates.Has(State::StencilTest)) {
 			return;
@@ -612,41 +612,41 @@ namespace lum::rhi::gl {
 
 		if (face == Face::Front) {
 
-			auto& front = mDepthStencilState.stencil.mFront;
+			auto& front = mDepthStencilState.mStencil.mFront;
 
-			if (front.reference == ref) {
+			if (front.mReference == ref) {
 				LUM_PROFILER_CACHE_HIT();
 				return;
 			}
 
 			glStencilFuncSeparate(
 				GL_FRONT, 
-				skCompareFlagLookup[lookup_cast(front.compareFlag)], 
+				skCompareFlagLookup[lookup_cast(front.mCompareFlag)], 
 				ref, 
-				front.readMask
+				front.mReadMask
 			);
 
-			front.reference = ref;
+			front.mReference = ref;
 
 			LUM_PROFILER_CACHE_MISS();
 
 		}
 		else if (face == Face::Back) {
-			auto& back = mDepthStencilState.stencil.mBack;
+			auto& back = mDepthStencilState.mStencil.mBack;
 
-			if (back.reference == ref) {
+			if (back.mReference == ref) {
 				LUM_PROFILER_CACHE_HIT();
 				return;
 			}
 
 			glStencilFuncSeparate(
 				GL_BACK,
-				skCompareFlagLookup[lookup_cast(back.compareFlag)],
+				skCompareFlagLookup[lookup_cast(back.mCompareFlag)],
 				ref,
-				back.readMask
+				back.mReadMask
 			);
 
-			back.reference = ref;
+			back.mReference = ref;
 
 			LUM_PROFILER_CACHE_MISS();
 
@@ -665,13 +665,13 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		auto& stencil = mDepthStencilState.stencil;
+		auto& stencil = mDepthStencilState.mStencil;
 
 		if (face == Face::Front) {
 
 			auto& front = stencil.mFront;
 			
-			if (front.stencilFailOp == sfail && front.depthFailOp == dpfail && front.passOp == dppass) {
+			if (front.mStencilFailOp == sfail && front.mDepthFailOp == dpfail && front.mPassOp == dppass) {
 				LUM_PROFILER_CACHE_HIT();
 				return;
 			}
@@ -684,9 +684,9 @@ namespace lum::rhi::gl {
 				skStencilOpLookup[lookup_cast(dppass)]
 			);
 
-			front.stencilFailOp = sfail;
-			front.depthFailOp = dpfail;
-			front.passOp = dppass;
+			front.mStencilFailOp = sfail;
+			front.mDepthFailOp = dpfail;
+			front.mPassOp = dppass;
 
 			LUM_PROFILER_CACHE_MISS();
 
@@ -695,7 +695,7 @@ namespace lum::rhi::gl {
 
 			auto& back = stencil.mBack;
 
-			if (back.stencilFailOp == sfail && back.depthFailOp == dpfail && back.passOp == dppass) {
+			if (back.mStencilFailOp == sfail && back.mDepthFailOp == dpfail && back.mPassOp == dppass) {
 				LUM_PROFILER_CACHE_HIT();
 				return;
 			}
@@ -707,9 +707,9 @@ namespace lum::rhi::gl {
 				skStencilOpLookup[lookup_cast(dppass)]
 			);
 
-			back.stencilFailOp = sfail;
-			back.depthFailOp = dpfail;
-			back.passOp = dppass;
+			back.mStencilFailOp = sfail;
+			back.mDepthFailOp = dpfail;
+			back.mPassOp = dppass;
 
 			LUM_PROFILER_CACHE_MISS();
 
@@ -728,13 +728,13 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		auto& stencil = mDepthStencilState.stencil;
+		auto& stencil = mDepthStencilState.mStencil;
 
 		if (face == Face::Front) {
 
 			auto& front = stencil.mFront;
 
-			if (front.stencilFailOp == op) {
+			if (front.mStencilFailOp == op) {
 				LUM_PROFILER_CACHE_HIT();
 				return;
 			}
@@ -742,11 +742,11 @@ namespace lum::rhi::gl {
 			glStencilOpSeparate(
 				GL_FRONT,
 				skStencilOpLookup[lookup_cast(op)],
-				skStencilOpLookup[lookup_cast(front.depthFailOp)],
-				skStencilOpLookup[lookup_cast(front.passOp)]
+				skStencilOpLookup[lookup_cast(front.mDepthFailOp)],
+				skStencilOpLookup[lookup_cast(front.mPassOp)]
 			);
 
-			front.stencilFailOp = op;
+			front.mStencilFailOp = op;
 
 			LUM_PROFILER_CACHE_MISS();
 
@@ -755,7 +755,7 @@ namespace lum::rhi::gl {
 
 			auto& back = stencil.mBack;
 
-			if (back.stencilFailOp == op) {
+			if (back.mStencilFailOp == op) {
 				LUM_PROFILER_CACHE_HIT();
 				return;
 			}
@@ -763,11 +763,11 @@ namespace lum::rhi::gl {
 			glStencilOpSeparate(
 				GL_BACK,
 				skStencilOpLookup[lookup_cast(op)],
-				skStencilOpLookup[lookup_cast(back.depthFailOp)],
-				skStencilOpLookup[lookup_cast(back.passOp)]
+				skStencilOpLookup[lookup_cast(back.mDepthFailOp)],
+				skStencilOpLookup[lookup_cast(back.mPassOp)]
 			);
 
-			back.stencilFailOp = op;
+			back.mStencilFailOp = op;
 
 			LUM_PROFILER_CACHE_MISS();
 
@@ -786,25 +786,25 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		auto& stencil = mDepthStencilState.stencil;
+		auto& stencil = mDepthStencilState.mStencil;
 
 		if (face == Face::Front) {
 
 			auto& front = stencil.mFront;
 
-			if (front.stencilFailOp == op) {
+			if (front.mStencilFailOp == op) {
 				LUM_PROFILER_CACHE_HIT();
 				return;
 			}
 
 			glStencilOpSeparate(
 				GL_FRONT,
-				skStencilOpLookup[lookup_cast(front.stencilFailOp)],
+				skStencilOpLookup[lookup_cast(front.mStencilFailOp)],
 				skStencilOpLookup[lookup_cast(op)],
-				skStencilOpLookup[lookup_cast(front.passOp)]
+				skStencilOpLookup[lookup_cast(front.mPassOp)]
 			);
 
-			front.depthFailOp = op;
+			front.mDepthFailOp = op;
 
 			LUM_PROFILER_CACHE_MISS();
 
@@ -813,19 +813,19 @@ namespace lum::rhi::gl {
 
 			auto& back = stencil.mBack;
 
-			if (back.stencilFailOp == op) {
+			if (back.mStencilFailOp == op) {
 				LUM_PROFILER_CACHE_HIT();
 				return;
 			}
 
 			glStencilOpSeparate(
 				GL_BACK,
-				skStencilOpLookup[lookup_cast(back.stencilFailOp)],
+				skStencilOpLookup[lookup_cast(back.mStencilFailOp)],
 				skStencilOpLookup[lookup_cast(op)],
-				skStencilOpLookup[lookup_cast(back.passOp)]
+				skStencilOpLookup[lookup_cast(back.mPassOp)]
 			);
 
-			back.depthFailOp = op;
+			back.mDepthFailOp = op;
 
 			LUM_PROFILER_CACHE_MISS();
 
@@ -844,25 +844,25 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		auto& stencil = mDepthStencilState.stencil;
+		auto& stencil = mDepthStencilState.mStencil;
 
 		if (face == Face::Front) {
 
 			auto& front = stencil.mFront;
 
-			if (front.passOp == op) {
+			if (front.mPassOp == op) {
 				LUM_PROFILER_CACHE_HIT();
 				return;
 			}
 
 			glStencilOpSeparate(
 				GL_FRONT,
-				skStencilOpLookup[lookup_cast(front.stencilFailOp)],
-				skStencilOpLookup[lookup_cast(front.depthFailOp)],
+				skStencilOpLookup[lookup_cast(front.mStencilFailOp)],
+				skStencilOpLookup[lookup_cast(front.mDepthFailOp)],
 				skStencilOpLookup[lookup_cast(op)]
 			);
 
-			front.passOp = op;
+			front.mPassOp = op;
 
 			LUM_PROFILER_CACHE_MISS();
 
@@ -871,19 +871,19 @@ namespace lum::rhi::gl {
 
 			auto& back = stencil.mBack;
 
-			if (back.passOp == op) {
+			if (back.mPassOp == op) {
 				LUM_PROFILER_CACHE_HIT();
 				return;
 			}
 
 			glStencilOpSeparate(
 				GL_BACK,
-				skStencilOpLookup[lookup_cast(back.stencilFailOp)],
-				skStencilOpLookup[lookup_cast(back.depthFailOp)],
+				skStencilOpLookup[lookup_cast(back.mStencilFailOp)],
+				skStencilOpLookup[lookup_cast(back.mDepthFailOp)],
 				skStencilOpLookup[lookup_cast(op)]
 			);
 
-			back.passOp = op;
+			back.mPassOp = op;
 
 			LUM_PROFILER_CACHE_MISS();
 
@@ -932,15 +932,15 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		if (mRasterizerState.depthBias.slopeFactor == slope && mRasterizerState.depthBias.units == units) {
+		if (mRasterizerState.mDepthBias.mSlopeFactor == slope && mRasterizerState.mDepthBias.mUnits == units) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
 
 		glPolygonOffset(slope, units);
 
-		mRasterizerState.depthBias.slopeFactor = slope;
-		mRasterizerState.depthBias.units = units;
+		mRasterizerState.mDepthBias.mSlopeFactor = slope;
+		mRasterizerState.mDepthBias.mUnits = units;
 
 		LUM_PROFILER_CACHE_MISS();
 
@@ -951,18 +951,18 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		if (mRasterizerState.depthBias.clamp == clamp) {
+		if (mRasterizerState.mDepthBias.mClamp == clamp) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
 
 		glPolygonOffsetClamp(
-			mRasterizerState.depthBias.slopeFactor,
-			mRasterizerState.depthBias.units,
+			mRasterizerState.mDepthBias.mSlopeFactor,
+			mRasterizerState.mDepthBias.mUnits,
 			clamp
 		); 
 
-		mRasterizerState.depthBias.clamp = clamp;
+		mRasterizerState.mDepthBias.mClamp = clamp;
 
 		LUM_PROFILER_CACHE_MISS();
 
@@ -973,13 +973,13 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		if (mRasterizerState.depthBias.slopeFactor == slopeFactor) {
+		if (mRasterizerState.mDepthBias.mSlopeFactor == slopeFactor) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
 
-		glPolygonOffset(slopeFactor, mRasterizerState.depthBias.units);
-		mRasterizerState.depthBias.slopeFactor = slopeFactor;
+		glPolygonOffset(slopeFactor, mRasterizerState.mDepthBias.mUnits);
+		mRasterizerState.mDepthBias.mSlopeFactor = slopeFactor;
 
 		LUM_PROFILER_CACHE_MISS();
 
@@ -990,20 +990,20 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		if (mRasterizerState.depthBias.units == constantBias) {
+		if (mRasterizerState.mDepthBias.mUnits == constantBias) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
 
-		glPolygonOffset(mRasterizerState.depthBias.slopeFactor, constantBias);
-		mRasterizerState.depthBias.units = constantBias;
+		glPolygonOffset(mRasterizerState.mDepthBias.mSlopeFactor, constantBias);
+		mRasterizerState.mDepthBias.mUnits = constantBias;
 
 		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::SetTopology ( TopologyMode mode, Face face ) {
 
-		if (mRasterizerState.polygon.topologyMode == mode && mRasterizerState.polygon.topologyModeFaces == face) {
+		if (mRasterizerState.mPolygon.mTopologyMode == mode && mRasterizerState.mPolygon.mTopologyModeFaces == face) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
@@ -1013,36 +1013,36 @@ namespace lum::rhi::gl {
 			skTopologyModeLookup[lookup_cast(mode)]
 		);
 
-		mRasterizerState.polygon.topologyMode = mode;
-		mRasterizerState.polygon.topologyModeFaces = face;
+		mRasterizerState.mPolygon.mTopologyMode = mode;
+		mRasterizerState.mPolygon.mTopologyModeFaces = face;
 
 		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::SetPointSize ( float32 size ) {
 
-		if (mRasterizerState.polygon.pointSize == size) {
+		if (mRasterizerState.mPolygon.mPointSize == size) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
 
 		glPointSize(size);
 
-		mRasterizerState.polygon.pointSize = size;
+		mRasterizerState.mPolygon.mPointSize = size;
 
 		LUM_PROFILER_CACHE_MISS();
 
 	}
 	void GLDevice::SetLineWidth ( float32 width ) {
 
-		if (mRasterizerState.polygon.lineWidth == width) {
+		if (mRasterizerState.mPolygon.mLineWidth == width) {
 			LUM_PROFILER_CACHE_HIT();
 			return;
 		}
 
 		glLineWidth(width);
 
-		mRasterizerState.polygon.lineWidth = width;
+		mRasterizerState.mPolygon.mLineWidth = width;
 
 		LUM_PROFILER_CACHE_MISS();
 
@@ -1074,6 +1074,8 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
+
+	// TODO implement
 	void GLDevice::ToggleSampleCoverage(bool toggle) {
 
 

@@ -1,6 +1,6 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Loads assets (textures, sounds, shaders, models)
+// Purpose: Loads assets and stores project root path
 // 
 //=============================================================================//
 #pragma once

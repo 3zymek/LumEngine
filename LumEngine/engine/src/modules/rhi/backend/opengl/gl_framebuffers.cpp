@@ -1,9 +1,13 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: OpenGL framebuffer operations (FBO)
+//          Creation, texture attachment, binding, and clearing
+//
+//=============================================================================//
+
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
 namespace lum::rhi::gl {
-///////////////////////////////////////////////////
-/// Framebuffers
-///////////////////////////////////////////////////
 
 	FramebufferHandle GLDevice::CreateFramebuffer() {
 		LUM_HOTCHK_RETURN_CUSTOM(
@@ -31,10 +35,10 @@ namespace lum::rhi::gl {
 
 		Texture tex;
 
-		glCreateTextures(GL_TEXTURE_2D, 1, &tex.mHandle.mGlHandle);
+		glCreateTextures(GL_TEXTURE_2D, 1, &tex.mHandle.gl);
 
 		GLenum format = (desc.mAttachment == FramebufferAttachment::DepthAttach) ? GL_DEPTH_COMPONENT24 : GL_RGBA8;
-		glTextureStorage2D(tex.mHandle.mGlHandle, 1, format, desc.mWidth, desc.mHeight);
+		glTextureStorage2D(tex.mHandle.gl, 1, format, desc.mWidth, desc.mHeight);
 
 		return mTextures.create_handle(std::move(tex));
 	}
@@ -46,7 +50,7 @@ namespace lum::rhi::gl {
 
 		if(index > GL_COLOR_ATTACHMENT0)
 
-		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_COLOR_ATTACHMENT0, mTextures[tex].mHandle.mGlHandle, 0);
+		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_COLOR_ATTACHMENT0, mTextures[tex].mHandle.gl, 0);
 
 	}
 
@@ -55,7 +59,7 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(mFramebuffers.exist(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
 		LUM_HOTCHK_RETURN_VOID(mTextures.exist(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
 
-		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_DEPTH_ATTACHMENT, mTextures[tex].mHandle.mGlHandle, 0);
+		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_DEPTH_ATTACHMENT, mTextures[tex].mHandle.gl, 0);
 
 	}
 
@@ -64,7 +68,7 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(mFramebuffers.exist(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
 		LUM_HOTCHK_RETURN_VOID(mTextures.exist(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
 
-		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_STENCIL_ATTACHMENT, mTextures[tex].mHandle.mGlHandle, 0);
+		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_STENCIL_ATTACHMENT, mTextures[tex].mHandle.gl, 0);
 
 	}
 

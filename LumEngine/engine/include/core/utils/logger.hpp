@@ -1,6 +1,6 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Logger for debugging
+// Purpose: Logs messages form all over the engine for debugging and testing
 // 
 //=============================================================================//
 #pragma once

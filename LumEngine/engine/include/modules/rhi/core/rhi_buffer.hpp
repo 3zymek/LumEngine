@@ -1,12 +1,14 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Buffer configuration for the Rendering Hardware Interface
+// Purpose: Buffer management configuration (VBO, EBO, UBO, SSBO)
 //
 //=============================================================================//
 #pragma once
+
 #include "core/core_pch.hpp"
 #include "core/core_common.hpp"
 #include "rhi/rhi_common.hpp"
+
 namespace lum::rhi {
 
 	struct BufferDescriptor {

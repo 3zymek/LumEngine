@@ -1,10 +1,13 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: OpenGL buffer management (VBO, EBO, UBO, SSBO)
+//          Creation, mapping, updating, and binding operations
+//
+//=============================================================================//
+
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
 namespace lum::rhi::gl {
-
-	///////////////////////////////////////////////////
-	/// Buffers
-	///////////////////////////////////////////////////
 
 	BufferHandle GLDevice::CreateVertexBuffer(const BufferDescriptor& desc) {
 

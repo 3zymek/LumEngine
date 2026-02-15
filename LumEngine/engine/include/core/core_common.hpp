@@ -20,10 +20,10 @@ namespace lum {
 	template<typename T, int NULL_VAL>
 	struct GenerateID {
 		static uint32 Get() {
-			return gID++;
+			return gID.fetch_add(1, std::memory_order_relaxed);
 		}
 	private:
-		inline static uint32 gID = NULL_VAL + 1;
+		inline static std::atomic<uint32> gID = NULL_VAL + 1;
 	};
 
 
@@ -33,7 +33,7 @@ namespace lum {
 	/// @return The value casted to float.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr float32 ToF(T value) { return static_cast<float32>(value); }
+	inline constexpr float32 ToFloat32(T value) { return static_cast<float32>(value); }
 
 
 
@@ -42,7 +42,7 @@ namespace lum {
 	/// @return The value casted to uint8.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr uint8 ToU8(T value) { return static_cast<uint8>(value); }
+	inline constexpr uint8 ToUint8(T value) { return static_cast<uint8>(value); }
 
 
 
@@ -51,7 +51,7 @@ namespace lum {
 	/// @return The value casted to uint16.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr uint16 ToU16(T value) { return static_cast<uint16>(value); }
+	inline constexpr uint16 ToUint16(T value) { return static_cast<uint16>(value); }
 
 
 
@@ -60,7 +60,7 @@ namespace lum {
 	/// @return The value casted to uint32_t.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr uint32 ToU32(T value) { return static_cast<uint32>(value); }
+	inline constexpr uint32 ToUint32(T value) { return static_cast<uint32>(value); }
 
 
 
@@ -69,7 +69,7 @@ namespace lum {
 	/// @return The value casted to uint64_t.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr uint64_t ToU64(T value) { return static_cast<uint64_t>(value); }
+	inline constexpr uint64_t ToUint64(T value) { return static_cast<uint64_t>(value); }
 
 
 
@@ -78,7 +78,7 @@ namespace lum {
 	/// @return The value casted to double.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr float64 ToD(T value) { return static_cast<float64>(value); }
+	inline constexpr float64 ToFloat64(T value) { return static_cast<float64>(value); }
 
 
 
@@ -87,7 +87,7 @@ namespace lum {
 	/// @return The value casted to int32.
 	template<typename T>
 		requires std::is_arithmetic_v<T>
-	inline constexpr int32 ToI(T value) { return static_cast<int32>(value); }
+	inline constexpr int32 ToInteger(T value) { return static_cast<int32>(value); }
 
 
 

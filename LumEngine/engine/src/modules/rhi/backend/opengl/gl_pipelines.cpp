@@ -1,8 +1,8 @@
-// ************************************
-// LumEngine Copyright (C) 2026 3zymek
-// All rights reserved.
-// Pipelines implementation for OpenGL RHI
-// ************************************
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: RHI OpenGL implementation pipeline operations and management
+// 
+//=============================================================================//
 
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
@@ -16,35 +16,34 @@ namespace lum::rhi::gl {
 		BindShader(pip.mShader);
 
 	}
-
 	void GLDevice::bind_check_rasterizer ( const Pipeline& pip ) noexcept {
 
 		const auto& rast = pip.mRasterizer;
 
-		SetTopology(rast.polygon.topologyMode, rast.polygon.topologyModeFaces);
-		SetLineWidth(rast.polygon.lineWidth);
-		SetPointSize(rast.polygon.pointSize);
+		SetTopology(rast.mPolygon.mTopologyMode, rast.mPolygon.mTopologyModeFaces);
+		SetLineWidth(rast.mPolygon.mLineWidth);
+		SetPointSize(rast.mPolygon.mPointSize);
 
-		ToggleDepthBias(rast.depthBias.bEnable);
+		ToggleDepthBias(rast.mDepthBias.bEnable);
 
-		SetDepthBiasSlope(rast.depthBias.slopeFactor);
-		SetDepthBiasClamp(rast.depthBias.clamp);
+		SetDepthBiasSlope(rast.mDepthBias.mSlopeFactor);
+		SetDepthBiasClamp(rast.mDepthBias.mClamp);
 
 	}
 	void GLDevice::bind_check_depth_stencil ( const Pipeline& pip ) noexcept {
 
-		const auto& depth = pip.mDepthStencil.depth;
-		const auto& stencil = pip.mDepthStencil.stencil;
+		const auto& depth = pip.mDepthStencil.mDepth;
+		const auto& stencil = pip.mDepthStencil.mStencil;
 
 		ToggleDepthTest(depth.bEnabled);
 
 		SetDepthFunc(depth.mCompare);
 
 		ToggleStencilTest(stencil.bEnabled);
-		SetStencilReference(stencil.mFront.reference, Face::Front);
-		SetStencilReference(stencil.mBack.reference, Face::Back);
-		SetStencilOp(stencil.mFront.stencilFailOp, stencil.mFront.depthFailOp, stencil.mFront.passOp, Face::Front);
-		SetStencilOp(stencil.mBack.stencilFailOp, stencil.mBack.depthFailOp, stencil.mBack.passOp, Face::Back);
+		SetStencilReference(stencil.mFront.mReference, Face::Front);
+		SetStencilReference(stencil.mBack.mReference, Face::Back);
+		SetStencilOp(stencil.mFront.mStencilFailOp, stencil.mFront.mDepthFailOp, stencil.mFront.mPassOp, Face::Front);
+		SetStencilOp(stencil.mBack.mStencilFailOp, stencil.mBack.mDepthFailOp, stencil.mBack.mPassOp, Face::Back);
 		
 	}
 	void GLDevice::bind_check_scissors ( const Pipeline& pip ) noexcept {
@@ -84,9 +83,7 @@ namespace lum::rhi::gl {
 	}
 
 
-	///////////////////////////////////////////////////
-	/// Pipelines
-	///////////////////////////////////////////////////
+
 
 	PipelineHandle GLDevice::CreatePipeline ( const PipelineDescriptor& desc ) {
 
@@ -109,14 +106,18 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::DeletePipeline(PipelineHandle& pipeline) {
 
-		LUM_HOTCHK_RETURN_VOID(mPipelines.exist(pipeline), LUM_SEV_WARN, "Pipeline doesn't exist");
+		if (!mPipelines.exist(pipeline)) {
+			return;
+		}
 
 		mPipelines.delete_handle(pipeline);
 
 	}
 	void GLDevice::BindPipeline(const PipelineHandle& pipeline) {
 
-		LUM_HOTCHK_RETURN_VOID(mPipelines.exist(pipeline), LUM_SEV_WARN, "Pipeline doesn't exist");
+		if (!mPipelines.exist(pipeline)) {
+			return;
+		}
 
 		if (pipeline == mCurrentPipeline) { 
 			LUM_PROFILER_CACHE_HIT();

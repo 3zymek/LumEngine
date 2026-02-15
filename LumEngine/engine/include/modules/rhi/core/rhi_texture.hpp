@@ -1,15 +1,11 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Texture configuration for the Rendering Hardware Interface
+// Purpose: Texture configuration structures (descriptors, formats, types)
 //
 //=============================================================================//
 #pragma once
 
-#include "rhi/rhi_pch.hpp"
 #include "rhi/rhi_common.hpp"
-
-#include "core/core_common.hpp"
-#include "core/shaders_define.h"
 
 namespace lum::rhi {
 
@@ -98,7 +94,7 @@ namespace lum::rhi {
 
 		InternalImageFormat mInternalFormat = InternalImageFormat::RGBA8; // GPU storage format
 
-		LoadedImageFormat mDataFormat = LoadedImageFormat::RGBA; // CPU layout
+		LoadedImageFormat mLoadedFormat = LoadedImageFormat::RGBA; // CPU layout
 		TextureDataType mDataType = TextureDataType::UnsignedByte; // CPU channel type
 
 		bool bCompressed = false;
@@ -108,7 +104,7 @@ namespace lum::rhi {
 
 		// Can texture have LOD ( Level Of Detail )
 		bool bGenerateMipmaps = false;
-		uint32 mMipmapLevels = 0; // If 0 - calculate automatically
+		uint32 mMipmapLevels = 0; // Set 0 to calculate automatically
 
 		uint32 mSamples = 0;
 
@@ -146,7 +142,7 @@ namespace lum::rhi {
 		uint32 mMipmapLevels = 0;
 
 		union {
-			TextureID mGlHandle = 0;
+			TextureID gl = 0;
 		} mHandle{};
 
 	};

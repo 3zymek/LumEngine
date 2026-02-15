@@ -1,8 +1,8 @@
-// ************************************
-// LumEngine Copyright (C) 2026 3zymek
-// All rights reserved.
-// Core math API and backend abstraction.
-// ************************************
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Core math API abstraction
+// 
+//=============================================================================//
 #pragma once
 
 #include "core/core_pch.hpp"
@@ -19,37 +19,6 @@ namespace lum {
 		using Mat4 = glm::mat4;
 
 		using Quat = glm::quat;
-
-		inline const float* value_ptr(const Mat4& m) {
-
-			return glm::value_ptr(m);
-
-		}
-		inline const float* value_ptr(const Mat3& m) {
-
-			return glm::value_ptr(m);
-
-		}
-		inline const float* value_ptr(const Vec2& v) {
-
-			return glm::value_ptr(v);
-
-		}
-		inline const float* value_ptr(const Vec3& v) {
-
-			return glm::value_ptr(v);
-
-		}
-		inline const float* value_ptr(const Vec4& v) {
-
-			return glm::value_ptr(v);
-
-		}
-		inline const float* value_ptr(const Quat& q) {
-
-			return glm::value_ptr(q);
-
-		}
 
 		inline Mat4 mat4_cast(const Quat& q) {
 

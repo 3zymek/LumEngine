@@ -1,8 +1,8 @@
-// ************************************
-// LumEngine Copyright (C) 2026 3zymek
-// All rights reserved.
-// Shaders implementation for OpenGL RHI
-// ************************************
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: OpenGL shader operations and management
+//
+//=============================================================================//
 
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
@@ -104,7 +104,7 @@ namespace lum::rhi::gl {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
 		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
-		glUniformMatrix4fv(loc, 1, GL_FALSE, math::value_ptr(mat));
+		glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mat));
 
 	}
 	void GLDevice::Setf ( const ShaderHandle& shader, ccharptr location, float32 value ) {
@@ -125,21 +125,21 @@ namespace lum::rhi::gl {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
 		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
-		glUniform4fv(loc, 1, math::value_ptr(vec));
+		glUniform4fv(loc, 1, glm::value_ptr(vec));
 
 	}
 	void GLDevice::SetVec3 ( const ShaderHandle& shader, ccharptr location, const math::Vec3& vec ) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
 		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
-		glUniform3fv(loc, 1, math::value_ptr(vec));
+		glUniform3fv(loc, 1, glm::value_ptr(vec));
 
 	}
 	void GLDevice::SetVec2 ( const ShaderHandle& shader, ccharptr location, const math::Vec2& vec ) {
 
 		GLuint loc = glGetUniformLocation(mShaders[shader].handle, location);
 		LUM_HOTCHK_RETURN_VOID(loc != -1, LUM_SEV_WARN, "Couldn't localize uniform named {}");
-		glUniform2fv(loc, 1, math::value_ptr(vec));
+		glUniform2fv(loc, 1, glm::value_ptr(vec));
 
 	}
 	

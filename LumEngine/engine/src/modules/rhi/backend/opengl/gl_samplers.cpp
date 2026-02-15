@@ -1,3 +1,9 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: OpenGL samplers operations
+//			Creation, binding
+//
+//=============================================================================//
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
 namespace lum::rhi::gl {

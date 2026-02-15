@@ -17,133 +17,73 @@
 #include "core/utils/flags.hpp"
 #include "core/utils/fixed_string.hpp"
 #include "assimp/Importer.hpp"
+
+#include "testfield/renderer.hpp"
+
 using namespace lum;
 using namespace lum::rhi;
-#define LUM_UNIFORM_BUFFER_STRUCT struct alignas(16)
-class Camera {
-public:
+
+int main() {
+
+    Logger::Get().EnableLog(LogSeverity::All);
+
+    WindowDescriptor windowDesc;
+    windowDesc.bFullscreen = false;
+    windowDesc.mHeight = 920;
+    windowDesc.mWidth = 1280;
+
+    Window* window = CreateWindow(windowDesc);
+
+    input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
+
+    AssetService::SetProjectRoot("C:/Users/szymek/Desktop/lumen_assets");
+
+    Renderer render{ window };
+
+    Camera camera{ window };
+
+    render.mLights[0];
     
-    Camera(Window* wind) : m_window(wind) { Init(wind); }
-    
-    void Update() {
+    Object headcrab;
+    render.LoadModel(headcrab, "models/scene.gltf");
+    render.LoadTexture2D(headcrab, "textures/scene.png", TexturePreset::Albedo);
 
-        RecalculateDirection();
-        RecalculateMovement();
-        RecalculateMVP();
+    while (window->IsOpen()) {
+        
+        render.BeginFrame();
+        
+        ImGui::Begin("Lights");
 
-    }
+        for (int32 i = 0; i < LUM_MAX_LIGHTS; i++) {
+            std::string label = "Light " + std::to_string(i);
 
-    glm::mat4 view = glm::mat4(1.f);
-    glm::mat4 projection = glm::mat4(1.f);
+            
+            if (ImGui::CollapsingHeader(label.c_str())) {
+                ImGui::PushID(i);
 
-    glm::vec3 position = { 0,0,0 };
+                ImGui::DragFloat3("Position", glm::value_ptr(render.mLights[i].mPosition), 0.1f, -100.f, 100.f);
+                ImGui::ColorEdit3("Color", glm::value_ptr(render.mLights[i].mColor));
+                ImGui::DragFloat("Intensity", &render.mLights[i].mIntensity, 0.1f, 0.0f, 10.0f);
 
-    glm::vec3 front = { 0,0,-1 };
-    glm::vec3 up    = { 0,1,0 };
-    glm::vec3 right = { 1,0,0 };
-    Window* m_window = nullptr;
-    float32 move_speed = 0.07f;
-private:
-    
-    void RecalculateDirection() {
+                ImGui::Spacing();
 
-        glm::vec2 mouse_pos = input::GetMousePos();
-
-        if (!mouse_locked) {
-            lastX = mouse_pos.x;
-            lastY = mouse_pos.y;
-            return;
-        }
-
-        float xpos = mouse_pos.x - lastX;
-        float ypos = lastY - mouse_pos.y;
-
-        lastX = mouse_pos.x;
-        lastY = mouse_pos.y;
-
-        xpos *= sensivity;
-        ypos *= sensivity;
-
-        yaw += xpos;
-        pitch += ypos;
-
-        if (pitch >= 89.f) pitch = 89.f;
-        if (pitch <= -89.f) pitch = -89.f;
-
-        glm::vec3 new_view = { 0,0,0 };
-        new_view.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        new_view.y = sin(glm::radians(pitch));
-        new_view.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-        front = glm::normalize(new_view);
-        right = glm::normalize(glm::cross(front, glm::vec3(0,1,0)));
-        up = glm::normalize(glm::cross(right, front));
-
-    }
-
-    void RecalculateMovement() {
-
-        if (input::KeyPressed(input::Key::W)) {
-            position += front * move_speed;
-            //std::cout << "w";
-        }
-        if (input::KeyPressed(input::Key::S)) {
-            position -= front * move_speed;
-            //std::cout << "s";
-        }
-        if (input::KeyPressed(input::Key::A)) {
-            position -= right * move_speed;
-            //std::cout << "a";
-        }
-        if (input::KeyPressed(input::Key::D)) {
-            position += right * move_speed;
-            //std::cout << "d";
-        }
-        if (input::KeyPressedOnce(input::Key::LEFT_CONTROL)) {
-            mouse_locked = !mouse_locked;
-            if (mouse_locked) {
-                glfwSetInputMode(static_cast<GLFWwindow*>(m_window->GetNativeWindow()), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                ImGui::PopID();
             }
-            else glfwSetInputMode(static_cast<GLFWwindow*>(m_window->GetNativeWindow()), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
 
+        ImGui::End();
+
+        render.UpdateCamera(camera);
+
+        render.Draw(headcrab);
+
+        render.EndFrame();
+
     }
 
-    void RecalculateMVP() {
-        aspect_ratio = (float32)m_window->GetWidth() / (float32)m_window->GetHeight();
-        view = glm::lookAt(position, front + position, up);
-        projection = glm::perspective(glm::radians(fov), aspect_ratio, min_plane, max_plane);
+}
 
-    }
-
-    void Init(Window* wind) {
-        aspect_ratio = (double)wind->GetWidth() / (double)wind->GetHeight();
-        glm::vec2 mouse_pos = input::GetMousePos();
-        lastX = mouse_pos.x;
-        lastY = mouse_pos.y;
-    }
-    
-    float32 aspect_ratio = 0;
-    float32 lastX = 0;
-    float32 lastY = 0;
-    float32 yaw = 0, pitch = 0;
-    float32 fov = 45.f;
-    float32 min_plane = 0.1f;
-    float32 max_plane = 1000.f;
-    float32 sensivity = 0.1f;
-    bool mouse_locked = false;
-
-    bool saveMousePos = false;
-    bool mouseLocked = true;
-
-};
-
-LUM_UNIFORM_BUFFER_STRUCT CameraUBO {
-    glm::mat4 view;
-    glm::mat4 proj;
-    glm::vec3 pos;
-};
-
+/*
 RenderDevice* device = nullptr;
 
 struct BaseObject {
@@ -166,7 +106,7 @@ struct BaseObject {
 
 };
 
-void UpdateCamera(RenderDevice* dev, Camera& cam, const rhi::BufferHandle& ubo, CameraUBO& camstruct, rhi::BufferHandle& modelubo, BaseObject obj) {
+void UpdateCamera(RenderDevice* dev, Camera& cam, const rhi::BufferHandle& ubo, CameraUBO& camstruct, rhi::BufferHandle& modelubo, BaseObject& obj) {
     
     cam.Update();
 
@@ -183,7 +123,7 @@ void UpdateCamera(RenderDevice* dev, Camera& cam, const rhi::BufferHandle& ubo, 
     camstruct.pos = cam.position;
 
     dev->UpdateBuffer(ubo, &camstruct, 0, 0);
-    dev->UpdateBuffer(modelubo, &model, 0, 0);
+    dev->UpdateBuffer(modelubo, glm::value_ptr(model), 0, 0);
     
 }
 
@@ -446,9 +386,6 @@ int main() {
 
     do {
 
-        UpdateCamera(device, c, cameraUBO, camUBO, modelUBO, cube);
-        c.Update();
-
         int32 x, y;
         glfwGetWindowSize(static_cast<GLFWwindow*>(window->GetNativeWindow()), &x, &y);
         window->SetWidth(x);
@@ -456,14 +393,25 @@ int main() {
 
         device->BeginFrame();
         
-        c.move_speed = std::clamp((scrollY * 0.005f), 0.0f, 100.f);
+        ImGui::Begin("Transform");
 
-        if (input::KeyPressedOnce(input::Key::SPACE)) {
-            device->UpdateTexture(cube.texture, newdesc);
-        }
+        ImGui::DragFloat3("Position", glm::value_ptr(cube.modelPos), 0.1f, -1000.f, 1000.f);
+        ImGui::DragFloat3("Scale", glm::value_ptr(cube.modelScale), 0.1f, -1000.f, 1000.f);
+        ImGui::DragFloat3("Rotate", glm::value_ptr(cube.modelRot), 0.1f, -1000.f, 1000.f);
+
+        ImGui::End();
+
+        UpdateCamera(device, c, cameraUBO, camUBO, modelUBO, cube);
+
+        c.move_speed = std::clamp((scrollY * 0.005f), 0.0f, 100.f);
 
         device->BindPipeline(cubePip);
         device->BindSampler(sampler, LUM_SAMPLER_ALBEDO);
+
+        if (input::KeyPressed(input::Key::SPACE)) {
+            device->SetTopology(TopologyMode::Line);
+        }
+
         cube.Draw(LUM_TEX_ALBEDO, cubeIndices.size());
 
         device->BindPipeline(skyboxPip);
@@ -476,4 +424,4 @@ int main() {
 
     device->GetProfilerInfo();
 
-}
+}*/

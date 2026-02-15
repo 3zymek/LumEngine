@@ -12,20 +12,21 @@ layout(std140, binding = LUM_UBO_MODEL_BINDING) uniform ModelUniforms {
 	mat4 LUM_MODEL_MAT4;
 };
 
-out vec3 fragNormal;
-out vec2 fragUv;
-out vec3 fragPos;
+out vec3 fNormal;
+out vec2 fUV;
+out vec3 fPos;
 
 void main() {
 	
 	gl_Position = 
 		LUM_CAMERA_PROJECTION_MAT4 *
 		LUM_CAMERA_VIEW_MAT4 *
+		LUM_MODEL_MAT4 *
 		vec4(aPos, 1.0);
 
 	mat3 normalMatrix = transpose(inverse(mat3(LUM_MODEL_MAT4)));
-	fragNormal = normalize(normalMatrix * aNormal);
-	fragUv = aUV;
-	fragPos = (LUM_MODEL_MAT4 * vec4(aPos, 1.0)).xyz;
+	fNormal = normalize(normalMatrix * aNormal);
+	fUV = aUV;
+	fPos = (LUM_MODEL_MAT4 * vec4(aPos, 1.0)).xyz;
 
 }

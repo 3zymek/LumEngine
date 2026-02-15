@@ -1,23 +1,31 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: OpenGL device state core management and rendering commands
+//          Viewport, color/depth/stencil clearing, draw calls,
+//          frame begin/end, and state queries
+//
+//=============================================================================//
+
+#include "core/core_pch.hpp"
+#include "core/core_defines.hpp"
+#include "core/utils/asset_service.hpp"
+
+#include "rhi/rhi_pch.hpp"
 #include "rhi/backend/opengl/gl_device.hpp"
+#include "rhi/core/rhi_vertex_layout.hpp"
 #include "rhi/core/rhi_device.hpp"
 #include "rhi/core/rhi_buffer.hpp"
-#include "rhi/rhi_pch.hpp"
-#include "core/core_defines.hpp"
-#include "rhi/core/rhi_vertex_layout.hpp"
-#include "core/utils/asset_service.hpp"
-#include "window_context/window.hpp"
 #include "rhi/rhi_common.hpp"
-#include "core/core_pch.hpp"
-#if LUM_ENABLE_IMGUI == 1
-	#include "imgui.h"
-	#include "imgui_impl_glfw.h"
-	#include "imgui_impl_opengl3.h"
-#endif
-namespace lum::rhi::gl {
 
-	///////////////////////////////////////////////////
-	/// Other
-	///////////////////////////////////////////////////
+#include "window_context/window.hpp"
+
+#if LUM_ENABLE_IMGUI == 1
+	#include <imgui.h>
+	#include <imgui_impl_glfw.h>
+	#include <imgui_impl_opengl3.h>
+#endif
+
+namespace lum::rhi::gl {
 
 	void GLDevice::SetViewport ( int32 x, int32 y, int32 width, int32 height ) {
 

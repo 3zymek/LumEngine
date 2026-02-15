@@ -1,3 +1,10 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: OpenGL texture operations (2D, 3D, Cubemap)
+//			creation, update, delete, bind
+//
+//=============================================================================//
+
 #include "modules/rhi/backend/opengl/gl_device.hpp"
 
 namespace lum::rhi::gl {
@@ -43,10 +50,10 @@ namespace lum::rhi::gl {
 				}
 			}
 
-			glCreateTextures(GL_TEXTURE_2D, 1, &texture.mHandle.mGlHandle);
+			glCreateTextures(GL_TEXTURE_2D, 1, &texture.mHandle.gl);
 
 			glTextureStorage2D(
-				texture.mHandle.mGlHandle,
+				texture.mHandle.gl,
 				mipmapLevels,
 				skInternalImageFormatLookup[lookup_cast(desc.mInternalFormat)],
 				width,
@@ -54,12 +61,12 @@ namespace lum::rhi::gl {
 			);
 
 			glTextureSubImage2D(
-				texture.mHandle.mGlHandle,
+				texture.mHandle.gl,
 				0,
 				0, 0,
 				width,
 				height,
-				skLoadedImageFormatLookup[lookup_cast(desc.mDataFormat)],
+				skLoadedImageFormatLookup[lookup_cast(desc.mLoadedFormat)],
 				skTextureDataTypeLookup[lookup_cast(desc.mDataType)],
 				data.mPixels.data()
 			);
@@ -80,10 +87,10 @@ namespace lum::rhi::gl {
 				}
 			}
 
-			glCreateTextures(GL_TEXTURE_2D, 1, &texture.mHandle.mGlHandle);
+			glCreateTextures(GL_TEXTURE_2D, 1, &texture.mHandle.gl);
 
 			glTextureStorage2D(
-				texture.mHandle.mGlHandle,
+				texture.mHandle.gl,
 				mipmapLevels,
 				skInternalImageFormatLookup[lookup_cast(desc.mInternalFormat)],
 				width,
@@ -91,12 +98,12 @@ namespace lum::rhi::gl {
 			);
 
 			glTextureSubImage2D(
-				texture.mHandle.mGlHandle,
+				texture.mHandle.gl,
 				0,
 				0, 0,
 				width,
 				height,
-				skLoadedImageFormatLookup[lookup_cast(desc.mDataFormat)],
+				skLoadedImageFormatLookup[lookup_cast(desc.mLoadedFormat)],
 				skTextureDataTypeLookup[lookup_cast(desc.mDataType)],
 				desc.mData
 			);
@@ -104,10 +111,10 @@ namespace lum::rhi::gl {
 		}
 
 		if (mipmapLevels > 1) {
-			glGenerateTextureMipmap(texture.mHandle.mGlHandle);
+			glGenerateTextureMipmap(texture.mHandle.gl);
 		}
 
-		texture.mDataFormat = desc.mDataFormat;
+		texture.mDataFormat = desc.mLoadedFormat;
 		texture.mDataType = desc.mDataType;
 		texture.mInternalFormat = desc.mInternalFormat;
 		texture.mRect.mWidth = width;
@@ -137,7 +144,7 @@ namespace lum::rhi::gl {
 
 		Texture tex;
 
-		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &tex.mHandle.mGlHandle);
+		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &tex.mHandle.gl);
 
 		TextureData texData;
 		bool success;
@@ -149,7 +156,7 @@ namespace lum::rhi::gl {
 		int32 width = texData.mWidth;
 		int32 height = texData.mHeight;
 
-		glTextureStorage2D(tex.mHandle.mGlHandle, 1, GL_RGBA8, width, height);
+		glTextureStorage2D(tex.mHandle.gl, 1, GL_RGBA8, width, height);
 
 		for (usize i = 0; i < 6; i++) {
 
@@ -166,7 +173,7 @@ namespace lum::rhi::gl {
 			}
 
 			glTextureSubImage3D(
-				tex.mHandle.mGlHandle, 
+				tex.mHandle.gl, 
 				0, 
 				0, 
 				0, 
@@ -206,7 +213,7 @@ namespace lum::rhi::gl {
 
 
 		glTextureSubImage2D(
-			texture.mHandle.mGlHandle,
+			texture.mHandle.gl,
 			0,
 			desc.mRect.x,
 			desc.mRect.y,
@@ -231,7 +238,7 @@ namespace lum::rhi::gl {
 		}
 
 		if (mipmapLevels > 1) {
-			glGenerateTextureMipmap(texture.mHandle.mGlHandle);
+			glGenerateTextureMipmap(texture.mHandle.gl);
 		}
 
 	}
@@ -245,7 +252,7 @@ namespace lum::rhi::gl {
 		}
 
 		glTextureSubImage2D(
-			mTextures[tex].mHandle.mGlHandle,
+			mTextures[tex].mHandle.gl,
 			rect.mMipLevel,
 			rect.x,
 			rect.y,
@@ -261,7 +268,7 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), LUM_SEV_WARN, "Texture doesn't exist");
 
-		glDeleteTextures(1, &mTextures[texture].mHandle.mGlHandle);
+		glDeleteTextures(1, &mTextures[texture].mHandle.gl);
 
 		mTextures.delete_handle(texture);
 
@@ -276,7 +283,7 @@ namespace lum::rhi::gl {
 		}
 
 		mCurrentTextures[binding] = texture;
-		glBindTextureUnit(binding, mTextures[texture].mHandle.mGlHandle);
+		glBindTextureUnit(binding, mTextures[texture].mHandle.gl);
 
 		LUM_LOG_DEBUG("Binded texture %d to binding %d", texture.id, binding);
 
