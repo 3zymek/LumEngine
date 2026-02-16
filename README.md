@@ -1,6 +1,6 @@
 <div align="center">
 
-![lumengine logo](https://github.com/3zymek/LumEngine/blob/main/LumEngine/assets/branding/lumengine_medium2.png)
+![lumengine logo](https://github.com/3zymek/LumEngine/blob/main/LumEngine/internal_assets/branding/lumengine_medium2.png)
 
 # LumEngine
 
