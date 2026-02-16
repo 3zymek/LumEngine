@@ -98,7 +98,7 @@ namespace lum {
 			*  @thread_safety Call from the main thread or the thread that owns the EventBus.
 			*/
 			void PollEvents( ) {
-				for (usize i = 0; i < detail::MAX_EVENT_TYPES; i++) {
+				for (usize i = 0; i < limits::gMaxEventTypes; i++) {
 					if (m_pools[i])
 						m_pools[i]->PollEvents();
 				}
@@ -118,12 +118,12 @@ namespace lum {
 			}
 
 			void Init( ) {
-				for (usize i = 0; i < detail::MAX_EVENT_TYPES; i++) {
+				for (usize i = 0; i < limits::gMaxEventTypes; i++) {
 					m_pools[i] = nullptr;
 				}
 			}
 
-			detail::BasePool* m_pools[ detail::MAX_EVENT_TYPES ];
+			detail::BasePool* m_pools[ limits::gMaxEventTypes ];
 
 		};
 

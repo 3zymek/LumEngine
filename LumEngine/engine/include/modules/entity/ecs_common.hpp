@@ -9,11 +9,7 @@ namespace lum {
 
         namespace detail {
 
-            inline constexpr uint32 MAX_POOL_CAPACITY = settings::ECS_MAX_POOL_CAPACITY;
-            inline constexpr uint32 MAX_ENTITY_COUNT = settings::ECS_MAX_ENTITY_COUNT;
-            inline constexpr uint32 MAX_COMPONENT_TYPES_COUNT = settings::ECS_MAX_COMPONENT_TYPES_COUNT;
-
-            #define LumComponentTag \
+            #define LUM_COMPONENT_TAG \
                 static constexpr bool __lumcomponent__ = true;
 
             struct UniqueComponent {};
@@ -29,12 +25,8 @@ namespace lum {
             struct ComponentTypeID {
                 template<Component ComponentType>
                 static ComponentTID Get() {
-                    static ComponentTID id = globalID++;
-                    return id;
+                    return GenerateID<ComponentType>::Get();
                 }
-            private:
-
-                static inline ComponentTID globalID = 0;
 
             };
         }

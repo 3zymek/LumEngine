@@ -3,7 +3,7 @@
 namespace lum::ecs::components {
 	struct AudioEmitterComponent {
 
-		LumComponentTag;
+		LUM_COMPONENT_TAG;
 
 		audio::EmitterHandle emitterID{};
 

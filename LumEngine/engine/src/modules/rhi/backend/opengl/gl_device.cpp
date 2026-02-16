@@ -8,7 +8,7 @@
 
 #include "core/core_pch.hpp"
 #include "core/core_defines.hpp"
-#include "core/utils/asset_service.hpp"
+#include "core/utils/asset_loader.hpp"
 
 #include "rhi/rhi_pch.hpp"
 #include "rhi/backend/opengl/gl_device.hpp"

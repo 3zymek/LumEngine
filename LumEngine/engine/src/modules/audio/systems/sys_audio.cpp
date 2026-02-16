@@ -14,24 +14,24 @@ namespace lum {
 
 				for (auto& active_clip : emitter.active_clips) {
 
-					auto& clip = emitter.clips[active_clip.audioClip];
+					auto& clip = emitter.clips[active_clip.mAudioClip];
 
 					bool isPlaying;
-					active_clip.channel->isPlaying(&isPlaying);
+					active_clip.mChannel->isPlaying(&isPlaying);
 					if (!isPlaying) {
-						manager.StopEmitterClip(active_clip.emitterID, active_clip.audioClip);
+						manager.StopEmitterClip(active_clip.mEmitterID, active_clip.mAudioClip);
 					}
 
 					FMOD_VECTOR transfered_pos = TransferEmitterCoordsToFMOD(emitter.transform->position);
 					FMOD_VECTOR vel = { 0, 0, 0 };
 
-					active_clip.channel->set3DAttributes(
+					active_clip.mChannel->set3DAttributes(
 						&transfered_pos,	// position
 						&vel				// velocity
 					);
-					active_clip.channel->setPaused(clip.paused);
-					active_clip.channel->setVolume(clip.volume);
-					active_clip.channel->setPitch(clip.pitch);
+					active_clip.mChannel->setPaused(clip.paused);
+					active_clip.mChannel->setVolume(clip.volume);
+					active_clip.mChannel->setPitch(clip.pitch);
 
 				}
 

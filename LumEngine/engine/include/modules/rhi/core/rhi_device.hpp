@@ -12,10 +12,10 @@
 #include "core/utils/flags.hpp"
 #include "core/setup.hpp"
 
+#include "rhi/rhi_common.hpp"
 #include "rhi/core/rhi_buffer.hpp"
 #include "rhi/core/rhi_vertex_layout.hpp"
 #include "rhi/core/rhi_shader.hpp"
-#include "rhi/rhi_common.hpp"
 #include "rhi/core/rhi_texture.hpp"
 #include "rhi/core/rhi_sampler.hpp"
 #include "rhi/core/rhi_framebuffer.hpp"
@@ -370,6 +370,7 @@ namespace lum::rhi {
 		LUM_NODISCARD
 		virtual TextureHandle CreateCubemapTexture ( const TextureCubemapDescriptor& desc ) = 0;
 
+		virtual void UnbindTexture(TextureType type) = 0;
 		virtual void UpdateTexture ( const TextureHandle& tex, const TextureDescriptor& desc ) = 0;
 		virtual void UpdateTexture ( const TextureHandle& tex, const TextureRect&, const void* data ) = 0;
 

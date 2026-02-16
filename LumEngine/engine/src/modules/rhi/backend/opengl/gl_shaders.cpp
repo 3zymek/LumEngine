@@ -19,13 +19,13 @@ namespace lum::rhi::gl {
 
 		bool success;
 
-		String&& vfile = AssetService::LoadInternalShader ( desc.vertexSource, success );
+		String&& vfile = AssetLoader::LoadInternalShader ( desc.vertexSource, success );
 		if (!success) {
 			LUM_LOG_ERROR("Couldn't load shader %s", desc.vertexSource);
 			return ShaderHandle{};
 		}
 
-		String&& ffile = AssetService::LoadInternalShader ( desc.fragmentSource, success );
+		String&& ffile = AssetLoader::LoadInternalShader ( desc.fragmentSource, success );
 		if (!success) {
 			LUM_LOG_ERROR("Couldn't load shader %s", desc.fragmentSource);
 			return ShaderHandle{};

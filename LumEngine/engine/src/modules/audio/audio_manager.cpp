@@ -8,7 +8,7 @@
 #include "audio/audio_listener_wrapper.hpp"
 #include "core/utils/string_hasher.hpp"
 
-#include "core/utils/asset_service.hpp"
+#include "core/utils/asset_loader.hpp"
 #include "modules/audio/audio_system.hpp"
 #include "modules/audio/components/c_audio_emitter.hpp"
 #include "modules/audio/components/c_audio_listener.hpp"
@@ -38,17 +38,17 @@ namespace lum {
 				return;
 			}
 
-			auto id = GenerateID<AudioHandle, detail::AUDIO_ID_NULL>::Get();
+			auto id = GenerateID<AudioHandle, detail::gAudioNullID>::Get();
 			auto hashed_new_id = HashStr(alias_name);
 
 			bool success;
 			AudioClip clip;
 			FMOD_ASSERT(
 				mAudioSystem->createSound(
-					lum::AssetService::LoadAudio(path, success).c_str(),
+					lum::AssetLoader::LoadAudio(path, success).c_str(),
 					mode,
 					nullptr,
-					&clip.sound
+					&clip.mSound
 				)
 			);
 
@@ -83,7 +83,7 @@ namespace lum {
 			if (!entity.Has<AudioEmitterComponent>())
 				entity.AddComponent<AudioEmitterComponent>();
 
-			auto id = GenerateID<EmitterHandle, detail::EMITTER_ID_NULL>::Get();
+			auto id = GenerateID<EmitterHandle, detail::gEmitterNullID>::Get();
 			entity.GetComponent<AudioEmitterComponent>()->emitterID = id;
 			detail::AudioEmitter emitter;
 			emitter.transform = mEntityManager.GetComponent<ecs::components::TransformComponent>(entity.GetID());
@@ -139,11 +139,11 @@ namespace lum {
 				return;
 
 			AudioChannel channel;
-			channel.audioClip = audioID;
-			channel.emitterID = emitterID;
+			channel.mAudioClip = audioID;
+			channel.mEmitterID = emitterID;
 
 
-			mAudioSystem->playSound(mSounds[audioID].sound, nullptr, false, &channel.channel);
+			mAudioSystem->playSound(mSounds[audioID].mSound, nullptr, false, &channel.mChannel);
 
 			emitter.active_clips.push_back(std::move(channel));
 
@@ -162,8 +162,8 @@ namespace lum {
 			}
 
 			for (auto& active_clip : emitter.active_clips) {
-				if (active_clip.audioClip == audioID) {
-					active_clip.channel->stop();
+				if (active_clip.mAudioClip == audioID) {
+					active_clip.mChannel->stop();
 					std::swap(emitter.active_clips.back(), active_clip);
 					emitter.active_clips.pop_back();
 					emitter.transform = nullptr;

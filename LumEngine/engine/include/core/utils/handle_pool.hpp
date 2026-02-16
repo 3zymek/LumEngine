@@ -35,7 +35,7 @@ namespace cstd {
 
 	public:
 
-		handle_pool(Hsize new_max_size) : MAX_SIZE(new_max_size) { reserve(MAX_SIZE); }
+		handle_pool(Hsize maxSize) : mMaxSize(maxSize) { reserve(mMaxSize); }
 
 		iterator begin() { return mDense.begin(); }
 		iterator end() { return mDense.end(); }
@@ -51,7 +51,7 @@ namespace cstd {
 		}
 
 		HandleType create_handle(const DenseType& obj) {
-			if (mDense.size() == MAX_SIZE)
+			if (mDense.size() == mMaxSize)
 				throw std::runtime_error("Handle pool full");
 
 			Slot slot;
@@ -61,7 +61,7 @@ namespace cstd {
 				mFreeSlots.pop_back();
 			}
 			else
-				slot = static_cast<Slot>(nextSlot++);
+				slot = static_cast<Slot>(mNextSlot++);
 
 			mDense.push_back(obj);
 
@@ -130,9 +130,9 @@ namespace cstd {
 
 	private:
 
-		Hsize MAX_SIZE = 0;
+		Hsize mMaxSize = 0;
 
-		Hsize nextSlot = 0;
+		Hsize mNextSlot = 0;
 
 		std::vector<DenseType>	mDense;
 		std::vector<SparseType>	mSparse;

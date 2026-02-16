@@ -94,38 +94,38 @@ namespace lum {
 	private:
 
 		LUM_COMPILE_VARIABLE
-		static uint32 MAX_COLOR_LENGTH = 6; // With \0
+		static uint32 sMaxColorLength = 6; // With \0
 
 		LUM_COMPILE_VARIABLE
-		static uint32 MAX_SEVERITY_LENGTH = 6; // With \0
+		static uint32 sMaxSeverityLength = 6; // With \0
 
 		LUM_COMPILE_VARIABLE
-		static uint32 DESCRIPTION_LENGTH = 128;
+		static uint32 sMaxDescriptionLength = 128;
 
-		char mDescBuffer			[DESCRIPTION_LENGTH]	{};
-		char mDescTempBuffer		[DESCRIPTION_LENGTH]	{};
-		char mSeverityTempBuffer	[MAX_SEVERITY_LENGTH]	{};
+		char mDescBuffer			[sMaxDescriptionLength]	{};
+		char mDescTempBuffer		[sMaxDescriptionLength]	{};
+		char mSeverityTempBuffer	[sMaxSeverityLength]	{};
 		char mCentertedSeverity		[16]					{};
-		char mSevColorBuffer		[MAX_COLOR_LENGTH]		{};
+		char mSevColorBuffer		[sMaxColorLength]		{};
 
 		uint64 mLastLogs[5]{};
 		Flags<LogSeverity> mSeverity = LogSeverity::Fatal | LogSeverity::Debug | LogSeverity::Warn | LogSeverity::Error;
 		
 		template<usize L>
-		void center_custom(charptr out, usize out_size, const char(&s)[L], usize left_width, usize right_width) {
+		void center_custom(charptr out, usize outSize, const char(&s)[L], usize leftWidth, usize rightWidth) {
 
 			if (L <= 1) return;
 
 			usize len = strlen(s);
 
-			usize rightPad = right_width - len;
+			usize rightPad = rightWidth - len;
 
-			usize copyLen = std::min<usize>(len, out_size - left_width);
-			usize padRight = std::min<usize>(rightPad, out_size - left_width - copyLen);
+			usize copyLen = std::min<usize>(len, outSize - leftWidth);
+			usize padRight = std::min<usize>(rightPad, outSize - leftWidth - copyLen);
 
-			std::memset(out, ' ', left_width);
-			std::memcpy(out + left_width, s, copyLen);
-			std::memset(out + left_width + copyLen, ' ', padRight);
+			std::memset(out, ' ', leftWidth);
+			std::memcpy(out + leftWidth, s, copyLen);
+			std::memset(out + leftWidth + copyLen, ' ', padRight);
 
 		}
 

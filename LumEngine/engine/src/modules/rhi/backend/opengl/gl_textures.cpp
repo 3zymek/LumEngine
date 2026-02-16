@@ -31,7 +31,7 @@ namespace lum::rhi::gl {
 			}
 
 			bool success;
-			TextureData data = AssetService::LoadTexture(desc.mFilename, success);
+			TextureData data = AssetLoader::LoadTexture(desc.mFilename, success);
 			if (!success) {
 				LUM_LOG_ERROR("Something went wrong during loading texture: %s", desc.mFilename);
 				return {};
@@ -148,7 +148,7 @@ namespace lum::rhi::gl {
 
 		TextureData texData;
 		bool success;
-		texData = AssetService::LoadTexture(desc.mFaces[0], success);
+		texData = AssetLoader::LoadTexture(desc.mFaces[0], success);
 		if (!success) {
 			LUM_LOG_ERROR("Failed to load texture %s", desc.mFaces[0]);
 		}
@@ -160,7 +160,7 @@ namespace lum::rhi::gl {
 
 		for (usize i = 0; i < 6; i++) {
 
-			TextureData texture = AssetService::LoadTexture(desc.mFaces[i], success);
+			TextureData texture = AssetLoader::LoadTexture(desc.mFaces[i], success);
 			
 			if (!success) {
 				LUM_LOG_ERROR("Failed to load texture %s", desc.mFaces[i]);
@@ -191,12 +191,17 @@ namespace lum::rhi::gl {
 		return mTextures.create_handle(std::move(tex));
 
 	}
+	void GLDevice::UnbindTexture(TextureType type) {
+
+		glBindTextureUnit(skTextureTypeLookup[lookup_cast(type)], 0);
+
+	}
 	void GLDevice::UpdateTexture(const TextureHandle& tex, const TextureDescriptor& desc) {
 
 		LUM_HOTCHK_RETURN_VOID(mTextures.exist(tex), LUM_SEV_WARN, "Texture doesn't exist");
 
 		bool success;
-		auto data = AssetService::LoadTexture(desc.mFilename, success);
+		auto data = AssetLoader::LoadTexture(desc.mFilename, success);
 
 		if (!success) {
 			LUM_LOG_ERROR("Failed to load image %s", desc.mFilename);

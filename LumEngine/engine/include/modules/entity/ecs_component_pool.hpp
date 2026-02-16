@@ -18,50 +18,50 @@ namespace lum {
 
 			public:
 
-				iterator begin() { return m_components.begin(); }
-				iterator end() { return m_components.end(); }
+				iterator begin() { return mComponents.begin(); }
+				iterator end() { return mComponents.end(); }
 
-				const_iterator begin() const { return m_components.begin(); }
-				const_iterator end() const { return m_components.end(); }
+				const_iterator begin() const { return mComponents.begin(); }
+				const_iterator end() const { return mComponents.end(); }
 
 				inline T& operator[]( usize index ) {
-					return m_components[index];
+					return mComponents[index];
 				}
 
 				inline usize size() {
-					return m_components.dense_size();
+					return mComponents.dense_size();
 				}
 
 				T* Add( EntityID entityID ) {
 					LUM_HOTCHK_RETURN_NPTR(
-						m_components.contains(entityID), LUM_SEV_DEBUG, "Entity {} already have {} component"
+						mComponents.contains(entityID), LUM_SEV_DEBUG, "Entity {} already have {} component"
 					);
 					T component;
-					m_components.emplace(component, entityID);
-					return &m_components[entityID];
+					mComponents.emplace(component, entityID);
+					return &mComponents[entityID];
 				}
 
 				inline void Remove( EntityID entityID ) {
 					LUM_HOTCHK_RETURN_VOID(
-						!m_components.contains(entityID), LUM_SEV_DEBUG, "Entity doesn't have {} component to remove"
+						!mComponents.contains(entityID), LUM_SEV_DEBUG, "Entity doesn't have {} component to remove"
 					);
-					m_components.remove(entityID);
+					mComponents.remove(entityID);
 				}
 
 				inline T* Get( EntityID entityID ) {
 					LUM_HOTCHK_RETURN_NPTR(
-						!m_components.contains(entityID), LUM_SEV_DEBUG, "Entity doesn't have {} component"
+						!mComponents.contains(entityID), LUM_SEV_DEBUG, "Entity doesn't have {} component"
 					);
-					return &m_components[entityID];
+					return &mComponents[entityID];
 				}
 
 				inline bool Has( EntityID entityID ) {
-					return m_components.contains(entityID);
+					return mComponents.contains(entityID);
 				}
 
 			private:
 
-				cstd::sparse_set<T, ComponentIndex> m_components{ MAX_POOL_CAPACITY };
+				cstd::sparse_set<T, ComponentIndex> mComponents{ limits::gMaxEcsPoolCapacity };
 
 			};
 		}

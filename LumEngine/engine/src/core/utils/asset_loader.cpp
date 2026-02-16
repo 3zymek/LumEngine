@@ -12,14 +12,14 @@
 #include <assimp/postprocess.h> // Loading Models
 //=====================
 
-#include "core/utils/asset_service.hpp"
+#include "core/utils/asset_loader.hpp"
 #include "core/utils/lum_assert.hpp"
 #include "rhi/rhi_common.hpp"
 
 
 namespace lum {
 		
-		TextureData AssetService::LoadTexture ( ccharptr filepath, bool& success ) {
+		TextureData AssetLoader::LoadTexture ( ccharptr filepath, bool& success ) {
 
 			String file = (gProjectRoot / String(filepath)).lexically_normal().string();
 
@@ -53,7 +53,7 @@ namespace lum {
 		}
 
 		
-		ModelData AssetService::LoadMesh ( ccharptr filepath, bool& success ) {
+		ModelData AssetLoader::LoadMesh ( ccharptr filepath, bool& success ) {
 
 			String file = (gProjectRoot / filepath).lexically_normal().string();
 			if (!detail::fs::exists(file)) {
@@ -130,7 +130,7 @@ namespace lum {
 		}
 	   
 
-		String AssetService::LoadAudio ( StringView filepath, bool& success ) {
+		String AssetLoader::LoadAudio ( StringView filepath, bool& success ) {
 
 			String file = (gProjectRoot / filepath).lexically_normal().string();
 			 
@@ -144,7 +144,7 @@ namespace lum {
 		}
 
 
-		String AssetService::LoadInternalShader ( StringView filepath, bool& success ) {
+		String AssetLoader::LoadInternalShader ( StringView filepath, bool& success ) {
 
 			String file = (gInternalShaderPath / filepath).lexically_normal().string();
 
@@ -173,7 +173,7 @@ namespace lum {
 		}
 
 
-		String AssetService::LoadExternalShader ( StringView filepath, bool& success ) {
+		String AssetLoader::LoadExternalShader ( StringView filepath, bool& success ) {
 
 			String file = (gProjectRoot / filepath).lexically_normal().string();
 

@@ -2,7 +2,7 @@
 #include "rhi/rhi_common.hpp"
 #include "render_resources.hpp"
 #include "material.hpp"
-#include "core/utils/asset_service.hpp"
+#include "core/utils/asset_loader.hpp"
 
 namespace lum {
 
@@ -16,9 +16,7 @@ namespace lum {
 
 		detail::RenderResources mRenderResources;
 		Material mMaterial;
-		ModelData mModel;
-		TextureData mTextureData;
-		
+		ModelData mModel; // TODO make models independent at renderer or model system
 		Transform mTransform;
 
 	};

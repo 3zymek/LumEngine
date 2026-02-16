@@ -1,6 +1,7 @@
 #pragma once
 #include "core/core_common.hpp"
 #include "core/core_pch.hpp"
+#include "core/limits.hpp"
 namespace lum {
 	namespace ev {
 		namespace detail {
@@ -18,11 +19,7 @@ namespace lum {
 			
 			using SubscribtionID = uint32;
 
-			inline constexpr usize MAX_EVENT_TYPES = settings::EVENT_MAX_EVENT_TYPES;
-			inline constexpr usize MAX_CALLBACKS_PER_FRAME = settings::EVENT_MAX_CALLBACKS_PER_FRAME;
-			inline constexpr usize MAX_PERM_CALLBACKS = settings::EVENT_MAX_PERMAMENT_CALLBACKS;
-			inline constexpr usize MAX_EMITTS_PER_FRAME = settings::EVENT_MAX_EMITTS_PER_FRAME;
-			inline constexpr usize MAX_TO_DELETE_CALLBACKS_PER_FRAME = 2;
+			LUM_COMPILE_VARIABLE usize gMaxDeleteCallbacksPerFrame = 2;
 
 			struct Callback {
 				Storage buffer{};

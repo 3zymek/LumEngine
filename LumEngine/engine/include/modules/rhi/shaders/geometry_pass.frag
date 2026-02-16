@@ -25,20 +25,7 @@ out vec4 FinalColor;
 
 void main() {
 	
-	vec3 totalLight = vec3(0.0);
-	
-	for(int i = 0; i < LUM_MAX_LIGHTS; i++){
-		PointLight light = aLightBuffer.lights[i];
 
-		vec3 lightDir = normalize(light.mPosition - fPos);
-		float diff = max(dot(fNormal, lightDir), 0.0);
-
-		totalLight += diff * light.mColor * light.mIntensity;
-
-	}
-
-	vec3 albedo = texture(tAlbedo, fUV).rgb;
-
-	FinalColor = vec4(albedo * totalLight, 1.0);
+	FinalColor = texture(tAlbedo, fUV);
 
 }

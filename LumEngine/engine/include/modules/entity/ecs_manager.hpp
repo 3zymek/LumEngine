@@ -12,11 +12,11 @@ namespace lum {
 		class EntityManager {
 
 			// Context
-			ev::EventBus& event_bus;
+			ev::EventBus& mEventBus;
 
 		public:
 
-			EntityManager(ev::EventBus& bus) : event_bus(bus) { Init(); }
+			EntityManager(ev::EventBus& bus) : mEventBus(bus) { Init(); }
 			~EntityManager() { Destruct(); }
 
 			LUM_NODISCARD
@@ -25,7 +25,7 @@ namespace lum {
 			template<detail::Component T>
 			T* AddComponent(EntityID entityID) {
 
-				event_bus.Emit<ev::ComponentAdded>({ entityID, detail::ComponentTypeID::Get<T>() });
+				mEventBus.Emit<ev::ComponentAdded>({ entityID, detail::ComponentTypeID::Get<T>() });
 
 				LUM_LOG_DEBUG("Added component {} to entity {}");
 
@@ -36,7 +36,7 @@ namespace lum {
 			template<detail::Component T>
 			void RemoveComponent(EntityID entityID) {
 
-				event_bus.Emit<ev::ComponentRemoved>({ entityID, detail::ComponentTypeID::Get<T>() });
+				mEventBus.Emit<ev::ComponentRemoved>({ entityID, detail::ComponentTypeID::Get<T>() });
 
 				LUM_LOG_DEBUG("Removed component {} on entity {}");
 
@@ -83,19 +83,19 @@ namespace lum {
 			}
 
 			inline void Init() {
-				for (usize i = 0; i < detail::MAX_COMPONENT_TYPES_COUNT; i++) {
+				for (usize i = 0; i < limits::gMaxComponents; i++) {
 					m_pools[i] = nullptr;
 				}
 			}
 
 			inline void Destruct() {
-				for (usize i = 0; i < detail::MAX_COMPONENT_TYPES_COUNT; i++) {
+				for (usize i = 0; i < limits::gMaxComponents; i++) {
 					delete m_pools[i];
 					m_pools[i] = nullptr;
 				}
 			}
 
-			detail::BasePool* m_pools[detail::MAX_COMPONENT_TYPES_COUNT]{};
+			detail::BasePool* m_pools[limits::gMaxComponents]{};
 
 		};
 

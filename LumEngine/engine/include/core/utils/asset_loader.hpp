@@ -35,7 +35,7 @@ namespace lum {
 
 	};
 	
-	class AssetService {
+	class AssetLoader {
 
 		using Path = detail::fs::path;
 
@@ -68,9 +68,9 @@ namespace lum {
 		static inline Path gInternalShaderPath	= detail::fs::current_path().parent_path() / "LumEngine" / "engine" / "include" / "modules" / "rhi" / "shaders";
 		static inline Path gShaderDefine		= detail::fs::current_path().parent_path() / "LumEngine" / "engine" / "include" / "core" / "shaders_define.h";
 
-		AssetService ( const AssetService& )	= delete;
-		AssetService ( AssetService&& )			= delete;
-		AssetService ( )						= default;
+		AssetLoader ( const AssetLoader& )	= delete;
+		AssetLoader ( AssetLoader&& )		= delete;
+		AssetLoader ( )						= default;
 
 	};
 }

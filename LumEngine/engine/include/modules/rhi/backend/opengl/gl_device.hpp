@@ -10,7 +10,7 @@
 #include "rhi/rhi_pch.hpp"
 
 #include "core/core_defines.hpp"
-#include "core/utils/asset_service.hpp"
+#include "core/utils/asset_loader.hpp"
 #include "core/utils/sparse_set.hpp"
 
 namespace lum::rhi::gl {
@@ -86,6 +86,7 @@ namespace lum::rhi::gl {
 		TextureHandle	CreateTexture2D		 ( const TextureDescriptor& )				override;
 		TextureHandle	CreateTexture3D		 ( const TextureDescriptor& )				override;
 		TextureHandle	CreateCubemapTexture ( const TextureCubemapDescriptor& desc )	override;
+		void			UnbindTexture		 ( TextureType type )						override;
 		void			UpdateTexture		 ( const TextureHandle& tex, const TextureDescriptor& desc ) override;
 		void			UpdateTexture		 ( const TextureHandle& tex, const TextureRect&, const void* data ) override;
 		void			DeleteTexture		 ( TextureHandle& )							override;

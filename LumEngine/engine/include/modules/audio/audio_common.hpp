@@ -1,6 +1,7 @@
 #pragma once
 #include "audio/audio_pch.hpp"
 #include "core/core_common.hpp"
+#include "core/limits.hpp"
 namespace FMOD { struct Sound; struct Channel; }
 namespace lum {
 	namespace audio {
@@ -8,9 +9,6 @@ namespace lum {
 		using EmitterHandle = uint32;
 		using AudioHandle	= uint32;
 		using ChannelHandle = uint32;
-
-		constexpr uint32 MAX_SOUNDS_COUNT = settings::AUDIO_MAX_SOUNDS_COUNT;
-		constexpr uint32 MAX_CHANNELS_COUNT = settings::AUDIO_MAX_CHANNELS_COUNT;
 
 		enum class AudioInitFlags : bitfield {
 			Normal				= 0x00000000, // Default audio initialization (no extra features)
@@ -42,19 +40,19 @@ namespace lum {
 
 		namespace detail {
 
-			constexpr EmitterHandle EMITTER_ID_NULL = 0;
-			constexpr AudioHandle	AUDIO_ID_NULL = 0;
-			constexpr ChannelHandle CHANNEL_ID_NULL = 0;
+			constexpr EmitterHandle gEmitterNullID = 0;
+			constexpr AudioHandle	gAudioNullID = 0;
+			constexpr ChannelHandle gChannelNullID = 0;
 
 
 			struct AudioClip {
-				FMOD::Sound* sound;
+				FMOD::Sound* mSound;
 			};
 
 			struct AudioChannel {
-				FMOD::Channel*	channel = nullptr;
-				EmitterHandle	emitterID{};
-				AudioHandle		audioClip{};
+				FMOD::Channel*	mChannel = nullptr;
+				EmitterHandle	mEmitterID{};
+				AudioHandle		mAudioClip{};
 			};
 
 			#define FMOD_ASSERT(x) \

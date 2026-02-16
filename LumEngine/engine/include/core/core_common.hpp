@@ -17,7 +17,7 @@ namespace lum {
 	/// Generates ID for any type
 	/// @tparam T object Type to generate an ID
 	/// @tparam NULL_VAL Null value for ID's
-	template<typename T, int NULL_VAL>
+	template<typename T, int32 NULL_VAL = 0>
 	struct GenerateID {
 		static uint32 Get() {
 			return gID.fetch_add(1, std::memory_order_relaxed);
@@ -150,52 +150,6 @@ namespace lum {
 	}
 	inline uint64 HashStr(std::string_view str) noexcept {
 		return cstd::StringHasher::Hash(str);
-	}
-
-
-
-
-	namespace settings {
-
-		////////////////////////////////////////////////////////////////////////
-		// ECS
-
-		// Defines how much memory needs to be reserved for components
-		LUM_COMPILE_VARIABLE usize ECS_MAX_POOL_CAPACITY	= 1024;
-		LUM_COMPILE_VARIABLE usize ECS_MAX_ENTITY_COUNT	= 1024;
-
-		// Defines how much containers needs to be reserved for components
-		LUM_COMPILE_VARIABLE usize ECS_MAX_COMPONENT_TYPES_COUNT = 32;
-
-		////////////////////////////////////////////////////////////////////////
-
-
-		////////////////////////////////////////////////////////////////////////
-		// Audio
-
-		// Defines how much memory needs to be reserved for audio
-		LUM_COMPILE_VARIABLE usize AUDIO_MAX_SOUNDS_COUNT		= 256;
-		LUM_COMPILE_VARIABLE usize AUDIO_MAX_CHANNELS_COUNT	= 256;
-
-		////////////////////////////////////////////////////////////////////////
-
-
-		////////////////////////////////////////////////////////////////////////
-		// Events
-
-		// Defines how much memory needs to be reserved for pools
-
-		LUM_COMPILE_VARIABLE usize EVENT_MAX_EVENT_TYPES = 32;
-
-		// All settings under are for single event type
-
-		LUM_COMPILE_VARIABLE usize EVENT_MAX_CALLBACKS_PER_FRAME	= 8;
-		LUM_COMPILE_VARIABLE usize EVENT_MAX_PERMAMENT_CALLBACKS	= 8;
-		LUM_COMPILE_VARIABLE usize EVENT_MAX_EMITTS_PER_FRAME		= 64;
-
-		////////////////////////////////////////////////////////////////////////
-
-
 	}
 
 	namespace cmdcolor {

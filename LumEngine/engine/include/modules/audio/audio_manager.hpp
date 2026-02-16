@@ -170,8 +170,8 @@ namespace lum {
 			std::unique_ptr< AudioListenerWrapper >			mListener;
 			std::unique_ptr< FMOD::System, FDestructor >	mAudioSystem;
 
-			cstd::sparse_set< AudioClip, AudioHandle >		mSounds{ MAX_SOUNDS_COUNT };
-			cstd::sparse_set< AudioEmitter, EmitterHandle >	mEmitters{ ecs::detail::MAX_ENTITY_COUNT };
+			cstd::sparse_set< AudioClip, AudioHandle >		mSounds{ limits::gMaxAudioSounds };
+			cstd::sparse_set< AudioEmitter, EmitterHandle >	mEmitters{ limits::gMaxEntity };
 
 			std::unordered_map< uint64_t, AudioHandle >		mNameToID;
 			#ifdef LUM_ENABLE_LOGGER

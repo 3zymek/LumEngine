@@ -6,7 +6,7 @@ namespace lum::ecs::components {
 		glm::vec3 forward	= { 0, 0, 1 };
 		glm::vec3 up		= { 0, 1, 0 };
 
-		LumComponentTag;
+		LUM_COMPONENT_TAG;
 
 	};
 }

@@ -11,7 +11,7 @@ namespace lum::ecs::components {
 		glm::mat4 model		= glm::mat4(1.f);
 		bool dirty			= false;
 
-		LumComponentTag;
+		LUM_COMPONENT_TAG;
 
 	};
 }

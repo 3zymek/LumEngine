@@ -40,7 +40,7 @@ namespace lum {
 			*  @param bus Reference to the EventBus to use.
 			*  @thread_safety Must be called from the main thread or EventBus owner context.
 			*/
-			explicit EventEmitter(EventBus& bus) : m_bus(bus) { m_subscribtions.reserve(detail::MAX_PERM_CALLBACKS); }
+			explicit EventEmitter(EventBus& bus) : m_bus(bus) { mSubscriptions.reserve(limits::gMaxPermanentCallbacks); }
 			~EventEmitter() { Destroy(); }
 
 			/*! @brief Emits an event to all subscribers of the specified type.
@@ -80,11 +80,11 @@ namespace lum {
 			*/
 			template<detail::LumEvent EventType, typename Lambda>
 			void SubscribePermamently(Lambda&& lambda) {
-				if (m_subscribtions.size() >= detail::MAX_PERM_CALLBACKS)
+				if (mSubscriptions.size() >= limits::gMaxPermanentCallbacks)
 					return;
 
 				auto id = m_bus.SubscribePermanently<EventType>(std::forward<Lambda>(lambda));
-				m_subscribtions.push_back({ id, [](SubscribtionID id, EventBus& bus)
+				mSubscriptions.push_back({ id, [](SubscribtionID id, EventBus& bus)
 					{ bus.UnsubscribePermanent<EventType>(id); }
 					});
 			}
@@ -92,7 +92,7 @@ namespace lum {
 		private:
 
 			void Destroy() {
-				for (auto& slot : m_subscribtions) {
+				for (auto& slot : mSubscriptions) {
 					slot.unsub(slot.id, m_bus);
 				}
 				LUM_LOG_DEBUG("Destroyed emitter and unsubscribed all callbacks");
@@ -100,7 +100,7 @@ namespace lum {
 
 			EventBus& m_bus;
 
-			std::vector<EmitterSlot> m_subscribtions;
+			std::vector<EmitterSlot> mSubscriptions;
 
 		};
 	}

@@ -5,7 +5,7 @@
 //=============================================================================//
 #pragma once
 
-#include "glfw3.h"
+#include "rhi/rhi_pch.hpp"
 
 namespace lum {
 	namespace input {
@@ -39,9 +39,10 @@ namespace lum {
 
 		namespace detail {
 
-			std::array<bool, static_cast<int32>(Key::MAX_COUNT)> key_is_pressed{};
+			inline std::array<bool, static_cast<int32>(Key::MAX_COUNT)> gKeyIsPressed{};
 
-			inline static int key_map[] = {
+			LUM_COMPILE_VARIABLE 
+			int32 gKeyMap[] = {
 				GLFW_KEY_SPACE,
 				GLFW_KEY_APOSTROPHE,
 				GLFW_KEY_COMMA,
