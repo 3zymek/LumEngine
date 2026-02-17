@@ -10,14 +10,14 @@
 
 namespace lum::rhi {
 
-	struct ShaderDescriptor {
+	struct RShaderDescriptor {
 		ccharptr vertexSource;
 		ccharptr fragmentSource;
 	};
 
-	struct Shader {
+	struct RShader {
 
-		ShaderID handle = 0;
+		RShaderID handle = 0;
 
 	};
 

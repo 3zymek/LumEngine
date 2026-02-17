@@ -16,8 +16,8 @@
 #include "imgui.h"
 #include "core/utils/flags.hpp"
 #include "core/utils/fixed_string.hpp"
-#include "assimp/Importer.hpp"
-
+#include "testfield/texture_manager.hpp"
+#include "testfield/material_manager.hpp"
 #include "testfield/renderer.hpp"
 
 using namespace lum;
@@ -27,6 +27,8 @@ int main() {
 
     Logger::Get().EnableLog(LogSeverity::All);
 
+    AssetLoader::SetProjectRoot("C:/Users/szymek/Desktop/lumen_assets");
+
     WindowDescriptor windowDesc;
     windowDesc.bFullscreen = false;
     windowDesc.mHeight = 920;
@@ -34,73 +36,24 @@ int main() {
 
     Window* window = CreateWindow(windowDesc);
 
+    RDevice* device = rhi::CreateDevice(window);
+
     input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
-    AssetLoader::SetProjectRoot("C:/Users/szymek/Desktop/lumen_assets");
+    CTextureManager texManager{ device };
+    MMaterialManager matManager{ device, &texManager };
 
-    Renderer render{ window };
+    auto tex = texManager.Load("textures/default.png", ETexturePreset::Albedo);
+    auto tex2 = texManager.Load("textures/default.png", TexturePreset::Albedo);
 
-    Camera camera{ window };
+    LMaterialBase base;
+    base.mAlbedoMap = tex;
+    base.mBaseColor = { 1.f, 0.f, 1.f };
+    auto baseHandle = matManager.UploadBase(base);
 
-    render.mLights[0];
+    auto materialInstance = matManager.CreateInstance(baseHandle);
 
-    auto texture = render.LoadTexture2D("textures/cola_baseColor.png", TexturePreset::Albedo);
+    //Renderer render{ device, &texManager };
 
-    MaterialDescriptor desc;
-    desc.mAlbedoMap = render.GetTexture(texture);
-    auto handle = render.mMaterialManager.CreateMaterial(desc);
-    auto def = render.mMaterialManager.Get(handle);
 
-    Object sphere;
-    render.LoadModel(sphere, "models/sphere.fbx");
-    sphere.mMaterial = def;
-
-    Object bottle;
-    render.LoadModel(bottle, "models/bottle/scene.gltf");
-
-    /*
-    Material& material = renderer.CreateMaterial();
-    material.options = default; // example
-    
-    
-    */
-
-    bottle.mTransform.position = { 10.f, 0.f, 0.f };
-
-    while (window->IsOpen()) {
-
-        render.BeginFrame();
-
-        ImGui::Begin("Lights");
-
-        for (int32 i = 0; i < LUM_MAX_LIGHTS; i++) {
-            String label = "Light " + std::to_string(i);
-
-            
-            if (ImGui::CollapsingHeader(label.c_str())) {
-                ImGui::PushID(i);
-
-                ImGui::DragFloat3("Position", glm::value_ptr(render.mLights[i].mPosition), 0.1f, -100.f, 100.f);
-                ImGui::ColorEdit3("Color", glm::value_ptr(render.mLights[i].mColor));
-                ImGui::DragFloat("Intensity", &render.mLights[i].mIntensity, 0.1f, 0.0f, 10.0f);
-
-                ImGui::Spacing();
-
-                ImGui::PopID();
-            }
-        }
-
-        ImGui::ColorEdit3("Sphere color", glm::value_ptr(sphere.mMaterial.mBaseColor));
-
-        ImGui::End();
-
-        render.UpdateCamera(camera);
-
-        render.Draw(sphere);
-        //render.Draw(bottle);
-
-        render.EndFrame();
-
-    }
-
-}
+} 

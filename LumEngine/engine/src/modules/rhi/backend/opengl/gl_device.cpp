@@ -121,44 +121,44 @@ namespace lum::rhi::gl {
 
 	}
 
-	const BlendState& GLDevice::GetBlendState ( ) const noexcept {
+	const RBlendState& GLDevice::GetBlendState ( ) const noexcept {
 		return mBlendState;
 	}
-	const CullState& GLDevice::GetCullState ( ) const noexcept {
+	const RCullState& GLDevice::GetCullState ( ) const noexcept {
 		return mCullState;
 	}
-	const ScissorState& GLDevice::GetScissorState ( ) const noexcept {
+	const RScissorState& GLDevice::GetScissorState ( ) const noexcept {
 		return mScissorState;
 	}
-	const DepthStencilState& GLDevice::GetDepthStencilState ( ) const noexcept {
+	const RDepthStencilState& GLDevice::GetDepthStencilState ( ) const noexcept {
 		return mDepthStencilState;
 	}
-	const RasterizerState& GLDevice::GetRasterizerState ( ) const noexcept {
+	const RRasterizerState& GLDevice::GetRasterizerState ( ) const noexcept {
 		return mRasterizerState;
 	}
-	const ViewportState& GLDevice::GetViewport ( ) const noexcept {
+	const RViewportState& GLDevice::GetViewport ( ) const noexcept {
 		return mViewportState;
 	}
 
-	bool GLDevice::IsValid ( BufferHandle handle ) const {
+	bool GLDevice::IsValid ( RBufferHandle handle ) const {
 		return mBuffers.exist(handle);
 	}
-	bool GLDevice::IsValid ( TextureHandle handle ) const {
+	bool GLDevice::IsValid ( RTextureHandle handle ) const {
 		return mTextures.exist(handle);
 	}
-	bool GLDevice::IsValid ( ShaderHandle handle ) const {
+	bool GLDevice::IsValid ( RShaderHandle handle ) const {
 		return mShaders.exist(handle);
 	}
-	bool GLDevice::IsValid ( FramebufferHandle handle ) const {
+	bool GLDevice::IsValid ( RFramebufferHandle handle ) const {
 		return mFramebuffers.exist(handle);
 	}
-	bool GLDevice::IsValid ( VertexLayoutHandle handle ) const {
+	bool GLDevice::IsValid ( RVertexLayoutHandle handle ) const {
 		return mLayouts.exist(handle);
 	}
-	bool GLDevice::IsValid ( PipelineHandle handle ) const {
+	bool GLDevice::IsValid ( RPipelineHandle handle ) const {
 		return mPipelines.exist(handle);
 	}
-	bool GLDevice::IsValid ( SamplerHandle handle ) const {
+	bool GLDevice::IsValid ( RSamplerHandle handle ) const {
 		return mSamplers.exist(handle);
 	}
 
@@ -188,7 +188,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetColorMask ( ColorMask rgba ) {
+	void GLDevice::SetColorMask ( RColorMask rgba ) {
 
 		if (rgba.r == mColorMask.r &&
 			rgba.g == mColorMask.g &&
@@ -256,13 +256,13 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::Clear ( Flags<ClearFlag> flags ) {
+	void GLDevice::Clear ( Flags<RClearFlag> flags ) {
 		
 		GLbitfield mask = 0;
 
-		mask |= (flags.Has(ClearFlag::Color)) ? GL_COLOR_BUFFER_BIT : 0;
-		mask |= (flags.Has(ClearFlag::Depth)) ? GL_DEPTH_BUFFER_BIT : 0;
-		mask |= (flags.Has(ClearFlag::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0;
+		mask |= (flags.Has(RClearFlag::Color)) ? GL_COLOR_BUFFER_BIT : 0;
+		mask |= (flags.Has(RClearFlag::Depth)) ? GL_DEPTH_BUFFER_BIT : 0;
+		mask |= (flags.Has(RClearFlag::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0;
 
 		glClear(mask);
 
@@ -270,7 +270,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::Draw(const VertexLayoutHandle& vao, uint32 vertex_count) {
+	void GLDevice::Draw(const RVertexLayoutHandle& vao, uint32 vertex_count) {
 
 		LUM_HOTCHK_RETURN_VOID(mLayouts.exist(vao), LUM_SEV_WARN, "Cannot draw, invalid vertex layout");
 
@@ -281,14 +281,14 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::DrawInstanced(const VertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount) {
+	void GLDevice::DrawInstanced(const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount) {
 
 	}
-	void GLDevice::DrawInstancedBase(const VertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount, uint32 baseInstance) {
+	void GLDevice::DrawInstancedBase(const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount, uint32 baseInstance) {
 
 	}
 
-	void GLDevice::DrawElements(const VertexLayoutHandle& vao, uint32 indices_count) {
+	void GLDevice::DrawElements(const RVertexLayoutHandle& vao, uint32 indices_count) {
 		LUM_HOTCHK_RETURN_VOID(mLayouts.exist(vao), LUM_SEV_WARN, "Cannot draw, invalid vertex layout");
 
 		glBindVertexArray(mLayouts[vao].mHandle);
@@ -298,10 +298,10 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::DrawElementsInstanced(const VertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount) {
+	void GLDevice::DrawElementsInstanced ( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount) {
 
 	}
-	void GLDevice::DrawElementsInstancedBase(const VertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance) {
+	void GLDevice::DrawElementsInstancedBase ( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance) {
 
 	}
 
@@ -310,7 +310,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_BEGIN_FRAME();
 
 		SetViewport(0, 0, window->GetWidth(), window->GetHeight());
-		Clear(ClearFlag::Color | ClearFlag::Depth | ClearFlag::Stencil);
+		Clear(RClearFlag::Color | RClearFlag::Depth | RClearFlag::Stencil);
 
 #		if LUM_ENABLE_IMGUI == 1
 			ImGui_ImplOpenGL3_NewFrame();

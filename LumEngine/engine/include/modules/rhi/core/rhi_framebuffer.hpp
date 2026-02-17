@@ -9,28 +9,28 @@
 
 namespace lum::rhi {
 
-	enum class FramebufferAttachment : uint8 {
+	enum class RFramebufferAttachment : uint8 {
 		DepthAttach,
 		StencilAttach,
 		ColorAttach
 	};
 
-	struct FramebufferTextureDescriptor {
+	struct RFramebufferTextureDescriptor {
 
 		uint32 mWidth = 0;
 		uint32 mHeight = 0;
 
-		DataFormat mFormat{};
+		RDataFormat mFormat{};
 
 		bool bGenerateMipmaps = false;
 
-		FramebufferAttachment mAttachment{};
+		RFramebufferAttachment mAttachment{};
 
 	};
 
-	struct Framebuffer {
+	struct RFramebuffer {
 
-		FramebufferID mHandle = 0;
+		RFramebufferID mHandle = 0;
 
 	};
 

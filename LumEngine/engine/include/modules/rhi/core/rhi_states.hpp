@@ -9,7 +9,7 @@
 
 namespace lum::rhi {
 
-	enum class State : EnumFlag {
+	enum class RState : bitfield {
 		None = 1 << 0, // No state
 		DepthTest = 1 << 1, // Depth testing enabled
 		DepthWrite = 1 << 2, // Depth writes enabled
@@ -25,7 +25,7 @@ namespace lum::rhi {
 	};
 
 	// Specifies the comparison function used in LumEngine RHI.
-	enum class CompareFlag : bitfield {
+	enum class RCompareFlag : byte {
 		Equal,			// Passes if the incoming depth value is equal to the stored depth value.
 		NotEqual,		// Passes if the incoming depth value is not equal to the stored depth value.
 		LessEqual,		// Passes if the incoming depth value is less than or equal to the stored depth value.
@@ -43,7 +43,7 @@ namespace lum::rhi {
 	* Can be applied to the graphics pipeline to control culling, fill mode,
 	* line/point size, and polygon offset.
 	*/
-	struct RasterizerState {
+	struct RRasterizerState {
 
 		/*!
 		* @brief Polygon rasterization settings.
@@ -51,12 +51,12 @@ namespace lum::rhi {
 		* Controls how polygons are drawn, which faces are affected, and
 		* the size of points/lines when rendering point or line topology.
 		*/
-		struct PolygonState {
+		struct RPolygonState {
 			// Polygon rasterization mode (fill, wireframe, or points)
-			TopologyMode mTopologyMode = TopologyMode::Fill;
+			RTopologyMode mTopologyMode = RTopologyMode::Fill;
 
 			// Faces affected by the rasterization mode
-			Face mTopologyModeFaces = Face::FrontBack;
+			RFace mTopologyModeFaces = RFace::FrontBack;
 
 			// Point size for point topology
 			float32 mPointSize = 1.f;
@@ -71,7 +71,7 @@ namespace lum::rhi {
 		* Used to offset polygon depth values to avoid z-fighting or to
 		* render decals, shadows, or polygons slightly in front/back of surfaces.
 		*/
-		struct DepthBiasState {
+		struct RDepthBiasState {
 
 			// Specifies whether the depth bias is enabled.
 			// If flag is false, depth bias is disabled. Otherwise, it is enabled. 
@@ -95,7 +95,7 @@ namespace lum::rhi {
 	};
 
 	// Front and back stencil test actions.
-	enum class StencilOp : bitfield {
+	enum class RStencilOp : byte {
 		Zero,			// Sets the stencil buffer value to 0. 
 		One,			// Sets the stencil buffer value to 1. 
 		Keep,			// Keeps the current value. 
@@ -109,7 +109,7 @@ namespace lum::rhi {
 
 	// Represents the stencil state for a single face (front or back) in the pipeline.
 	// Includes reference value, read/write masks, comparison function, and stencil operations.
-	struct StencilFaceState {
+	struct RStencilFaceState {
 
 		// Specifies the reference value for the stencil test. 
 		// ref is clamped to the range [0,2n−1], where n is the number of bitplanes in the stencil buffer. 
@@ -127,29 +127,29 @@ namespace lum::rhi {
 
 		// Specifies the test function. 
 		// The initial value is CompareFlag::Always. 
-		CompareFlag mCompareFlag = CompareFlag::Always;
+		RCompareFlag mCompareFlag = RCompareFlag::Always;
 
 		// Specifies the action to take when the stencil test fails. 
 		// The initial value is StencilOp::Keep. 
-		StencilOp mStencilFailOp = StencilOp::Keep;
+		RStencilOp mStencilFailOp = RStencilOp::Keep;
 
 		// Specifies the stencil action when the stencil test passes, but the depth test fails. dpfail accepts the same symbolic 
 		// constants as sfail. 
 		// The initial value is StencilOp::Keep.
-		StencilOp mDepthFailOp = StencilOp::Keep;
+		RStencilOp mDepthFailOp = RStencilOp::Keep;
 
 		// Specifies the stencil action when both the stencil test and the depth test pass, or when the stencil test passes and 
 		// either there is no depth buffer or depth testing is not enabled. dppass accepts the same symbolic constants as sfail. 
 		// The initial value is StencilOp::Keep. 
-		StencilOp mPassOp = StencilOp::Keep;
+		RStencilOp mPassOp = RStencilOp::Keep;
 
 	};
 
 	// Represents the depth and stencil state of the pipeline.
 	// Includes depth test enable/write, comparison function, and stencil face operations.
-	struct DepthStencilState {
+	struct RDepthStencilState {
 
-		struct Depth {
+		struct RDepth {
 
 			// Specifies whether the depth buffer is enabled for writing. 
 			// If flag is false, depth buffer writing is disabled. Otherwise, it is enabled. 
@@ -163,24 +163,24 @@ namespace lum::rhi {
 
 			// Specifies the depth comparison function. 
 			// The initial value is CompareFlag::Less. 
-			CompareFlag	mCompare = CompareFlag::Less;
+			RCompareFlag	mCompare = RCompareFlag::Less;
 
 		} mDepth;
 
-		struct Stencil {
+		struct RStencil {
 
 			// Defines if stencil test is enabled.
 			// The initial value is false.
 			bool bEnabled = false;
 
 			// Stencil state for front
-			StencilFaceState mFront{};
+			RStencilFaceState mFront{};
 
 			// Stencil state for back
-			StencilFaceState mBack{};
+			RStencilFaceState mBack{};
 
 			// Helper for creating same stencil face state for both sides.
-			static Stencil CreateBothSides(const StencilFaceState& state) {
+			static RStencil CreateBothSides(const RStencilFaceState& state) {
 				return { .bEnabled = true, .mFront = state, .mBack = state };
 			}
 
@@ -191,7 +191,7 @@ namespace lum::rhi {
 
 	// Represents the face culling state of the pipeline.
 	// Includes cull enable, which face to cull, and front face winding order.
-	struct CullState {
+	struct RCullState {
 
 		// Defines if cull is enabled.
 		// The initial value is false.
@@ -199,17 +199,17 @@ namespace lum::rhi {
 		
 		// Specifies whether front- or back-facing facets are candidates for culling. 
 		// The initial value is Face::Back. 
-		Face mFace = Face::Back;
+		RFace mFace = RFace::Back;
 		
 		// Specifies the orientation of front-facing polygons. 
 		// The initial value is WindingOrder::CounterClockwise. 
-		WindingOrder mWindingOrder = WindingOrder::CounterClockwise;
+		RWindingOrder mWindingOrder = RWindingOrder::CounterClockwise;
 
 	};
 
 	// Represents the scissor test state of the pipeline.
 	// Includes enable flag and scissor rectangle dimensions.
-	struct ScissorState {
+	struct RScissorState {
 
 		// Defines if scissor test is enabled.
 		// The initial value is false.
@@ -232,7 +232,7 @@ namespace lum::rhi {
 	};
 
 	// Specifies the blending factor used for source or destination color in blending operations.
-	enum class BlendFactor : bitfield {
+	enum class RBlendFactor : byte {
 
 		Zero,					// Multiply by 0, effectively ignoring this component.
 		One,					// Multiply by 1, use full value of this component.
@@ -264,7 +264,7 @@ namespace lum::rhi {
 	};
 
 	// Specifies the operation used to combine source and destination colors in blending.
-	enum class BlendOp : bitfield {
+	enum class RBlendOp : byte {
 
 		// Add the weighted source and destination colors.
 		//( C_out = C_src * F_src + C_dst * F_dst )
@@ -285,7 +285,7 @@ namespace lum::rhi {
 
 	// Represents the blending state of the pipeline.
 	// Includes enable flag, source/destination factors, and blend operations for color and alpha.
-	struct BlendState {
+	struct RBlendState {
 
 		// Defines if blending is enabled.
 		// The initial value is false.
@@ -293,27 +293,27 @@ namespace lum::rhi {
 
 		// Specified how the alpha source blending factor is computed.
 		// The initial value is BlendFactor::One.
-		BlendFactor mSrcAlphaFactor = BlendFactor::One;
+		RBlendFactor mSrcAlphaFactor = RBlendFactor::One;
 
 		// Specified how the alpha destination blending factor is computed.
 		// The initial value is BlendFactor::Zero.
-		BlendFactor mDstAlphaFactor = BlendFactor::Zero;
+		RBlendFactor mDstAlphaFactor = RBlendFactor::Zero;
 
 		// specifies the alpha blend equation, how the alpha component of the source and destination colors are combined.
 		// The initial value is BlendOp::Add.
-		BlendOp mAlphaOp = BlendOp::Add;
+		RBlendOp mAlphaOp = RBlendOp::Add;
 
 		// Specifies how the red, green, and blue blending factors are computed.
 		// The initial value is BlendFactor::One.
-		BlendFactor mSrcColorFactor = BlendFactor::One;
+		RBlendFactor mSrcColorFactor = RBlendFactor::One;
 
 		// Specifies how the red, green, and blue destination blending factors are computed.
 		// The initial value is BlendFactor::Zero.
-		BlendFactor mDstColorFactor = BlendFactor::Zero;
+		RBlendFactor mDstColorFactor = RBlendFactor::Zero;
 
 		// Specifies the RGB blend equation, how the red, green, and blue components of the source and destination colors are combined.
 		// The initial value is BlendOp::Add.
-		BlendOp mColorOp = BlendOp::Add;
+		RBlendOp mColorOp = RBlendOp::Add;
 
 		// Constant blend color used when blend factors are set to BlendFactor::ConstantColor or BlendFactor::OneMinusConstantColor.
 		// This color is independent of source and destination and acts as a fixed reference value in the blend equation.
@@ -322,7 +322,7 @@ namespace lum::rhi {
 
 	};
 	
-	struct ViewportState {
+	struct RViewportState {
 
 		int32 x{};
 		int32 y{};
@@ -331,7 +331,7 @@ namespace lum::rhi {
 
 	};
 
-	struct MultisampleState {
+	struct RMultisampleState {
 
 		bool bEnable = false;
 		bool bEnableSampleCoverage = false;

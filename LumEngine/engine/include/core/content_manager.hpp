@@ -8,23 +8,15 @@
 namespace lum {
 
 	// TODO automatically creates and stores rhi handles to textures, models, sounds and materials
-	class ContentManager {
+	class AssetManager {
 	public:
 
-		ContentManager(rhi::RenderDevice* device) : mRenderDevice(device) {}
-
-		void RegisterTexture(ccharptr name, ccharptr path) {
-
-		}
+		AssetManager(rhi::RDevice* device) : mRenderDevice(device) {}
 
 
 	private:
 
-		rhi::RenderDevice* mRenderDevice = nullptr;
-
-		std::unordered_map<uint64, uint64> mTexturePaths;
-
-		std::unordered_map<uint64, rhi::TextureHandle> mTextureCache;
+		rhi::RDevice* mRenderDevice = nullptr;
 
 	};
 

@@ -7,6 +7,7 @@
 
 #include "core/core_pch.hpp"
 #include "core/core_defines.hpp"
+#include "core/utils/asset_loader.hpp"
 #include "core/utils/handle_pool.hpp"
 #include "core/shaders_define.h"
 #include "core/utils/flags.hpp"
@@ -28,7 +29,7 @@
 namespace lum { class Window; }
 namespace lum::rhi {
 
-	/*!
+	/*====================================================================
 	*  @brief Low-level GPU interface for resource creation and rendering.
 	*
 	*  @brief RHI_Device provides functions to create, bind, and manage GPU resources
@@ -39,14 +40,14 @@ namespace lum::rhi {
 	*  current command buffer / pipeline state.
 	*
 	*/
-	class RenderDevice {
+	class RDevice {
 	public:
 
 		///////////////////////////////////////////////////
 		/// Buffers
 		///////////////////////////////////////////////////
 
-		/*!
+		/*====================================================================
 		* @brief Creates a vertex buffer (VBO).
 		*
 		* Allocates a GPU buffer to store vertex data. The buffer is described
@@ -59,9 +60,9 @@ namespace lum::rhi {
 		*       updating, mapping, or binding to a vertex layout.
 		*/
 		LUM_NODISCARD
-		virtual BufferHandle CreateVertexBuffer ( const BufferDescriptor& desc ) = 0;
+		virtual RBufferHandle CreateVertexBuffer ( const RBufferDescriptor& desc ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Creates an element/index buffer (EBO).
 		*
 		* Allocates a GPU buffer for storing index data for indexed drawing.
@@ -72,9 +73,9 @@ namespace lum::rhi {
 		* @note The buffer can later be attached to a vertex layout for indexed draw calls.
 		*/
 		LUM_NODISCARD
-		virtual BufferHandle CreateElementBuffer ( const BufferDescriptor& desc ) = 0;
+		virtual RBufferHandle CreateElementBuffer ( const RBufferDescriptor& desc ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Creates a uniform buffer (UBO).
 		*
 		* Allocates a GPU buffer for storing uniform data that shaders can access.
@@ -85,13 +86,13 @@ namespace lum::rhi {
 		* @note Binding to shaders is done using SetUniformBufferBinding().
 		*/
 		LUM_NODISCARD
-		virtual BufferHandle CreateUniformBuffer ( const BufferDescriptor& desc ) = 0;
+		virtual RBufferHandle CreateUniformBuffer ( const RBufferDescriptor& desc ) = 0;
 
 		// TODO implement
 		LUM_NODISCARD
-		virtual BufferHandle CreateShaderStorageBuffer ( const BufferDescriptor& desc ) = 0;
+		virtual RBufferHandle CreateShaderStorageBuffer ( const RBufferDescriptor& desc ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Updates the contents of a GPU buffer.
 		*
 		* Copies data from CPU memory into a GPU buffer. Can update the full buffer
@@ -104,9 +105,9 @@ namespace lum::rhi {
 		*
 		* @note Use this for dynamic updates of vertex, element, or uniform buffers.
 		*/
-		virtual void UpdateBuffer ( const BufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 ) = 0;
+		virtual void UpdateBuffer ( const RBufferHandle& buff, cvptr data, usize offset = 0, usize size = 0 ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Deletes a GPU buffer.
 		*
 		* Frees the GPU memory associated with the buffer handle.
@@ -115,9 +116,9 @@ namespace lum::rhi {
 		*
 		* @note After deletion, the handle becomes invalid and must not be used.
 		*/
-		virtual void DeleteBuffer ( BufferHandle& buff ) = 0;
+		virtual void DeleteBuffer ( RBufferHandle& buff ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Maps a GPU buffer into CPU address space.
 		*
 		* Allows direct CPU access to buffer memory for reading or writing.
@@ -131,9 +132,9 @@ namespace lum::rhi {
 		* @note Call UnmapBuffer() after finishing CPU access.
 		*/
 		LUM_NODISCARD
-		virtual vptr MapBuffer ( const BufferHandle& buff, Flags<Mapflag> flags, usize offset = 0, usize size = 0 ) = 0;
+		virtual vptr MapBuffer ( const RBufferHandle& buff, Flags<RMapflag> flags, usize offset = 0, usize size = 0 ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Unmaps a previously mapped GPU buffer.
 		*
 		* Completes CPU access and ensures data is synchronized with the GPU.
@@ -142,11 +143,11 @@ namespace lum::rhi {
 		*
 		* @note Always call after MapBuffer() to avoid undefined behavior.
 		*/
-		virtual void UnmapBuffer ( const BufferHandle& buff ) = 0;
+		virtual void UnmapBuffer ( const RBufferHandle& buff ) = 0;
 
-		virtual void SetShaderStorageBinding(const BufferHandle& ssbo, uint32 binding) = 0;
+		virtual void SetShaderStorageBinding(const RBufferHandle& ssbo, uint32 binding) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Attaches an element buffer (EBO) to a vertex layout (VAO).
 		*
 		* Binds the index buffer to a vertex array object, enabling indexed draw calls.
@@ -156,9 +157,9 @@ namespace lum::rhi {
 		*
 		* @note Must be done before issuing draw calls that use indices.
 		*/
-		virtual void AttachElementBufferToLayout ( const BufferHandle& ebo, const VertexLayoutHandle& vao ) = 0;
+		virtual void AttachElementBufferToLayout ( const RBufferHandle& ebo, const RVertexLayoutHandle& vao ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Binds a uniform buffer (UBO) to a shader binding point.
 		*
 		* Connects a GPU uniform buffer to a specific binding slot in the shader.
@@ -168,7 +169,7 @@ namespace lum::rhi {
 		*
 		* @note The shader must define a corresponding uniform block at this binding point.
 		*/
-		virtual void SetUniformBufferBinding ( const BufferHandle& ubo, int32 binding ) = 0;
+		virtual void SetUniformBufferBinding ( const RBufferHandle& ubo, int32 binding ) = 0;
 
 
 
@@ -179,7 +180,8 @@ namespace lum::rhi {
 		/// Framebuffers
 		///////////////////////////////////////////////////
 
-		/*! @brief Updates data of given buffer.
+		/*====================================================================
+		*  @brief Updates data of given buffer.
 		*
 		*  @param buff Buffer handle to update.
 		*  @param data Pointer to source data in CPU memeory.
@@ -188,9 +190,10 @@ namespace lum::rhi {
 		*
 		*/
 		LUM_NODISCARD
-		virtual FramebufferHandle CreateFramebuffer ( ) = 0;
+		virtual RFramebufferHandle CreateFramebuffer ( ) = 0;
 
-		/*! @brief Creates a texture for use in a framebuffer.
+		/*====================================================================
+		* @brief Creates a texture for use in a framebuffer.
 		*
 		*  Allocates a 2D texture based on the given descriptor. The texture format
 		*  depends on the type of attachment: depth or color.
@@ -201,15 +204,16 @@ namespace lum::rhi {
 		*          if the requested size is invalid or the maximum number of textures is reached.
 		*/
 		LUM_NODISCARD
-		virtual TextureHandle CreateFramebufferTexture ( const FramebufferTextureDescriptor& desc ) = 0;
+		virtual RTextureHandle CreateFramebufferTexture ( const RFramebufferTextureDescriptor& desc ) = 0;
 
 		// TO FIX:
-		virtual void SetFramebufferColorTexture ( const FramebufferHandle& fbo, const TextureHandle& tex, uint8 index ) = 0;
+		virtual void SetFramebufferColorTexture ( const RFramebufferHandle& fbo, const RTextureHandle& tex, uint8 index ) = 0;
 		// TO IMPLEMENT:
-		virtual void SetFramebufferDepthTexture ( const FramebufferHandle& fbo, const TextureHandle& tex ) = 0;
-		virtual void SetFramebufferStencilTexture ( const FramebufferHandle& fbo, const TextureHandle& tex ) = 0;
+		virtual void SetFramebufferDepthTexture ( const RFramebufferHandle& fbo, const RTextureHandle& tex ) = 0;
+		virtual void SetFramebufferStencilTexture ( const RFramebufferHandle& fbo, const RTextureHandle& tex ) = 0;
 
-		/*! @brief Clears the specified framebuffer with the given color and depth values.
+		/*====================================================================
+		* @brief Clears the specified framebuffer with the given color and depth values.
 		*
 		* This function sets the clear color and depth, then clears the color and depth
 		* buffers of the framebuffer. The framebuffer is automatically bound during this operation.
@@ -218,9 +222,10 @@ namespace lum::rhi {
 		* @param color RGBA color used to clear the color buffer.
 		* @param depth Depth value used to clear the depth buffer (clamped between 0.0 and 1.0).
 		*/
-		virtual void ClearFramebuffer ( FramebufferHandle fbo, ChannelRGBA color, float32 depth ) = 0;
+		virtual void ClearFramebuffer ( RFramebufferHandle fbo, ChannelRGBA color, float32 depth ) = 0;
 
-		/*! @brief Deletes the specified framebuffer and releases its resources.
+		/*====================================================================
+		* @brief Deletes the specified framebuffer and releases its resources.
 		*	
 		* After calling this function, the framebuffer handle becomes invalid and should
 		* not be used in subsequent rendering operations.
@@ -228,18 +233,20 @@ namespace lum::rhi {
 		* @param buff Handle to the framebuffer to delete.
 		*
 		*/
-		virtual void DeleteFramebuffer ( FramebufferHandle& fbo ) = 0;
+		virtual void DeleteFramebuffer ( RFramebufferHandle& fbo ) = 0;
 
-		/*! @brief Sets the current framebuffer for rendering.
+		/*====================================================================
+		* @brief Sets the current framebuffer for rendering.
 		*
 		* This makes the given framebuffer the target for all subsequent draw operations.
 		* 
 		* @param buff Handle to the framebuffer to bind.
 		*
 		*/
-		virtual void BindFramebuffer ( const FramebufferHandle& fbo ) = 0;
+		virtual void BindFramebuffer ( const RFramebufferHandle& fbo ) = 0;
 
-		/*! @brief Unbinds any currently bound framebuffer.
+		/*====================================================================
+		* @brief Unbinds any currently bound framebuffer.
 		*
 		*  After calling this, rendering will target the default framebuffer
 		*  (typically the screen) instead of any previously bound framebuffer.
@@ -254,7 +261,8 @@ namespace lum::rhi {
 		/// Layouts
 		///////////////////////////////////////////////////
 
-		/*! @brief Creates Vertex layout (VAO).
+		/*====================================================================
+		* @brief Creates Vertex layout (VAO).
 		*
 		*  @param desc Descriptor.
 		*  @param vbo Vertex buffer to connect.
@@ -263,14 +271,15 @@ namespace lum::rhi {
 		*
 		*/
 		LUM_NODISCARD
-		virtual VertexLayoutHandle CreateVertexLayout ( const VertexLayoutDescriptor& desc, const BufferHandle& vbo ) = 0;
+		virtual RVertexLayoutHandle CreateVertexLayout ( const RVertexLayoutDescriptor& desc, const RBufferHandle& vbo ) = 0;
 		
-		/*! @brief Deletes vertex layout.
+		/*====================================================================
+		* @brief Deletes vertex layout.
 		*
 		*  @param layout Layout handle to delete.
 		*
 		*/
-		virtual void DeleteVertexLayout ( VertexLayoutHandle& layout ) = 0;
+		virtual void DeleteVertexLayout ( RVertexLayoutHandle& layout ) = 0;
 
 
 
@@ -280,7 +289,8 @@ namespace lum::rhi {
 		/// Shaders
 		///////////////////////////////////////////////////
 
-		/*! @brief Creates a shader from a descriptor.
+		/*====================================================================
+		* @brief Creates a shader from a descriptor.
 		*
 		*  Uses vertex/fragment sources from the descriptor.
 		*  @param desc ShaderDescriptor with source file names.
@@ -288,57 +298,60 @@ namespace lum::rhi {
 		* 
 		*/
 		LUM_NODISCARD
-		virtual ShaderHandle CreateShader ( const ShaderDescriptor& desc) = 0;
+		virtual RShaderHandle CreateShader ( const RShaderDescriptor& desc) = 0;
 		
-		/*! @brief Binds a shader for rendering.
+		/*====================================================================
+		* @brief Binds a shader for rendering.
 		*
 		*  The bound shader will be used on next draw/dispatch.
 		*  @param shader Shader handle to bind.
 		* 
 		*/
-		virtual void BindShader ( const ShaderHandle& shader ) = 0;
+		virtual void BindShader ( const RShaderHandle& shader ) = 0;
 		
-		/*! @brief Deletes a shader.
+		/*====================================================================
+		* @brief Deletes a shader.
 		*
 		*  Frees GPU resources and invalidates the handle.
 		*  @param shader Shader handle to delete.
 		* 
 		*/
-		virtual void DeleteShader ( ShaderHandle& shader ) = 0;
+		virtual void DeleteShader ( RShaderHandle& shader ) = 0;
 		
-		/*! @brief Sets a 4x4 matrix uniform in a shader.
+		/*====================================================================
+		* @brief Sets a 4x4 matrix uniform in a shader.
 		* 
 		*  @param shader Shader handle.
 		*  @param location Name of the uniform.
 		*  @param mat Matrix to set.
 		* 
 		*/
-		virtual void SetMat4 ( const ShaderHandle& shader, ccharptr location, const math::Mat4& mat ) = 0;
+		virtual void SetMat4 ( const RShaderHandle& shader, ccharptr location, const math::Mat4& mat ) = 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Sets a float uniform in a shader.
 		*/
-		virtual void Setf ( const ShaderHandle& shader, ccharptr location, float32 value )	= 0;
+		virtual void Setf ( const RShaderHandle& shader, ccharptr location, float32 value )	= 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Sets an int uniform in a shader.
 		*/
-		virtual void Seti ( const ShaderHandle& shader, ccharptr location, int32 value )	= 0;
+		virtual void Seti ( const RShaderHandle& shader, ccharptr location, int32 value )	= 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Sets a vec4 uniform in a shader.
 		*/
-		virtual void SetVec4 ( const ShaderHandle& shader, ccharptr location, const math::Vec4& vec ) = 0;
+		virtual void SetVec4 ( const RShaderHandle& shader, ccharptr location, const math::Vec4& vec ) = 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Sets a vec3 uniform in a shader.
 		*/
-		virtual void SetVec3 ( const ShaderHandle& shader, ccharptr location, const math::Vec3& vec ) = 0;
+		virtual void SetVec3 ( const RShaderHandle& shader, ccharptr location, const math::Vec3& vec ) = 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Sets a vec2 uniform in a shader.
 		*/
-		virtual void SetVec2 ( const ShaderHandle& shader, ccharptr location, const math::Vec2& vec ) = 0;
+		virtual void SetVec2 ( const RShaderHandle& shader, ccharptr location, const math::Vec2& vec ) = 0;
 
 
 
@@ -347,7 +360,8 @@ namespace lum::rhi {
 		/// Textures
 		///////////////////////////////////////////////////
 
-		/*! @brief Creates a 2D texture.
+		/*====================================================================
+		* @brief Creates a 2D texture.
 		*
 		*  Uses the descriptor to initialize GPU texture.
 		*  @param desc Texture properties and data.
@@ -355,9 +369,10 @@ namespace lum::rhi {
 		* 
 		*/
 		LUM_NODISCARD 
-		virtual TextureHandle CreateTexture2D ( const TextureDescriptor& desc ) = 0;
+		virtual RTextureHandle CreateTexture2D ( const RTextureDescriptor& desc ) = 0;
 
-		/*! @brief Creates a 3D texture.
+		/*====================================================================
+		* @brief Creates a 3D texture.
 		*
 		*  Uses the descriptor to initialize GPU 3D texture.
 		*  @param desc Texture properties and data.
@@ -365,24 +380,25 @@ namespace lum::rhi {
 		* 
 		*/
 		LUM_NODISCARD 
-		virtual TextureHandle CreateTexture3D ( const TextureDescriptor& desc ) = 0;
+		virtual RTextureHandle CreateTexture3D ( const RTextureDescriptor& desc ) = 0;
 		
 		LUM_NODISCARD
-		virtual TextureHandle CreateCubemapTexture ( const TextureCubemapDescriptor& desc ) = 0;
+		virtual RTextureHandle CreateCubemapTexture ( const RTextureCubemapDescriptor& desc ) = 0;
 
-		virtual void UnbindTexture(TextureType type) = 0;
-		virtual void UpdateTexture ( const TextureHandle& tex, const TextureDescriptor& desc ) = 0;
-		virtual void UpdateTexture ( const TextureHandle& tex, const TextureRect&, const void* data ) = 0;
+		virtual void UnbindTexture ( RTextureType type ) = 0;
+		virtual void UpdateTexture ( const RTextureHandle& tex, const RTextureUpdateDescriptor& desc ) = 0;
 
-		/*! @brief Deletes a texture.
+		/*====================================================================
+		* @brief Deletes a texture.
 		*
 		*  Frees GPU memory and invalidates the handle.
 		*  @param texture Handle of the texture to delete.
 		* 
 		*/
-		virtual void DeleteTexture ( TextureHandle& texture ) = 0;
+		virtual void DeleteTexture ( RTextureHandle& texture ) = 0;
 
-		/*! @brief Binds a texture to a given binding slot.
+		/*====================================================================
+		* @brief Binds a texture to a given binding slot.
 		*
 		* This function associates the specified texture with a shader binding slot.
 		* If no binding is provided, a default or previously assigned binding is used.
@@ -393,7 +409,7 @@ namespace lum::rhi {
 		*                a default or pre-assigned slot will be used (LUM_NULL_BINDING).
 		*
 		*/
-		virtual void BindTexture ( const TextureHandle& texture, uint16 binding ) = 0;
+		virtual void BindTexture ( const RTextureHandle& texture, uint16 binding ) = 0;
 
 
 
@@ -403,15 +419,16 @@ namespace lum::rhi {
 		/// Samplers
 		///////////////////////////////////////////////////
 		
-		/*! @brief Creates Sampler.
+		/*====================================================================
+		* @brief Creates Sampler.
 		*
 		*  @param desc SamplerDescriptor of sampler.
 		*
 		*/
 		LUM_NODISCARD
-		virtual SamplerHandle CreateSampler ( const SamplerDescriptor& desc ) = 0;
-		virtual void BindSampler ( const SamplerHandle& sampler, uint16 binding ) = 0;
-		virtual void DeleteSampler ( SamplerHandle sampler ) = 0;
+		virtual RSamplerHandle CreateSampler ( const RSamplerDescriptor& desc ) = 0;
+		virtual void BindSampler ( const RSamplerHandle& sampler, uint16 binding ) = 0;
+		virtual void DeleteSampler ( RSamplerHandle sampler ) = 0;
 
 
 
@@ -420,16 +437,16 @@ namespace lum::rhi {
 		/// Pipelines
 		///////////////////////////////////////////////////
 
-		virtual PipelineHandle CreatePipeline ( const PipelineDescriptor& desc ) = 0;
-		virtual void DeletePipeline ( PipelineHandle& pipeline ) = 0;
-		virtual void BindPipeline ( const PipelineHandle& pipeline ) = 0;
+		virtual RPipelineHandle CreatePipeline ( const RPipelineDescriptor& desc ) = 0;
+		virtual void DeletePipeline ( RPipelineHandle& pipeline ) = 0;
+		virtual void BindPipeline ( const RPipelineHandle& pipeline ) = 0;
 
 
 		///////////////////////////////////////////////////
 		/// Other
 		///////////////////////////////////////////////////
 
-		/*!
+		/*====================================================================
 		* @brief Sets the active viewport.
 		*
 		* Defines the transformation from normalized device coordinates
@@ -444,7 +461,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetViewport ( int32 x, int32 y, int32 width, int32 height ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the left coordinate of the viewport.
 		*
 		* Updates only the X coordinate while preserving the current Y position,
@@ -458,7 +475,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetViewportX ( int32 x ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the bottom coordinate of the viewport.
 		*
 		* Updates only the Y coordinate while preserving the current X position,
@@ -472,7 +489,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetViewportY ( int32 y ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the width of the viewport.
 		*
 		* Updates only the viewport width while preserving the current X and Y
@@ -486,7 +503,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetViewportWidth ( int32 width ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the height of the viewport.
 		*
 		* Updates only the viewport height while preserving the current X and Y
@@ -501,7 +518,7 @@ namespace lum::rhi {
 		virtual void SetViewportHeight ( int32 height ) = 0;
 
 
-		/*!
+		/*====================================================================
 		* @brief Enables or disables the scissor test.
 		*
 		* When enabled, fragments outside the defined scissor rectangle
@@ -514,7 +531,7 @@ namespace lum::rhi {
 		*/
 		virtual void ToggleScissors ( bool toggle ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Checks whether the scissor test is currently enabled.
 		*
 		* Returns the current state of the scissor test without modifying it.
@@ -527,7 +544,7 @@ namespace lum::rhi {
 		*/
 		virtual bool IsScissorEnabled ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the active scissor rectangle.
 		*
 		* Defines the rectangular region, in screen-space pixels,
@@ -542,7 +559,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetScissors ( int32 x, int32 y, int32 width, int32 height ) = 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Sets the left coordinate of the scissor rectangle.
 		*
 		* Updates only the X coordinate while preserving the current Y position,
@@ -557,7 +574,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetScissorX ( int32 x ) = 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Sets the bottom coordinate of the scissor rectangle.
 		*
 		* Updates only the Y coordinate while preserving the current X position,
@@ -572,7 +589,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetScissorY ( int32 y ) = 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Sets the width of the scissor rectangle.
 		*
 		* Updates only the width while preserving the current X and Y coordinates
@@ -587,7 +604,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetScissorWidth ( int32 width ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the height of the scissor rectangle.
 		*
 		* Updates only the height while preserving the current X and Y coordinates
@@ -606,7 +623,7 @@ namespace lum::rhi {
 
 		// Cull setters
 
-		/*!
+		/*====================================================================
 		* @brief Enables or disables face culling.
 		*
 		* Controls whether the rasterizer discards back-facing (or front-facing,
@@ -619,7 +636,7 @@ namespace lum::rhi {
 		*/
 		virtual void ToggleCull ( bool toggle ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Checks whether face culling is currently enabled.
 		*
 		* Returns the current state of face culling without modifying it.
@@ -632,7 +649,7 @@ namespace lum::rhi {
 		*/
 		virtual bool IsCullEnabled ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Selects which polygon faces are culled.
 		*
 		* Controls the rasterizer culling mode used to discard primitives
@@ -642,9 +659,9 @@ namespace lum::rhi {
 		*
 		* @param face Cull face selection (Front or Back).
 		*/
-		virtual void SetCullFace ( Face face ) = 0;
+		virtual void SetCullFace ( RFace face ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the front-face winding order.
 		*
 		* Defines which vertex winding order is considered front-facing
@@ -656,14 +673,14 @@ namespace lum::rhi {
 		* @param order Vertex winding order defining front-facing polygons
 		*              (e.g. Clockwise or CounterClockwise).
 		*/
-		virtual void SetFrontFace ( WindingOrder ) = 0;
+		virtual void SetFrontFace ( RWindingOrder ) = 0;
 
 
 
 
 		// Blend setters
 
-		/*!
+		/*====================================================================
 		* @brief Enables or disables color blending.
 		*
 		* Controls whether fragment shader outputs are blended with the
@@ -677,7 +694,7 @@ namespace lum::rhi {
 		*/
 		virtual void ToggleBlend ( bool toggle ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Checks whether color blending is currently enabled.
 		*
 		* Returns the current state of blending without modifying it.
@@ -691,7 +708,7 @@ namespace lum::rhi {
 		*/
 		virtual bool IsBlendEnabled ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the constant blend color used in blend operations.
 		*
 		* Defines the RGBA color value used when blend factors are set to
@@ -716,7 +733,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetBlendConstantColor ( ChannelRGBA rgba ) = 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Sets all blend factors for both color and alpha channels.
 		*
 		* Configures how source and destination colors are combined during blending.
@@ -737,9 +754,9 @@ namespace lum::rhi {
 		* @param srcAlpha Source blend factor for alpha channel.
 		* @param dstAlpha Destination blend factor for alpha channel.
 		*/
-		virtual void SetBlendFactors ( BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha ) = 0;
+		virtual void SetBlendFactors ( RBlendFactor srcColor, RBlendFactor dstColor, RBlendFactor srcAlpha, RBlendFactor dstAlpha ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets blend factors for color channels only.
 		*
 		* Configures how source and destination RGB values are weighted during blending.
@@ -754,9 +771,9 @@ namespace lum::rhi {
 		* @param srcColor Source blend factor for RGB channels.
 		* @param dstColor Destination blend factor for RGB channels.
 		*/
-		virtual void SetBlendColorFactors ( BlendFactor srcColor, BlendFactor dstColor ) = 0;
+		virtual void SetBlendColorFactors ( RBlendFactor srcColor, RBlendFactor dstColor ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets blend factors for alpha channel only.
 		*
 		* Configures how source and destination alpha values are weighted during blending.
@@ -771,9 +788,9 @@ namespace lum::rhi {
 		* @param srcAlpha Source blend factor for alpha channel.
 		* @param dstAlpha Destination blend factor for alpha channel.
 		*/
-		virtual void SetBlendAlphaFactors ( BlendFactor srcAlpha, BlendFactor dstAlpha ) = 0;
+		virtual void SetBlendAlphaFactors ( RBlendFactor srcAlpha, RBlendFactor dstAlpha ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the blend factor for the source color component.
 		*
 		* Configures how the source RGB values are weighted during color blending.
@@ -788,9 +805,9 @@ namespace lum::rhi {
 		*
 		* @param factor Source blend factor for RGB channels.
 		*/
-		virtual void SetBlendSrcColorFactor ( BlendFactor factor ) = 0;
+		virtual void SetBlendSrcColorFactor ( RBlendFactor factor ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the blend factor for the destination color component.
 		*
 		* Configures how the destination RGB values (already in framebuffer) are
@@ -805,9 +822,9 @@ namespace lum::rhi {
 		*
 		* @param factor Destination blend factor for RGB channels.
 		*/
-		virtual void SetBlendDstColorFactor ( BlendFactor factor ) = 0;
+		virtual void SetBlendDstColorFactor ( RBlendFactor factor ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the blend factor for the source alpha component.
 		*
 		* Configures how the source alpha value is weighted during alpha blending.
@@ -822,9 +839,9 @@ namespace lum::rhi {
 		*
 		* @param factor Source blend factor for alpha channel.
 		*/
-		virtual void SetBlendSrcAlphaFactor ( BlendFactor factor ) = 0;
+		virtual void SetBlendSrcAlphaFactor ( RBlendFactor factor ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the blend factor for the destination alpha component.
 		*
 		* Configures how the destination alpha value (already in framebuffer) is
@@ -839,9 +856,9 @@ namespace lum::rhi {
 		*
 		* @param factor Destination blend factor for alpha channel.
 		*/
-		virtual void SetBlendDstAlphaFactor ( BlendFactor factor ) = 0;
+		virtual void SetBlendDstAlphaFactor ( RBlendFactor factor ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the blend operation for color and alpha channels.
 		*
 		* Defines how the source and destination values (after applying blend factors)
@@ -853,9 +870,9 @@ namespace lum::rhi {
 		* @param colorOp Blend operation for RGB channels (e.g., Add, Subtract, Min, Max).
 		* @param alphaOp Blend operation for alpha channel (e.g., Add, Subtract, Min, Max).
 		*/
-		virtual void SetBlendOp ( BlendOp colorOp, BlendOp alphaOp ) = 0;
+		virtual void SetBlendOp ( RBlendOp colorOp, RBlendOp alphaOp ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the blend operation for RGB color channels.
 		*
 		* Configures the mathematical operation used to combine source and destination
@@ -872,9 +889,9 @@ namespace lum::rhi {
 		*
 		* @param op Blend operation for RGB channels.
 		*/
-		virtual void SetBlendColorOp ( BlendOp op ) = 0;
+		virtual void SetBlendColorOp ( RBlendOp op ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the blend operation for alpha channel.
 		*
 		* Configures the mathematical operation used to combine source and destination
@@ -891,7 +908,7 @@ namespace lum::rhi {
 		*
 		* @param op Blend operation for alpha channel.
 		*/
-		virtual void SetBlendAlphaOp ( BlendOp op ) = 0;
+		virtual void SetBlendAlphaOp ( RBlendOp op ) = 0;
 
 		virtual void SetBlendFactorsForTarget(uint8 target) = 0;
 		virtual void ToggleBlendForTarget(uint8 target, bool enable) = 0;
@@ -900,7 +917,7 @@ namespace lum::rhi {
 
 		// Depth setters
 
-		/*!
+		/*====================================================================
 		* @brief Enables or disables depth buffer writes.
 		*
 		* Controls whether fragment depth values are written to the
@@ -916,7 +933,7 @@ namespace lum::rhi {
 		*/
 		virtual void ToggleDepthWrite ( bool toggle ) = 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Checks whether depth buffer writes are currently enabled.
 		*
 		* Returns the current state of depth writing without modifying it.
@@ -930,22 +947,22 @@ namespace lum::rhi {
 		*/
 		virtual bool IsDepthWriteEnabled ( ) const noexcept = 0;
 
-		/*!
-		 * @brief Enables or disables depth testing.
-		 *
-		 * When enabled, the depth test compares each fragment's depth value against
-		 * the current depth buffer value using the comparison function set by SetDepthFunc().
-		 * Fragments that fail the test are discarded before blending.
-		 *
-		 * State is persistent until changed.
-		 *
-		 * Essential for correct rendering of 3D scenes with overlapping geometry.
-		 *
-		 * @param enable True to enable depth testing, false to disable it.
-		 */
+		/*====================================================================
+		* @brief Enables or disables depth testing.
+		*
+		* When enabled, the depth test compares each fragment's depth value against
+		* the current depth buffer value using the comparison function set by SetDepthFunc().
+		* Fragments that fail the test are discarded before blending.
+		*
+		* State is persistent until changed.
+		*
+		* Essential for correct rendering of 3D scenes with overlapping geometry.
+		*
+		* @param enable True to enable depth testing, false to disable it.
+		*/
 		virtual void ToggleDepthTest ( bool enable ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Checks whether depth testing is currently enabled.
 		*
 		* Returns the current state of depth testing without modifying it.
@@ -959,7 +976,7 @@ namespace lum::rhi {
 		*/
 		virtual bool IsDepthTestEnabled ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the depth comparison function.
 		*
 		* Determines the condition under which a fragment passes the depth test.
@@ -974,14 +991,14 @@ namespace lum::rhi {
 		* @param func Comparison function used for depth testing
 		*             (e.g., CompareFlag::Less, CompareFlag::LessOrEqual).
 		*/
-		virtual void SetDepthFunc ( CompareFlag func ) = 0;
+		virtual void SetDepthFunc ( RCompareFlag func ) = 0;
 
 
 
 
 		// Stencil setters
 
-		/*!
+		/*====================================================================
 		* @brief Enables or disables stencil testing.
 		*
 		* When enabled, the stencil test compares a reference value against the value
@@ -996,7 +1013,7 @@ namespace lum::rhi {
 		*/
 		virtual void ToggleStencilTest ( bool toggle ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Queries whether stencil testing is currently enabled.
 		*
 		* Returns true if stencil testing is active and fragments are being
@@ -1011,7 +1028,7 @@ namespace lum::rhi {
 		*/
 		virtual bool IsStencilTestEnabled ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the reference value for stencil testing and operations.
 		*
 		* Defines the reference value used in stencil comparison functions and
@@ -1028,9 +1045,9 @@ namespace lum::rhi {
 		* @param face Specifies which polygon faces the reference applies to
 		*             (Front, Back, or FrontBack).
 		*/
-		virtual void SetStencilReference ( int32 ref, Face face = Face::FrontBack ) = 0;
+		virtual void SetStencilReference ( int32 ref, RFace face = RFace::FrontBack ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets stencil buffer operations for stencil and depth test outcomes.
 		*
 		* Defines how the stencil buffer is modified depending on the result of
@@ -1055,9 +1072,9 @@ namespace lum::rhi {
 		* @param face          Specifies which polygon faces the operations apply to
 		*                      (Front, Back, or FrontBack).
 		*/
-		virtual void SetStencilOp ( StencilOp stencilFailOp, StencilOp depthFailOp, StencilOp passOp, Face face = Face::FrontBack ) = 0;
+		virtual void SetStencilOp ( RStencilOp stencilFailOp, RStencilOp depthFailOp, RStencilOp passOp, RFace face = RFace::FrontBack ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the stencil operation executed when the stencil test fails.
 		*
 		* Defines how the stencil buffer value is modified when the stencil comparison
@@ -1075,9 +1092,9 @@ namespace lum::rhi {
 		* @param face Specifies which polygon faces the operation applies to
 		*             (Front, Back, or FrontBack).
 		*/
-		virtual void SetStencilOpOnStencilFail ( StencilOp op, Face face = Face::FrontBack ) = 0;
+		virtual void SetStencilOpOnStencilFail ( RStencilOp op, RFace face = RFace::FrontBack ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the stencil operation executed when the depth test fails.
 		*
 		* Defines how the stencil buffer value is modified when the stencil test
@@ -1096,9 +1113,9 @@ namespace lum::rhi {
 		* @param face Specifies which polygon faces the operation applies to
 		*             (Front, Back, or FrontBack).
 		*/
-		virtual void SetStencilOpOnDepthFail ( StencilOp op, Face face = Face::FrontBack ) = 0;
+		virtual void SetStencilOpOnDepthFail ( RStencilOp op, RFace face = RFace::FrontBack ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the stencil operation executed when both stencil and depth tests pass.
 		*
 		* Defines how the stencil buffer value is modified when a fragment
@@ -1117,12 +1134,12 @@ namespace lum::rhi {
 		* @param face Specifies which polygon faces the operation applies to
 		*             (Front, Back, or FrontBack).
 		*/
-		virtual void SetStencilOpOnDepthPass ( StencilOp op, Face face = Face::FrontBack ) = 0;
+		virtual void SetStencilOpOnDepthPass ( RStencilOp op, RFace face = RFace::FrontBack ) = 0;
 
 
 		// Rasterizer setters
 
-		/*!
+		/*====================================================================
 		* @brief Enables or disables depth bias during rasterization.
 		*
 		* When enabled, applies the currently configured depth bias
@@ -1134,7 +1151,7 @@ namespace lum::rhi {
 		*/
 		virtual void ToggleDepthBias ( bool toggle ) = 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Checks if depth bias (polygon offset) is currently enabled.
 		*
 		* Query function to determine whether depth bias calculations are active.
@@ -1144,7 +1161,7 @@ namespace lum::rhi {
 		*/
 		virtual bool IsDepthBiasEnabled ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the depth bias scale factors for polygon offset.
 		*
 		* Configures how depth values are offset to prevent z-fighting artifacts.
@@ -1156,7 +1173,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetDepthBiasFactors ( float32 slope, float32 constant ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the maximum depth offset clamp value.
 		*
 		* Limits the calculated depth bias to prevent excessive offset values.
@@ -1167,7 +1184,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetDepthBiasClamp ( float32 clamp ) = 0;
 
-		/*!
+		/*====================================================================
 		*  @brief Sets the scale and units used to calculate depth values.
 		*
 		*  Keeps the binding until changed. Used by shaders on next draw/dispatch.
@@ -1177,7 +1194,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetDepthBiasSlope ( float32 slopeFactor ) = 0;
 		
-		/*!
+		/*====================================================================
 		* @brief Sets the constant depth bias offset.
 		*
 		* Defines a fixed depth offset added to each fragment, independent of polygon slope.
@@ -1194,7 +1211,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetDepthBiasConstant ( float32 constantBias ) = 0;
 
-		/*!
+		/*====================================================================
 		*  @brief Controls the interpretation of polygons for rasterization.
 		*	face describes which polygons mode applies to: 
 		*	both front and back-facing polygons.
@@ -1207,9 +1224,9 @@ namespace lum::rhi {
 		*  @param face Specifies the polygons that mode applies to. 
 		*	The initial value is Face::FrontBack. 
 		*/
-		virtual void SetTopology ( TopologyMode mode, Face face = Face::FrontBack ) = 0;
+		virtual void SetTopology ( RTopologyMode mode, RFace face = RFace::FrontBack ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the size of rendered points.
 		*
 		* Specifies the diameter of points when rendering with point topology.
@@ -1219,7 +1236,7 @@ namespace lum::rhi {
 		*/
 		virtual void SetPointSize ( float32 size ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the width of rendered lines.
 		*
 		* Specifies the thickness of lines when rendering with line topology.
@@ -1237,7 +1254,7 @@ namespace lum::rhi {
 
 
 
-		/*!
+		/*====================================================================
 		* @brief Returns the current blend state.
 		*
 		* Provides read-only access to the blend configuration, including
@@ -1247,9 +1264,9 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current BlendState.
 		*/
-		virtual const BlendState& GetBlendState ( ) const noexcept = 0;
+		virtual const RBlendState& GetBlendState ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Returns the current face culling state.
 		*
 		* Allows querying which faces are culled (front/back) and the winding order.
@@ -1258,9 +1275,9 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current CullState.
 		*/
-		virtual const CullState& GetCullState ( ) const noexcept = 0;
+		virtual const RCullState& GetCullState ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Returns the current scissor state.
 		*
 		* Provides access to scissor rectangle configuration.
@@ -1269,9 +1286,9 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current ScissorState.
 		*/
-		virtual const ScissorState& GetScissorState ( ) const noexcept = 0;
+		virtual const RScissorState& GetScissorState ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Returns the current depth and stencil state.
 		*
 		* Provides access to depth test, depth write, stencil enable,
@@ -1281,9 +1298,9 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current DepthStencilState.
 		*/
-		virtual const DepthStencilState& GetDepthStencilState ( ) const noexcept = 0;
+		virtual const RDepthStencilState& GetDepthStencilState ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Returns the current rasterizer state.
 		*
 		* Exposes configuration such as polygon fill mode, cull face,
@@ -1293,9 +1310,9 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current RasterizerState.
 		*/
-		virtual const RasterizerState& GetRasterizerState ( ) const noexcept = 0;
+		virtual const RRasterizerState& GetRasterizerState ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Returns the current viewport state.
 		*
 		* Provides access to viewport dimensions and depth range.
@@ -1304,65 +1321,65 @@ namespace lum::rhi {
 		*
 		* @return Reference to the current ViewportState.
 		*/
-		virtual const ViewportState& GetViewport ( ) const noexcept = 0;
+		virtual const RViewportState& GetViewport ( ) const noexcept = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Checks if a buffer handle is valid.
 		*
 		* @param handle Buffer handle to validate.
 		* @return True if the handle refers to an existing buffer, false otherwise.
 		*/
-		virtual bool IsValid ( BufferHandle handle ) const = 0;
+		virtual bool IsValid ( RBufferHandle handle ) const = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Checks if a texture handle is valid.
 		*
 		* @param handle Texture handle to validate.
 		* @return True if the handle refers to an existing texture, false otherwise.
 		*/
-		virtual bool IsValid ( TextureHandle handle ) const = 0;
+		virtual bool IsValid ( RTextureHandle handle ) const = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Checks if a shader handle is valid.
 		*
 		* @param handle Shader handle to validate.
 		* @return True if the handle refers to an existing shader, false otherwise.
 		*/
-		virtual bool IsValid ( ShaderHandle handle ) const = 0;
+		virtual bool IsValid ( RShaderHandle handle ) const = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Checks if a framebuffer handle is valid.
 		*
 		* @param handle Framebuffer handle to validate.
 		* @return True if the handle refers to an existing framebuffer, false otherwise.
 		*/
-		virtual bool IsValid ( FramebufferHandle handle ) const = 0;
+		virtual bool IsValid ( RFramebufferHandle handle ) const = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Checks if a vertex layout handle is valid.
 		*
 		* @param handle Vertex layout handle to validate.
 		* @return True if the handle refers to an existing vertex layout, false otherwise.
 		*/
-		virtual bool IsValid ( VertexLayoutHandle handle ) const = 0;
+		virtual bool IsValid ( RVertexLayoutHandle handle ) const = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Checks if a pipeline handle is valid.
 		*
 		* @param handle Pipeline handle to validate.
 		* @return True if the handle refers to an existing pipeline, false otherwise.
 		*/
-		virtual bool IsValid ( PipelineHandle handle ) const = 0;
+		virtual bool IsValid ( RPipelineHandle handle ) const = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Checks if a sampler handle is valid.
 		*
 		* @param handle Sampler handle to validate.
 		* @return True if the handle refers to an existing sampler, false otherwise.
 		*/
-		virtual bool IsValid ( SamplerHandle handle ) const = 0;
+		virtual bool IsValid ( RSamplerHandle handle ) const = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the color write mask for individual RGBA channels.
 		*
 		* Controls which color components are written to the framebuffer.
@@ -1376,16 +1393,16 @@ namespace lum::rhi {
 		*/
 		virtual void SetColorMask ( bool r, bool g, bool b, bool a ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the color write mask using a ColorMask structure.
 		*
 		* Convenience overload for setting all channel masks at once.
 		*
 		* @param rgba ColorMask structure containing all channel enable flags.
 		*/
-		virtual void SetColorMask ( ColorMask rgba ) = 0;
+		virtual void SetColorMask ( RColorMask rgba ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the clear color for subsequent clear operations.
 		*
 		* Defines the RGBA color used when clearing the color buffer.
@@ -1395,14 +1412,14 @@ namespace lum::rhi {
 		*/
 		virtual void SetClearColor ( ChannelRGBA color ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Clears the color buffer using the current clear color.
 		*
 		* Fills the entire color buffer with the previously set clear color.
 		*/
 		virtual void ClearColor ( ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Sets the clear color and immediately clears the color buffer.
 		*
 		* Convenience function combining SetClearColor and ClearColor.
@@ -1411,21 +1428,21 @@ namespace lum::rhi {
 		*/
 		virtual void ClearColor ( ChannelRGBA color ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Clears the depth buffer to its default value (typically 1.0).
 		*
 		* Resets depth information for subsequent depth-tested rendering.
 		*/
 		virtual void ClearDepth ( ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Clears the stencil buffer to zero.
 		*
 		* Resets stencil values for subsequent stencil operations.
 		*/
 		virtual void ClearStencil ( ) = 0;
 
-		/*!
+		/*====================================================================
 		* @brief Clears specified buffers in a single operation.
 		*
 		* Efficiently clears multiple buffers (color, depth, stencil) simultaneously.
@@ -1433,15 +1450,15 @@ namespace lum::rhi {
 		*
 		* @param flags Combination of ClearFlag values (Color, Depth, Stencil).
 		*/
-		virtual void Clear(Flags<ClearFlag> flags) = 0;
+		virtual void Clear(Flags<RClearFlag> flags) = 0;
 
 		// TODO
-		virtual void Draw(const VertexLayoutHandle& vao, uint32 vertexCount) = 0;
-		virtual void DrawInstanced(const VertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount) = 0;
-		virtual void DrawInstancedBase(const VertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount, uint32 baseInstance) = 0;
-		virtual void DrawElements(const VertexLayoutHandle&, uint32 indicesCount) = 0;
-		virtual void DrawElementsInstanced(const VertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount) = 0;
-		virtual void DrawElementsInstancedBase(const VertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance) = 0;
+		virtual void Draw(const RVertexLayoutHandle& vao, uint32 vertexCount) = 0;
+		virtual void DrawInstanced(const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount) = 0;
+		virtual void DrawInstancedBase(const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount, uint32 baseInstance) = 0;
+		virtual void DrawElements(const RVertexLayoutHandle&, uint32 indicesCount) = 0;
+		virtual void DrawElementsInstanced(const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount) = 0;
+		virtual void DrawElementsInstancedBase(const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance) = 0;
 		virtual void BeginFrame() = 0;
 		virtual void EndFrame() = 0;
 
@@ -1460,25 +1477,25 @@ namespace lum::rhi {
 		LUM_COMPILE_VARIABLE
 		static uint32 MAX_SAMPLER_UNITS = 32;
 
-		std::array<TextureHandle, MAX_TEXTURE_UNITS> mCurrentTextures{};
-		std::array<SamplerHandle, MAX_SAMPLER_UNITS> mCurrentSamplers{};
+		std::array<RTextureHandle, MAX_TEXTURE_UNITS> mCurrentTextures{};
+		std::array<RSamplerHandle, MAX_SAMPLER_UNITS> mCurrentSamplers{};
 
-		ShaderHandle		mCurrentShader{};
-		FramebufferHandle	mCurrentFramebuffer{};
-		PipelineHandle		mCurrentPipeline{};
+		RShaderHandle		mCurrentShader{};
+		RFramebufferHandle	mCurrentFramebuffer{};
+		RPipelineHandle		mCurrentPipeline{};
 
 		// Cache of current states
 
-		BlendState			mBlendState{};
-		CullState			mCullState{};
-		ScissorState		mScissorState{};
-		DepthStencilState	mDepthStencilState{};
-		RasterizerState		mRasterizerState{};
-		ViewportState		mViewportState{};
-		ColorMask			mColorMask{};
+		RBlendState			mBlendState{};
+		RCullState			mCullState{};
+		RScissorState		mScissorState{};
+		RDepthStencilState	mDepthStencilState{};
+		RRasterizerState		mRasterizerState{};
+		RViewportState		mViewportState{};
+		RColorMask			mColorMask{};
 
 		// SOURCE OF TRUST - enabled states ( don't look at bEnabled at states )
-		Flags<State>		mEnabledStates{};
+		Flags<RState>		mEnabledStates{};
 
 		ChannelRGBA			mClearColor{};
 		
@@ -1522,19 +1539,20 @@ namespace lum::rhi {
 		LUM_COMPILE_VARIABLE
 		static uint32 skMaxPipelines = 100;
 
-		cstd::handle_pool<Sampler, SamplerHandle>			mSamplers		{ skMaxSamplers };
-		cstd::handle_pool<Shader, ShaderHandle>				mShaders		{ skMaxShaders };
-		cstd::handle_pool<Buffer, BufferHandle>				mBuffers		{ skMaxBuffers };
-		cstd::handle_pool<VertexLayout, VertexLayoutHandle> mLayouts		{ skMaxLayouts };
-		cstd::handle_pool<Texture, TextureHandle>			mTextures		{ skMaxTextures };
-		cstd::handle_pool<Framebuffer, FramebufferHandle>	mFramebuffers	{ skMaxFramebuffers };
-		cstd::handle_pool<Pipeline, PipelineHandle>			mPipelines		{ skMaxPipelines };
+		cstd::handle_pool<Sampler, RSamplerHandle>			mSamplers		{ skMaxSamplers };
+		cstd::handle_pool<RShader, RShaderHandle>				mShaders		{ skMaxShaders };
+		cstd::handle_pool<RBuffer, RBufferHandle>				mBuffers		{ skMaxBuffers };
+		cstd::handle_pool<RVertexLayout, RVertexLayoutHandle> mLayouts		{ skMaxLayouts };
+		cstd::handle_pool<RTexture, RTextureHandle>			mTextures		{ skMaxTextures };
+		cstd::handle_pool<RFramebuffer, RFramebufferHandle>	mFramebuffers	{ skMaxFramebuffers };
+		cstd::handle_pool<Pipeline, RPipelineHandle>			mPipelines		{ skMaxPipelines };
 
 
 
 	};
 
-	/*! @brief Creates render device.
+	/*====================================================================
+	* @brief Creates render device.
 	*
 	*  Initializes and creates render device including used backend (OpenGL for now).
 	* 
@@ -1543,6 +1561,6 @@ namespace lum::rhi {
 	*  @return Pointer to the device.
 	*
 	*/
-	RenderDevice* CreateDevice(Window* window);
+	RDevice* CreateDevice(Window* window);
 
 }

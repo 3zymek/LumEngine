@@ -43,6 +43,8 @@ namespace lum {
 
 			bool success;
 			AudioClip clip;
+			// TODO REPAIR
+			/*
 			FMOD_ASSERT(
 				mAudioSystem->createSound(
 					lum::AssetLoader::LoadAudio(path, success).c_str(),
@@ -51,6 +53,7 @@ namespace lum {
 					&clip.mSound
 				)
 			);
+			*/
 
 			mSounds.emplace(clip, id);
 			mNameToID.emplace(hashed_new_id, id);

@@ -9,7 +9,7 @@
 
 namespace lum::rhi {
 
-	struct TextureRect {
+	struct RTextureRect {
 		uint32 x = 0;
 		uint32 y = 0;
 		
@@ -20,7 +20,7 @@ namespace lum::rhi {
 		uint32 mMipLevel = 0;
 	};
 
-	enum class TextureType : uint8 {
+	enum class RTextureType : uint8 {
 		Texture1D,
 		Texture2D,
 		Texture3D,
@@ -30,7 +30,7 @@ namespace lum::rhi {
 		CubemapArray
 	};
 
-	enum class InternalImageFormat : uint8 {
+	enum class RInternalImageFormat : uint8 {
 
 		// 8-bit normalized
 		RGBA8,
@@ -58,7 +58,7 @@ namespace lum::rhi {
 		Depth32FStencil8,
 	};
 
-	enum class LoadedImageFormat : uint8 {
+	enum class RLoadedImageFormat : uint8 {
 		RGBA,
 		RGB,
 		RG,
@@ -68,7 +68,7 @@ namespace lum::rhi {
 		DepthStencil
 	};
 
-	enum class TextureDataType : uint8 {
+	enum class RTextureDataType : uint8 {
 		UnsignedByte,
 		Byte,
 
@@ -86,21 +86,19 @@ namespace lum::rhi {
 		Float_32_UnsignedInt_24_8_Rev
 	};
 
-	struct TextureDescriptor {
+	struct RTextureDescriptor {
 
-		// Path/Name of the texture
-		ccharptr mFilename = nullptr;
-		cvptr mData = nullptr; // Data with texture ( higher priority than 'filename' )
+		FTextureData mData;
 
-		InternalImageFormat mInternalFormat = InternalImageFormat::RGBA8; // GPU storage format
+		RInternalImageFormat mInternalFormat = RInternalImageFormat::RGBA8; // GPU storage format
 
-		LoadedImageFormat mLoadedFormat = LoadedImageFormat::RGBA; // CPU layout
-		TextureDataType mDataType = TextureDataType::UnsignedByte; // CPU channel type
+		RLoadedImageFormat mLoadedFormat = RLoadedImageFormat::RGBA; // CPU layout
+		RTextureDataType mDataType = RTextureDataType::UnsignedByte; // CPU channel type
 
-		bool bCompressed = false;
+		//bool bCompressed = false;
 
-		bool bFlipVertically = false;
-		bool bPremultiplyAlpha = false;
+		//bool bFlipVertically = false;
+		//bool bPremultiplyAlpha = false;
 
 		// Can texture have LOD ( Level Of Detail )
 		bool bGenerateMipmaps = false;
@@ -108,16 +106,22 @@ namespace lum::rhi {
 
 		uint32 mSamples = 0;
 
-		TextureRect mRect;
+	};
+
+	struct RTextureUpdateDescriptor {
+
+		RTextureRect	mRect;
+		FTextureData		mData;
+		bool			bGenerateMipmaps = false;
 
 	};
 
-	struct TextureCubemapDescriptor {
+	struct RTextureCubemapDescriptor {
 		
-		InternalImageFormat mInternalFormat = InternalImageFormat::RGBA8;
+		RInternalImageFormat mInternalFormat = RInternalImageFormat::RGBA8;
 
-		LoadedImageFormat mDataFormat = LoadedImageFormat::RGBA;
-		TextureDataType mDataType = TextureDataType::UnsignedByte;
+		RLoadedImageFormat mDataFormat = RLoadedImageFormat::RGBA;
+		RTextureDataType mDataType = RTextureDataType::UnsignedByte;
 
 		bool bGenerateMipmaps = false;
 		uint32 mMipmapLevels = 1;
@@ -125,24 +129,24 @@ namespace lum::rhi {
 		bool bFlipVertically = false;
 		bool bPremultiplyAlpha = false;
 
-		ccharptr mFaces[6]{};
+		FTextureData mFaces[6]{};
 
 	};
 
-	struct Texture {
+	struct RTexture {
 
-		TextureRect mRect;
+		RTextureRect mRect;
 
-		TextureType mType;
+		RTextureType mType;
 
-		InternalImageFormat mInternalFormat = InternalImageFormat::RGBA8;
-		LoadedImageFormat mDataFormat = LoadedImageFormat::RGBA;
-		TextureDataType mDataType = TextureDataType::UnsignedByte;
+		RInternalImageFormat mInternalFormat = RInternalImageFormat::RGBA8;
+		RLoadedImageFormat mDataFormat = RLoadedImageFormat::RGBA;
+		RTextureDataType mDataType = RTextureDataType::UnsignedByte;
 
 		uint32 mMipmapLevels = 0;
 
 		union {
-			TextureID gl = 0;
+			RTextureID gl = 0;
 		} mHandle{};
 
 	};

@@ -8,6 +8,7 @@
 #include "core/core_pch.hpp"
 #include "core/core_defines.hpp"
 #include "core/types.hpp"
+#include "core/limits.hpp"
 
 namespace lum {
 
@@ -19,7 +20,12 @@ namespace lum {
 
 	}
 
-	struct TextureData {
+	enum class ERootID : uint8 {
+		Internal,
+		External
+	};
+
+	struct FTextureData {
 
 		int32 mWidth = 0;
 		int32 mHeight = 0;
@@ -28,7 +34,7 @@ namespace lum {
 
 	};
 
-	struct ModelData {
+	struct FModelData {
 
 		std::vector<Vertex> mVertices;
 		std::vector<uint32> mIndices;
@@ -43,30 +49,45 @@ namespace lum {
 
 		LUM_FORCEINLINE
 		static void SetProjectRoot ( Path path ) { 
-			gProjectRoot = path; 
+			sProjectRoot = path; 
 			LUM_LOG_INFO("Project root path has been set to %s", path.string().c_str());
 		}
 
 		LUM_NODISCARD
-		static TextureData LoadTexture ( ccharptr filepath, bool& success );
+		static std::optional<FTextureData> LoadTexture ( ERootID root, ccharptr filepath );
 		
 		LUM_NODISCARD
-		static ModelData LoadMesh ( ccharptr filepath, bool& success );
+		static std::optional<FModelData> LoadMesh ( ERootID root, ccharptr filepath );
 
 		LUM_NODISCARD
-		static String LoadAudio ( StringView filepath, bool& success );
+		static std::optional<String> LoadAudio ( ERootID root, StringView filepath );
 
 		LUM_NODISCARD
-		static String LoadInternalShader ( StringView filepath, bool& success );
+		static std::optional<String> LoadShader ( ERootID root, StringView filepath );
 
-		LUM_NODISCARD
-		static String LoadExternalShader ( StringView filepath, bool& success );
+		static ccharptr GetErrorMessage() { return sLastErrorMessage; }
 
 	private:
 
-		static inline Path gProjectRoot			= "";
-		static inline Path gInternalShaderPath	= detail::fs::current_path().parent_path() / "LumEngine" / "engine" / "include" / "modules" / "rhi" / "shaders";
-		static inline Path gShaderDefine		= detail::fs::current_path().parent_path() / "LumEngine" / "engine" / "include" / "core" / "shaders_define.h";
+		static inline Path sProjectRoot		= "";
+		static inline Path sInternalRoot	= detail::fs::current_path().parent_path() / "LumEngine" / "internal_assets";
+		static inline Path sShaderDefine	= detail::fs::current_path().parent_path() / "LumEngine" / "engine" / "include" / "core" / "shaders_define.h";
+	   
+		static inline char sLastErrorMessage[limits::gMaxErrorAssetLoadLength] {};
+
+		template<usize L>
+		static void set_error_msg ( const char (&msg)[L] ) {
+
+			usize length = std::clamp(L, 0u, limits::gMaxErrorAssetLoadLength);
+			std::strncpy(sLastErrorMessage, msg, length);
+
+		}
+
+		static void set_error_msg ( ccharptr msg ) {
+
+			std::strncpy(sLastErrorMessage, msg, sizeof(sLastErrorMessage));
+
+		}
 
 		AssetLoader ( const AssetLoader& )	= delete;
 		AssetLoader ( AssetLoader&& )		= delete;

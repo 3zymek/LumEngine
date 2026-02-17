@@ -2,23 +2,23 @@
 
 namespace lum::rhi::gl {
 
-	VertexLayoutHandle GLDevice::CreateVertexLayout ( const VertexLayoutDescriptor& desc, const BufferHandle& vbo ) {
+	RVertexLayoutHandle GLDevice::CreateVertexLayout ( const RVertexLayoutDescriptor& desc, const RBufferHandle& vbo ) {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mBuffers.exist(vbo),
 			LUM_SEV_WARN,
-			VertexLayoutHandle{},
+			RVertexLayoutHandle{},
 			"Buffer doesn't exist"
 		);
 		LUM_HOTCHK_RETURN_CUSTOM(
 			desc.mAttributes.size() > 0,
 			LUM_SEV_WARN,
-			VertexLayoutHandle{},
+			RVertexLayoutHandle{},
 			"VertexLayout has no attributes",
 		);
 
-		VertexLayout layout;
-		Buffer& buffer = mBuffers[vbo];
+		RVertexLayout layout;
+		RBuffer& buffer = mBuffers[vbo];
 
 		glCreateVertexArrays(1, &layout.mHandle);
 		glVertexArrayVertexBuffer(
@@ -34,7 +34,7 @@ namespace lum::rhi::gl {
 			glVertexArrayAttribFormat(
 				layout.mHandle,
 				desc.mAttributes[i].mShaderLocation,
-				detail::skDataFormatLookup[lookup_cast(desc.mAttributes[i].mFormat)],
+				detail::gDataFormatLookup[lookup_cast(desc.mAttributes[i].mFormat)],
 				GL_FLOAT,
 				GL_FALSE,
 				desc.mAttributes[i].mRelativeOffset
@@ -57,7 +57,7 @@ namespace lum::rhi::gl {
 		return layoutHandle;
 
 	}
-	void GLDevice::DeleteVertexLayout ( VertexLayoutHandle& layout ) {
+	void GLDevice::DeleteVertexLayout ( RVertexLayoutHandle& layout ) {
 		LUM_HOTCHK_RETURN_VOID(!mLayouts.exist(layout), LUM_SEV_WARN, "Layout doesn't exist");
 
 		glDeleteVertexArrays(1, &mLayouts[layout].mHandle);

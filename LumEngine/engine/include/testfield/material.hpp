@@ -5,11 +5,11 @@ namespace lum {
 
 	struct MaterialDescriptor {
 
-		rhi::TextureHandle mAlbedoMap{};
-		rhi::TextureHandle mNormalMap{};
-		rhi::TextureHandle mRoughnessMap{};
-		rhi::TextureHandle mMetallicMap{};
-		rhi::TextureHandle mAmbientMap{};
+		rhi::RTextureHandle mAlbedoMap{};
+		rhi::RTextureHandle mNormalMap{};
+		rhi::RTextureHandle mRoughnessMap{};
+		rhi::RTextureHandle mMetallicMap{};
+		rhi::RTextureHandle mAmbientMap{};
 
 		glm::vec3 mBaseColor = glm::vec3(1.0f);
 		float32 mRoughness = 0.5f;
@@ -18,13 +18,13 @@ namespace lum {
 
 	};
 
-	struct Material {
+	struct LMaterialBase {
 
-		rhi::TextureHandle mAlbedoMap;
-		rhi::TextureHandle mNormalMap;
-		rhi::TextureHandle mRoughnessMap;
-		rhi::TextureHandle mMetallicMap;
-		rhi::TextureHandle mAmbientMap;
+		rhi::RTextureHandle mAlbedoMap;
+		rhi::RTextureHandle mNormalMap;
+		rhi::RTextureHandle mRoughnessMap;
+		rhi::RTextureHandle mMetallicMap;
+		rhi::RTextureHandle mAmbientMap;
 
 		glm::vec3 mBaseColor = glm::vec3(1.0f);
 		float32 mRoughness = 0.5f;

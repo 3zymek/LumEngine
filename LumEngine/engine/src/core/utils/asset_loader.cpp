@@ -19,24 +19,29 @@
 
 namespace lum {
 		
-		TextureData AssetLoader::LoadTexture ( ccharptr filepath, bool& success ) {
+		std::optional<FTextureData> AssetLoader::LoadTexture ( ERootID root, ccharptr filepath ) {
 
-			String file = (gProjectRoot / String(filepath)).lexically_normal().string();
+			String file;
+
+			if (root == ERootID::External)
+				file = (sProjectRoot / filepath).lexically_normal().string();
+			else if (root == ERootID::Internal)
+				file = (sInternalRoot / filepath).lexically_normal().string();
 
 			if (!detail::fs::exists(file)) {
-				success = false;
-				return {};
+				set_error_msg("File doesn't exist");
+				return std::nullopt;
 			}
 
-			TextureData texture;
+			FTextureData texture;
 			int32 format;
 			
 			ucharptr data = stbi_load(file.c_str(), &texture.mWidth, &texture.mHeight, &format, 4);
 			texture.mColorChannels = 4;
 
 			if (!data) {
-				success = false;
-				return {};
+				set_error_msg(stbi_failure_reason());
+				return std::nullopt;
 			}
 
 			usize size = texture.mWidth * texture.mHeight * texture.mColorChannels;
@@ -47,18 +52,23 @@ namespace lum {
 			std::memcpy(texture.mPixels.data(), data, size);
 
 			stbi_image_free(data);
-			success = true;
 
 			return texture;
 		}
 
 		
-		ModelData AssetLoader::LoadMesh ( ccharptr filepath, bool& success ) {
+		std::optional<FModelData> AssetLoader::LoadMesh ( ERootID root, ccharptr filepath ) {
 
-			String file = (gProjectRoot / filepath).lexically_normal().string();
+			String file;
+
+			if (root == ERootID::External)
+				file = (sProjectRoot / filepath).lexically_normal().string();
+			else if (root == ERootID::Internal)
+				file = (sInternalRoot / filepath).lexically_normal().string();
+
 			if (!detail::fs::exists(file)) {
-				success = false;
-				return {};
+				set_error_msg("File doesn't exist");
+				return std::nullopt;
 			}
 
 			Assimp::Importer importer;
@@ -69,11 +79,11 @@ namespace lum {
 			const aiScene* scene = importer.ReadFile(file.c_str(), flags);
 
 			if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-				success = false;
-				return {};
+				set_error_msg(importer.GetErrorString());
+				return std::nullopt;
 			}
 		   
-			ModelData finalData;
+			FModelData finalData;
 
 			uint32 elementOffset = 0;
 
@@ -125,39 +135,47 @@ namespace lum {
 
 		   }
 
-			success = true;
 			return finalData;
 		}
 	   
 
-		String AssetLoader::LoadAudio ( StringView filepath, bool& success ) {
+		std::optional<String> AssetLoader::LoadAudio ( ERootID root, StringView filepath ) {
 
-			String file = (gProjectRoot / filepath).lexically_normal().string();
+			String file;
+
+			if (root == ERootID::External)
+				file = (sProjectRoot / filepath).lexically_normal().string();
+			else if (root == ERootID::Internal)
+				file = (sInternalRoot / filepath).lexically_normal().string();
 			 
 			if (!detail::fs::exists(file)) {
-				success = false;
-				return {};
+				set_error_msg("File doesn't exist");
+				return std::nullopt;
 			}
 
-			success = true;
 			return file;
 		}
 
 
-		String AssetLoader::LoadInternalShader ( StringView filepath, bool& success ) {
+		std::optional<String> AssetLoader::LoadShader ( ERootID root, StringView filepath ) {
 
-			String file = (gInternalShaderPath / filepath).lexically_normal().string();
+			String file;
+
+			if (root == ERootID::External)
+				file = (sProjectRoot / filepath).lexically_normal().string();
+			else if (root == ERootID::Internal)
+				file = (sInternalRoot / filepath).lexically_normal().string();
 
 			if (!detail::fs::exists(file)) {
-				success = false;
-				return "";
+				set_error_msg("File doesn't exist");
+				return std::nullopt;
 			}
 
 			std::ifstream loadedFile(file);
-			std::ifstream defines(gShaderDefine);
+			std::ifstream defines(sShaderDefine);
 			if (!loadedFile.is_open() || !defines.is_open()) {
-				success = false;
-				return "";
+				set_error_msg("File couldn't be opened");
+				return std::nullopt;
 			}
 
 			String version;
@@ -168,36 +186,6 @@ namespace lum {
 			ss << defines.rdbuf() << '\n';
 			ss << loadedFile.rdbuf();
 
-			success = true;
-			return ss.str();
-		}
-
-
-		String AssetLoader::LoadExternalShader ( StringView filepath, bool& success ) {
-
-			String file = (gProjectRoot / filepath).lexically_normal().string();
-
-			if (!detail::fs::exists(file)) {
-				success = false;
-				return "";
-			}
-
-			std::ifstream loadedFile(file);
-			std::ifstream defines(gShaderDefine);
-			if (!loadedFile.is_open() || !defines.is_open()) {
-				success = false;
-				return "";
-			}
-
-			String version;
-			std::getline(loadedFile, version);
-
-			std::stringstream ss;
-			ss << version << '\n';
-			ss << defines.rdbuf() << '\n';
-			ss << loadedFile.rdbuf();
-
-			success = true;
 			return ss.str();
 		}
 

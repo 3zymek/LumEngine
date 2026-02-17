@@ -10,7 +10,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::bind_check_shader ( const Pipeline& pip ) noexcept {
 		
-		if (pip.mShader.id == null_id<ShaderID>())
+		if (pip.mShader.id == null_id<RShaderID>())
 			return;
 
 		BindShader(pip.mShader);
@@ -40,10 +40,10 @@ namespace lum::rhi::gl {
 		SetDepthFunc(depth.mCompare);
 
 		ToggleStencilTest(stencil.bEnabled);
-		SetStencilReference(stencil.mFront.mReference, Face::Front);
-		SetStencilReference(stencil.mBack.mReference, Face::Back);
-		SetStencilOp(stencil.mFront.mStencilFailOp, stencil.mFront.mDepthFailOp, stencil.mFront.mPassOp, Face::Front);
-		SetStencilOp(stencil.mBack.mStencilFailOp, stencil.mBack.mDepthFailOp, stencil.mBack.mPassOp, Face::Back);
+		SetStencilReference(stencil.mFront.mReference, RFace::Front);
+		SetStencilReference(stencil.mBack.mReference, RFace::Back);
+		SetStencilOp(stencil.mFront.mStencilFailOp, stencil.mFront.mDepthFailOp, stencil.mFront.mPassOp, RFace::Front);
+		SetStencilOp(stencil.mBack.mStencilFailOp, stencil.mBack.mDepthFailOp, stencil.mBack.mPassOp, RFace::Back);
 		
 	}
 	void GLDevice::bind_check_scissors ( const Pipeline& pip ) noexcept {
@@ -85,16 +85,16 @@ namespace lum::rhi::gl {
 
 
 
-	PipelineHandle GLDevice::CreatePipeline ( const PipelineDescriptor& desc ) {
+	RPipelineHandle GLDevice::CreatePipeline ( const RPipelineDescriptor& desc ) {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mPipelines.dense_size() <= skMaxPipelines,
 			LUM_SEV_WARN,
-			PipelineHandle{},
+			RPipelineHandle{},
 			"Max pipelines reached"
 		);
 
-		if (desc.mShader.id != null_id<PipelineID>() && !mShaders.exist(desc.mShader)) {
+		if (desc.mShader.id != null_id<RPipelineID>() && !mShaders.exist(desc.mShader)) {
 			LUM_LOG_ERROR("Shader %d doesn't exist", desc.mShader.id);
 		}
 
@@ -104,7 +104,7 @@ namespace lum::rhi::gl {
 		return mPipelines.create_handle(std::move(pipeline));
 
 	}
-	void GLDevice::DeletePipeline(PipelineHandle& pipeline) {
+	void GLDevice::DeletePipeline(RPipelineHandle& pipeline) {
 
 		if (!mPipelines.exist(pipeline)) {
 			return;
@@ -113,7 +113,7 @@ namespace lum::rhi::gl {
 		mPipelines.delete_handle(pipeline);
 
 	}
-	void GLDevice::BindPipeline(const PipelineHandle& pipeline) {
+	void GLDevice::BindPipeline(const RPipelineHandle& pipeline) {
 
 		if (!mPipelines.exist(pipeline)) {
 			return;

@@ -45,5 +45,7 @@ namespace lum::limits {
 	LUM_COMPILE_VARIABLE usize gMaxTextures = 256;
 
 
+	//============================= Assets ==================================
+	LUM_COMPILE_VARIABLE usize gMaxErrorAssetLoadLength = 128;
 
 }

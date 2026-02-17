@@ -52,33 +52,33 @@ namespace lum {
 
 
 
-		struct PipelineHandle		: cstd::BaseHandle {}; // Pipeline state handle
-		struct FramebufferHandle	: cstd::BaseHandle {}; // Framebuffer handle
-		struct SamplerHandle		: cstd::BaseHandle {}; // Texture sampler handle
-		struct ShaderHandle			: cstd::BaseHandle {}; // Shader handle
-		struct TextureHandle		: cstd::BaseHandle {}; // Texture handle
-		struct BufferHandle			: cstd::BaseHandle {}; // Buffer handle
-		struct VertexLayoutHandle	: cstd::BaseHandle {}; // Vertex layout handle
+		struct RPipelineHandle		: cstd::BaseHandle {}; // Pipeline state handle
+		struct RFramebufferHandle	: cstd::BaseHandle {}; // Framebuffer handle
+		struct RSamplerHandle		: cstd::BaseHandle {}; // Texture sampler handle
+		struct RShaderHandle		: cstd::BaseHandle {}; // Shader handle
+		struct RTextureHandle		: cstd::BaseHandle {}; // Texture handle
+		struct RBufferHandle		: cstd::BaseHandle {}; // Buffer handle
+		struct RVertexLayoutHandle	: cstd::BaseHandle {}; // Vertex layout handle
 
-		using BufferID		= uint32; // Numeric ID for buffer
-		using LayoutID		= uint32; // Numeric ID for vertex layout
-		using TextureID		= uint32; // Numeric ID for texture
-		using SamplerID		= uint32; // Numeric ID for sampler
-		using FramebufferID = uint32; // Numeric ID for framebuffer
-		using PipelineID	= uint32; // Numeric ID for pipeline
-		using ShaderID		= uint8;  // Numeric ID for shader (compact)
+		using RBufferID			= uint32; // Numeric ID for buffer
+		using RLayoutID			= uint32; // Numeric ID for vertex layout
+		using RTextureID		= uint32; // Numeric ID for texture
+		using RSamplerID		= uint32; // Numeric ID for sampler
+		using RFramebufferID	= uint32; // Numeric ID for framebuffer
+		using RPipelineID		= uint32; // Numeric ID for pipeline
+		using RShaderID			= uint8;  // Numeric ID for shader (compact)
 
-		using EnumFlag		= uint16;    // Bitmask storage type
+		using REnumFlag		= uint16;    // Bitmask storage type
 
 		using ChannelRGBA = math::Vec4; // RGBA color channel type
 
-		enum class ClearFlag : EnumFlag {
+		enum class RClearFlag : REnumFlag {
 			Color = 1 << 0,     // Clear color buffer
 			Depth = 1 << 1,     // Clear depth buffer
 			Stencil = 1 << 2    // Clear stencil buffer
 		};
 
-		enum class DataFormat : EnumFlag {
+		enum class RDataFormat : REnumFlag {
 			Float1, // Single float
 			Vec2,   // 2-component vector (x,y)
 			Vec3,   // 3-component vector (x,y,z)
@@ -87,25 +87,25 @@ namespace lum {
 			Mat4    // 4x4 matrix
 		};
 
-		enum class BufferType : EnumFlag {
+		enum class RBufferType : REnumFlag {
 			Vertex,        // Vertex buffer (VBO)
 			Element,       // Element / index buffer (EBO)
 			Uniform,       // Uniform buffer (UBO)
 			ShaderStorage, // Shader storage buffer (SSBO)
 		};
 
-		enum class BufferUsage : EnumFlag {
+		enum class RBufferUsage : REnumFlag {
 			Static,  // Data does not change during runtime (fast)
 			Dynamic  // Data updated during runtime (slower)
 		};
 
-		enum class TopologyMode : EnumFlag {
+		enum class RTopologyMode : REnumFlag {
 			Point, // Draw vertices as points
 			Line,  // Draw edges as lines
 			Fill   // Fill polygon interiors
 		};
 
-		enum class Mapflag : EnumFlag {
+		enum class RMapflag : REnumFlag {
 			Persistent			= 1 << 0, // Pointer remains valid across frames
 			Write				= 1 << 1, // CPU can write
 			Read				= 1 << 2, // CPU can read
@@ -115,18 +115,18 @@ namespace lum {
 			Unsynchronized		= 1 << 6, // Map without GPU sync guarantees
 		};
 
-		enum class Face : EnumFlag {
+		enum class RFace : REnumFlag {
 			Front,      // Front-facing polygon
 			Back,       // Back-facing polygon
 			FrontBack,  // Both faces
 		};
 
-		enum class WindingOrder : EnumFlag {
+		enum class RWindingOrder : REnumFlag {
 			CounterClockwise, // Triangles front-facing if CCW
 			Clockwise         // Triangles front-facing if CW
 		};
 
-		struct ColorMask {
+		struct RColorMask {
 			bool r : 1 = true; // Red channel write enabled
 			bool g : 1 = true; // Green channel write enabled
 			bool b : 1 = true; // Blue channel write enabled
@@ -135,7 +135,7 @@ namespace lum {
 
 		namespace detail {
 			LUM_COMPILE_VARIABLE
-				static uint8 skDataFormatLookup[] = { 1, 2, 3, 4, 9, 16 }; // Lookup for data format sizes
+			static uint8 gDataFormatLookup[] = { 1, 2, 3, 4, 9, 16 }; // Lookup for data format sizes
 		}
 
 	} // namespace rhi

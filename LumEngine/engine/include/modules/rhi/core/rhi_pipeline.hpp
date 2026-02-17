@@ -10,29 +10,29 @@
 
 namespace lum::rhi {
 
-	struct PipelineDescriptor {
+	struct RPipelineDescriptor {
 
-		RasterizerState			mRasterizer		{};
-		DepthStencilState		mDepthStencil	{};
-		ScissorState			mScissor		{};
-		CullState				mCull			{};
-		BlendState				mBlend			{};
-		ColorMask				mColorMask		{};
+		RRasterizerState		mRasterizer		{};
+		RDepthStencilState		mDepthStencil	{};
+		RScissorState			mScissor		{};
+		RCullState				mCull			{};
+		RBlendState				mBlend			{};
+		RColorMask				mColorMask		{};
 
-		ShaderHandle			mShader{};
+		RShaderHandle			mShader{};
 
 	};
 
 	struct Pipeline {
 
-		RasterizerState			mRasterizer		{};
-		DepthStencilState		mDepthStencil	{};
-		ScissorState			mScissor		{};
-		CullState				mCull			{};
-		BlendState				mBlend			{};
-		ColorMask				mColorMask		{};
+		RRasterizerState			mRasterizer		{};
+		RDepthStencilState		mDepthStencil	{};
+		RScissorState			mScissor		{};
+		RCullState				mCull			{};
+		RBlendState				mBlend			{};
+		RColorMask				mColorMask		{};
 
-		ShaderHandle			mShader{};
+		RShaderHandle			mShader{};
 
 	};
 

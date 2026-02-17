@@ -15,8 +15,8 @@ namespace lum {
 	struct Object {
 
 		detail::RenderResources mRenderResources;
-		Material mMaterial;
-		ModelData mModel; // TODO make models independent at renderer or model system
+		LMaterialBase mMaterial;
+		FModelData mModel; // TODO make models independent at renderer or model system
 		Transform mTransform;
 
 	};

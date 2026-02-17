@@ -6,14 +6,14 @@ namespace lum {
 	namespace detail {
 		struct RenderResources {
 
-			rhi::BufferHandle mVbo;
-			rhi::BufferHandle mEbo;
-			rhi::VertexLayoutHandle mVao;
-			rhi::TextureHandle mTexture;
+			rhi::RBufferHandle mVbo;
+			rhi::RBufferHandle mEbo;
+			rhi::RVertexLayoutHandle mVao;
+			rhi::RTextureHandle mTexture;
 			uint16 mTextureBinding = 0;
-			rhi::SamplerHandle mSampler;
+			rhi::RSamplerHandle mSampler;
 			uint16 mSamplerBinding = 0;
-			rhi::PipelineHandle mPipeline;
+			rhi::RPipelineHandle mPipeline;
 
 		};
 	}
