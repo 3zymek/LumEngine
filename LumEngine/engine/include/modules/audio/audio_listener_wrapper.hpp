@@ -21,8 +21,8 @@ namespace lum {
 			friend class lum::systems::AudioSystem;
 
 			ecs::EntityID							entityID{};
-			ecs::components::TransformComponent*	transform_component = nullptr;
-			ecs::components::AudioListenerComponent* listener_component = nullptr;
+			CTransform*	mTransform = nullptr;
+			CAudioListener* mListener = nullptr;
 
 		};
 	}

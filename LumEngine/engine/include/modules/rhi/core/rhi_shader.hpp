@@ -11,13 +11,13 @@
 namespace lum::rhi {
 
 	struct RShaderDescriptor {
-		ccharptr vertexSource;
-		ccharptr fragmentSource;
+		ccharptr mVertexContent;
+		ccharptr mFragmentContent;
 	};
 
 	struct RShader {
 
-		RShaderID handle = 0;
+		RShaderID mHandle = 0;
 
 	};
 

@@ -20,8 +20,10 @@
 // Uniform buffer binding for model matrix.
 #define LUM_UBO_MODEL_BINDING 2
 
-#define LUM_SSBO_LIGHTS_BINDING 3
-#define LUM_MAX_LIGHTS 3
+#define LUM_UBO_MATERIAL_BINDING 3
+
+#define LUM_SSBO_LIGHTS_BINDING 4
+#define LUM_MAX_LIGHTS 64
 
 // Sampler slots for material textures.
 #define LUM_SAMPLER_ALBEDO		0 // Albedo texture sampler.

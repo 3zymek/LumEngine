@@ -33,7 +33,7 @@ namespace lum {
 
 		class AudioManager {
 
-			using AudioEmitterComponent = ecs::components::AudioEmitterComponent;
+			using AudioEmitterComponent = CAudioEmitter;
 			using AudioInstance			= detail::AudioInstance;
 			using AudioClip				= detail::AudioClip;
 			using AudioEmitter			= detail::AudioEmitter;

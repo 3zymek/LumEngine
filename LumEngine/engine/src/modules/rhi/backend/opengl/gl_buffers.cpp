@@ -191,7 +191,7 @@ namespace lum::rhi::gl {
 		);
 
 		LUM_HOTCHK_RETURN_VOID(
-			buffer.mFlags.Has(RMapflag::Write),
+			buffer.mFlags.Has(RMapFlag::Write),
 			LUM_SEV_WARN,
 			"Buffer %d has no write flags enabled",
 			vbo.id
@@ -228,7 +228,7 @@ namespace lum::rhi::gl {
 		LUM_LOG_INFO("Deleted buffer %d", vbo.id);
 	}
 
-	vptr GLDevice::MapBuffer(const RBufferHandle& vbo, Flags<RMapflag> flags, usize offset, usize size) {
+	vptr GLDevice::MapBuffer(const RBufferHandle& vbo, Flags<RMapFlag> flags, usize offset, usize size) {
 
 		LUM_HOTCHK_RETURN_NPTR(mBuffers.exist(vbo), LUM_SEV_DEBUG, "Buffer doesn't exist");
 

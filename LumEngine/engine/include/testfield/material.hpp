@@ -18,7 +18,7 @@ namespace lum {
 
 	};
 
-	struct LMaterialBase {
+	struct FMaterialBase {
 
 		rhi::RTextureHandle mAlbedoMap;
 		rhi::RTextureHandle mNormalMap;

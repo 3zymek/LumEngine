@@ -132,7 +132,7 @@ namespace lum::rhi {
 		* @note Call UnmapBuffer() after finishing CPU access.
 		*/
 		LUM_NODISCARD
-		virtual vptr MapBuffer ( const RBufferHandle& buff, Flags<RMapflag> flags, usize offset = 0, usize size = 0 ) = 0;
+		virtual vptr MapBuffer ( const RBufferHandle& buff, Flags<RMapFlag> flags, usize offset = 0, usize size = 0 ) = 0;
 
 		/*====================================================================
 		* @brief Unmaps a previously mapped GPU buffer.

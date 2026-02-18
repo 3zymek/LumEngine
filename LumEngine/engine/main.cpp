@@ -5,7 +5,6 @@
 #include "lum_packages/lum_render.hpp"
 #include "window_context/input_common.hpp"
 #include "core/utils/logger.hpp"
-#include "editor.hpp"
 #include "audio/components/c_audio_listener.hpp"
 #include "window_context/window.hpp"
 #include "rhi/core/rhi_device.hpp"
@@ -18,6 +17,8 @@
 #include "core/utils/fixed_string.hpp"
 #include "testfield/texture_manager.hpp"
 #include "testfield/material_manager.hpp"
+#include "testfield/model_manager.hpp"
+#include "testfield/shader_manager.hpp"
 #include "testfield/renderer.hpp"
 
 using namespace lum;
@@ -40,20 +41,57 @@ int main() {
 
     input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
-    CTextureManager texManager{ device };
+    MTextureManager texManager{ device };
     MMaterialManager matManager{ device, &texManager };
+    MMeshManager meshManager{ device };
+    MShaderManager shaderManager{ device };
+    
+    auto tex = texManager.Load("textures/scene.png", ETexturePreset::Albedo);
 
-    auto tex = texManager.Load("textures/default.png", ETexturePreset::Albedo);
-    auto tex2 = texManager.Load("textures/default.png", TexturePreset::Albedo);
-
-    LMaterialBase base;
+    FMaterialBase base;
     base.mAlbedoMap = tex;
     base.mBaseColor = { 1.f, 0.f, 1.f };
     auto baseHandle = matManager.UploadBase(base);
 
     auto materialInstance = matManager.CreateInstance(baseHandle);
 
-    //Renderer render{ device, &texManager };
+    auto meshHandle = meshManager.CreateStatic("models/scene.gltf");
+
+    SRenderer render{ device, &texManager, &matManager, &meshManager };
+
+    Camera camera{ window };
+    Object obj;
+    obj.mMaterial = materialInstance;
+    obj.mStaticMesh = meshHandle;
+
+    auto geometry = shaderManager.LoadShader("shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ERootID::Internal);
+
+    while (window->IsOpen()) {
+       
+        window->PollEvents();
+        
+        render.BeginFrame();
+        
+        ImGui::SetNextWindowPos(ImVec2(10, 10));
+        ImGui::Begin(
+            "##fps",
+            nullptr,
+            ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration
+        );
+        
+        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+        ImGui::End();
+
+        ImGui::Begin("BaseColor");
+        ImGui::ColorEdit3("Color", glm::value_ptr(obj.mMaterial.mBaseColor));
+        ImGui::End();
+
+        render.UpdateCamera(camera);
+        render.Draw(obj, geometry);
+
+        render.EndFrame();
+    }
+
 
 
 } 

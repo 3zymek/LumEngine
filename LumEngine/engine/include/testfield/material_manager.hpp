@@ -7,7 +7,7 @@
 
 namespace lum {
 
-	struct LMaterialBase {
+	struct FMaterialBase {
 
 		rhi::RTextureHandle mAlbedoMap;
 		rhi::RTextureHandle mNormalMap;
@@ -24,9 +24,7 @@ namespace lum {
 
 	struct MaterialBaseHandle : cstd::BaseHandle {};
 
-	struct LMaterialInstance {
-
-		LMaterialInstance ( MMaterialManager& mgr ) : mManager(mgr) {}
+	struct FMaterialInstance {
 
 		rhi::RTextureHandle mAlbedoMap;
 		rhi::RTextureHandle mNormalMap;
@@ -38,14 +36,6 @@ namespace lum {
 		float32 mRoughness = 0.5f;
 		float32 mMetallic = 0.0f;
 		float32 mAmbient = 1.0f;
-
-		void LoadBase() {
-			
-		}
-
-	private:
-
-		MMaterialManager& mManager;
 
 	};
 
@@ -61,23 +51,23 @@ namespace lum {
 	class MMaterialManager {
 	public:
 
-		MMaterialManager ( rhi::RDevice* device, CTextureManager* texMgr ) : mRenderDevice(device), mTextureManager(texMgr) 
+		MMaterialManager ( rhi::RDevice* device, MTextureManager* texMgr ) : mRenderDevice(device), mTextureManager(texMgr) 
 			{ create_materials(); }
 
 		LUM_NODISCARD
-		MaterialBaseHandle UploadBase ( const LMaterialBase& base ) {
+		MaterialBaseHandle UploadBase ( const FMaterialBase& base ) {
 
 			return mBaseMaterials.create_handle(base);
 
 		}
 
-		LMaterialInstance CreateInstance ( MaterialBaseHandle base ) {
+		FMaterialInstance CreateInstance ( MaterialBaseHandle base ) {
 
 			if (!mBaseMaterials.exist(base))
 				base = mDefaultMaterial;
 
-			LMaterialInstance instance(*this);
-			LMaterialBase matBase = mBaseMaterials[base];
+			FMaterialInstance instance;
+			FMaterialBase matBase = mBaseMaterials[base];
 			
 			instance.mAlbedoMap		= validate_texture(matBase.mAlbedoMap);
 			instance.mNormalMap		= validate_texture(matBase.mNormalMap);
@@ -108,11 +98,10 @@ namespace lum {
 
 		MaterialBaseHandle mDefaultMaterial;
 
-		CTextureManager* mTextureManager = nullptr;
+		MTextureManager* mTextureManager = nullptr;
 		rhi::RDevice* mRenderDevice = nullptr;
 
-		cstd::handle_pool<LMaterialBase, MaterialBaseHandle>	mBaseMaterials{ limits::gMaxMaterials };
-
+		cstd::handle_pool<FMaterialBase, MaterialBaseHandle> mBaseMaterials{ limits::gMaxMaterials };
 
 		rhi::RTextureHandle validate_texture ( rhi::RTextureHandle tex ) {
 
@@ -128,7 +117,7 @@ namespace lum {
 		void create_materials( ) {
 
 			{ // Base material
-				LMaterialBase base;
+				FMaterialBase base;
 				base.mAlbedoMap		= mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
 				base.mNormalMap		= mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
 				base.mMetallicMap	= mTextureManager->GetFallbackTexture(EFallbackTexture::Default);

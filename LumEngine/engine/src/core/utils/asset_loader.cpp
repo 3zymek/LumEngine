@@ -57,7 +57,7 @@ namespace lum {
 		}
 
 		
-		std::optional<FModelData> AssetLoader::LoadMesh ( ERootID root, ccharptr filepath ) {
+		std::optional<FMeshData> AssetLoader::LoadMesh ( ERootID root, ccharptr filepath ) {
 
 			String file;
 
@@ -83,7 +83,7 @@ namespace lum {
 				return std::nullopt;
 			}
 		   
-			FModelData finalData;
+			FMeshData finalData;
 
 			uint32 elementOffset = 0;
 

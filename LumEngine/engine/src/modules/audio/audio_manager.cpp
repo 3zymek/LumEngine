@@ -72,8 +72,8 @@ namespace lum {
 
 				mListener = std::make_unique<AudioListenerWrapper>(entityID);
 
-				mListener->transform_component	= mEntityManager.GetComponent<ecs::components::TransformComponent>(entityID);
-				mListener->listener_component	= mEntityManager.GetComponent<ecs::components::AudioListenerComponent>(entityID);
+				mListener->mTransform	= mEntityManager.GetComponent<CTransform>(entityID);
+				mListener->mListener	= mEntityManager.GetComponent<CAudioListener>(entityID);
 
 				LUM_LOG_INFO("Audio Listener created");
 
@@ -89,7 +89,7 @@ namespace lum {
 			auto id = GenerateID<EmitterHandle, detail::gEmitterNullID>::Get();
 			entity.GetComponent<AudioEmitterComponent>()->emitterID = id;
 			detail::AudioEmitter emitter;
-			emitter.transform = mEntityManager.GetComponent<ecs::components::TransformComponent>(entity.GetID());
+			emitter.transform = mEntityManager.GetComponent<CTransform>(entity.GetID());
 			AudioEmitterWrapper wrapper(*this, id);
 
 			mEmitters.emplace(emitter, id);
@@ -263,10 +263,10 @@ namespace lum {
 			mEventBus.SubscribePermanently<ev::ComponentAdded>(
 					[this](const ev::ComponentAdded& ev)
 					{
-						if (ev.component_typeID == ecs::detail::ComponentTypeID::Get<ecs::components::AudioListenerComponent>() or
-							ev.component_typeID == ecs::detail::ComponentTypeID::Get<ecs::components::AudioEmitterComponent>()) {
+						if (ev.component_typeID == ecs::detail::ComponentTypeID::Get<CAudioListener>() or
+							ev.component_typeID == ecs::detail::ComponentTypeID::Get<CAudioEmitter>()) {
 
-							mEntityManager.RequireComponent<ecs::components::TransformComponent>(ev.entityID);
+							mEntityManager.RequireComponent<CTransform>(ev.entityID);
 
 						}
 

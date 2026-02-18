@@ -16,7 +16,7 @@ namespace lum {
 
 			struct AudioEmitter {
 				AudioEmitter() { active_clips.reserve(5); }
-				ecs::components::TransformComponent* transform = nullptr;
+				CTransform* transform = nullptr;
 				std::vector<AudioChannel> active_clips;
 				std::unordered_map<AudioHandle, AudioInstance> clips;
 			};

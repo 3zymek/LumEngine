@@ -32,10 +32,10 @@ namespace lum {
 	*
 	* @note Must be initialized with a valid RDevice before use.
 	*/
-	class CTextureManager {
+	class MTextureManager {
 	public:
 		
-		CTextureManager( rhi::RDevice* device ) { init(device); }
+		MTextureManager( rhi::RDevice* device ) { init(device); }
 
 		/*====================================================================
 		* @brief Retrieves a cached texture by path.

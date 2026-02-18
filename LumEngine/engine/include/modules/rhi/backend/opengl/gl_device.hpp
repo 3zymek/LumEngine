@@ -30,7 +30,7 @@ namespace lum::rhi::gl {
 		RBufferHandle	CreateShaderStorageBuffer	( const RBufferDescriptor& )								override;
 		void			UpdateBuffer				( const RBufferHandle&, cvptr, usize, usize )			override;
 		void			DeleteBuffer				( RBufferHandle& )										override;
-		vptr			MapBuffer					( const RBufferHandle&, Flags<RMapflag>, usize, usize )	override;
+		vptr			MapBuffer					( const RBufferHandle&, Flags<RMapFlag>, usize, usize )	override;
 		void			UnmapBuffer					( const RBufferHandle& )									override;
 		void			SetShaderStorageBinding		( const RBufferHandle& ssbo, uint32 binding )			override;
 		void			AttachElementBufferToLayout	( const RBufferHandle&, const RVertexLayoutHandle& )		override;
@@ -451,7 +451,7 @@ namespace lum::rhi::gl {
 
 		void		cache_uniforms_locations	( );
 		bool		is_valid_buffer_descriptor	( const RBufferDescriptor&)		noexcept;
-		GLbitfield	translate_mapping_flags		( Flags<RMapflag> )				noexcept;
+		GLbitfield	translate_mapping_flags		( Flags<RMapFlag> )				noexcept;
 
 	};
 

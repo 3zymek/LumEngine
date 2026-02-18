@@ -109,7 +109,7 @@ namespace lum {
 		char mSevColorBuffer		[sMaxColorLength]		{};
 
 		uint64 mLastLogs[5]{};
-		Flags<LogSeverity> mSeverity = LogSeverity::Fatal | LogSeverity::Debug | LogSeverity::Warn | LogSeverity::Error;
+		Flags<LogSeverity> mSeverity{ LogSeverity::Fatal, LogSeverity::Debug, LogSeverity::Warn, LogSeverity::Error };
 		
 		template<usize L>
 		void center_custom(charptr out, usize outSize, const char(&s)[L], usize leftWidth, usize rightWidth) {

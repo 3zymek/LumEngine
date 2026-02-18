@@ -21,6 +21,7 @@ namespace lum {
 		virtual uint32	GetWidth		( ) const noexcept = 0;
 		virtual uint32	GetHeight		( ) const noexcept = 0;
 		virtual vptr	GetNativeWindow	( ) const noexcept = 0;
+		virtual void	PollEvents		( ) noexcept = 0;
 		virtual bool	IsOpen				( ) const noexcept = 0;
 		virtual RenderBackend	GetBackend	( )	const noexcept = 0;
 
@@ -40,7 +41,8 @@ namespace lum {
 		void					SetHeight		( uint32	) noexcept override;
 		uint32					GetWidth		(			) const noexcept override;
 		uint32					GetHeight		(			) const noexcept override;
-		vptr					GetNativeWindow(			) const noexcept override;
+		vptr					GetNativeWindow	(			) const noexcept override;
+		void					PollEvents		(			) noexcept override;
 		bool					IsOpen			(			) const noexcept override;
 		RenderBackend			GetBackend		(			) const noexcept override;
 

@@ -34,7 +34,7 @@ namespace lum {
 
 	};
 
-	struct FModelData {
+	struct FMeshData {
 
 		std::vector<Vertex> mVertices;
 		std::vector<uint32> mIndices;
@@ -57,7 +57,7 @@ namespace lum {
 		static std::optional<FTextureData> LoadTexture ( ERootID root, ccharptr filepath );
 		
 		LUM_NODISCARD
-		static std::optional<FModelData> LoadMesh ( ERootID root, ccharptr filepath );
+		static std::optional<FMeshData> LoadMesh ( ERootID root, ccharptr filepath );
 
 		LUM_NODISCARD
 		static std::optional<String> LoadAudio ( ERootID root, StringView filepath );

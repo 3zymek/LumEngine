@@ -104,8 +104,8 @@ namespace lum {
 			Line,  // Draw edges as lines
 			Fill   // Fill polygon interiors
 		};
-
-		enum class RMapflag : REnumFlag {
+		
+		enum class RMapFlag : REnumFlag {
 			Persistent			= 1 << 0, // Pointer remains valid across frames
 			Write				= 1 << 1, // CPU can write
 			Read				= 1 << 2, // CPU can read
@@ -139,4 +139,8 @@ namespace lum {
 		}
 
 	} // namespace rhi
+
+	LUM_ENUM_OPERATIONS(rhi::RMapFlag);
+	LUM_ENUM_OPERATIONS(rhi::RClearFlag);
+
 } // namespace lum

@@ -12,7 +12,7 @@ namespace lum {
             #define LUM_COMPONENT_TAG \
                 static constexpr bool __lumcomponent__ = true;
 
-            struct UniqueComponent {};
+            struct CUnique {};
 
             template<typename T>
             concept Component =

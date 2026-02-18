@@ -43,13 +43,20 @@ namespace lum {
 		mHeight = height;
 	}
 	uint32 OpenGLWindow::GetWidth( ) const noexcept {
-		return mWidth;
+		int32 width;
+		glfwGetWindowSize(mWindow, &width, nullptr);
+		return width;
 	}
 	uint32 OpenGLWindow::GetHeight( ) const noexcept {
-		return mHeight;
+		int32 height;
+		glfwGetWindowSize(mWindow, nullptr, &height);
+		return height;
 	}
 	void* OpenGLWindow::GetNativeWindow( ) const noexcept {
 		return mWindow;
+	}
+	void OpenGLWindow::PollEvents() noexcept {
+		glfwPollEvents();
 	}
 	bool OpenGLWindow::IsOpen( ) const noexcept {
 		return !glfwWindowShouldClose(mWindow);

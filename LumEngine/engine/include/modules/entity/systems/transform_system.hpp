@@ -7,7 +7,7 @@ namespace lum::systems {
 
 	class TransformSystem {
 
-		using TransformComponent = ecs::components::TransformComponent;
+		using TransformComponent = CTransform;
 
 	public:
 
@@ -18,9 +18,9 @@ namespace lum::systems {
 			auto* transform = ecs_manager.GetComponent<TransformComponent>( e.GetID() );
 			LUM_HOTCHK_RETURN_VOID(transform, LogSeverity::Warn, "Entity doesn't have transform component");
 			transform->position = position;
-			if (m_dirty_entities.size() < MAX_DIRTY_TRANSFORMS_PER_FRAME && !transform->dirty) {
+			if (m_dirty_entities.size() < MAX_DIRTY_TRANSFORMS_PER_FRAME && !transform->bDirty) {
 				m_dirty_entities.push_back(e.GetID());
-				transform->dirty = true;
+				transform->bDirty = true;
 			}
 		}
 
@@ -28,9 +28,9 @@ namespace lum::systems {
 			auto* transform = ecs_manager.GetComponent<TransformComponent>(e.GetID());
 			LUM_HOTCHK_RETURN_VOID(transform, LUM_SEV_WARN, "Entity doesn't have transform component");
 			transform->rotation = rotation;
-			if (m_dirty_entities.size() < MAX_DIRTY_TRANSFORMS_PER_FRAME && !transform->dirty) {
+			if (m_dirty_entities.size() < MAX_DIRTY_TRANSFORMS_PER_FRAME && !transform->bDirty) {
 				m_dirty_entities.push_back(e.GetID());
-				transform->dirty = true;
+				transform->bDirty = true;
 			}
 		}
 
@@ -38,9 +38,9 @@ namespace lum::systems {
 			auto* transform = ecs_manager.GetComponent<TransformComponent>(e.GetID());
 			LUM_HOTCHK_RETURN_VOID(transform, LUM_SEV_WARN, "Entity doesn't have transform component");
 			transform->scale = scale;
-			if (m_dirty_entities.size() < MAX_DIRTY_TRANSFORMS_PER_FRAME && !transform->dirty) {
+			if (m_dirty_entities.size() < MAX_DIRTY_TRANSFORMS_PER_FRAME && !transform->bDirty) {
 				m_dirty_entities.push_back(e.GetID());
-				transform->dirty = true;
+				transform->bDirty = true;
 			}
 		}
 
@@ -52,7 +52,7 @@ namespace lum::systems {
 				auto* transform = ecs_manager.GetComponent<TransformComponent>(entityID);
 				if (!check_transform(transform, "Entity doesn't have transform component")) continue;
 				calculate_matrix(transform);
-				transform->dirty = false;
+				transform->bDirty = false;
 			}
 			if(size > 0) m_dirty_entities.clear();
 		}
@@ -65,7 +65,6 @@ namespace lum::systems {
 						* glm::mat4_cast( glm::quat(glm::radians(transform->rotation)) )
 						* glm::scale	( new_model, transform->scale );
 			
-			transform->model = new_model;
 		}
 
 		inline static bool check_transform( auto* transform, const char* msg ) {

@@ -20,7 +20,7 @@ namespace lum::rhi {
 		usize mSize = 0;
 
 		// Flags defines what operations can be done on a buffer and which not.
-		Flags<RMapflag> mMapFlags{};
+		Flags<RMapFlag> mMapFlags{};
 
 		// Pointer to data.
 		cvptr mData = nullptr;
@@ -30,7 +30,7 @@ namespace lum::rhi {
 
 		RBufferType		mType	{};
 		RBufferUsage		mUsage	{};
-		Flags<RMapflag>	mFlags	{};
+		Flags<RMapFlag>	mFlags	{};
 		usize			mSize	= 0;
 		bool			bMapped	= false;
 

@@ -30,6 +30,10 @@ namespace lum {
 
 		constexpr Flags() noexcept = default;
 		constexpr Flags(T flag) noexcept : mFlags(static_cast<U>(flag)) {}
+		constexpr Flags(std::initializer_list<T> list) {
+			for (T f : list)
+				Enable(f);
+		}
 
 		/*!
 		* @brief Enables (sets) a single flag.
@@ -113,16 +117,30 @@ namespace lum {
 	};
 
 	template<Enum T>
-	constexpr Flags<T> operator|(T a, T b) {
-		return Flags<T>(a) | b;
-	}
+	struct EnableEnumFlags : std::false_type {};
+
+#	define LUM_ENUM_OPERATIONS(T) \
+		template<> \
+		struct EnableEnumFlags<T> : std::true_type {};
+
 	template<Enum T>
+		requires EnableEnumFlags<T>::value
+	constexpr Flags<T> operator|(T a, T b) {
+		Flags<T> f;
+		f.Enable(a);
+		f.Enable(b);
+		return f;
+	}
+
+	template<Enum T>
+		requires EnableEnumFlags<T>::value
 	constexpr Flags<T> operator|(Flags<T> a, T b) {
 		a.Enable(b);
 		return a;
 	}
 
 	template<Enum T>
+		requires EnableEnumFlags<T>::value
 	constexpr Flags<T>& operator|=(Flags<T>& a, T b) {
 		a.Enable(b);
 		return a;
@@ -130,6 +148,7 @@ namespace lum {
 
 	
 	template<Enum T>
+		requires EnableEnumFlags<T>::value
 	constexpr Flags<T> operator&(T a, T b) {
 		Flags<T> result;
 		if ((static_cast<std::underlying_type_t<T>>(a) &
