@@ -139,7 +139,7 @@ namespace lum {
 		}
 	   
 
-		std::optional<String> AssetLoader::LoadAudio ( ERootID root, StringView filepath ) {
+		std::optional<String> AssetLoader::LoadAudio ( ERootID root, ccharptr filepath) {
 
 			String file;
 
@@ -157,7 +157,7 @@ namespace lum {
 		}
 
 
-		std::optional<String> AssetLoader::LoadShader ( ERootID root, StringView filepath ) {
+		std::optional<String> AssetLoader::LoadShader ( ERootID root, ccharptr filepath) {
 
 			String file;
 

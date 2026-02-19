@@ -11,7 +11,7 @@ namespace lum::rhi::gl {
 
 	RFramebufferHandle GLDevice::CreateFramebuffer() {
 		LUM_HOTCHK_RETURN_CUSTOM(
-			mFramebuffers.dense_size() >= skMaxFramebuffers,
+			mFramebuffers.dense_size() <= skMaxFramebuffers,
 			LUM_SEV_ERROR,
 			RFramebufferHandle{},
 			"Max framebuffers reached"
@@ -27,7 +27,7 @@ namespace lum::rhi::gl {
 
 	RTextureHandle GLDevice::CreateFramebufferTexture(const RFramebufferTextureDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
-			mTextures.dense_size() >= skMaxTextures || desc.mHeight <= 0 || desc.mWidth <= 0,
+			mTextures.dense_size() <= skMaxTextures || desc.mHeight <= 0 || desc.mWidth <= 0,
 			LUM_SEV_ERROR,
 			RTextureHandle{},
 			"Max textures reached"
@@ -37,18 +37,21 @@ namespace lum::rhi::gl {
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &tex.mHandle.gl);
 
-		GLenum format = (desc.mAttachment == RFramebufferAttachment::DepthAttach) ? GL_DEPTH_COMPONENT24 : GL_RGBA8;
+		GLenum format = skInternalImageFormatLookup[lookup_cast(desc.mFormat)];
 		glTextureStorage2D(tex.mHandle.gl, 1, format, desc.mWidth, desc.mHeight);
 
 		return mTextures.create_handle(std::move(tex));
 	}
 
-	void GLDevice::SetFramebufferColorTexture(const RFramebufferHandle& fbo, const RTextureHandle& tex, uint8 index) {
+	void GLDevice::SetFramebufferColorTexture(const RFramebufferHandle& fbo, const RTextureHandle& tex, int8 index) {
 
 		LUM_HOTCHK_RETURN_VOID(mFramebuffers.exist(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
 		LUM_HOTCHK_RETURN_VOID(mTextures.exist(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
-
-		if(index > GL_COLOR_ATTACHMENT0)
+	   
+		if (index > 31) {
+			LUM_LOG_WARN("Too big color index given");
+			return;
+		}
 
 		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_COLOR_ATTACHMENT0, mTextures[tex].mHandle.gl, 0);
 
@@ -76,7 +79,7 @@ namespace lum::rhi::gl {
 		BindFramebuffer(fbo);
 		glClearColor(color.r, color.g, color.b, color.a);
 		glClearDepth(std::clamp(depth, 0.0f, 1.0f));
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 
 	void GLDevice::DeleteFramebuffer(RFramebufferHandle& buff) {

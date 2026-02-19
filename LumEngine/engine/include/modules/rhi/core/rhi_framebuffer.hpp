@@ -6,6 +6,7 @@
 #pragma once
 
 #include "rhi/rhi_common.hpp"
+#include "rhi/core/rhi_texture.hpp"
 
 namespace lum::rhi {
 
@@ -19,8 +20,8 @@ namespace lum::rhi {
 
 		uint32 mWidth = 0;
 		uint32 mHeight = 0;
-
-		RDataFormat mFormat{};
+		
+		RInternalImageFormat mFormat{};
 
 		bool bGenerateMipmaps = false;
 

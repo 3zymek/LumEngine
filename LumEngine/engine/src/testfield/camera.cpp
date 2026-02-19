@@ -73,6 +73,16 @@ namespace lum {
         aspect_ratio = (float32)m_window->GetWidth() / (float32)m_window->GetHeight();
         view = glm::lookAt(position, front + position, up);
         projection = glm::perspective(glm::radians(fov), aspect_ratio, min_plane, max_plane);
+        /*float32 size = 10.f;
+         projection = glm::ortho(
+            -size * aspect_ratio,
+            size * aspect_ratio,
+            -size,
+            size,
+            -100.0f,
+            100.0f
+        );*/
+
 
     }
 

@@ -181,12 +181,7 @@ namespace lum::rhi {
 		///////////////////////////////////////////////////
 
 		/*====================================================================
-		*  @brief Updates data of given buffer.
-		*
-		*  @param buff Buffer handle to update.
-		*  @param data Pointer to source data in CPU memeory.
-		*  @param offset Byte offset from the beginning of the buffer ( 0 for whole buffer ).
-		*  @param size Byte size of data to write ( 0 for whole buffer ).
+		*  @brief Creates framebuffer.
 		*
 		*/
 		LUM_NODISCARD
@@ -207,7 +202,7 @@ namespace lum::rhi {
 		virtual RTextureHandle CreateFramebufferTexture ( const RFramebufferTextureDescriptor& desc ) = 0;
 
 		// TO FIX:
-		virtual void SetFramebufferColorTexture ( const RFramebufferHandle& fbo, const RTextureHandle& tex, uint8 index ) = 0;
+		virtual void SetFramebufferColorTexture ( const RFramebufferHandle& fbo, const RTextureHandle& tex, int8 index ) = 0;
 		// TO IMPLEMENT:
 		virtual void SetFramebufferDepthTexture ( const RFramebufferHandle& fbo, const RTextureHandle& tex ) = 0;
 		virtual void SetFramebufferStencilTexture ( const RFramebufferHandle& fbo, const RTextureHandle& tex ) = 0;

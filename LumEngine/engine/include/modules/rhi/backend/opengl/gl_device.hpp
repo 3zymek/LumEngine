@@ -43,8 +43,8 @@ namespace lum::rhi::gl {
 		//=================================================
 
 		RFramebufferHandle	CreateFramebuffer			( )															override;
-		RTextureHandle		CreateFramebufferTexture	( const RFramebufferTextureDescriptor& )						override;
-		void				SetFramebufferColorTexture	( const RFramebufferHandle&, const RTextureHandle&, uint8 )	override;
+		RTextureHandle		CreateFramebufferTexture	( const RFramebufferTextureDescriptor& )					override;
+		void				SetFramebufferColorTexture	( const RFramebufferHandle&, const RTextureHandle&, int8 )	override;
 		void				SetFramebufferDepthTexture	( const RFramebufferHandle&, const RTextureHandle&)			override;
 		void				SetFramebufferStencilTexture( const RFramebufferHandle&, const RTextureHandle&)			override;
 		void				ClearFramebuffer			( RFramebufferHandle, ChannelRGBA, float32)					override;

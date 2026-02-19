@@ -130,6 +130,14 @@ namespace lum {
 
 
 
+	/// @return Returns how much elements has raw array
+	/// @param arr Array
+	template<typename T, usize L>
+	inline constexpr usize ArraySize(const T(&arr)[L]) {
+		return L;
+	}
+
+
 	/// @return Underlying type of enum.
 	/// @param e Enum.
 	template<typename T>

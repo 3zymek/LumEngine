@@ -179,7 +179,7 @@ namespace lum::rhi::gl {
 
 		RBuffer& buffer = mBuffers[vbo];
 
-		LUM_HOTCHK_RETURN_VOID(offset + size < buffer.mSize, LUM_SEV_WARN, "Invalid offset or size");
+		LUM_HOTCHK_RETURN_VOID(offset + size <= buffer.mSize, LUM_SEV_WARN, "Invalid offset or size");
 
 		if (size == 0) size = buffer.mSize;
 
@@ -207,7 +207,7 @@ namespace lum::rhi::gl {
 
 		LUM_HOTCHK_RETURN_VOID(ptr, LUM_SEV_WARN, "Failed during buffer mapping");
 
-		std::memcpy(ptr, data, buffer.mSize);
+		std::memcpy(ptr, data, size);
 
 		glUnmapNamedBuffer(buffer.mHandle.gl);
 

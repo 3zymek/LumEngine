@@ -294,7 +294,7 @@ namespace lum::rhi::gl {
 		glBindVertexArray(mLayouts[vao].mHandle);
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices_count), GL_UNSIGNED_INT, nullptr);
 
-		//LUM_PROFILER_DRAW_CALL();
+		LUM_PROFILER_DRAW_CALL();
 
 	}
 

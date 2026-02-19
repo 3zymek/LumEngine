@@ -38,6 +38,15 @@ int main() {
     Window* window = CreateWindow(windowDesc);
 
     RDevice* device = rhi::CreateDevice(window);
+    
+    rhi::RTextureCubemapDescriptor desc;
+    desc.mFaces[LUM_CUBEMAP_NEGATIVE_X] = AssetLoader::LoadTexture(ERootID::External, "textures/nx.png").value();
+    desc.mFaces[LUM_CUBEMAP_NEGATIVE_Y] = AssetLoader::LoadTexture(ERootID::External, "textures/ny.png").value();
+    desc.mFaces[LUM_CUBEMAP_NEGATIVE_Z] = AssetLoader::LoadTexture(ERootID::External, "textures/nz.png").value();
+    desc.mFaces[LUM_CUBEMAP_POSITIVE_X] = AssetLoader::LoadTexture(ERootID::External, "textures/px.png").value();
+    desc.mFaces[LUM_CUBEMAP_POSITIVE_Y] = AssetLoader::LoadTexture(ERootID::External, "textures/py.png").value();
+    desc.mFaces[LUM_CUBEMAP_POSITIVE_Z] = AssetLoader::LoadTexture(ERootID::External, "textures/pz.png").value();
+    auto cubemap = device->CreateCubemapTexture(desc);
 
     input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
@@ -49,22 +58,37 @@ int main() {
     auto tex = texManager.Load("textures/scene.png", ETexturePreset::Albedo);
 
     FMaterialBase base;
-    base.mAlbedoMap = tex;
-    base.mBaseColor = { 1.f, 0.f, 1.f };
+    //base.mAlbedoMap = tex;
+    base.mBaseColor = { 1.f, 1.f, 1.f };
     auto baseHandle = matManager.UploadBase(base);
 
     auto materialInstance = matManager.CreateInstance(baseHandle);
 
-    auto meshHandle = meshManager.CreateStatic("models/scene.gltf");
+    auto meshHandle = meshManager.CreateStatic("models/Can.obj");
 
-    SRenderer render{ device, &texManager, &matManager, &meshManager };
+    FRendererContext ctx;
+    ctx.mRenderDevice = device;
+    ctx.mTextureManager = &texManager;
+    ctx.mMaterialManager = &matManager;
+    ctx.mMeshManager = &meshManager;
+    ctx.mShaderManager = &shaderManager;
 
+    SRenderer render{ ctx };
+    
     Camera camera{ window };
     Object obj;
+    Object obj2;
     obj.mMaterial = materialInstance;
     obj.mStaticMesh = meshHandle;
+    obj2.mMaterial = materialInstance;
+    obj2.mStaticMesh = meshHandle;
+    obj2.mTransform.position = { 10, 0, 0 };
 
-    auto geometry = shaderManager.LoadShader("shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ERootID::Internal);
+    render.SetEnvionmentTexture(cubemap);
+
+    DirectionalLight light;
+
+    render.mDirectionalLight = &light;
 
     while (window->IsOpen()) {
        
@@ -83,12 +107,23 @@ int main() {
         ImGui::End();
 
         ImGui::Begin("BaseColor");
-        ImGui::ColorEdit3("Color", glm::value_ptr(obj.mMaterial.mBaseColor));
+        ImGui::DragFloat("Roughness1", &obj.mMaterial.mRoughness, 0.1f, 0.0f, 1.0f);
+        ImGui::DragFloat("Metallic1", &obj.mMaterial.mMetallic, 0.1f, 0.0f, 1.0f);
+        ImGui::ColorEdit3("Color1", glm::value_ptr(obj.mMaterial.mBaseColor));
+        ImGui::DragFloat("Roughness2", &obj2.mMaterial.mRoughness, 0.1f, 0.0f, 1.0f);
+        ImGui::DragFloat("Metallic2", &obj2.mMaterial.mMetallic, 0.1f, 0.0f, 1.0f);
+        ImGui::ColorEdit3("Color2", glm::value_ptr(obj2.mMaterial.mBaseColor));
+        ImGui::End();
+
+        ImGui::Begin("Light");
+        ImGui::DragFloat3("Position", glm::value_ptr(light.mDirection), 0.1f, -1000.f, 1000.f);
+        ImGui::DragFloat("Intensity", &light.mIntensity, 0.1f, 0.0f, 1000.f);
         ImGui::End();
 
         render.UpdateCamera(camera);
-        render.Draw(obj, geometry);
-
+        render.Draw(obj2);
+        render.Draw(obj);
+        
         render.EndFrame();
     }
 

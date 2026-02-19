@@ -60,10 +60,10 @@ namespace lum {
 		static std::optional<FMeshData> LoadMesh ( ERootID root, ccharptr filepath );
 
 		LUM_NODISCARD
-		static std::optional<String> LoadAudio ( ERootID root, StringView filepath );
+		static std::optional<String> LoadAudio ( ERootID root, ccharptr filepath );
 
 		LUM_NODISCARD
-		static std::optional<String> LoadShader ( ERootID root, StringView filepath );
+		static std::optional<String> LoadShader ( ERootID root, ccharptr filepath );
 
 		static ccharptr GetErrorMessage() { return sLastErrorMessage; }
 
