@@ -1,103 +1,59 @@
 #pragma once
-#include "event/engine_events/event_ecs_events.hpp"
+
+#include "core/limits.hpp"
 #include "entity/ecs_common.hpp"
 #include "entity/ecs_component_pool.hpp"
-#include "core/core_defines.hpp"
-#include "event/event_bus.hpp"
+
 namespace lum {
+
 	struct Entity;
-	namespace ev { class EventBus; }
+
 	namespace ecs {
 
-		class EntityManager {
-
-			// Context
-			ev::EventBus& mEventBus;
-
+		class MEntityManager {
 		public:
+			
+			template<detail::Component tType>
+			tType AddComponent(EntityID entityID) {
 
-			EntityManager(ev::EventBus& bus) : mEventBus(bus) { Init(); }
-			~EntityManager() { Destruct(); }
+			}
+			template<detail::Component tType>
+			tType AddComponent(const Entity& entity) {
 
-			LUM_NODISCARD
-			Entity CreateEntity();
+			}
+			template<detail::Component tType>
+			tType RemoveComponent(EntityID entityID) {
 
-			template<detail::Component T>
-			T* AddComponent(EntityID entityID) {
-
-				mEventBus.Emit<ev::ComponentAdded>({ entityID, detail::ComponentTypeID::Get<T>() });
-
-				LUM_LOG_DEBUG("Added component {} to entity {}");
-
-				return GetOrCreatePool<T>().Add(entityID);
+			}
+			template<detail::Component tType>
+			tType RemoveComponent(const Entity& entity) {
 
 			}
 
-			template<detail::Component T>
-			void RemoveComponent(EntityID entityID) {
-
-				mEventBus.Emit<ev::ComponentRemoved>({ entityID, detail::ComponentTypeID::Get<T>() });
-
-				LUM_LOG_DEBUG("Removed component {} on entity {}");
-
-				GetOrCreatePool<T>().Delete(entityID);
-
-			}
-
-			template<detail::Component T>
-			T* GetComponent(EntityID entityID) {
-
-				return GetOrCreatePool<T>().Get(entityID);
-
-			}
-
-			template<detail::Component T>
-			void RequireComponent(EntityID entityID) {
-
-				if (!Has<T>(entityID))
-					AddComponent<T>(entityID);
-
-				LUM_LOG_DEBUG("Required component {}");
-
-			}
-
-			template<detail::Component T>
+			template<detail::Component tType>
 			bool Has(EntityID entityID) {
-				return GetOrCreatePool<T>().Has(entityID);
-			}
 
+			}
+			template<detail::Component tType>
+			bool Has(const Entity& entity) {
+
+			}
+			
+			
 		private:
 
-			template<detail::Component T>
-			detail::ComponentPool<T>& GetOrCreatePool() {
+			void init() {
 
-				auto typeID = detail::ComponentTypeID::Get<T>();
+			}
+			void destroy() {
 
-				if (!m_pools[typeID]) {
-					m_pools[typeID] = new detail::ComponentPool<T>;
-					return *static_cast<detail::ComponentPool<T>*>(m_pools[typeID]);
-				}
-				//static_assert(std::is_base_of_v<detail::UniqueComponent, T> && "Unique component already exists");
-
-				return *static_cast<detail::ComponentPool<T>*>(m_pools[typeID]);
 			}
 
-			inline void Init() {
-				for (usize i = 0; i < limits::gMaxComponents; i++) {
-					m_pools[i] = nullptr;
-				}
-			}
-
-			inline void Destruct() {
-				for (usize i = 0; i < limits::gMaxComponents; i++) {
-					delete m_pools[i];
-					m_pools[i] = nullptr;
-				}
-			}
-
-			detail::BasePool* m_pools[limits::gMaxComponents]{};
+			detail::BaseComponent* mComponentPools [ limits::gMaxComponents ];
 
 		};
 
+
 	}
+
 }

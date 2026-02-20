@@ -26,6 +26,14 @@ namespace lum {
 		inline static std::atomic<uint32> gID = NULL_VAL + 1;
 	};
 
+	struct GenerateTypeID {
+		template<typename T>
+		static uint32 Get() {
+			return gID.fetch_add(1, std::memory_order_relaxed);
+		}
+	private:
+		inline static std::atomic<uint32> gID = 0;
+	};
 
 	
 	/// Converts any arithmetic type to float at compile-time.

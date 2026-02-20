@@ -23,7 +23,7 @@ namespace lum::rhi {
 
 	};
 
-	struct Pipeline {
+	struct RPipeline {
 
 		RRasterizerState			mRasterizer		{};
 		RDepthStencilState		mDepthStencil	{};

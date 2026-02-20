@@ -15,7 +15,7 @@ namespace lum {
 
 		public:
 
-			AudioEmitterWrapper( AudioManager& m, EmitterHandle emitterID ) : emitterID(emitterID), manager(m) {}
+			AudioEmitterWrapper( AudioManager& m, EmitterID emitterID ) : emitterID(emitterID), manager(m) {}
 
 			~AudioEmitterWrapper() { manager.DestroyEmitter(emitterID); }
 
@@ -98,7 +98,7 @@ namespace lum {
 			*
 			*  @thread_safety Safe to call from any thread.
 			*/
-			inline EmitterHandle GetID( ) const { return emitterID; }
+			inline EmitterID GetID( ) const { return emitterID; }
 
 			/*! @brief Removes a sound by name.
 			*
@@ -153,7 +153,7 @@ namespace lum {
 
 		private:
 
-			EmitterHandle emitterID{};
+			EmitterID emitterID{};
 
 		};
 	}

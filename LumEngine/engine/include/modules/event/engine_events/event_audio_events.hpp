@@ -9,7 +9,7 @@ namespace lum {
 			LumEventTag;
 			
 
-			audio::EmitterHandle emitterID;
+			audio::EmitterID emitterID;
 			String name;
 
 			float32		volume;
@@ -22,7 +22,7 @@ namespace lum {
 
 			LumEventTag;
 
-			audio::EmitterHandle emitterID;
+			audio::EmitterID emitterID;
 			String name;
 
 		};
@@ -30,7 +30,7 @@ namespace lum {
 		{
 			LumEventTag;
 
-			audio::EmitterHandle emitterID;
+			audio::EmitterID emitterID;
 			String name;
 
 			float32		volume;

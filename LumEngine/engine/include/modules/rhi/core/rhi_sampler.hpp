@@ -53,7 +53,7 @@ namespace lum::rhi {
 
 	};
 
-	struct Sampler {
+	struct RSampler {
 
 		RSamplerID mHandle = 0;
 

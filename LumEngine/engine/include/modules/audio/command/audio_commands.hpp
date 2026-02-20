@@ -4,14 +4,14 @@
 namespace lum {
 	namespace cmd {
 		namespace detail {
-			struct AddClip		{ audio::AudioHandle audioID; };
-			struct RemoveClip	{ audio::AudioHandle audioID; };
-			struct SetVolume	{ audio::AudioHandle audioID; float32 volume; };
-			struct SetPitch		{ audio::AudioHandle audioID; float32 pitch; };
-			struct SetLoop		{ audio::AudioHandle audioID; bool loop; };
-			struct SetPause		{ audio::AudioHandle audioID; bool paused; };
-			struct Stop			{ audio::AudioHandle audioID; };
-			struct Play			{ audio::AudioHandle audioID; };
+			struct AddClip		{ audio::AudioID audioID; };
+			struct RemoveClip	{ audio::AudioID audioID; };
+			struct SetVolume	{ audio::AudioID audioID; float32 volume; };
+			struct SetPitch		{ audio::AudioID audioID; float32 pitch; };
+			struct SetLoop		{ audio::AudioID audioID; bool loop; };
+			struct SetPause		{ audio::AudioID audioID; bool paused; };
+			struct Stop			{ audio::AudioID audioID; };
+			struct Play			{ audio::AudioID audioID; };
 
 			union Payload {
 				AddClip		addClip;
@@ -40,7 +40,7 @@ namespace lum {
 
 			LumCmdTag;
 
-			audio::EmitterHandle emitterID;
+			audio::EmitterID emitterID;
 			Type type;
 			detail::Payload data;
 

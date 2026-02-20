@@ -7,7 +7,7 @@ namespace lum {
 		namespace detail {
 
 			struct AudioInstance {
-				AudioHandle id		{	};
+				AudioID id		{	};
 				float32 volume		{ 1 };
 				float32 pitch		{ 1 };
 				bool loop		{ false };
@@ -18,7 +18,7 @@ namespace lum {
 				AudioEmitter() { active_clips.reserve(5); }
 				CTransform* transform = nullptr;
 				std::vector<AudioChannel> active_clips;
-				std::unordered_map<AudioHandle, AudioInstance> clips;
+				std::unordered_map<AudioID, AudioInstance> clips;
 			};
 		}
 	}

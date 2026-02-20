@@ -22,13 +22,13 @@ namespace lum {
 			LUM_COMPILE_VARIABLE usize gMaxDeleteCallbacksPerFrame = 2;
 
 			struct Callback {
-				Storage buffer{};
-				InvokeFn invoke = nullptr;
-				DestroyFn destroy = nullptr;
-				bool active = false;
+				Storage mStorage{};
+				InvokeFn mInvoke = nullptr;
+				DestroyFn mDestroy = nullptr;
+				bool bActive = false;
 				void Destroy() {
-					(*destroy)(&buffer);
-					active = false;
+					(*mDestroy)(&mStorage);
+					bActive = false;
 				}
 			};
 

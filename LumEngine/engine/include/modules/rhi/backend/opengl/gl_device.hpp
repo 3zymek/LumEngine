@@ -24,16 +24,13 @@ namespace lum::rhi::gl {
 		// Buffers
 		//=================================================
 
-		RBufferHandle	CreateVertexBuffer			( const RBufferDescriptor& )								override;
-		RBufferHandle	CreateElementBuffer			( const RBufferDescriptor& )								override;
-		RBufferHandle	CreateUniformBuffer			( const RBufferDescriptor& )								override;
-		RBufferHandle	CreateShaderStorageBuffer	( const RBufferDescriptor& )								override;
+		RBufferHandle	CreateBuffer				( const RBufferDescriptor& desc )						override;
 		void			UpdateBuffer				( const RBufferHandle&, cvptr, usize, usize )			override;
 		void			DeleteBuffer				( RBufferHandle& )										override;
 		vptr			MapBuffer					( const RBufferHandle&, Flags<RMapFlag>, usize, usize )	override;
-		void			UnmapBuffer					( const RBufferHandle& )									override;
+		void			UnmapBuffer					( const RBufferHandle& )								override;
 		void			SetShaderStorageBinding		( const RBufferHandle& ssbo, uint32 binding )			override;
-		void			AttachElementBufferToLayout	( const RBufferHandle&, const RVertexLayoutHandle& )		override;
+		void			AttachElementBufferToLayout	( const RBufferHandle&, const RVertexLayoutHandle& )	override;
 		void			SetUniformBufferBinding		( const RBufferHandle&, int32 )							override;
 
 
@@ -70,12 +67,6 @@ namespace lum::rhi::gl {
 		RShaderHandle	CreateShader ( const RShaderDescriptor& )							override;
 		void			BindShader	 ( const RShaderHandle& )								override;
 		void			DeleteShader ( RShaderHandle& )										override;
-		void			SetMat4		 ( const RShaderHandle&, ccharptr, const math::Mat4& )	override;
-		void			Setf		 ( const RShaderHandle&, ccharptr, float32 )				override;
-		void			Seti		 ( const RShaderHandle&, ccharptr, int32 )				override;
-		void			SetVec4		 ( const RShaderHandle&, ccharptr, const math::Vec4& )	override;
-		void			SetVec3		 ( const RShaderHandle&, ccharptr, const math::Vec3& )	override;
-		void			SetVec2		 ( const RShaderHandle&, ccharptr, const math::Vec2& )	override;
 
 
 
@@ -83,9 +74,7 @@ namespace lum::rhi::gl {
 		// Textures
 		//=================================================
 
-		RTextureHandle	CreateTexture2D		 ( const RTextureDescriptor& )				override;
-		RTextureHandle	CreateTexture3D		 ( const RTextureDescriptor& )				override; // TODO IMPLEMENT
-		RTextureHandle	CreateCubemapTexture ( const RTextureCubemapDescriptor& )	override;
+		RTextureHandle	CreateTexture		 ( const RTextureDescriptor& desc ) override;
 		void			UnbindTexture		 ( RTextureType )						override;
 		void			UpdateTexture		 ( const RTextureHandle&, const RTextureUpdateDescriptor& ) override;
 		void			DeleteTexture		 ( RTextureHandle& )							override;
@@ -347,13 +336,10 @@ namespace lum::rhi::gl {
 		LUM_COMPILE_VARIABLE
 		static GLenum skTextureTypeLookup[] =
 		{
-			GL_TEXTURE_1D,
+			GL_NONE,
 			GL_TEXTURE_2D,
 			GL_TEXTURE_3D,
-			GL_TEXTURE_2D_ARRAY,
-			GL_TEXTURE_2D_MULTISAMPLE,
-			GL_TEXTURE_CUBE_MAP,
-			GL_TEXTURE_CUBE_MAP_ARRAY
+			GL_TEXTURE_CUBE_MAP
 		};
 
 		LUM_COMPILE_VARIABLE
@@ -420,25 +406,25 @@ namespace lum::rhi::gl {
 		//=================================================
 
 		LUM_FORCEINLINE
-		void bind_check_shader(const Pipeline&) noexcept;
+		void bind_check_shader(const RPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_rasterizer(const Pipeline&) noexcept;
+		void bind_check_rasterizer(const RPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_depth_stencil(const Pipeline&) noexcept;
+		void bind_check_depth_stencil(const RPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_scissors(const Pipeline&) noexcept;
+		void bind_check_scissors(const RPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_blend(const Pipeline&) noexcept;
+		void bind_check_blend(const RPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_cull(const Pipeline&) noexcept;
+		void bind_check_cull(const RPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_color_mask(const Pipeline&) noexcept;
+		void bind_check_color_mask(const RPipeline&) noexcept;
 
 
 
@@ -448,9 +434,12 @@ namespace lum::rhi::gl {
 		LUM_FORCEINLINE
 		bool link_program(GLuint program);
 
-
-		void		cache_uniforms_locations	( );
-		bool		is_valid_buffer_descriptor	( const RBufferDescriptor&)		noexcept;
+		RTextureHandle create_texture_2d(const RTextureDescriptor&);
+		RTextureHandle create_texture_3d(const RTextureDescriptor&);
+		RTextureHandle create_texture_cubemap(const RTextureDescriptor&);
+		
+		bool		validate_texture_descriptor	( const RTextureDescriptor& )	noexcept;
+		bool		validate_buffer_descriptor	( const RBufferDescriptor& )	noexcept;
 		GLbitfield	translate_mapping_flags		( Flags<RMapFlag> )				noexcept;
 
 	};

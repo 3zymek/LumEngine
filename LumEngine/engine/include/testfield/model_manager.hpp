@@ -22,8 +22,8 @@ namespace lum {
 		};
 	}
 
-	struct StaticMeshHandle : cstd::BaseHandle {};
-	struct DynamicMeshHandle : cstd::BaseHandle {};
+	struct StaticMeshHandle : cstd::BaseHandle<uint32> {};
+	struct DynamicMeshHandle : cstd::BaseHandle<uint32> {};
 
 	struct FStaticMeshResource {
 
@@ -50,7 +50,7 @@ namespace lum {
 		MMeshManager(rhi::RDevice* device) : mRenderDevice(device) { create_meshes(); }
 
 		FStaticMeshResource GetStatic(StaticMeshHandle handle) {
-			if (mStaticMeshes.exist(handle))
+			if (mStaticMeshes.Exist(handle))
 				return mStaticMeshes[handle];
 			else 
 				return mStaticMeshes[mDefaultMesh];
@@ -78,7 +78,7 @@ namespace lum {
 			meshResource.mVao = res.mVao;
 			meshResource.mNumIndices = data.value().mIndices.size();
 
-			StaticMeshHandle meshHandle = mStaticMeshes.create_handle(std::move(meshResource));
+			StaticMeshHandle meshHandle = mStaticMeshes.CreateHandle(std::move(meshResource));
 
 			mStaticMeshCache[hash] = meshHandle;
 
@@ -144,14 +144,16 @@ namespace lum {
 			vboDesc.mData = data.mVertices.data();
 			vboDesc.mMapFlags = mapFlag;
 			vboDesc.mSize = ByteSize(data.mVertices);
-			res.mVbo = mRenderDevice->CreateVertexBuffer(vboDesc);
+			vboDesc.mBufferType = rhi::RBufferType::Vertex;
+			res.mVbo = mRenderDevice->CreateBuffer(vboDesc);
 			
 			rhi::RBufferDescriptor eboDesc;
 			eboDesc.mBufferUsage = usage;
 			eboDesc.mData = data.mIndices.data();
 			eboDesc.mMapFlags = mapFlag;
 			eboDesc.mSize = ByteSize(data.mIndices);
-			res.mEbo = mRenderDevice->CreateElementBuffer(eboDesc);
+			eboDesc.mBufferType = rhi::RBufferType::Element;
+			res.mEbo = mRenderDevice->CreateBuffer(eboDesc);
 			
 			rhi::RVertexAttribute vaoAttrib[3];
 			
@@ -195,7 +197,7 @@ namespace lum {
 				staticMesh.mVao = res.mVao;
 				staticMesh.mNumIndices = data.mIndices.size();
 				
-				mDefaultMesh = mStaticMeshes.create_handle(std::move(staticMesh));
+				mDefaultMesh = mStaticMeshes.CreateHandle(std::move(staticMesh));
 				
 			}
 			{ // Error mesh
@@ -213,7 +215,7 @@ namespace lum {
 				staticMesh.mVao = res.mVao;
 				staticMesh.mNumIndices = data.value().mIndices.size();
 
-				mErrorMesh = mStaticMeshes.create_handle(std::move(staticMesh));
+				mErrorMesh = mStaticMeshes.CreateHandle(std::move(staticMesh));
 
 			}
 

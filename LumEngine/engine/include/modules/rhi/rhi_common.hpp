@@ -50,16 +50,6 @@ namespace lum {
 			return MaxVal<T>();
 		}
 
-
-
-		struct RPipelineHandle		: cstd::BaseHandle {}; // Pipeline state handle
-		struct RFramebufferHandle	: cstd::BaseHandle {}; // Framebuffer handle
-		struct RSamplerHandle		: cstd::BaseHandle {}; // Texture sampler handle
-		struct RShaderHandle		: cstd::BaseHandle {}; // Shader handle
-		struct RTextureHandle		: cstd::BaseHandle {}; // Texture handle
-		struct RBufferHandle		: cstd::BaseHandle {}; // Buffer handle
-		struct RVertexLayoutHandle	: cstd::BaseHandle {}; // Vertex layout handle
-
 		using RBufferID			= uint32; // Numeric ID for buffer
 		using RLayoutID			= uint32; // Numeric ID for vertex layout
 		using RTextureID		= uint32; // Numeric ID for texture
@@ -67,6 +57,14 @@ namespace lum {
 		using RFramebufferID	= uint32; // Numeric ID for framebuffer
 		using RPipelineID		= uint32; // Numeric ID for pipeline
 		using RShaderID			= uint8;  // Numeric ID for shader (compact)
+
+		struct RPipelineHandle : public cstd::BaseHandle<RPipelineID> {}; // Pipeline state handle
+		struct RFramebufferHandle : public cstd::BaseHandle<RFramebufferID> {}; // Framebuffer handle
+		struct RSamplerHandle : public cstd::BaseHandle<RSamplerID> {}; // Texture sampler handle
+		struct RShaderHandle : public cstd::BaseHandle<RShaderID> {}; // Shader handle
+		struct RTextureHandle : public cstd::BaseHandle<RTextureID> {}; // Texture handle
+		struct RBufferHandle : public cstd::BaseHandle<RBufferID> {}; // Buffer handle
+		struct RVertexLayoutHandle : public cstd::BaseHandle<RLayoutID> {}; // Vertex layout handle
 
 		using REnumFlag		= uint16;    // Bitmask storage type
 
@@ -88,6 +86,7 @@ namespace lum {
 		};
 
 		enum class RBufferType : REnumFlag {
+			None,
 			Vertex,        // Vertex buffer (VBO)
 			Element,       // Element / index buffer (EBO)
 			Uniform,       // Uniform buffer (UBO)

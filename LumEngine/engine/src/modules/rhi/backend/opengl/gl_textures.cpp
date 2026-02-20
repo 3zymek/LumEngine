@@ -9,131 +9,21 @@
 
 namespace lum::rhi::gl {
 
-	RTextureHandle GLDevice::CreateTexture2D ( const RTextureDescriptor& desc ) {
-		
-		LUM_HOTCHK_RETURN_CUSTOM(
-			mTextures.dense_size() <= skMaxTextures,
-			LUM_SEV_WARN,
-			RTextureHandle{},
-			"Max textures reached"
-		);
+	RTextureHandle GLDevice::CreateTexture(const RTextureDescriptor& desc) {
 
-		LUM_HOTCHK_RETURN_CUSTOM(
-			desc.mData.mPixels.data() != nullptr,
-			LUM_SEV_WARN,
-			RTextureHandle{},
-			"Texture pixel data is null"
-		);
-
-		RTexture texture;
-
-		uint32 width = desc.mData.mWidth;
-		uint32 height = desc.mData.mHeight;
-		uint32 mipmapLevels = desc.bGenerateMipmaps ? 
-			(desc.mMipmapLevels == 0 ? mipmap_lvls(width, height) : desc.mMipmapLevels) : 1;
-
-		glCreateTextures(GL_TEXTURE_2D, 1, &texture.mHandle.gl);
-
-		glTextureStorage2D(
-			texture.mHandle.gl,
-			mipmapLevels,
-			skInternalImageFormatLookup[lookup_cast(desc.mInternalFormat)],
-			width,
-			height
-		);
-
-		glTextureSubImage2D(
-			texture.mHandle.gl,
-			0,
-			0, 0,
-			width,
-			height,
-			skLoadedImageFormatLookup[lookup_cast(desc.mLoadedFormat)],
-			skTextureDataTypeLookup[lookup_cast(desc.mDataType)],
-			desc.mData.mPixels.data()
-		);
-
-		if (mipmapLevels > 1) {
-			glGenerateTextureMipmap(texture.mHandle.gl);
+		if (desc.mTextureType == RTextureType::None) {
+			LUM_LOG_WARN("No texture type given");
+			return {};
 		}
 
-		texture.mDataFormat = desc.mLoadedFormat;
-		texture.mDataType = desc.mDataType;
-		texture.mInternalFormat = desc.mInternalFormat;
-		texture.mRect.mWidth = width;
-		texture.mRect.mHeight = height;
-		texture.mType = RTextureType::Texture2D;
-		texture.mMipmapLevels = mipmapLevels;
+		if (desc.mTextureType == RTextureType::Texture2D)
+			return create_texture_2d(desc);
 
-		auto textureHandle = mTextures.create_handle(std::move(texture));
+		else if (desc.mTextureType == RTextureType::Texture3D)
+			return create_texture_3d(desc);
 
-		LUM_LOG_INFO("Created texture %d", textureHandle.id);
-
-		return textureHandle;
-	}
-	// TODO IMPLEMENT:
-	RTextureHandle GLDevice::CreateTexture3D ( const RTextureDescriptor& desc ) {
-
-		RTexture texture;
-		return mTextures.create_handle(std::move(texture));
-	}
-	RTextureHandle GLDevice::CreateCubemapTexture ( const RTextureCubemapDescriptor& desc ) {
-		LUM_HOTCHK_RETURN_CUSTOM(
-			mTextures.dense_size() <= skMaxTextures,
-			LUM_SEV_WARN,
-			RTextureHandle{},
-			"Max textures reached"
-		);
-
-		RTexture tex;
-
-		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &tex.mHandle.gl);
-
-		int32 width = desc.mFaces[0].mWidth;
-		int32 height = desc.mFaces[0].mHeight;
-
-		glTextureStorage2D(tex.mHandle.gl, 1, GL_RGBA8, width, height);
-
-		for (usize i = 0; i < 6; i++) {
-			
-			auto texture = desc.mFaces[i];
-
-			LUM_HOTCHK_RETURN_CUSTOM(
-				texture.mPixels.data() != nullptr,
-				LUM_SEV_WARN,
-				RTextureHandle{},
-				"Texture pixel data is null"
-			);
-
-			LUM_HOTCHK_RETURN_CUSTOM(
-				texture.mWidth > 0 && texture.mHeight > 0,
-				LUM_SEV_WARN,
-				RTextureHandle{},
-				"Invalid texture dimensions"
-			);
-
-			if (texture.mWidth != width || texture.mHeight != height) {
-				LUM_LOG_ERROR("Invalid cubemap height or width");
-				continue;
-			}
-
-			glTextureSubImage3D(
-				tex.mHandle.gl, 
-				0, 
-				0, 
-				0, 
-				i, 
-				texture.mWidth, 
-				texture.mHeight, 
-				1, 
-				GL_RGBA, 
-				GL_UNSIGNED_BYTE, 
-				texture.mPixels.data()
-			);
-		
-		}
-
-		return mTextures.create_handle(std::move(tex));
+		else if (desc.mTextureType == RTextureType::Cubemap)
+			return create_texture_cubemap(desc);
 
 	}
 	void GLDevice::UnbindTexture(RTextureType type) {
@@ -143,7 +33,7 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::UpdateTexture(const RTextureHandle& tex, const RTextureUpdateDescriptor& desc) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(tex), LUM_SEV_WARN, "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.Exist(tex), LUM_SEV_WARN, "Texture doesn't exist");
 
 		LUM_HOTCHK_RETURN_VOID(
 			desc.mData.mPixels.data() != nullptr,
@@ -167,7 +57,7 @@ namespace lum::rhi::gl {
 
 
 		glTextureSubImage2D(
-			texture.mHandle.gl,
+			texture.mHandle,
 			0,
 			desc.mRect.x,
 			desc.mRect.y,
@@ -181,22 +71,22 @@ namespace lum::rhi::gl {
 		uint32 mipmapLevels = desc.bGenerateMipmaps ? mipmap_lvls(width, height) : 1;
 
 		if (mipmapLevels > 1) {
-			glGenerateTextureMipmap(texture.mHandle.gl);
+			glGenerateTextureMipmap(texture.mHandle);
 		}
 
 	}
 	void GLDevice::DeleteTexture(RTextureHandle& texture) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture), LUM_SEV_WARN, "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.Exist(texture), LUM_SEV_WARN, "Texture doesn't exist");
 
-		glDeleteTextures(1, &mTextures[texture].mHandle.gl);
+		glDeleteTextures(1, &mTextures[texture].mHandle);
 
-		mTextures.delete_handle(texture);
+		mTextures.DeleteHandle(texture);
 
 	}
 	void GLDevice::BindTexture(const RTextureHandle& texture, uint16 binding) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.exist(texture) && binding < MAX_TEXTURE_UNITS, LUM_SEV_WARN, "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.Exist(texture) && binding < MAX_TEXTURE_UNITS, LUM_SEV_WARN, "Texture doesn't exist");
 
 		if (mCurrentTextures[binding] == texture) {
 			LUM_PROFILER_CACHE_HIT();
@@ -204,11 +94,142 @@ namespace lum::rhi::gl {
 		}
 
 		mCurrentTextures[binding] = texture;
-		glBindTextureUnit(binding, mTextures[texture].mHandle.gl);
+		glBindTextureUnit(binding, mTextures[texture].mHandle);
 
-		LUM_LOG_DEBUG("Binded texture %d to binding %d", texture.id, binding);
+		LUM_LOG_DEBUG("Binded texture %d to binding %d", texture.mID, binding);
 
 		LUM_PROFILER_CACHE_MISS();
 
 	}
+	
+	RTextureHandle GLDevice::create_texture_2d(const RTextureDescriptor& desc) {
+
+		RTexture texture;
+
+		uint32 width = (desc.mWidth == 0) ? desc.mData.mWidth : desc.mWidth;
+		uint32 height = (desc.mHeight == 0) ? desc.mData.mHeight : desc.mHeight;
+		uint32 mipmapLevels = desc.bGenerateMipmaps ?
+			(desc.mMipmapLevels == 0 ? mipmap_lvls(width, height) : desc.mMipmapLevels) : 1;
+
+		glCreateTextures(GL_TEXTURE_2D, 1, &texture.mHandle);
+
+		glTextureStorage2D(
+			texture.mHandle,
+			mipmapLevels,
+			skInternalImageFormatLookup[lookup_cast(desc.mInternalFormat)],
+			width,
+			height
+		);
+
+		glTextureSubImage2D(
+			texture.mHandle,
+			0,
+			0, 0,
+			width,
+			height,
+			skLoadedImageFormatLookup[lookup_cast(desc.mLoadedFormat)],
+			skTextureDataTypeLookup[lookup_cast(desc.mDataType)],
+			desc.mData.mPixels.data()
+		);
+
+		if (mipmapLevels > 1) {
+			glGenerateTextureMipmap(texture.mHandle);
+		}
+
+		texture.mDataFormat = desc.mLoadedFormat;
+		texture.mDataType = desc.mDataType;
+		texture.mInternalFormat = desc.mInternalFormat;
+		texture.mRect.mWidth = width;
+		texture.mRect.mHeight = height;
+		texture.mType = RTextureType::Texture2D;
+		texture.mMipmapLevels = mipmapLevels;
+
+		auto textureHandle = mTextures.CreateHandle(std::move(texture));
+
+		LUM_LOG_INFO("Created texture 2D %d", textureHandle.mID);
+
+		return textureHandle;
+
+	}
+	RTextureHandle GLDevice::create_texture_3d(const RTextureDescriptor&) {
+
+		// TODO IMPLEMENT
+		return {};
+
+	}
+
+	RTextureHandle GLDevice::create_texture_cubemap(const RTextureDescriptor& desc) {
+	
+		RTexture tex;
+
+		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &tex.mHandle);
+
+		int32 width = desc.mCubemap.mFaces[0].mWidth;
+		int32 height = desc.mCubemap.mFaces[0].mHeight;
+
+		glTextureStorage2D(tex.mHandle, 1, skInternalImageFormatLookup[lookup_cast(desc.mInternalFormat)], width, height);
+
+		for (usize i = 0; i < 6; i++) {
+
+			auto texture = desc.mCubemap.mFaces[i];
+
+			LUM_HOTCHK_RETURN_CUSTOM(
+				!texture.mPixels.empty(),
+				LUM_SEV_WARN,
+				{},
+				"Texture pixel data is null"
+			);
+
+			LUM_HOTCHK_RETURN_CUSTOM(
+				texture.mWidth > 0 && texture.mHeight > 0,
+				LUM_SEV_WARN,
+				{},
+				"Invalid texture dimensions"
+			);
+
+			if (texture.mWidth != width || texture.mHeight != height) {
+				LUM_LOG_ERROR("Invalid cubemap height or width");
+				continue;
+			}
+
+			glTextureSubImage3D(
+				tex.mHandle,
+				0,
+				0,
+				0,
+				i,
+				texture.mWidth,
+				texture.mHeight,
+				1,
+				skLoadedImageFormatLookup[lookup_cast(desc.mLoadedFormat)],
+				GL_UNSIGNED_BYTE,
+				texture.mPixels.data()
+			);
+
+		}
+
+		return mTextures.CreateHandle(std::move(tex));
+
+	}
+
+	bool GLDevice::validate_texture_descriptor(const RTextureDescriptor& desc) noexcept {
+
+		LUM_HOTCHK_RETURN_CUSTOM(
+			mTextures.DenseSize() <= skMaxTextures,
+			LUM_SEV_WARN,
+			false,
+			"Max textures reached"
+		);
+
+		LUM_HOTCHK_RETURN_CUSTOM(
+			desc.mData.mPixels.data() != nullptr,
+			LUM_SEV_WARN,
+			false,
+			"Texture pixel data is null"
+		);
+
+		return true;
+
+	}
+
 }

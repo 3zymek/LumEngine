@@ -9,24 +9,25 @@
 #include "core/core_common.hpp"
 
 namespace cstd {
+	template<typename T>
+		requires std::is_arithmetic_v<T>
 	struct alignas(8) BaseHandle {
-		lum::uint32 id = lum::MaxVal<lum::uint32>();
-		lum::uint32 generation = 0;
+		T mID = lum::MaxVal<T>();
+		T mGeneration = 0;
 
 		bool operator==(const BaseHandle& other) const noexcept {
-			return id == other.id && generation == other.generation;
+			return mID == other.mID && mGeneration == other.mGeneration;
 		}
 	};
 
-
-	template<typename DenseType, typename HandleType>
-		requires std::is_base_of_v<BaseHandle, HandleType>
+	template<typename DenseType, typename HandleType, typename T = lum::uint32>
+		requires std::is_arithmetic_v<T>
 	class handle_pool {
 
-		using Generation	= lum::uint32;
-		using Slot			= lum::uint32;
-		using SparseType	= lum::uint32;
-		using Hsize			= lum::usize;
+		using Generation	= T;
+		using Slot			= T;
+		using SparseType	= T;
+		using Hsize			= T;
 
 		using iterator = typename std::vector<DenseType>::iterator;
 		using const_iterator = typename std::vector<DenseType>::const_iterator;
@@ -47,10 +48,10 @@ namespace cstd {
 			return mDense[mSparse[id]];
 		}
 		DenseType& operator[](const HandleType& handle) {
-			return mDense[mSparse[handle.id]];
+			return mDense[mSparse[handle.mID]];
 		}
 
-		HandleType create_handle(const DenseType& obj) {
+		HandleType CreateHandle(const DenseType& obj) {
 			if (mDense.size() == mMaxSize)
 				throw std::runtime_error("Handle pool full");
 
@@ -71,17 +72,17 @@ namespace cstd {
 			mDenseToSparse[lastDense] = slot;
 
 			HandleType handle;
-			handle.id = slot;
-			handle.generation = mGenerations[slot];
+			handle.mID = slot;
+			handle.mGeneration = mGenerations[slot];
 
 			return handle;
 
 		}
 
-		void delete_handle(const HandleType& handle) {
-			Slot slot = static_cast<Slot>(handle.id);
+		void DeleteHandle(const HandleType& handle) {
+			Slot slot = static_cast<Slot>(handle.mID);
 			if (slot >= mSparse.size()) return;
-			if (mGenerations[slot] != handle.generation) return;
+			if (mGenerations[slot] != handle.mGeneration) return;
 
 			Hsize denseIndex = mSparse[slot];
 			Hsize lastIndex = mDense.size() - 1;
@@ -115,15 +116,15 @@ namespace cstd {
 			mFreeSlots.reserve(new_max_size);
 		}
 
-		inline Hsize dense_size() const { return mDense.size(); }
+		inline Hsize DenseSize() const { return mDense.size(); }
 
-		inline bool exist(const HandleType& handle) const noexcept {
-			return handle.id < mGenerations.size() && handle.generation == mGenerations[handle.id];
+		inline bool Exist(const HandleType& handle) const noexcept {
+			return handle.mID < mGenerations.size() && handle.mGeneration == mGenerations[handle.mID];
 		}
 
-		inline DenseType* get(const HandleType& handle) {
-			if (exist(handle))
-				return &mDense[mSparse[handle.id]];
+		inline DenseType* Get(const HandleType& handle) {
+			if (Exist(handle))
+				return &mDense[mSparse[handle.mID]];
 			else
 				return nullptr;
 		}

@@ -10,6 +10,8 @@
 #include "core/core_common.hpp"
 #include "core/core_pch.hpp"
 #include "audio/audio_pch.hpp"
+
+#include "event/event_bus.hpp"
 namespace lum {
 
 	namespace systems {
@@ -43,7 +45,7 @@ namespace lum {
 
 		public:
 
-			AudioManager(ecs::EntityManager& ecs_m, ev::EventBus& ev_bus) : mEntityManager(ecs_m), mEventBus(ev_bus) {}
+			AudioManager(ecs::MEntityManager& entityMgr, ev::EventBus& eventBus) : mEntityManager(entityMgr), mEventBus(eventBus) {}
 			~AudioManager() = default;
 
 
@@ -105,23 +107,23 @@ namespace lum {
 			*/
 			AudioEmitterWrapper		CreateEmitter( Entity );
 
-			void AddClipToEmitter		( EmitterHandle, AudioHandle );
-			void RemoveClipFromEmitter	( EmitterHandle, AudioHandle );
-			void PlayEmitterClip		( EmitterHandle, AudioHandle );
-			void StopEmitterClip		( EmitterHandle, AudioHandle );
-			void SetEmitterClipVolume	( EmitterHandle, AudioHandle, float32 );
-			void SetEmitterClipPitch	( EmitterHandle, AudioHandle, float32 );
-			void SetEmitterClipPause	( EmitterHandle, AudioHandle, bool );
-			void SetEmitterClipLoop		( EmitterHandle, AudioHandle, bool );
-			void DestroyEmitter			( EmitterHandle );
+			void AddClipToEmitter		( EmitterID, AudioID );
+			void RemoveClipFromEmitter	( EmitterID, AudioID );
+			void PlayEmitterClip		( EmitterID, AudioID );
+			void StopEmitterClip		( EmitterID, AudioID );
+			void SetEmitterClipVolume	( EmitterID, AudioID, float32 );
+			void SetEmitterClipPitch	( EmitterID, AudioID, float32 );
+			void SetEmitterClipPause	( EmitterID, AudioID, bool );
+			void SetEmitterClipLoop		( EmitterID, AudioID, bool );
+			void DestroyEmitter			( EmitterID );
 
-			float	GetEmitterClipVolume( EmitterHandle, AudioHandle );
-			float	GetEmitterClipPitch	( EmitterHandle, AudioHandle );
-			bool	GetEmitterClipLooped( EmitterHandle, AudioHandle );
-			bool	GetEmitterClipPaused( EmitterHandle, AudioHandle );
+			float	GetEmitterClipVolume( EmitterID, AudioID );
+			float	GetEmitterClipPitch	( EmitterID, AudioID );
+			bool	GetEmitterClipLooped( EmitterID, AudioID );
+			bool	GetEmitterClipPaused( EmitterID, AudioID );
 
 			AudioListenerWrapper*		GetListener	( );
-			std::optional<AudioHandle>	GetIDByName	( StringView );
+			std::optional<AudioID>	GetIDByName	( StringView );
 			bool						NameExists	( StringView );
 
 		private:
@@ -138,44 +140,44 @@ namespace lum {
 
 			void SubscribeEvents		( );
 
-			inline bool validate_emitter_id	( EmitterHandle id ) noexcept {
+			inline bool validate_emitter_id	( EmitterID id ) noexcept {
 
-				if (!mEmitters.contains(id)) {
+				if (!mEmitters.Contains(id)) {
 					LUM_LOG_WARN("Emitter does not exist");
 					return false;
 				}
 				return true;
 
 			}
-			inline bool ValidateAudioID		( AudioHandle id ) noexcept {
+			inline bool ValidateAudioID		( AudioID id ) noexcept {
 
-				if (!mSounds.contains(id)) {
+				if (!mSounds.Contains(id)) {
 					LUM_LOG_WARN("Sound does not exist");
 					return false;
 				}
 				return true;
 
 			}
-			inline bool ValidateEmitterAndAudioID( EmitterHandle emitterID, AudioHandle audioID ) noexcept {
+			inline bool ValidateEmitterAndAudioID( EmitterID emitterID, AudioID audioID ) noexcept {
 
 				return validate_emitter_id(emitterID) && ValidateAudioID(audioID);
 
 			}
 
 			ev::EventBus& mEventBus;
-			ecs::EntityManager& mEntityManager;
+			ecs::MEntityManager& mEntityManager;
 
 			cmd::CommandBuffer< cmd::AudioCmd, 100 > mCmdBuffer;
 
 			std::unique_ptr< AudioListenerWrapper >			mListener;
 			std::unique_ptr< FMOD::System, FDestructor >	mAudioSystem;
 
-			cstd::sparse_set< AudioClip, AudioHandle >		mSounds{ limits::gMaxAudioSounds };
-			cstd::sparse_set< AudioEmitter, EmitterHandle >	mEmitters{ limits::gMaxEntity };
+			cstd::SparseSet< AudioID, AudioClip >		mSounds		{ limits::gMaxAudioSounds };
+			cstd::SparseSet< EmitterID, AudioEmitter >	mEmitters	{ limits::gMaxEntity };
 
-			std::unordered_map< uint64_t, AudioHandle >		mNameToID;
+			std::unordered_map< uint64_t, AudioID >		mNameToID;
 			#ifdef LUM_ENABLE_LOGGER
-				std::unordered_map< AudioHandle, String >	mIDToName;
+				std::unordered_map< AudioID, String >	mIDToName;
 			#endif
 		};
 

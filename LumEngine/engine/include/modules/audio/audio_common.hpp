@@ -6,8 +6,8 @@ namespace FMOD { struct Sound; struct Channel; }
 namespace lum {
 	namespace audio {
 
-		using EmitterHandle = uint32;
-		using AudioHandle	= uint32;
+		using EmitterID = uint32;
+		using AudioID	= uint32;
 		using ChannelHandle = uint32;
 
 		enum class AudioInitFlags : bitfield {
@@ -40,8 +40,8 @@ namespace lum {
 
 		namespace detail {
 
-			constexpr EmitterHandle gEmitterNullID = 0;
-			constexpr AudioHandle	gAudioNullID = 0;
+			constexpr EmitterID gEmitterNullID = 0;
+			constexpr AudioID	gAudioNullID = 0;
 			constexpr ChannelHandle gChannelNullID = 0;
 
 
@@ -51,8 +51,8 @@ namespace lum {
 
 			struct AudioChannel {
 				FMOD::Channel*	mChannel = nullptr;
-				EmitterHandle	mEmitterID{};
-				AudioHandle		mAudioClip{};
+				EmitterID	mEmitterID{};
+				AudioID		mAudioClip{};
 			};
 
 			#define FMOD_ASSERT(x) \

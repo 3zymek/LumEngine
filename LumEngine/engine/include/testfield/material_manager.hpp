@@ -22,7 +22,7 @@ namespace lum {
 
 	};
 
-	struct MaterialBaseHandle : cstd::BaseHandle {};
+	struct MaterialBaseHandle : cstd::BaseHandle<uint32> {};
 
 	struct FMaterialInstance {
 
@@ -57,13 +57,13 @@ namespace lum {
 		LUM_NODISCARD
 		MaterialBaseHandle UploadBase ( const FMaterialBase& base ) {
 
-			return mBaseMaterials.create_handle(base);
+			return mBaseMaterials.CreateHandle(base);
 
 		}
 
 		FMaterialInstance CreateInstance ( MaterialBaseHandle base ) {
 
-			if (!mBaseMaterials.exist(base))
+			if (!mBaseMaterials.Exist(base))
 				base = mDefaultMaterial;
 
 			FMaterialInstance instance;

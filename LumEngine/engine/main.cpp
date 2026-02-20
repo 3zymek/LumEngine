@@ -24,6 +24,38 @@
 using namespace lum;
 using namespace lum::rhi;
 
+struct CRender {
+    LUM_COMPONENT_TAG;
+};
+
+struct CMaterial {
+    LUM_COMPONENT_TAG;
+    FMaterialInstance mMaterial;
+};
+struct CStaticMesh {
+    LUM_COMPONENT_TAG;
+    StaticMeshHandle mMesh;
+};
+
+
+struct RenderSystem {
+public:
+
+    RenderSystem(ecs::MEntityManager* em, SRenderer* r)
+        : mEntityManager(em), mRenderer(r) {
+    }
+
+    void Update() {
+
+    }
+
+private:
+
+    ecs::MEntityManager* mEntityManager = nullptr;
+    SRenderer* mRenderer = nullptr;
+
+};
+
 int main() {
 
     Logger::Get().EnableLog(LogSeverity::All);
@@ -34,19 +66,9 @@ int main() {
     windowDesc.bFullscreen = false;
     windowDesc.mHeight = 920;
     windowDesc.mWidth = 1280;
-
     Window* window = CreateWindow(windowDesc);
 
     RDevice* device = rhi::CreateDevice(window);
-    
-    rhi::RTextureCubemapDescriptor desc;
-    desc.mFaces[LUM_CUBEMAP_NEGATIVE_X] = AssetLoader::LoadTexture(ERootID::External, "textures/nx.png").value();
-    desc.mFaces[LUM_CUBEMAP_NEGATIVE_Y] = AssetLoader::LoadTexture(ERootID::External, "textures/ny.png").value();
-    desc.mFaces[LUM_CUBEMAP_NEGATIVE_Z] = AssetLoader::LoadTexture(ERootID::External, "textures/nz.png").value();
-    desc.mFaces[LUM_CUBEMAP_POSITIVE_X] = AssetLoader::LoadTexture(ERootID::External, "textures/px.png").value();
-    desc.mFaces[LUM_CUBEMAP_POSITIVE_Y] = AssetLoader::LoadTexture(ERootID::External, "textures/py.png").value();
-    desc.mFaces[LUM_CUBEMAP_POSITIVE_Z] = AssetLoader::LoadTexture(ERootID::External, "textures/pz.png").value();
-    auto cubemap = device->CreateCubemapTexture(desc);
 
     input::SetActiveWindow(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
@@ -56,9 +78,9 @@ int main() {
     MShaderManager shaderManager{ device };
     
     auto tex = texManager.Load("textures/scene.png", ETexturePreset::Albedo);
+    //auto cubemap = texManager.LoadEquirectangularCubemap("textures/cubemap.png");
 
     FMaterialBase base;
-    //base.mAlbedoMap = tex;
     base.mBaseColor = { 1.f, 1.f, 1.f };
     auto baseHandle = matManager.UploadBase(base);
 
@@ -75,6 +97,8 @@ int main() {
 
     SRenderer render{ ctx };
     
+    ev::EventBus evBus;
+
     Camera camera{ window };
     Object obj;
     Object obj2;
@@ -84,7 +108,7 @@ int main() {
     obj2.mStaticMesh = meshHandle;
     obj2.mTransform.position = { 10, 0, 0 };
 
-    render.SetEnvionmentTexture(cubemap);
+    //render.SetEnvionmentTexture(cubemap);
 
     DirectionalLight light;
 
@@ -121,8 +145,6 @@ int main() {
         ImGui::End();
 
         render.UpdateCamera(camera);
-        render.Draw(obj2);
-        render.Draw(obj);
         
         render.EndFrame();
     }

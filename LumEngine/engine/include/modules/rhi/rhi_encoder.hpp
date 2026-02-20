@@ -10,9 +10,6 @@
 
 namespace lum::rhi {
 
-	template<typename T>
-	concept Device = T::rhiDevice == true;
-
 	using InvokeFn = void(*)(vptr userParams, cvptr device);
 	using Storage = std::aligned_storage_t<256, alignof(std::max_align_t)>;
 
@@ -26,15 +23,14 @@ namespace lum::rhi {
 	class Encoder {
 	public:
 
-		void begin_record() {
-			bRecording = true;
-		}
-		void end_record() {
-			bRecording = false;
+
+		void Record() {
+
 		}
 
-		template<Device D>
-		void flush(const D& device);
+		void Flush() {
+
+		}
 
 	private:
 

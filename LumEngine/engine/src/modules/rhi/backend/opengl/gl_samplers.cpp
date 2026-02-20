@@ -10,13 +10,13 @@ namespace lum::rhi::gl {
 
 	RSamplerHandle GLDevice::CreateSampler ( const RSamplerDescriptor& desc ) {
 		LUM_HOTCHK_RETURN_CUSTOM(
-			mSamplers.dense_size() <= skMaxSamplers,
+			mSamplers.DenseSize() <= skMaxSamplers,
 			LUM_SEV_WARN,
 			RSamplerHandle{},
 			"Max samplers reached"
 		);
 
-		Sampler sampler;
+		RSampler sampler;
 
 		glCreateSamplers	( 1, &sampler.mHandle );
 		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_MAG_FILTER, (desc.mMagFilter == RSamplerMagFilter::Nearest) ? GL_NEAREST : GL_LINEAR);
@@ -32,16 +32,16 @@ namespace lum::rhi::gl {
 		GLfloat final_anisotropy = std::clamp((float32)desc.mAnisotropy, 1.0f, (float32)max_anisotropy);
 		glSamplerParameterf ( sampler.mHandle, GL_TEXTURE_MAX_ANISOTROPY, final_anisotropy );
 
-		RSamplerHandle samplerHandle = mSamplers.create_handle(std::move(sampler));
+		RSamplerHandle samplerHandle = mSamplers.CreateHandle(std::move(sampler));
 
-		LUM_LOG_INFO("Created sampler %d", samplerHandle.id);
+		LUM_LOG_INFO("Created sampler %d", samplerHandle.mID);
 
 		return samplerHandle;
 	}
 
 	void GLDevice::BindSampler ( const RSamplerHandle& sampler, uint16 binding ) {
 		
-		LUM_HOTCHK_RETURN_VOID(mSamplers.exist(sampler) && binding < MAX_SAMPLER_UNITS, LUM_SEV_WARN, "Sampler doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mSamplers.Exist(sampler) && binding < MAX_SAMPLER_UNITS, LUM_SEV_WARN, "Sampler doesn't exist");
 
 		if (mCurrentSamplers[binding] == sampler) {
 			LUM_PROFILER_CACHE_HIT();
@@ -57,13 +57,13 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::DeleteSampler ( RSamplerHandle sampler ) {
-		LUM_HOTCHK_RETURN_VOID( mSamplers.exist(sampler), LUM_SEV_WARN, "Sampler doesn't exist" );
+		LUM_HOTCHK_RETURN_VOID( mSamplers.Exist(sampler), LUM_SEV_WARN, "Sampler doesn't exist" );
 
 		glDeleteSamplers ( 1, &mSamplers[sampler].mHandle );
 
-		mSamplers.delete_handle(sampler);
+		mSamplers.DeleteHandle(sampler);
 
-		LUM_LOG_INFO( "Deleted sampler %d", sampler.id );
+		LUM_LOG_INFO( "Deleted sampler %d", sampler.mID );
 
 	}
 

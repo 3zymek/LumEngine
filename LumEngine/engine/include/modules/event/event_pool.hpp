@@ -58,7 +58,7 @@ namespace lum {
 					}
 
 					auto& callback = mCallbacks[id];
-					if (!callback.active)
+					if (!callback.bActive)
 						return;
 
 					callback.Destroy();
@@ -123,16 +123,16 @@ namespace lum {
 
 					static_assert(sizeof(Storage) >= sizeof(Lambda), "Lambda too big for buffer");
 					static_assert(alignof(Storage) >= alignof(Lambda), "Lambda aligment dismatch");
-					new (&callback.buffer) Lambda(std::forward<Lambda>(lambda));
+					new (&callback.mStorage) Lambda(std::forward<Lambda>(lambda));
 
-					callback.invoke = [](vptr userParam, cvptr event) {
+					callback.mInvoke = [](vptr userParam, cvptr event) {
 						auto* l = reinterpret_cast<Lambda*>(userParam);
 						(*l)(*reinterpret_cast<const T*>(event));
 						};
-					callback.destroy = [](vptr userParam) {
+					callback.mDestroy = [](vptr userParam) {
 						reinterpret_cast<Lambda*>(userParam)->~Lambda();
 						};
-					callback.active = true;
+					callback.bActive = true;
 
 				}
 
@@ -155,9 +155,9 @@ namespace lum {
 					// Temporary callbacks
 					for (Event_t i = 0; i < temp; i++) {
 						auto& callback = mCallbacks[i];
-						if (!callback.active)
+						if (!callback.bActive)
 							continue;
-						callback.invoke(&callback.buffer, &event);
+						callback.mInvoke(&callback.mStorage, &event);
 						callback.Destroy();
 					}
 					mCurrentCallbacksID = 0;
@@ -165,7 +165,7 @@ namespace lum {
 					// Permament Callbacks
 					for (auto& slot : mPermActiveSlots) {
 						auto& callback = mPermCallbacks[slot];
-						callback.invoke(&callback.buffer, &event);
+						callback.mInvoke(&callback.mStorage, &event);
 					}
 
 				}

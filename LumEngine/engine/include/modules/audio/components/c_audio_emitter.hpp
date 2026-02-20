@@ -5,7 +5,7 @@ namespace lum {
 
 		LUM_COMPONENT_TAG;
 
-		audio::EmitterHandle emitterID{};
+		audio::EmitterID emitterID{};
 
 	};
 }

@@ -11,7 +11,7 @@ namespace lum::systems {
 
 	public:
 
-		TransformSystem( ecs::EntityManager& ecs_mgr ) : ecs_manager(ecs_mgr) 
+		TransformSystem( ecs::MEntityManager& ecs_mgr ) : ecs_manager(ecs_mgr) 
 			{ m_dirty_entities.reserve(MAX_DIRTY_TRANSFORMS_PER_FRAME); }
 
 		void SetPosition( const Entity& e, const glm::vec3 position ) {
@@ -78,7 +78,7 @@ namespace lum::systems {
 
 		std::vector<ecs::EntityID> m_dirty_entities;
 
-		ecs::EntityManager& ecs_manager;
+		ecs::MEntityManager& ecs_manager;
 
 	};
 

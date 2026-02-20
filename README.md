@@ -9,6 +9,7 @@ Learning indie game engine project from scratch in C++.
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![C++](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
 ![Status](https://img.shields.io/badge/status-in%20development-orange.svg)
+[![wakatime](https://wakatime.com/badge/github/3zymek/LumEngine.svg)](https://wakatime.com/badge/github/3zymek/LumEngine)
 
 </div>
 
@@ -49,6 +50,9 @@ LumEngine/
 │   ├── events/        # Event system
 │   testfield/         # Testing field (dirty classes etc.)
 ````
+
+# My Time spent on developing
+![time](https://wakatime.com/share/@3zymek/7a14911b-2a12-44ae-984a-4b45b47d27a9.svg)
 
 ### Prefixes
 ````bash

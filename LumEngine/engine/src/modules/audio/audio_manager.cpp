@@ -38,7 +38,7 @@ namespace lum {
 				return;
 			}
 
-			auto id = GenerateID<AudioHandle, detail::gAudioNullID>::Get();
+			auto id = GenerateID<AudioID, detail::gAudioNullID>::Get();
 			auto hashed_new_id = HashStr(alias_name);
 
 			bool success;
@@ -55,7 +55,7 @@ namespace lum {
 			);
 			*/
 
-			mSounds.emplace(clip, id);
+			mSounds.Append(clip, id);
 			mNameToID.emplace(hashed_new_id, id);
 
 			#ifdef LUM_ENABLE_LOGGER
@@ -72,8 +72,8 @@ namespace lum {
 
 				mListener = std::make_unique<AudioListenerWrapper>(entityID);
 
-				mListener->mTransform	= mEntityManager.GetComponent<CTransform>(entityID);
-				mListener->mListener	= mEntityManager.GetComponent<CAudioListener>(entityID);
+				//mListener->mTransform	= mEntityManager.GetComponent<CTransform>(entityID);
+				//mListener->mListener	= mEntityManager.GetComponent<CAudioListener>(entityID);
 
 				LUM_LOG_INFO("Audio Listener created");
 
@@ -83,20 +83,20 @@ namespace lum {
 		}
 		AudioEmitterWrapper		AudioManager::CreateEmitter(Entity entity) {
 
-			if (!entity.Has<AudioEmitterComponent>())
-				entity.AddComponent<AudioEmitterComponent>();
+			//if (!entity.Has<AudioEmitterComponent>())
+				//entity.AddComponent<AudioEmitterComponent>();
 
-			auto id = GenerateID<EmitterHandle, detail::gEmitterNullID>::Get();
-			entity.GetComponent<AudioEmitterComponent>()->emitterID = id;
-			detail::AudioEmitter emitter;
-			emitter.transform = mEntityManager.GetComponent<CTransform>(entity.GetID());
-			AudioEmitterWrapper wrapper(*this, id);
+			//auto id = GenerateID<EmitterID, detail::gEmitterNullID>::Get();
+			//entity.GetComponent<AudioEmitterComponent>()->emitterID = id;
+			//detail::AudioEmitter emitter;
+			//emitter.transform = mEntityManager.GetComponent<CTransform>(entity.GetID());
+			//AudioEmitterWrapper wrapper(*this, id);
 
-			mEmitters.emplace(emitter, id);
+			//mEmitters.Emplace(emitter, id);
 
 			LUM_LOG_INFO("Audio Emitter created");
-
-			return wrapper;
+			return {*this, 1};
+			//return wrapper;
 		}
 
 
@@ -106,7 +106,7 @@ namespace lum {
 		/// Private API
 		////////////////////////////////////
 
-		void AudioManager::AddClipToEmitter(EmitterHandle emitterID, AudioHandle audioID) {
+		void AudioManager::AddClipToEmitter(EmitterID emitterID, AudioID audioID) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -123,7 +123,7 @@ namespace lum {
 			LUM_LOG_DEBUG("Added clip {} to emitter {}");
 
 		}
-		void AudioManager::RemoveClipFromEmitter(EmitterHandle emitterID, AudioHandle audioID) {
+		void AudioManager::RemoveClipFromEmitter(EmitterID emitterID, AudioID audioID) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -132,7 +132,7 @@ namespace lum {
 
 			LUM_LOG_DEBUG("Removed clip {} from emitter {}");
 		}
-		void AudioManager::PlayEmitterClip(EmitterHandle emitterID, AudioHandle audioID) {
+		void AudioManager::PlayEmitterClip(EmitterID emitterID, AudioID audioID) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -153,7 +153,7 @@ namespace lum {
 			LUM_LOG_DEBUG("Played clip {} on emitter {}");
 
 		}
-		void AudioManager::StopEmitterClip(EmitterHandle emitterID, AudioHandle audioID) {
+		void AudioManager::StopEmitterClip(EmitterID emitterID, AudioID audioID) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -176,7 +176,7 @@ namespace lum {
 			LUM_LOG_DEBUG("Stopped clip {} on emitter {}");
 
 		}
-		void AudioManager::SetEmitterClipVolume(EmitterHandle emitterID, AudioHandle audioID, float32 volume) {
+		void AudioManager::SetEmitterClipVolume(EmitterID emitterID, AudioID audioID, float32 volume) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -192,7 +192,7 @@ namespace lum {
 			LUM_LOG_DEBUG("Set volume ({}) at clip {} on emitter {}");
 
 		}
-		void AudioManager::SetEmitterClipPitch(EmitterHandle emitterID, AudioHandle audioID, float32 pitch) {
+		void AudioManager::SetEmitterClipPitch(EmitterID emitterID, AudioID audioID, float32 pitch) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -208,7 +208,7 @@ namespace lum {
 			LUM_LOG_DEBUG("Set pitch ({}) at clip {} on emitter {}");
 
 		}
-		void AudioManager::SetEmitterClipPause(EmitterHandle emitterID, AudioHandle audioID, bool paused) {
+		void AudioManager::SetEmitterClipPause(EmitterID emitterID, AudioID audioID, bool paused) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -224,7 +224,7 @@ namespace lum {
 			LUM_LOG_DEBUG("Set paused ({}) at clip {} on emitter {}");
 
 		}
-		void AudioManager::SetEmitterClipLoop(EmitterHandle emitterID, AudioHandle audioID, bool loop) {
+		void AudioManager::SetEmitterClipLoop(EmitterID emitterID, AudioID audioID, bool loop) {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
@@ -238,28 +238,29 @@ namespace lum {
 			LUM_LOG_DEBUG("Set loop ({}) at clip {} on emitter {}");
 
 		}
-		void AudioManager::DestroyEmitter(EmitterHandle emitterID) {
+		void AudioManager::DestroyEmitter(EmitterID emitterID) {
 
 			validate_emitter_id(emitterID);
 
-			mEmitters.remove(emitterID);
+			mEmitters.Remove(emitterID);
 
 			LUM_LOG_INFO("Destroyed emitter {}");
 
 		}
-		float32 AudioManager::GetEmitterClipVolume(EmitterHandle emitterID, AudioHandle audioID) {
+		float32 AudioManager::GetEmitterClipVolume(EmitterID emitterID, AudioID audioID) {
 			return mEmitters[emitterID].clips[audioID].volume;
 		}
-		float32 AudioManager::GetEmitterClipPitch(EmitterHandle emitterID, AudioHandle audioID) {
+		float32 AudioManager::GetEmitterClipPitch(EmitterID emitterID, AudioID audioID) {
 			return mEmitters[emitterID].clips[audioID].pitch;
 		}
-		bool AudioManager::GetEmitterClipLooped(EmitterHandle emitterID, AudioHandle audioID) {
+		bool AudioManager::GetEmitterClipLooped(EmitterID emitterID, AudioID audioID) {
 			return mEmitters[emitterID].clips[audioID].loop;
 		}
-		bool AudioManager::GetEmitterClipPaused(EmitterHandle emitterID, AudioHandle audioID) {
+		bool AudioManager::GetEmitterClipPaused(EmitterID emitterID, AudioID audioID) {
 			return mEmitters[emitterID].clips[audioID].paused;
 		}
 		void AudioManager::SubscribeEvents() {
+			/*
 			mEventBus.SubscribePermanently<ev::ComponentAdded>(
 					[this](const ev::ComponentAdded& ev)
 					{
@@ -272,13 +273,14 @@ namespace lum {
 
 					}
 				);
+				*/
 		}
 
 		AudioListenerWrapper* AudioManager::GetListener() {
 			return mListener.get();
 		}
 
-		std::optional<AudioHandle> AudioManager::GetIDByName(StringView name) {
+		std::optional<AudioID> AudioManager::GetIDByName(StringView name) {
 			auto it = mNameToID.find(HashStr(name));
 			if (it == mNameToID.end()) {
 				LUM_LOG_WARN("Audio file named {} does not exists");

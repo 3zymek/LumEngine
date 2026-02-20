@@ -47,50 +47,8 @@ namespace lum::rhi {
 		/// Buffers
 		///////////////////////////////////////////////////
 
-		/*====================================================================
-		* @brief Creates a vertex buffer (VBO).
-		*
-		* Allocates a GPU buffer to store vertex data. The buffer is described
-		* by a BufferDescriptor containing size, usage flags, and optional initial data.
-		*
-		* @param desc Descriptor of the buffer to create.
-		* @return Handle to the created vertex buffer.
-		*
-		* @note The returned handle is used for subsequent operations like
-		*       updating, mapping, or binding to a vertex layout.
-		*/
 		LUM_NODISCARD
-		virtual RBufferHandle CreateVertexBuffer ( const RBufferDescriptor& desc ) = 0;
-
-		/*====================================================================
-		* @brief Creates an element/index buffer (EBO).
-		*
-		* Allocates a GPU buffer for storing index data for indexed drawing.
-		*
-		* @param desc Descriptor of the buffer to create.
-		* @return Handle to the created element buffer.
-		*
-		* @note The buffer can later be attached to a vertex layout for indexed draw calls.
-		*/
-		LUM_NODISCARD
-		virtual RBufferHandle CreateElementBuffer ( const RBufferDescriptor& desc ) = 0;
-
-		/*====================================================================
-		* @brief Creates a uniform buffer (UBO).
-		*
-		* Allocates a GPU buffer for storing uniform data that shaders can access.
-		*
-		* @param desc Descriptor of the uniform buffer to create.
-		* @return Handle to the created uniform buffer.
-		*
-		* @note Binding to shaders is done using SetUniformBufferBinding().
-		*/
-		LUM_NODISCARD
-		virtual RBufferHandle CreateUniformBuffer ( const RBufferDescriptor& desc ) = 0;
-
-		// TODO implement
-		LUM_NODISCARD
-		virtual RBufferHandle CreateShaderStorageBuffer ( const RBufferDescriptor& desc ) = 0;
+		virtual RBufferHandle CreateBuffer ( const RBufferDescriptor& desc ) = 0;
 
 		/*====================================================================
 		* @brief Updates the contents of a GPU buffer.
@@ -312,42 +270,6 @@ namespace lum::rhi {
 		* 
 		*/
 		virtual void DeleteShader ( RShaderHandle& shader ) = 0;
-		
-		/*====================================================================
-		* @brief Sets a 4x4 matrix uniform in a shader.
-		* 
-		*  @param shader Shader handle.
-		*  @param location Name of the uniform.
-		*  @param mat Matrix to set.
-		* 
-		*/
-		virtual void SetMat4 ( const RShaderHandle& shader, ccharptr location, const math::Mat4& mat ) = 0;
-		
-		/*====================================================================
-		* @brief Sets a float uniform in a shader.
-		*/
-		virtual void Setf ( const RShaderHandle& shader, ccharptr location, float32 value )	= 0;
-		
-		/*====================================================================
-		* @brief Sets an int uniform in a shader.
-		*/
-		virtual void Seti ( const RShaderHandle& shader, ccharptr location, int32 value )	= 0;
-		
-		/*====================================================================
-		* @brief Sets a vec4 uniform in a shader.
-		*/
-		virtual void SetVec4 ( const RShaderHandle& shader, ccharptr location, const math::Vec4& vec ) = 0;
-		
-		/*====================================================================
-		* @brief Sets a vec3 uniform in a shader.
-		*/
-		virtual void SetVec3 ( const RShaderHandle& shader, ccharptr location, const math::Vec3& vec ) = 0;
-		
-		/*====================================================================
-		* @brief Sets a vec2 uniform in a shader.
-		*/
-		virtual void SetVec2 ( const RShaderHandle& shader, ccharptr location, const math::Vec2& vec ) = 0;
-
 
 
 
@@ -355,30 +277,8 @@ namespace lum::rhi {
 		/// Textures
 		///////////////////////////////////////////////////
 
-		/*====================================================================
-		* @brief Creates a 2D texture.
-		*
-		*  Uses the descriptor to initialize GPU texture.
-		*  @param desc Texture properties and data.
-		*  @return Handle to the created texture.
-		* 
-		*/
-		LUM_NODISCARD 
-		virtual RTextureHandle CreateTexture2D ( const RTextureDescriptor& desc ) = 0;
-
-		/*====================================================================
-		* @brief Creates a 3D texture.
-		*
-		*  Uses the descriptor to initialize GPU 3D texture.
-		*  @param desc Texture properties and data.
-		*  @return Handle to the created texture.
-		* 
-		*/
-		LUM_NODISCARD 
-		virtual RTextureHandle CreateTexture3D ( const RTextureDescriptor& desc ) = 0;
-		
 		LUM_NODISCARD
-		virtual RTextureHandle CreateCubemapTexture ( const RTextureCubemapDescriptor& desc ) = 0;
+		virtual RTextureHandle CreateTexture ( const RTextureDescriptor& desc ) = 0;
 
 		virtual void UnbindTexture ( RTextureType type ) = 0;
 		virtual void UpdateTexture ( const RTextureHandle& tex, const RTextureUpdateDescriptor& desc ) = 0;
@@ -1534,13 +1434,13 @@ namespace lum::rhi {
 		LUM_COMPILE_VARIABLE
 		static uint32 skMaxPipelines = 100;
 
-		cstd::handle_pool<Sampler, RSamplerHandle>			mSamplers		{ skMaxSamplers };
-		cstd::handle_pool<RShader, RShaderHandle>				mShaders		{ skMaxShaders };
-		cstd::handle_pool<RBuffer, RBufferHandle>				mBuffers		{ skMaxBuffers };
-		cstd::handle_pool<RVertexLayout, RVertexLayoutHandle> mLayouts		{ skMaxLayouts };
-		cstd::handle_pool<RTexture, RTextureHandle>			mTextures		{ skMaxTextures };
-		cstd::handle_pool<RFramebuffer, RFramebufferHandle>	mFramebuffers	{ skMaxFramebuffers };
-		cstd::handle_pool<Pipeline, RPipelineHandle>			mPipelines		{ skMaxPipelines };
+		cstd::handle_pool<RSampler, RSamplerHandle, RSamplerID>				mSamplers		{ skMaxSamplers };
+		cstd::handle_pool<RShader, RShaderHandle, RShaderID>				mShaders		{ skMaxShaders };
+		cstd::handle_pool<RBuffer, RBufferHandle, RBufferID>				mBuffers		{ skMaxBuffers };
+		cstd::handle_pool<RVertexLayout, RVertexLayoutHandle, RLayoutID>	mLayouts		{ skMaxLayouts };
+		cstd::handle_pool<RTexture, RTextureHandle, RTextureID>				mTextures		{ skMaxTextures };
+		cstd::handle_pool<RFramebuffer, RFramebufferHandle, RFramebufferID>	mFramebuffers	{ skMaxFramebuffers };
+		cstd::handle_pool<RPipeline, RPipelineHandle, RPipelineID>			mPipelines		{ skMaxPipelines };
 
 
 
