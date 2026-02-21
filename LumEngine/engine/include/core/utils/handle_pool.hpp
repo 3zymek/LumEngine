@@ -8,70 +8,151 @@
 #include "core/core_pch.hpp"
 #include "core/core_common.hpp"
 
-namespace cstd {
-	template<typename T>
-		requires std::is_arithmetic_v<T>
+namespace lum::cstd {
+
+	/* @brief Base type for all handle types.
+	*
+	* Stores a slot ID and a generation counter to detect use-after-free.
+	* Two handles are equal only if both ID and generation match.
+	*
+	* @tparam tType Unsigned arithmetic type used for ID and generation.
+	*/
+	template<typename tType = uint32>
+		requires std::is_arithmetic_v<tType> && std::is_unsigned_v<tType>
 	struct alignas(8) BaseHandle {
-		T mID = lum::MaxVal<T>();
-		T mGeneration = 0;
+		tType mID = lum::MaxVal<tType>();  // Slot index. MaxVal means invalid/null.
+		tType mGeneration = 0;             // Incremented on Remove to invalidate old handles.
 
 		bool operator==(const BaseHandle& other) const noexcept {
 			return mID == other.mID && mGeneration == other.mGeneration;
 		}
 	};
+	
+	/* @brief Generational handle pool with stable references.
+	*
+	* Stores objects in a dense array for cache-friendly iteration.
+	* Objects are accessed via typed handles that carry a generation counter,
+	* which allows detecting dangling handles after removal.
+	* Removed slots are recycled via a free list.
+	*
+	* @tparam tHandle      Handle type derived from BaseHandle.
+	* @tparam tDense       Type of stored objects.
+	* @tparam tArithmetic  Unsigned integer type used for indices and generations.
+	*/
+	template<typename tHandle, typename tDense, typename tArithmetic = uint32>
+		requires std::is_arithmetic_v<tArithmetic> && std::is_unsigned_v<tArithmetic>
+	class HandlePool {
 
-	template<typename DenseType, typename HandleType, typename T = lum::uint32>
-		requires std::is_arithmetic_v<T>
-	class handle_pool {
-
-		using Generation	= T;
-		using Slot			= T;
-		using SparseType	= T;
-		using Hsize			= T;
-
-		using iterator = typename std::vector<DenseType>::iterator;
-		using const_iterator = typename std::vector<DenseType>::const_iterator;
-		
-		static constexpr SparseType NULL_HANDLE = lum::MaxVal<SparseType>();
+		using GenerationT	= tArithmetic;
+		using SparseT		= tArithmetic;
 
 	public:
 
-		handle_pool(Hsize maxSize) : mMaxSize(maxSize) { reserve(mMaxSize); }
+		/* @brief Constructs the pool with a fixed maximum capacity.
+		* @param maxSize Maximum number of objects that can be stored simultaneously.
+		*/
+		constexpr HandlePool( SparseT maxSize ) : kMaxSize( maxSize ) { init(maxSize); }
+		~HandlePool( ) = default;
 
-		iterator begin() { return mDense.begin(); }
-		iterator end() { return mDense.end(); }
+		// Standard iterators over dense value array.
+		using Iterator = typename std::vector<tDense>::iterator;
+		using ConstIterator = typename std::vector<tDense>::const_iterator;
+		Iterator begin( ) { return mDense.begin(); }
+		Iterator end( ) { return mDense.end(); }
+		ConstIterator begin( ) const { return mDense.begin(); }
+		ConstIterator end( ) const { return mDense.end(); }
+		
+		/* @brief Iterator that yields slot-value pairs during iteration.
+		*
+		* Allows range-based for loops with structured bindings:
+		* for (auto [slot, value] : pool.Each()) { ... }
+		*/
+		struct KeyValIterator {
+			tDense* mDense;          // Pointer to dense value array.
+			SparseT* mDenseToSparse;  // Pointer to slot index array parallel to dense.
+			SparseT  mIndex;          // Current position in dense array.
 
-		const_iterator begin() const { return mDense.begin(); }
-		const_iterator end() const { return mDense.end(); }
+			/* @brief Returns the current slot-value pair.
+			* @return Pair of (slot index, pointer to dense value).
+			*/
+			std::pair<SparseT, tDense*> operator*() {
+				return { mDenseToSparse[mIndex], &mDense[mIndex] };
+			}
+			KeyValIterator& operator++() { mIndex++; return *this; }
+			bool operator!=(KeyValIterator other) { return mIndex != other.mIndex; }
+		};
 
-		DenseType& operator[](const Hsize id) {
+		/* @brief Range wrapper returned by Each(), enables range-based for. */
+		struct KeyValRange {
+			KeyValIterator mBegin;
+			KeyValIterator mEnd;
+			KeyValIterator begin() { return mBegin; }
+			KeyValIterator end() { return mEnd; }
+		};
+		
+		/* @brief Returns a slot-value range for structured binding iteration.
+		* @return KeyValRange over all currently stored slot-value pairs.
+		*/
+		KeyValRange Each() {
+			return {
+				{ mDense.data(), mDenseToSparse.data(), 0 },
+				{ mDense.data(), mDenseToSparse.data(), static_cast<SparseT>(mDense.size()) }
+			};
+		}
+
+		/* @brief Returns object at slot index. No bounds or validity checking.
+		* @param id Slot index to look up.
+		*/
+		inline constexpr tDense& operator[](SparseT id) {
 			return mDense[mSparse[id]];
 		}
-		DenseType& operator[](const HandleType& handle) {
+
+		/* @brief Returns object by handle. No validity checking.
+		* @param handle Handle to look up.
+		*/
+		inline constexpr tDense& operator[](tHandle handle) {
 			return mDense[mSparse[handle.mID]];
 		}
 
-		HandleType CreateHandle(const DenseType& obj) {
-			if (mDense.size() == mMaxSize)
+		/* @brief Returns pointer to object by handle, or nullptr if handle is invalid.
+		* @param handle Handle to look up.
+		* @return Pointer to object, or nullptr if handle is stale or out of range.
+		*/
+		tDense* Get( tHandle handle ) {
+			if (Contains(handle))
+				return &mDense[mSparse[handle.mID]];
+			else
+				return nullptr;
+		} 
+
+		/* @brief Inserts an object into the pool and returns its handle.
+		* Reuses a previously freed slot if available, otherwise allocates a new one.
+		* @param value Object to insert (moved into the pool).
+		* @return Handle to the inserted object.
+		* @throws std::runtime_error if the pool is full.
+		*/
+		constexpr tHandle Append( tDense value ) {
+
+			if (mDense.size() >= kMaxSize)
 				throw std::runtime_error("Handle pool full");
 
-			Slot slot;
+			SparseT slot;
 
 			if (!mFreeSlots.empty()) {
 				slot = mFreeSlots.back();
 				mFreeSlots.pop_back();
 			}
 			else
-				slot = static_cast<Slot>(mNextSlot++);
+				slot = static_cast<SparseT>(mNextSlot++);
 
-			mDense.push_back(obj);
+			mDense.emplace_back(std::move(value));
 
-			Hsize lastDense = mDense.size() - 1;
+			SparseT lastDense = mDense.size() - 1;
 
-			mSparse[slot] = static_cast<SparseType>(lastDense);
-			mDenseToSparse[lastDense] = slot;
+			mSparse[slot] = static_cast<SparseT>(lastDense);
+			mDenseToSparse.push_back(slot);
 
-			HandleType handle;
+			tHandle handle;
 			handle.mID = slot;
 			handle.mGeneration = mGenerations[slot];
 
@@ -79,21 +160,49 @@ namespace cstd {
 
 		}
 
-		void DeleteHandle(const HandleType& handle) {
-			Slot slot = static_cast<Slot>(handle.mID);
-			if (slot >= mSparse.size()) return;
+		inline constexpr SparseT MaxSize( )    const { return kMaxSize; }    // Maximum slot capacity.
+		inline constexpr SparseT DenseSize( )  const { return mDense.size(); } // Current number of stored objects.
+		inline constexpr bool    DenseEmpty( ) const { return mDense.empty(); }
+
+		/* @brief Removes all objects and resets the pool to its initial state.
+		* All existing handles become invalid after this call.
+		*/
+		inline constexpr void Clear( ) {
+
+			mDense.clear();
+			mSparse.clear();
+			mDenseToSparse.clear();
+			mFreeSlots.clear();
+			mGenerations.clear();
+
+			init(kMaxSize);
+
+			mNextSlot = 0;
+
+		}
+
+		/* @brief Removes the object referenced by the given handle.
+		* Increments the generation counter to invalidate existing handles to this slot.
+		* Uses swap-with-last to maintain dense packing. O(1).
+		* @param handle Handle to the object to remove.
+		*/
+		void Remove( tHandle handle ) {
+
+			SparseT slot = static_cast<SparseT>(handle.mID);
+
+			if (slot >= kMaxSize) return;
 			if (mGenerations[slot] != handle.mGeneration) return;
 
-			Hsize denseIndex = mSparse[slot];
-			Hsize lastIndex = mDense.size() - 1;
+			SparseT denseIndex = mSparse[slot];
+			SparseT lastIndex = mDense.size() - 1;
 
 			if (denseIndex != lastIndex) {
 
 				std::swap(mDense[denseIndex], mDense[lastIndex]);
 
-				Slot movedSlot = mDenseToSparse[lastIndex];
-				mSparse[movedSlot] = static_cast<SparseType>(denseIndex);
-				mDenseToSparse[denseIndex] = static_cast<SparseType>(movedSlot);
+				SparseT movedSlot = mDenseToSparse[lastIndex];
+				mSparse[movedSlot] = static_cast<SparseT>(denseIndex);
+				mDenseToSparse[denseIndex] = static_cast<SparseT>(movedSlot);
 
 
 			}
@@ -104,42 +213,41 @@ namespace cstd {
 			mGenerations[slot]++;
 			mFreeSlots.push_back(slot);
 
-			mSparse[slot] = NULL_HANDLE;
+			mSparse[slot] = skNullHandle;
 
 		}
 
-		void reserve(Hsize new_max_size) {
-			mDense.reserve(new_max_size);
-			mSparse.resize(new_max_size, NULL_HANDLE);
-			mDenseToSparse.resize(new_max_size, NULL_HANDLE);
-			mGenerations.resize(new_max_size, 0);
-			mFreeSlots.reserve(new_max_size);
-		}
-
-		inline Hsize DenseSize() const { return mDense.size(); }
-
-		inline bool Exist(const HandleType& handle) const noexcept {
-			return handle.mID < mGenerations.size() && handle.mGeneration == mGenerations[handle.mID];
-		}
-
-		inline DenseType* Get(const HandleType& handle) {
-			if (Exist(handle))
-				return &mDense[mSparse[handle.mID]];
-			else
-				return nullptr;
+		/* @brief Checks whether a handle is valid and points to a live object.
+		* @param handle Handle to validate.
+		* @return True if the handle is valid and the object exists.
+		*/
+		constexpr inline bool Contains( tHandle handle ) const noexcept {
+			return (handle.mID < mGenerations.size()) && (handle.mGeneration == mGenerations[handle.mID]);
 		}
 
 	private:
 
-		Hsize mMaxSize = 0;
+		static constexpr SparseT skNullHandle = MaxVal<SparseT>(); // Sentinel value for empty slots.
+		const SparseT kMaxSize = 0; // Maximum capacity set at construction.
+		
+		SparseT mNextSlot = 0; // Next slot to allocate when free list is empty.
 
-		Hsize mNextSlot = 0;
+		std::vector<tDense>    mDense;         // Contiguous object storage.
+		std::vector<SparseT>   mSparse;        // Maps slot index → dense index.
+		std::vector<SparseT>   mDenseToSparse; // Maps dense index → slot index.
+		std::vector<SparseT>   mGenerations;   // Generation counter per slot.
+		std::vector<SparseT>   mFreeSlots;     // Recycled slot indices available for reuse.
 
-		std::vector<DenseType>	mDense;
-		std::vector<SparseType>	mSparse;
-		std::vector<SparseType> mDenseToSparse;
-		std::vector<Generation> mGenerations;
-		std::vector<Slot>		mFreeSlots;
+		/* @brief Initializes internal arrays to the given capacity. */
+		inline constexpr void init( SparseT size ) {
+			mDense.reserve(size);
+			mFreeSlots.reserve(size);
+			mDenseToSparse.reserve(size);
+
+			mSparse.resize(size, skNullHandle);
+			mGenerations.resize(size, 0);
+		}
+
 
 	};
 }

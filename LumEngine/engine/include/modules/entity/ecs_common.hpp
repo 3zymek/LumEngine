@@ -7,18 +7,19 @@ namespace lum {
 
         using EntityID = uint32;
 
+#       define LUM_COMPONENT_TAG \
+            inline constexpr static bool __lum_component__ = true;
+
         namespace detail {
 
-            #define LUM_COMPONENT_TAG \
-                static constexpr bool __lumcomponent__ = true;
-
             struct CUnique {};
-
-            template<typename T>
+            
+            template<typename tType>
             concept Component =
-                requires { T::__lumcomponent__ == true; }&&
-                    std::is_trivially_copyable_v<T>&&
-                    std::is_trivially_destructible_v<T>;
+                requires
+                    { tType::__lum_component__; } &&
+                    std::is_trivially_copyable_v<tType> &&
+                    std::is_trivially_destructible_v<tType>; 
          
         }
     }

@@ -141,25 +141,25 @@ namespace lum::rhi::gl {
 	}
 
 	bool GLDevice::IsValid ( RBufferHandle handle ) const {
-		return mBuffers.Exist(handle);
+		return mBuffers.Contains(handle);
 	}
 	bool GLDevice::IsValid ( RTextureHandle handle ) const {
-		return mTextures.Exist(handle);
+		return mTextures.Contains(handle);
 	}
 	bool GLDevice::IsValid ( RShaderHandle handle ) const {
-		return mShaders.Exist(handle);
+		return mShaders.Contains(handle);
 	}
 	bool GLDevice::IsValid ( RFramebufferHandle handle ) const {
-		return mFramebuffers.Exist(handle);
+		return mFramebuffers.Contains(handle);
 	}
 	bool GLDevice::IsValid ( RVertexLayoutHandle handle ) const {
-		return mLayouts.Exist(handle);
+		return mLayouts.Contains(handle);
 	}
 	bool GLDevice::IsValid ( RPipelineHandle handle ) const {
-		return mPipelines.Exist(handle);
+		return mPipelines.Contains(handle);
 	}
 	bool GLDevice::IsValid ( RSamplerHandle handle ) const {
-		return mSamplers.Exist(handle);
+		return mSamplers.Contains(handle);
 	}
 
 	void GLDevice::SetColorMask ( bool r, bool g, bool b, bool a ) {
@@ -272,7 +272,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::Draw(const RVertexLayoutHandle& vao, uint32 vertex_count) {
 
-		LUM_HOTCHK_RETURN_VOID(mLayouts.Exist(vao), LUM_SEV_WARN, "Cannot draw, invalid vertex layout");
+		LUM_HOTCHK_RETURN_VOID(mLayouts.Contains(vao), LUM_SEV_WARN, "Cannot draw, invalid vertex layout");
 
 		glBindVertexArray(mLayouts[vao].mHandle);
 		glDrawArrays(GL_TRIANGLES, 0, vertex_count);
@@ -289,7 +289,7 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::DrawElements(const RVertexLayoutHandle& vao, uint32 indices_count) {
-		LUM_HOTCHK_RETURN_VOID(mLayouts.Exist(vao), LUM_SEV_WARN, "Cannot draw, invalid vertex layout");
+		LUM_HOTCHK_RETURN_VOID(mLayouts.Contains(vao), LUM_SEV_WARN, "Cannot draw, invalid vertex layout");
 
 		glBindVertexArray(mLayouts[vao].mHandle);
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices_count), GL_UNSIGNED_INT, nullptr);

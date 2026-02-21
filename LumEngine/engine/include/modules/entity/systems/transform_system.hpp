@@ -61,9 +61,9 @@ namespace lum::systems {
 
 		void calculate_matrix( TransformComponent* transform ) {
 			glm::mat4 new_model = glm::mat4(1.f);
-			new_model	= glm::translate( new_model, transform->position )
-						* glm::mat4_cast( glm::quat(glm::radians(transform->rotation)) )
-						* glm::scale	( new_model, transform->scale );
+			new_model	= glm::translate( new_model, transform->mPosition )
+						* glm::mat4_cast( glm::quat(glm::radians(transform->mRotation)) )
+						* glm::scale	( new_model, transform->mScale );
 			
 		}
 

@@ -32,7 +32,7 @@ namespace lum::rhi::gl {
 		GLfloat final_anisotropy = std::clamp((float32)desc.mAnisotropy, 1.0f, (float32)max_anisotropy);
 		glSamplerParameterf ( sampler.mHandle, GL_TEXTURE_MAX_ANISOTROPY, final_anisotropy );
 
-		RSamplerHandle samplerHandle = mSamplers.CreateHandle(std::move(sampler));
+		RSamplerHandle samplerHandle = mSamplers.Append(std::move(sampler));
 
 		LUM_LOG_INFO("Created sampler %d", samplerHandle.mID);
 
@@ -41,7 +41,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::BindSampler ( const RSamplerHandle& sampler, uint16 binding ) {
 		
-		LUM_HOTCHK_RETURN_VOID(mSamplers.Exist(sampler) && binding < MAX_SAMPLER_UNITS, LUM_SEV_WARN, "Sampler doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mSamplers.Contains(sampler) && binding < MAX_SAMPLER_UNITS, LUM_SEV_WARN, "Sampler doesn't exist");
 
 		if (mCurrentSamplers[binding] == sampler) {
 			LUM_PROFILER_CACHE_HIT();
@@ -57,11 +57,11 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::DeleteSampler ( RSamplerHandle sampler ) {
-		LUM_HOTCHK_RETURN_VOID( mSamplers.Exist(sampler), LUM_SEV_WARN, "Sampler doesn't exist" );
+		LUM_HOTCHK_RETURN_VOID( mSamplers.Contains(sampler), LUM_SEV_WARN, "Sampler doesn't exist" );
 
 		glDeleteSamplers ( 1, &mSamplers[sampler].mHandle );
 
-		mSamplers.DeleteHandle(sampler);
+		mSamplers.Remove(sampler);
 
 		LUM_LOG_INFO( "Deleted sampler %d", sampler.mID );
 

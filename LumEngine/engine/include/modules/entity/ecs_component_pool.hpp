@@ -3,28 +3,41 @@
 #include "entity/ecs_common.hpp"
 #include "core/utils/sparse_set.hpp"
 
+namespace lum::ecs { class MEntityManager; }
+
 namespace lum::ecs::detail {
-	struct BaseComponent {};
+
+	struct BaseComponent { 
+		virtual void Remove( EntityID enttiyID ) = 0;
+		virtual ~BaseComponent( ) {}
+	};
 
 	template<Component tType>
 	class ComponentPool : public BaseComponent {
 	public:
 
-		tType* Add(EntityID entityID, tType component = {}) {
-			mComponents.Append(tType{}, entityID);
-			return mComponents.GetAt(entityID);
+		friend class MEntityManager;
+
+		tType& Add( EntityID entityID, tType component ) {
+
+			if (!Has(entityID))
+				mComponents.Append(component, entityID);
+			return mComponents[entityID];
+
 		}
-		void Remove(EntityID entityID) {
-			mComponents.Remove(entityID);
+		tType* Get( EntityID entityID ) {
+			return mComponents.Get(entityID);
 		}
-		bool Has(EntityID entityID) {
-			return mComponents.Contains(entityID);
+		void Remove( EntityID entityID ) override {
+			mComponents.Remove( entityID );
+		}
+		bool Has( EntityID entityID ) {
+			return mComponents.Contains( entityID );
 		}
 
+	protected:
 
-	private:
-
-		cstd::SparseSet<uint32, tType> mComponents { limits::gMaxEcsPoolCapacity };
+		cstd::SparseSet<EntityID, tType> mComponents { limits::gMaxEntity };
 
 	};
 }

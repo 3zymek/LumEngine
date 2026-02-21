@@ -16,20 +16,21 @@ namespace lum {
 
 	/// Generates ID for any type
 	/// @tparam T object Type to generate an ID
-	/// @tparam NULL_VAL Null value for ID's
-	template<typename T, int32 NULL_VAL = 0>
+	/// @tparam tNullVal Null value for ID's
+	template<typename tType, int32 tNullVal = 0>
 	struct GenerateID {
 		static uint32 Get() {
 			return gID.fetch_add(1, std::memory_order_relaxed);
 		}
 	private:
-		inline static std::atomic<uint32> gID = NULL_VAL + 1;
+		inline static std::atomic<uint32> gID = tNullVal + 1;
 	};
 
 	struct GenerateTypeID {
-		template<typename T>
+		template<typename tType>
 		static uint32 Get() {
-			return gID.fetch_add(1, std::memory_order_relaxed);
+			static uint32 id = gID.fetch_add(1, std::memory_order_relaxed);
+			return id;
 		}
 	private:
 		inline static std::atomic<uint32> gID = 0;

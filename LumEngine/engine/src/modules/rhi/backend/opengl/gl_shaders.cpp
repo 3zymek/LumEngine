@@ -40,7 +40,7 @@ namespace lum::rhi::gl {
 
 		link_program(shader.mHandle);
 
-		RShaderHandle handle = mShaders.CreateHandle(std::move(shader));
+		RShaderHandle handle = mShaders.Append(std::move(shader));
 
 		LUM_LOG_INFO("Created shader %d", handle.mID);
 		return handle;
@@ -49,7 +49,7 @@ namespace lum::rhi::gl {
 	void GLDevice::BindShader ( const RShaderHandle& shader ) {
 
 		LUM_HOTCHK_RETURN_VOID(
-			mShaders.Exist(shader),
+			mShaders.Contains(shader),
 			LUM_SEV_WARN,
 			"Shader %d doesn't exist", 
 			shader.mID
@@ -72,7 +72,7 @@ namespace lum::rhi::gl {
 	void GLDevice::DeleteShader ( RShaderHandle& shader ) {
 
 		LUM_HOTCHK_RETURN_VOID(
-			mShaders.Exist(shader),
+			mShaders.Contains(shader),
 			LUM_SEV_WARN,
 			"Shader %d doesn't exist",
 			shader.mID
@@ -80,7 +80,7 @@ namespace lum::rhi::gl {
 
 		glDeleteProgram(mShaders[shader].mHandle);
 
-		mShaders.DeleteHandle(shader);
+		mShaders.Remove(shader);
 
 		LUM_LOG_DEBUG("Shader %d deleted", shader.mID);
 

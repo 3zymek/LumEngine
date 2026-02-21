@@ -46,7 +46,17 @@ public:
     }
 
     void Update() {
-
+        
+        mEntityManager->Each<CRender, CTransform, CMaterial, CStaticMesh>(
+            [&](CRender& render, CTransform& transform, CMaterial& material, CStaticMesh& mesh) 
+            {
+                Object obj;
+                obj.mMaterial = material.mMaterial;
+                obj.mStaticMesh = mesh.mMesh;
+                obj.mTransform = transform;
+                mRenderer->Draw(obj);
+            });
+        
     }
 
 private:
@@ -76,9 +86,9 @@ int main() {
     MMaterialManager matManager{ device, &texManager };
     MMeshManager meshManager{ device };
     MShaderManager shaderManager{ device };
-    
+
     auto tex = texManager.Load("textures/scene.png", ETexturePreset::Albedo);
-    //auto cubemap = texManager.LoadEquirectangularCubemap("textures/cubemap.png");
+    auto cubemap = texManager.LoadEquirectangularCubemap("textures/cubemap.png");
 
     FMaterialBase base;
     base.mBaseColor = { 1.f, 1.f, 1.f };
@@ -96,19 +106,18 @@ int main() {
     ctx.mShaderManager = &shaderManager;
 
     SRenderer render{ ctx };
-    
-    ev::EventBus evBus;
+    ecs::MEntityManager entMgr;
+    RenderSystem sysRender{ &entMgr, &render };
 
     Camera camera{ window };
-    Object obj;
-    Object obj2;
-    obj.mMaterial = materialInstance;
-    obj.mStaticMesh = meshHandle;
-    obj2.mMaterial = materialInstance;
-    obj2.mStaticMesh = meshHandle;
-    obj2.mTransform.position = { 10, 0, 0 };
+    ManagedEntity e1 = entMgr.CreateEntity();
 
-    //render.SetEnvionmentTexture(cubemap);
+    e1.AddComponent<CMaterial>({ .mMaterial = materialInstance });
+    e1.AddComponent<CTransform>();
+    e1.AddComponent<CStaticMesh>({ .mMesh = meshHandle });
+    e1.AddComponent<CRender>();
+
+    render.SetEnvionmentTexture(cubemap);
 
     DirectionalLight light;
 
@@ -130,14 +139,14 @@ int main() {
         ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
         ImGui::End();
 
-        ImGui::Begin("BaseColor");
-        ImGui::DragFloat("Roughness1", &obj.mMaterial.mRoughness, 0.1f, 0.0f, 1.0f);
-        ImGui::DragFloat("Metallic1", &obj.mMaterial.mMetallic, 0.1f, 0.0f, 1.0f);
-        ImGui::ColorEdit3("Color1", glm::value_ptr(obj.mMaterial.mBaseColor));
-        ImGui::DragFloat("Roughness2", &obj2.mMaterial.mRoughness, 0.1f, 0.0f, 1.0f);
-        ImGui::DragFloat("Metallic2", &obj2.mMaterial.mMetallic, 0.1f, 0.0f, 1.0f);
-        ImGui::ColorEdit3("Color2", glm::value_ptr(obj2.mMaterial.mBaseColor));
-        ImGui::End();
+        //ImGui::Begin("BaseColor");
+        //ImGui::DragFloat("Roughness1", &obj.mMaterial.mRoughness, 0.1f, 0.0f, 1.0f);
+        //ImGui::DragFloat("Metallic1", &obj.mMaterial.mMetallic, 0.1f, 0.0f, 1.0f);
+        //ImGui::ColorEdit3("Color1", glm::value_ptr(obj.mMaterial.mBaseColor));
+        //ImGui::DragFloat("Roughness2", &obj2.mMaterial.mRoughness, 0.1f, 0.0f, 1.0f);
+        //ImGui::DragFloat("Metallic2", &obj2.mMaterial.mMetallic, 0.1f, 0.0f, 1.0f);
+        //ImGui::ColorEdit3("Color2", glm::value_ptr(obj2.mMaterial.mBaseColor));
+        //ImGui::End();
 
         ImGui::Begin("Light");
         ImGui::DragFloat3("Position", glm::value_ptr(light.mDirection), 0.1f, -1000.f, 1000.f);
@@ -145,10 +154,9 @@ int main() {
         ImGui::End();
 
         render.UpdateCamera(camera);
-        
+
+        sysRender.Update();
+
         render.EndFrame();
     }
-
-
-
 } 

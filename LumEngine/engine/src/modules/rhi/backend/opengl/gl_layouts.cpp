@@ -5,7 +5,7 @@ namespace lum::rhi::gl {
 	RVertexLayoutHandle GLDevice::CreateVertexLayout ( const RVertexLayoutDescriptor& desc, const RBufferHandle& vbo ) {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
-			mBuffers.Exist(vbo),
+			mBuffers.Contains(vbo),
 			LUM_SEV_WARN,
 			RVertexLayoutHandle{},
 			"Buffer doesn't exist"
@@ -50,7 +50,7 @@ namespace lum::rhi::gl {
 
 		}
 
-		auto layoutHandle = mLayouts.CreateHandle(std::move(layout));
+		auto layoutHandle = mLayouts.Append(std::move(layout));
 
 		LUM_LOG_INFO("Created vertex layout %d", layoutHandle.mID);
 
@@ -58,10 +58,10 @@ namespace lum::rhi::gl {
 
 	}
 	void GLDevice::DeleteVertexLayout ( RVertexLayoutHandle& layout ) {
-		LUM_HOTCHK_RETURN_VOID(!mLayouts.Exist(layout), LUM_SEV_WARN, "Layout doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(!mLayouts.Contains(layout), LUM_SEV_WARN, "Layout doesn't exist");
 
 		glDeleteVertexArrays(1, &mLayouts[layout].mHandle);
-		mLayouts.DeleteHandle(layout);
+		mLayouts.Remove(layout);
 
 	}
 }

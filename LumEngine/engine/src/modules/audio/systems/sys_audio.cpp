@@ -22,7 +22,7 @@ namespace lum {
 						manager.StopEmitterClip(active_clip.mEmitterID, active_clip.mAudioClip);
 					}
 
-					FMOD_VECTOR transfered_pos = TransferEmitterCoordsToFMOD(emitter.transform->position);
+					FMOD_VECTOR transfered_pos = TransferEmitterCoordsToFMOD(emitter.transform->mPosition);
 					FMOD_VECTOR vel = { 0, 0, 0 };
 
 					active_clip.mChannel->set3DAttributes(
@@ -85,7 +85,7 @@ namespace lum {
 			LUM_HOTCHK_RETURN_VOID(!listener, LUM_SEV_WARN, "Listener doesn't exists");
 			LUM_HOTCHK_RETURN_VOID(!listener->mTransform, LUM_SEV_WARN, "Listener doesn't have transform component");
 
-			FMOD_VECTOR transfered_pos = TransferListenerCoordsToFMOD(listener->mTransform->position);
+			FMOD_VECTOR transfered_pos = TransferListenerCoordsToFMOD(listener->mTransform->mPosition);
 
 			FMOD_VECTOR forward = TransferListenerCoordsToFMOD(listener->mListener->forward);
 			FMOD_VECTOR up		= TransferListenerCoordsToFMOD(listener->mListener->up);

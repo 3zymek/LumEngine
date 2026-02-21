@@ -14,7 +14,7 @@ namespace lum {
 
 				using CallbackArray		= std::array<Callback, limits::gMaxCallbackPerFrame>;
 				using PermCallbackArray = std::array<Callback, limits::gMaxPermanentCallbacks>;
-				using SlotsVector		= std::vector<Event_t>;
+				using SlotsVector		= std::vector<EventT>;
 				using EventsVector		= std::vector<T>;
 
 			public:
@@ -153,7 +153,7 @@ namespace lum {
 
 					auto temp = mCurrentCallbacksID;
 					// Temporary callbacks
-					for (Event_t i = 0; i < temp; i++) {
+					for (EventT i = 0; i < temp; i++) {
 						auto& callback = mCallbacks[i];
 						if (!callback.bActive)
 							continue;
@@ -178,14 +178,14 @@ namespace lum {
 					mEventsNext.reserve(limits::gMaxCallbackPerFrame);
 					mToDelete.reserve(gMaxDeleteCallbacksPerFrame);
 
-					for (Event_t i = 0; i < limits::gMaxPermanentCallbacks; i++) {
+					for (EventT i = 0; i < limits::gMaxPermanentCallbacks; i++) {
 						mPermFreeSlots.push_back(i);
 					}
 
 				}
 
 				CallbackArray	mCallbacks;
-				Event_t			mCurrentCallbacksID = 0;
+				EventT			mCurrentCallbacksID = 0;
 
 				PermCallbackArray	mPermCallbacks;
 				SlotsVector			mPermFreeSlots;

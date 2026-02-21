@@ -188,13 +188,13 @@ namespace lum {
 
 		void upload_model_matrix(const CTransform& obj) {
 
-			glm::quat rot = glm::quat(glm::radians(obj.rotation));
+			glm::quat rot = glm::quat(glm::radians(obj.mRotation));
 			glm::mat4 rotation = glm::mat4_cast(rot);
 			glm::mat4 model = glm::mat4(1.f);
 			model = glm::mat4(1.f);
-			model = glm::translate(model, obj.position);
+			model = glm::translate(model, obj.mPosition);
 			model = model * rotation;
-			model = glm::scale(model, obj.scale);
+			model = glm::scale(model, obj.mScale);
 
 			mRenderDevice->UpdateBuffer(mUniforms.mModelUniform, glm::value_ptr(model), 0, 0);
 

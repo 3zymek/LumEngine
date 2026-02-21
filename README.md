@@ -59,7 +59,6 @@ LumEngine/
 M (Manager)     - Class that manages data flow and object lifetime
 S (System)      - Class that processes data each frame, no ownership
 C (Component)   - Struct that is component in ECS
-L (Lumen)       - Engine types used by user ( or highend )
 R (Render)      - Class that is part of Render Hardware Interface
 F (Plain Data)  - Stores only data
 E (Enum)        - Enum or enum class
@@ -69,6 +68,7 @@ m (member)  - Variable is a member of a class
 s (static)  - Variable is static
 g (global)  - Variable doesn't belong to any class (global state)
 k (const)   - Variable is constant (or constexpr)
+t (template)- Template type
 
 I use PascalCase for public function and classes, snake_case for private methods and camelCase for variables
 ````

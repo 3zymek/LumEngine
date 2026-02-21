@@ -57,13 +57,13 @@ namespace lum {
 		LUM_NODISCARD
 		MaterialBaseHandle UploadBase ( const FMaterialBase& base ) {
 
-			return mBaseMaterials.CreateHandle(base);
+			return mBaseMaterials.Append(base);
 
 		}
 
 		FMaterialInstance CreateInstance ( MaterialBaseHandle base ) {
 
-			if (!mBaseMaterials.Exist(base))
+			if (!mBaseMaterials.Contains(base))
 				base = mDefaultMaterial;
 
 			FMaterialInstance instance;
@@ -101,7 +101,7 @@ namespace lum {
 		MTextureManager* mTextureManager = nullptr;
 		rhi::RDevice* mRenderDevice = nullptr;
 
-		cstd::handle_pool<FMaterialBase, MaterialBaseHandle> mBaseMaterials{ limits::gMaxMaterials };
+		cstd::HandlePool<MaterialBaseHandle, FMaterialBase> mBaseMaterials { limits::gMaxMaterials };
 
 		rhi::RTextureHandle validate_texture ( rhi::RTextureHandle tex ) {
 

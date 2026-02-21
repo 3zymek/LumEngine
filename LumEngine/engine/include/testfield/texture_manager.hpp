@@ -28,8 +28,7 @@ namespace lum {
 		
 	};
 
-	/*====================================================================
-	* @brief Manages GPU texture resources and their lifecycle.
+	/* @brief Manages GPU texture resources and their lifecycle.
 	*
 	* Handles texture loading, caching, and creation through the RHI backend.
 	* Textures are identified by path hash and accessed via RTextureHandle.
@@ -43,8 +42,7 @@ namespace lum {
 		
 		MTextureManager( rhi::RDevice* device ) { init(device); }
 
-		/*====================================================================
-		* @brief Retrieves a cached texture by path.
+		/* @brief Retrieves a cached texture by path.
 		* Returns missing texture fallback if not found in cache.
 		* @param path Path to the texture asset.
 		* @param id Root directory identifier.
@@ -61,8 +59,7 @@ namespace lum {
 
 		}
 
-		/*====================================================================
-		* @brief Loads a texture from disk or returns cached version.
+		/* @brief Loads a texture from disk or returns cached version.
 		* Applies preset configuration (format, mipmaps) based on texture type.
 		* Returns missing texture fallback on load failure.
 		* @param path Path to the texture asset.
@@ -101,17 +98,14 @@ namespace lum {
 			if (mTextures.contains(hash))
 				return mTextures[hash];
 
-			LUM_LOG_DEBUG("Loading equirectangular: %s", path);
 			std::optional<FTextureData> data = AssetLoader::LoadTexture(root, path);
 			if (!data) {
 				LUM_LOG_ERROR("Failed to load texture %s", path);
 				return mMissingTexture;
 			}
 
-			LUM_LOG_DEBUG("Converting to cubemap...");
 			std::array<FTextureData, 6> convertedData = convert_equirectangular_to_cubemap(data.value(), data.value().mWidth);
 
-			LUM_LOG_DEBUG("Creating texture...");
 			rhi::RTextureDescriptor desc;
 			for (int32 i = 0; i < 6; i++)
 				desc.mCubemap.mFaces[i] = convertedData[i];
@@ -125,8 +119,7 @@ namespace lum {
 			return handle;
 		}
 
-		/*====================================================================
-		* @brief Returns a built-in fallback texture.
+		/* @brief Returns a built-in fallback texture.
 		* @param fallback Fallback type (Missing = checkered, Default = white 1x1).
 		*/
 		rhi::RTextureHandle GetFallbackTexture ( EFallbackTexture fallback ) {
@@ -146,8 +139,7 @@ namespace lum {
 		
 		std::unordered_map<uint64, rhi::RTextureHandle> mTextures;
 
-		/*====================================================================
-		* @brief Initializes the texture manager with a render device.
+		/* @brief Initializes the texture manager with a render device.
 		* Automatically creates default and missing fallback textures.
 		* @param device Valid pointer to an RDevice instance.
 		*/
@@ -159,8 +151,7 @@ namespace lum {
 
 		}
 
-		/*====================================================================
-		* @brief Creates built-in fallback textures on initialization.
+		/* @brief Creates built-in fallback textures on initialization.
 		*
 		* Creates two fallback textures:
 		* - Default: 1x1 white texture used as safe fallback.

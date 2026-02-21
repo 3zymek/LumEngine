@@ -110,7 +110,7 @@ namespace lum {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
-			auto& emitter = mEmitters[emitterID];
+			AudioEmitter& emitter = mEmitters[emitterID];
 
 			if (emitter.clips.contains(audioID))
 				return;
@@ -127,7 +127,7 @@ namespace lum {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
-			auto& emitter = mEmitters[emitterID];
+			AudioEmitter& emitter = mEmitters[emitterID];
 			emitter.clips.erase(audioID);
 
 			LUM_LOG_DEBUG("Removed clip {} from emitter {}");
@@ -136,7 +136,7 @@ namespace lum {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
-			auto& emitter = mEmitters[emitterID];
+			AudioEmitter& emitter = mEmitters[emitterID];
 
 			if (!emitter.clips.contains(audioID))
 				return;
@@ -157,7 +157,7 @@ namespace lum {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
-			auto& emitter = mEmitters[emitterID];
+			AudioEmitter& emitter = mEmitters[emitterID];
 
 			if (!emitter.clips.contains(audioID)) {
 				LUM_LOG_WARN("Audio {} does not exists");
@@ -180,7 +180,7 @@ namespace lum {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
-			auto& emitter = mEmitters[emitterID];
+			AudioEmitter& emitter = mEmitters[emitterID];
 
 			if (!emitter.clips.contains(audioID)) {
 				LUM_LOG_WARN("Audio {} does not exists");
@@ -196,7 +196,7 @@ namespace lum {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
-			auto& emitter = mEmitters[emitterID];
+			AudioEmitter& emitter = mEmitters[emitterID];
 
 			if (!emitter.clips.contains(audioID)) {
 				LUM_LOG_WARN("Audio {} does not exists");
@@ -212,7 +212,7 @@ namespace lum {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
-			auto& emitter = mEmitters[emitterID];
+			AudioEmitter& emitter = mEmitters[emitterID];
 
 			if (!emitter.clips.contains(audioID)) {
 				LUM_LOG_WARN("Audio {} does not exists");
@@ -228,7 +228,7 @@ namespace lum {
 
 			ValidateEmitterAndAudioID(emitterID, audioID);
 
-			auto& emitter = mEmitters[emitterID];
+			AudioEmitter& emitter = mEmitters[emitterID];
 
 			if (!emitter.clips.contains(audioID))
 				return;

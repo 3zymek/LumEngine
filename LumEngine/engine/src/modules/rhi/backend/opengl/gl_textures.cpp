@@ -25,6 +25,7 @@ namespace lum::rhi::gl {
 		else if (desc.mTextureType == RTextureType::Cubemap)
 			return create_texture_cubemap(desc);
 
+		return {};
 	}
 	void GLDevice::UnbindTexture(RTextureType type) {
 
@@ -33,7 +34,7 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::UpdateTexture(const RTextureHandle& tex, const RTextureUpdateDescriptor& desc) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.Exist(tex), LUM_SEV_WARN, "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(tex), LUM_SEV_WARN, "Texture doesn't exist");
 
 		LUM_HOTCHK_RETURN_VOID(
 			desc.mData.mPixels.data() != nullptr,
@@ -77,16 +78,16 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::DeleteTexture(RTextureHandle& texture) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.Exist(texture), LUM_SEV_WARN, "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(texture), LUM_SEV_WARN, "Texture doesn't exist");
 
 		glDeleteTextures(1, &mTextures[texture].mHandle);
 
-		mTextures.DeleteHandle(texture);
+		mTextures.Remove(texture);
 
 	}
 	void GLDevice::BindTexture(const RTextureHandle& texture, uint16 binding) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.Exist(texture) && binding < MAX_TEXTURE_UNITS, LUM_SEV_WARN, "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(texture) && binding < MAX_TEXTURE_UNITS, LUM_SEV_WARN, "Texture doesn't exist");
 
 		if (mCurrentTextures[binding] == texture) {
 			LUM_PROFILER_CACHE_HIT();
@@ -144,7 +145,7 @@ namespace lum::rhi::gl {
 		texture.mType = RTextureType::Texture2D;
 		texture.mMipmapLevels = mipmapLevels;
 
-		auto textureHandle = mTextures.CreateHandle(std::move(texture));
+		auto textureHandle = mTextures.Append(std::move(texture));
 
 		LUM_LOG_INFO("Created texture 2D %d", textureHandle.mID);
 
@@ -208,7 +209,7 @@ namespace lum::rhi::gl {
 
 		}
 
-		return mTextures.CreateHandle(std::move(tex));
+		return mTextures.Append(std::move(tex));
 
 	}
 

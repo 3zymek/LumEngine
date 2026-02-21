@@ -6,7 +6,7 @@ namespace lum {
 	namespace ev {
 		struct AddClipToEmitter
 		{
-			LumEventTag;
+			LUM_EVENT_TAG;
 			
 
 			audio::EmitterID emitterID;
@@ -20,7 +20,7 @@ namespace lum {
 		struct RemoveClipFromEmitter
 		{
 
-			LumEventTag;
+			LUM_EVENT_TAG;
 
 			audio::EmitterID emitterID;
 			String name;
@@ -28,7 +28,7 @@ namespace lum {
 		};
 		struct PlaySound
 		{
-			LumEventTag;
+			LUM_EVENT_TAG;
 
 			audio::EmitterID emitterID;
 			String name;

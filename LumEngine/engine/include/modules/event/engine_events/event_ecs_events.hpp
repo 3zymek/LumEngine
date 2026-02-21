@@ -7,11 +7,11 @@ namespace lum::ev {
 
 		ecs::EntityID entityID;
 		ecs::detail::ComponentTID component_typeID;
-		LumEventTag;
+		LUM_EVENT_TAG;
 	};
 	struct ComponentRemoved
 	{
-		LumEventTag;
+		LUM_EVENT_TAG;
 
 		ecs::EntityID entityID{};
 		ecs::detail::ComponentTID component_typeID{};

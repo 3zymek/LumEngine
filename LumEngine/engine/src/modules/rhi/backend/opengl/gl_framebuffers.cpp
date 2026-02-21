@@ -21,7 +21,7 @@ namespace lum::rhi::gl {
 
 		glCreateFramebuffers(1, &fbo.mHandle);
 
-		return mFramebuffers.CreateHandle(std::move(fbo));
+		return mFramebuffers.Append(std::move(fbo));
 
 	}
 
@@ -40,13 +40,13 @@ namespace lum::rhi::gl {
 		GLenum format = skInternalImageFormatLookup[lookup_cast(desc.mFormat)];
 		glTextureStorage2D(tex.mHandle, 1, format, desc.mWidth, desc.mHeight);
 
-		return mTextures.CreateHandle(std::move(tex));
+		return mTextures.Append(std::move(tex));
 	}
 
 	void GLDevice::SetFramebufferColorTexture(const RFramebufferHandle& fbo, const RTextureHandle& tex, int8 index) {
 
-		LUM_HOTCHK_RETURN_VOID(mFramebuffers.Exist(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
-		LUM_HOTCHK_RETURN_VOID(mTextures.Exist(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mFramebuffers.Contains(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
 	   
 		if (index > 31) {
 			LUM_LOG_WARN("Too big color index given");
@@ -59,8 +59,8 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetFramebufferDepthTexture(const RFramebufferHandle& fbo, const RTextureHandle& tex) {
 
-		LUM_HOTCHK_RETURN_VOID(mFramebuffers.Exist(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
-		LUM_HOTCHK_RETURN_VOID(mTextures.Exist(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mFramebuffers.Contains(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
 
 		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_DEPTH_ATTACHMENT, mTextures[tex].mHandle, 0);
 
@@ -68,8 +68,8 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetFramebufferStencilTexture(const RFramebufferHandle& fbo, const RTextureHandle& tex) {
 
-		LUM_HOTCHK_RETURN_VOID(mFramebuffers.Exist(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
-		LUM_HOTCHK_RETURN_VOID(mTextures.Exist(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mFramebuffers.Contains(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
 
 		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_STENCIL_ATTACHMENT, mTextures[tex].mHandle, 0);
 
@@ -83,16 +83,16 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::DeleteFramebuffer(RFramebufferHandle& buff) {
-		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.Exist(buff), LUM_SEV_DEBUG, "Framebuffer doesn't exists");
+		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.Contains(buff), LUM_SEV_DEBUG, "Framebuffer doesn't exists");
 
 		RFramebuffer& fbo = mFramebuffers[buff];
 		glDeleteFramebuffers(1, &fbo.mHandle);
 
-		mFramebuffers.DeleteHandle(buff);
+		mFramebuffers.Remove(buff);
 	}
 
 	void GLDevice::BindFramebuffer(const RFramebufferHandle& buff) {
-		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.Exist(buff), LUM_SEV_DEBUG, "Framebuffer doesn't exists");
+		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.Contains(buff), LUM_SEV_DEBUG, "Framebuffer doesn't exists");
 
 		if (mCurrentFramebuffer == buff) {
 			LUM_PROFILER_CACHE_HIT();

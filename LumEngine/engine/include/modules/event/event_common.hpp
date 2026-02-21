@@ -12,14 +12,15 @@ namespace lum {
 			std::is_trivially_copyable_v<T>&&
 				std::is_trivially_constructible_v<T>;
 
-			using Event_t	= uint32;
+			using EventT	= uint32;
 			using InvokeFn	= void(*)(vptr userParam, cvptr event);
 			using DestroyFn = void(*)(vptr userParam);
 			using Storage	= std::aligned_storage_t<256, alignof(std::max_align_t)>;
 			
 			using SubscribtionID = uint32;
 
-			LUM_COMPILE_VARIABLE usize gMaxDeleteCallbacksPerFrame = 2;
+			LUM_COMPILE_VARIABLE 
+			usize gMaxDeleteCallbacksPerFrame = 2;
 
 			struct Callback {
 				Storage mStorage{};
@@ -34,18 +35,18 @@ namespace lum {
 
 			struct GetEventTypeID {
 				template<LumEvent T>
-				constexpr static Event_t Get() {
-					static Event_t typeID = globalID++;
+				constexpr static EventT Get() {
+					static EventT typeID = globalID++;
 					return typeID;
 				}
 			private:
 
-				static inline Event_t globalID = 0;
+				static inline EventT globalID = 0;
 
 			};
 
 
-			#define LumEventTag static constexpr bool __lumevent__ = true;
+			#define LUM_EVENT_TAG static constexpr bool __lumevent__ = true;
 
 		}
 	}

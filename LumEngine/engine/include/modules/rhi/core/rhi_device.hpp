@@ -1434,13 +1434,13 @@ namespace lum::rhi {
 		LUM_COMPILE_VARIABLE
 		static uint32 skMaxPipelines = 100;
 
-		cstd::handle_pool<RSampler, RSamplerHandle, RSamplerID>				mSamplers		{ skMaxSamplers };
-		cstd::handle_pool<RShader, RShaderHandle, RShaderID>				mShaders		{ skMaxShaders };
-		cstd::handle_pool<RBuffer, RBufferHandle, RBufferID>				mBuffers		{ skMaxBuffers };
-		cstd::handle_pool<RVertexLayout, RVertexLayoutHandle, RLayoutID>	mLayouts		{ skMaxLayouts };
-		cstd::handle_pool<RTexture, RTextureHandle, RTextureID>				mTextures		{ skMaxTextures };
-		cstd::handle_pool<RFramebuffer, RFramebufferHandle, RFramebufferID>	mFramebuffers	{ skMaxFramebuffers };
-		cstd::handle_pool<RPipeline, RPipelineHandle, RPipelineID>			mPipelines		{ skMaxPipelines };
+		cstd::HandlePool<RSamplerHandle, RSampler, RSamplerID>				mSamplers		{ skMaxSamplers };
+		cstd::HandlePool<RShaderHandle, RShader, RShaderID>					mShaders		{ skMaxShaders };
+		cstd::HandlePool<RBufferHandle, RBuffer, RBufferID>					mBuffers		{ skMaxBuffers };
+		cstd::HandlePool<RVertexLayoutHandle, RVertexLayout, RLayoutID>		mLayouts		{ skMaxLayouts };
+		cstd::HandlePool<RTextureHandle, RTexture, RTextureID>				mTextures		{ skMaxTextures };
+		cstd::HandlePool<RFramebufferHandle, RFramebuffer, RFramebufferID>	mFramebuffers	{ skMaxFramebuffers };
+		cstd::HandlePool<RPipelineHandle, RPipeline, RPipelineID>			mPipelines		{ skMaxPipelines };
 
 
 

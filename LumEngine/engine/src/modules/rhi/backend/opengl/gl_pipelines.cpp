@@ -94,28 +94,28 @@ namespace lum::rhi::gl {
 			"Max pipelines reached"
 		);
 
-		if (desc.mShader.mID != null_id<RShaderID>() && !mShaders.Exist(desc.mShader)) {
+		if (desc.mShader.mID != null_id<RShaderID>() && !mShaders.Contains(desc.mShader)) {
 			LUM_LOG_ERROR("Shader %d doesn't exist", desc.mShader.mID);
 		}
 
 		RPipeline pipeline;
 		std::memcpy(&pipeline, &desc, sizeof(desc));
 
-		return mPipelines.CreateHandle(std::move(pipeline));
+		return mPipelines.Append(std::move(pipeline));
 
 	}
 	void GLDevice::DeletePipeline(RPipelineHandle& pipeline) {
 
-		if (!mPipelines.Exist(pipeline)) {
+		if (!mPipelines.Contains(pipeline)) {
 			return;
 		}
 
-		mPipelines.DeleteHandle(pipeline);
+		mPipelines.Remove(pipeline);
 
 	}
 	void GLDevice::BindPipeline(const RPipelineHandle& pipeline) {
 
-		if (!mPipelines.Exist(pipeline)) {
+		if (!mPipelines.Contains(pipeline)) {
 			return;
 		}
 

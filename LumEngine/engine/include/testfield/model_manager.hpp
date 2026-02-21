@@ -50,7 +50,7 @@ namespace lum {
 		MMeshManager(rhi::RDevice* device) : mRenderDevice(device) { create_meshes(); }
 
 		FStaticMeshResource GetStatic(StaticMeshHandle handle) {
-			if (mStaticMeshes.Exist(handle))
+			if (mStaticMeshes.Contains(handle))
 				return mStaticMeshes[handle];
 			else 
 				return mStaticMeshes[mDefaultMesh];
@@ -78,7 +78,7 @@ namespace lum {
 			meshResource.mVao = res.mVao;
 			meshResource.mNumIndices = data.value().mIndices.size();
 
-			StaticMeshHandle meshHandle = mStaticMeshes.CreateHandle(std::move(meshResource));
+			StaticMeshHandle meshHandle = mStaticMeshes.Append(std::move(meshResource));
 
 			mStaticMeshCache[hash] = meshHandle;
 
@@ -116,8 +116,20 @@ namespace lum {
 		StaticMeshHandle mErrorMesh;
 
 		std::unordered_map<uint64, StaticMeshHandle> mStaticMeshCache;
-		cstd::handle_pool<FStaticMeshResource, StaticMeshHandle> mStaticMeshes { limits::gMaxModels };
+		cstd::HandlePool<StaticMeshHandle, FStaticMeshResource> mStaticMeshes { limits::gMaxModels };
 
+		std::vector<Vertex> mBasicVertices = {
+			// position              // normal            // uv
+			{{ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }},
+			{{  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }},
+			{{  0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }},
+			{{ -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }},
+		};
+
+		std::vector<uint32> mBasicIndices = {
+			0, 1, 2,
+			2, 3, 0
+		};
 
 		detail::FRenderResources upload_gpu(detail::EMeshType type, const FMeshData& data) {
 			
@@ -197,7 +209,7 @@ namespace lum {
 				staticMesh.mVao = res.mVao;
 				staticMesh.mNumIndices = data.mIndices.size();
 				
-				mDefaultMesh = mStaticMeshes.CreateHandle(std::move(staticMesh));
+				mDefaultMesh = mStaticMeshes.Append(std::move(staticMesh));
 				
 			}
 			{ // Error mesh
@@ -215,24 +227,11 @@ namespace lum {
 				staticMesh.mVao = res.mVao;
 				staticMesh.mNumIndices = data.value().mIndices.size();
 
-				mErrorMesh = mStaticMeshes.CreateHandle(std::move(staticMesh));
+				mErrorMesh = mStaticMeshes.Append(std::move(staticMesh));
 
 			}
 
 		}
-
-		std::vector<Vertex> mBasicVertices = {
-			// position              // normal            // uv
-			{{ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }},
-			{{  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }},
-			{{  0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }},
-			{{ -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }},
-		};
-
-		std::vector<uint32> mBasicIndices = {
-			0, 1, 2,
-			2, 3, 0
-		};
 
 	};
 
