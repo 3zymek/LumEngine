@@ -27,14 +27,14 @@ def setup_fmod():
     debugDir.mkdir(parents=True, exist_ok=True)
     releaseDir.mkdir(parents=True, exist_ok=True)
 
-    dll_dir = fmodDir / "dll"
-    if dll_dir.exists():
-        for dll_file in dll_dir.glob("*.dll"):
-            shutil.copy2(dll_file, debugDir)
-            shutil.copy2(dll_file, releaseDir)
+    dllDir = fmodDir / "dll"
+    if dllDir.exists():
+        for dllFile in dllDir.glob("*.dll"):
+            shutil.copy2(dllFile, debugDir)
+            shutil.copy2(dllFile, releaseDir)
 
     print("Cleaning up...")
     if fmodZip.exists():
         fmodZip.unlink()
-    if dll_dir.exists():
-        shutil.rmtree(dll_dir)
+    if dllDir.exists():
+        shutil.rmtree(dllDir)

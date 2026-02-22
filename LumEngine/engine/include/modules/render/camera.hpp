@@ -6,10 +6,10 @@ namespace lum {
 
     struct Window;
 
-    class Camera {
+    class EditorCamera {
     public:
 
-        Camera(Window* wind) : m_window(wind) { Init(wind); }
+        EditorCamera(Window* wind) : m_window(wind) { Init(wind); }
 
         void Update() {
 

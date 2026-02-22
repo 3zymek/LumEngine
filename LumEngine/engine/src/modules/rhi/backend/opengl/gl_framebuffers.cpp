@@ -17,7 +17,7 @@ namespace lum::rhi::gl {
 			"Max framebuffers reached"
 		);
 
-		RFramebuffer fbo;
+		FFramebuffer fbo;
 
 		glCreateFramebuffers(1, &fbo.mHandle);
 
@@ -33,11 +33,11 @@ namespace lum::rhi::gl {
 			"Max textures reached"
 		);
 
-		RTexture tex;
+		FTexture tex;
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &tex.mHandle);
 
-		GLenum format = skInternalImageFormatLookup[lookup_cast(desc.mFormat)];
+		GLenum format = skInternalImageFormatLookup[LookupCast(desc.mFormat)];
 		glTextureStorage2D(tex.mHandle, 1, format, desc.mWidth, desc.mHeight);
 
 		return mTextures.Append(std::move(tex));
@@ -85,7 +85,7 @@ namespace lum::rhi::gl {
 	void GLDevice::DeleteFramebuffer(RFramebufferHandle& buff) {
 		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.Contains(buff), LUM_SEV_DEBUG, "Framebuffer doesn't exists");
 
-		RFramebuffer& fbo = mFramebuffers[buff];
+		FFramebuffer& fbo = mFramebuffers[buff];
 		glDeleteFramebuffers(1, &fbo.mHandle);
 
 		mFramebuffers.Remove(buff);

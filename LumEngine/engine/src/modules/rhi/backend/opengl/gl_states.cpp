@@ -175,7 +175,7 @@ namespace lum::rhi::gl {
 	bool GLDevice::IsCullEnabled ( ) const noexcept {
 		return mEnabledStates.Has(RState::Cull);
 	}
-	void GLDevice::SetCullFace ( RFace face ) {
+	void GLDevice::SetCullFace ( EFace face ) {
 
 		if (!mEnabledStates.Has(RState::Cull)) {
 			return;
@@ -186,14 +186,14 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		glCullFace(skFacesLookup[lookup_cast(face)]);
+		glCullFace(skFacesLookup[LookupCast(face)]);
 
 		mCullState.mFace = face;
 
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetFrontFace ( RWindingOrder order ) {
+	void GLDevice::SetFrontFace ( EWindingOrder order ) {
 
 		if (!mEnabledStates.Has(RState::Cull)) {
 			return;
@@ -204,7 +204,7 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		glFrontFace((order == RWindingOrder::Clockwise) ? GL_CW : GL_CCW);
+		glFrontFace((order == EWindingOrder::Clockwise) ? GL_CW : GL_CCW);
 
 		mCullState.mWindingOrder = order;
 
@@ -256,7 +256,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 	
 	}
-	void GLDevice::SetBlendFactors ( RBlendFactor srcColor, RBlendFactor dstColor, RBlendFactor srcAlpha, RBlendFactor dstAlpha ) {
+	void GLDevice::SetBlendFactors ( EBlendFactor srcColor, EBlendFactor dstColor, EBlendFactor srcAlpha, EBlendFactor dstAlpha ) {
 
 		if (!mEnabledStates.Has(RState::Blend)) {
 			return;
@@ -270,10 +270,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[lookup_cast(srcColor)],
-			skBlendFactorLookup[lookup_cast(dstColor)],
-			skBlendFactorLookup[lookup_cast(srcAlpha)],
-			skBlendFactorLookup[lookup_cast(dstAlpha)]
+			skBlendFactorLookup[LookupCast(srcColor)],
+			skBlendFactorLookup[LookupCast(dstColor)],
+			skBlendFactorLookup[LookupCast(srcAlpha)],
+			skBlendFactorLookup[LookupCast(dstAlpha)]
 		);
 
 		mBlendState.mSrcColorFactor = srcColor;
@@ -284,7 +284,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetBlendColorFactors ( RBlendFactor srcColor, RBlendFactor dstColor ) {
+	void GLDevice::SetBlendColorFactors ( EBlendFactor srcColor, EBlendFactor dstColor ) {
 
 		if (!mEnabledStates.Has(RState::Blend)) {
 			return;
@@ -296,10 +296,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[lookup_cast(srcColor)],
-			skBlendFactorLookup[lookup_cast(dstColor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mSrcAlphaFactor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mDstAlphaFactor)]
+			skBlendFactorLookup[LookupCast(srcColor)],
+			skBlendFactorLookup[LookupCast(dstColor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mSrcAlphaFactor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mDstAlphaFactor)]
 		);
 
 		mBlendState.mSrcColorFactor = srcColor;
@@ -308,7 +308,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetBlendAlphaFactors ( RBlendFactor srcAlpha, RBlendFactor dstAlpha ) {
+	void GLDevice::SetBlendAlphaFactors ( EBlendFactor srcAlpha, EBlendFactor dstAlpha ) {
 
 		if (!mEnabledStates.Has(RState::Blend)) {
 			return;
@@ -320,10 +320,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[lookup_cast(mBlendState.mSrcColorFactor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mDstColorFactor)],
-			skBlendFactorLookup[lookup_cast(srcAlpha)],
-			skBlendFactorLookup[lookup_cast(dstAlpha)]
+			skBlendFactorLookup[LookupCast(mBlendState.mSrcColorFactor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mDstColorFactor)],
+			skBlendFactorLookup[LookupCast(srcAlpha)],
+			skBlendFactorLookup[LookupCast(dstAlpha)]
 		);
 
 		mBlendState.mSrcAlphaFactor = srcAlpha;
@@ -332,7 +332,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetBlendSrcColorFactor ( RBlendFactor factor ) {
+	void GLDevice::SetBlendSrcColorFactor ( EBlendFactor factor ) {
 
 		if (!mEnabledStates.Has(RState::Blend)) {
 			return;
@@ -344,10 +344,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[lookup_cast(factor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mDstColorFactor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mSrcAlphaFactor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mDstAlphaFactor)]
+			skBlendFactorLookup[LookupCast(factor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mDstColorFactor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mSrcAlphaFactor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mDstAlphaFactor)]
 		);
 
 		mBlendState.mSrcColorFactor = factor;
@@ -355,7 +355,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetBlendDstColorFactor ( RBlendFactor factor ) {
+	void GLDevice::SetBlendDstColorFactor ( EBlendFactor factor ) {
 
 		if (!mEnabledStates.Has(RState::Blend)) {
 			return;
@@ -367,10 +367,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[lookup_cast(mBlendState.mSrcColorFactor)],
-			skBlendFactorLookup[lookup_cast(factor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mSrcAlphaFactor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mDstAlphaFactor)]
+			skBlendFactorLookup[LookupCast(mBlendState.mSrcColorFactor)],
+			skBlendFactorLookup[LookupCast(factor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mSrcAlphaFactor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mDstAlphaFactor)]
 		);
 
 		mBlendState.mDstColorFactor = factor;
@@ -378,7 +378,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetBlendSrcAlphaFactor ( RBlendFactor factor ) {
+	void GLDevice::SetBlendSrcAlphaFactor ( EBlendFactor factor ) {
 
 		if (!mEnabledStates.Has(RState::Blend)) {
 			return;
@@ -390,10 +390,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[lookup_cast(mBlendState.mSrcColorFactor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mDstColorFactor)],
-			skBlendFactorLookup[lookup_cast(factor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mDstAlphaFactor)]
+			skBlendFactorLookup[LookupCast(mBlendState.mSrcColorFactor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mDstColorFactor)],
+			skBlendFactorLookup[LookupCast(factor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mDstAlphaFactor)]
 		);
 
 		mBlendState.mSrcAlphaFactor = factor;
@@ -401,7 +401,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetBlendDstAlphaFactor ( RBlendFactor factor ) {
+	void GLDevice::SetBlendDstAlphaFactor ( EBlendFactor factor ) {
 
 		if (!mEnabledStates.Has(RState::Blend)) {
 			return;
@@ -413,10 +413,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[lookup_cast(mBlendState.mSrcColorFactor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mDstColorFactor)],
-			skBlendFactorLookup[lookup_cast(mBlendState.mSrcAlphaFactor)],
-			skBlendFactorLookup[lookup_cast(factor)]
+			skBlendFactorLookup[LookupCast(mBlendState.mSrcColorFactor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mDstColorFactor)],
+			skBlendFactorLookup[LookupCast(mBlendState.mSrcAlphaFactor)],
+			skBlendFactorLookup[LookupCast(factor)]
 		);
 
 		mBlendState.mDstAlphaFactor = factor;
@@ -424,7 +424,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetBlendOp ( RBlendOp colorOp, RBlendOp alphaOp ) {
+	void GLDevice::SetBlendOp ( EBlendOp colorOp, EBlendOp alphaOp ) {
 
 		if (!mEnabledStates.Has(RState::Blend)) {
 			return;
@@ -436,8 +436,8 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendEquationSeparate(
-			skBlendOpLookup[lookup_cast(colorOp)],
-			skBlendOpLookup[lookup_cast(alphaOp)]
+			skBlendOpLookup[LookupCast(colorOp)],
+			skBlendOpLookup[LookupCast(alphaOp)]
 		);
 
 		mBlendState.mAlphaOp = alphaOp;
@@ -446,7 +446,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetBlendColorOp ( RBlendOp op) {
+	void GLDevice::SetBlendColorOp ( EBlendOp op) {
 
 		if (!mEnabledStates.Has(RState::Blend)) {
 			return;
@@ -458,8 +458,8 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendEquationSeparate(
-			skBlendOpLookup[lookup_cast(op)],
-			skBlendOpLookup[lookup_cast(mBlendState.mAlphaOp)]
+			skBlendOpLookup[LookupCast(op)],
+			skBlendOpLookup[LookupCast(mBlendState.mAlphaOp)]
 		);
 
 		mBlendState.mColorOp = op;
@@ -467,7 +467,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetBlendAlphaOp ( RBlendOp op) {
+	void GLDevice::SetBlendAlphaOp ( EBlendOp op) {
 
 		if (!mEnabledStates.Has(RState::Blend)) {
 			return;
@@ -479,8 +479,8 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendEquationSeparate(
-			skBlendOpLookup[lookup_cast(mBlendState.mColorOp)],
-			skBlendOpLookup[lookup_cast(op)]
+			skBlendOpLookup[LookupCast(mBlendState.mColorOp)],
+			skBlendOpLookup[LookupCast(op)]
 		);
 
 		mBlendState.mAlphaOp = op;
@@ -567,7 +567,7 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		glDepthFunc(skCompareFlagLookup[lookup_cast(func)]);
+		glDepthFunc(skCompareFlagLookup[LookupCast(func)]);
 
 		LUM_PROFILER_CACHE_MISS();
 
@@ -604,13 +604,13 @@ namespace lum::rhi::gl {
 	bool GLDevice::IsStencilTestEnabled ( ) const noexcept {
 		return mEnabledStates.Has(RState::StencilTest);
 	}
-	void GLDevice::SetStencilReference ( int32 ref, RFace face ) {
+	void GLDevice::SetStencilReference ( int32 ref, EFace face ) {
 
 		if (!mEnabledStates.Has(RState::StencilTest)) {
 			return;
 		}
 
-		if (face == RFace::Front) {
+		if (face == EFace::Front) {
 
 			auto& front = mDepthStencilState.mStencil.mFront;
 
@@ -621,7 +621,7 @@ namespace lum::rhi::gl {
 
 			glStencilFuncSeparate(
 				GL_FRONT, 
-				skCompareFlagLookup[lookup_cast(front.mCompareFlag)], 
+				skCompareFlagLookup[LookupCast(front.mCompareFlag)], 
 				ref, 
 				front.mReadMask
 			);
@@ -631,7 +631,7 @@ namespace lum::rhi::gl {
 			LUM_PROFILER_CACHE_MISS();
 
 		}
-		else if (face == RFace::Back) {
+		else if (face == EFace::Back) {
 			auto& back = mDepthStencilState.mStencil.mBack;
 
 			if (back.mReference == ref) {
@@ -641,7 +641,7 @@ namespace lum::rhi::gl {
 
 			glStencilFuncSeparate(
 				GL_BACK,
-				skCompareFlagLookup[lookup_cast(back.mCompareFlag)],
+				skCompareFlagLookup[LookupCast(back.mCompareFlag)],
 				ref,
 				back.mReadMask
 			);
@@ -653,13 +653,13 @@ namespace lum::rhi::gl {
 		}
 		else {
 
-			SetStencilReference(ref, RFace::Back);
-			SetStencilReference(ref, RFace::Front);
+			SetStencilReference(ref, EFace::Back);
+			SetStencilReference(ref, EFace::Front);
 
 		}
 
 	}
-	void GLDevice::SetStencilOp ( RStencilOp sfail, RStencilOp dpfail, RStencilOp dppass, RFace face ) {
+	void GLDevice::SetStencilOp ( EStencilOp sfail, EStencilOp dpfail, EStencilOp dppass, EFace face ) {
 
 		if (!mEnabledStates.Has(RState::StencilTest)) {
 			return;
@@ -667,7 +667,7 @@ namespace lum::rhi::gl {
 
 		auto& stencil = mDepthStencilState.mStencil;
 
-		if (face == RFace::Front) {
+		if (face == EFace::Front) {
 
 			auto& front = stencil.mFront;
 			
@@ -679,9 +679,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_FRONT,
-				skStencilOpLookup[lookup_cast(sfail)],
-				skStencilOpLookup[lookup_cast(dpfail)],
-				skStencilOpLookup[lookup_cast(dppass)]
+				skStencilOpLookup[LookupCast(sfail)],
+				skStencilOpLookup[LookupCast(dpfail)],
+				skStencilOpLookup[LookupCast(dppass)]
 			);
 
 			front.mStencilFailOp = sfail;
@@ -691,7 +691,7 @@ namespace lum::rhi::gl {
 			LUM_PROFILER_CACHE_MISS();
 
 		}
-		else if (face == RFace::Back) {
+		else if (face == EFace::Back) {
 
 			auto& back = stencil.mBack;
 
@@ -702,9 +702,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_BACK,
-				skStencilOpLookup[lookup_cast(sfail)],
-				skStencilOpLookup[lookup_cast(dpfail)],
-				skStencilOpLookup[lookup_cast(dppass)]
+				skStencilOpLookup[LookupCast(sfail)],
+				skStencilOpLookup[LookupCast(dpfail)],
+				skStencilOpLookup[LookupCast(dppass)]
 			);
 
 			back.mStencilFailOp = sfail;
@@ -716,13 +716,13 @@ namespace lum::rhi::gl {
 		}
 		else {
 
-			SetStencilOp(sfail, dpfail, dppass, RFace::Back);
-			SetStencilOp(sfail, dpfail, dppass, RFace::Front);
+			SetStencilOp(sfail, dpfail, dppass, EFace::Back);
+			SetStencilOp(sfail, dpfail, dppass, EFace::Front);
 
 		}
 
 	}
-	void GLDevice::SetStencilOpOnStencilFail ( RStencilOp op, RFace face ) {
+	void GLDevice::SetStencilOpOnStencilFail ( EStencilOp op, EFace face ) {
 
 		if (!mEnabledStates.Has(RState::StencilTest)) {
 			return;
@@ -730,7 +730,7 @@ namespace lum::rhi::gl {
 
 		auto& stencil = mDepthStencilState.mStencil;
 
-		if (face == RFace::Front) {
+		if (face == EFace::Front) {
 
 			auto& front = stencil.mFront;
 
@@ -741,9 +741,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_FRONT,
-				skStencilOpLookup[lookup_cast(op)],
-				skStencilOpLookup[lookup_cast(front.mDepthFailOp)],
-				skStencilOpLookup[lookup_cast(front.mPassOp)]
+				skStencilOpLookup[LookupCast(op)],
+				skStencilOpLookup[LookupCast(front.mDepthFailOp)],
+				skStencilOpLookup[LookupCast(front.mPassOp)]
 			);
 
 			front.mStencilFailOp = op;
@@ -751,7 +751,7 @@ namespace lum::rhi::gl {
 			LUM_PROFILER_CACHE_MISS();
 
 		}
-		else if (face == RFace::Back) {
+		else if (face == EFace::Back) {
 
 			auto& back = stencil.mBack;
 
@@ -762,9 +762,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_BACK,
-				skStencilOpLookup[lookup_cast(op)],
-				skStencilOpLookup[lookup_cast(back.mDepthFailOp)],
-				skStencilOpLookup[lookup_cast(back.mPassOp)]
+				skStencilOpLookup[LookupCast(op)],
+				skStencilOpLookup[LookupCast(back.mDepthFailOp)],
+				skStencilOpLookup[LookupCast(back.mPassOp)]
 			);
 
 			back.mStencilFailOp = op;
@@ -774,13 +774,13 @@ namespace lum::rhi::gl {
 		}
 		else {
 
-			SetStencilOpOnStencilFail(op, RFace::Back);
-			SetStencilOpOnStencilFail(op, RFace::Front);
+			SetStencilOpOnStencilFail(op, EFace::Back);
+			SetStencilOpOnStencilFail(op, EFace::Front);
 
 		}
 
 	}
-	void GLDevice::SetStencilOpOnDepthFail ( RStencilOp op, RFace face ) {
+	void GLDevice::SetStencilOpOnDepthFail ( EStencilOp op, EFace face ) {
 
 		if (!mEnabledStates.Has(RState::StencilTest)) {
 			return;
@@ -788,7 +788,7 @@ namespace lum::rhi::gl {
 
 		auto& stencil = mDepthStencilState.mStencil;
 
-		if (face == RFace::Front) {
+		if (face == EFace::Front) {
 
 			auto& front = stencil.mFront;
 
@@ -799,9 +799,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_FRONT,
-				skStencilOpLookup[lookup_cast(front.mStencilFailOp)],
-				skStencilOpLookup[lookup_cast(op)],
-				skStencilOpLookup[lookup_cast(front.mPassOp)]
+				skStencilOpLookup[LookupCast(front.mStencilFailOp)],
+				skStencilOpLookup[LookupCast(op)],
+				skStencilOpLookup[LookupCast(front.mPassOp)]
 			);
 
 			front.mDepthFailOp = op;
@@ -809,7 +809,7 @@ namespace lum::rhi::gl {
 			LUM_PROFILER_CACHE_MISS();
 
 		}
-		else if (face == RFace::Back) {
+		else if (face == EFace::Back) {
 
 			auto& back = stencil.mBack;
 
@@ -820,9 +820,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_BACK,
-				skStencilOpLookup[lookup_cast(back.mStencilFailOp)],
-				skStencilOpLookup[lookup_cast(op)],
-				skStencilOpLookup[lookup_cast(back.mPassOp)]
+				skStencilOpLookup[LookupCast(back.mStencilFailOp)],
+				skStencilOpLookup[LookupCast(op)],
+				skStencilOpLookup[LookupCast(back.mPassOp)]
 			);
 
 			back.mDepthFailOp = op;
@@ -832,13 +832,13 @@ namespace lum::rhi::gl {
 		}
 		else {
 
-			SetStencilOpOnDepthFail(op, RFace::Back);
-			SetStencilOpOnDepthFail(op, RFace::Front);
+			SetStencilOpOnDepthFail(op, EFace::Back);
+			SetStencilOpOnDepthFail(op, EFace::Front);
 
 		}
 
 	}
-	void GLDevice::SetStencilOpOnDepthPass ( RStencilOp op, RFace face ) {
+	void GLDevice::SetStencilOpOnDepthPass ( EStencilOp op, EFace face ) {
 
 		if (!mEnabledStates.Has(RState::StencilTest)) {
 			return;
@@ -846,7 +846,7 @@ namespace lum::rhi::gl {
 
 		auto& stencil = mDepthStencilState.mStencil;
 
-		if (face == RFace::Front) {
+		if (face == EFace::Front) {
 
 			auto& front = stencil.mFront;
 
@@ -857,9 +857,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_FRONT,
-				skStencilOpLookup[lookup_cast(front.mStencilFailOp)],
-				skStencilOpLookup[lookup_cast(front.mDepthFailOp)],
-				skStencilOpLookup[lookup_cast(op)]
+				skStencilOpLookup[LookupCast(front.mStencilFailOp)],
+				skStencilOpLookup[LookupCast(front.mDepthFailOp)],
+				skStencilOpLookup[LookupCast(op)]
 			);
 
 			front.mPassOp = op;
@@ -867,7 +867,7 @@ namespace lum::rhi::gl {
 			LUM_PROFILER_CACHE_MISS();
 
 		}
-		else if (face == RFace::Back) {
+		else if (face == EFace::Back) {
 
 			auto& back = stencil.mBack;
 
@@ -878,9 +878,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_BACK,
-				skStencilOpLookup[lookup_cast(back.mStencilFailOp)],
-				skStencilOpLookup[lookup_cast(back.mDepthFailOp)],
-				skStencilOpLookup[lookup_cast(op)]
+				skStencilOpLookup[LookupCast(back.mStencilFailOp)],
+				skStencilOpLookup[LookupCast(back.mDepthFailOp)],
+				skStencilOpLookup[LookupCast(op)]
 			);
 
 			back.mPassOp = op;
@@ -890,8 +890,8 @@ namespace lum::rhi::gl {
 		}
 		else {
 
-			SetStencilOpOnDepthFail(op, RFace::Back);
-			SetStencilOpOnDepthFail(op, RFace::Front);
+			SetStencilOpOnDepthFail(op, EFace::Back);
+			SetStencilOpOnDepthFail(op, EFace::Front);
 
 		}
 
@@ -1001,7 +1001,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetTopology ( RTopologyMode mode, RFace face ) {
+	void GLDevice::SetTopology ( ETopologyMode mode, EFace face ) {
 
 		if (mRasterizerState.mPolygon.mTopologyMode == mode && mRasterizerState.mPolygon.mTopologyModeFaces == face) {
 			LUM_PROFILER_CACHE_HIT();
@@ -1009,8 +1009,8 @@ namespace lum::rhi::gl {
 		}
 
 		glPolygonMode(
-			skFacesLookup[lookup_cast(face)],
-			skTopologyModeLookup[lookup_cast(mode)]
+			skFacesLookup[LookupCast(face)],
+			skTopologyModeLookup[LookupCast(mode)]
 		);
 
 		mRasterizerState.mPolygon.mTopologyMode = mode;

@@ -8,9 +8,15 @@ namespace lum {
 	class MShaderManager {
 	public:
 
-		MShaderManager ( rhi::RDevice* device ) : mRenderDevice(device) {}
+		MShaderManager( ) {}
 
-		rhi::RShaderHandle LoadShader (ccharptr vertexPath, ccharptr fragmentPath, ERootID root = ERootID::External) {
+		void Initialize( rhi::RDevice* device ) {
+
+			mRenderDevice = device;
+
+		}
+
+		rhi::RShaderHandle LoadShader( ccharptr vertexPath, ccharptr fragmentPath, ERootID root = ERootID::External ) {
 		
 			uint64 hash = HashStr(vertexPath) / HashStr(fragmentPath);
 

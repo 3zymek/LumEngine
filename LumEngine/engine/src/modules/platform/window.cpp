@@ -1,5 +1,5 @@
 #pragma once
-#include "window_context/window.hpp"
+#include "platform/window.hpp"
 #include "core/core_defines.hpp"
 #include "core/utils/lum_assert.hpp"
 #if LUM_ENABLE_IMGUI == 1

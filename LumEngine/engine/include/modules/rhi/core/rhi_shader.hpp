@@ -15,7 +15,7 @@ namespace lum::rhi {
 		ccharptr mFragmentContent;
 	};
 
-	struct RShader {
+	struct FShader {
 
 		RShaderID mHandle = 0;
 

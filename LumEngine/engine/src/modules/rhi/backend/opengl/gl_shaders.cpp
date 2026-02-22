@@ -17,7 +17,7 @@ namespace lum::rhi::gl {
 			"Max shaders reached"
 		);
 
-		RShader shader;
+		FShader shader;
 
 		GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
 		GLuint fshader = glCreateShader(GL_FRAGMENT_SHADER);

@@ -16,12 +16,12 @@ namespace lum {
 	class Window {
 	public:
 
-		virtual void	SetWidth		( uint32 ) noexcept = 0;
-		virtual void	SetHeight		( uint32 ) noexcept = 0;
-		virtual uint32	GetWidth		( ) const noexcept = 0;
-		virtual uint32	GetHeight		( ) const noexcept = 0;
-		virtual vptr	GetNativeWindow	( ) const noexcept = 0;
-		virtual void	PollEvents		( ) noexcept = 0;
+		virtual void	SetWidth			( uint32 ) noexcept = 0;
+		virtual void	SetHeight			( uint32 ) noexcept = 0;
+		virtual uint32	GetWidth			( ) const noexcept = 0;
+		virtual uint32	GetHeight			( ) const noexcept = 0;
+		virtual vptr	GetNativeWindow		( ) const noexcept = 0;
+		virtual void	PollEvents			( ) noexcept = 0;
 		virtual bool	IsOpen				( ) const noexcept = 0;
 		virtual RenderBackend	GetBackend	( )	const noexcept = 0;
 

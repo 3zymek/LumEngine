@@ -17,14 +17,14 @@ namespace lum::rhi::gl {
 			"VertexLayout has no attributes",
 		);
 
-		RVertexLayout layout;
-		RBuffer& buffer = mBuffers[vbo];
+		FVertexLayout layout;
+		FBuffer& buffer = mBuffers[vbo];
 
 		glCreateVertexArrays(1, &layout.mHandle);
 		glVertexArrayVertexBuffer(
 			layout.mHandle,
 			desc.mBinding,
-			buffer.mHandle.gl,
+			buffer.mHandle,
 			desc.mOffset,
 			desc.mStride
 		);
@@ -34,7 +34,7 @@ namespace lum::rhi::gl {
 			glVertexArrayAttribFormat(
 				layout.mHandle,
 				desc.mAttributes[i].mShaderLocation,
-				detail::gDataFormatLookup[lookup_cast(desc.mAttributes[i].mFormat)],
+				detail::gDataFormatLookup[LookupCast(desc.mAttributes[i].mFormat)],
 				GL_FLOAT,
 				GL_FALSE,
 				desc.mAttributes[i].mRelativeOffset

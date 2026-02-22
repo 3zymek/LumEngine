@@ -92,31 +92,31 @@ namespace lum {
 				aiMesh* mesh = scene->mMeshes[meshIndex];
 
 				for (uint32 vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
-					Vertex vert;
+					rhi::FVertex vert;
 
-					vert.position = {
+					vert.mPosition = {
 						mesh->mVertices[vertexIndex].x,
 						mesh->mVertices[vertexIndex].y,
 						mesh->mVertices[vertexIndex].z
 					};
 
 					if (mesh->HasNormals()) {
-						vert.normal = {
+						vert.mNormal = {
 							mesh->mNormals[vertexIndex].x,
 							mesh->mNormals[vertexIndex].y,
 							mesh->mNormals[vertexIndex].z
 						};
 					}
-					else vert.normal = { 0.0f, 0.0f, 0.0f };
+					else vert.mNormal = { 0.0f, 0.0f, 0.0f };
 
 					if (mesh->mTextureCoords[0]) {
-						vert.uv = {
+						vert.mUv = {
 							mesh->mTextureCoords[0][vertexIndex].x,
 							mesh->mTextureCoords[0][vertexIndex].y
 						};
 
 					}
-					else vert.uv = { 0.0f, 0.0f };
+					else vert.mUv = { 0.0f, 0.0f };
 					
 					finalData.mVertices.push_back(vert);
 				  

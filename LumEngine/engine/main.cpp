@@ -3,10 +3,10 @@
 #include "lum_packages/lum_ecs.hpp"
 #include "lum_packages/lum_events.hpp"
 #include "lum_packages/lum_render.hpp"
-#include "window_context/input_common.hpp"
+#include "platform/input_common.hpp"
 #include "core/utils/logger.hpp"
 #include "audio/components/c_audio_listener.hpp"
-#include "window_context/window.hpp"
+#include "platform/window.hpp"
 #include "rhi/core/rhi_device.hpp"
 #include "core/utils/asset_loader.hpp"
 #include "rhi/rhi_common.hpp"
@@ -15,59 +15,32 @@
 #include "imgui.h"
 #include "core/utils/flags.hpp"
 #include "core/utils/fixed_string.hpp"
-#include "testfield/texture_manager.hpp"
-#include "testfield/material_manager.hpp"
-#include "testfield/model_manager.hpp"
-#include "testfield/shader_manager.hpp"
-#include "testfield/renderer.hpp"
+#include "render/renderer.hpp"
+#include "render/texture_manager.hpp"
+#include "render/mesh_manager.hpp"
+#include "render/shader_manager.hpp"
+#include "render/material_manager.hpp"
+#include "render/render_system.hpp"
+#include "render/camera.hpp"
+
+#include "engine.hpp"
 
 using namespace lum;
 using namespace lum::rhi;
 
-struct CRender {
-    LUM_COMPONENT_TAG;
-};
-
-struct CMaterial {
-    LUM_COMPONENT_TAG;
-    FMaterialInstance mMaterial;
-};
-struct CStaticMesh {
-    LUM_COMPONENT_TAG;
-    StaticMeshHandle mMesh;
-};
-
-
-struct RenderSystem {
-public:
-
-    RenderSystem(ecs::MEntityManager* em, SRenderer* r)
-        : mEntityManager(em), mRenderer(r) {
-    }
-
-    void Update() {
-        
-        mEntityManager->Each<CRender, CTransform, CMaterial, CStaticMesh>(
-            [&](CRender& render, CTransform& transform, CMaterial& material, CStaticMesh& mesh) 
-            {
-                Object obj;
-                obj.mMaterial = material.mMaterial;
-                obj.mStaticMesh = mesh.mMesh;
-                obj.mTransform = transform;
-                mRenderer->Draw(obj);
-            });
-        
-    }
-
-private:
-
-    ecs::MEntityManager* mEntityManager = nullptr;
-    SRenderer* mRenderer = nullptr;
-
-};
-
 int main() {
 
+    Engine e;
+
+    e.Initialize("test");
+    
+    e.Run();
+
+    e.Finalize();
+
+
+
+    /*
     Logger::Get().EnableLog(LogSeverity::All);
 
     AssetLoader::SetProjectRoot("C:/Users/szymek/Desktop/lumen_assets");
@@ -98,28 +71,29 @@ int main() {
 
     auto meshHandle = meshManager.CreateStatic("models/Can.obj");
 
-    FRendererContext ctx;
+    render::FRendererContext ctx;
     ctx.mRenderDevice = device;
     ctx.mTextureManager = &texManager;
     ctx.mMaterialManager = &matManager;
     ctx.mMeshManager = &meshManager;
     ctx.mShaderManager = &shaderManager;
 
-    SRenderer render{ ctx };
+    render::Renderer render;
+    render.Initialize(ctx);
     ecs::MEntityManager entMgr;
     RenderSystem sysRender{ &entMgr, &render };
 
-    Camera camera{ window };
+    EditorCamera camera{ window };
     ManagedEntity e1 = entMgr.CreateEntity();
 
     e1.AddComponent<CMaterial>({ .mMaterial = materialInstance });
     e1.AddComponent<CTransform>();
     e1.AddComponent<CStaticMesh>({ .mMesh = meshHandle });
-    e1.AddComponent<CRender>();
+    //e1.AddComponent<CRender>();
 
     render.SetEnvionmentTexture(cubemap);
 
-    DirectionalLight light;
+    render::DirectionalLight light;
 
     render.mDirectionalLight = &light;
 
@@ -157,6 +131,16 @@ int main() {
 
         sysRender.Update();
 
+        ImGui::Begin("Spawn");
+        if (ImGui::Button("Render component")) {
+            if (!e1.HasComponent<CRender>())
+                e1.AddComponent<CRender>();
+            else
+                e1.RemoveComponent<CRender>();
+        }
+        ImGui::End();
+
         render.EndFrame();
     }
+    */
 } 

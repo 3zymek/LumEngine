@@ -1,26 +1,40 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Entity template implementation
+// Purpose: Represents a unique entity in the scene.
+//          Entity stores only an ID. ManagedEntity extends it
+//          with component add/remove/get operations via MEntityManager.
 //
 //=============================================================================//
 #pragma once
 
 #include "entity/ecs_manager.hpp"
 
-template<lum::ecs::detail::Component tType>
-tType& lum::ManagedEntity::AddComponent(tType component) {
-	return mEntityManager.template AddComponent<tType>(mID, component);
-}
-template<lum::ecs::detail::Component tType>
-tType* lum::ManagedEntity::GetComponent() {
-	return mEntityManager.template GetComponent<tType>(mID);
-}
-template<lum::ecs::detail::Component tType>
-lum::ManagedEntity& lum::ManagedEntity::RemoveComponent() {
-	mEntityManager.template RemoveComponent<tType>(mID);
-	return *this;
-}
-template<lum::ecs::detail::Component tType>
-bool lum::ManagedEntity::HasComponent(tType component) {
-	mEntityManager.template HasComponent<tType>(mID);
+namespace lum {
+
+	template<ecs::detail::Component tType>
+	tType& ManagedEntity::AddComponent( tType component ) {
+		return mEntityManager->template AddComponent<tType>(mID, component);
+	}
+
+	template<ecs::detail::Component tType>
+	tType* ManagedEntity::GetComponent( ) {
+		return mEntityManager->template GetComponent<tType>(mID);
+	}
+
+	template<ecs::detail::Component tType>
+	ManagedEntity& ManagedEntity::RemoveComponent( ) {
+		mEntityManager->template RemoveComponent<tType>(mID);
+		return *this;
+	}
+
+	template<ecs::detail::Component tType>
+	bool ManagedEntity::HasComponent( ) {
+		return mEntityManager->template HasComponent<tType>(mID);
+	}
+
+	template<ecs::detail::Component tType, ecs::detail::Component... tRest>
+	bool ManagedEntity::HasComponents( ) {
+		return mEntityManager->template HasComponents<tType, tRest...>(mID);
+	}
+
 }

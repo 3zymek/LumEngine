@@ -17,7 +17,7 @@
 #include "rhi/core/rhi_buffer.hpp"
 #include "rhi/rhi_common.hpp"
 
-#include "window_context/window.hpp"
+#include "platform/window.hpp"
 
 #if LUM_ENABLE_IMGUI == 1
 	#include <imgui.h>
@@ -121,22 +121,22 @@ namespace lum::rhi::gl {
 
 	}
 
-	const RBlendState& GLDevice::GetBlendState ( ) const noexcept {
+	const FBlendState& GLDevice::GetBlendState ( ) const noexcept {
 		return mBlendState;
 	}
-	const RCullState& GLDevice::GetCullState ( ) const noexcept {
+	const FCullState& GLDevice::GetCullState ( ) const noexcept {
 		return mCullState;
 	}
-	const RScissorState& GLDevice::GetScissorState ( ) const noexcept {
+	const FScissorState& GLDevice::GetScissorState ( ) const noexcept {
 		return mScissorState;
 	}
-	const RDepthStencilState& GLDevice::GetDepthStencilState ( ) const noexcept {
+	const FDepthStencilState& GLDevice::GetDepthStencilState ( ) const noexcept {
 		return mDepthStencilState;
 	}
-	const RRasterizerState& GLDevice::GetRasterizerState ( ) const noexcept {
+	const FRasterizerState& GLDevice::GetRasterizerState ( ) const noexcept {
 		return mRasterizerState;
 	}
-	const RViewportState& GLDevice::GetViewport ( ) const noexcept {
+	const FViewportState& GLDevice::GetViewport ( ) const noexcept {
 		return mViewportState;
 	}
 
@@ -188,7 +188,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::SetColorMask ( RColorMask rgba ) {
+	void GLDevice::SetColorMask ( FColorMask rgba ) {
 
 		if (rgba.r == mColorMask.r &&
 			rgba.g == mColorMask.g &&
@@ -256,13 +256,13 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::Clear ( Flags<RClearFlag> flags ) {
+	void GLDevice::Clear ( Flags<EClearFlag> flags ) {
 		
 		GLbitfield mask = 0;
 
-		mask |= (flags.Has(RClearFlag::Color)) ? GL_COLOR_BUFFER_BIT : 0;
-		mask |= (flags.Has(RClearFlag::Depth)) ? GL_DEPTH_BUFFER_BIT : 0;
-		mask |= (flags.Has(RClearFlag::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0;
+		mask |= (flags.Has(EClearFlag::Color)) ? GL_COLOR_BUFFER_BIT : 0;
+		mask |= (flags.Has(EClearFlag::Depth)) ? GL_DEPTH_BUFFER_BIT : 0;
+		mask |= (flags.Has(EClearFlag::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0;
 
 		glClear(mask);
 
@@ -310,7 +310,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_BEGIN_FRAME();
 
 		SetViewport(0, 0, window->GetWidth(), window->GetHeight());
-		Clear(RClearFlag::Color | RClearFlag::Depth | RClearFlag::Stencil);
+		Clear(EClearFlag::Color | EClearFlag::Depth | EClearFlag::Stencil);
 
 #		if LUM_ENABLE_IMGUI == 1
 			ImGui_ImplOpenGL3_NewFrame();

@@ -47,6 +47,7 @@ target_include_directories(LumEngine PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine/external/imgui/inc"
     "${CMAKE_SOURCE_DIR}/LumEngine/external/assimp/inc"
     "${CMAKE_SOURCE_DIR}/LumEngine/external/stb/inc"
+    "${CMAKE_SOURCE_DIR}/LumEngine/external/json"
 )
 
 target_link_libraries(LumEngine PRIVATE 

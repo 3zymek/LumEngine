@@ -1,11 +1,18 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Represents a unique entity in the scene.
+//          Entity stores only an ID. ManagedEntity extends it
+//          with component add/remove/get operations via MEntityManager.
+//
+//=============================================================================//
 #pragma once
-#include "core/core_defines.hpp"
+
 #include "core/core_pch.hpp"
-#include "core/core_common.hpp"
+
 namespace lum {
     namespace ecs {
 
-        using EntityID = uint32;
+        using EntityID = uint64;
 
 #       define LUM_COMPONENT_TAG \
             inline constexpr static bool __lum_component__ = true;

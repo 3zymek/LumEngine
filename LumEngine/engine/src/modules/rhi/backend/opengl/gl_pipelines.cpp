@@ -8,15 +8,15 @@
 
 namespace lum::rhi::gl {
 
-	void GLDevice::bind_check_shader ( const RPipeline& pip ) noexcept {
+	void GLDevice::bind_check_shader ( const FPipeline& pip ) noexcept {
 		
-		if (pip.mShader.mID == null_id<RShaderID>())
+		if (pip.mShader.mID == NullID<RShaderID>())
 			return;
 
 		BindShader(pip.mShader);
 
 	}
-	void GLDevice::bind_check_rasterizer ( const RPipeline& pip ) noexcept {
+	void GLDevice::bind_check_rasterizer ( const FPipeline& pip ) noexcept {
 
 		const auto& rast = pip.mRasterizer;
 
@@ -30,7 +30,7 @@ namespace lum::rhi::gl {
 		SetDepthBiasClamp(rast.mDepthBias.mClamp);
 
 	}
-	void GLDevice::bind_check_depth_stencil ( const RPipeline& pip ) noexcept {
+	void GLDevice::bind_check_depth_stencil ( const FPipeline& pip ) noexcept {
 
 		const auto& depth = pip.mDepthStencil.mDepth;
 		const auto& stencil = pip.mDepthStencil.mStencil;
@@ -40,13 +40,13 @@ namespace lum::rhi::gl {
 		SetDepthFunc(depth.mCompare);
 
 		ToggleStencilTest(stencil.bEnabled);
-		SetStencilReference(stencil.mFront.mReference, RFace::Front);
-		SetStencilReference(stencil.mBack.mReference, RFace::Back);
-		SetStencilOp(stencil.mFront.mStencilFailOp, stencil.mFront.mDepthFailOp, stencil.mFront.mPassOp, RFace::Front);
-		SetStencilOp(stencil.mBack.mStencilFailOp, stencil.mBack.mDepthFailOp, stencil.mBack.mPassOp, RFace::Back);
+		SetStencilReference(stencil.mFront.mReference, EFace::Front);
+		SetStencilReference(stencil.mBack.mReference, EFace::Back);
+		SetStencilOp(stencil.mFront.mStencilFailOp, stencil.mFront.mDepthFailOp, stencil.mFront.mPassOp, EFace::Front);
+		SetStencilOp(stencil.mBack.mStencilFailOp, stencil.mBack.mDepthFailOp, stencil.mBack.mPassOp, EFace::Back);
 		
 	}
-	void GLDevice::bind_check_scissors ( const RPipeline& pip ) noexcept {
+	void GLDevice::bind_check_scissors ( const FPipeline& pip ) noexcept {
 
 		const auto& scissors = pip.mScissor;
 
@@ -54,7 +54,7 @@ namespace lum::rhi::gl {
 		SetScissors(scissors.x, scissors.y, scissors.mWidth, scissors.mHeight); // Default options
 
 	}
-	void GLDevice::bind_check_blend ( const RPipeline& pip ) noexcept {
+	void GLDevice::bind_check_blend ( const FPipeline& pip ) noexcept {
 
 		const auto& blend = pip.mBlend;
 
@@ -64,7 +64,7 @@ namespace lum::rhi::gl {
 		SetBlendOp(blend.mColorOp, blend.mAlphaOp);
 
 	}
-	void GLDevice::bind_check_cull ( const RPipeline& pip ) noexcept {
+	void GLDevice::bind_check_cull ( const FPipeline& pip ) noexcept {
 
 		const auto& cull = pip.mCull;
 
@@ -74,7 +74,7 @@ namespace lum::rhi::gl {
 		SetFrontFace(cull.mWindingOrder);
 
 	}
-	void GLDevice::bind_check_color_mask ( const RPipeline& pip ) noexcept {
+	void GLDevice::bind_check_color_mask ( const FPipeline& pip ) noexcept {
 
 		const auto& mask = pip.mColorMask;
 
@@ -85,7 +85,7 @@ namespace lum::rhi::gl {
 
 
 
-	RPipelineHandle GLDevice::CreatePipeline ( const RPipelineDescriptor& desc ) {
+	RPipelineHandle GLDevice::CreatePipeline ( const FPipelineDescriptor& desc ) {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mPipelines.DenseSize() <= skMaxPipelines,
@@ -94,11 +94,11 @@ namespace lum::rhi::gl {
 			"Max pipelines reached"
 		);
 
-		if (desc.mShader.mID != null_id<RShaderID>() && !mShaders.Contains(desc.mShader)) {
+		if (desc.mShader.mID != NullID<RShaderID>() && !mShaders.Contains(desc.mShader)) {
 			LUM_LOG_ERROR("Shader %d doesn't exist", desc.mShader.mID);
 		}
 
-		RPipeline pipeline;
+		FPipeline pipeline;
 		std::memcpy(&pipeline, &desc, sizeof(desc));
 
 		return mPipelines.Append(std::move(pipeline));
@@ -125,7 +125,7 @@ namespace lum::rhi::gl {
 		}
 		mCurrentPipeline = pipeline;
 
-		RPipeline& pip = mPipelines[pipeline];
+		FPipeline& pip = mPipelines[pipeline];
 	   
 		// Shader
 		bind_check_shader ( pip );

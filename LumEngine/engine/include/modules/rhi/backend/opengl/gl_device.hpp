@@ -24,10 +24,10 @@ namespace lum::rhi::gl {
 		// Buffers
 		//=================================================
 
-		RBufferHandle	CreateBuffer				( const RBufferDescriptor& desc )						override;
+		RBufferHandle	CreateBuffer				( const FBufferDescriptor& desc )						override;
 		void			UpdateBuffer				( const RBufferHandle&, cvptr, usize, usize )			override;
 		void			DeleteBuffer				( RBufferHandle& )										override;
-		vptr			MapBuffer					( const RBufferHandle&, Flags<RMapFlag>, usize, usize )	override;
+		vptr			MapBuffer					( const RBufferHandle&, Flags<EMapFlag>, usize, usize )	override;
 		void			UnmapBuffer					( const RBufferHandle& )								override;
 		void			SetShaderStorageBinding		( const RBufferHandle& ssbo, uint32 binding )			override;
 		void			AttachElementBufferToLayout	( const RBufferHandle&, const RVertexLayoutHandle& )	override;
@@ -96,7 +96,7 @@ namespace lum::rhi::gl {
 		// Pipelines
 		//=================================================
 
-		RPipelineHandle		CreatePipeline	( const RPipelineDescriptor& )	override;
+		RPipelineHandle		CreatePipeline	( const FPipelineDescriptor& )	override;
 		void				DeletePipeline	( RPipelineHandle& )				override;
 		void				BindPipeline	( const RPipelineHandle& )		override;
 
@@ -125,24 +125,24 @@ namespace lum::rhi::gl {
 		// Cull setters
 		void ToggleCull		( bool )			override;
 		bool IsCullEnabled	( )					const noexcept override;
-		void SetCullFace	( RFace face )		override;
-		void SetFrontFace	( RWindingOrder )	override;
+		void SetCullFace	( EFace face )		override;
+		void SetFrontFace	( EWindingOrder )	override;
 
 
 		// Blend setters
 		void ToggleBlend				( bool enabled )		override;
 		bool IsBlendEnabled				( )						const noexcept override;
 		void SetBlendConstantColor		( ChannelRGBA rgba )	override;
-		void SetBlendFactors			( RBlendFactor srcColor, RBlendFactor dstColor, RBlendFactor srcAlpha, RBlendFactor dstAlpha ) override;
-		void SetBlendColorFactors		( RBlendFactor srcColor, RBlendFactor dstColor )	override;
-		void SetBlendAlphaFactors		( RBlendFactor srcAlpha, RBlendFactor dstAlpha )	override;
-		void SetBlendSrcColorFactor		( RBlendFactor factor )							override;
-		void SetBlendDstColorFactor		( RBlendFactor factor )							override;
-		void SetBlendSrcAlphaFactor		( RBlendFactor factor )							override;
-		void SetBlendDstAlphaFactor		( RBlendFactor factor )							override;
-		void SetBlendOp					( RBlendOp colorOp, RBlendOp alphaOp )			override;
-		void SetBlendColorOp			( RBlendOp op )									override;
-		void SetBlendAlphaOp			( RBlendOp op )									override;
+		void SetBlendFactors			( EBlendFactor srcColor, EBlendFactor dstColor, EBlendFactor srcAlpha, EBlendFactor dstAlpha ) override;
+		void SetBlendColorFactors		( EBlendFactor srcColor, EBlendFactor dstColor )	override;
+		void SetBlendAlphaFactors		( EBlendFactor srcAlpha, EBlendFactor dstAlpha )	override;
+		void SetBlendSrcColorFactor		( EBlendFactor factor )							override;
+		void SetBlendDstColorFactor		( EBlendFactor factor )							override;
+		void SetBlendSrcAlphaFactor		( EBlendFactor factor )							override;
+		void SetBlendDstAlphaFactor		( EBlendFactor factor )							override;
+		void SetBlendOp					( EBlendOp colorOp, EBlendOp alphaOp )			override;
+		void SetBlendColorOp			( EBlendOp op )									override;
+		void SetBlendAlphaOp			( EBlendOp op )									override;
 		void SetBlendFactorsForTarget	( uint8 target )								override;
 		void ToggleBlendForTarget		( uint8 target, bool enable )					override;
 
@@ -157,11 +157,11 @@ namespace lum::rhi::gl {
 		// Stencil setters
 		void ToggleStencilTest			( bool )			override;
 		bool IsStencilTestEnabled		( )					const noexcept override;
-		void SetStencilReference		( int32 ref, RFace )	override;
-		void SetStencilOp				( RStencilOp sfail, RStencilOp dpfail, RStencilOp dppass, RFace face)	override;
-		void SetStencilOpOnStencilFail	( RStencilOp op, RFace face )	override;
-		void SetStencilOpOnDepthFail	( RStencilOp op, RFace face )	override;
-		void SetStencilOpOnDepthPass	( RStencilOp op, RFace face )	override;
+		void SetStencilReference		( int32 ref, EFace )	override;
+		void SetStencilOp				( EStencilOp sfail, EStencilOp dpfail, EStencilOp dppass, EFace face)	override;
+		void SetStencilOpOnStencilFail	( EStencilOp op, EFace face )	override;
+		void SetStencilOpOnDepthFail	( EStencilOp op, EFace face )	override;
+		void SetStencilOpOnDepthPass	( EStencilOp op, EFace face )	override;
 
 
 		// Rasterizer setters
@@ -171,14 +171,14 @@ namespace lum::rhi::gl {
 		void SetDepthBiasClamp		( float32 clamp )					override;
 		void SetDepthBiasSlope		( float32 )							override;
 		void SetDepthBiasConstant	( float32 )							override;
-		void SetTopology			( RTopologyMode mode, RFace face )	override;
+		void SetTopology			( ETopologyMode mode, EFace face )	override;
 
-		const RBlendState&			GetBlendState		 ( ) const noexcept override;
-		const RCullState&			GetCullState		 ( ) const noexcept override;
-		const RScissorState&			GetScissorState		 ( ) const noexcept override;
-		const RDepthStencilState&	GetDepthStencilState ( ) const noexcept override;
-		const RRasterizerState&		GetRasterizerState	 ( ) const noexcept override;
-		const RViewportState&		GetViewport			 ( ) const noexcept override;
+		const FBlendState&			GetBlendState		 ( ) const noexcept override;
+		const FCullState&			GetCullState		 ( ) const noexcept override;
+		const FScissorState&			GetScissorState		 ( ) const noexcept override;
+		const FDepthStencilState&	GetDepthStencilState ( ) const noexcept override;
+		const FRasterizerState&		GetRasterizerState	 ( ) const noexcept override;
+		const FViewportState&		GetViewport			 ( ) const noexcept override;
 
 		bool IsValid ( RBufferHandle handle )		const override;
 		bool IsValid ( RTextureHandle handle )		const override;
@@ -189,14 +189,14 @@ namespace lum::rhi::gl {
 		bool IsValid ( RSamplerHandle handle )		const override;
 
 		void SetColorMask ( bool r, bool g, bool b, bool a )	override;
-		void SetColorMask ( RColorMask rgba )					override;
+		void SetColorMask ( FColorMask rgba )					override;
 
 		void SetClearColor	( ChannelRGBA color )	override;
 		void ClearColor		( )						override;
 		void ClearColor		( ChannelRGBA color )	override;
 		void ClearDepth		( )						override;
 		void ClearStencil	( )						override;
-		void Clear			( Flags<RClearFlag> )	override;
+		void Clear			( Flags<EClearFlag> )	override;
 
 		void SetPointSize ( float32 size )	override;
 		void SetLineWidth ( float32 width )	override;
@@ -406,25 +406,25 @@ namespace lum::rhi::gl {
 		//=================================================
 
 		LUM_FORCEINLINE
-		void bind_check_shader(const RPipeline&) noexcept;
+		void bind_check_shader(const FPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_rasterizer(const RPipeline&) noexcept;
+		void bind_check_rasterizer(const FPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_depth_stencil(const RPipeline&) noexcept;
+		void bind_check_depth_stencil(const FPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_scissors(const RPipeline&) noexcept;
+		void bind_check_scissors(const FPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_blend(const RPipeline&) noexcept;
+		void bind_check_blend(const FPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_cull(const RPipeline&) noexcept;
+		void bind_check_cull(const FPipeline&) noexcept;
 
 		LUM_FORCEINLINE
-		void bind_check_color_mask(const RPipeline&) noexcept;
+		void bind_check_color_mask(const FPipeline&) noexcept;
 
 
 
@@ -439,8 +439,8 @@ namespace lum::rhi::gl {
 		RTextureHandle create_texture_cubemap(const RTextureDescriptor&);
 		
 		bool		validate_texture_descriptor	( const RTextureDescriptor& )	noexcept;
-		bool		validate_buffer_descriptor	( const RBufferDescriptor& )	noexcept;
-		GLbitfield	translate_mapping_flags		( Flags<RMapFlag> )				noexcept;
+		bool		validate_buffer_descriptor	( const FBufferDescriptor& )	noexcept;
+		GLbitfield	translate_mapping_flags		( Flags<EMapFlag> )				noexcept;
 
 	};
 

@@ -139,7 +139,7 @@ namespace lum::cstd {
 		*/
 		void Remove( SparseT idx ) {
 
-			if ((idx > kMaxSize) && (mSparse[idx] == skNullSparse)) return;
+			if ((idx > kMaxSize) || (mSparse[idx] == skNullSparse)) return;
 
 			SparseT toDelete = mSparse[idx];
 			SparseT last = mDense.size() - 1;

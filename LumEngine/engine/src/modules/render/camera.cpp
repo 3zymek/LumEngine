@@ -1,11 +1,11 @@
-#include "testfield/camera.hpp"
+#include "render/camera.hpp"
 #include "core/core_common.hpp"
-#include "window_context/window.hpp"
-#include "window_context/input_common.hpp"
+#include "platform/window.hpp"
+#include "platform/input_common.hpp"
 
 namespace lum {
 
-    void Camera::RecalculateDirection() {
+    void EditorCamera::RecalculateDirection() {
 
         glm::vec2 mouse_pos = input::GetMousePos();
 
@@ -41,7 +41,7 @@ namespace lum {
 
     }
 
-    void Camera::RecalculateMovement() {
+    void EditorCamera::RecalculateMovement() {
        
         if (input::KeyPressed(input::Key::W)) {
             position += front * move_speed;
@@ -69,7 +69,7 @@ namespace lum {
 
     }
 
-    void Camera::RecalculateMVP() {
+    void EditorCamera::RecalculateMVP() {
         aspect_ratio = (float32)m_window->GetWidth() / (float32)m_window->GetHeight();
         view = glm::lookAt(position, front + position, up);
         projection = glm::perspective(glm::radians(fov), aspect_ratio, min_plane, max_plane);
@@ -86,7 +86,7 @@ namespace lum {
 
     }
 
-    void Camera::Init(Window* wind) {
+    void EditorCamera::Init(Window* wind) {
         aspect_ratio = (double)wind->GetWidth() / (double)wind->GetHeight();
         glm::vec2 mouse_pos = input::GetMousePos();
         lastX = mouse_pos.x;

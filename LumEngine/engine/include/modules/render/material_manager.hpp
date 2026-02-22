@@ -51,17 +51,25 @@ namespace lum {
 	class MMaterialManager {
 	public:
 
-		MMaterialManager ( rhi::RDevice* device, MTextureManager* texMgr ) : mRenderDevice(device), mTextureManager(texMgr) 
-			{ create_materials(); }
+		MMaterialManager( ) {}
+
+		void Initialize( rhi::RDevice* device, MTextureManager* texMgr ) {
+
+			mRenderDevice = device;
+			mTextureManager = texMgr;
+
+			init();
+
+		}
 
 		LUM_NODISCARD
-		MaterialBaseHandle UploadBase ( const FMaterialBase& base ) {
+		MaterialBaseHandle UploadBase( const FMaterialBase& base ) {
 
 			return mBaseMaterials.Append(base);
 
 		}
 
-		FMaterialInstance CreateInstance ( MaterialBaseHandle base ) {
+		FMaterialInstance CreateInstance( MaterialBaseHandle base ) {
 
 			if (!mBaseMaterials.Contains(base))
 				base = mDefaultMaterial;
@@ -84,7 +92,7 @@ namespace lum {
 
 		}
 
-		void SetBaseMap ( MaterialBaseHandle material, EMaterialMember mem, rhi::RTextureHandle tex ) {
+		void SetBaseMap( MaterialBaseHandle material, EMaterialMember mem, rhi::RTextureHandle tex ) {
 			switch (mem) {
 				case EMaterialMember::Albedo: mBaseMaterials[material].mAlbedoMap = tex; break;
 				case EMaterialMember::Normal: mBaseMaterials[material].mNormalMap = tex; break;
@@ -103,7 +111,12 @@ namespace lum {
 
 		cstd::HandlePool<MaterialBaseHandle, FMaterialBase> mBaseMaterials { limits::gMaxMaterials };
 
-		rhi::RTextureHandle validate_texture ( rhi::RTextureHandle tex ) {
+		/* Init implementation */
+		void init( ) {
+			create_materials();
+		}
+
+		rhi::RTextureHandle validate_texture( rhi::RTextureHandle tex ) {
 
 			if (!mRenderDevice->IsValid(tex)) {
 				LUM_LOG_DEBUG("No texture given, setting default fallback");

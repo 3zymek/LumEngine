@@ -13,7 +13,7 @@ namespace lum::cstd {
 	public:
 		
 		template<size_t L>
-		inline constexpr static uint64 Hash(const char (&str)[L]) noexcept {
+		inline constexpr static uint64 Hash( const char (&str)[L] ) noexcept {
 
 			uint64 h = FNV1A_ENTRY;
 
@@ -26,7 +26,7 @@ namespace lum::cstd {
 
 		}
 
-		inline static uint64 Hash(StringView str) noexcept {
+		inline static uint64 Hash( StringView str ) noexcept {
 
 			uint64 h = FNV1A_ENTRY;
 
@@ -48,4 +48,4 @@ namespace lum::cstd {
 
 	};
 
-}
+} // namespace lum::cstd

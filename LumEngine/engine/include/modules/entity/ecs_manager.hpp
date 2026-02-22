@@ -39,6 +39,7 @@ namespace lum {
 
 			/* @brief Adds a component of type tType to the given entity.
 			* @param entityID Target entity ID.
+			* @param component Component to create (default constructor by default)
 			* @return Reference to the newly added component.
 			*/
 			template<detail::Component tType>
@@ -46,6 +47,7 @@ namespace lum {
 
 			/* @brief Adds a component of type tType to the given entity.
 			* @param entity Target entity.
+			* @param component Component to create (default constructor by default)
 			* @return Reference to the newly added component.
 			*/
 			template<detail::Component tType>
@@ -102,7 +104,21 @@ namespace lum {
 			*/
 			template<detail::Component tType>
 			bool HasComponent( Entity entity );
-			
+
+			/* @brief Checks whether the given entity has a components of types.
+			* @param entityID Target entity ID.
+			* @return True if the components exists on the entity.
+			*/
+			template<ecs::detail::Component tType, ecs::detail::Component... tRest>
+			bool HasComponents( EntityID entityID );
+
+			/* @brief Checks whether the given entity has a components of types.
+			* @param entity Target entity.
+			* @return True if the components exists on the entity.
+			*/
+			template<ecs::detail::Component tType, ecs::detail::Component... tRest>
+			bool HasComponents( Entity entity );
+
 
 
 
@@ -151,18 +167,18 @@ namespace lum {
 		private:
 			
 			void init( ) {
-				for (int32 i = 0; i < limits::gMaxComponents; i++) {
+				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
 					mComponentPools[i] = nullptr;
 				}
 			}
 			void destroy( ) {
-				for (int32 i = 0; i < limits::gMaxComponents; i++) {
+				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
 					delete mComponentPools[i];
 				}
 			}
 
-			detail::BaseComponent* mComponentPools [ limits::gMaxComponents ]; // Array of component pools indexed by type ID.
-			void* mUniqueComponents[ limits::gMaxComponents ];
+			detail::BasePool* mComponentPools [ limits::gMaxComponentTypes ]; // Array of component pools indexed by type ID.
+			vptr mUniqueComponents[ limits::gMaxComponentTypes ]; // TODO implement unique components
 
 		};
 

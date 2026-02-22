@@ -29,16 +29,16 @@ namespace lum {
 			return log;
 		}
 
-		inline constexpr void EnableLog ( Flags<LogSeverity> sev ) {
+		inline constexpr void EnableLog( Flags<LogSeverity> sev ) {
 			mSeverity.Enable(sev);
 		}
 
-		inline constexpr void DisableLog (Flags<LogSeverity> sev) {
+		inline constexpr void DisableLog( Flags<LogSeverity> sev ) {
 			mSeverity.Disable(sev);
 		}
 
 		template<usize fileL, usize funcL, typename... Args>
-		void LogCmd (
+		void LogCmd(
 			LogSeverity sev,
 			const char(&file)[fileL],
 			const char(&func)[funcL],
@@ -112,7 +112,7 @@ namespace lum {
 		Flags<LogSeverity> mSeverity{ LogSeverity::Fatal, LogSeverity::Debug, LogSeverity::Warn, LogSeverity::Error };
 		
 		template<usize L>
-		void center_custom(charptr out, usize outSize, const char(&s)[L], usize leftWidth, usize rightWidth) {
+		void center_custom( charptr out, usize outSize, const char(&s)[L], usize leftWidth, usize rightWidth ) {
 
 			if (L <= 1) return;
 
@@ -130,7 +130,7 @@ namespace lum {
 		}
 
 		template<usize fileL>
-		ccharptr extract_filename(const char(&path)[fileL]) {
+		ccharptr extract_filename( const char(&path)[fileL] ) {
 			ccharptr lastSlash = nullptr;
 
 			for (size_t i = 0; i < fileL - 1; ++i) {
@@ -142,12 +142,12 @@ namespace lum {
 			return lastSlash ? lastSlash + 1 : path;
 		}
 
-		void output_time();
+		void output_time( );
 
 		void to_string	( charptr out, LogSeverity sev );
 		void to_color	( charptr out, LogSeverity sev );
 
-		Logger() = default;
+		Logger( ) = default;
 
 	};
 }

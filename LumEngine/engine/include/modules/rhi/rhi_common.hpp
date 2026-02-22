@@ -11,21 +11,20 @@
 
 namespace lum {
 
-	struct alignas(16) Vertex {
-		math::Vec3 position;	// Vertex position in 3D space
-		math::Vec3 normal;		// Vertex normal
-		math::Vec2 uv;			// Texture coordinates (UV)
-	};
-
 	namespace rhi {
 
+		struct alignas(16) FVertex {
+			glm::vec3 mPosition;	// Vertex position in 3D space
+			glm::vec3 mNormal;		// Vertex normal
+			glm::vec2 mUv;			// Texture coordinates (UV)
+		};
 
 
 		// Returns number of mipmap levels for an image given width and height.
 		// @param width Width of the image.
 		// @param height Height of the image.
 		// @return Number of mipmap levels (>= 1).
-		inline uint32 mipmap_lvls(uint32 width, uint32 height) {
+		inline uint32 MipmapLvls(uint32 width, uint32 height) {
 			return 1 + std::floor(std::log2(std::max(width, height)));
 		}
 
@@ -36,7 +35,7 @@ namespace lum {
 		// @return Underlying integer representation.
 		template<typename E>
 			requires std::is_enum_v<E>
-		constexpr inline std::underlying_type_t<E> lookup_cast(E e) {
+		constexpr inline std::underlying_type_t<E> LookupCast(E e) {
 			return ToUnderlyingEnum(e);
 		}
 
@@ -46,7 +45,7 @@ namespace lum {
 		// Useful for invalid IDs or handles.
 		template<typename T>
 			requires std::is_arithmetic_v<T>
-		inline constexpr T null_id() {
+		inline constexpr T NullID() {
 			return MaxVal<T>();
 		}
 
@@ -58,25 +57,25 @@ namespace lum {
 		using RPipelineID		= uint32; // Numeric ID for pipeline
 		using RShaderID			= uint8;  // Numeric ID for shader (compact)
 
-		struct RPipelineHandle : public cstd::BaseHandle<RPipelineID> {}; // Pipeline state handle
-		struct RFramebufferHandle : public cstd::BaseHandle<RFramebufferID> {}; // Framebuffer handle
-		struct RSamplerHandle : public cstd::BaseHandle<RSamplerID> {}; // Texture sampler handle
-		struct RShaderHandle : public cstd::BaseHandle<RShaderID> {}; // Shader handle
-		struct RTextureHandle : public cstd::BaseHandle<RTextureID> {}; // Texture handle
-		struct RBufferHandle : public cstd::BaseHandle<RBufferID> {}; // Buffer handle
-		struct RVertexLayoutHandle : public cstd::BaseHandle<RLayoutID> {}; // Vertex layout handle
+		struct RPipelineHandle		: public cstd::BaseHandle<RPipelineID> {}; // Pipeline state handle
+		struct RFramebufferHandle	: public cstd::BaseHandle<RFramebufferID> {}; // Framebuffer handle
+		struct RSamplerHandle		: public cstd::BaseHandle<RSamplerID> {}; // Texture sampler handle
+		struct RShaderHandle		: public cstd::BaseHandle<RShaderID> {}; // Shader handle
+		struct RTextureHandle		: public cstd::BaseHandle<RTextureID> {}; // Texture handle
+		struct RBufferHandle		: public cstd::BaseHandle<RBufferID> {}; // Buffer handle
+		struct RVertexLayoutHandle	: public cstd::BaseHandle<RLayoutID> {}; // Vertex layout handle
 
-		using REnumFlag		= uint16;    // Bitmask storage type
+		using REnumFlag	= uint16;    // Bitmask storage type
 
-		using ChannelRGBA = math::Vec4; // RGBA color channel type
+		using ChannelRGBA = glm::vec4; // RGBA color channel type
 
-		enum class RClearFlag : REnumFlag {
+		enum class EClearFlag : bitfield {
 			Color = 1 << 0,     // Clear color buffer
 			Depth = 1 << 1,     // Clear depth buffer
 			Stencil = 1 << 2    // Clear stencil buffer
 		};
 
-		enum class RDataFormat : REnumFlag {
+		enum class EDataFormat : byte {
 			Float1, // Single float
 			Vec2,   // 2-component vector (x,y)
 			Vec3,   // 3-component vector (x,y,z)
@@ -85,7 +84,7 @@ namespace lum {
 			Mat4    // 4x4 matrix
 		};
 
-		enum class RBufferType : REnumFlag {
+		enum class EBufferType : byte {
 			None,
 			Vertex,        // Vertex buffer (VBO)
 			Element,       // Element / index buffer (EBO)
@@ -93,18 +92,18 @@ namespace lum {
 			ShaderStorage, // Shader storage buffer (SSBO)
 		};
 
-		enum class RBufferUsage : REnumFlag {
+		enum class EBufferUsage : byte {
 			Static,  // Data does not change during runtime (fast)
 			Dynamic  // Data updated during runtime (slower)
 		};
 
-		enum class RTopologyMode : REnumFlag {
+		enum class ETopologyMode : byte {
 			Point, // Draw vertices as points
 			Line,  // Draw edges as lines
 			Fill   // Fill polygon interiors
 		};
 		
-		enum class RMapFlag : REnumFlag {
+		enum class EMapFlag : bitfield {
 			Persistent			= 1 << 0, // Pointer remains valid across frames
 			Write				= 1 << 1, // CPU can write
 			Read				= 1 << 2, // CPU can read
@@ -114,18 +113,18 @@ namespace lum {
 			Unsynchronized		= 1 << 6, // Map without GPU sync guarantees
 		};
 
-		enum class RFace : REnumFlag {
+		enum class EFace : byte {
 			Front,      // Front-facing polygon
 			Back,       // Back-facing polygon
 			FrontBack,  // Both faces
 		};
 
-		enum class RWindingOrder : REnumFlag {
+		enum class EWindingOrder : byte {
 			CounterClockwise, // Triangles front-facing if CCW
 			Clockwise         // Triangles front-facing if CW
 		};
 
-		struct RColorMask {
+		struct FColorMask {
 			bool r : 1 = true; // Red channel write enabled
 			bool g : 1 = true; // Green channel write enabled
 			bool b : 1 = true; // Blue channel write enabled
@@ -134,12 +133,12 @@ namespace lum {
 
 		namespace detail {
 			LUM_COMPILE_VARIABLE
-			static uint8 gDataFormatLookup[] = { 1, 2, 3, 4, 9, 16 }; // Lookup for data format sizes
+			uint8 gDataFormatLookup[] = { 1, 2, 3, 4, 9, 16 }; // Lookup for data format sizes
 		}
 
-	} // namespace rhi
+	} // namespace lum::rhi
 
-	LUM_ENUM_OPERATIONS(rhi::RMapFlag);
-	LUM_ENUM_OPERATIONS(rhi::RClearFlag);
+	LUM_ENUM_OPERATIONS(rhi::EMapFlag);
+	LUM_ENUM_OPERATIONS(rhi::EClearFlag);
 
 } // namespace lum

@@ -137,7 +137,7 @@ namespace lum::rhi {
 
 	};
 
-	struct RTexture {
+	struct FTexture {
 
 		RTextureRect mRect;
 

@@ -16,14 +16,14 @@ namespace lum::rhi::gl {
 			"Max samplers reached"
 		);
 
-		RSampler sampler;
+		FSampler sampler;
 
 		glCreateSamplers	( 1, &sampler.mHandle );
 		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_MAG_FILTER, (desc.mMagFilter == RSamplerMagFilter::Nearest) ? GL_NEAREST : GL_LINEAR);
-		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_MIN_FILTER, skTextureMinFilterLookup[lookup_cast(desc.mMinFilter)]);
+		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_MIN_FILTER, skTextureMinFilterLookup[LookupCast(desc.mMinFilter)]);
 
-		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_WRAP_S, skSamplerWrapLookup[lookup_cast(desc.mWrapS)] );
-		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_WRAP_T, skSamplerWrapLookup[lookup_cast(desc.mWrapT)] );
+		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_WRAP_S, skSamplerWrapLookup[LookupCast(desc.mWrapS)] );
+		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_WRAP_T, skSamplerWrapLookup[LookupCast(desc.mWrapT)] );
 
 
 		GLfloat max_anisotropy = 1.0f;
@@ -41,7 +41,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::BindSampler ( const RSamplerHandle& sampler, uint16 binding ) {
 		
-		LUM_HOTCHK_RETURN_VOID(mSamplers.Contains(sampler) && binding < MAX_SAMPLER_UNITS, LUM_SEV_WARN, "Sampler doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(mSamplers.Contains(sampler) && binding < skMaxSamplerUnits, LUM_SEV_WARN, "Sampler doesn't exist");
 
 		if (mCurrentSamplers[binding] == sampler) {
 			LUM_PROFILER_CACHE_HIT();

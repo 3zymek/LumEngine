@@ -29,7 +29,7 @@ namespace lum::rhi {
 
 	};
 
-	struct RFramebuffer {
+	struct FFramebuffer {
 
 		RFramebufferID mHandle = 0;
 

@@ -8,7 +8,6 @@
 #pragma once
 
 #include "entity/ecs_common.hpp"
-#include "core/core_defines.hpp"
 
 namespace lum {
 
@@ -42,24 +41,47 @@ namespace lum {
 	public:
 
 		friend class ecs::MEntityManager;
-		ManagedEntity( ecs::MEntityManager& mgr ) : mEntityManager( mgr ) {}
+		
+		/* @brief Constructs a managed entity bound to the given entity manager.
+		* @param mgr Reference to the entity manager that owns this entity.
+		*/
+		ManagedEntity(ecs::MEntityManager* mgr) : mEntityManager(mgr) {}
 
+		/* @brief Adds a component of type tType to this entity.
+		* @param component Component value to add (default constructed if not provided).
+		* @return Reference to the added component.
+		*/
 		template<ecs::detail::Component tType>
-		tType& AddComponent( tType component = {} );
+		tType& AddComponent(tType component = {});
 
+		/* @brief Returns a pointer to the component of type tType on this entity.
+		* @return Pointer to component, or nullptr if not present.
+		*/
 		template<ecs::detail::Component tType>
-		tType* GetComponent( );
+		tType* GetComponent();
 
+		/* @brief Removes the component of type tType from this entity.
+		* @return Reference to this entity for method chaining.
+		*/
 		template<ecs::detail::Component tType>
-		ManagedEntity& RemoveComponent( );
+		ManagedEntity& RemoveComponent();
 
+		/* @brief Checks whether this entity has a component of type tType.
+		* @return True if the component exists on this entity.
+		*/
 		template<ecs::detail::Component tType>
-		bool HasComponent( tType component = {} );
+		bool HasComponent();
+
+		/* @brief Checks whether this entity has all specified component types.
+		* @return True if all components exist on this entity.
+		*/
+		template<ecs::detail::Component tType, ecs::detail::Component... tRest>
+		bool HasComponents();
 
 		
 	protected:
 
-		ecs::MEntityManager& mEntityManager;
+		ecs::MEntityManager* mEntityManager;
 
 	};
 

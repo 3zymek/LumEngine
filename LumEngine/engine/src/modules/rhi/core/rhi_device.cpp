@@ -1,5 +1,5 @@
 #include "rhi/core/rhi_device.hpp"
-#include "window_context/window.hpp"
+#include "platform/window.hpp"
 #include "rhi/backend/opengl/gl_device.hpp"
 namespace lum::rhi {
 

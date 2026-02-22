@@ -15,8 +15,8 @@ namespace lum::limits {
 	LUM_COMPILE_VARIABLE usize gMaxEcsPoolCapacity = 1024;
 	LUM_COMPILE_VARIABLE usize gMaxEntity = 1024;
 
-	// Defines how much containers needs to be reserved for components
-	LUM_COMPILE_VARIABLE usize gMaxComponents = 32;
+	// How much component types are in engine
+	LUM_COMPILE_VARIABLE usize gMaxComponentTypes = 32;
 
 
 

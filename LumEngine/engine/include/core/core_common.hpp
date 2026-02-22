@@ -8,7 +8,6 @@
 #include "core/core_pch.hpp"
 #include "core/types.hpp"
 #include "core/utils/string_hasher.hpp"
-#include "core/math/types.hpp"
 
 namespace lum {
 

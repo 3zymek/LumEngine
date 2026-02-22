@@ -119,6 +119,19 @@ namespace lum {
 	template<Enum T>
 	struct EnableEnumFlags : std::false_type {};
 
+	/* @brief Enables bitwise flag operations for a given enum class.
+	*
+	* Specializes EnableEnumFlags for type T to mark it as a valid flag enum.
+	* After using this macro, the enum supports bitwise operators
+	* (|, &, ^, ~) via the EnableEnumFlags trait.
+	*
+	* @param T Enum class type to enable flag operations for.
+	*
+	* @example
+	*   enum class EShaderStage { Vertex = 1, Fragment = 2, Compute = 4 };
+	*   LUM_ENUM_OPERATIONS(EShaderStage);
+	*   EShaderStage stages = EShaderStage::Vertex | EShaderStage::Fragment;
+	*/
 #	define LUM_ENUM_OPERATIONS(T) \
 		template<> \
 		struct EnableEnumFlags<T> : std::true_type {};

@@ -12,7 +12,7 @@
 
 namespace lum {
 
-	struct Vertex;
+	namespace rhi { struct FVertex; }
 
 	namespace detail {
 
@@ -36,7 +36,7 @@ namespace lum {
 
 	struct FMeshData {
 
-		std::vector<Vertex> mVertices;
+		std::vector<rhi::FVertex> mVertices;
 		std::vector<uint32> mIndices;
 
 	};

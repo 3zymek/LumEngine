@@ -1,7 +1,7 @@
 #pragma once
 #include "audio/audio_common.hpp"
 #include "entity/ecs_common.hpp"
-#include "entity/components/c_transform.hpp"
+#include "entity/components/transform.hpp"
 #include "audio/components/c_audio_listener.hpp"
 namespace lum {
 	namespace systems {
