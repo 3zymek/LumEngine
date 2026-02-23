@@ -18,11 +18,13 @@ namespace lum::ecs {
 
 	template<detail::Component tType>
 	tType& MEntityManager::AddComponent( EntityID entityID, tType component ) {
+		LUM_LOG_DEBUG("Added component %s to entity %d", typeid(tType).name(), entityID);
 		return GetPool<tType>().Add(entityID, component);
 	}
 
 	template<detail::Component tType>
 	tType& MEntityManager::AddComponent( Entity entity, tType component ) {
+		LUM_LOG_DEBUG("Added component %s to entity %d", typeid(tType).name(), entity.mID);
 		return GetPool<tType>().Add(entity.mID, component);
 	}
 

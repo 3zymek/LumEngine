@@ -9,84 +9,58 @@ namespace lum {
 				virtual void PollEvents() = 0;
 			};
 
-			template<LumEvent T>
+			template<LumEvent tType>
 			class EventPool : public BasePool {
-
-				using CallbackArray		= std::array<Callback, limits::gMaxCallbackPerFrame>;
-				using PermCallbackArray = std::array<Callback, limits::gMaxPermanentCallbacks>;
-				using SlotsVector		= std::vector<EventT>;
-				using EventsVector		= std::vector<T>;
 
 			public:
 
-				EventPool() { Init(); }
+				EventPool() { init(); }
 
-				template<typename Lambda>
-				SubscribtionID Subscribe(Lambda&& lambda) {
+				template<typename tLambda>
+				SubscribtionID Subscribe(tLambda&& lambda) {
 
-					SetupCallback(std::forward<Lambda>(lambda), mCallbacks[mCurrentCallbacksID]);
+					
 
-					LUM_LOG_DEBUG("Subscribed at slot {}");
+					setup_callback(std::forward<tLambda>(lambda), mCallbacks[mCurrentCallbacksID]);
+
 					return mCurrentCallbacksID++;
 
 				}
 
-				template<typename Lambda>
-				SubscribtionID SubscribePermanently(Lambda&& lambda) {
+				template<typename tLambda>
+				SubscribtionID SubscribePermanently(tLambda&& lambda) {
 
-					if (mPermFreeSlots.empty()) {
-						LUM_LOG_ERROR("Couldn't substribe - slots for permament callbacks are full");
-						return std::numeric_limits<SubscribtionID>::max();
+					for (usize i = 0; i < limits::gMaxPermanentCallbacks; i++) {
+						if (!mPermCallbacks[i].bActive) {
+							setup_callback(std::forward<tLambda>(lambda), mPermCallbacks[i]);
+							return i;
+						}
 					}
-
-					auto slot = mPermFreeSlots.back();
-					mPermFreeSlots.pop_back();
-					mPermActiveSlots.push_back(slot);
-
-					SetupCallback(std::forward<Lambda>(lambda), mPermCallbacks[slot]);
-
-					LUM_LOG_DEBUG("Subscribed permamently at slot {}");
-					return slot;
+					LUM_LOG_WARN("No free permanent callback slots");
+					return MaxVal<SubscribtionID>();
 
 				}
 
-				void Unsubscribe(SubscribtionID id) {
+				void Unsubscribe( SubscribtionID id ) {
 
 					if (mCurrentCallbacksID < id) {
-						LUM_LOG_WARN("Subscribtion at id {} does not exists");
 						return;
 					}
 
 					auto& callback = mCallbacks[id];
-					if (!callback.bActive)
-						return;
-
-					callback.Destroy();
-
-					LUM_LOG_DEBUG("Unsubscribed callback at slot {}");
+					if (callback.bActive)
+						callback.Destroy();
 
 				}
-				void UnsubscribePermanent(SubscribtionID id) {
-
-					if (mPermActiveSlots.empty() || mToDelete.size() >= gMaxDeleteCallbacksPerFrame) {
-						LUM_LOG_WARN("Unable to unsubscribe callback");
-						return;
-					}
+				void UnsubscribePermanent( SubscribtionID id ) {
 
 					auto& callback = mPermCallbacks[id];
-					callback.Destroy();
-					mPermFreeSlots.push_back(id);
-
-					for (size_t i = 0; i < mPermActiveSlots.size(); i++) {
-						if (mPermActiveSlots[i] == id) {
-							mToDelete.push_back(i);
-							return;
-						}
-					}
+					if(callback.bActive)
+						callback.Destroy();
 
 				}
 
-				void Emit(const T& event) {
+				void Emit(const tType& event) {
 
 					if (mEventsCurrent.size() >= limits::gMaxEventEmittsPerFrame)
 						return;
@@ -94,7 +68,6 @@ namespace lum {
 						mEventsCurrent.push_back(event);
 					else
 						mEventsNext.push_back(event);
-					LUM_LOG_DEBUG("Emitting event");
 
 				}
 
@@ -102,10 +75,8 @@ namespace lum {
 
 					bPolling = true;
 
-					DeleteCallbacks();
-
 					for (auto& event : mEventsCurrent) {
-						InvokeCallbacks(event);
+						invoke_callbacks(event);
 					}
 
 					mEventsCurrent.clear();
@@ -118,42 +89,29 @@ namespace lum {
 
 			private:
 
-				template<typename Lambda>
-				void SetupCallback(Lambda&& lambda, Callback& callback) {
+				template<typename tLambda>
+				void setup_callback(tLambda&& lambda, Callback& callback) {
 
-					static_assert(sizeof(Storage) >= sizeof(Lambda), "Lambda too big for buffer");
-					static_assert(alignof(Storage) >= alignof(Lambda), "Lambda aligment dismatch");
-					new (&callback.mStorage) Lambda(std::forward<Lambda>(lambda));
+					LUM_SASSERT(sizeof(Storage) >= sizeof(tLambda) && "Lambda too big for buffer");
+					LUM_SASSERT(alignof(Storage) >= alignof(tLambda) && "Lambda aligment dismatch");
+					new (&callback.mStorage) tLambda(std::forward<tLambda>(lambda));
 
 					callback.mInvoke = [](vptr userParam, cvptr event) {
-						auto* l = reinterpret_cast<Lambda*>(userParam);
-						(*l)(*reinterpret_cast<const T*>(event));
+						auto* l = reinterpret_cast<tLambda*>(userParam);
+						(*l)(*reinterpret_cast<const tType*>(event));
 						};
 					callback.mDestroy = [](vptr userParam) {
-						reinterpret_cast<Lambda*>(userParam)->~Lambda();
+						reinterpret_cast<tLambda*>(userParam)->~Lambda();
 						};
 					callback.bActive = true;
 
 				}
 
-				void DeleteCallbacks() {
-
-					std::sort(mToDelete.begin(), mToDelete.end(), std::greater<>());
-
-					for (auto& slot : mToDelete) {
-						mPermCallbacks[mPermActiveSlots[slot]].Destroy();
-						std::swap(mPermActiveSlots[slot], mPermActiveSlots.back());
-						mPermActiveSlots.pop_back();
-					}
-					mToDelete.clear();
-
-				}
-
-				void InvokeCallbacks(const T& event) {
+				void invoke_callbacks(const tType& event) {
 
 					auto temp = mCurrentCallbacksID;
 					// Temporary callbacks
-					for (EventT i = 0; i < temp; i++) {
+					for (int32 i = 0; i < temp; i++) {
 						auto& callback = mCallbacks[i];
 						if (!callback.bActive)
 							continue;
@@ -163,37 +121,27 @@ namespace lum {
 					mCurrentCallbacksID = 0;
 
 					// Permament Callbacks
-					for (auto& slot : mPermActiveSlots) {
+					for (auto& slot : mPermCallbacks) {
 						auto& callback = mPermCallbacks[slot];
-						callback.mInvoke(&callback.mStorage, &event);
+						if(callback.bActive)
+							callback.mInvoke(&callback.mStorage, &event);
 					}
 
 				}
 
-				void Init() {
+				void init() {
 
-					mPermFreeSlots.reserve(limits::gMaxPermanentCallbacks);
-					mPermActiveSlots.reserve(limits::gMaxPermanentCallbacks);
 					mEventsCurrent.reserve(limits::gMaxCallbackPerFrame);
 					mEventsNext.reserve(limits::gMaxCallbackPerFrame);
-					mToDelete.reserve(gMaxDeleteCallbacksPerFrame);
-
-					for (EventT i = 0; i < limits::gMaxPermanentCallbacks; i++) {
-						mPermFreeSlots.push_back(i);
-					}
 
 				}
 
-				CallbackArray	mCallbacks;
-				EventT			mCurrentCallbacksID = 0;
+				std::array<Callback, limits::gMaxCallbackPerFrame>    mCallbacks;
+				std::array<Callback, limits::gMaxPermanentCallbacks>  mPermCallbacks;
+				EventT mCurrentCallbacksID = 0;
 
-				PermCallbackArray	mPermCallbacks;
-				SlotsVector			mPermFreeSlots;
-				SlotsVector			mPermActiveSlots;
-				SlotsVector			mToDelete;
-
-				EventsVector mEventsCurrent;
-				EventsVector mEventsNext;
+				std::vector<tType> mEventsCurrent;
+				std::vector<tType> mEventsNext;
 
 				bool bPolling = false;
 

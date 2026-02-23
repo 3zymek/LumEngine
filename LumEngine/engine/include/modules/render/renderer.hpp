@@ -54,6 +54,14 @@ namespace lum::render {
 
 	};
 
+	struct FCameraData {
+
+		glm::vec3 mPosition{ 1 };
+		glm::mat4 mView{ 1 };
+		glm::mat4 mProjection{ 1 };
+
+	};
+
 	namespace detail {
 
 		struct FEnvironmentPass {
@@ -133,7 +141,7 @@ namespace lum::render {
 
 		void SetEnvionmentTexture( rhi::RTextureHandle tex );
 
-		void UpdateCamera( EditorCamera& camera );
+		void UpdateCamera( FCameraData& camera );
 
 		void Draw( const Object& obj );
 		void BeginFrame( );

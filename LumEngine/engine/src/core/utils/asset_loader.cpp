@@ -1,6 +1,6 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Loads assets and stores project root path
+// Purpose: Loads assets (textures, sounds, shaders, models)
 // 
 //=============================================================================//
 #pragma once
@@ -18,175 +18,179 @@
 
 
 namespace lum {
-		
-		std::optional<FTextureData> AssetLoader::LoadTexture ( ERootID root, ccharptr filepath ) {
 
-			String file;
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
 
-			if (root == ERootID::External)
-				file = (sProjectRoot / filepath).lexically_normal().string();
-			else if (root == ERootID::Internal)
-				file = (sInternalRoot / filepath).lexically_normal().string();
+	std::optional<FTextureData> AssetLoader::LoadTexture( ERootID root, ccharptr filepath ) {
 
-			if (!detail::fs::exists(file)) {
-				set_error_msg("File doesn't exist");
-				return std::nullopt;
-			}
+		String file;
 
-			FTextureData texture;
-			int32 format;
-			
-			ucharptr data = stbi_load(file.c_str(), &texture.mWidth, &texture.mHeight, &format, 4);
-			texture.mColorChannels = 4;
+		if (root == ERootID::External)
+			file = (sProjectRoot / filepath).lexically_normal().string();
+		else if (root == ERootID::Internal)
+			file = (sInternalRoot / filepath).lexically_normal().string();
 
-			if (!data) {
-				set_error_msg(stbi_failure_reason());
-				return std::nullopt;
-			}
-
-			usize size = texture.mWidth * texture.mHeight * texture.mColorChannels;
-			texture.mPixels.resize(size);
-
-			LUM_ASSERT(size > 0 && data != nullptr, "Texture source data is null");
-
-			std::memcpy(texture.mPixels.data(), data, size);
-
-			stbi_image_free(data);
-
-			return texture;
+		if (!detail::fs::exists(file)) {
+			set_error_msg("File doesn't exist");
+			return std::nullopt;
 		}
 
-		
-		std::optional<FMeshData> AssetLoader::LoadMesh ( ERootID root, ccharptr filepath ) {
+		FTextureData texture;
+		int32 format;
 
-			String file;
+		ucharptr data = stbi_load(file.c_str(), &texture.mWidth, &texture.mHeight, &format, 4);
+		texture.mColorChannels = 4;
 
-			if (root == ERootID::External)
-				file = (sProjectRoot / filepath).lexically_normal().string();
-			else if (root == ERootID::Internal)
-				file = (sInternalRoot / filepath).lexically_normal().string();
+		if (!data) {
+			set_error_msg(stbi_failure_reason());
+			return std::nullopt;
+		}
 
-			if (!detail::fs::exists(file)) {
-				set_error_msg("File doesn't exist");
-				return std::nullopt;
-			}
+		usize size = texture.mWidth * texture.mHeight * texture.mColorChannels;
+		texture.mPixels.resize(size);
 
-			Assimp::Importer importer;
-			uint32 flags = 0;
-			flags |= aiProcess_FlipUVs;
-			flags |= aiProcess_Triangulate;
-			flags |= aiProcess_CalcTangentSpace;
-			const aiScene* scene = importer.ReadFile(file.c_str(), flags);
+		LUM_ASSERT(size > 0 && data != nullptr, "Texture source data is null");
 
-			if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-				set_error_msg(importer.GetErrorString());
-				return std::nullopt;
-			}
-		   
-			FMeshData finalData;
+		std::memcpy(texture.mPixels.data(), data, size);
 
-			uint32 elementOffset = 0;
+		stbi_image_free(data);
 
-			for (uint32 meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+		return texture;
+	}
 
-				aiMesh* mesh = scene->mMeshes[meshIndex];
 
-				for (uint32 vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
-					rhi::FVertex vert;
+	std::optional<FMeshData> AssetLoader::LoadMesh( ERootID root, ccharptr filepath ) {
 
-					vert.mPosition = {
-						mesh->mVertices[vertexIndex].x,
-						mesh->mVertices[vertexIndex].y,
-						mesh->mVertices[vertexIndex].z
+		String file;
+
+		if (root == ERootID::External)
+			file = (sProjectRoot / filepath).lexically_normal().string();
+		else if (root == ERootID::Internal)
+			file = (sInternalRoot / filepath).lexically_normal().string();
+
+		if (!detail::fs::exists(file)) {
+			set_error_msg("File doesn't exist");
+			return std::nullopt;
+		}
+
+		Assimp::Importer importer;
+		uint32 flags = 0;
+		flags |= aiProcess_FlipUVs;
+		flags |= aiProcess_Triangulate;
+		flags |= aiProcess_CalcTangentSpace;
+		const aiScene* scene = importer.ReadFile(file.c_str(), flags);
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+			set_error_msg(importer.GetErrorString());
+			return std::nullopt;
+		}
+
+		FMeshData finalData;
+
+		uint32 elementOffset = 0;
+
+		for (uint32 meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+
+			aiMesh* mesh = scene->mMeshes[meshIndex];
+
+			for (uint32 vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
+				rhi::FVertex vert;
+
+				vert.mPosition = {
+					mesh->mVertices[vertexIndex].x,
+					mesh->mVertices[vertexIndex].y,
+					mesh->mVertices[vertexIndex].z
+				};
+
+				if (mesh->HasNormals()) {
+					vert.mNormal = {
+						mesh->mNormals[vertexIndex].x,
+						mesh->mNormals[vertexIndex].y,
+						mesh->mNormals[vertexIndex].z
+					};
+				}
+				else vert.mNormal = { 0.0f, 0.0f, 0.0f };
+
+				if (mesh->mTextureCoords[0]) {
+					vert.mUv = {
+						mesh->mTextureCoords[0][vertexIndex].x,
+						mesh->mTextureCoords[0][vertexIndex].y
 					};
 
-					if (mesh->HasNormals()) {
-						vert.mNormal = {
-							mesh->mNormals[vertexIndex].x,
-							mesh->mNormals[vertexIndex].y,
-							mesh->mNormals[vertexIndex].z
-						};
-					}
-					else vert.mNormal = { 0.0f, 0.0f, 0.0f };
+				}
+				else vert.mUv = { 0.0f, 0.0f };
 
-					if (mesh->mTextureCoords[0]) {
-						vert.mUv = {
-							mesh->mTextureCoords[0][vertexIndex].x,
-							mesh->mTextureCoords[0][vertexIndex].y
-						};
+				finalData.mVertices.push_back(vert);
 
-					}
-					else vert.mUv = { 0.0f, 0.0f };
-					
-					finalData.mVertices.push_back(vert);
-				  
+			}
+
+			for (uint32 faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+				aiFace face = mesh->mFaces[faceIndex];
+
+				for (uint32 elementIndex = 0; elementIndex < face.mNumIndices; ++elementIndex) {
+					finalData.mIndices.push_back(face.mIndices[elementIndex] + elementOffset);
 				}
 
-				for (uint32 faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
-					aiFace face = mesh->mFaces[faceIndex];
 
-					for (uint32 elementIndex = 0; elementIndex < face.mNumIndices; ++elementIndex) {
-						finalData.mIndices.push_back(face.mIndices[elementIndex] + elementOffset);
-					}
-
-					
-				}
-				elementOffset += mesh->mNumVertices;
-
-		   }
-
-			return finalData;
-		}
-	   
-
-		std::optional<String> AssetLoader::LoadAudio ( ERootID root, ccharptr filepath) {
-
-			String file;
-
-			if (root == ERootID::External)
-				file = (sProjectRoot / filepath).lexically_normal().string();
-			else if (root == ERootID::Internal)
-				file = (sInternalRoot / filepath).lexically_normal().string();
-			 
-			if (!detail::fs::exists(file)) {
-				set_error_msg("File doesn't exist");
-				return std::nullopt;
 			}
+			elementOffset += mesh->mNumVertices;
 
-			return file;
 		}
 
+		return finalData;
+	}
 
-		std::optional<String> AssetLoader::LoadShader ( ERootID root, ccharptr filepath) {
 
-			String file;
+	std::optional<String> AssetLoader::LoadAudio( ERootID root, ccharptr filepath ) {
 
-			if (root == ERootID::External)
-				file = (sProjectRoot / filepath).lexically_normal().string();
-			else if (root == ERootID::Internal)
-				file = (sInternalRoot / filepath).lexically_normal().string();
+		String file;
 
-			if (!detail::fs::exists(file)) {
-				set_error_msg("File doesn't exist");
-				return std::nullopt;
-			}
+		if (root == ERootID::External)
+			file = (sProjectRoot / filepath).lexically_normal().string();
+		else if (root == ERootID::Internal)
+			file = (sInternalRoot / filepath).lexically_normal().string();
 
-			std::ifstream loadedFile(file);
-			std::ifstream defines(sShaderDefine);
-			if (!loadedFile.is_open() || !defines.is_open()) {
-				set_error_msg("File couldn't be opened");
-				return std::nullopt;
-			}
-
-			String version;
-			std::getline(loadedFile, version);
-
-			std::stringstream ss;
-			ss << version << '\n';
-			ss << defines.rdbuf() << '\n';
-			ss << loadedFile.rdbuf();
-
-			return ss.str();
+		if (!detail::fs::exists(file)) {
+			set_error_msg("File doesn't exist");
+			return std::nullopt;
 		}
+
+		return file;
+	}
+
+
+	std::optional<String> AssetLoader::LoadShader( ERootID root, ccharptr filepath ) {
+
+		String file;
+
+		if (root == ERootID::External)
+			file = (sProjectRoot / filepath).lexically_normal().string();
+		else if (root == ERootID::Internal)
+			file = (sInternalRoot / filepath).lexically_normal().string();
+
+		if (!detail::fs::exists(file)) {
+			set_error_msg("File doesn't exist");
+			return std::nullopt;
+		}
+
+		std::ifstream loadedFile(file);
+		std::ifstream defines(sShaderDefine);
+		if (!loadedFile.is_open() || !defines.is_open()) {
+			set_error_msg("File couldn't be opened");
+			return std::nullopt;
+		}
+
+		String version;
+		std::getline(loadedFile, version);
+
+		std::stringstream ss;
+		ss << version << '\n';
+		ss << defines.rdbuf() << '\n';
+		ss << loadedFile.rdbuf();
+
+		return ss.str();
+	}
 
 }

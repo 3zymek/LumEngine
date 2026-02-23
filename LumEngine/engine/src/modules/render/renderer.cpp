@@ -17,13 +17,11 @@ namespace lum::render {
 		mEnvironmentPass.mTexture = tex;
 	}
 
-	void Renderer::UpdateCamera(EditorCamera& camera) {
+	void Renderer::UpdateCamera(FCameraData& camera) {
 
-		camera.Update();
-
-		mCurrentCamera.mPosition = camera.position;
-		mCurrentCamera.mProjection = camera.projection;
-		mCurrentCamera.mView = camera.view;
+		mCurrentCamera.mPosition = camera.mPosition;
+		mCurrentCamera.mProjection = camera.mProjection;
+		mCurrentCamera.mView = camera.mView;
 
 		upload_camera_uniform();
 
@@ -54,7 +52,7 @@ namespace lum::render {
 	}
 
 	void Renderer::EndFrame() {
-
+		
 		mRenderDevice->BindPipeline(mEnvironmentPass.mPipeline);
 
 		mRenderDevice->BindShader(mEnvironmentPass.mShader);

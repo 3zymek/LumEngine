@@ -6,18 +6,23 @@
 #pragma once
 
 #include "entity/ecs_common.hpp"
-#include "core/core_pch.hpp"
 
 namespace lum {
-	struct CTransform {
 
-		LUM_COMPONENT_TAG;
+	/* @brief ECS component storing the 3D transform of an entity. */
+	struct CTransform : Component {
 
-		glm::vec3 mPosition	= { 0.f, 0.f, 0.f };
-		glm::vec3 mScale	= { 1.f, 1.f, 1.f };
-		glm::vec3 mRotation	= { 0.f, 0.f, 0.f };
+		/* @brief World position. */
+		glm::vec3 mPosition = { 0.f, 0.f, 0.f };
 
+		/* @brief Non-uniform scale. */
+		glm::vec3 mScale = { 1.f, 1.f, 1.f };
+
+		/* @brief Euler rotation in degrees. */
+		glm::vec3 mRotation = { 0.f, 0.f, 0.f };
+
+		/* @brief Marks the transform as modified, triggering matrix recalculation. */
 		bool bDirty = false;
 
 	};
-}
+} // namespace lum

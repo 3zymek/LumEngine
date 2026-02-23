@@ -1,11 +1,10 @@
+#pragma once
 #include "core/utils/fixed_string.hpp"
 #include "entity/ecs_common.hpp"
 
 namespace lum {
 
-	struct CName {
-
-		LUM_COMPONENT_TAG;
+	struct CName : Component {
 
 		FixedString<32> mName;
 

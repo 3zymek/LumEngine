@@ -1,149 +1,87 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Manages shared material bases and per-entity instances.
+//
+//=============================================================================//
 #pragma once
 
 #include "core/utils/handle_pool.hpp"
 #include "core/core_common.hpp"
-#include "rhi/core/rhi_device.hpp"
-#include "texture_manager.hpp"
+#include "render/material.hpp"
+#include "core/limits.hpp"
 
 namespace lum {
 
-	struct FMaterialBase {
+	class MTextureManager;
 
-		rhi::RTextureHandle mAlbedoMap;
-		rhi::RTextureHandle mNormalMap;
-		rhi::RTextureHandle mRoughnessMap;
-		rhi::RTextureHandle mMetallicMap;
-		rhi::RTextureHandle mAmbientMap;
-
-		glm::vec3 mBaseColor = glm::vec3(1.0f);
-		float32 mRoughness = 0.5f;
-		float32 mMetallic = 0.0f;
-		float32 mAmbient = 1.0f;
-
-	};
+	namespace rhi {
+		class RDevice;
+	} // lum::rhi
 
 	struct MaterialBaseHandle : cstd::BaseHandle<uint32> {};
 
-	struct FMaterialInstance {
-
-		rhi::RTextureHandle mAlbedoMap;
-		rhi::RTextureHandle mNormalMap;
-		rhi::RTextureHandle mRoughnessMap;
-		rhi::RTextureHandle mMetallicMap;
-		rhi::RTextureHandle mAmbientMap;
-
-		glm::vec3 mBaseColor = glm::vec3(1.0f);
-		float32 mRoughness = 0.5f;
-		float32 mMetallic = 0.0f;
-		float32 mAmbient = 1.0f;
-
-	};
-
 	enum class EMaterialMember {
-		
 		Albedo,
 		Normal,
 		Metallic,
 		Roughness,
-	
 	};
 
+	/* @brief Manages material base assets and per-entity material instances.
+	*
+	* Base materials (FMaterialBase) are shared and stored by handle.
+	* Instances (FMaterialInstance) are created from a base and resolve
+	* missing textures to fallbacks automatically.
+	*/
 	class MMaterialManager {
 	public:
 
 		MMaterialManager( ) {}
 
-		void Initialize( rhi::RDevice* device, MTextureManager* texMgr ) {
+		/* @brief Initializes the manager with the given device and texture manager.
+		* @param device  Pointer to the active render device.
+		* @param texMgr  Pointer to the texture manager for fallback resolution.
+		*/
+		void Initialize( rhi::RDevice* device, MTextureManager* texMgr );
 
-			mRenderDevice = device;
-			mTextureManager = texMgr;
-
-			init();
-
-		}
-
+		/* @brief Uploads a material base to the pool and returns its handle.
+		* @param base Material base data to upload.
+		* @return Handle to the uploaded base material.
+		*/
 		LUM_NODISCARD
-		MaterialBaseHandle UploadBase( const FMaterialBase& base ) {
+		MaterialBaseHandle UploadBase( const FMaterialBase& base );
 
-			return mBaseMaterials.Append(base);
+		/* @brief Creates a material instance from a base handle.
+		* Resolves invalid texture handles to fallback textures.
+		* Falls back to the default material if the handle is invalid.
+		* @param base Handle to the base material.
+		* @return Fully resolved material instance ready for rendering.
+		*/
+		FMaterialInstance CreateInstance( MaterialBaseHandle base );
 
-		}
-
-		FMaterialInstance CreateInstance( MaterialBaseHandle base ) {
-
-			if (!mBaseMaterials.Contains(base))
-				base = mDefaultMaterial;
-
-			FMaterialInstance instance;
-			FMaterialBase matBase = mBaseMaterials[base];
-			
-			instance.mAlbedoMap		= validate_texture(matBase.mAlbedoMap);
-			instance.mNormalMap		= validate_texture(matBase.mNormalMap);
-			instance.mMetallicMap	= validate_texture(matBase.mMetallicMap);
-			instance.mRoughnessMap	= validate_texture(matBase.mRoughnessMap);
-			instance.mAmbientMap	= validate_texture(matBase.mAmbientMap);
-
-			instance.mBaseColor = matBase.mBaseColor;
-			instance.mRoughness = matBase.mRoughness;
-			instance.mMetallic = matBase.mMetallic;
-			instance.mAmbient = matBase.mAmbient;
-
-			return instance;
-
-		}
-
-		void SetBaseMap( MaterialBaseHandle material, EMaterialMember mem, rhi::RTextureHandle tex ) {
-			switch (mem) {
-				case EMaterialMember::Albedo: mBaseMaterials[material].mAlbedoMap = tex; break;
-				case EMaterialMember::Normal: mBaseMaterials[material].mNormalMap = tex; break;
-				case EMaterialMember::Metallic: mBaseMaterials[material].mMetallicMap = tex; break;
-				case EMaterialMember::Roughness: mBaseMaterials[material].mRoughnessMap = tex; break;
-			}
-		}
-
+		/* @brief Sets a specific texture map on a base material.
+		* @param material Handle to the base material to modify.
+		* @param mem      Which map to set (Albedo, Normal, Metallic, Roughness).
+		* @param tex      Texture handle to assign.
+		*/
+		void SetBaseMap( MaterialBaseHandle material, EMaterialMember mem, rhi::RTextureHandle tex );
 
 	private:
 
-		MaterialBaseHandle mDefaultMaterial;
-
+		MaterialBaseHandle	mDefaultMaterial;
 		MTextureManager* mTextureManager = nullptr;
 		rhi::RDevice* mRenderDevice = nullptr;
 
-		cstd::HandlePool<MaterialBaseHandle, FMaterialBase> mBaseMaterials { limits::gMaxMaterials };
+		cstd::HandlePool<MaterialBaseHandle, FMaterialBase> mBaseMaterials{ limits::gMaxMaterials };
 
-		/* Init implementation */
-		void init( ) {
-			create_materials();
-		}
+		void init( );
 
-		rhi::RTextureHandle validate_texture( rhi::RTextureHandle tex ) {
+		/* @brief Returns the texture if valid, otherwise returns the default fallback. */
+		rhi::RTextureHandle validate_texture( rhi::RTextureHandle tex );
 
-			if (!mRenderDevice->IsValid(tex)) {
-				LUM_LOG_DEBUG("No texture given, setting default fallback");
-				return mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
-			}
-			else
-				return tex;
-
-		}
-
-		void create_materials( ) {
-
-			{ // Base material
-				FMaterialBase base;
-				base.mAlbedoMap		= mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
-				base.mNormalMap		= mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
-				base.mMetallicMap	= mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
-				base.mRoughnessMap	= mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
-				base.mAmbientMap	= mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
-				
-				mDefaultMaterial = UploadBase(base);
-
-			}
-
-		}
+		/* @brief Creates and uploads the built-in default material. */
+		void create_materials( );
 
 	};
 
-
-}
+} // namespace lum

@@ -1,8 +1,6 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Represents a unique entity in the scene.
-//          Entity stores only an ID. ManagedEntity extends it
-//          with component add/remove/get operations via MEntityManager.
+// Purpose: Entity and component primitives for the ECS.
 //
 //=============================================================================//
 #pragma once
@@ -10,24 +8,31 @@
 #include "core/core_pch.hpp"
 
 namespace lum {
-    namespace ecs {
 
-        using EntityID = uint64;
+	/* @brief Base tag struct for all ECS components.
+	* Inherit from this to mark a struct as a valid component.
+	*/
+	struct Component : std::true_type {};
 
-#       define LUM_COMPONENT_TAG \
-            inline constexpr static bool __lum_component__ = true;
+	namespace ecs {
 
-        namespace detail {
+		/* @brief Unique identifier for an entity. */
+		using EntityID = uint64;
 
-            struct CUnique {};
-            
-            template<typename tType>
-            concept Component =
-                requires
-                    { tType::__lum_component__; } &&
-                    std::is_trivially_copyable_v<tType> &&
-                    std::is_trivially_destructible_v<tType>; 
-         
-        }
-    }
-}
+		namespace detail {
+
+			/* @brief Concept validating a well-formed ECS component type.
+			* Requires the type to inherit from lum::Component,
+			* be trivially copyable and trivially destructible.
+			*/
+			template<typename tType>
+			concept Component =
+				std::is_base_of_v<lum::Component, tType>&&
+				std::is_trivially_copyable_v<tType>&&
+				std::is_trivially_destructible_v<tType>;
+
+		} // namespace lum::ecs::detail
+
+	} // namespace lum::ecs
+
+} // namespace lum

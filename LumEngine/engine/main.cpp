@@ -32,7 +32,9 @@ int main() {
 
     Engine e;
 
-    e.Initialize("test");
+    e.Initialize("C:/Users/szymek/Desktop/lumen_assets");
+
+    e.SetScene("scene.json");
     
     e.Run();
 

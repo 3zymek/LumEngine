@@ -163,7 +163,8 @@ namespace lum {
 			template<detail::Component tType>
 			detail::ComponentPool<tType>& GetPool( );
 			
-			
+			MEntityManager(const MEntityManager&) = delete;
+			MEntityManager& operator=(const MEntityManager&) = delete;
 		private:
 			
 			void init( ) {
@@ -173,7 +174,8 @@ namespace lum {
 			}
 			void destroy( ) {
 				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
-					delete mComponentPools[i];
+					if(mComponentPools[i] != nullptr)
+						delete mComponentPools[i];
 				}
 			}
 

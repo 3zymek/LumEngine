@@ -1,13 +1,20 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Creation, management and cache textures
+// Purpose: GPU texture loading, caching and lifecycle management.
 //
 //=============================================================================//
 #pragma once
 
-#include "rhi/core/rhi_device.hpp"
+#include "core/core_common.hpp"
 
 namespace lum {
+
+	namespace rhi {
+		class RDevice;
+		struct RTextureHandle;
+	} // lum::rhi
+
+	struct FTextureData;
 
 	enum class ETexturePreset : uint8 {
 		Albedo,
@@ -63,7 +70,13 @@ namespace lum {
 		*/
 		rhi::RTextureHandle Load( ccharptr path, ETexturePreset preset, ERootID id = ERootID::External );
 
-		rhi::RTextureHandle LoadEquirectangularCubemap( ccharptr path, ERootID root = ERootID::External );
+		/* @brief Loads an equirectangular HDR image and converts it to a cubemap.
+		* @param path Path to the equirectangular texture asset.
+		* @param faceSize Resolution of each cubemap face in pixels.
+		* @param root Root directory identifier.
+		*/
+		rhi::RTextureHandle LoadEquirectangularCubemap( ccharptr path, int32 faceSize, ERootID root = ERootID::External );
+
 
 		/* @brief Returns a built-in fallback texture.
 		* @param fallback Fallback type (Missing = checkered, Default = white 1x1).
@@ -74,10 +87,16 @@ namespace lum {
 	private:
 
 		rhi::RDevice*		mRenderDevice = nullptr;
+
+		/* @brief Fallback texture displayed when a requested asset cannot be found. */
 		rhi::RTextureHandle mMissingTexture;
+
+		/* @brief Default 1x1 white texture used as a safe neutral fallback. */
 		rhi::RTextureHandle mDefaultTexture;
-		
+
+		/* @brief Cache mapping texture path hashes to their GPU handles. */
 		std::unordered_map<uint64, rhi::RTextureHandle> mTextures;
+
 
 		/* Init internal implementation */
 		void init( );
@@ -91,8 +110,14 @@ namespace lum {
 		*/
 		void create_default_textures( );
 
+		/* @brief Converts an equirectangular texture into six cubemap faces.
+		* @param equirect Source equirectangular texture data.
+		* @param faceSize Resolution of each output face in pixels.
+		* @return Array of six FTextureData, one per cubemap face.
+		*/
 		std::array<FTextureData, 6> convert_equirectangular_to_cubemap( const FTextureData& equirect, int32 faceSize = 4096 );
 
+		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
 		static inline rhi::RTextureDescriptor sTexturePresetsLookup[] = {
 			{ // ALBEDO
 				.mInternalFormat = rhi::RInternalImageFormat::SRGB8_Alpha8,
@@ -120,6 +145,7 @@ namespace lum {
 			},
 		};
 
+		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
 		LUM_COMPILE_VARIABLE
 		static uint16 skTextureBindingLookups[] = {
 			LUM_TEX_ALBEDO,

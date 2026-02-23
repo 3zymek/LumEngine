@@ -1,17 +1,21 @@
 #pragma once
+#include "scene/scene_loader.hpp"
 #include "core/core_pch.hpp"
+#include "entity/ecs_manager.hpp"
 
 namespace lum {
 
-	namespace ecs { class MEntityManager; }
 	class MTextureManager;
 	class MMaterialManager;
 	class MMeshManager;
 	class MShaderManager;
 
+	namespace render { class Renderer; }
+
 	struct Scene {
 	
-		ecs::MEntityManager& mEntityMgr;
+		std::vector<ecs::EntityID> mEntities;
+		std::unique_ptr<ecs::MEntityManager> mEntityMgr;
 		
 	};
 
@@ -21,6 +25,7 @@ namespace lum {
 		MMaterialManager*	mMaterialMgr = nullptr;
 		MMeshManager*		mMeshMgr = nullptr;
 		MShaderManager*		mShaderMgr = nullptr;
+		render::Renderer*	mRenderer = nullptr;
 
 	};
 
@@ -33,19 +38,25 @@ namespace lum {
 
 		}
 
-		void SetScene(ccharptr scenePath) {
+		void SetScene( ccharptr scenePath ) {
 
 			uint64 hash = HashStr(scenePath);
 
-			if (mScenes.contains(hash))
-				mCurrentScene = &mScenes[hash];
+			if (!mScenes.contains(hash))
+				mScenes[hash] = mLoader.Load( scenePath, mContext );
 
+			mCurrentScene = &mScenes[hash];
+		}
+
+		Scene* GetCurrentScene() {
+			return mCurrentScene;
 		}
 
 	private:
 
 		FSceneManagerContext mContext;
 
+		SceneLoader mLoader;
 		Scene* mCurrentScene = nullptr;
 		
 		std::unordered_map<uint64, Scene> mScenes;

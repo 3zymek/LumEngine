@@ -1,9 +1,13 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Loads and manages static mesh resources using RHI.
+//
+//=============================================================================//
 #pragma once
-
-#include "rhi/core/rhi_device.hpp"
 
 #include "core/core_common.hpp"
 #include "core/utils/handle_pool.hpp"
+#include "render/mesh.hpp"
 
 namespace lum {
 
@@ -14,12 +18,11 @@ namespace lum {
 			Dynamic
 		};
 
+		/* @brief Stores raw GPU buffer handles for a mesh (VBO, EBO, VAO). */
 		struct FRenderResources {
-
-			rhi::RBufferHandle mVbo;
-			rhi::RBufferHandle mEbo;
-			rhi::RVertexLayoutHandle mVao;
-
+			rhi::RBufferHandle			mVbo;
+			rhi::RBufferHandle			mEbo;
+			rhi::RVertexLayoutHandle	mVao;
 		};
 
 	} // namespace lum::detail
@@ -27,70 +30,76 @@ namespace lum {
 	struct StaticMeshHandle : cstd::BaseHandle<uint32> {};
 	struct DynamicMeshHandle : cstd::BaseHandle<uint32> {};
 
-	struct FStaticMeshResource {
-
-		rhi::RBufferHandle mVbo;
-		rhi::RBufferHandle mEbo;
-		rhi::RVertexLayoutHandle mVao;
-		uint32 mNumIndices = 0;
-
-	};
-
-	struct FDynamicMeshInstance {
-
-		FMeshData mData;
-		rhi::RBufferHandle mVbo;
-		rhi::RBufferHandle mEbo;
-		rhi::RVertexLayoutHandle mVao;
-		bool bDirty = false;
-
-	};
-
+	/* @brief Loads and manages static mesh resources on the GPU.
+	*
+	* Handles mesh loading via Assimp, GPU upload, and handle-based access.
+	* Meshes are cached by path hash to avoid duplicate uploads.
+	* Provides built-in default and error meshes as fallbacks.
+	*/
 	class MMeshManager {
 	public:
 
-		MMeshManager( ) {}
+		MMeshManager() {}
 
+		/* @brief Initializes the manager with the given RHI device.
+		* @param device Pointer to the active render device.
+		*/
 		void Initialize( rhi::RDevice* device );
 
-		FStaticMeshResource GetStatic( StaticMeshHandle handle );
+		/* @brief Returns the static mesh resource for the given handle.
+		* @param handle Handle to the static mesh.
+		* @return Reference to the mesh resource containing VAO and index count.
+		*/
+		const FStaticMeshResource& GetStatic( StaticMeshHandle handle );
 
+		/* @brief Loads a static mesh from disk and uploads it to the GPU.
+		* Returns a cached handle if the mesh was already loaded.
+		* @param path Path to the mesh file (relative to root).
+		* @param root Root directory identifier.
+		* @return Handle to the uploaded static mesh.
+		*/
 		StaticMeshHandle CreateStatic( ccharptr path, ERootID root = ERootID::External );
 
+		/* @brief Loads a dynamic mesh instance from disk.
+		* @param path Path to the mesh file.
+		* @param root Root directory identifier.
+		* @return Dynamic mesh instance.
+		*/
 		FDynamicMeshInstance CreateDynamic( ccharptr path, ERootID root = ERootID::External );
 
 	private:
 
 		rhi::RDevice* mRenderDevice = nullptr;
 
-		StaticMeshHandle mDefaultMesh;
-		StaticMeshHandle mErrorMesh;
+		StaticMeshHandle mDefaultMesh; // Fallback mesh used when no mesh is assigned.
+		StaticMeshHandle mErrorMesh;   // Fallback mesh used when loading fails.
 
-		std::unordered_map<uint64, StaticMeshHandle> mStaticMeshCache;
-		cstd::HandlePool<StaticMeshHandle, FStaticMeshResource> mStaticMeshes { limits::gMaxModels };
+		std::unordered_map<uint64, StaticMeshHandle> mStaticMeshCache; // Path hash -> handle cache.
+		cstd::HandlePool<StaticMeshHandle, FStaticMeshResource> mStaticMeshes{ limits::gMaxModels };
 
 		std::vector<rhi::FVertex> mBasicVertices = {
-			// position              // normal            // uv
+			// position                normal               uv
 			{{ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }},
 			{{  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }},
 			{{  0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }},
 			{{ -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }},
 		};
 
-		std::vector<uint32> mBasicIndices = {
-			0, 1, 2,
-			2, 3, 0
-		};
+		std::vector<uint32> mBasicIndices = { 0, 1, 2, 2, 3, 0 };
 
+		/* @brief Initializes built-in default and error meshes. */
+		void init( );
 
-		/* Init internal implementation */
-		void init();
-
+		/* @brief Uploads mesh data to the GPU and returns render resources.
+		* @param type   Mesh type (Static or Dynamic).
+		* @param data   CPU-side mesh data to upload.
+		* @return Render resources containing VBO, EBO, and VAO handles.
+		*/
 		detail::FRenderResources upload_gpu( detail::EMeshType type, const FMeshData& data );
 
+		/* @brief Creates and uploads built-in meshes (default, error). */
 		void create_meshes( );
 
 	};
-
 
 } // namespace lum

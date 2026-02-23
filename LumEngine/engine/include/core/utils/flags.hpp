@@ -134,7 +134,7 @@ namespace lum {
 	*/
 #	define LUM_ENUM_OPERATIONS(T) \
 		template<> \
-		struct EnableEnumFlags<T> : std::true_type {};
+		struct EnableEnumFlags<T> : std::true_type {}
 
 	template<Enum T>
 		requires EnableEnumFlags<T>::value

@@ -71,31 +71,12 @@ namespace lum {
 
 	};
 
-	struct SceneModule {
-
-		MSceneManager mSceneMgr;
-		ecs::MEntityManager mEntityMgr;
-
-		void Initialize( ResourceModule& res ) {
-
-			FSceneManagerContext ctx;
-			ctx.mMaterialMgr = &res.mMaterialMgr;
-			ctx.mMeshMgr = &res.mMeshMgr;
-			ctx.mTextureMgr = &res.mTextureMgr;
-			ctx.mShaderMgr = &res.mShaderMgr;
-
-			mSceneMgr.Initialize(ctx);
-
-		}
-
-	};
-
 	struct RenderModule {
 
 		render::Renderer mRenderer;
 		render::RenderSystem mRenderSys;
-		
-		void Initialize( PlatformModule& platform, ResourceModule& res, SceneModule& scene ) {
+
+		void Initialize( PlatformModule& platform, ResourceModule& res ) {
 			render::FRendererContext ctx;
 			ctx.mMaterialManager = &res.mMaterialMgr;
 			ctx.mMeshManager = &res.mMeshMgr;
@@ -105,7 +86,27 @@ namespace lum {
 
 			mRenderer.Initialize(ctx);
 
-			mRenderSys.Initialize(&scene.mEntityMgr, &mRenderer);
+			mRenderSys.Initialize(&mRenderer);
+		}
+
+	};
+
+	struct SceneModule {
+
+		MSceneManager mSceneMgr;
+		ecs::MEntityManager mEntityMgr;
+
+		void Initialize( ResourceModule& res, RenderModule& render ) {
+
+			FSceneManagerContext ctx;
+			ctx.mMaterialMgr = &res.mMaterialMgr;
+			ctx.mMeshMgr = &res.mMeshMgr;
+			ctx.mTextureMgr = &res.mTextureMgr;
+			ctx.mShaderMgr = &res.mShaderMgr;
+			ctx.mRenderer = &render.mRenderer;
+
+			mSceneMgr.Initialize(ctx);
+
 		}
 
 	};
@@ -122,6 +123,11 @@ namespace lum {
 			init();
 
 		}
+		void SetScene( ccharptr path ) {
+
+			mScene.mSceneMgr.SetScene(path);
+		
+		}
 		void Run( ) {
 
 			while (mPlatform.mWindow->IsOpen()) {
@@ -130,7 +136,7 @@ namespace lum {
 
 				mRender.mRenderer.BeginFrame();
 
-				mRender.mRenderSys.Update();
+				mRender.mRenderSys.Update( mScene.mSceneMgr.GetCurrentScene()->mEntityMgr.get(), mPlatform.mWindow );
 
 				mRender.mRenderer.EndFrame();
 
@@ -149,8 +155,8 @@ namespace lum {
 
 			mPlatform.	Initialize();
 			mRes.		Initialize(mPlatform);
-			mScene.		Initialize(mRes);
-			mRender.	Initialize(mPlatform, mRes, mScene);
+			mRender.	Initialize(mPlatform, mRes);
+			mScene.		Initialize(mRes, mRender);
 
 		}
 

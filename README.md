@@ -32,23 +32,25 @@ This is my personal project where I'm learning game engine architecture by build
 
 - Fundamental renderer
 - Clean code
-- Asset management system
+- Scene loading and management
+- PBR
+- Own engine format
 
 ## Project Structure
 ````
 LumEngine/
 ├──engine
-│   ├── core/              # Core engine functionality
-│   ├── math/          # Math library and backend
-│   ├── scene/         # Scene management (not implemented yet)
-│   ├── utils/         # Utility functions/helpers
+│   ├── core/           # Core engine functionality
+│   ├── math/           # Math library and backend
+│   ├── scene/          # Scene management (not implemented yet)
+│   ├── utils/          # Utility functions/helpers
 │   modules/
-│   ├── rhi/           # Rendering Hardware Interface
-│   │   └── backend/   # OpenGL implementation
-│   ├── ecs/           # Entity Component System
-│   ├── audio/         # Audio system
-│   ├── events/        # Event system
-│   testfield/         # Testing field (dirty classes etc.)
+│   ├── rhi/            # Rendering Hardware Interface
+│   │   └── backend/    # OpenGL implementation
+│   ├── ecs/            # Entity Component System
+│   ├── audio/          # Audio system
+│   ├── events/         # Event system
+│   └── scene/          # Scene management
 ````
 
 # My Time spent on developing
@@ -58,8 +60,8 @@ LumEngine/
 ````bash
 M (Manager)     - Class that manages data flow and object lifetime
 S (System)      - Class that processes data each frame, no ownership
-C (Component)   - Struct that is component in ECS
-R (Render)      - Class that is part of Render Hardware Interface
+C (Component)   - Component in ECS
+R (Render)      - Render Hardware Interface handles and types
 F (Plain Data)  - Stores only data
 E (Enum)        - Enum or enum class
 I (Interface)   - Abstract class
@@ -68,7 +70,7 @@ m (member)  - Variable is a member of a class
 s (static)  - Variable is static
 g (global)  - Variable doesn't belong to any class (global state)
 k (const)   - Variable is constant (or constexpr)
-t (template)- Template type
+t (template)- Template type/variable
 
 I use PascalCase for public function and classes, snake_case for private methods and camelCase for variables
 ````

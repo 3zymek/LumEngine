@@ -1,19 +1,20 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Creation, management and cache textures
+// Purpose: GPU texture loading, caching and lifecycle management.
 //
 //=============================================================================//
 
+#include "rhi/core/rhi_device.hpp"
 #include "render/texture_manager.hpp"
 #include "core/utils/asset_loader.hpp"
 
 namespace lum {
-
+	
 	//---------------------------------------------------------
 	// Public
 	//---------------------------------------------------------
 
-	void MTextureManager::Initialize(rhi::RDevice* device) {
+	void MTextureManager::Initialize( rhi::RDevice* device ) {
 
 		mRenderDevice = device;
 
@@ -58,7 +59,7 @@ namespace lum {
 		return handle;
 	}
 
-	rhi::RTextureHandle MTextureManager::LoadEquirectangularCubemap( ccharptr path, ERootID root ) {
+	rhi::RTextureHandle MTextureManager::LoadEquirectangularCubemap( ccharptr path, int32 faceSize, ERootID root ) {
 
 		uint32 hash = HashStr(path);
 
@@ -71,7 +72,7 @@ namespace lum {
 			return mMissingTexture;
 		}
 
-		std::array<FTextureData, 6> convertedData = convert_equirectangular_to_cubemap(data.value(), data.value().mWidth);
+		std::array<FTextureData, 6> convertedData = convert_equirectangular_to_cubemap(data.value(), faceSize);
 
 		rhi::RTextureDescriptor desc;
 		for (int32 i = 0; i < 6; i++)

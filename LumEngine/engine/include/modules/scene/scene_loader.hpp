@@ -18,6 +18,7 @@ namespace lum {
 	struct FSceneManagerContext;
 
 	class SceneLoader {
+	public:
 		
 		Scene Load( ccharptr path, FSceneManagerContext& ctx );
 

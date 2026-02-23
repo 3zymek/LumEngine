@@ -1,5 +1,12 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Loads and manages static mesh resources using RHI.
+//
+//=============================================================================//
+
 #include "render/mesh_manager.hpp"
 #include "core/utils/asset_loader.hpp"
+#include "render/mesh.hpp"
 
 namespace lum {
 
@@ -14,14 +21,14 @@ namespace lum {
 
 	}
 
-	FStaticMeshResource MMeshManager::GetStatic(StaticMeshHandle handle) {
+	const FStaticMeshResource& MMeshManager::GetStatic( StaticMeshHandle handle ) {
 		if (mStaticMeshes.Contains(handle))
 			return mStaticMeshes[handle];
 		else
 			return mStaticMeshes[mDefaultMesh];
 	}
 
-	StaticMeshHandle MMeshManager::CreateStatic(ccharptr path, ERootID root ) {
+	StaticMeshHandle MMeshManager::CreateStatic( ccharptr path, ERootID root ) {
 
 		uint64 hash = HashStr(path);
 

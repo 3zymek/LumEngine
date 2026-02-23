@@ -1,62 +1,49 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: ECS system handling camera and mesh rendering each frame.
+//
+//=============================================================================//
 #pragma once
 
 #include "core/core_common.hpp"
-#include "render/renderer.hpp"
-#include "entity/ecs_manager.hpp"
-#include "render/texture_manager.hpp"
-#include "render/mesh_manager.hpp"
-#include "render/shader_manager.hpp"
-#include "render/material_manager.hpp"
-#include "render/render_system.hpp"
 
 namespace lum {
 
-	struct CRender {
-		LUM_COMPONENT_TAG;
-	};
-
-	struct CMaterial {
-		LUM_COMPONENT_TAG;
-		FMaterialInstance mInstance;
-	};
-	struct CStaticMesh {
-		LUM_COMPONENT_TAG;
-		StaticMeshHandle mInstance;
-	};
+	namespace ecs { class MEntityManager; }
+	class Window;
 
 	namespace render {
 
+		class Renderer;
+
+		/* @brief ECS system responsible for submitting render objects each frame.
+		* Iterates over camera and mesh entities and dispatches draw calls to the Renderer.
+		*/
 		struct RenderSystem {
 		public:
 
-			RenderSystem( ) {}
+			RenderSystem() = default;
 
-			void Initialize( ecs::MEntityManager* entMgr, render::Renderer* renderer ) {
-				mEntityManager = entMgr;
-				mRenderer = renderer;
-			}
+			/* @brief Initializes the system with a renderer instance.
+			* @param renderer Valid pointer to an active Renderer.
+			*/
+			void Initialize( render::Renderer* renderer );
 
-			void Update() {
-
-				mEntityManager->Each<CRender, CTransform, CMaterial, CStaticMesh>(
-					[&](CRender& render, CTransform& transform, CMaterial& material, CStaticMesh& mesh)
-					{
-						render::Object obj;
-						obj.mMaterial = material.mInstance;
-						obj.mStaticMesh = mesh.mInstance;
-						obj.mTransform = transform;
-						mRenderer->Draw(obj);
-					});
-
-			}
+			/* @brief Processes all renderable entities and submits them for drawing.
+			* Updates camera matrices from CCamera and CTransform,
+			* then submits each CStaticMesh with its material and transform.
+			* @param entityMgr Active entity manager to query components from.
+			* @param window    Window used to compute the current aspect ratio.
+			*/
+			void Update( ecs::MEntityManager* entityMgr, Window* window );
 
 		private:
 
-			ecs::MEntityManager* mEntityManager = nullptr;
+			/* @brief Pointer to the active renderer used for draw call submission. */
 			render::Renderer* mRenderer = nullptr;
 
 		};
 
-	} // namespace lum::render
+	} // namespace render
 
 } // namespace lum

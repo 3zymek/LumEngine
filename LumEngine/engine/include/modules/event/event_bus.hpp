@@ -20,7 +20,7 @@ namespace lum {
 		class EventBus {
 		public:
 
-			EventBus( ) { Init(); }
+			EventBus( ) { init(); }
 
 			/*! @brief Emits an event to all subscribers of the given type.
 			*
@@ -32,7 +32,7 @@ namespace lum {
 			*/
 			template< detail::LumEvent EventType >
 			void Emit( const EventType& event ) {
-				GetOrCreatePool<EventType>().Emit(event);
+				get_pool<EventType>().Emit(event);
 			}
 
 			/*! @brief Subscribes a one-time callback to an event type.
@@ -47,7 +47,7 @@ namespace lum {
 			*/
 			template< detail::LumEvent EventType, typename Lambda >
 			detail::SubscribtionID Subscribe( Lambda&& lambda ) {
-				return GetOrCreatePool<EventType>().Subscribe(std::forward<Lambda>(lambda));
+				return get_pool<EventType>().Subscribe(std::forward<Lambda>(lambda));
 			}
 
 			/*! @brief Subscribes a permanent callback to an event type.
@@ -62,7 +62,7 @@ namespace lum {
 			*/
 			template< detail::LumEvent EventType, typename Lambda >
 			detail::SubscribtionID SubscribePermanently( Lambda&& lambda ) {
-				return GetOrCreatePool<EventType>().SubscribePermanently(std::forward<Lambda>(lambda));
+				return get_pool<EventType>().SubscribePermanently(std::forward<Lambda>(lambda));
 			}
 
 			/*! @brief Unsubscribes a previously registered one-time callback.
@@ -75,7 +75,7 @@ namespace lum {
 			*/
 			template< detail::LumEvent EventType >
 			void Unsubscribe( detail::SubscribtionID id ) {
-				GetOrCreatePool<EventType>().Unsubscribe(id);
+				get_pool<EventType>().Unsubscribe(id);
 			}
 
 			/*! @brief Unsubscribes a previously registered permanent callback.
@@ -88,7 +88,7 @@ namespace lum {
 			*/
 			template< detail::LumEvent EventType >
 			void UnsubscribePermanent( detail::SubscribtionID id ) {
-				GetOrCreatePool<EventType>().UnsubscribePermanent(id);
+				get_pool<EventType>().UnsubscribePermanent(id);
 			}
 
 			/*! @brief Polls all event pools and executes pending events.
@@ -99,8 +99,8 @@ namespace lum {
 			*/
 			void PollEvents( ) {
 				for (usize i = 0; i < limits::gMaxEventTypes; i++) {
-					if (m_pools[i])
-						m_pools[i]->PollEvents();
+					if (mPools[i])
+						mPools[i]->PollEvents();
 				}
 			}
 
@@ -109,21 +109,28 @@ namespace lum {
 		private:
 
 			template< detail::LumEvent EventType >
-			detail::EventPool<EventType>& GetOrCreatePool( ) {
+			detail::EventPool<EventType>& get_pool( ) {
 				auto typeID = detail::GetEventTypeID::Get<EventType>();
-				if (!m_pools[typeID]) {
-					m_pools[typeID] = new detail::EventPool<EventType>();
+				if (!mPools[typeID]) {
+					mPools[typeID] = new detail::EventPool<EventType>();
 				}
-				return *static_cast<detail::EventPool<EventType>*>(m_pools[typeID]);
+				return *static_cast<detail::EventPool<EventType>*>(mPools[typeID]);
 			}
 
-			void Init( ) {
+			void init( ) {
 				for (usize i = 0; i < limits::gMaxEventTypes; i++) {
-					m_pools[i] = nullptr;
+					mPools[i] = nullptr;
 				}
 			}
 
-			detail::BasePool* m_pools[ limits::gMaxEventTypes ];
+			void destruct( ) {
+				for (usize i = 0; i < limits::gMaxEventTypes; i++) {
+					if (mPools[i] != nullptr)
+						delete mPools[i];
+				}
+			}
+
+			detail::BasePool* mPools[ limits::gMaxEventTypes ];
 
 		};
 
