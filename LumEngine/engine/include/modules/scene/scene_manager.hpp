@@ -1,5 +1,4 @@
 #pragma once
-#include "scene/scene_loader.hpp"
 #include "core/core_pch.hpp"
 #include "entity/ecs_manager.hpp"
 
@@ -15,7 +14,7 @@ namespace lum {
 	struct Scene {
 	
 		std::vector<ecs::EntityID> mEntities;
-		std::unique_ptr<ecs::MEntityManager> mEntityMgr;
+		ecs::MEntityManager mEntityMgr;
 		
 	};
 
@@ -32,31 +31,16 @@ namespace lum {
 	class MSceneManager {
 	public:
 
-		void Initialize( FSceneManagerContext& ctx ) {
-			
-			mContext = ctx;
+		void Initialize( FSceneManagerContext& ctx );
 
-		}
+		void SetScene( ccharptr scenePath );
 
-		void SetScene( ccharptr scenePath ) {
-
-			uint64 hash = HashStr(scenePath);
-
-			if (!mScenes.contains(hash))
-				mScenes[hash] = mLoader.Load( scenePath, mContext );
-
-			mCurrentScene = &mScenes[hash];
-		}
-
-		Scene* GetCurrentScene() {
-			return mCurrentScene;
-		}
+		Scene* GetCurrentScene( );
 
 	private:
 
 		FSceneManagerContext mContext;
 
-		SceneLoader mLoader;
 		Scene* mCurrentScene = nullptr;
 		
 		std::unordered_map<uint64, Scene> mScenes;

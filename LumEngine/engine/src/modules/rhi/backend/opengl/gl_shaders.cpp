@@ -25,8 +25,10 @@ namespace lum::rhi::gl {
 		glShaderSource(vshader, 1, &desc.mVertexContent, nullptr);
 		glShaderSource(fshader, 1, &desc.mFragmentContent, nullptr);
 
+		LUM_LOG_INFO("Compiling shader %s", desc.mVertexContent);
 		if (!compile_shader( vshader ))
 			return RShaderHandle{};
+		LUM_LOG_INFO("Compiling shader %s", desc.mFragmentContent);
 		if (!compile_shader( fshader ))
 			return RShaderHandle{};
 

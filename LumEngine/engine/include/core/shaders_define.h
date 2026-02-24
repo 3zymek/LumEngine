@@ -51,9 +51,6 @@
 // Cubemap texture binding slot.
 #define LUM_TEX_CUBEMAP 8 // Cubemap texture binding.
 
-// Null/default binding value.
-#define LUM_NULL_BINDING MaxVal<uint16>() // Invalid/null binding.
-
 
 ///////////////////////////////////////////
 // Instance names

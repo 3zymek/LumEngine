@@ -106,6 +106,23 @@ namespace lum {
 		LUM_NODISCARD
 		static std::optional<String> LoadShader( ERootID root, ccharptr filepath );
 
+		/* @brief Writes text content to a file at the given path.
+		* Creates the file if it does not exist, overwrites if it does.
+		* @param root Root directory identifier.
+		* @param filepath Path relative to the selected root.
+		* @param content Text content to write.
+		* @return If operation went succesfully.
+		*/
+		static bool WriteFile( ERootID root, ccharptr filepath, const String& content );
+
+		/* @brief Reads raw text content from a file.
+		* @param root Root directory identifier.
+		* @param filepath Path relative to the selected root.
+		* @return File contents as String or empty on failure.
+		*/
+		LUM_NODISCARD
+		static std::optional<String> ReadFile( ERootID root, ccharptr filepath );
+
 		/* @brief Returns the last error message set by a failed load operation. */
 		static ccharptr GetErrorMessage( ) { return sLastErrorMessage; }
 
@@ -133,6 +150,13 @@ namespace lum {
 		/* @brief Sets the error message from a runtime string. */
 		static void set_error_msg( ccharptr msg ) {
 			std::strncpy(sLastErrorMessage, msg, sizeof(sLastErrorMessage));
+		}
+
+		static String get_full_path( ERootID root, ccharptr filepath ) {
+			if (root == ERootID::External)
+				return (sProjectRoot / filepath).lexically_normal().string();
+			else if (root == ERootID::Internal)
+				return (sInternalRoot / filepath).lexically_normal().string();
 		}
 
 		AssetLoader( const AssetLoader& ) = delete;

@@ -42,7 +42,7 @@ namespace lum {
 			auto hashed_new_id = HashStr(alias_name);
 
 			bool success;
-			AudioClip clip;
+			AudioClip clip{};
 			// TODO REPAIR
 			/*
 			FMOD_ASSERT(

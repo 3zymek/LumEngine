@@ -241,7 +241,7 @@ namespace lum::render {
 			mShadowPass.mPipeline = mRenderDevice->CreatePipeline(desc);
 		}
 
-		mShadowPass.mShader = mShaderManager->LoadShader("shaders/shadow_pass.vert", "shaders/shadow_pass.frag", ERootID::Internal);
+		//mShadowPass.mShader = mShaderManager->LoadShader("shaders/shadow_pass.vert", "shaders/shadow_pass.frag", ERootID::Internal);
 	}
 
 }

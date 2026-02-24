@@ -25,16 +25,20 @@
 
 #include "engine.hpp"
 
+#include "scene/format/common.hpp"
+#include "scene/format/tokenizer.hpp"
+#include "scene/format/scene_parser.hpp"
+
 using namespace lum;
 using namespace lum::rhi;
 
 int main() {
-
+    
     Engine e;
 
     e.Initialize("C:/Users/szymek/Desktop/lumen_assets");
 
-    e.SetScene("scene.json");
+    e.SetScene("scene.lsc");
     
     e.Run();
 

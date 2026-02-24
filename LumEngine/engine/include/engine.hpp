@@ -136,7 +136,7 @@ namespace lum {
 
 				mRender.mRenderer.BeginFrame();
 
-				mRender.mRenderSys.Update( mScene.mSceneMgr.GetCurrentScene()->mEntityMgr.get(), mPlatform.mWindow );
+				mRender.mRenderSys.Update( &mScene.mSceneMgr.GetCurrentScene()->mEntityMgr, mPlatform.mWindow );
 
 				mRender.mRenderer.EndFrame();
 

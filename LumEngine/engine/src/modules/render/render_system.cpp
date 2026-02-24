@@ -47,7 +47,7 @@ namespace lum {
 					obj.mTransform = transform;
 					mRenderer->Draw(obj);
 				});
-
+			
 		}
 
 	} // namespace lum::render

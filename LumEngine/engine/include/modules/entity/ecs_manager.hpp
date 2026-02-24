@@ -30,6 +30,12 @@ namespace lum {
 		public:
 
 			MEntityManager( ) { init(); }
+			MEntityManager( MEntityManager&& other ) noexcept {
+				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
+					mComponentPools[i] = other.mComponentPools[i];
+					other.mComponentPools[i] = nullptr;
+				}
+			}
 			~MEntityManager( ) { destroy(); }
 
 			
@@ -162,9 +168,8 @@ namespace lum {
 			*/
 			template<detail::Component tType>
 			detail::ComponentPool<tType>& GetPool( );
+
 			
-			MEntityManager(const MEntityManager&) = delete;
-			MEntityManager& operator=(const MEntityManager&) = delete;
 		private:
 			
 			void init( ) {
@@ -174,8 +179,10 @@ namespace lum {
 			}
 			void destroy( ) {
 				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
-					if(mComponentPools[i] != nullptr)
+					if (mComponentPools[i] != nullptr) {
 						delete mComponentPools[i];
+						mComponentPools[i] = nullptr;
+					}
 				}
 			}
 

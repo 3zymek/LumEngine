@@ -115,6 +115,7 @@ namespace lum::ecs {
 	template<detail::Component tType>
 	detail::ComponentPool<tType>& MEntityManager::GetPool( ) {
 		uint32 typeID = GenerateTypeID::Get<tType>();
+		LUM_ASSERT(typeID < limits::gMaxComponentTypes, "Too many component types");
 		if (mComponentPools[typeID] == nullptr)
 			mComponentPools[typeID] = new detail::ComponentPool<tType>();
 		return *static_cast<detail::ComponentPool<tType>*>(mComponentPools[typeID]);

@@ -34,7 +34,6 @@ namespace lum {
 	Scene SceneLoader::Load( ccharptr path, FSceneManagerContext& ctx ) {	
 		
 		Scene scene;
-		scene.mEntityMgr = std::make_unique<ecs::MEntityManager>();
 		auto& manager = scene.mEntityMgr;
 
 		std::filesystem::path p;
@@ -65,7 +64,7 @@ namespace lum {
 				
 				if (key == "render") {
 					if (value.get<bool>() == true)
-						manager->AddComponent<CRender>(e);
+						manager.AddComponent<CRender>(e);
 				}
 
 				else if (key == "transform") {
@@ -77,12 +76,12 @@ namespace lum {
 					t.mRotation = { rot[0].get<float32>(), rot[1].get<float32>(), rot[2].get<float32>() };
 					t.mScale = { scale[0].get<float32>(), scale[1].get<float32>(), scale[2].get<float32>() };
 					
-					manager->AddComponent(e, t);
+					manager.AddComponent(e, t);
 				}
 
 				else if (key == "static_mesh") {
 					auto mesh = ctx.mMeshMgr->CreateStatic(value["path"].get<String>().c_str(), ERootID::External);
-					manager->AddComponent<CStaticMesh>(e, { .mMesh = mesh });
+					manager.AddComponent<CStaticMesh>(e, { .mMesh = mesh });
 				}
 
 				else if (key == "material") {
@@ -92,7 +91,7 @@ namespace lum {
 					base.mMetallic = value["metallic"].get<float32>();
 					auto baseHandle = ctx.mMaterialMgr->UploadBase(base);
 					auto instance = ctx.mMaterialMgr->CreateInstance(baseHandle);
-					manager->AddComponent<CMaterial>(e, { .mMat = instance });
+					manager.AddComponent<CMaterial>(e, { .mMat = instance });
 				}
 
 				else if (key == "camera") {
@@ -101,7 +100,7 @@ namespace lum {
 					c.mNear = value["near"].get<float32>();
 					c.mFov = value["fov"].get<float32>();
 
-					manager->AddComponent<CCamera>(e, c);
+					manager.AddComponent<CCamera>(e, c);
 					
 				}
 

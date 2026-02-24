@@ -25,14 +25,9 @@ namespace lum {
 
 	std::optional<FTextureData> AssetLoader::LoadTexture( ERootID root, ccharptr filepath ) {
 
-		String file;
+		String path = get_full_path(root, filepath);
 
-		if (root == ERootID::External)
-			file = (sProjectRoot / filepath).lexically_normal().string();
-		else if (root == ERootID::Internal)
-			file = (sInternalRoot / filepath).lexically_normal().string();
-
-		if (!detail::fs::exists(file)) {
+		if (!detail::fs::exists(path)) {
 			set_error_msg("File doesn't exist");
 			return std::nullopt;
 		}
@@ -40,7 +35,7 @@ namespace lum {
 		FTextureData texture;
 		int32 format;
 
-		ucharptr data = stbi_load(file.c_str(), &texture.mWidth, &texture.mHeight, &format, 4);
+		ucharptr data = stbi_load(path.c_str(), &texture.mWidth, &texture.mHeight, &format, 4);
 		texture.mColorChannels = 4;
 
 		if (!data) {
@@ -63,14 +58,9 @@ namespace lum {
 
 	std::optional<FMeshData> AssetLoader::LoadMesh( ERootID root, ccharptr filepath ) {
 
-		String file;
+		String path = get_full_path(root, filepath);
 
-		if (root == ERootID::External)
-			file = (sProjectRoot / filepath).lexically_normal().string();
-		else if (root == ERootID::Internal)
-			file = (sInternalRoot / filepath).lexically_normal().string();
-
-		if (!detail::fs::exists(file)) {
+		if (!detail::fs::exists(path)) {
 			set_error_msg("File doesn't exist");
 			return std::nullopt;
 		}
@@ -80,7 +70,7 @@ namespace lum {
 		flags |= aiProcess_FlipUVs;
 		flags |= aiProcess_Triangulate;
 		flags |= aiProcess_CalcTangentSpace;
-		const aiScene* scene = importer.ReadFile(file.c_str(), flags);
+		const aiScene* scene = importer.ReadFile(path.c_str(), flags);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			set_error_msg(importer.GetErrorString());
@@ -145,40 +135,30 @@ namespace lum {
 
 	std::optional<String> AssetLoader::LoadAudio( ERootID root, ccharptr filepath ) {
 
-		String file;
+		String path = get_full_path(root, filepath);
 
-		if (root == ERootID::External)
-			file = (sProjectRoot / filepath).lexically_normal().string();
-		else if (root == ERootID::Internal)
-			file = (sInternalRoot / filepath).lexically_normal().string();
-
-		if (!detail::fs::exists(file)) {
+		if (!detail::fs::exists(path)) {
 			set_error_msg("File doesn't exist");
 			return std::nullopt;
 		}
 
-		return file;
+		return path;
 	}
 
 
 	std::optional<String> AssetLoader::LoadShader( ERootID root, ccharptr filepath ) {
 
-		String file;
+		String path = get_full_path(root, filepath);
 
-		if (root == ERootID::External)
-			file = (sProjectRoot / filepath).lexically_normal().string();
-		else if (root == ERootID::Internal)
-			file = (sInternalRoot / filepath).lexically_normal().string();
-
-		if (!detail::fs::exists(file)) {
-			set_error_msg("File doesn't exist");
+		std::ifstream loadedFile(path);
+		if (!loadedFile.is_open()) {
+			set_error_msg(strerror(errno));
 			return std::nullopt;
 		}
 
-		std::ifstream loadedFile(file);
 		std::ifstream defines(sShaderDefine);
-		if (!loadedFile.is_open() || !defines.is_open()) {
-			set_error_msg("File couldn't be opened");
+		if (!defines.is_open()) {
+			set_error_msg(strerror(errno));
 			return std::nullopt;
 		}
 
@@ -191,6 +171,40 @@ namespace lum {
 		ss << loadedFile.rdbuf();
 
 		return ss.str();
+	}
+
+	bool AssetLoader::WriteFile( ERootID root, ccharptr filepath, const String& content ) {
+
+		String path = get_full_path(root, filepath);
+
+		std::ofstream file(path);
+		if (!file.is_open()) {
+			set_error_msg(strerror(errno));
+			return false;
+		}
+		file << content;
+		file.close();
+
+		return true;
+	}
+	std::optional<String> AssetLoader::ReadFile(ERootID root, ccharptr filepath) {
+		
+		String path = get_full_path(root, filepath);
+
+		std::ifstream file(path);
+		if (!file.is_open()) {
+			set_error_msg(strerror(errno));
+			return std::nullopt;
+		}
+		
+		std::ostringstream ss;
+		ss << file.rdbuf();
+
+		String content = ss.str();
+		
+		file.close();
+
+		return content;
 	}
 
 }

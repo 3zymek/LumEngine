@@ -75,6 +75,7 @@ namespace lum::ecs::detail {
 			return mComponents.Contains( entityID );
 		}
 
+
 	protected:
 
 		cstd::SparseSet<EntityID, tType> mComponents { limits::gMaxEntity };
