@@ -79,7 +79,7 @@ namespace lum {
 		* @return Populated FTextureData or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<FTextureData> LoadTexture( ERootID root, ccharptr filepath );
+		static std::optional<FTextureData> LoadTexture( ERootID root, StringView filepath );
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.
@@ -87,7 +87,7 @@ namespace lum {
 		* @return Populated FMeshData or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<FMeshData> LoadMesh( ERootID root, ccharptr filepath );
+		static std::optional<FMeshData> LoadMesh( ERootID root, StringView filepath );
 
 		/* @brief Loads an audio file from disk.
 		* @param root Root directory identifier.
@@ -95,7 +95,7 @@ namespace lum {
 		* @return File contents as String or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<String> LoadAudio( ERootID root, ccharptr filepath );
+		static std::optional<String> LoadAudio( ERootID root, StringView filepath );
 
 		/* @brief Loads a shader source file from disk.
 		* Prepends the engine shader define header automatically.
@@ -104,7 +104,7 @@ namespace lum {
 		* @return Shader source as String or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<String> LoadShader( ERootID root, ccharptr filepath );
+		static std::optional<String> LoadShader( ERootID root, StringView filepath );
 
 		/* @brief Writes text content to a file at the given path.
 		* Creates the file if it does not exist, overwrites if it does.
@@ -113,7 +113,7 @@ namespace lum {
 		* @param content Text content to write.
 		* @return If operation went succesfully.
 		*/
-		static bool WriteFile( ERootID root, ccharptr filepath, const String& content );
+		static bool WriteFile( ERootID root, StringView filepath, const String& content );
 
 		/* @brief Reads raw text content from a file.
 		* @param root Root directory identifier.
@@ -121,7 +121,7 @@ namespace lum {
 		* @return File contents as String or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<String> ReadFile( ERootID root, ccharptr filepath );
+		static std::optional<String> ReadFile( ERootID root, StringView filepath );
 
 		/* @brief Returns the last error message set by a failed load operation. */
 		static ccharptr GetErrorMessage( ) { return sLastErrorMessage; }
@@ -143,16 +143,16 @@ namespace lum {
 		/* @brief Sets the error message from a string literal. */
 		template<usize tL>
 		static void set_error_msg( const char(&msg)[tL] ) {
-			usize length = std::clamp(tL, 0u, limits::gMaxErrorAssetLoadLength);
+			usize length = (tL < limits::gMaxErrorAssetLoadLength) ? tL : limits::gMaxErrorAssetLoadLength;
 			std::strncpy(sLastErrorMessage, msg, length);
 		}
 
 		/* @brief Sets the error message from a runtime string. */
-		static void set_error_msg( ccharptr msg ) {
-			std::strncpy(sLastErrorMessage, msg, sizeof(sLastErrorMessage));
+		static void set_error_msg( String msg ) {
+			std::strncpy(sLastErrorMessage, msg.data(), sizeof(sLastErrorMessage));
 		}
 
-		static String get_full_path( ERootID root, ccharptr filepath ) {
+		static String get_full_path( ERootID root, StringView filepath ) {
 			if (root == ERootID::External)
 				return (sProjectRoot / filepath).lexically_normal().string();
 			else if (root == ERootID::Internal)

@@ -57,7 +57,11 @@ namespace lum {
 		* @param base Handle to the base material.
 		* @return Fully resolved material instance ready for rendering.
 		*/
+		LUM_NODISCARD
 		FMaterialInstance CreateInstance( MaterialBaseHandle base );
+
+		LUM_NODISCARD
+		FMaterialInstance GetDefaultInstance();
 
 		/* @brief Sets a specific texture map on a base material.
 		* @param material Handle to the base material to modify.

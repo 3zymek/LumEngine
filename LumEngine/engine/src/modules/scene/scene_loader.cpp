@@ -87,8 +87,8 @@ namespace lum {
 				else if (key == "material") {
 					FMaterialBase base;
 					base.mBaseColor = { value["base_color"][0].get<float32>(), value["base_color"][1].get<float32>(), value["base_color"][2].get<float32>() };
-					base.mRoughness = value["roughness"].get<float32>();
-					base.mMetallic = value["metallic"].get<float32>();
+					base.mRoughnessValue = value["roughness"].get<float32>();
+					base.mMetallicValue = value["metallic"].get<float32>();
 					auto baseHandle = ctx.mMaterialMgr->UploadBase(base);
 					auto instance = ctx.mMaterialMgr->CreateInstance(baseHandle);
 					manager.AddComponent<CMaterial>(e, { .mMat = instance });

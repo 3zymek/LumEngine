@@ -36,18 +36,10 @@ namespace lum::fmt {
 		static void parse_transform	( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 		static void parse_smesh		( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 		static void parse_camera	( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
+		static void parse_render	( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
+		static void parse_material	( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
+		static void parse_name		( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 
-
-		//---------------------------------------------------------
-		// Helpers
-		//---------------------------------------------------------
-
-		static void expect_opening_bracket( std::vector<FToken>& tokens, int32& i );
-		static void expect_colon( std::vector<FToken>& tokens, int32& i );
-
-		static float32		read_float_parameter( std::vector<FToken>& tokens, int32& i );
-		static glm::vec3	read_vec3_parameter	( std::vector<FToken>& tokens, int32& i );
-		static glm::vec2	read_vec2_parameter	( std::vector<FToken>& tokens, int32& i );
 
 		Tokenizer& mTokenizer;
 		FSceneManagerContext mContext;
@@ -64,6 +56,8 @@ namespace lum::fmt {
 			{ HashStr("transform"), parse_transform },
 			{ HashStr("static_mesh"), parse_smesh },
 			{ HashStr("camera"), parse_camera },
+			{ HashStr("render"), parse_render },
+			{ HashStr("material"), parse_material }
 
 		};
 

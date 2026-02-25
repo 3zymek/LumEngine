@@ -136,6 +136,13 @@ namespace lum {
 
 				mRender.mRenderer.BeginFrame();
 
+				ImGui::Begin("Scene");
+				
+				if (ImGui::Button("Reload scene"))
+					SetScene("scene.lsc");
+
+				ImGui::End();
+
 				mRender.mRenderSys.Update( &mScene.mSceneMgr.GetCurrentScene()->mEntityMgr, mPlatform.mWindow );
 
 				mRender.mRenderer.EndFrame();

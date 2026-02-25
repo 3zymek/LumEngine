@@ -23,7 +23,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	std::optional<FTextureData> AssetLoader::LoadTexture( ERootID root, ccharptr filepath ) {
+	std::optional<FTextureData> AssetLoader::LoadTexture( ERootID root, StringView filepath ) {
 
 		String path = get_full_path(root, filepath);
 
@@ -56,7 +56,7 @@ namespace lum {
 	}
 
 
-	std::optional<FMeshData> AssetLoader::LoadMesh( ERootID root, ccharptr filepath ) {
+	std::optional<FMeshData> AssetLoader::LoadMesh( ERootID root, StringView filepath ) {
 
 		String path = get_full_path(root, filepath);
 
@@ -133,7 +133,7 @@ namespace lum {
 	}
 
 
-	std::optional<String> AssetLoader::LoadAudio( ERootID root, ccharptr filepath ) {
+	std::optional<String> AssetLoader::LoadAudio( ERootID root, StringView filepath ) {
 
 		String path = get_full_path(root, filepath);
 
@@ -146,7 +146,7 @@ namespace lum {
 	}
 
 
-	std::optional<String> AssetLoader::LoadShader( ERootID root, ccharptr filepath ) {
+	std::optional<String> AssetLoader::LoadShader( ERootID root, StringView filepath ) {
 
 		String path = get_full_path(root, filepath);
 
@@ -173,7 +173,7 @@ namespace lum {
 		return ss.str();
 	}
 
-	bool AssetLoader::WriteFile( ERootID root, ccharptr filepath, const String& content ) {
+	bool AssetLoader::WriteFile( ERootID root, StringView filepath, const String& content ) {
 
 		String path = get_full_path(root, filepath);
 
@@ -187,7 +187,7 @@ namespace lum {
 
 		return true;
 	}
-	std::optional<String> AssetLoader::ReadFile(ERootID root, ccharptr filepath) {
+	std::optional<String> AssetLoader::ReadFile(ERootID root, StringView filepath) {
 		
 		String path = get_full_path(root, filepath);
 

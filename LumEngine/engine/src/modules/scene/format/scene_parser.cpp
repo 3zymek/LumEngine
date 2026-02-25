@@ -1,13 +1,17 @@
 #pragma once
 
 #include "scene/format/scene_parser.hpp"
+#include "scene/format/tokenizer.hpp"
+#include "scene/format/material_parser.hpp"
+
 #include "scene/scene_manager.hpp"
 #include "scene/scene_loader.hpp"
-#include "scene/format/tokenizer.hpp"
 
 #include "entity/components/transform.hpp"
 #include "entity/components/mesh.hpp"
 #include "entity/components/camera.hpp"
+#include "entity/components/render.hpp"
+#include "entity/components/material.hpp"
 
 #include "render/texture_manager.hpp"
 #include "render/shader_manager.hpp"
@@ -46,19 +50,19 @@ namespace lum::fmt {
 
 	void SceneParser::parse_world(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
 
-		expect_opening_bracket(tokens, i);
+		detail::expect_opening_bracket(tokens, i);
 
 		while (i < tokens.size() && tokens[i].mType != ETokenType::RBracket) {
 
 			if (tokens[i].mType == ETokenType::Component) {
 				
-				expect_opening_bracket(tokens, i);
+				detail::expect_opening_bracket(tokens, i);
 
 				if (tokens[i].mType == ETokenType::Parameter) {
 
 					if (tokens[i].mValue == "path") {
 						
-						expect_colon(tokens, i);
+						detail::expect_colon(tokens, i);
 						ctx.mContext.mRenderer->SetEnvionmentTexture(ctx.mContext.mTextureMgr->LoadEquirectangularCubemap(tokens[i].mValue.c_str(), 1024));
 
 					}
@@ -80,7 +84,7 @@ namespace lum::fmt {
 		ctx.mScene.mEntities.push_back(e.mID);
 		ctx.mEntity = e.mID;
 
-		expect_opening_bracket(tokens, i);
+		detail::expect_opening_bracket(tokens, i);
 
 		while (i < tokens.size() && tokens[i].mType != ETokenType::RBracket) {
 
@@ -98,27 +102,28 @@ namespace lum::fmt {
 
 	void SceneParser::parse_transform(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
 
+		detail::expect_opening_bracket(tokens, i);
+
 		CTransform transform;
-		expect_opening_bracket(tokens, i);
 
 		while (i < tokens.size() && tokens[i].mType != ETokenType::RBracket) {
 
 			if (tokens[i].mType == ETokenType::Parameter) {
 				if (tokens[i].mValue == "position") {
 
-					transform.mPosition = read_vec3_parameter(tokens, i);
+					transform.mPosition = detail::read_vec3_parameter(tokens, i);
 
 				}
 
 				else if (tokens[i].mValue == "rotation") {
 
-					transform.mRotation = read_vec3_parameter(tokens, i);
+					transform.mRotation = detail::read_vec3_parameter(tokens, i);
 
 				}
 
 				else if (tokens[i].mValue == "scale") {
 
-					transform.mScale = read_vec3_parameter(tokens, i);
+					transform.mScale = detail::read_vec3_parameter(tokens, i);
 
 				}
 			}
@@ -130,16 +135,19 @@ namespace lum::fmt {
 	}
 	void SceneParser::parse_smesh(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
 
+		detail::expect_opening_bracket(tokens, i);
+
 		CStaticMesh mesh;
-		expect_opening_bracket(tokens, i);
 
 		while (i < tokens.size() && tokens[i].mType != ETokenType::RBracket) {
 
 			if (tokens[i].mType == ETokenType::Parameter) {
 
 				if (tokens[i].mValue == "path") {
-					expect_colon(tokens, i);
+
+					detail::expect_colon(tokens, i);
 					mesh.mMesh = ctx.mContext.mMeshMgr->CreateStatic(tokens[i].mValue.c_str());
+
 				}
 				else LUM_LOG_ERROR("Invalid mesh parameter");
 
@@ -152,8 +160,9 @@ namespace lum::fmt {
 	}
 	void SceneParser::parse_camera(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
 
+		detail::expect_opening_bracket(tokens, i);
+
 		CCamera camera;
-		expect_opening_bracket(tokens, i);
 
 		while (i < tokens.size() && tokens[i].mType != ETokenType::RBracket) {
 
@@ -161,27 +170,27 @@ namespace lum::fmt {
 
 				if (tokens[i].mValue == "fov") {
 
-					camera.mFov = read_float_parameter(tokens, i);
+					camera.mFov = detail::read_float_parameter(tokens, i);
 
 				}
 				else if (tokens[i].mValue == "near") {
 
-					camera.mNear = read_float_parameter(tokens, i);
+					camera.mNear = detail::read_float_parameter(tokens, i);
 
 				}
 				else if (tokens[i].mValue == "far") {
 
-					camera.mFar = read_float_parameter(tokens, i);
+					camera.mFar = detail::read_float_parameter(tokens, i);
 
 				}
 				else if (tokens[i].mValue == "target") {
 
-					camera.mTarget = read_vec3_parameter(tokens, i);
+					camera.mTarget = detail::read_vec3_parameter(tokens, i);
 
 				}
 				else if (tokens[i].mValue == "up") {
 
-					camera.mUp = read_vec3_parameter(tokens, i);
+					camera.mUp = detail::read_vec3_parameter(tokens, i);
 
 				}
 
@@ -195,61 +204,100 @@ namespace lum::fmt {
 		
 	}
 
+	void SceneParser::parse_render(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
 
+		detail::expect_opening_bracket(tokens, i);
 
+		CRender render;
 
-	//---------------------------------------------------------
-	// Helpers
-	//---------------------------------------------------------
+		while (i < tokens.size() && tokens[i].mType != ETokenType::RBracket) {
 
-	void SceneParser::expect_opening_bracket(std::vector<FToken>& tokens, int32& i) {
-		++i;
-		LUM_ASSERT(tokens[i].mType == ETokenType::LBracket, "Opening bracket expected");
-		++i;
-	}
+			if (tokens[i].mType == ETokenType::Parameter) {
 
-	void SceneParser::expect_colon(std::vector<FToken>& tokens, int32& i) {
-		++i;
-		LUM_ASSERT(tokens[i].mType == ETokenType::Colon, "Colon expected");
-		++i;
-	}
+				if (tokens[i].mValue == "visible") {
 
-	float32 SceneParser::read_float_parameter(std::vector<FToken>& tokens, int32& i) {
+					render.bVisible = detail::read_bool_parameter(tokens, i);
 
-		expect_colon(tokens, i);
+				}
 
-		float32 value = std::stof(tokens[i].mValue);
+			}
 
-		LUM_ASSERT(tokens[i + 1].mType != ETokenType::Number, "Float expected");
+			i++;
 
-		return value;
+		}
+		
+		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, render);
 
 	}
+	void SceneParser::parse_material(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
 
-	glm::vec3 SceneParser::read_vec3_parameter(std::vector<FToken>& tokens, int32& i) {
+		detail::expect_opening_bracket(tokens, i);
+		CMaterial material;
 
-		expect_colon(tokens, i);
+		while (i < tokens.size() && tokens[i].mType != ETokenType::RBracket) {
 
-		float32 x = std::stof(tokens[i++].mValue);
-		float32 y = std::stof(tokens[i++].mValue);
-		float32 z = std::stof(tokens[i].mValue);
+			if (tokens[i].mType == ETokenType::Parameter) {
 
-		LUM_ASSERT(tokens[i + 1].mType != ETokenType::Number, "Vec3 expected");
+				if (tokens[i].mValue == "path") {
 
-		return glm::vec3(x, y, z);
+					detail::expect_colon(tokens, i);
+
+					std::optional<String> content = AssetLoader::ReadFile(ERootID::External, tokens[i].mValue);
+
+					if (!content) {
+						LUM_LOG_ERROR("Failed to load material %s: %s", tokens[i].mValue.c_str(), AssetLoader::GetErrorMessage());
+						material.mMat = ctx.mContext.mMaterialMgr->GetDefaultInstance();
+						ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, material);
+						i++;
+						continue;
+					}
+
+					
+				  
+					Tokenizer tokenizer;
+					tokenizer.Tokenize(content.value());
+					MaterialParser parser(tokenizer);
+
+					MaterialData data;
+					parser.Parse(data);
+
+					auto& instance = material.mMat;
+
+					if (data.mAlbedoTex) {
+						instance.mAlbedoTex = ctx.mContext.mTextureMgr->Load(data.mAlbedoTex.value(), ETexturePreset::Albedo);
+					}
+					if (data.mNormalTex) {
+						instance.mNormalTex = ctx.mContext.mTextureMgr->Load(data.mNormalTex.value(), ETexturePreset::Normal);
+					}
+					if (data.mRoughnessTex) {
+						instance.mRoughnessTex = ctx.mContext.mTextureMgr->Load(data.mRoughnessTex.value(), ETexturePreset::Roughness);
+					}
+					if (data.mMetallicTex) {
+						instance.mMetallicTex = ctx.mContext.mTextureMgr->Load(data.mMetallicTex.value(), ETexturePreset::Metallic);
+					}
+					if (data.mBaseColor) {
+						instance.mBaseColor = data.mBaseColor.value();
+					}
+					if (data.mRoughnessValue) {
+						instance.mRoughnessValue = data.mRoughnessValue.value();
+					}
+					if (data.mMetallicValue) {
+						instance.mMetallicValue = data.mMetallicValue.value();
+					}
+
+
+
+				}
+
+			}
+			i++;
+		}
+
+		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, material);
+
 
 	}
-	glm::vec2 SceneParser::read_vec2_parameter(std::vector<FToken>& tokens, int32& i) {
-
-		LUM_ASSERT(tokens[i].mType == ETokenType::Colon, "Colon expected");
-		++i;
-
-		float32 x = std::stof(tokens[i++].mValue);
-		float32 y = std::stof(tokens[i].mValue);
-
-		LUM_ASSERT(tokens[i + 1].mType != ETokenType::Number, "Vec2 expected");
-
-		return glm::vec2(x, y);
+	void SceneParser::parse_name(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
 
 	}
 

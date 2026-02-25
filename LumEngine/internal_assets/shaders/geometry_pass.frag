@@ -37,23 +37,8 @@ out vec4 FinalColor;
 
 void main() {
 
-	float shininess = (1.0 - matRoughness) * 128.0;
-
-	vec3 cameraV = normalize(LUM_CAMERA_POSITION - fPos);
-	
-	vec3 lightDir = normalize(-aLightBuffer.light.mDirection);
-	float diff = max(dot(lightDir, fN), 0.0);
-	vec3 diffuse = diff * aLightBuffer.light.mIntensity * aLightBuffer.light.mColor;
-
-	vec3 R = reflect(-lightDir, fN);
-	float spec = pow(max(dot(cameraV, R), 0.0), shininess);
-	vec3 specular = spec * aLightBuffer.light.mIntensity * aLightBuffer.light.mColor;
-
-	vec3 ambient = vec3(0.05);
-
 	vec4 texColor = texture(tAlbedo, fUV);
-	vec3 result = (ambient + diffuse + specular) * texColor.rgb;
 
-	FinalColor = vec4(result * matBaseColor, 1.0);
+	FinalColor = vec4(texColor.xyz * matBaseColor, 1.0);
 
 }

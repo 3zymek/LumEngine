@@ -15,31 +15,31 @@ namespace lum {
 	struct FMaterialBase {
 
 		/* @brief Albedo (base color) texture map. */
-		rhi::RTextureHandle mAlbedoMap;
+		rhi::RTextureHandle mAlbedoTex;
 
 		/* @brief Normal map for surface detail. */
-		rhi::RTextureHandle mNormalMap;
+		rhi::RTextureHandle mNormalTex;
 
 		/* @brief Roughness texture map. */
-		rhi::RTextureHandle mRoughnessMap;
+		rhi::RTextureHandle mRoughnessTex;
 
 		/* @brief Metallic texture map. */
-		rhi::RTextureHandle mMetallicMap;
+		rhi::RTextureHandle mMetallicTex;
 
 		/* @brief Ambient occlusion texture map. */
-		rhi::RTextureHandle mAmbientMap;
+		rhi::RTextureHandle mAmbientTex;
 
 		/* @brief Base color multiplier. */
 		glm::vec3 mBaseColor = glm::vec3(1.0f);
 
 		/* @brief Roughness scalar fallback when no map is bound. */
-		float32 mRoughness = 0.5f;
+		float32 mRoughnessValue = 0.5f;
 
 		/* @brief Metallic scalar fallback when no map is bound. */
-		float32 mMetallic = 0.0f;
+		float32 mMetallicValue = 0.0f;
 
 		/* @brief Ambient occlusion scalar fallback when no map is bound. */
-		float32 mAmbient = 1.0f;
+		//float32 mAmbient = 1.0f;
 
 	};
 

@@ -22,7 +22,7 @@ namespace lum {
 
 	}
 
-	rhi::RTextureHandle MTextureManager::Get( ccharptr path, ERootID id ) {
+	rhi::RTextureHandle MTextureManager::Get( StringView path, ERootID id ) {
 
 		uint64 hash = HashStr(path);
 
@@ -34,7 +34,7 @@ namespace lum {
 
 	}
 
-	rhi::RTextureHandle MTextureManager::Load( ccharptr path, ETexturePreset preset, ERootID id ) {
+	rhi::RTextureHandle MTextureManager::Load( StringView path, ETexturePreset preset, ERootID id ) {
 
 		uint64 hash = HashStr(path);
 
@@ -44,7 +44,7 @@ namespace lum {
 		std::optional<FTextureData> data = AssetLoader::LoadTexture(id, path);
 
 		if (!data) {
-			LUM_LOG_ERROR("Failed to load texture %s: %s", path, AssetLoader::GetErrorMessage());
+			LUM_LOG_ERROR("Failed to load texture %s: %s", path.data(), AssetLoader::GetErrorMessage());
 			return mMissingTexture;
 		}
 
@@ -59,7 +59,7 @@ namespace lum {
 		return handle;
 	}
 
-	rhi::RTextureHandle MTextureManager::LoadEquirectangularCubemap( ccharptr path, int32 faceSize, ERootID root ) {
+	rhi::RTextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, int32 faceSize, ERootID root ) {
 
 		uint32 hash = HashStr(path);
 
@@ -68,7 +68,7 @@ namespace lum {
 
 		std::optional<FTextureData> data = AssetLoader::LoadTexture(root, path);
 		if (!data) {
-			LUM_LOG_ERROR("Failed to load texture %s", path);
+			LUM_LOG_ERROR("Failed to load texture %s", path.data());
 			return mMissingTexture;
 		}
 

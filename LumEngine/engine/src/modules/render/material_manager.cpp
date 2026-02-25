@@ -24,13 +24,13 @@ namespace lum {
 
 	}
 
-	MaterialBaseHandle MMaterialManager::UploadBase(const FMaterialBase& base) {
+	MaterialBaseHandle MMaterialManager::UploadBase( const FMaterialBase& base ) {
 
 		return mBaseMaterials.Append(base);
 
 	}
 
-	FMaterialInstance MMaterialManager::CreateInstance(MaterialBaseHandle base) {
+	FMaterialInstance MMaterialManager::CreateInstance( MaterialBaseHandle base ) {
 
 		if (!mBaseMaterials.Contains(base))
 			base = mDefaultMaterial;
@@ -38,27 +38,22 @@ namespace lum {
 		FMaterialInstance instance;
 		FMaterialBase matBase = mBaseMaterials[base];
 
-		instance.mAlbedoMap = validate_texture(matBase.mAlbedoMap);
-		instance.mNormalMap = validate_texture(matBase.mNormalMap);
-		instance.mMetallicMap = validate_texture(matBase.mMetallicMap);
-		instance.mRoughnessMap = validate_texture(matBase.mRoughnessMap);
-		instance.mAmbientMap = validate_texture(matBase.mAmbientMap);
-
-		instance.mBaseColor = matBase.mBaseColor;
-		instance.mRoughness = matBase.mRoughness;
-		instance.mMetallic = matBase.mMetallic;
-		instance.mAmbient = matBase.mAmbient;
+		instance = static_cast<FMaterialInstance>(matBase);
 
 		return instance;
 
 	}
 
+	FMaterialInstance MMaterialManager::GetDefaultInstance() {
+		return CreateInstance(mDefaultMaterial);
+	}
+
 	void MMaterialManager::SetBaseMap(MaterialBaseHandle material, EMaterialMember mem, rhi::RTextureHandle tex) {
 		switch (mem) {
-		case EMaterialMember::Albedo: mBaseMaterials[material].mAlbedoMap = tex; break;
-		case EMaterialMember::Normal: mBaseMaterials[material].mNormalMap = tex; break;
-		case EMaterialMember::Metallic: mBaseMaterials[material].mMetallicMap = tex; break;
-		case EMaterialMember::Roughness: mBaseMaterials[material].mRoughnessMap = tex; break;
+		case EMaterialMember::Albedo: mBaseMaterials[material].mAlbedoTex = tex; break;
+		case EMaterialMember::Normal: mBaseMaterials[material].mNormalTex = tex; break;
+		case EMaterialMember::Metallic: mBaseMaterials[material].mMetallicTex = tex; break;
+		case EMaterialMember::Roughness: mBaseMaterials[material].mRoughnessTex = tex; break;
 		}
 	}
 
@@ -88,11 +83,11 @@ namespace lum {
 
 		{ // Base material
 			FMaterialBase base;
-			base.mAlbedoMap = mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
-			base.mNormalMap = mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
-			base.mMetallicMap = mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
-			base.mRoughnessMap = mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
-			base.mAmbientMap = mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
+			base.mAlbedoTex = mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
+			base.mNormalTex = mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
+			base.mMetallicTex = mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
+			base.mRoughnessTex = mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
+			base.mAmbientTex = mTextureManager->GetFallbackTexture(EFallbackTexture::Default);
 
 			mDefaultMaterial = UploadBase(base);
 

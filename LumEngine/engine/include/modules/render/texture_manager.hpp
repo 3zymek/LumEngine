@@ -19,7 +19,7 @@ namespace lum {
 	enum class ETexturePreset : uint8 {
 		Albedo,
 		Normal,
-		Metalness,
+		Metallic,
 		Roughness,
 	};
 
@@ -59,7 +59,7 @@ namespace lum {
 		* @param path Path to the texture asset.
 		* @param id Root directory identifier.
 		*/
-		rhi::RTextureHandle Get( ccharptr path, ERootID id = ERootID::External );
+		rhi::RTextureHandle Get( StringView path, ERootID id = ERootID::External );
 
 		/* @brief Loads a texture from disk or returns cached version.
 		* Applies preset configuration (format, mipmaps) based on texture type.
@@ -68,14 +68,14 @@ namespace lum {
 		* @param preset Texture type preset (Albedo, Normal, Metalness, Roughness).
 		* @param id Root directory identifier.
 		*/
-		rhi::RTextureHandle Load( ccharptr path, ETexturePreset preset, ERootID id = ERootID::External );
+		rhi::RTextureHandle Load( StringView path, ETexturePreset preset, ERootID id = ERootID::External );
 
 		/* @brief Loads an equirectangular HDR image and converts it to a cubemap.
 		* @param path Path to the equirectangular texture asset.
 		* @param faceSize Resolution of each cubemap face in pixels.
 		* @param root Root directory identifier.
 		*/
-		rhi::RTextureHandle LoadEquirectangularCubemap( ccharptr path, int32 faceSize, ERootID root = ERootID::External );
+		rhi::RTextureHandle LoadEquirectangularCubemap( StringView path, int32 faceSize, ERootID root = ERootID::External );
 
 
 		/* @brief Returns a built-in fallback texture.

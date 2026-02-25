@@ -18,7 +18,7 @@ namespace lum {
 
 		uint64 hash = HashStr(scenePath);
 
-		if (!mScenes.contains(hash)) {
+		//if (!mScenes.contains(hash)) {
 
 			std::optional<String> content = AssetLoader::ReadFile(ERootID::External, scenePath);
 
@@ -26,7 +26,7 @@ namespace lum {
 				LUM_LOG_ERROR("Failed to load scene %s: %s", scenePath, AssetLoader::GetErrorMessage());
 				return;
 			}
-			if (!fmt::IsValidFormat(scenePath)) {
+			if (!fmt::IsValidFormat(scenePath, fmt::EFormat::Scene)) {
 				LUM_LOG_ERROR("Invalid scene format: %s", scenePath);
 				return;
 			}
@@ -38,15 +38,10 @@ namespace lum {
 			Scene scene;
 			parser.Parse(scene);
 
-			scene.mEntityMgr.EachWithID<CTransform>(
-				[&](ecs::EntityID id, CTransform& c) {
-					std::cout << id << '\n';
-					std::cout << "pos: " << c.mPosition.x << " " << c.mPosition.y << " " << c.mPosition.z << '\n';
-				});
-
+			mScenes.erase(hash);
 			mScenes.emplace(hash, std::move(scene));
 			
-		}
+		//}
 
 		mCurrentScene = &mScenes[hash];
 

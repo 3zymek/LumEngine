@@ -37,10 +37,10 @@ namespace lum::render {
 
 		mRenderDevice->BindPipeline(mGeometryPass.mPipeline);
 		mRenderDevice->BindShader(mGeometryPass.mShader);
-		mRenderDevice->BindTexture(mat.mAlbedoMap, LUM_TEX_ALBEDO);
-		mRenderDevice->BindTexture(mat.mNormalMap, LUM_TEX_NORMAL);
-		mRenderDevice->BindTexture(mat.mMetallicMap, LUM_TEX_METALNESS);
-		mRenderDevice->BindTexture(mat.mRoughnessMap, LUM_TEX_ROUGHNESS);
+		mRenderDevice->BindTexture(mat.mAlbedoTex, LUM_TEX_ALBEDO);
+		mRenderDevice->BindTexture(mat.mNormalTex, LUM_TEX_NORMAL);
+		mRenderDevice->BindTexture(mat.mMetallicTex, LUM_TEX_METALNESS);
+		mRenderDevice->BindTexture(mat.mRoughnessTex, LUM_TEX_ROUGHNESS);
 
 		mRenderDevice->DrawElements(res.mVao, res.mNumIndices);
 
@@ -87,8 +87,8 @@ namespace lum::render {
 	void Renderer::upload_material(const FMaterialInstance& mat) {
 
 		mCurrentMaterial.mBaseColor = mat.mBaseColor;
-		mCurrentMaterial.mRougness = mat.mRoughness;
-		mCurrentMaterial.mMetallic = mat.mMetallic;
+		mCurrentMaterial.mRougness = mat.mRoughnessValue;
+		mCurrentMaterial.mMetallic = mat.mMetallicValue;
 
 		mRenderDevice->UpdateBuffer(mUniforms.mMaterialUniform, &mCurrentMaterial);
 
