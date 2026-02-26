@@ -17,9 +17,26 @@ namespace lum {
 
 		template<usize tNewL>
 		FixedString& operator=(const char(&src)[tNewL]) noexcept {
-			LUM_SASSERT(tNewL <= tL && "string is too big");
-			size = tNewL - 1;
-			std::memcpy(buff, src, tNewL);
+			usize len = tNewL;
+			if (len > tL) {
+				LUM_LOG_WARN("String too big, truncating: %s", src);
+				len = tL;
+			}
+			size = len;
+			std::memcpy(buff, src, len);
+			buff[len] = '\0';
+			return *this;
+		}
+
+		FixedString& operator=(const char* src) noexcept {
+			usize len = std::strlen(src);
+			if (len > tL) {
+				LUM_LOG_WARN("String too big, truncating: %s", src);
+				len = tL;
+			}
+			size = len;
+			std::memcpy(buff, src, len);
+			buff[len] = '\0';
 			return *this;
 		}
 

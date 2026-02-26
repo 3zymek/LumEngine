@@ -30,6 +30,10 @@ namespace lum::fmt {
 
 	private:
 
+		static inline bool in_block(std::vector<FToken>& tokens, int32 i) {
+			return i < tokens.size() && tokens[i].mType != ETokenType::RBracket;
+		}
+
 		static void parse_world( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 
 		static void parse_entity	( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
@@ -39,7 +43,7 @@ namespace lum::fmt {
 		static void parse_render	( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 		static void parse_material	( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 		static void parse_name		( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
+		static void parse_directional_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 
 		Tokenizer& mTokenizer;
 		FSceneManagerContext mContext;
@@ -57,8 +61,9 @@ namespace lum::fmt {
 			{ HashStr("static_mesh"), parse_smesh },
 			{ HashStr("camera"), parse_camera },
 			{ HashStr("render"), parse_render },
-			{ HashStr("material"), parse_material }
-
+			{ HashStr("material"), parse_material },
+			{ HashStr("name"), parse_name },
+			{ HashStr("directional_light"), parse_directional_light }, 
 		};
 
 	};

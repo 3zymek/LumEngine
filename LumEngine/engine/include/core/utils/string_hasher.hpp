@@ -17,7 +17,7 @@ namespace lum::cstd {
 
 			uint64 h = FNV1A_ENTRY;
 
-			for (usize i = 0; i < L; i++) {
+			for (usize i = 0; i < L - 1; i++) {
 				h ^= static_cast<uint8>(str[i]);
 				h *= FNV1A_PRIME;
 			}

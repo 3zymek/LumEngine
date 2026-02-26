@@ -35,10 +35,37 @@ in vec3 fN;
 
 out vec4 FinalColor;
 
+vec3 calcDirectionalLight( DirectionalLight light, vec3 N, vec3 V ){
+
+	vec3 I = normalize(-light.mDirection);
+
+	vec3 ambient = vec3( 0.2, 0.2, 0.2 );
+	float diff = max(dot(N, I), 0.0);
+
+	vec3 R = reflect(-I, N);
+
+	float spec = pow(max(dot(V, R), 0.0), 10.0);
+
+	vec3 result = ambient + diff * vec3(1.0) + spec * vec3(1.0);
+	return result;
+}
+
 void main() {
 
-	vec4 texColor = texture(tAlbedo, fUV);
+	vec3 albedo = texture(tAlbedo, fUV).rgb * matBaseColor;
+	
+	vec3 N = normalize(fN);
 
-	FinalColor = vec4(texColor.xyz * matBaseColor, 1.0);
+	vec3 V = normalize(LUM_CAMERA_POSITION - fPos);
+
+	vec3 L = normalize(-aLightBuffer.light.mDirection);
+
+	vec3 H = normalize(V + L);
+
+	vec3 F0 = mix(vec3(0.04), albedo, matMetallic);
+    float VdotH = max(dot(V, H), 0.0);
+    vec3 F = F0 + (1.0 - F0) * pow(1.0 - VdotH, 5.0);
+
+	FinalColor = vec4(F, 1.0);
 
 }

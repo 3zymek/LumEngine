@@ -18,12 +18,6 @@ namespace lum::fmt {
 				}
 			}
 
-			else if (c == '\n') {
-
-				mTokens.push_back({ ETokenType::EndOfLine, "EOF" });
-
-			}
-
 			else if (c == '"') {
 
 				++pos;
@@ -80,14 +74,18 @@ namespace lum::fmt {
 
 			}
 
-			else if (isdigit(c)) {
+			else if (isdigit(c) || c == '-') {
 
 				String value;
-				while (pos < str.size() && (isdigit(str[pos]) || str[pos] == '.')) {
+				while (pos < str.size() && (isdigit(str[pos]) || (str[pos] == '.' || str[pos] == '-'))) {
 					value += str[pos++];
 				}
-
-				mTokens.push_back({ ETokenType::Number, value });
+				if (pos < str.size() && isalpha(str[pos])) {
+					LUM_LOG_ERROR("Invalid number token: %s", value.c_str());
+				}
+				else {
+					mTokens.push_back({ ETokenType::Number, value });
+				}
 
 			}
 

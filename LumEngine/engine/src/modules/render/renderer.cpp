@@ -32,7 +32,7 @@ namespace lum::render {
 		const FStaticMeshResource& res = mMeshManager->GetStatic(obj.mStaticMesh);
 		const auto& mat = obj.mMaterial;
 
-		upload_model_matrix(obj.mTransform);
+		upload_model_matrix(obj);
 		upload_material(obj.mMaterial);
 
 		mRenderDevice->BindPipeline(mGeometryPass.mPipeline);
@@ -70,7 +70,7 @@ namespace lum::render {
 	// Private
 	//---------------------------------------------------------
 
-	void Renderer::upload_model_matrix(const CTransform& obj) {
+	void Renderer::upload_model_matrix( const Object& obj ) {
 
 		glm::quat rot = glm::quat(glm::radians(obj.mRotation));
 		glm::mat4 rotation = glm::mat4_cast(rot);
@@ -95,12 +95,10 @@ namespace lum::render {
 	}
 
 	void Renderer::upload_lights() {
-		if (!mDirectionalLight)
-			return;
 
-		mRenderDevice->UpdateBuffer(mUniforms.mLightShaderStorage, mDirectionalLight, 0, sizeof(DirectionalLight));
+		mRenderDevice->UpdateBuffer(mUniforms.mLightShaderStorage, &mDirectionalLight, 0, sizeof(DirectionalLight));
 
-		glm::vec3 lightDir = glm::normalize(mDirectionalLight->mDirection);
+		glm::vec3 lightDir = glm::normalize(mDirectionalLight.mDirection);
 		glm::vec3 lightPos = -lightDir * 20.0f;
 
 		glm::mat4 view = glm::lookAt(lightPos, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));

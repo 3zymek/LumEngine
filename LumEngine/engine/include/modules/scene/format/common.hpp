@@ -52,21 +52,21 @@ namespace lum {
 
 		namespace detail {
 
-			inline void expect_opening_bracket(std::vector<FToken>& tokens, int32& i) {
+			inline void ExpectOpeningBracket(std::vector<FToken>& tokens, int32& i) {
 				++i;
 				LUM_ASSERT(tokens[i].mType == ETokenType::LBracket, "Opening bracket expected");
 				++i;
 			}
 
-			inline void expect_colon(std::vector<FToken>& tokens, int32& i) {
+			inline void ExpectColon(std::vector<FToken>& tokens, int32& i) {
 				++i;
 				LUM_ASSERT(tokens[i].mType == ETokenType::Colon, "Colon expected");
 				++i;
 			}
 
-			inline String read_str_parameter(std::vector<FToken>& tokens, int32& i) {
+			inline String ReadStringParameter(std::vector<FToken>& tokens, int32& i) {
 
-				expect_colon(tokens, i);
+				ExpectColon(tokens, i);
 
 				String value = tokens[i].mValue;
 
@@ -76,9 +76,9 @@ namespace lum {
 
 			}
 
-			inline bool read_bool_parameter(std::vector<FToken>& tokens, int32& i) {
+			inline bool ReadBoolParameter(std::vector<FToken>& tokens, int32& i) {
 
-				expect_colon(tokens, i);
+				ExpectColon(tokens, i);
 
 				bool value = std::stof(tokens[i].mValue) > 0;
 
@@ -88,9 +88,9 @@ namespace lum {
 
 			}
 
-			inline float32 read_float_parameter(std::vector<FToken>& tokens, int32& i) {
+			inline float32 ReadFloatParameter(std::vector<FToken>& tokens, int32& i) {
 
-				expect_colon(tokens, i);
+				ExpectColon(tokens, i);
 
 				float32 value = std::stof(tokens[i].mValue);
 
@@ -100,9 +100,9 @@ namespace lum {
 
 			}
 
-			inline glm::vec3 read_vec3_parameter(std::vector<FToken>& tokens, int32& i) {
+			inline glm::vec3 ReadVec3Parameter(std::vector<FToken>& tokens, int32& i) {
 
-				expect_colon(tokens, i);
+				ExpectColon(tokens, i);
 
 				float32 x = std::stof(tokens[i++].mValue);
 				float32 y = std::stof(tokens[i++].mValue);
@@ -113,7 +113,7 @@ namespace lum {
 				return glm::vec3(x, y, z);
 
 			}
-			inline glm::vec2 read_vec2_parameter(std::vector<FToken>& tokens, int32& i) {
+			inline glm::vec2 ReadVec2Parameter(std::vector<FToken>& tokens, int32& i) {
 
 				LUM_ASSERT(tokens[i].mType == ETokenType::Colon, "Colon expected");
 				++i;

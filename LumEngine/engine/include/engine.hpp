@@ -137,7 +137,7 @@ namespace lum {
 				mRender.mRenderer.BeginFrame();
 
 				ImGui::Begin("Scene");
-				
+
 				if (ImGui::Button("Reload scene"))
 					SetScene("scene.lsc");
 

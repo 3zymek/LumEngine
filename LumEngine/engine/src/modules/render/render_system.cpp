@@ -11,11 +11,14 @@
 #include "entity/components/render.hpp"
 #include "entity/components/name.hpp"
 #include "entity/components/camera.hpp"
+#include "entity/components/light.hpp"
 
 #include "platform/input_common.hpp"
 #include "platform/key_codes.hpp"
 
 #include "platform/window.hpp"
+
+#include "imgui.h"
 
 namespace lum {
 
@@ -41,23 +44,48 @@ namespace lum {
 					glm::vec3 forward = glm::normalize(camera.mTarget - transform.mPosition);
 					glm::vec3 right = glm::normalize(glm::cross(forward, camera.mUp));
 
-					float32 speed = 5.0f * 10.f;
+					float32 speed = 5.0f * 0.1f;
 					
-					if (input::KeyPressed(input::Key::W)) transform.mPosition += forward * speed;
-					if (input::KeyPressed(input::Key::S)) transform.mPosition -= forward * speed;
-					if (input::KeyPressed(input::Key::A)) transform.mPosition -= right * speed;
-					if (input::KeyPressed(input::Key::D)) transform.mPosition += right * speed;
+					static bool sCameraLocked = false;
 
-					// mouse look
-					glm::vec2 delta = input->GetMouseDelta();
-					mYaw += delta.x * 0.1f;
-					mPitch -= delta.y * 0.1f;
-					mPitch = glm::clamp(mPitch, -89.0f, 89.0f);
+					if (input::KeyPressedOnce(input::Key::LEFT_CONTROL)) {
+						sCameraLocked = !sCameraLocked;
+					}
+					static glm::vec2 sLastMousePos;
+					if (!sCameraLocked) {
+						float32 speed = 5.0f * 0.1f;
+
+						if (input::KeyPressed(input::Key::W)) transform.mPosition += forward * speed;
+						if (input::KeyPressed(input::Key::S)) transform.mPosition -= forward * speed;
+						if (input::KeyPressed(input::Key::A)) transform.mPosition -= right * speed;
+						if (input::KeyPressed(input::Key::D)) transform.mPosition += right * speed;
+
+						static glm::vec2 sLastMousePos = input::GetMousePos();
+						glm::vec2 currentPos = input::GetMousePos();
+						glm::vec2 delta = currentPos - sLastMousePos;
+						sLastMousePos = currentPos;
+
+						camera.mYaw += delta.x * 0.1f;
+						camera.mPitch -= delta.y * 0.1f;
+						camera.mPitch = glm::clamp(camera.mPitch, -89.0f, 89.0f);
+					}
+					else {
+						sLastMousePos = input::GetMousePos();
+					}
+					glm::vec2 currentPos = input::GetMousePos();
+					glm::vec2 delta = currentPos - sLastMousePos;
+					sLastMousePos = currentPos;
+
+					camera.mYaw += delta.x * 0.1f;
+					camera.mPitch -= delta.y * 0.1f;
+					camera.mPitch = glm::clamp(camera.mPitch, -89.0f, 89.0f);
+					data.mPitch = camera.mPitch;
+					data.mYaw = camera.mYaw;
 
 					glm::vec3 direction;
-					direction.x = cos(glm::radians(mYaw)) * cos(glm::radians(mPitch));
-					direction.y = sin(glm::radians(mPitch));
-					direction.z = sin(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+					direction.x = cos(glm::radians(camera.mYaw)) * cos(glm::radians(camera.mPitch));
+					direction.y = sin(glm::radians(camera.mPitch));
+					direction.z = sin(glm::radians(camera.mYaw)) * cos(glm::radians(camera.mPitch));
 
 					camera.mTarget = transform.mPosition + glm::normalize(direction);
 
@@ -65,17 +93,37 @@ namespace lum {
 				}
 			);
 
+			ImGui::Begin("Materials");
 			entityMgr->Each<CRender, CTransform, CMaterial, CStaticMesh>(
 				[&](CRender& render, CTransform& transform, CMaterial& material, CStaticMesh& mesh)
 				{
 					if (!render.bVisible) return;
 					render::Object obj;
+					
+					ImGui::DragFloat("Roughness", &material.mMat.mRoughnessValue, 0.01f, 0.0f, 1.0f);
+					ImGui::DragFloat("Metallic", &material.mMat.mMetallicValue, 0.01f, 0.0f, 1.0f);
+					ImGui::ColorEdit3("BaseColor", glm::value_ptr(material.mMat.mBaseColor), 0.01f);
+
 					obj.mMaterial = material.mMat;
 					obj.mStaticMesh = mesh.mMesh;
-					obj.mTransform = transform;
+					obj.mPosition = transform.mPosition;
+					obj.mRotation = transform.mRotation;
+					obj.mScale = transform.mScale;
 					mRenderer->Draw(obj);
 				});
+			ImGui::End();
 			
+			entityMgr->Each<CDirectionalLight>(
+				[&](CDirectionalLight& light)
+				{
+					ImGui::DragFloat3("direction", glm::value_ptr(light.mDirection), 0.1f, -1000.f, 1000.f);
+					ImGui::DragFloat("intensity", &light.mIntensity, 0.1f, 0.0f, 1000.f);
+					mRenderer->mDirectionalLight.mDirection = light.mDirection;
+					mRenderer->mDirectionalLight.mIntensity = light.mIntensity;
+					mRenderer->mDirectionalLight.mColor = light.mColor;
+
+				});
+
 		}
 
 	} // namespace lum::render

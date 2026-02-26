@@ -38,8 +38,17 @@ namespace lum::render {
 
 	struct Object {
 
-		CTransform mTransform;
+		/* @brief World position. */
+		glm::vec3 mPosition = { 0.f, 0.f, 0.f };
+
+		/* @brief Non-uniform scale. */
+		glm::vec3 mScale = { 1.f, 1.f, 1.f };
+
+		/* @brief Euler rotation in degrees. */
+		glm::vec3 mRotation = { 0.f, 0.f, 0.f };
+
 		StaticMeshHandle mStaticMesh;
+
 		FMaterialInstance mMaterial;
 
 	};
@@ -59,6 +68,12 @@ namespace lum::render {
 		glm::vec3 mPosition{ 1 };
 		glm::mat4 mView{ 1 };
 		glm::mat4 mProjection{ 1 };
+
+		/* @brief Yaw angle in degrees, represents horizontal rotation. */
+		float32 mYaw = -90.0f;
+
+		/* @brief Pitch angle in degrees, represents vertical rotation. */
+		float32 mPitch = 0.0f;
 
 	};
 
@@ -147,7 +162,7 @@ namespace lum::render {
 		void BeginFrame( );
 		void EndFrame( );
 
-		DirectionalLight* mDirectionalLight = nullptr;
+		DirectionalLight mDirectionalLight;
 
 	private:
 
@@ -177,7 +192,7 @@ namespace lum::render {
 			init_shadow_pass();
 		}
 
-		void upload_model_matrix( const CTransform& obj );
+		void upload_model_matrix( const Object& obj );
 		void upload_material( const FMaterialInstance& mat );
 		void upload_lights( );
 		void upload_camera_uniform( );

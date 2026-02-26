@@ -161,12 +161,21 @@ namespace lum {
 	/// @param str String literal to hash.
 	/// @return 64-bit hash of the input string.
 	template<usize L>
-	inline constexpr uint64 HashStr(const char8 (&str)[L]) noexcept {
+	inline constexpr uint64 HashStr( const char (&str)[L] ) noexcept {
 		return cstd::StringHasher::Hash(str);
 	}
-	inline uint64 HashStr(std::string_view str) noexcept {
+	inline uint64 HashStr( StringView str ) noexcept {
 		return cstd::StringHasher::Hash(str);
 	}
+
+
+	inline String ToLower(const String& str) {
+		String result = str;
+		std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+		return result;
+	}
+
+
 
 	namespace cmdcolor {
 	

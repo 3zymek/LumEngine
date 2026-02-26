@@ -14,7 +14,7 @@ namespace lum::fmt {
 				
 				if (tokens[i].mValue == "albedo") {
 					
-					String path = detail::read_str_parameter(tokens, i);
+					String path = detail::ReadStringParameter(tokens, i);
 					
 					material.mAlbedoTex = path;
 
@@ -22,21 +22,21 @@ namespace lum::fmt {
 				}
 				else if (tokens[i].mValue == "normal") {
 					
-					String path = detail::read_str_parameter(tokens, i);
+					String path = detail::ReadStringParameter(tokens, i);
 
 					material.mNormalTex = path;
 
 				}
 				else if (tokens[i].mValue == "roughness") {
 		
-					String path = detail::read_str_parameter(tokens, i);
+					String path = detail::ReadStringParameter(tokens, i);
 
 					material.mRoughnessTex = path;
 
 				}
 				else if (tokens[i].mValue == "metallic") {
 					
-					String path = detail::read_str_parameter(tokens, i);
+					String path = detail::ReadStringParameter(tokens, i);
 
 					material.mMetallicTex = path;
 
@@ -44,21 +44,21 @@ namespace lum::fmt {
 				}
 				else if (tokens[i].mValue == "base_color") {
 					
-					glm::vec3 value = detail::read_vec3_parameter(tokens, i);
+					glm::vec3 value = detail::ReadVec3Parameter(tokens, i);
 
 					material.mBaseColor = value;
 
 				}
 				else if (tokens[i].mValue == "roughness_value") {
 
-					float32 value = detail::read_float_parameter(tokens, i);
+					float32 value = detail::ReadFloatParameter(tokens, i);
 
 					material.mRoughnessValue = value;
 					
 				}
 				else if (tokens[i].mValue == "metallic_value") {
 					
-					float32 value = detail::read_float_parameter(tokens, i);
+					float32 value = detail::ReadFloatParameter(tokens, i);
 
 					material.mMetallicValue = value;
 
