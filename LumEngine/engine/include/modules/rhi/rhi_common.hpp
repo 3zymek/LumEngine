@@ -17,6 +17,8 @@ namespace lum {
 			glm::vec3 mPosition;	// Vertex position in 3D space
 			glm::vec3 mNormal;		// Vertex normal
 			glm::vec2 mUv;			// Texture coordinates (UV)
+			glm::vec3 mTangent;
+			glm::vec3 mBitangent;
 		};
 
 

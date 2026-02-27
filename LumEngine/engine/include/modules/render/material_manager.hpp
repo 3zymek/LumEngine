@@ -12,14 +12,17 @@
 
 namespace lum {
 
+	/////Forward Declare/////
 	class MTextureManager;
-
 	namespace rhi {
 		class RDevice;
-	} // lum::rhi
+	}
+	////////////////////////
 
+	/* @brief Strongly typed handle referencing a base material in the pool. */
 	struct MaterialBaseHandle : cstd::BaseHandle<uint32> {};
 
+	/* @brief Identifies which texture map to set on a material base. */
 	enum class EMaterialMember {
 		Albedo,
 		Normal,
@@ -36,7 +39,7 @@ namespace lum {
 	class MMaterialManager {
 	public:
 
-		MMaterialManager( ) {}
+		MMaterialManager( ) = default;
 
 		/* @brief Initializes the manager with the given device and texture manager.
 		* @param device  Pointer to the active render device.
@@ -51,6 +54,14 @@ namespace lum {
 		LUM_NODISCARD
 		MaterialBaseHandle UploadBase( const FMaterialBase& base );
 
+		/* @brief Resolves a material descriptor and uploads it to the base material pool.
+		* Loads textures from provided paths and automatically applies fallbacks for unset fields.
+		* @param desc Descriptor containing optional texture paths and material parameters.
+		* @return Handle to the uploaded base material.
+		*/
+		LUM_NODISCARD
+		MaterialBaseHandle UploadBase(const FMaterialDescriptor& base);
+
 		/* @brief Creates a material instance from a base handle.
 		* Resolves invalid texture handles to fallback textures.
 		* Falls back to the default material if the handle is invalid.
@@ -60,6 +71,7 @@ namespace lum {
 		LUM_NODISCARD
 		FMaterialInstance CreateInstance( MaterialBaseHandle base );
 
+		/* @brief Returns a material instance created from the built-in default material. */
 		LUM_NODISCARD
 		FMaterialInstance GetDefaultInstance();
 
@@ -72,19 +84,25 @@ namespace lum {
 
 	private:
 
-		MaterialBaseHandle	mDefaultMaterial;
-		MTextureManager* mTextureManager = nullptr;
+		/* @brief Render backend */
 		rhi::RDevice* mRenderDevice = nullptr;
 
+		/* @brief Handle to the built-in default material, used as fallback for invalid handles. */
+		MaterialBaseHandle mDefaultMaterial;
+		MTextureManager* mTextureMgr = nullptr;
+
+
+		/* @brief Pool storing all uploaded base materials, indexed by MaterialBaseHandle. */
 		cstd::HandlePool<MaterialBaseHandle, FMaterialBase> mBaseMaterials{ limits::gMaxMaterials };
 
-		void init( );
+		/* @brief Internal initialization — sets up device and texture manager references, then creates the default material. */
+		void init();
 
 		/* @brief Returns the texture if valid, otherwise returns the default fallback. */
 		rhi::RTextureHandle validate_texture( rhi::RTextureHandle tex );
 
 		/* @brief Creates and uploads the built-in default material. */
-		void create_materials( );
+		void create_default_materials( );
 
 	};
 

@@ -100,7 +100,9 @@ namespace lum::fmt {
 				}
 
 			}
+
 			i++;
+
 		}
 
 	}
@@ -258,40 +260,12 @@ namespace lum::fmt {
 					tokenizer.Tokenize(content.value());
 					MaterialParser parser(tokenizer);
 
-					MaterialData data;
+					FMaterialDescriptor data;
 					parser.Parse(data);
 
 					auto& instance = material.mMat;
 
-					if (data.mAlbedoTex) {
-						instance.mAlbedoTex = ctx.mContext.mTextureMgr->Load(data.mAlbedoTex.value(), ETexturePreset::Albedo);
-					}
-					else instance.mAlbedoTex = ctx.mContext.mTextureMgr->GetFallbackTexture(EFallbackTexture::Default);
-
-					if (data.mNormalTex) {
-						instance.mNormalTex = ctx.mContext.mTextureMgr->Load(data.mNormalTex.value(), ETexturePreset::Normal);
-					}
-					else instance.mNormalTex = ctx.mContext.mTextureMgr->GetFallbackTexture(EFallbackTexture::Default);
-
-					if (data.mRoughnessTex) {
-						instance.mRoughnessTex = ctx.mContext.mTextureMgr->Load(data.mRoughnessTex.value(), ETexturePreset::Roughness);
-					}
-					else instance.mRoughnessTex = ctx.mContext.mTextureMgr->GetFallbackTexture(EFallbackTexture::Default);
-
-					if (data.mMetallicTex) {
-						instance.mMetallicTex = ctx.mContext.mTextureMgr->Load(data.mMetallicTex.value(), ETexturePreset::Metallic);
-					}
-					else instance.mMetallicTex = ctx.mContext.mTextureMgr->GetFallbackTexture(EFallbackTexture::Default);
-
-					if (data.mBaseColor) {
-						instance.mBaseColor = data.mBaseColor.value();
-					}
-					if (data.mRoughnessValue) {
-						instance.mRoughnessValue = data.mRoughnessValue.value();
-					}
-					if (data.mMetallicValue) {
-						instance.mMetallicValue = data.mMetallicValue.value();
-					}
+					MaterialBaseHandle handle = ctx.mContext.mMaterialMgr->UploadBase(data);
 
 				}
 				else LUM_LOG_ERROR("Invalid parameter");
@@ -329,7 +303,6 @@ namespace lum::fmt {
 		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, name);
 
 	}
-
 	void SceneParser::parse_directional_light(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
 
 		detail::ExpectOpeningBracket(tokens, i);
@@ -362,6 +335,36 @@ namespace lum::fmt {
 		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, light);
 
 	}
+	void SceneParser::parse_point_light(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
 
+		detail::ExpectOpeningBracket(tokens, i);
+		CPointLight light;
+
+		while (in_block(tokens, i)) {
+
+			if (tokens[i].mValue == "intensity") {
+
+				light.mIntensity = detail::ReadFloatParameter(tokens, i);
+
+			}
+			else if (tokens[i].mValue == "radius") {
+
+				light.mRadius = detail::ReadFloatParameter(tokens, i);
+
+			}
+			else if (tokens[i].mValue == "color") {
+
+				light.mColor = detail::ReadVec3Parameter(tokens, i);
+
+			}
+
+
+			i++;
+
+		}
+
+		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, light);
+
+	}
 
 } // namespace lum::fmt

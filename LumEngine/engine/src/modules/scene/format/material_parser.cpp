@@ -4,7 +4,7 @@
 
 namespace lum::fmt {
 
-	void MaterialParser::Parse( MaterialData& material ) {
+	void MaterialParser::Parse( FMaterialDescriptor& material ) {
 
 		auto& tokens = mTokenizer.GetTokens();
 

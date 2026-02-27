@@ -1,37 +1,36 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Parser for .lmt material format files.
+//
+//=============================================================================//
 #pragma once
 
 #include "core/core_common.hpp"
 
 namespace lum::fmt {
 
-	class Tokenizer;
+    class Tokenizer;
 
-	struct MaterialData {
+    /* @brief Parses a tokenized .lmt file into a material descriptor.
+    * Used as the second stage of the .lmt parsing pipeline after tokenization.
+    */
+    class MaterialParser {
+    public:
 
-		std::optional<String> mAlbedoTex;
-		std::optional<String> mNormalTex;
-		std::optional<String> mRoughnessTex;
-		std::optional<String> mMetallicTex;
+       /* @brief Constructs the parser with a reference to an existing tokenizer.
+        * @param tokenizer Tokenizer that has already processed the .lmt file content.
+        */
+        MaterialParser( Tokenizer& tokenizer ) : mTokenizer( tokenizer ) {}
 
-		std::optional<glm::vec3> mBaseColor;
-		std::optional<float32> mRoughnessValue = 0.0f;
-		std::optional<float32> mMetallicValue = 0.0f;
+       /* @brief Parses the token stream and fills the material descriptor.
+        * @param material Output descriptor to fill with parsed material data.
+        */
+        void Parse( FMaterialDescriptor& material );
 
-	};
+    private:
 
-	class MaterialParser {
-	public:
+        Tokenizer& mTokenizer;
+    
+    };
 
-		MaterialParser( Tokenizer& tokenizer ) : mTokenizer( tokenizer ) { }
-		
-		void Parse( MaterialData& material );
-
-	private:
-
-		Tokenizer& mTokenizer;
-
-	};
-
-
-
-}
+} // namespace lum::fmt

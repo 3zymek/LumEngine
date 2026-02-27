@@ -129,7 +129,7 @@ namespace lum {
 		eboDesc.mBufferType = rhi::EBufferType::Element;
 		res.mEbo = mRenderDevice->CreateBuffer(eboDesc);
 
-		rhi::RVertexAttribute vaoAttrib[3];
+		rhi::RVertexAttribute vaoAttrib[5];
 
 		auto& position = vaoAttrib[0];
 		position.mFormat = rhi::EDataFormat::Vec3;
@@ -145,6 +145,16 @@ namespace lum {
 		uv.mFormat = rhi::EDataFormat::Vec2;
 		uv.mRelativeOffset = offsetof(rhi::FVertex, mUv);
 		uv.mShaderLocation = LUM_LAYOUT_UV;
+
+		auto& tg = vaoAttrib[3];
+		tg.mFormat = rhi::EDataFormat::Vec3;
+		tg.mRelativeOffset = offsetof(rhi::FVertex, mTangent);
+		tg.mShaderLocation = LUM_LAYOUT_TANGENT;
+
+		auto& btg = vaoAttrib[4];
+		btg.mFormat = rhi::EDataFormat::Vec3;
+		btg.mRelativeOffset = offsetof(rhi::FVertex, mBitangent);
+		btg.mShaderLocation = LUM_LAYOUT_BITANGENT;
 
 		rhi::RVertexLayoutDescriptor vaoDesc;
 		vaoDesc.mAttributes = vaoAttrib;

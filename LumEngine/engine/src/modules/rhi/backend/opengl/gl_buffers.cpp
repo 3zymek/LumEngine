@@ -48,9 +48,9 @@ namespace lum::rhi::gl {
 
 		FBuffer& buffer = mBuffers[vbo];
 
-		LUM_HOTCHK_RETURN_VOID(offset + size <= buffer.mSize, LUM_SEV_WARN, "Invalid offset or size");
-
 		if (size == 0) size = buffer.mSize;
+
+		LUM_HOTCHK_RETURN_VOID(offset + size <= buffer.mSize, LUM_SEV_WARN, "Invalid offset or size");
 
 		LUM_HOTCHK_RETURN_VOID(
 			buffer.mUsage != EBufferUsage::Static,
@@ -66,7 +66,7 @@ namespace lum::rhi::gl {
 			vbo.mID
 		);
 
-		void* ptr =
+		vptr ptr =
 			glMapNamedBufferRange(
 				buffer.mHandle,
 				offset,
@@ -74,7 +74,7 @@ namespace lum::rhi::gl {
 				GL_MAP_WRITE_BIT
 			);
 
-		LUM_HOTCHK_RETURN_VOID(ptr, LUM_SEV_WARN, "Failed during buffer mapping");
+		LUM_HOTCHK_RETURN_VOID(ptr != nullptr, LUM_SEV_WARN, "Failed during buffer mapping");
 
 		std::memcpy(ptr, data, size);
 

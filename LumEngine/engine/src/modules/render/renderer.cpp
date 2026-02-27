@@ -27,6 +27,12 @@ namespace lum::render {
 
 	}
 
+	void UpdateLights() {
+
+
+
+	}
+
 	void Renderer::Draw(const Object& obj) {
 
 		const FStaticMeshResource& res = mMeshManager->GetStatic(obj.mStaticMesh);
@@ -96,17 +102,9 @@ namespace lum::render {
 
 	void Renderer::upload_lights() {
 
-		mRenderDevice->UpdateBuffer(mUniforms.mLightShaderStorage, &mDirectionalLight, 0, sizeof(DirectionalLight));
+		mRenderDevice->UpdateBuffer(mUniforms.mLightShaderStorage, mPointLights.data(), 0, sizeof(PointLight) * mPointLightsCount);
+		mRenderDevice->UpdateBuffer(mUniforms.mLightShaderStorage, &mPointLightsCount, sizeof(PointLight) * LUM_MAX_LIGHTS, sizeof(mPointLightsCount));
 
-		glm::vec3 lightDir = glm::normalize(mDirectionalLight.mDirection);
-		glm::vec3 lightPos = -lightDir * 20.0f;
-
-		glm::mat4 view = glm::lookAt(lightPos, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-		glm::mat4 proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 100.0f);
-
-		mShadowPass.mLightSpaceMatrix = proj * view;
-
-		mRenderDevice->UpdateBuffer(mUniforms.mLightShaderStorage, glm::value_ptr(mShadowPass.mLightSpaceMatrix), sizeof(DirectionalLight), sizeof(glm::mat4));
 	}
 
 	void Renderer::upload_camera_uniform() {
@@ -139,7 +137,7 @@ namespace lum::render {
 			mRenderDevice->SetUniformBufferBinding(mUniforms.mMaterialUniform, LUM_UBO_MATERIAL_BINDING);
 		}
 		{ // Light SSBO
-			desc.mSize = sizeof(DirectionalLight) + sizeof(glm::mat4);
+			desc.mSize = sizeof(PointLight) * LUM_MAX_LIGHTS + sizeof(int);
 			desc.mBufferType = rhi::EBufferType::ShaderStorage;
 			mUniforms.mLightShaderStorage = mRenderDevice->CreateBuffer(desc);
 			mRenderDevice->SetShaderStorageBinding(mUniforms.mLightShaderStorage, LUM_SSBO_LIGHTS_BINDING);

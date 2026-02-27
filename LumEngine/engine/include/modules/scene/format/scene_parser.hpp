@@ -43,7 +43,9 @@ namespace lum::fmt {
 		static void parse_render	( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 		static void parse_material	( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 		static void parse_name		( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-		static void parse_directional_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
+		
+		static void parse_directional_light	( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
+		static void parse_point_light		( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 
 		Tokenizer& mTokenizer;
 		FSceneManagerContext mContext;
@@ -63,7 +65,8 @@ namespace lum::fmt {
 			{ HashStr("render"), parse_render },
 			{ HashStr("material"), parse_material },
 			{ HashStr("name"), parse_name },
-			{ HashStr("directional_light"), parse_directional_light }, 
+			{ HashStr("directional_light"), parse_directional_light },
+			{ HashStr("point_light"), parse_point_light }
 		};
 
 	};

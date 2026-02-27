@@ -9,13 +9,16 @@
 
 namespace lum {
 
+	///Forward Declare///
+	struct FTextureData;
 	namespace rhi {
 		class RDevice;
 		struct RTextureHandle;
 	} // lum::rhi
+	/////////////////////
 
-	struct FTextureData;
 
+	/* @brief Defines texture type presets used to configure format and sampling. */
 	enum class ETexturePreset : uint8 {
 		Albedo,
 		Normal,
@@ -23,15 +26,17 @@ namespace lum {
 		Roughness,
 	};
 
+	/* @brief Built-in fallback texture types for missing or unset assets. */
 	enum class EFallbackTexture : uint8 {
-		Missing,
-		Default
+		Missing,       // Checkered texture indicating missing asset
+		DefaultAlbedo, // 1x1 white (255, 255, 255) neutral fallback for albedo and non-color maps
+		DefaultNormal, // 1x1 flat normal (128, 128, 255) fallback when no normal map is provided
 	};
 
+	/* @brief Descriptor for loading a cubemap from 6 individual face textures. */
 	struct FCubemapDescriptor {
-		
+		/* @brief Paths to the 6 cubemap faces in order: +X, -X, +Y, -Y, +Z, -Z */
 		ccharptr mFaces[6];
-		
 	};
 
 	/* @brief Manages GPU texture resources and their lifecycle.
@@ -86,19 +91,23 @@ namespace lum {
 
 	private:
 
+		/* @brief Rendering backend */
 		rhi::RDevice*		mRenderDevice = nullptr;
 
 		/* @brief Fallback texture displayed when a requested asset cannot be found. */
 		rhi::RTextureHandle mMissingTexture;
 
-		/* @brief Default 1x1 white texture used as a safe neutral fallback. */
-		rhi::RTextureHandle mDefaultTexture;
+		/* @brief Default 1x1 white texture used as a neutral fallback for albedo and non-color maps. */
+		rhi::RTextureHandle mDefaultAlbedoTexture;
+
+		/* @brief Default 1x1 (128, 128, 255) texture representing a flat normal, used when no normal map is provided. */
+		rhi::RTextureHandle mDefaultNormalTexture;
 
 		/* @brief Cache mapping texture path hashes to their GPU handles. */
 		std::unordered_map<uint64, rhi::RTextureHandle> mTextures;
 
 
-		/* Init internal implementation */
+		/* @brief Internal initialization — sets up device reference and creates fallback textures. */
 		void init( );
 
 		/* @brief Creates built-in fallback textures on initialization.
@@ -126,8 +135,8 @@ namespace lum {
 				.bGenerateMipmaps = true,
 			},
 			{ // NORMAL
-				.mInternalFormat = rhi::RInternalImageFormat::RGBA8,
-				.mLoadedFormat = rhi::RLoadedImageFormat::RGBA,
+				.mInternalFormat = rhi::RInternalImageFormat::RGB8,
+				.mLoadedFormat = rhi::RLoadedImageFormat::RGB,
 				.mDataType = rhi::RTextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},

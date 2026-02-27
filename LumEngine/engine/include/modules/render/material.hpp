@@ -43,6 +43,24 @@ namespace lum {
 
 	};
 
+	/* @brief Descriptor for creating a material base.
+	* All fields are optional — unset fields resolve to engine defaults at upload time.
+	* Textures are specified as asset paths and resolved by the texture manager.
+	*/
+	struct FMaterialDescriptor {
+
+		std::optional<String> mAlbedoTex;      // Path to albedo texture
+		std::optional<String> mNormalTex;      // Path to normal map
+		std::optional<String> mRoughnessTex;   // Path to roughness map
+		std::optional<String> mMetallicTex;    // Path to metallic map
+
+		std::optional<glm::vec3> mBaseColor;   // Base color multiplier, defaults to (1, 1, 1)
+
+		std::optional<float32> mRoughnessValue = 0.0f; // Roughness multiplier, defaults to 0.5
+		std::optional<float32> mMetallicValue = 0.0f;  // Metallic multiplier, defaults to 0.0
+	
+	};
+
 	/* @brief Per-object instance of FMaterialBase with no additional overrides. */
 	struct FMaterialInstance : FMaterialBase {};
 

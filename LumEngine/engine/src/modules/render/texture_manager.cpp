@@ -90,8 +90,9 @@ namespace lum {
 	rhi::RTextureHandle MTextureManager::GetFallbackTexture( EFallbackTexture fallback ) {
 		switch (fallback) {
 		case EFallbackTexture::Missing: return mMissingTexture;
-		case EFallbackTexture::Default: return mDefaultTexture;
-		default: return mDefaultTexture;
+		case EFallbackTexture::DefaultAlbedo: return mDefaultAlbedoTexture;
+		case EFallbackTexture::DefaultNormal: return mDefaultNormalTexture;
+		default: return mDefaultAlbedoTexture;
 		}
 	}
 
@@ -110,7 +111,7 @@ namespace lum {
 	}
 
 	void MTextureManager::create_default_textures( ) {
-		{ // Default texture
+		{ // Default albedo texture
 			FTextureData data;
 			data.mPixels = { 255, 255, 255, 255 };
 			data.mWidth = 1;
@@ -120,13 +121,25 @@ namespace lum {
 			desc.mInternalFormat = rhi::RInternalImageFormat::SRGB8_Alpha8;
 			desc.mLoadedFormat = rhi::RLoadedImageFormat::RGBA;
 			desc.mTextureType = rhi::RTextureType::Texture2D;
-			mDefaultTexture = mRenderDevice->CreateTexture(desc);
+			mDefaultAlbedoTexture = mRenderDevice->CreateTexture(desc);
+		}
+		{ // Default normal texture
+			FTextureData data;
+			data.mPixels = { 128, 128, 255 };
+			data.mWidth = 1;
+			data.mHeight = 1;
+			rhi::RTextureDescriptor desc;
+			desc.mData = data;
+			desc.mInternalFormat = rhi::RInternalImageFormat::RGB8;
+			desc.mLoadedFormat = rhi::RLoadedImageFormat::RGB;
+			desc.mTextureType = rhi::RTextureType::Texture2D;
+			mDefaultNormalTexture = mRenderDevice->CreateTexture(desc);
 		}
 		{ // Missing texture
 			std::optional<FTextureData> data = AssetLoader::LoadTexture(ERootID::Internal, "textures/missingTex.png");
 			if (!data) {
 				LUM_LOG_ERROR("Failed to load missing texture fallback");
-				mMissingTexture = mDefaultTexture;
+				mMissingTexture = mDefaultAlbedoTexture;
 				return;
 			}
 			rhi::RTextureDescriptor desc;

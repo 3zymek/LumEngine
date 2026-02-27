@@ -112,17 +112,39 @@ namespace lum {
 					mRenderer->Draw(obj);
 				});
 			ImGui::End();
-			
-			entityMgr->Each<CDirectionalLight>(
-				[&](CDirectionalLight& light)
-				{
-					ImGui::DragFloat3("direction", glm::value_ptr(light.mDirection), 0.1f, -1000.f, 1000.f);
-					ImGui::DragFloat("intensity", &light.mIntensity, 0.1f, 0.0f, 1000.f);
-					mRenderer->mDirectionalLight.mDirection = light.mDirection;
-					mRenderer->mDirectionalLight.mIntensity = light.mIntensity;
-					mRenderer->mDirectionalLight.mColor = light.mColor;
 
-				});
+			uint32 pointLights = 0;
+			entityMgr->Each<CTransform, CPointLight>(
+				[&](CTransform& transform, CPointLight& light) {
+					PointLight pointL;
+					pointL.mColor = light.mColor;
+					pointL.mIntensity = light.mIntensity;
+					pointL.mPosition = transform.mPosition;
+					pointL.mRadius = light.mRadius;
+					mRenderer->mPointLights[pointLights] = pointL;
+					pointLights++;
+				}
+			);
+			mRenderer->mPointLightsCount = pointLights;
+
+			if (ImGui::CollapsingHeader("Point Lights")) {
+				uint32_t i = 0;
+				entityMgr->Each<CTransform, CPointLight>(
+					[&](CTransform& transform, CPointLight& light) {
+						ImGui::PushID(i);
+						std::string label = "Light " + std::to_string(i);
+						if (ImGui::TreeNode(label.c_str())) {
+							ImGui::DragFloat3("Position", &transform.mPosition.x, 0.1f);
+							ImGui::ColorEdit3("Color", &light.mColor.x);
+							ImGui::DragFloat("Intensity", &light.mIntensity, 0.01f, 0.0f, 100.0f);
+							ImGui::DragFloat("Radius", &light.mRadius, 0.1f, 0.0f, 1000.0f);
+							ImGui::TreePop();
+						}
+						ImGui::PopID();
+						i++;
+					}
+				);
+			}
 
 		}
 

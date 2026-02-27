@@ -36,6 +36,15 @@ namespace lum::render {
 
 	};
 
+	struct PointLight {
+
+		glm::vec3 mPosition;
+		float32 mIntensity;
+		glm::vec3 mColor;
+		float32 mRadius;
+
+	};
+
 	struct Object {
 
 		/* @brief World position. */
@@ -157,12 +166,15 @@ namespace lum::render {
 		void SetEnvionmentTexture( rhi::RTextureHandle tex );
 
 		void UpdateCamera( FCameraData& camera );
+		void UpdateLights();
+
 
 		void Draw( const Object& obj );
 		void BeginFrame( );
 		void EndFrame( );
 
-		DirectionalLight mDirectionalLight;
+		std::array<PointLight, LUM_MAX_LIGHTS> mPointLights;
+		uint32 mPointLightsCount = 0;
 
 	private:
 

@@ -103,6 +103,23 @@ namespace lum {
 				}
 				else vert.mNormal = { 0.0f, 0.0f, 0.0f };
 
+				if (mesh->HasTangentsAndBitangents()) {
+					vert.mTangent = {
+						mesh->mTangents[vertexIndex].x,
+						mesh->mTangents[vertexIndex].y,
+						mesh->mTangents[vertexIndex].z
+					};
+					vert.mBitangent = {
+						mesh->mBitangents[vertexIndex].x,
+						mesh->mBitangents[vertexIndex].y,
+						mesh->mBitangents[vertexIndex].z
+					};
+				}
+				else {
+					vert.mTangent = { 0.0f, 0.0f, 0.0f };
+					vert.mBitangent = { 0.0f, 0.0f, 0.0f };
+				}
+
 				if (mesh->mTextureCoords[0]) {
 					vert.mUv = {
 						mesh->mTextureCoords[0][vertexIndex].x,

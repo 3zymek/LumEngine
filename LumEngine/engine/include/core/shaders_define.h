@@ -14,6 +14,10 @@
 // Shader location for uv
 #define LUM_LAYOUT_UV 2
 
+#define LUM_LAYOUT_TANGENT 3
+
+#define LUM_LAYOUT_BITANGENT 4
+
 // Uniform buffer binding for camera matrices ( projection and view ).
 #define LUM_UBO_CAMERA_BINDING 1
 
@@ -50,6 +54,7 @@
 
 // Cubemap texture binding slot.
 #define LUM_TEX_CUBEMAP 8 // Cubemap texture binding.
+
 
 
 ///////////////////////////////////////////
