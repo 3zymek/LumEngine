@@ -73,7 +73,7 @@ namespace lum {
 
 		/* @brief Returns a material instance created from the built-in default material. */
 		LUM_NODISCARD
-		FMaterialInstance GetDefaultInstance();
+		FMaterialInstance GetDefaultInstance( );
 
 		/* @brief Sets a specific texture map on a base material.
 		* @param material Handle to the base material to modify.
@@ -102,7 +102,7 @@ namespace lum {
 		rhi::RTextureHandle validate_texture( rhi::RTextureHandle tex );
 
 		/* @brief Creates and uploads the built-in default material. */
-		void create_default_materials( );
+		void create_defaults( );
 
 	};
 

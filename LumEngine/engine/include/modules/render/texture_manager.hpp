@@ -75,13 +75,18 @@ namespace lum {
 		*/
 		rhi::RTextureHandle Load( StringView path, ETexturePreset preset, ERootID id = ERootID::External );
 
+		/* @brief Maps a channel count to the corresponding RImageFormat.
+		* @param channels Number of color channels (1 = R, 2 = RG, 3 = RGB, 4 = RGBA).
+		* @return Matching RImageFormat. Defaults to RGBA for unknown values.
+		*/
+		rhi::RImageFormat ChannelsToFormat( uint32 channels );
+
 		/* @brief Loads an equirectangular HDR image and converts it to a cubemap.
 		* @param path Path to the equirectangular texture asset.
 		* @param faceSize Resolution of each cubemap face in pixels.
 		* @param root Root directory identifier.
 		*/
 		rhi::RTextureHandle LoadEquirectangularCubemap( StringView path, int32 faceSize, ERootID root = ERootID::External );
-
 
 		/* @brief Returns a built-in fallback texture.
 		* @param fallback Fallback type (Missing = checkered, Default = white 1x1).
@@ -117,7 +122,7 @@ namespace lum {
 		* - Missing: loaded from internal assets, used when requested
 		*   text	ure cannot be found. Falls back to default if file is missing.
 		*/
-		void create_default_textures( );
+		void create_defaults( );
 
 		/* @brief Converts an equirectangular texture into six cubemap faces.
 		* @param equirect Source equirectangular texture data.
@@ -129,26 +134,26 @@ namespace lum {
 		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
 		static inline rhi::RTextureDescriptor sTexturePresetsLookup[] = {
 			{ // ALBEDO
-				.mInternalFormat = rhi::RInternalImageFormat::SRGB8_Alpha8,
-				.mLoadedFormat = rhi::RLoadedImageFormat::RGBA,
+				.mImageLayout = rhi::RImageLayout::SRGB8_Alpha8,
+				.mImageFormat = rhi::RImageFormat::RGBA,
 				.mDataType = rhi::RTextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true,
 			},
 			{ // NORMAL
-				.mInternalFormat = rhi::RInternalImageFormat::RGB8,
-				.mLoadedFormat = rhi::RLoadedImageFormat::RGB,
+				.mImageLayout = rhi::RImageLayout::RGB8,
+				.mImageFormat = rhi::RImageFormat::RGB,
 				.mDataType = rhi::RTextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // METALNESS
-				.mInternalFormat = rhi::RInternalImageFormat::R8,
-				.mLoadedFormat = rhi::RLoadedImageFormat::R,
+				.mImageLayout = rhi::RImageLayout::R8,
+				.mImageFormat = rhi::RImageFormat::R,
 				.mDataType = rhi::RTextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // ROUGHNESS
-				.mInternalFormat = rhi::RInternalImageFormat::R8,
-				.mLoadedFormat = rhi::RLoadedImageFormat::R,
+				.mImageLayout = rhi::RImageLayout::R8,
+				.mImageFormat = rhi::RImageFormat::R,
 				.mDataType = rhi::RTextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},

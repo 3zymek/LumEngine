@@ -1,50 +1,98 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Scene management — stores, loads and provides access to active scenes.
+//
+//=============================================================================//
 #pragma once
+
 #include "core/core_pch.hpp"
 #include "entity/ecs_manager.hpp"
 
 namespace lum {
 
-	class MTextureManager;
-	class MMaterialManager;
-	class MMeshManager;
-	class MShaderManager;
+    //// Forward Declare ////
+    class MTextureManager;
+    class MMaterialManager;
+    class MMeshManager;
+    class MShaderManager;
+    namespace render { class Renderer; }
+    ////////////////////////
 
-	namespace render { class Renderer; }
 
-	struct Scene {
-	
-		std::vector<ecs::EntityID> mEntities;
-		ecs::MEntityManager mEntityMgr;
-		
-	};
+    /* @brief Represents a single scene — holds a list of active entities
+    *  and their corresponding ECS manager.
+    */
+    struct FScene {
 
-	struct FSceneManagerContext {
+        /* @brief List of all entity IDs belonging to this scene. */
+        std::vector<ecs::EntityID> mEntities;
 
-		MTextureManager*	mTextureMgr = nullptr;
-		MMaterialManager*	mMaterialMgr = nullptr;
-		MMeshManager*		mMeshMgr = nullptr;
-		MShaderManager*		mShaderMgr = nullptr;
-		render::Renderer*	mRenderer = nullptr;
+        /* @brief ECS manager owning and managing components for this scene. */
+        ecs::MEntityManager mEntityMgr;
 
-	};
+    };
 
-	class MSceneManager {
-	public:
+    /* @brief Aggregates all resource manager pointers required by the SceneManager
+    *  to load and initialize scene assets.
+    */
+    struct FSceneManagerContext {
 
-		void Initialize( FSceneManagerContext& ctx );
+        /* @brief Pointer to the active texture manager. */
+        MTextureManager* mTextureMgr = nullptr;
 
-		void SetScene( ccharptr scenePath );
+        /* @brief Pointer to the active material manager. */
+        MMaterialManager* mMaterialMgr = nullptr;
 
-		Scene* GetCurrentScene( );
+        /* @brief Pointer to the active mesh manager. */
+        MMeshManager* mMeshMgr = nullptr;
 
-	private:
+        /* @brief Pointer to the active shader manager. */
+        MShaderManager* mShaderMgr = nullptr;
 
-		FSceneManagerContext mContext;
+        /* @brief Pointer to the active renderer. */
+        render::Renderer* mRenderer = nullptr;
 
-		Scene* mCurrentScene = nullptr;
-		
-		std::unordered_map<uint64, Scene> mScenes;
-		
-	};
+    };
 
-}
+    /* @brief Manages loading, storing and switching between scenes.
+    *  Scenes are keyed by a 64-bit hash derived from their file path.
+    */
+    class MSceneManager {
+    public:
+
+        /* @brief Initializes the manager with all required resource managers and renderer.
+         *  @param ctx Context struct containing valid pointers to all subsystem managers.
+         */
+        void Initialize( FSceneManagerContext& ctx );
+
+        /* @brief Loads and sets the active scene from a given file path.
+         *  If the scene is already cached, switches to it directly.
+         *  @param scenePath Path to the scene file to load.
+         */
+        void SetScene( StringView scenePath );
+
+        /* @brief Loads scene from a given file path.
+         *  If the scene is already cached, reloads it.
+         *  @param scenePath Path to the scene file to load.
+         */
+        void LoadScene( StringView scenePath );
+
+        /* @brief Returns a pointer to the currently active scene.
+         *  @return Pointer to the active Scene, or nullptr if none is set.
+         */
+        FScene* GetCurrentScene( );
+
+    private:
+        
+        /* @brief Cached context holding all resource manager references. */
+        FSceneManagerContext mContext;
+
+        /* @brief Pointer to the currently active scene. */
+        FScene* mCurrentScene = nullptr;
+        
+        /* @brief Map of all loaded scenes, keyed by hashed scene path. */
+        std::unordered_map<uint64, FScene> mScenes;
+
+    };
+
+} // namespace lum

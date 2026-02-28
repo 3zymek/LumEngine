@@ -166,14 +166,13 @@ namespace lum::render {
 		void SetEnvionmentTexture( rhi::RTextureHandle tex );
 
 		void UpdateCamera( FCameraData& camera );
-		void UpdateLights();
 
 
 		void Draw( const Object& obj );
 		void BeginFrame( );
 		void EndFrame( );
 
-		std::array<PointLight, LUM_MAX_LIGHTS> mPointLights;
+		std::array<PointLight, LUM_MAX_LIGHTS> mPointLights{};
 		uint32 mPointLightsCount = 0;
 
 	private:

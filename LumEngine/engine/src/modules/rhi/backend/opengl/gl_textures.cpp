@@ -64,7 +64,7 @@ namespace lum::rhi::gl {
 			desc.mRect.y,
 			width,
 			height,
-			skLoadedImageFormatLookup[LookupCast(mTextures[tex].mDataFormat)],
+			skImageFormatLookup[LookupCast(mTextures[tex].mDataFormat)],
 			skTextureDataTypeLookup[LookupCast(mTextures[tex].mDataType)],
 			desc.mData.mPixels.data()
 		);
@@ -117,10 +117,16 @@ namespace lum::rhi::gl {
 		glTextureStorage2D(
 			texture.mHandle,
 			mipmapLevels,
-			skInternalImageFormatLookup[LookupCast(desc.mInternalFormat)],
+			skImageLayoutLookup[LookupCast(desc.mImageLayout)],
 			width,
 			height
 		);
+
+		LUM_LOG_INFO("upload: w=%d h=%d format=%d layout=%d pixels=%zu",
+			width, height,
+			LookupCast(desc.mImageFormat),
+			LookupCast(desc.mImageLayout),
+			desc.mData.mPixels.size());
 
 		glTextureSubImage2D(
 			texture.mHandle,
@@ -128,7 +134,7 @@ namespace lum::rhi::gl {
 			0, 0,
 			width,
 			height,
-			skLoadedImageFormatLookup[LookupCast(desc.mLoadedFormat)],
+			skImageFormatLookup[LookupCast(desc.mImageFormat)],
 			skTextureDataTypeLookup[LookupCast(desc.mDataType)],
 			desc.mData.mPixels.data()
 		);
@@ -137,9 +143,9 @@ namespace lum::rhi::gl {
 			glGenerateTextureMipmap(texture.mHandle);
 		}
 
-		texture.mDataFormat = desc.mLoadedFormat;
+		texture.mDataFormat = desc.mImageFormat;
 		texture.mDataType = desc.mDataType;
-		texture.mInternalFormat = desc.mInternalFormat;
+		texture.mInternalFormat = desc.mImageLayout;
 		texture.mRect.mWidth = width;
 		texture.mRect.mHeight = height;
 		texture.mType = RTextureType::Texture2D;
@@ -168,7 +174,7 @@ namespace lum::rhi::gl {
 		int32 width = desc.mCubemap.mFaces[0].mWidth;
 		int32 height = desc.mCubemap.mFaces[0].mHeight;
 
-		glTextureStorage2D(tex.mHandle, 1, skInternalImageFormatLookup[LookupCast(desc.mInternalFormat)], width, height);
+		glTextureStorage2D(tex.mHandle, 1, skImageLayoutLookup[LookupCast(desc.mImageLayout)], width, height);
 
 		for (usize i = 0; i < 6; i++) {
 
@@ -202,7 +208,7 @@ namespace lum::rhi::gl {
 				texture.mWidth,
 				texture.mHeight,
 				1,
-				skLoadedImageFormatLookup[LookupCast(desc.mLoadedFormat)],
+				skImageFormatLookup[LookupCast(desc.mImageFormat)],
 				GL_UNSIGNED_BYTE,
 				texture.mPixels.data()
 			);

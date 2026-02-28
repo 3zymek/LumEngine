@@ -13,17 +13,19 @@ namespace lum::fmt {
 		mTokens.clear();
 
 		usize pos = 0;
-		String result;
+
 		while (pos < str.size()) {
 
 			const char& c = str[pos];
 
+			// Comment
 			if (c == '/' && pos + 1 < str.size() && str[pos + 1] == '/') {
 				while (pos < str.size() && str[pos] != '\n') {
 					pos++;
 				}
 			}
 
+			// String
 			else if (c == '"') {
 
 				++pos;
@@ -38,6 +40,7 @@ namespace lum::fmt {
 
 			}
 
+			// Component
 			else if (c == '@') {
 
 				++pos;
@@ -52,6 +55,7 @@ namespace lum::fmt {
 
 			}
 
+			// Identifier / Parameter
 			else if (isalpha(c)) {
 
 				String value;
@@ -80,6 +84,7 @@ namespace lum::fmt {
 
 			}
 
+			// Number
 			else if (isdigit(c) || c == '-') {
 
 				String value;
@@ -95,6 +100,7 @@ namespace lum::fmt {
 
 			}
 
+			// Left Bracket
 			else if (c == '{') {
 
 				++pos;
@@ -103,6 +109,7 @@ namespace lum::fmt {
 
 			}
 
+			// Right Bracket
 			else if (c == '}') {
 
 				++pos;

@@ -23,7 +23,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	std::optional<FTextureData> AssetLoader::LoadTexture( ERootID root, StringView filepath ) {
+	std::optional<FTextureData> AssetLoader::LoadTexture( ERootID root, StringView filepath, uint8 expectedFormat) {
 
 		String path = get_full_path(root, filepath);
 
@@ -33,19 +33,18 @@ namespace lum {
 		}
 
 		FTextureData texture;
-		int32 format;
+		int32 format{};
 
-		ucharptr data = stbi_load(path.c_str(), &texture.mWidth, &texture.mHeight, &format, 4);
-		texture.mColorChannels = 4;
+		ucharptr data = stbi_load(path.c_str(), &texture.mWidth, &texture.mHeight, &format, expectedFormat);
 
 		if (!data) {
 			set_error_msg(stbi_failure_reason());
 			return std::nullopt;
 		}
 
-		usize size = texture.mWidth * texture.mHeight * texture.mColorChannels;
+		texture.mChannels = format;
+		usize size = (usize)texture.mWidth * (usize)texture.mHeight * (usize)texture.mChannels;
 		texture.mPixels.resize(size);
-
 		LUM_ASSERT(size > 0 && data != nullptr, "Texture source data is null");
 
 		std::memcpy(texture.mPixels.data(), data, size);

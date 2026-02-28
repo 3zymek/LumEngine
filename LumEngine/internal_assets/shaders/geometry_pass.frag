@@ -123,7 +123,7 @@ void main() {
 		vec3 diffuse = (albedo / 3.14159265359) * kD;
 
 		float dist = length(light.mPosition - fPos);
-    	float attenuation = clamp(1.0 - dist / light.mRadius, 0.0, 1.0);
+    	float attenuation = clamp(1.0 - (dist * dist) / (light.mRadius * light.mRadius), 0.0, 1.0);
 
 		Lo += (diffuse + specular) * NdotL * light.mColor * light.mIntensity * attenuation;
 

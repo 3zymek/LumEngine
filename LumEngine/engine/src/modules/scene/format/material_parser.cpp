@@ -1,8 +1,18 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Parser for .lmt material format files.
+//
+//=============================================================================//
+
 #include "scene/format/material_parser.hpp"
 #include "scene/format/tokenizer.hpp"
 #include "entity/components/material.hpp"
 
 namespace lum::fmt {
+
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
 
 	void MaterialParser::Parse( FMaterialDescriptor& material ) {
 
@@ -17,7 +27,6 @@ namespace lum::fmt {
 					String path = detail::ReadStringParameter(tokens, i);
 					
 					material.mAlbedoTex = path;
-
 					
 				}
 				else if (tokens[i].mValue == "normal") {
@@ -70,4 +79,4 @@ namespace lum::fmt {
 
 	}
 
-}
+} // namespace lum::fmt

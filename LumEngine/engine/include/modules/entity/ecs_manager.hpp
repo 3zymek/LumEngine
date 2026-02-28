@@ -187,7 +187,7 @@ namespace lum {
 			}
 
 			detail::BasePool* mComponentPools [ limits::gMaxComponentTypes ]; // Array of component pools indexed by type ID.
-			vptr mUniqueComponents[ limits::gMaxComponentTypes ]; // TODO implement unique components
+			vptr mUniqueComponents[ limits::gMaxComponentTypes ]{}; // TODO implement unique components
 
 		};
 

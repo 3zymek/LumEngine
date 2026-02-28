@@ -1,6 +1,6 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Performance profiler for Render Hardware Interface
+// Purpose: Very simple performance profiler for Render Hardware Interface
 // 
 //=============================================================================//
 #pragma once
@@ -8,45 +8,70 @@
 #include "core/setup.hpp"
 #include "rhi/rhi_common.hpp"
 
-namespace lum::rhi::performance {
+namespace lum::rhi {
 
-	class Profiler {
-	public:
+	/* @brief RHI performance monitoring utilities. */
+	namespace performance {
 
-		void StartRecording() {
-			bRecording = true;
-			cacheHits = 0;
-			cacheMisses = 0;
-		}
-		void EndRecording() {
-			bRecording = false;
-		}
+		/* @brief Lightweight profiler for tracking RHI performance metrics.
+		* Collects draw call counts and texture cache hit/miss statistics
+		* between StartRecording and EndRecording calls.
+		*/
+		class Profiler {
+		public:
 
-		void RegisterDrawCall() {
-			drawCalls++;
-		}
+			/* @brief Begins a new profiling session and resets all counters. */
+			void StartRecording() {
+				bRecording = true;
+				cacheHits = 0;
+				cacheMisses = 0;
+			}
 
-		void RegisterCacheMiss() {
-			cacheMisses++;
-		}
+			/* @brief Ends the current profiling session. */
+			void EndRecording() {
+				bRecording = false;
+			}
 
-		void RegisterCacheHit() {
-			cacheHits++;
-		}
+			/* @brief Increments the draw call counter by one. */
+			void RegisterDrawCall() {
+				drawCalls++;
+			}
 
-		float32 GetCacheHitRate() const {
-			uint32 total = cacheHits + cacheMisses;
-			return total > 0 ? (float32)cacheHits / total : 0.0f;
-		}
+			/* @brief Increments the cache miss counter by one. */
+			void RegisterCacheMiss() {
+				cacheMisses++;
+			}
 
-	private:
+			/* @brief Increments the cache hit counter by one. */
+			void RegisterCacheHit() {
+				cacheHits++;
+			}
 
-		bool bRecording = false;
+			/* @brief Computes the cache hit rate for the current session.
+			* @return Ratio of cache hits to total cache accesses (0.0 - 1.0).
+			*         Returns 0.0 if no cache accesses have been recorded.
+			*/
+			float32 GetCacheHitRate() const {
+				uint32 total = cacheHits + cacheMisses;
+				return total > 0 ? (float32)cacheHits / total : 0.0f;
+			}
 
-		uint32 drawCalls = 0;
-		uint32 cacheHits = 0;
-		uint32 cacheMisses = 0;
+		private:
 
-	};
+			/* @brief Whether the profiler is currently recording. */
+			bool bRecording = false;
 
-}
+			/* @brief Total number of draw calls recorded in the current session. */
+			uint32 drawCalls = 0;
+
+			/* @brief Number of cache hits recorded in the current session. */
+			uint32 cacheHits = 0;
+
+			/* @brief Number of cache misses recorded in the current session. */
+			uint32 cacheMisses = 0;
+
+		};
+
+	} // namespace lum::rhi::performance
+
+} // namespace lum::rhi

@@ -214,8 +214,8 @@ namespace lum::rhi::gl {
 		void DrawElementsInstanced		( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount ) override;
 		void DrawElementsInstancedBase	( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance ) override;
 
-		void BeginFrame	( )	override;
-		void EndFrame	( )	override;
+		void BeginPass	( )	override;
+		void EndPass	( )	override;
 
 
 	protected:
@@ -343,7 +343,7 @@ namespace lum::rhi::gl {
 		};
 
 		LUM_COMPILE_VARIABLE
-		static GLenum skInternalImageFormatLookup[] =
+		static GLenum skImageLayoutLookup[] =
 		{
 			GL_RGBA8,
 			GL_SRGB8_ALPHA8,
@@ -369,7 +369,7 @@ namespace lum::rhi::gl {
 		};
 
 		LUM_COMPILE_VARIABLE
-		static GLenum skLoadedImageFormatLookup[] =
+		static GLenum skImageFormatLookup[] =
 		{
 			GL_RGBA,
 			GL_RGB,

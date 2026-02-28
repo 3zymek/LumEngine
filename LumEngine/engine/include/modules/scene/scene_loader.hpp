@@ -14,13 +14,13 @@
 
 namespace lum {
 
-	struct Scene;
+	struct FScene;
 	struct FSceneManagerContext;
 
 	class SceneLoader {
 	public:
 		
-		Scene Load( ccharptr path, FSceneManagerContext& ctx );
+		FScene Load( ccharptr path, FSceneManagerContext& ctx );
 
 	};
 

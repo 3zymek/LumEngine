@@ -104,7 +104,7 @@ namespace lum {
 	//---------------------------------------------------------
 
 	void MMaterialManager::init() {
-		create_default_materials();
+		create_defaults();
 	}
 
 	rhi::RTextureHandle MMaterialManager::validate_texture(rhi::RTextureHandle tex) {
@@ -118,7 +118,7 @@ namespace lum {
 
 	}
 
-	void MMaterialManager::create_default_materials() {
+	void MMaterialManager::create_defaults() {
 
 		{ // Base material
 			FMaterialBase base;

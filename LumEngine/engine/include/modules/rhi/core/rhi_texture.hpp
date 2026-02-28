@@ -9,17 +9,32 @@
 
 namespace lum::rhi {
 
+	/* @brief Defines a rectangular region within a texture, used for partial updates.
+	* Also carries mip level and depth slice for 3D or array texture operations.
+	*/
 	struct RTextureRect {
+
+		/* @brief X offset in pixels from the left edge of the texture. */
 		uint32 x = 0;
+
+		/* @brief Y offset in pixels from the top edge of the texture. */
 		uint32 y = 0;
-		
+
+		/* @brief Width of the region in pixels. */
 		uint32 mWidth = 0;
+
+		/* @brief Height of the region in pixels. */
 		uint32 mHeight = 0;
+
+		/* @brief Depth of the region in pixels, used for Texture3D. */
 		uint32 mDepth = 1;
 
+		/* @brief Mip level this region targets. */
 		uint32 mMipLevel = 0;
+
 	};
 
+	/* @brief Dimensionality and type of a GPU texture resource. */
 	enum class RTextureType : byte {
 		None,
 		Texture2D,
@@ -27,8 +42,11 @@ namespace lum::rhi {
 		Cubemap
 	};
 
-	enum class RInternalImageFormat : byte {
-
+	/* @brief GPU-side internal storage format for a texture.
+	* Determines how pixel data is stored and sampled on the GPU.
+	*/
+	enum class RImageLayout : byte {
+		
 		// 8-bit normalized
 		RGBA8,
 		SRGB8_Alpha8,
@@ -53,9 +71,13 @@ namespace lum::rhi {
 		Depth32F,
 		Depth24Stencil8,
 		Depth32FStencil8,
+
 	};
 
-	enum class RLoadedImageFormat : byte {
+	/* @brief CPU-side pixel channel layout of the source texture data.
+	* Describes how channels are ordered in the raw pixel buffer passed to the GPU.
+	*/
+	enum class RImageFormat : byte {
 		RGBA,
 		RGB,
 		RG,
@@ -65,19 +87,16 @@ namespace lum::rhi {
 		DepthStencil
 	};
 
+	/* @brief Data type of each pixel channel in the CPU-side pixel buffer. */
 	enum class RTextureDataType : byte {
 		UnsignedByte,
 		Byte,
-
 		UnsignedShort,
 		Short,
-
 		UnsignedInt,
 		Int,
-
 		HalfFloat,
 		Float,
-
 		// Packed formats
 		UnsignedInt_24_8,
 		Float_32_UnsignedInt_24_8_Rev
@@ -105,52 +124,92 @@ namespace lum::rhi {
 	*/
 	struct RTextureDescriptor {
 
-		FTextureData mData; // Texture data loaded from CPU
+		/* @brief Raw pixel data loaded from the CPU side. */
+		FTextureData mData;
 
-		RInternalImageFormat mInternalFormat = RInternalImageFormat::RGBA8; // GPU-side storage format
-		RLoadedImageFormat mLoadedFormat = RLoadedImageFormat::RGBA;        // CPU-side pixel layout
-		RTextureDataType mDataType = RTextureDataType::UnsignedByte;        // Data type of each channel on CPU
+		/* @brief GPU-side storage format for the texture. */
+		RImageLayout mImageLayout = RImageLayout::RGBA8;
 
-		bool bGenerateMipmaps = false; // Whether to auto-generate mipmaps
+		/* @brief CPU-side pixel channel layout of the source data. */
+		RImageFormat mImageFormat = RImageFormat::RGBA;
 
-		uint32 mMipmapLevels = 0;// Number of mip levels (0 = calculate automatically)
-
-		uint32 mSamples = 0; // Number of samples for multisampled textures
-
-		RTextureType mTextureType = RTextureType::None; // Texture dimensionality and type
-
-		uint32 mWidth = 0;  // Texture width in pixels (0 = infer from mData)
-		uint32 mHeight = 0; // Texture height in pixels (0 = infer from mData)
-		uint32 mDepth = 0;  // Texture depth in pixels, used for Texture3D only
-
-		struct RCubemap {
-			FTextureData mFaces[6]{}; // Pixel data for each cubemap face (+X, -X, +Y, -Y, +Z, -Z)
-		} mCubemap;
-
-	};
-
-	struct RTextureUpdateDescriptor {
-
-		RTextureRect	mRect;
-		FTextureData	mData;
-		bool			bGenerateMipmaps = false;
-
-	};
-
-	struct FTexture {
-
-		RTextureRect mRect;
-
-		RTextureType mType = RTextureType::None;
-
-		RInternalImageFormat mInternalFormat = RInternalImageFormat::RGBA8;
-		RLoadedImageFormat mDataFormat = RLoadedImageFormat::RGBA;
+		/* @brief Data type of each pixel channel in the source buffer. */
 		RTextureDataType mDataType = RTextureDataType::UnsignedByte;
 
+		/* @brief Whether to automatically generate mipmaps after upload. */
+		bool bGenerateMipmaps = false;
+
+		/* @brief Number of mip levels to generate. 0 = calculate automatically. */
 		uint32 mMipmapLevels = 0;
 
+		/* @brief Number of samples for multisampled textures. 0 = not multisampled. */
+		uint32 mSamples = 0;
+
+		/* @brief Dimensionality and type of the texture. */
+		RTextureType mTextureType = RTextureType::None;
+
+		/* @brief Texture width in pixels. 0 = infer from mData. */
+		uint32 mWidth = 0;
+
+		/* @brief Texture height in pixels. 0 = infer from mData. */
+		uint32 mHeight = 0;
+
+		/* @brief Texture depth in pixels. Used for Texture3D only. */
+		uint32 mDepth = 0;
+
+		/* @brief Per-face pixel data for cubemap textures.
+		* Faces are ordered: +X, -X, +Y, -Y, +Z, -Z.
+		*/
+		struct RCubemap {
+
+			/* @brief Pixel data for each of the six cubemap faces. */
+			FTextureData mFaces[6]{};
+
+		} mCubemap;
+	};
+
+	/* @brief Describes a partial update to an existing GPU texture.
+	* Used to upload new pixel data to a specific region without recreating the texture.
+	*/
+	struct RTextureUpdateDescriptor {
+
+		/* @brief Target region within the texture to update. */
+		RTextureRect mRect;
+
+		/* @brief New pixel data to upload into the target region. */
+		FTextureData mData;
+
+		/* @brief Whether to regenerate mipmaps after the update. */
+		bool bGenerateMipmaps = false;
+
+	};
+
+	/* @brief Internal GPU-side representation of an uploaded texture.
+	* Stores the OpenGL handle alongside format and geometry metadata.
+	*/
+	struct FTexture {
+
+		/* @brief Region and dimensions of the texture. */
+		RTextureRect mRect;
+
+		/* @brief Dimensionality and type of the texture. */
+		RTextureType mType = RTextureType::None;
+
+		/* @brief GPU-side internal storage format. */
+		RImageLayout mInternalFormat = RImageLayout::RGBA8;
+
+		/* @brief CPU-side pixel channel layout used during upload. */
+		RImageFormat mDataFormat = RImageFormat::RGBA;
+
+		/* @brief Data type of each pixel channel used during upload. */
+		RTextureDataType mDataType = RTextureDataType::UnsignedByte;
+
+		/* @brief Number of mip levels generated for this texture. */
+		uint32 mMipmapLevels = 0;
+
+		/* @brief Underlying GPU texture handle (OpenGL object ID). */
 		RTextureID mHandle = 0;
 
 	};
 
-}
+} // namespace lum::rhi

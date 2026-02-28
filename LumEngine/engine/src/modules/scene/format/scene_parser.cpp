@@ -27,7 +27,7 @@ namespace lum::fmt {
 	// Public
 	//---------------------------------------------------------
 
-	void SceneParser::Parse(Scene& scene) {
+	void SceneParser::Parse(FScene& scene) {
 
 		FParseContext ctx{ scene };
 		ctx.mContext = mContext;
@@ -267,6 +267,8 @@ namespace lum::fmt {
 
 					MaterialBaseHandle handle = ctx.mContext.mMaterialMgr->UploadBase(data);
 
+					material.mMat = ctx.mContext.mMaterialMgr->CreateInstance(handle);
+
 				}
 				else LUM_LOG_ERROR("Invalid parameter");
 
@@ -277,7 +279,7 @@ namespace lum::fmt {
 		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, material);
 
 
-	} // TODO FIX
+	}
 	void SceneParser::parse_name(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
 
 		detail::ExpectOpeningBracket(tokens, i);

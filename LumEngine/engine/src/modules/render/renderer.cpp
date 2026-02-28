@@ -53,7 +53,7 @@ namespace lum::render {
 	}
 
 	void Renderer::BeginFrame() {
-		mRenderDevice->BeginFrame();
+		mRenderDevice->BeginPass();
 		upload_lights();
 	}
 
@@ -65,7 +65,7 @@ namespace lum::render {
 		mRenderDevice->BindTexture(mEnvironmentPass.mTexture, LUM_TEX_CUBEMAP);
 		mRenderDevice->DrawElements(mEnvironmentPass.mVao, mEnvironmentPass.mNumIndices);
 
-		mRenderDevice->EndFrame();
+		mRenderDevice->EndPass();
 	}
 
 
@@ -147,7 +147,7 @@ namespace lum::render {
 			rhi::RFramebufferTextureDescriptor desc;
 			desc.mWidth = 1024;
 			desc.mHeight = 1024;
-			desc.mFormat = rhi::RInternalImageFormat::Depth24Stencil8;
+			desc.mFormat = rhi::RImageLayout::Depth24Stencil8;
 			desc.bGenerateMipmaps = false;
 			desc.mAttachment = rhi::RFramebufferAttachment::DepthAttach;
 

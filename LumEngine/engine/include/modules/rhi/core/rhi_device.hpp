@@ -690,10 +690,10 @@ namespace lum::rhi {
 		virtual void DrawElementsInstancedBase( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance ) = 0;
 
 		/* @brief Begins a new frame. Call before any draw operations. */
-		virtual void BeginFrame( ) = 0; // REMOVE FROM RHI
+		virtual void BeginPass( ) = 0;
 
 		/* @brief Ends the current frame and presents the result. */
-		virtual void EndFrame( ) = 0; // REMOVE FROM RHI
+		virtual void EndPass( ) = 0;
 
 
 #		if LUM_ENABLE_RENDER_PROFILER == 1

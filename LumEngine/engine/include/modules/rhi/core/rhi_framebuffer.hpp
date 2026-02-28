@@ -21,7 +21,7 @@ namespace lum::rhi {
 		uint32 mWidth = 0;
 		uint32 mHeight = 0;
 		
-		RInternalImageFormat mFormat{};
+		RImageLayout mFormat{};
 
 		bool bGenerateMipmaps = false;
 

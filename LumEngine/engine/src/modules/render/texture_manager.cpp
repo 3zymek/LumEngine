@@ -52,6 +52,7 @@ namespace lum {
 
 		desc.mData = data.value();
 		desc.mTextureType = rhi::RTextureType::Texture2D;
+		desc.mImageFormat = ChannelsToFormat(data.value().mChannels);
 		rhi::RTextureHandle handle = mRenderDevice->CreateTexture(desc);
 
 		mTextures[hash] = handle;
@@ -59,9 +60,20 @@ namespace lum {
 		return handle;
 	}
 
+	rhi::RImageFormat MTextureManager::ChannelsToFormat( uint32 channels ) {
+		switch (channels) {
+		case 1: { return rhi::RImageFormat::R; }; break;
+		case 2: { return rhi::RImageFormat::RG; }; break;
+		case 3: { return rhi::RImageFormat::RGB; }; break;
+		case 4: { return rhi::RImageFormat::RGBA; }; break;
+		default: { return rhi::RImageFormat::RGBA; }; break;
+		}
+		return rhi::RImageFormat::RGBA;
+	}
+
 	rhi::RTextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, int32 faceSize, ERootID root ) {
 
-		uint32 hash = HashStr(path);
+		uint64 hash = HashStr(path);
 
 		if (mTextures.contains(hash))
 			return mTextures[hash];
@@ -78,8 +90,8 @@ namespace lum {
 		for (int32 i = 0; i < 6; i++)
 			desc.mCubemap.mFaces[i] = convertedData[i];
 
-		desc.mInternalFormat = rhi::RInternalImageFormat::RGB8;
-		desc.mLoadedFormat = rhi::RLoadedImageFormat::RGB;
+		desc.mImageLayout = rhi::RImageLayout::RGB8;
+		desc.mImageFormat = rhi::RImageFormat::RGB;
 		desc.mTextureType = rhi::RTextureType::Cubemap;
 
 		rhi::RTextureHandle handle = mRenderDevice->CreateTexture(desc);
@@ -106,20 +118,21 @@ namespace lum {
 
 	void MTextureManager::init( ) {
 
-		create_default_textures();
+		create_defaults();
 
 	}
 
-	void MTextureManager::create_default_textures( ) {
+	void MTextureManager::create_defaults( ) {
 		{ // Default albedo texture
 			FTextureData data;
 			data.mPixels = { 255, 255, 255, 255 };
 			data.mWidth = 1;
 			data.mHeight = 1;
+			data.mChannels = 4;
 			rhi::RTextureDescriptor desc;
 			desc.mData = data;
-			desc.mInternalFormat = rhi::RInternalImageFormat::SRGB8_Alpha8;
-			desc.mLoadedFormat = rhi::RLoadedImageFormat::RGBA;
+			desc.mImageLayout = rhi::RImageLayout::SRGB8_Alpha8;
+			desc.mImageFormat = rhi::RImageFormat::RGBA;
 			desc.mTextureType = rhi::RTextureType::Texture2D;
 			mDefaultAlbedoTexture = mRenderDevice->CreateTexture(desc);
 		}
@@ -128,10 +141,11 @@ namespace lum {
 			data.mPixels = { 128, 128, 255 };
 			data.mWidth = 1;
 			data.mHeight = 1;
+			data.mChannels = 3;
 			rhi::RTextureDescriptor desc;
 			desc.mData = data;
-			desc.mInternalFormat = rhi::RInternalImageFormat::RGB8;
-			desc.mLoadedFormat = rhi::RLoadedImageFormat::RGB;
+			desc.mImageLayout = rhi::RImageLayout::RGB8;
+			desc.mImageFormat = rhi::RImageFormat::RGB;
 			desc.mTextureType = rhi::RTextureType::Texture2D;
 			mDefaultNormalTexture = mRenderDevice->CreateTexture(desc);
 		}
@@ -144,8 +158,8 @@ namespace lum {
 			}
 			rhi::RTextureDescriptor desc;
 			desc.mData = data.value();
-			desc.mInternalFormat = rhi::RInternalImageFormat::SRGB8_Alpha8;
-			desc.mLoadedFormat = rhi::RLoadedImageFormat::RGBA;
+			desc.mImageLayout = rhi::RImageLayout::RGB8;
+			desc.mImageFormat = rhi::RImageFormat::RGB;
 			desc.mTextureType = rhi::RTextureType::Texture2D;
 			mMissingTexture = mRenderDevice->CreateTexture(desc);
 		}
@@ -189,7 +203,7 @@ namespace lum {
 					int32 px = (int32)(eu * equirect.mWidth) % equirect.mWidth;
 					int32 py = (int32)(ev * equirect.mHeight) % equirect.mHeight;
 
-					int32 srcIdx = (py * equirect.mWidth + px) * equirect.mColorChannels;
+					int32 srcIdx = (py * equirect.mWidth + px) * equirect.mChannels;
 					uint8 r = equirect.mPixels[srcIdx + 0];
 					uint8 g = equirect.mPixels[srcIdx + 1];
 					uint8 b = equirect.mPixels[srcIdx + 2];

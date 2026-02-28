@@ -14,11 +14,19 @@ namespace lum {
 	*/
 	struct Component : std::true_type {};
 
+	/* @brief Entity Component System namespace.
+	*  Provides core ECS primitives including entity management,
+	*  component storage and system iteration.
+	*/
 	namespace ecs {
 
 		/* @brief Unique identifier for an entity. */
 		using EntityID = uint64;
 
+
+		/* @brief Internal implementation details for the ECS.
+		*  Not intended for direct use outside of the ECS subsystem.
+		*/
 		namespace detail {
 
 			/* @brief Concept validating a well-formed ECS component type.

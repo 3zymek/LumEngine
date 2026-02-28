@@ -6,6 +6,7 @@
 #pragma once
 
 #include "core/core_common.hpp"
+#include "render/material.hpp"
 
 namespace lum::fmt {
 
@@ -16,7 +17,7 @@ namespace lum::fmt {
     */
     class MaterialParser {
     public:
-
+       
        /* @brief Constructs the parser with a reference to an existing tokenizer.
         * @param tokenizer Tokenizer that has already processed the .lmt file content.
         */

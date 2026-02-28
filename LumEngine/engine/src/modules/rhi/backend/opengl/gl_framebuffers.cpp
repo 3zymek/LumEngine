@@ -37,7 +37,7 @@ namespace lum::rhi::gl {
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &tex.mHandle);
 
-		GLenum format = skInternalImageFormatLookup[LookupCast(desc.mFormat)];
+		GLenum format = skImageLayoutLookup[LookupCast(desc.mFormat)];
 		glTextureStorage2D(tex.mHandle, 1, format, desc.mWidth, desc.mHeight);
 
 		return mTextures.Append(std::move(tex));

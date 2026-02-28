@@ -18,7 +18,7 @@ namespace lum {
 	} // namespace lum::detail
 
 	/* @brief Identifies the root directory used for asset path resolution. */
-	enum class ERootID : uint8 {
+	enum class ERootID : byte {
 		Internal, // Engine internal assets directory.
 		External  // Project root directory set by the user.
 	};
@@ -30,7 +30,7 @@ namespace lum {
 		/* @brief Texture height in pixels. */
 		int32 mHeight = 0;
 		/* @brief Number of color channels (e.g. 3 = RGB, 4 = RGBA). */
-		int32 mColorChannels = 0;
+		int32 mChannels = 0;
 		/* @brief Raw pixel data. */
 		std::vector<uint8> mPixels;
 	};
@@ -72,14 +72,15 @@ namespace lum {
 		static String GetProjectRoot( ) {
 			return sProjectRoot.string();
 		}
-
+		
 		/* @brief Loads a texture from disk.
-		* @param root Root directory identifier.
-		* @param filepath Path relative to the selected root.
-		* @return Populated FTextureData or empty on failure.
+		* @param root           Root directory identifier.
+		* @param filepath       Path relative to the selected root.
+		* @param expectedFormat Number of channels to force (1-4). 0 = use native format from file.
+		* @return FTextureData on success, or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<FTextureData> LoadTexture( ERootID root, StringView filepath );
+		static std::optional<FTextureData> LoadTexture( ERootID root, StringView filepath, uint8 expectedFormat = 0 );
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.
