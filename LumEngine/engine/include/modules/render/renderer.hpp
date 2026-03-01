@@ -1,7 +1,7 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
 // Purpose: Bridge between engine data and the RHI backend.
-// 
+//
 //=============================================================================//
 #pragma once
 
@@ -10,211 +10,160 @@
 #include "entity/components/transform.hpp"
 #include "render/material_manager.hpp"
 #include "render/mesh_manager.hpp"
-
-#define LUM_UNIFORM_BUFFER_STRUCT struct alignas(16)
+#include "render/common.hpp"
 
 namespace lum {
 
-	// Forward declarations
+	/// Forward declare ///
 	class MTextureManager;
 	class MMeshManager;
 	class MShaderManager;
 	class EditorCamera;
 	class StaticMeshHandle;
-	//=======================
-
+	///////////////////////
 }
 
 namespace lum::render {
 
-	struct DirectionalLight {
-
-		glm::vec3 mDirection = glm::vec3(0.f);
-		float32 mIntensity = 0.f;
-		glm::vec3 mColor = { 1, 1, 1 };
-		float32 __padding = 0;
-
-	};
-
-	struct PointLight {
-
-		glm::vec3 mPosition;
-		float32 mIntensity;
-		glm::vec3 mColor;
-		float32 mRadius;
-
-	};
-
-	struct Object {
-
-		/* @brief World position. */
-		glm::vec3 mPosition = { 0.f, 0.f, 0.f };
-
-		/* @brief Non-uniform scale. */
-		glm::vec3 mScale = { 1.f, 1.f, 1.f };
-
-		/* @brief Euler rotation in degrees. */
-		glm::vec3 mRotation = { 0.f, 0.f, 0.f };
-
-		StaticMeshHandle mStaticMesh;
-
-		FMaterialInstance mMaterial;
-
-	};
-
+	/* @brief Aggregates all external subsystem pointers required to initialize the renderer. */
 	struct FRendererContext {
-		
-		rhi::RDevice*		mRenderDevice		= nullptr;
-		MTextureManager*	mTextureManager		= nullptr;
-		MMaterialManager*	mMaterialManager	= nullptr;
-		MMeshManager*		mMeshManager		= nullptr;
-		MShaderManager*		mShaderManager		= nullptr;
+
+		/* @brief Pointer to the active RHI device. */
+		rhi::RDevice* mRenderDevice = nullptr;
+
+		/* @brief Pointer to the active texture manager. */
+		MTextureManager* mTextureMgr = nullptr;
+
+		/* @brief Pointer to the active material manager. */
+		MMaterialManager* mMaterialMgr = nullptr;
+
+		/* @brief Pointer to the active mesh manager. */
+		MMeshManager* mMeshMgr = nullptr;
+
+		/* @brief Pointer to the active shader manager. */
+		MShaderManager* mShaderMgr = nullptr;
 
 	};
 
-	struct FCameraData {
-
-		glm::vec3 mPosition{ 1 };
-		glm::mat4 mView{ 1 };
-		glm::mat4 mProjection{ 1 };
-
-		/* @brief Yaw angle in degrees, represents horizontal rotation. */
-		float32 mYaw = -90.0f;
-
-		/* @brief Pitch angle in degrees, represents vertical rotation. */
-		float32 mPitch = 0.0f;
-
-	};
-
-	namespace detail {
-
-		struct FEnvironmentPass {
-
-			rhi::RShaderHandle			mShader;
-			rhi::RPipelineHandle		mPipeline;
-			rhi::RTextureHandle			mTexture;
-			rhi::RBufferHandle			mVbo;
-			rhi::RBufferHandle			mEbo;
-			rhi::RVertexLayoutHandle	mVao;
-
-			uint32 mNumIndices = 0;
-
-		};
-
-		struct FShadowPass {
-
-			rhi::RShaderHandle		mShader;
-			rhi::RPipelineHandle	mPipeline;
-			rhi::RTextureHandle		mDepthTexture;
-			rhi::RFramebufferHandle mDepthBuffer;
-			glm::mat4 mLightSpaceMatrix = glm::mat4(1.f);
-
-		};
-
-		struct FRendererUniforms {
-
-			rhi::RBufferHandle mCameraUniform;
-			rhi::RBufferHandle mModelUniform;
-			rhi::RBufferHandle mMaterialUniform;
-			rhi::RBufferHandle mLightShaderStorage;
-
-		};
-
-		struct FGeometryPass {
-
-			rhi::RPipelineHandle	mPipeline;
-			rhi::RShaderHandle		mShader;
-
-		};
-
-		LUM_UNIFORM_BUFFER_STRUCT CameraUniformBuffer {
-			glm::mat4 mView;
-			glm::mat4 mProjection;
-			glm::vec3 mPosition;
-		};
-
-		LUM_UNIFORM_BUFFER_STRUCT ModelUniformBuffer {
-			glm::mat4 mModel;
-		};
-
-		LUM_UNIFORM_BUFFER_STRUCT MaterialUniformBuffer {
-			glm::vec3 mBaseColor = glm::vec3(1.0f);
-			float32 mRougness = 0.5f;
-			float32 mMetallic = 0.0f;
-		};
-
-	} // namespace lum::render::detail
-
-	// TODO fix from experimental to release
+	/* @brief High-level renderer — accepts per-frame draw calls, lights and camera data,
+	*  and drives the underlying RHI passes to produce a final image.
+	*/
 	class Renderer {
 	public:
 
 		Renderer( ) = default;
 
-		void Initialize(const FRendererContext& ctx) {
-		
-			mRenderDevice = ctx.mRenderDevice;
-			mTextureManager = ctx.mTextureManager;
-			mMaterialManager = ctx.mMaterialManager;
-			mMeshManager = ctx.mMeshManager;
-			mShaderManager = ctx.mShaderManager;
+		/* @brief Initializes the renderer and allocates all GPU resources.
+		*  @param ctx Context struct containing valid pointers to all subsystem managers.
+		*/
+		void Initialize( const FRendererContext& ctx );
 
-			init();
-		
-		}
+		/* @brief Sets the environment cubemap texture used for skybox rendering.
+		*  @param tex Handle to the environment texture.
+		*/
+		void SetEnvironmentTexture( rhi::RTextureHandle tex );
 
-		void SetEnvionmentTexture( rhi::RTextureHandle tex );
+		/* @brief Updates the active camera used for rendering this frame.
+		*  @param camera Camera data containing view, projection and position.
+		*/
+		void UpdateCamera( const FRenderCamera& camera );
 
-		void UpdateCamera( FCameraData& camera );
+		/* @brief Submits a point light to be included in the current frame's lighting.
+		*  @param light Point light to add. Ignored if LUM_MAX_LIGHTS is reached.
+		*/
+		void AddPointLight( const FPointLight& light );
 
+		void SetDirectionalLight(const FDirectionalLight& light);
+		FDirectionalLight GetDirectionalLight();
 
-		void Draw( const Object& obj );
+		/* @brief Submits a render instance for drawing in the current frame.
+		*  @param obj Render instance containing transform, mesh and material.
+		*/
+		void Draw( const FRenderInstance& obj );
+
+		/* @brief Begins a new frame — clears per-frame state and prepares passes. */
 		void BeginFrame( );
-		void EndFrame( );
 
-		std::array<PointLight, LUM_MAX_LIGHTS> mPointLights{};
-		uint32 mPointLightsCount = 0;
+		/* @brief Ends the current frame — flushes all submitted draw calls. */
+		void EndFrame( );
 
 	private:
 
-		// Context
+		/* @brief Cached context holding all subsystem manager references. */
+		FRendererContext mContext;
 
-		MTextureManager*	mTextureManager = nullptr;
-		MMaterialManager*	mMaterialManager = nullptr;
-		MMeshManager*		mMeshManager = nullptr;
-		MShaderManager*		mShaderManager = nullptr;
-		rhi::RDevice*		mRenderDevice = nullptr;
+		/* @brief Per-frame light data submitted via AddPointLight. */
+		detail::FRenderLights mLights;
 
+
+
+		//---------------------------------------------------------
 		// Passes
+		//---------------------------------------------------------
 
-		detail::FRendererUniforms	mUniforms;
-		detail::FEnvironmentPass	mEnvironmentPass;
-		detail::FShadowPass			mShadowPass;
-		detail::FGeometryPass		mGeometryPass;
+		/* @brief GPU buffer handles for all uniform and storage buffers. */
+		detail::FRendererUniforms mUniforms;
 
-		detail::CameraUniformBuffer mCurrentCamera;
+		/* @brief Internal state for the environment (skybox) pass. */
+		detail::FEnvironmentPass mEnvironmentPass;
 
-		detail::MaterialUniformBuffer mCurrentMaterial;
+		/* @brief Internal state for the shadow map pass. */
+		detail::FShadowPass	mShadowPass;
 
-		void init() {
-			init_buffers();
-			init_geometry_pass();
-			init_environment_pass();
-			init_shadow_pass();
-		}
+		/* @brief Internal state for the main geometry pass. */
+		detail::FGeometryPass mGeometryPass;
 
-		void upload_model_matrix( const Object& obj );
+
+		//---------------------------------------------------------
+		// Uniforms
+		//---------------------------------------------------------
+
+		/* @brief CPU-side camera uniform buffer, uploaded once per frame. */
+		detail::FCameraUniformBuffer mCurrentCamera {};
+
+		/* @brief CPU-side material uniform buffer, uploaded per draw call. */
+		detail::FMaterialUniformBuffer mMaterialUBO {};
+
+		detail::FDirectionalLightUniformBuffer mDirectionalLightUBO {};
+
+
+		/* @brief Allocates GPU buffers and initializes all render passes. */
+		void init( );
+
+		/* @brief Resets active light counts — called at the start of each frame. */
+		void clear_point_lights( );
+
+		void update_shadow_pass();
+
+		/* @brief Computes and uploads the model matrix for the given instance. */
+		void upload_model_matrix( const FRenderInstance& obj );
+
+		void upload_lightspace_matrix(const glm::mat4& mat);
+
+		/* @brief Uploads material parameters for the given material instance. */
 		void upload_material( const FMaterialInstance& mat );
-		void upload_lights( );
+
+		/* @brief Uploads all active point lights to the shader storage buffer. */
+		void upload_point_lights( );
+
+		void upload_directional_light();
+
+		/* @brief Uploads the current camera uniform buffer to the GPU. */
 		void upload_camera_uniform( );
 
-		void init_buffers( );
-		void init_geometry_pass( );
-		void init_environment_pass( );
-		void init_shadow_pass( );
+		/* @brief Allocates and initializes all uniform and storage GPU buffers. */
+		void prep_buffers( );
+
+		/* @brief Initializes pipeline and shader for the geometry pass. */
+		void prep_geometry_pass( );
+
+		/* @brief Initializes pipeline, shader and geometry for the environment pass. */
+		void prep_environment_pass( );
+
+		/* @brief Initializes pipeline, shader and framebuffer for the shadow pass. */
+		void prep_shadow_pass( );
+
 
 	};
 
 } // namespace lum::render
-
-#undef LUM_UNIFORM_BUFFER_STRUCT

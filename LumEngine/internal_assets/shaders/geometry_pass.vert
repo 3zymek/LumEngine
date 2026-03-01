@@ -1,20 +1,22 @@
 #version 450 core
-layout(location = LUM_LAYOUT_POSITION) in vec3 aPos;
-layout(location = LUM_LAYOUT_NORMAL) in vec3 aNormal;
-layout(location = LUM_LAYOUT_UV) in vec2 aUV;
-layout(location = LUM_LAYOUT_TANGENT) in vec3 aTangent;
-layout(location = LUM_LAYOUT_BITANGENT) in vec3 aBitangnet;
+layout( location = LUM_LAYOUT_POSITION	) in vec3 aPos;
+layout( location = LUM_LAYOUT_NORMAL	) in vec3 aNormal;
+layout( location = LUM_LAYOUT_UV		) in vec2 aUV;
+layout( location = LUM_LAYOUT_TANGENT	) in vec3 aTangent;
+layout( location = LUM_LAYOUT_BITANGENT	) in vec3 aBitangent;
+layout( std140, binding = LUM_UBO_CAMERA_BINDING ) uniform CameraUniforms {
+	
+	mat4 uCameraView;
+	mat4 uCameraProj;
+	vec4 uCameraPos;
 
-layout(std140, binding = LUM_UBO_CAMERA_BINDING) uniform CameraUniforms {
-	mat4 LUM_CAMERA_VIEW_MAT4;
-	mat4 LUM_CAMERA_PROJECTION_MAT4;
-	vec3 LUM_CAMERA_POSITION;
 };
-layout(std140, binding = LUM_UBO_MODEL_BINDING) uniform ModelUniforms {
-	mat4 LUM_MODEL_MAT4;
+layout( std140, binding = LUM_UBO_MODEL_BINDING ) uniform ModelUniforms {
+
+	mat4 uModelMatrix;
+	
 };
 
-out vec3 fN;
 out vec2 fUV;
 out vec3 fPos;
 out vec3 fTangent;
@@ -22,21 +24,20 @@ out vec3 fBitangent;
 
 out mat3 fTBN;
 
-void main() {
+void main( ) {
 	
 	gl_Position = 
-		LUM_CAMERA_PROJECTION_MAT4 *
-		LUM_CAMERA_VIEW_MAT4 *
-		LUM_MODEL_MAT4 *
+		uCameraProj *
+		uCameraView *
+		uModelMatrix *
 		vec4(aPos, 1.0);
 
-	mat3 normalMatrix = transpose(inverse(mat3(LUM_MODEL_MAT4)));
-	fN = normalize(normalMatrix * aNormal);
+	mat3 normalMatrix = transpose(inverse(mat3(uModelMatrix)));
 	fUV = aUV;
-	fPos = (LUM_MODEL_MAT4 * vec4(aPos, 1.0)).xyz;
+	fPos = (uModelMatrix * vec4(aPos, 1.0)).xyz;
 	
 	vec3 T = normalize(normalMatrix * aTangent);
-	vec3 B = normalize(normalMatrix * aBitangnet);
+	vec3 B = normalize(normalMatrix * aBitangent);
 	vec3 N = normalize(normalMatrix * aNormal);
 	fTBN = mat3(T, B, N);
 

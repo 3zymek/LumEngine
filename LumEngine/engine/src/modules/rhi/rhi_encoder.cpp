@@ -1,6 +1,6 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Records and plays RHI functions
+// TODO USELESS, REMOVE LATER
 //
 //=============================================================================//
 #include "rhi/rhi_encoder.hpp"
@@ -341,6 +341,17 @@ namespace lum::rhi {
 		setup_command([vao, indicesCount, instanceCount, baseInstance](RDevice* device) {
 			device->DrawElementsInstancedBase(vao, indicesCount, instanceCount, baseInstance);
 			});
+	}
+
+	void REncoder::BeginPass() {
+		mRenderDevice->BeginPass();
+	}
+
+	void REncoder::EndPass() {
+		
+
+
+		mRenderDevice->EndPass();
 	}
 
 	void REncoder::init() {

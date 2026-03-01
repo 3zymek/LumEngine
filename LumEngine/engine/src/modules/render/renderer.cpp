@@ -13,13 +13,21 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void Renderer::SetEnvionmentTexture(rhi::RTextureHandle tex) {
+	void Renderer::Initialize(const FRendererContext& ctx) {
+
+		mContext = ctx;
+
+		init();
+
+	}
+
+	void Renderer::SetEnvironmentTexture(rhi::RTextureHandle tex) {
 		mEnvironmentPass.mTexture = tex;
 	}
 
-	void Renderer::UpdateCamera(FCameraData& camera) {
+	void Renderer::UpdateCamera(const FRenderCamera& camera) {
 
-		mCurrentCamera.mPosition = camera.mPosition;
+		mCurrentCamera.mPosition = glm::vec4(camera.mPosition, 0.0);
 		mCurrentCamera.mProjection = camera.mProjection;
 		mCurrentCamera.mView = camera.mView;
 
@@ -27,45 +35,66 @@ namespace lum::render {
 
 	}
 
-	void UpdateLights() {
+	void Renderer::AddPointLight(const FPointLight& light) {
 
+		LUM_ASSERT(mLights.mActivePoints + 1 <= mLights.mPoints.size(), "Max point lights reached");
 
+		mLights.mPoints[ mLights.mActivePoints++ ] = light;
 
 	}
 
-	void Renderer::Draw(const Object& obj) {
+	void Renderer::SetDirectionalLight(const FDirectionalLight& light) {
 
-		const FStaticMeshResource& res = mMeshManager->GetStatic(obj.mStaticMesh);
+		mDirectionalLightUBO.mColor = glm::vec4(light.mColor, 0.0);
+		mDirectionalLightUBO.mDirection = glm::vec4(light.mDirection, 0.0);
+		mDirectionalLightUBO.mIntensity = light.mIntensity;
+
+	}
+	FDirectionalLight Renderer::GetDirectionalLight() {
+
+		return { 
+			glm::vec3(mDirectionalLightUBO.mDirection), 
+			mDirectionalLightUBO.mIntensity, 
+			glm::vec3(mDirectionalLightUBO.mColor) 
+		};
+
+	}
+
+	void Renderer::Draw(const FRenderInstance& obj) {
+
+		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic(obj.mStaticMesh);
 		const auto& mat = obj.mMaterial;
 
 		upload_model_matrix(obj);
 		upload_material(obj.mMaterial);
 
-		mRenderDevice->BindPipeline(mGeometryPass.mPipeline);
-		mRenderDevice->BindShader(mGeometryPass.mShader);
-		mRenderDevice->BindTexture(mat.mAlbedoTex, LUM_TEX_ALBEDO);
-		mRenderDevice->BindTexture(mat.mNormalTex, LUM_TEX_NORMAL);
-		mRenderDevice->BindTexture(mat.mMetallicTex, LUM_TEX_METALNESS);
-		mRenderDevice->BindTexture(mat.mRoughnessTex, LUM_TEX_ROUGHNESS);
+		mContext.mRenderDevice->BindPipeline(mGeometryPass.mPipeline);
+		mContext.mRenderDevice->BindShader(mGeometryPass.mShader);
+		mContext.mRenderDevice->BindTexture(mat.mAlbedoTex, LUM_TEX_ALBEDO);
+		mContext.mRenderDevice->BindTexture(mat.mNormalTex, LUM_TEX_NORMAL);
+		mContext.mRenderDevice->BindTexture(mat.mMetallicTex, LUM_TEX_METALNESS);
+		mContext.mRenderDevice->BindTexture(mat.mRoughnessTex, LUM_TEX_ROUGHNESS);
 
-		mRenderDevice->DrawElements(res.mVao, res.mNumIndices);
+		mContext.mRenderDevice->DrawElements(res.mVao, res.mNumIndices);
 
 	}
 
 	void Renderer::BeginFrame() {
-		mRenderDevice->BeginPass();
-		upload_lights();
+		mContext.mRenderDevice->BeginPass();
+		upload_directional_light();
+		upload_point_lights();
+		clear_point_lights();
 	}
 
 	void Renderer::EndFrame() {
 		
-		mRenderDevice->BindPipeline(mEnvironmentPass.mPipeline);
+		mContext.mRenderDevice->BindPipeline(mEnvironmentPass.mPipeline);
 
-		mRenderDevice->BindShader(mEnvironmentPass.mShader);
-		mRenderDevice->BindTexture(mEnvironmentPass.mTexture, LUM_TEX_CUBEMAP);
-		mRenderDevice->DrawElements(mEnvironmentPass.mVao, mEnvironmentPass.mNumIndices);
+		mContext.mRenderDevice->BindShader(mEnvironmentPass.mShader);
+		mContext.mRenderDevice->BindTexture(mEnvironmentPass.mTexture, LUM_TEX_CUBEMAP);
+		mContext.mRenderDevice->DrawElements(mEnvironmentPass.mVao, mEnvironmentPass.mNumIndices);
 
-		mRenderDevice->EndPass();
+		mContext.mRenderDevice->EndPass();
 	}
 
 
@@ -76,7 +105,34 @@ namespace lum::render {
 	// Private
 	//---------------------------------------------------------
 
-	void Renderer::upload_model_matrix( const Object& obj ) {
+	void Renderer::init() {
+		prep_buffers();
+		prep_geometry_pass();
+		prep_environment_pass();
+		prep_shadow_pass();
+	}
+
+	void Renderer::clear_point_lights() {
+
+		mLights.mActivePoints = 0;
+
+	}
+
+	void Renderer::update_shadow_pass() {
+
+		glm::mat4 lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 0.1f, 500.f);
+		glm::mat4 lightView = 
+			glm::lookAt(
+				glm::vec3(-mDirectionalLightUBO.mDirection) * 30.f, 
+				glm::vec3(0.0f), 
+				glm::vec3(0.0f, 1.0f, 0.0f)
+			);
+
+		mShadowPass.mLightSpaceMatrix = lightProjection * lightView;
+
+	}
+
+	void Renderer::upload_model_matrix( const FRenderInstance& obj ) {
 
 		glm::quat rot = glm::quat(glm::radians(obj.mRotation));
 		glm::mat4 rotation = glm::mat4_cast(rot);
@@ -86,64 +142,94 @@ namespace lum::render {
 		model = model * rotation;
 		model = glm::scale(model, obj.mScale);
 
-		mRenderDevice->UpdateBuffer(mUniforms.mModelUniform, glm::value_ptr(model), 0, 0);
+		mContext.mRenderDevice->UpdateBuffer(mUniforms.mModelUniform, glm::value_ptr(model), 0, 0);
+
+	}
+
+	void Renderer::upload_lightspace_matrix(const glm::mat4& mat) {
+
+		
 
 	}
 
 	void Renderer::upload_material(const FMaterialInstance& mat) {
 
-		mCurrentMaterial.mBaseColor = mat.mBaseColor;
-		mCurrentMaterial.mRougness = mat.mRoughnessValue;
-		mCurrentMaterial.mMetallic = mat.mMetallicValue;
+		mMaterialUBO.mBaseColor = glm::vec4(mat.mBaseColor, 1.0);
+		mMaterialUBO.mRoughness = mat.mRoughnessValue;
+		mMaterialUBO.mMetallic = mat.mMetallicValue;
 
-		mRenderDevice->UpdateBuffer(mUniforms.mMaterialUniform, &mCurrentMaterial);
-
-	}
-
-	void Renderer::upload_lights() {
-
-		mRenderDevice->UpdateBuffer(mUniforms.mLightShaderStorage, mPointLights.data(), 0, sizeof(PointLight) * mPointLightsCount);
-		mRenderDevice->UpdateBuffer(mUniforms.mLightShaderStorage, &mPointLightsCount, sizeof(PointLight) * LUM_MAX_LIGHTS, sizeof(mPointLightsCount));
+		mContext.mRenderDevice->UpdateBuffer(mUniforms.mMaterialUniform, &mMaterialUBO);
 
 	}
 
+	void Renderer::upload_point_lights() {
+
+		mContext.mRenderDevice->UpdateBuffer(
+			mUniforms.mPointLights, 
+			mLights.mPoints.data(), 
+			0, 
+			sizeof(FPointLight) * mLights.mActivePoints
+		);
+
+		mContext.mRenderDevice->UpdateBuffer(
+			mUniforms.mPointLights, 
+			&mLights.mActivePoints, 
+			sizeof(FPointLight) * LUM_MAX_LIGHTS, 
+			sizeof(mLights.mActivePoints)
+		);
+
+	}
+	void Renderer::upload_directional_light() {
+
+		mContext.mRenderDevice->UpdateBuffer(
+			mUniforms.mDirectionalLight,
+			&mDirectionalLightUBO
+		);
+
+	}
 	void Renderer::upload_camera_uniform() {
 
-		mRenderDevice->UpdateBuffer(mUniforms.mCameraUniform, &mCurrentCamera, 0, 0);
+		mContext.mRenderDevice->UpdateBuffer(mUniforms.mCameraUniform, &mCurrentCamera, 0, 0);
 
 	}
 
-	void Renderer::init_buffers() {
+	void Renderer::prep_buffers() {
 		rhi::FBufferDescriptor desc;
 		desc.mBufferUsage = rhi::EBufferUsage::Dynamic;
 		desc.mMapFlags = rhi::EMapFlag::Write;
 
 		{ // Camera Uniform
-			desc.mSize = sizeof(detail::CameraUniformBuffer);
+			desc.mSize = sizeof(detail::FCameraUniformBuffer);
 			desc.mBufferType = rhi::EBufferType::Uniform;
-			mUniforms.mCameraUniform = mRenderDevice->CreateBuffer(desc);
-			mRenderDevice->SetUniformBufferBinding(mUniforms.mCameraUniform, LUM_UBO_CAMERA_BINDING);
+			mUniforms.mCameraUniform = mContext.mRenderDevice->CreateBuffer(desc);
+			mContext.mRenderDevice->SetUniformBufferBinding(mUniforms.mCameraUniform, LUM_UBO_CAMERA_BINDING);
 		}
 		{ // Model Uniform
-			desc.mSize = sizeof(detail::ModelUniformBuffer);
+			desc.mSize = sizeof(detail::FModelUniformBuffer);
 			desc.mBufferType = rhi::EBufferType::Uniform;
-			mUniforms.mModelUniform = mRenderDevice->CreateBuffer(desc);
-			mRenderDevice->SetUniformBufferBinding(mUniforms.mModelUniform, LUM_UBO_MODEL_BINDING);
+			mUniforms.mModelUniform = mContext.mRenderDevice->CreateBuffer(desc);
+			mContext.mRenderDevice->SetUniformBufferBinding(mUniforms.mModelUniform, LUM_UBO_MODEL_BINDING);
 		}
 		{ // Material Uniform
-			desc.mSize = sizeof(detail::MaterialUniformBuffer);
+			desc.mSize = sizeof(detail::FMaterialUniformBuffer);
 			desc.mBufferType = rhi::EBufferType::Uniform;
-			mUniforms.mMaterialUniform = mRenderDevice->CreateBuffer(desc);
-			mRenderDevice->SetUniformBufferBinding(mUniforms.mMaterialUniform, LUM_UBO_MATERIAL_BINDING);
+			mUniforms.mMaterialUniform = mContext.mRenderDevice->CreateBuffer(desc);
+			mContext.mRenderDevice->SetUniformBufferBinding(mUniforms.mMaterialUniform, LUM_UBO_MATERIAL_BINDING);
 		}
-		{ // Light SSBO
-			desc.mSize = sizeof(PointLight) * LUM_MAX_LIGHTS + sizeof(int);
+		{ // Point Lights SSBO
+			desc.mSize = sizeof(FPointLight) * LUM_MAX_LIGHTS + sizeof(int);
 			desc.mBufferType = rhi::EBufferType::ShaderStorage;
-			mUniforms.mLightShaderStorage = mRenderDevice->CreateBuffer(desc);
-			mRenderDevice->SetShaderStorageBinding(mUniforms.mLightShaderStorage, LUM_SSBO_LIGHTS_BINDING);
+			mUniforms.mPointLights = mContext.mRenderDevice->CreateBuffer(desc);
+			mContext.mRenderDevice->SetShaderStorageBinding(mUniforms.mPointLights, LUM_SSBO_LIGHTS_BINDING);
+		}
+		{ // Directional Light UBO
+			desc.mSize = sizeof(mDirectionalLightUBO);
+			desc.mBufferType = rhi::EBufferType::Uniform;
+			mUniforms.mDirectionalLight = mContext.mRenderDevice->CreateBuffer(desc);
+			mContext.mRenderDevice->SetUniformBufferBinding(mUniforms.mDirectionalLight, LUM_UBO_DIRECTIONAL_LIGHT);
 		}
 		{ // Shadow Framebuffer
-			mShadowPass.mDepthBuffer = mRenderDevice->CreateFramebuffer();
+			mShadowPass.mDepthBuffer = mContext.mRenderDevice->CreateFramebuffer();
 			rhi::RFramebufferTextureDescriptor desc;
 			desc.mWidth = 1024;
 			desc.mHeight = 1024;
@@ -151,12 +237,12 @@ namespace lum::render {
 			desc.bGenerateMipmaps = false;
 			desc.mAttachment = rhi::RFramebufferAttachment::DepthAttach;
 
-			mShadowPass.mDepthTexture = mRenderDevice->CreateFramebufferTexture(desc);
-			mRenderDevice->SetFramebufferDepthTexture(mShadowPass.mDepthBuffer, mShadowPass.mDepthTexture);
+			mShadowPass.mDepthTexture = mContext.mRenderDevice->CreateFramebufferTexture(desc);
+			mContext.mRenderDevice->SetFramebufferDepthTexture(mShadowPass.mDepthBuffer, mShadowPass.mDepthTexture);
 
 		}
 	}
-	void Renderer::init_geometry_pass() {
+	void Renderer::prep_geometry_pass() {
 
 		{ // Geometry pipeline
 			rhi::FPipelineDescriptor desc;
@@ -164,12 +250,12 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = true;
 			desc.mDepthStencil.mDepth.mCompare = rhi::RCompareFlag::Less;
 			desc.mCull.bEnabled = true;
-			mGeometryPass.mPipeline = mRenderDevice->CreatePipeline(desc);
+			mGeometryPass.mPipeline = mContext.mRenderDevice->CreatePipeline(desc);
 		}
 
-		mGeometryPass.mShader = mShaderManager->LoadShader("shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ERootID::Internal);
+		mGeometryPass.mShader = mContext.mShaderMgr->LoadShader("shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ERootID::Internal);
 	}
-	void Renderer::init_environment_pass() {
+	void Renderer::prep_environment_pass() {
 
 		float32 vertices[] = {
 			-1, -1, -1,  1, -1, -1,  1,  1, -1, -1,  1, -1,
@@ -192,7 +278,7 @@ namespace lum::render {
 			desc.mSize = ByteSize(vertices);
 			desc.mData = vertices;
 			desc.mBufferType = rhi::EBufferType::Vertex;
-			mEnvironmentPass.mVbo = mRenderDevice->CreateBuffer(desc);
+			mEnvironmentPass.mVbo = mContext.mRenderDevice->CreateBuffer(desc);
 		}
 		{ // Environment EBO
 			rhi::FBufferDescriptor desc;
@@ -201,7 +287,7 @@ namespace lum::render {
 			desc.mSize = ByteSize(indices);
 			desc.mData = indices;
 			desc.mBufferType = rhi::EBufferType::Element;
-			mEnvironmentPass.mEbo = mRenderDevice->CreateBuffer(desc);
+			mEnvironmentPass.mEbo = mContext.mRenderDevice->CreateBuffer(desc);
 		}
 		{ // Environment VAO
 			rhi::RVertexAttribute attrs[]{
@@ -214,27 +300,27 @@ namespace lum::render {
 			rhi::RVertexLayoutDescriptor desc;
 			desc.mStride = 3 * sizeof(float32);
 			desc.mAttributes = attrs;
-			mEnvironmentPass.mVao = mRenderDevice->CreateVertexLayout(desc, mEnvironmentPass.mVbo);
-			mRenderDevice->AttachElementBufferToLayout(mEnvironmentPass.mEbo, mEnvironmentPass.mVao);
+			mEnvironmentPass.mVao = mContext.mRenderDevice->CreateVertexLayout(desc, mEnvironmentPass.mVbo);
+			mContext.mRenderDevice->AttachElementBufferToLayout(mEnvironmentPass.mEbo, mEnvironmentPass.mVao);
 		}
 		{ // Environment Pipeline
 			rhi::FPipelineDescriptor desc;
 			desc.mDepthStencil.mDepth.bEnabled = true;
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = false;
 			desc.mDepthStencil.mDepth.mCompare = rhi::RCompareFlag::LessEqual;
-			mEnvironmentPass.mPipeline = mRenderDevice->CreatePipeline(desc);
+			mEnvironmentPass.mPipeline = mContext.mRenderDevice->CreatePipeline(desc);
 		}
 
-		mEnvironmentPass.mShader = mShaderManager->LoadShader("shaders/skybox_pass.vert", "shaders/skybox_pass.frag", ERootID::Internal);
+		mEnvironmentPass.mShader = mContext.mShaderMgr->LoadShader("shaders/skybox_pass.vert", "shaders/skybox_pass.frag", ERootID::Internal);
 
 	}
-	void Renderer::init_shadow_pass() {
+	void Renderer::prep_shadow_pass() {
 
 		{ // Shadow Pipeline
 			rhi::FPipelineDescriptor desc;
 			desc.mDepthStencil.mDepth.bEnabled = true;
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = true;
-			mShadowPass.mPipeline = mRenderDevice->CreatePipeline(desc);
+			mShadowPass.mPipeline = mContext.mRenderDevice->CreatePipeline(desc);
 		}
 
 		//mShadowPass.mShader = mShaderManager->LoadShader("shaders/shadow_pass.vert", "shaders/shadow_pass.frag", ERootID::Internal);

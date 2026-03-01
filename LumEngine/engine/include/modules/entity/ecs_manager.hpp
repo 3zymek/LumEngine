@@ -38,8 +38,12 @@ namespace lum {
 			}
 			~MEntityManager( ) { destroy(); }
 
+
 			
-			ManagedEntity CreateEntity();
+			/* @brief Creates a new entity and returns a managed handle to it.
+			*  @return ManagedEntity wrapping the newly created entity ID.
+			*/
+			ManagedEntity CreateEntity( );
 
 
 
@@ -171,23 +175,18 @@ namespace lum {
 
 			
 		private:
-			
-			void init( ) {
-				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
-					mComponentPools[i] = nullptr;
-				}
-			}
-			void destroy( ) {
-				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
-					if (mComponentPools[i] != nullptr) {
-						delete mComponentPools[i];
-						mComponentPools[i] = nullptr;
-					}
-				}
-			}
 
-			detail::BasePool* mComponentPools [ limits::gMaxComponentTypes ]; // Array of component pools indexed by type ID.
-			vptr mUniqueComponents[ limits::gMaxComponentTypes ]{}; // TODO implement unique components
+			/* @brief Initializes all pool slots to nullptr. */
+			void init( );
+
+			/* @brief Deletes all allocated component pools. */
+			void destroy( );
+
+			/* @brief Array of component pools indexed by component type ID. */
+			detail::BasePool* mComponentPools[limits::gMaxComponentTypes];
+
+			/* @brief Reserved slots for unique (singleton) components. Not yet implemented. */
+			//vptr mUniqueComponents[limits::gMaxComponentTypes]{};
 
 		};
 

@@ -36,7 +36,7 @@ namespace lum {
 
 			entityMgr->Each<CCamera, CTransform>(
 				[&](CCamera& camera, CTransform& transform) {
-					FCameraData data;
+					FRenderCamera data;
 					data.mPosition = transform.mPosition;
 					data.mProjection = glm::perspective(glm::radians(camera.mFov), aspect, camera.mNear, camera.mFar);
 					data.mView = glm::lookAt(transform.mPosition, camera.mTarget, camera.mUp);
@@ -79,8 +79,6 @@ namespace lum {
 					camera.mYaw += delta.x * 0.1f;
 					camera.mPitch -= delta.y * 0.1f;
 					camera.mPitch = glm::clamp(camera.mPitch, -89.0f, 89.0f);
-					data.mPitch = camera.mPitch;
-					data.mYaw = camera.mYaw;
 
 					glm::vec3 direction;
 					direction.x = cos(glm::radians(camera.mYaw)) * cos(glm::radians(camera.mPitch));
@@ -98,7 +96,7 @@ namespace lum {
 				[&](CRender& render, CTransform& transform, CMaterial& material, CStaticMesh& mesh)
 				{
 					if (!render.bVisible) return;
-					render::Object obj;
+					render::FRenderInstance obj;
 					
 					ImGui::DragFloat("Roughness", &material.mMat.mRoughnessValue, 0.01f, 0.0f, 1.0f);
 					ImGui::DragFloat("Metallic", &material.mMat.mMetallicValue, 0.01f, 0.0f, 1.0f);
@@ -113,19 +111,16 @@ namespace lum {
 				});
 			ImGui::End();
 
-			uint32 pointLights = 0;
 			entityMgr->Each<CTransform, CPointLight>(
 				[&](CTransform& transform, CPointLight& light) {
-					PointLight pointL;
+					FPointLight pointL;
 					pointL.mColor = light.mColor;
 					pointL.mIntensity = light.mIntensity;
 					pointL.mPosition = transform.mPosition;
 					pointL.mRadius = light.mRadius;
-					mRenderer->mPointLights[pointLights] = pointL;
-					pointLights++;
+					mRenderer->AddPointLight(pointL);
 				}
 			);
-			mRenderer->mPointLightsCount = pointLights;
 
 			if (ImGui::CollapsingHeader("Point Lights")) {
 				uint32_t i = 0;

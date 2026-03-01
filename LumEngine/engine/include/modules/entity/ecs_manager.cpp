@@ -10,6 +10,10 @@
 
 namespace lum::ecs {
 
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
+
 	ManagedEntity MEntityManager::CreateEntity() {
 		return ManagedEntity{ this };
 	}
@@ -29,6 +33,27 @@ namespace lum::ecs {
 			if (mComponentPools[i] != nullptr)
 				mComponentPools[i]->Remove(entity.mID);
 
+		}
+	}
+
+		
+
+	//---------------------------------------------------------
+	// Private
+	//---------------------------------------------------------
+
+	void MEntityManager::init() {
+		for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
+			mComponentPools[i] = nullptr;
+		}
+	}
+
+	void MEntityManager::destroy() {
+		for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
+			if (mComponentPools[i] != nullptr) {
+				delete mComponentPools[i];
+				mComponentPools[i] = nullptr;
+			}
 		}
 	}
 

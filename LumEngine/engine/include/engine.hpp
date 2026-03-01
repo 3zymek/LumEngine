@@ -78,11 +78,11 @@ namespace lum {
 
 		void Initialize( PlatformModule& platform, ResourceModule& res ) {
 			render::FRendererContext ctx;
-			ctx.mMaterialManager = &res.mMaterialMgr;
-			ctx.mMeshManager = &res.mMeshMgr;
-			ctx.mTextureManager = &res.mTextureMgr;
+			ctx.mMaterialMgr = &res.mMaterialMgr;
+			ctx.mMeshMgr = &res.mMeshMgr;
+			ctx.mTextureMgr = &res.mTextureMgr;
 			ctx.mRenderDevice = platform.mRenderDevice;
-			ctx.mShaderManager = &res.mShaderMgr;
+			ctx.mShaderMgr = &res.mShaderMgr;
 
 			mRenderer.Initialize(ctx);
 
@@ -131,9 +131,7 @@ namespace lum {
 		void Run( ) {
 
 			while (mPlatform.mWindow->IsOpen()) {
-
 				mPlatform.mWindow->PollEvents();
-
 				mRender.mRenderer.BeginFrame();
 
 				ImGui::Begin("Scene");
@@ -141,12 +139,25 @@ namespace lum {
 				if (ImGui::Button("Reload scene"))
 					SetScene("scene.lsc");
 
+				ImGui::Separator();
+				ImGui::Text("Directional Light");
+
+				render::FDirectionalLight light = mRender.mRenderer.GetDirectionalLight();
+
+				bool changed = false;
+				changed |= ImGui::DragFloat3("Direction", &light.mDirection.x, 0.01f, -1.0f, 1.0f);
+				changed |= ImGui::ColorEdit3("Color", &light.mColor.x);
+				changed |= ImGui::DragFloat("Intensity", &light.mIntensity, 0.01f, 0.0f, 10.0f);
+
+				if (changed) {
+					light.mDirection = glm::normalize(light.mDirection);
+					mRender.mRenderer.SetDirectionalLight(light);
+				}
+
 				ImGui::End();
 
-				mRender.mRenderSys.Update( &mScene.mSceneMgr.GetCurrentScene()->mEntityMgr, mPlatform.mWindow );
-
+				mRender.mRenderSys.Update(&mScene.mSceneMgr.GetCurrentScene()->mEntityMgr, mPlatform.mWindow);
 				mRender.mRenderer.EndFrame();
-
 			}
 
 		}

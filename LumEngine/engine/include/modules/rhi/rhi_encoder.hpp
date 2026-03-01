@@ -1,6 +1,6 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Records and plays RHI functions.
+// TODO USELESS, REMOVE LATER
 //
 //=============================================================================//
 #pragma once
@@ -375,15 +375,17 @@ namespace lum::rhi {
 		*/
 		void DrawElementsInstancedBase(const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance);
 
-		void BeginPass() {
+		void BeginPass();
 
-		}
-
-		void EndPass() {
-
-		}
+		void EndPass();
 
 	private:
+
+		RDevice* mRenderDevice = nullptr;
+		std::vector<detail::FCommand> mCommandBuffer;
+		usize mMaxCommands = 0;
+
+		void init( );
 
 		template<typename tLambda>
 		void setup_command( tLambda&& lambda ) {
@@ -405,14 +407,6 @@ namespace lum::rhi {
 			mCommandBuffer.push_back(std::move(command));
 			
 		}
-
-		void init( );
-
-		RDevice* mRenderDevice = nullptr;
-
-		std::vector<detail::FCommand> mCommandBuffer;
-
-		usize mMaxCommands = 0;
 
 	};
 

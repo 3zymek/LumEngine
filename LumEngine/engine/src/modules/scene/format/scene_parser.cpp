@@ -45,6 +45,9 @@ namespace lum::fmt {
 
 	}
 
+
+
+
 	//---------------------------------------------------------
 	// Private
 	//---------------------------------------------------------
@@ -65,7 +68,7 @@ namespace lum::fmt {
 
 						if (ToLower(tokens[i].mValue) == "path") {
 							detail::ExpectColon(tokens, i);
-							ctx.mContext.mRenderer->SetEnvionmentTexture(
+							ctx.mContext.mRenderer->SetEnvironmentTexture(
 								ctx.mContext.mTextureMgr->LoadEquirectangularCubemap(tokens[i].mValue.c_str(), 1024));
 						}
 

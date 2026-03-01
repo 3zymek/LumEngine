@@ -1,74 +1,50 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
 // Purpose: Defines which gets pasted into every shader
-// 
+//
 //=============================================================================//
 #pragma once
 
-// Shader location for position
-#define LUM_LAYOUT_POSITION 0
+/* @brief Pi constant for use in lighting calculations. */
+#define LUM_PI 3.14159265359
 
-// Shader location for normal
-#define LUM_LAYOUT_NORMAL 1
+// Vertex attribute locations
+#define LUM_LAYOUT_POSITION  0 // Vertex position attribute location.
+#define LUM_LAYOUT_NORMAL    1 // Vertex normal attribute location.
+#define LUM_LAYOUT_UV        2 // Vertex UV attribute location.
+#define LUM_LAYOUT_TANGENT   3 // Vertex tangent attribute location.
+#define LUM_LAYOUT_BITANGENT 4 // Vertex bitangent attribute location.
 
-// Shader location for uv
-#define LUM_LAYOUT_UV 2
+// Uniform buffer bindings
+#define LUM_UBO_CAMERA_BINDING     1 // Camera matrices and position.
+#define LUM_UBO_MODEL_BINDING      2 // Model matrix.
+#define LUM_UBO_MATERIAL_BINDING   3 // Material parameters.
+#define LUM_UBO_DIRECTIONAL_LIGHT  6 // Directional light data.
 
-#define LUM_LAYOUT_TANGENT 3
+// Shader storage buffer bindings
+#define LUM_SSBO_LIGHTS_BINDING 4 // Point light array.
 
-#define LUM_LAYOUT_BITANGENT 4
-
-// Uniform buffer binding for camera matrices ( projection and view ).
-#define LUM_UBO_CAMERA_BINDING 1
-
-// Uniform buffer binding for model matrix.
-#define LUM_UBO_MODEL_BINDING 2
-
-#define LUM_UBO_MATERIAL_BINDING 3
-
-#define LUM_SSBO_LIGHTS_BINDING 4
+/* @brief Maximum number of point lights active in a single frame. */
 #define LUM_MAX_LIGHTS 64
 
-// Sampler slots for material textures.
-#define LUM_SAMPLER_ALBEDO		0 // Albedo texture sampler.
-#define LUM_SAMPLER_NORMAL		1 // Normal map sampler.
-#define LUM_SAMPLER_ROUGNESS	2 // Roughness map sampler.
-#define LUM_SAMPLER_METALNESS	3 // Metalness map sampler.
+// Sampler binding slots
+#define LUM_SAMPLER_ALBEDO    0 // Albedo texture sampler.
+#define LUM_SAMPLER_NORMAL    1 // Normal map sampler.
+#define LUM_SAMPLER_ROUGHNESS 2 // Roughness map sampler.
+#define LUM_SAMPLER_METALNESS 3 // Metalness map sampler.
+#define LUM_SAMPLER_CUBEMAP   8 // Cubemap sampler.
 
-// Cubemap sampler binding slot
-#define LUM_SAMPLER_CUBEMAP 8 // Sampler slot for cubemap
-
-// Texture slots for material textures.
-#define LUM_TEX_ALBEDO		0 // Albedo texture binding.
-#define LUM_TEX_NORMAL		1 // Normal map binding.
-#define LUM_TEX_ROUGHNESS	2 // Roughness map binding.
-#define LUM_TEX_METALNESS	3 // Metalness map binding.
+// Texture binding slots
+#define LUM_TEX_ALBEDO    0 // Albedo texture binding.
+#define LUM_TEX_NORMAL    1 // Normal map binding.
+#define LUM_TEX_ROUGHNESS 2 // Roughness map binding.
+#define LUM_TEX_METALNESS 3 // Metalness map binding.
+#define LUM_TEX_CUBEMAP   8 // Cubemap texture binding.
 
 // Cubemap face indices
-#define LUM_CUBEMAP_POSITIVE_X 0 // Positive X face texture.
-#define LUM_CUBEMAP_NEGATIVE_X 1 // Negative X face texture.
-#define LUM_CUBEMAP_POSITIVE_Y 2 // Positive Y face texture.
-#define LUM_CUBEMAP_NEGATIVE_Y 3 // Negative Y face texture.
-#define LUM_CUBEMAP_POSITIVE_Z 4 // Positive Z face texture.
-#define LUM_CUBEMAP_NEGATIVE_Z 5 // Negative Z face texture.
-
-// Cubemap texture binding slot.
-#define LUM_TEX_CUBEMAP 8 // Cubemap texture binding.
-
-
-
-///////////////////////////////////////////
-// Instance names
-///////////////////////////////////////////
-
-#define LUM_CAMERA_PROJECTION_MAT4 uProjection
-#define LUM_CAMERA_PROJECTION_MAT4_STR "uProjection"
-
-#define LUM_CAMERA_VIEW_MAT4 uView
-#define LUM_CAMERA_VIEW_MAT4_STR "uView"
-
-#define LUM_CAMERA_POSITION uCameraPos
-#define LUM_CAMERA_POSITION_STR "uCameraPos"
-
-#define LUM_MODEL_MAT4 uModel
-#define LUM_MODEL_MAT4_STR "uModel"
+#define LUM_CUBEMAP_POSITIVE_X 0 // +X face.
+#define LUM_CUBEMAP_NEGATIVE_X 1 // -X face.
+#define LUM_CUBEMAP_POSITIVE_Y 2 // +Y face.
+#define LUM_CUBEMAP_NEGATIVE_Y 3 // -Y face.
+#define LUM_CUBEMAP_POSITIVE_Z 4 // +Z face.
+#define LUM_CUBEMAP_NEGATIVE_Z 5 // -Z face.

@@ -1,3 +1,9 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Scene management — stores, loads and provides access to active scenes.
+//
+//=============================================================================//
+
 #include "scene/scene_manager.hpp"
 #include "entity/ecs_manager.hpp"
 #include "core/utils/asset_loader.hpp"
