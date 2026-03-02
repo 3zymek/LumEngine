@@ -39,15 +39,11 @@ namespace lum::rhi::gl {
 		// Framebuffers
 		//=================================================
 
-		RFramebufferHandle	CreateFramebuffer			( )															override;
-		RTextureHandle		CreateFramebufferTexture	( const RFramebufferTextureDescriptor& )					override;
-		void				SetFramebufferColorTexture	( const RFramebufferHandle&, const RTextureHandle&, int8 )	override;
-		void				SetFramebufferDepthTexture	( const RFramebufferHandle&, const RTextureHandle&)			override;
-		void				SetFramebufferStencilTexture( const RFramebufferHandle&, const RTextureHandle&)			override;
-		void				ClearFramebuffer			( RFramebufferHandle, ChannelRGBA, float32)					override;
-		void				DeleteFramebuffer			( RFramebufferHandle& )										override;
-		void				BindFramebuffer				( const RFramebufferHandle& )								override;
-		void				UnbindFramebuffer			( )															override;
+		RFramebufferHandle	CreateFramebuffer			( const RFramebufferDescriptor& )			override;
+		void				ClearFramebuffer			( RFramebufferHandle, ChannelRGBA, float32)	override;
+		void				DeleteFramebuffer			( RFramebufferHandle& )						override;
+		void				BindFramebuffer				( const RFramebufferHandle& )				override;
+		void				UnbindFramebuffer			( )											override;
 
 
 
@@ -61,7 +57,7 @@ namespace lum::rhi::gl {
 
 
 		//=================================================
-		// TODO Shaders ( !!! ADD CACHE LOCATIONS !!! )
+		// Shaders
 		//=================================================
 
 		RShaderHandle	CreateShader ( const RShaderDescriptor& )							override;
@@ -214,8 +210,8 @@ namespace lum::rhi::gl {
 		void DrawElementsInstanced		( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount ) override;
 		void DrawElementsInstancedBase	( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance ) override;
 
-		void BeginPass	( )	override;
-		void EndPass	( )	override;
+		void BeginFrame	( )	override;
+		void EndFrame	( )	override;
 
 
 	protected:
@@ -361,10 +357,15 @@ namespace lum::rhi::gl {
 			GL_RG32F,
 			GL_R32F,
 			
+			GL_DEPTH_COMPONENT16,
 			GL_DEPTH_COMPONENT24,
+			GL_DEPTH_COMPONENT32,
 			GL_DEPTH_COMPONENT32F,
+
 			GL_DEPTH24_STENCIL8,
 			GL_DEPTH32F_STENCIL8,
+
+			GL_STENCIL_INDEX8
 
 		};
 
@@ -438,9 +439,7 @@ namespace lum::rhi::gl {
 		RTextureHandle create_texture_3d(const RTextureDescriptor&);
 		RTextureHandle create_texture_cubemap(const RTextureDescriptor&);
 		
-		bool		validate_texture_descriptor	( const RTextureDescriptor& )	noexcept;
-		bool		validate_buffer_descriptor	( const FBufferDescriptor& )	noexcept;
-		GLbitfield	translate_mapping_flags		( Flags<EMapFlag> )				noexcept;
+		GLbitfield translate_mapping_flags( Flags<EMapFlag> ) noexcept;
 
 	};
 

@@ -1,0 +1,115 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Geometry render pass — handles per-object draw calls,
+//          model matrix and material uniform uploads.
+//
+//=============================================================================//
+
+#include "render/passes/geometry_pass.hpp"
+#include "render/common.hpp"
+#include "rhi/core/rhi_device.hpp"
+#include "render/renderer.hpp"
+#include "render/shader_manager.hpp"
+#include "render/mesh_manager.hpp"
+
+namespace lum::render {
+
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
+
+	void GeometryPass::Initialize( const FRendererContext& ctx ) {
+
+		mContext = ctx;
+
+		init();
+
+	}
+
+	void GeometryPass::Draw( const FRenderInstance& instance ) {
+		
+		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic(instance.mStaticMesh);
+		const auto& mat = instance.mMaterial;
+
+		upload_model_matrix(instance);
+		upload_material(mat);
+
+		mContext.mRenderDevice->BindPipeline(mPipeline);
+		mContext.mRenderDevice->BindShader(mShader);
+		mContext.mRenderDevice->BindTexture(mat.mAlbedoTex, LUM_TEX_ALBEDO);
+		mContext.mRenderDevice->BindTexture(mat.mNormalTex, LUM_TEX_NORMAL);
+		mContext.mRenderDevice->BindTexture(mat.mMetallicTex, LUM_TEX_METALNESS);
+		mContext.mRenderDevice->BindTexture(mat.mRoughnessTex, LUM_TEX_ROUGHNESS);
+
+		mContext.mRenderDevice->DrawElements(res.mVao, res.mNumIndices);
+
+	}
+
+	void GeometryPass::BeginPass( ) {
+		
+	}
+	void GeometryPass::EndPass( ) {
+
+	}
+
+
+
+
+
+	//---------------------------------------------------------
+	// Private
+	//---------------------------------------------------------
+
+	void GeometryPass::init( ) {
+
+		rhi::FBufferDescriptor desc;
+		desc.mBufferUsage = rhi::EBufferUsage::Dynamic;
+		desc.mMapFlags = rhi::EMapFlag::Write;
+		{ // Model Uniform
+			desc.mSize = sizeof(detail::FModelUniformBuffer);
+			desc.mBufferType = rhi::EBufferType::Uniform;
+			mModelUniform = mContext.mRenderDevice->CreateBuffer(desc);
+			mContext.mRenderDevice->SetUniformBufferBinding(mModelUniform, LUM_UBO_MODEL_BINDING);
+		}
+		{ // Material Uniform
+			desc.mSize = sizeof(detail::FMaterialUniformBuffer);
+			desc.mBufferType = rhi::EBufferType::Uniform;
+			mMaterialUniform = mContext.mRenderDevice->CreateBuffer(desc);
+			mContext.mRenderDevice->SetUniformBufferBinding(mMaterialUniform, LUM_UBO_MATERIAL_BINDING);
+		}
+		{ // Geometry pipeline
+			rhi::FPipelineDescriptor desc;
+			desc.mDepthStencil.mDepth.bEnabled = true;
+			desc.mDepthStencil.mDepth.bWriteToZBuffer = true;
+			desc.mDepthStencil.mDepth.mCompare = rhi::RCompareFlag::Less;
+			desc.mCull.bEnabled = true;
+			mPipeline = mContext.mRenderDevice->CreatePipeline(desc);
+			mShader = mContext.mShaderMgr->LoadShader("shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ERootID::Internal);
+		}
+		
+	}
+	void GeometryPass::upload_model_matrix( const FRenderInstance& instance ) {
+
+		glm::quat rot = glm::quat(glm::radians(instance.mRotation));
+		glm::mat4 rotation = glm::mat4_cast(rot);
+		glm::mat4 model = glm::mat4(1.f);
+		model = glm::mat4(1.f);
+		model = glm::translate(model, instance.mPosition);
+		model = model * rotation;
+		model = glm::scale(model, instance.mScale);
+
+		mContext.mRenderDevice->UpdateBuffer(mModelUniform, glm::value_ptr(model), 0, 0);
+
+	}
+	void GeometryPass::upload_material( const FMaterialInstance& mat ) {
+
+		mMaterialUBO.mBaseColor = glm::vec4(mat.mBaseColor, 1.0);
+		mMaterialUBO.mRoughness = mat.mRoughnessValue;
+		mMaterialUBO.mMetallic = mat.mMetallicValue;
+
+		mContext.mRenderDevice->UpdateBuffer(mMaterialUniform, &mMaterialUBO);
+
+	}
+
+
+} // namespace lum::render

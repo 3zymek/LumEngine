@@ -112,6 +112,8 @@ namespace lum::rhi::gl {
 		uint32 mipmapLevels = desc.bGenerateMipmaps ?
 			(desc.mMipmapLevels == 0 ? MipmapLvls(width, height) : desc.mMipmapLevels) : 1;
 
+		cvptr data = (desc.mData.mPixels.empty()) ? nullptr : desc.mData.mPixels.data();
+
 		glCreateTextures(GL_TEXTURE_2D, 1, &texture.mHandle);
 
 		glTextureStorage2D(
@@ -122,12 +124,6 @@ namespace lum::rhi::gl {
 			height
 		);
 
-		LUM_LOG_INFO("upload: w=%d h=%d format=%d layout=%d pixels=%zu",
-			width, height,
-			LookupCast(desc.mImageFormat),
-			LookupCast(desc.mImageLayout),
-			desc.mData.mPixels.size());
-
 		glTextureSubImage2D(
 			texture.mHandle,
 			0,
@@ -136,7 +132,7 @@ namespace lum::rhi::gl {
 			height,
 			skImageFormatLookup[LookupCast(desc.mImageFormat)],
 			skTextureDataTypeLookup[LookupCast(desc.mDataType)],
-			desc.mData.mPixels.data()
+			data
 		);
 
 		if (mipmapLevels > 1) {
@@ -216,26 +212,6 @@ namespace lum::rhi::gl {
 		}
 
 		return mTextures.Append(std::move(tex));
-
-	}
-
-	bool GLDevice::validate_texture_descriptor(const RTextureDescriptor& desc) noexcept {
-
-		LUM_HOTCHK_RETURN_CUSTOM(
-			mTextures.DenseSize() <= skMaxTextures,
-			LUM_SEV_WARN,
-			false,
-			"Max textures reached"
-		);
-
-		LUM_HOTCHK_RETURN_CUSTOM(
-			desc.mData.mPixels.data() != nullptr,
-			LUM_SEV_WARN,
-			false,
-			"Texture pixel data is null"
-		);
-
-		return true;
 
 	}
 

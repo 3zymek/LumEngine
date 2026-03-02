@@ -9,7 +9,7 @@
 
 namespace lum::rhi::gl {
 
-	RFramebufferHandle GLDevice::CreateFramebuffer() {
+	RFramebufferHandle GLDevice::CreateFramebuffer(const RFramebufferDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mFramebuffers.DenseSize() <= skMaxFramebuffers,
 			LUM_SEV_ERROR,
@@ -21,57 +21,41 @@ namespace lum::rhi::gl {
 
 		glCreateFramebuffers(1, &fbo.mHandle);
 
-		return mFramebuffers.Append(std::move(fbo));
+		for (uint8 i = 0; i < desc.mNumColorTex; i++) {
 
-	}
+			if (mTextures.Contains(desc.mColorTex[i])) {
+				
+				const FTexture* tex = mTextures.Get(desc.mColorTex[i]);
 
-	RTextureHandle GLDevice::CreateFramebufferTexture(const RFramebufferTextureDescriptor& desc) {
-		LUM_HOTCHK_RETURN_CUSTOM(
-			mTextures.DenseSize() <= skMaxTextures || desc.mHeight <= 0 || desc.mWidth <= 0,
-			LUM_SEV_ERROR,
-			RTextureHandle{},
-			"Max textures reached"
-		);
+				LUM_ASSERT(is_color_format(tex), "Invalid framebuffer color texture format");
+				glNamedFramebufferTexture(fbo.mHandle, GL_COLOR_ATTACHMENT0 + i, tex->mHandle, 0);
 
-		FTexture tex;
-
-		glCreateTextures(GL_TEXTURE_2D, 1, &tex.mHandle);
-
-		GLenum format = skImageLayoutLookup[LookupCast(desc.mFormat)];
-		glTextureStorage2D(tex.mHandle, 1, format, desc.mWidth, desc.mHeight);
-
-		return mTextures.Append(std::move(tex));
-	}
-
-	void GLDevice::SetFramebufferColorTexture(const RFramebufferHandle& fbo, const RTextureHandle& tex, int8 index) {
-
-		LUM_HOTCHK_RETURN_VOID(mFramebuffers.Contains(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
-		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
-	   
-		if (index > 31) {
-			LUM_LOG_WARN("Too big color index given");
-			return;
+			}
 		}
 
-		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_COLOR_ATTACHMENT0, mTextures[tex].mHandle, 0);
+		if (mTextures.Contains(desc.mDepthTex)) {
+			
+			const FTexture* tex = mTextures.Get(desc.mDepthTex);
 
-	}
+			LUM_ASSERT(is_depth_format(tex), "Invalid framebuffer depth texture format");
+			glNamedFramebufferTexture(fbo.mHandle, GL_DEPTH_ATTACHMENT, mTextures.Get(desc.mDepthTex)->mHandle, 0);
+		}
 
-	void GLDevice::SetFramebufferDepthTexture(const RFramebufferHandle& fbo, const RTextureHandle& tex) {
+		if (mTextures.Contains(desc.mStencilTex)) {
 
-		LUM_HOTCHK_RETURN_VOID(mFramebuffers.Contains(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
-		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
+			const FTexture* tex = mTextures.Get(desc.mStencilTex);
 
-		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_DEPTH_ATTACHMENT, mTextures[tex].mHandle, 0);
+			LUM_ASSERT(is_stencil_format(tex), "Invalid framebuffer stencil texture format");
+			glNamedFramebufferTexture(fbo.mHandle, GL_STENCIL_ATTACHMENT, mTextures.Get(desc.mStencilTex)->mHandle, 0);
 
-	}
+		}
+	   
+		LUM_ASSERT(
+			glCheckNamedFramebufferStatus(fbo.mHandle, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
+			"Framebuffer is not complete"
+		);
 
-	void GLDevice::SetFramebufferStencilTexture(const RFramebufferHandle& fbo, const RTextureHandle& tex) {
-
-		LUM_HOTCHK_RETURN_VOID(mFramebuffers.Contains(fbo), LUM_SEV_DEBUG, "Framebuffer doesn't exist");
-		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(tex), LUM_SEV_DEBUG, "Texture doesn't exist");
-
-		glNamedFramebufferTexture(mFramebuffers[fbo].mHandle, GL_STENCIL_ATTACHMENT, mTextures[tex].mHandle, 0);
+		return mFramebuffers.Append(std::move(fbo));
 
 	}
 

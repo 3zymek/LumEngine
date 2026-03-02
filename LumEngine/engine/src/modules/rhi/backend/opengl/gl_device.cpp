@@ -305,7 +305,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::BeginPass() {
+	void GLDevice::BeginFrame() {
 
 		LUM_PROFILER_BEGIN_FRAME();
 
@@ -322,7 +322,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::EndPass() {
+	void GLDevice::EndFrame() {
 
 #		if LUM_ENABLE_IMGUI == 1
 		ImGui::Render();

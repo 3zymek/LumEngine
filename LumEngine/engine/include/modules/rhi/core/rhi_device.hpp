@@ -116,21 +116,7 @@ namespace lum::rhi {
 		* @return Handle to the created framebuffer.
 		*/
 		LUM_NODISCARD
-		virtual RFramebufferHandle CreateFramebuffer( ) = 0;
-
-		/* @brief Creates a texture suitable for use as a framebuffer attachment.
-		* Format is determined by the attachment type (color or depth).
-		* @param desc Descriptor specifying width, height, and attachment type.
-		* @return Handle to the created texture, or an invalid handle on failure.
-		*/
-		LUM_NODISCARD
-		virtual RTextureHandle CreateFramebufferTexture( const RFramebufferTextureDescriptor& desc ) = 0;
-
-		// TO FIX:
-		virtual void SetFramebufferColorTexture(const RFramebufferHandle& fbo, const RTextureHandle& tex, int8 index) = 0;
-		// TO IMPLEMENT:
-		virtual void SetFramebufferDepthTexture(const RFramebufferHandle& fbo, const RTextureHandle& tex) = 0;
-		virtual void SetFramebufferStencilTexture(const RFramebufferHandle& fbo, const RTextureHandle& tex) = 0;
+		virtual RFramebufferHandle CreateFramebuffer( const RFramebufferDescriptor& desc ) = 0;
 
 		/* @brief Clears color and depth buffers of the given framebuffer.
 		* @param fbo   Handle of the framebuffer to clear.
@@ -690,10 +676,10 @@ namespace lum::rhi {
 		virtual void DrawElementsInstancedBase( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance ) = 0;
 
 		/* @brief Begins a new frame. Call before any draw operations. */
-		virtual void BeginPass( ) = 0;
+		virtual void BeginFrame( ) = 0;
 
 		/* @brief Ends the current frame and presents the result. */
-		virtual void EndPass( ) = 0;
+		virtual void EndFrame( ) = 0;
 
 
 #		if LUM_ENABLE_RENDER_PROFILER == 1
@@ -762,6 +748,13 @@ namespace lum::rhi {
 		cstd::HandlePool<RTextureHandle, FTexture, RTextureID>				mTextures{ skMaxTextures };
 		cstd::HandlePool<RFramebufferHandle, FFramebuffer, RFramebufferID>	mFramebuffers{ skMaxFramebuffers };
 		cstd::HandlePool<RPipelineHandle, FPipeline, RPipelineID>			mPipelines{ skMaxPipelines };
+
+		bool validate_texture_descriptor(const RTextureDescriptor&);
+		bool validate_buffer_descriptor(const FBufferDescriptor&);
+
+		bool is_depth_format(RImageLayout fmt);
+		bool is_stencil_format(RImageLayout fmt);
+		bool is_color_format(RImageLayout fmt);
 
 	};
 

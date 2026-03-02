@@ -21,7 +21,6 @@
 #include "render/shader_manager.hpp"
 #include "render/material_manager.hpp"
 #include "render/render_system.hpp"
-#include "render/camera.hpp"
 
 #include "engine.hpp"
 

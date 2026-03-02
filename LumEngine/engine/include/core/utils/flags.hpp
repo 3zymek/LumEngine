@@ -28,9 +28,9 @@ namespace lum {
 
 		U mFlags = 0;
 
-		constexpr Flags() noexcept = default;
-		constexpr Flags(T flag) noexcept : mFlags(static_cast<U>(flag)) {}
-		constexpr Flags(std::initializer_list<T> list) {
+		constexpr Flags( ) noexcept = default;
+		constexpr Flags( T flag ) noexcept : mFlags( static_cast<U>(flag) ) {}
+		constexpr Flags( std::initializer_list<T> list ) {
 			for (T f : list)
 				Enable(f);
 		}
@@ -42,9 +42,7 @@ namespace lum {
 		*
 		* @param flags Flag to enable.
 		*/
-		constexpr void Enable(T flags) noexcept {
-			mFlags |= static_cast<U>(flags);
-		}
+		constexpr void Enable( T flags ) noexcept { mFlags |= static_cast<U>(flags); }
 
 		/*!
 		* @brief Enables (sets) multiple flags.
@@ -53,9 +51,7 @@ namespace lum {
 		*		
 		* @param flags Flags to enable.
 		*/
-		constexpr void Enable(Flags<T> flags) noexcept {
-			mFlags |= flags.mFlags;
-		}
+		constexpr void Enable( Flags<T> flags ) noexcept { mFlags |= flags.mFlags; }
 		/*!
 		* @brief Disables (clears) a single flag.
 		*
@@ -63,9 +59,7 @@ namespace lum {
 		*
 		* @param flags Flag to disable.
 		*/
-		constexpr void Disable(T flags) noexcept {
-			mFlags &= ~static_cast<U>(flags);
-		}
+		constexpr void Disable( T flags ) noexcept { mFlags &= ~static_cast<U>(flags); }
 
 		/*!
 		* @brief Disables (clears) multiple flags.
@@ -74,9 +68,14 @@ namespace lum {
 		*
 		* @param flags Flags to disable.
 		*/
-		constexpr void Disable(Flags<T> flags) noexcept {
-			mFlags &= ~flags.mFlags;
-		}
+		constexpr void Disable( Flags<T> flags ) noexcept { mFlags &= ~flags.mFlags; }
+
+		/*!
+		* @brief Checks if no flags are set.
+		*
+		* @return True if the flag set is empty (all bits are zero).
+		*/
+		constexpr bool IsEmpty( ) const noexcept { return mFlags == 0; }
 
 		/*!
 		* @brief Checks if a specific flag is set.
@@ -84,9 +83,7 @@ namespace lum {
 		* @param flag Flag to check.
 		* @return True if the flag is set, false otherwise.
 		*/
-		constexpr bool Has(T flag) const noexcept {
-			return (mFlags & static_cast<U>(flag)) != 0;
-		}
+		constexpr bool Has( T flag ) const noexcept { return (mFlags & static_cast<U>(flag)) != 0; }
 
 		/*!
 		* @brief Checks if only the allowed flags are set.
@@ -96,20 +93,16 @@ namespace lum {
 		* @param allowed Set of allowed flags.
 		* @return True if only allowed flags are set, false otherwise.
 		*/
-		constexpr bool HasOnly(Flags<T> allowed) const noexcept {
-			return (mFlags & ~allowed.mFlags) == 0;
-		}
+		constexpr bool HasOnly( Flags<T> allowed ) const noexcept { return (mFlags & ~allowed.mFlags) == 0; }
 
 		/*!
 		* @brief Clears all flags.
 		*
 		* Resets the internal flag state to zero.
 		*/
-		constexpr void Clear() noexcept {
-			mFlags = 0;
-		}
+		constexpr void Clear( ) noexcept { mFlags = 0; }
 
-		constexpr Flags& operator=(T flag) noexcept {
+		constexpr Flags& operator=( T flag ) noexcept {
 			mFlags = static_cast<U>(flag);
 			return *this;
 		}
@@ -138,7 +131,7 @@ namespace lum {
 
 	template<Enum T>
 		requires EnableEnumFlags<T>::value
-	constexpr Flags<T> operator|(T a, T b) {
+	constexpr Flags<T> operator|( T a, T b ) {
 		Flags<T> f;
 		f.Enable(a);
 		f.Enable(b);
@@ -147,14 +140,14 @@ namespace lum {
 
 	template<Enum T>
 		requires EnableEnumFlags<T>::value
-	constexpr Flags<T> operator|(Flags<T> a, T b) {
+	constexpr Flags<T> operator|( Flags<T> a, T b ) {
 		a.Enable(b);
 		return a;
 	}
 
 	template<Enum T>
 		requires EnableEnumFlags<T>::value
-	constexpr Flags<T>& operator|=(Flags<T>& a, T b) {
+	constexpr Flags<T>& operator|=( Flags<T>& a, T b ) {
 		a.Enable(b);
 		return a;
 	}
@@ -162,7 +155,7 @@ namespace lum {
 	
 	template<Enum T>
 		requires EnableEnumFlags<T>::value
-	constexpr Flags<T> operator&(T a, T b) {
+	constexpr Flags<T> operator&( T a, T b ) {
 		Flags<T> result;
 		if ((static_cast<std::underlying_type_t<T>>(a) &
 			static_cast<std::underlying_type_t<T>>(b)) != 0) {

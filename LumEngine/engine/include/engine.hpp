@@ -21,6 +21,7 @@
 #include "render/material_manager.hpp"
 #include "render/renderer.hpp"
 #include "render/render_system.hpp"
+#include "render/common.hpp"
 
 #include "scene/scene_manager.hpp"
 

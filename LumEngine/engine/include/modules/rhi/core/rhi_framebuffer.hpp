@@ -10,22 +10,16 @@
 
 namespace lum::rhi {
 
-	enum class RFramebufferAttachment : uint8 {
-		DepthAttach,
-		StencilAttach,
-		ColorAttach
-	};
+	struct RFramebufferDescriptor {
 
-	struct RFramebufferTextureDescriptor {
+		RTextureHandle	mColorTex[8];
+		uint8			mNumColorTex = 0;
+
+		RTextureHandle mDepthTex;
+		RTextureHandle mStencilTex;
 
 		uint32 mWidth = 0;
 		uint32 mHeight = 0;
-		
-		RImageLayout mFormat{};
-
-		bool bGenerateMipmaps = false;
-
-		RFramebufferAttachment mAttachment{};
 
 	};
 

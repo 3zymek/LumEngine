@@ -11,39 +11,12 @@
 #include "render/material_manager.hpp"
 #include "render/mesh_manager.hpp"
 #include "render/common.hpp"
-
-namespace lum {
-
-	/// Forward declare ///
-	class MTextureManager;
-	class MMeshManager;
-	class MShaderManager;
-	class EditorCamera;
-	class StaticMeshHandle;
-	///////////////////////
-}
+#include "render/passes/geometry_pass.hpp"
+#include "render/passes/light_pass.hpp"
+#include "render/passes/environment_pass.hpp"
+#include "render/g_buffer.hpp"
 
 namespace lum::render {
-
-	/* @brief Aggregates all external subsystem pointers required to initialize the renderer. */
-	struct FRendererContext {
-
-		/* @brief Pointer to the active RHI device. */
-		rhi::RDevice* mRenderDevice = nullptr;
-
-		/* @brief Pointer to the active texture manager. */
-		MTextureManager* mTextureMgr = nullptr;
-
-		/* @brief Pointer to the active material manager. */
-		MMaterialManager* mMaterialMgr = nullptr;
-
-		/* @brief Pointer to the active mesh manager. */
-		MMeshManager* mMeshMgr = nullptr;
-
-		/* @brief Pointer to the active shader manager. */
-		MShaderManager* mShaderMgr = nullptr;
-
-	};
 
 	/* @brief High-level renderer — accepts per-frame draw calls, lights and camera data,
 	*  and drives the underlying RHI passes to produce a final image.
@@ -61,7 +34,7 @@ namespace lum::render {
 		/* @brief Sets the environment cubemap texture used for skybox rendering.
 		*  @param tex Handle to the environment texture.
 		*/
-		void SetEnvironmentTexture( rhi::RTextureHandle tex );
+		void SetEnvironmentTexture( rhi::RTextureHandle tex ) { mEnvironmentPass.SetCubemapTexture(tex); }
 
 		/* @brief Updates the active camera used for rendering this frame.
 		*  @param camera Camera data containing view, projection and position.
@@ -71,15 +44,19 @@ namespace lum::render {
 		/* @brief Submits a point light to be included in the current frame's lighting.
 		*  @param light Point light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
-		void AddPointLight( const FPointLight& light );
+		void AddPointLight( const FPointLight& light ) { mLightPass.AddPointLight(light); }
 
-		void SetDirectionalLight(const FDirectionalLight& light);
-		FDirectionalLight GetDirectionalLight();
+		/* @brief Sets the active directional light for the current frame.
+		*  @param light Directional light to set.
+		*/
+		void SetDirectionalLight( const FDirectionalLight& light ) { mLightPass.SetDirectionalLight(light); }
 
+		/* @brief Returns the currently active directional light. */
+		FDirectionalLight GetDirectionalLight( ) { return mLightPass.GetDirectionalLight(); }
 		/* @brief Submits a render instance for drawing in the current frame.
 		*  @param obj Render instance containing transform, mesh and material.
 		*/
-		void Draw( const FRenderInstance& obj );
+		void Draw( const FRenderInstance& instance ) { mGeometryPass.Draw(instance); }
 
 		/* @brief Begins a new frame — clears per-frame state and prepares passes. */
 		void BeginFrame( );
@@ -92,78 +69,41 @@ namespace lum::render {
 		/* @brief Cached context holding all subsystem manager references. */
 		FRendererContext mContext;
 
-		/* @brief Per-frame light data submitted via AddPointLight. */
-		detail::FRenderLights mLights;
 
-
+		detail::GBuffer mGBuffer;
 
 		//---------------------------------------------------------
 		// Passes
 		//---------------------------------------------------------
 
-		/* @brief GPU buffer handles for all uniform and storage buffers. */
-		detail::FRendererUniforms mUniforms;
+		/* @brief Geometry pass — renders all submitted instances into the G-Buffer. */
+		GeometryPass mGeometryPass;
 
-		/* @brief Internal state for the environment (skybox) pass. */
-		detail::FEnvironmentPass mEnvironmentPass;
+		/* @brief Light pass — evaluates lighting using G-Buffer data. */
+		LightPass mLightPass;
 
-		/* @brief Internal state for the shadow map pass. */
-		detail::FShadowPass	mShadowPass;
+		/* @brief Environment pass — renders the skybox cubemap. */
+		EnvironmentPass mEnvironmentPass;
 
-		/* @brief Internal state for the main geometry pass. */
-		detail::FGeometryPass mGeometryPass;
 
 
 		//---------------------------------------------------------
 		// Uniforms
 		//---------------------------------------------------------
 
+		/* @brief Uniform buffer holding per-frame camera matrices and position. */
+		rhi::RBufferHandle mCameraBuffer;
+
 		/* @brief CPU-side camera uniform buffer, uploaded once per frame. */
-		detail::FCameraUniformBuffer mCurrentCamera {};
+		detail::FCameraUniformBuffer mCameraStruct{};
 
-		/* @brief CPU-side material uniform buffer, uploaded per draw call. */
-		detail::FMaterialUniformBuffer mMaterialUBO {};
-
-		detail::FDirectionalLightUniformBuffer mDirectionalLightUBO {};
 
 
 		/* @brief Allocates GPU buffers and initializes all render passes. */
 		void init( );
 
-		/* @brief Resets active light counts — called at the start of each frame. */
-		void clear_point_lights( );
-
-		void update_shadow_pass();
-
-		/* @brief Computes and uploads the model matrix for the given instance. */
-		void upload_model_matrix( const FRenderInstance& obj );
-
-		void upload_lightspace_matrix(const glm::mat4& mat);
-
-		/* @brief Uploads material parameters for the given material instance. */
-		void upload_material( const FMaterialInstance& mat );
-
-		/* @brief Uploads all active point lights to the shader storage buffer. */
-		void upload_point_lights( );
-
-		void upload_directional_light();
-
 		/* @brief Uploads the current camera uniform buffer to the GPU. */
 		void upload_camera_uniform( );
 
-		/* @brief Allocates and initializes all uniform and storage GPU buffers. */
-		void prep_buffers( );
-
-		/* @brief Initializes pipeline and shader for the geometry pass. */
-		void prep_geometry_pass( );
-
-		/* @brief Initializes pipeline, shader and geometry for the environment pass. */
-		void prep_environment_pass( );
-
-		/* @brief Initializes pipeline, shader and framebuffer for the shadow pass. */
-		void prep_shadow_pass( );
-
-
 	};
-
 } // namespace lum::render

@@ -155,40 +155,5 @@ namespace lum::rhi::gl {
 
 	}
 
-	bool GLDevice::validate_buffer_descriptor(const FBufferDescriptor& desc) noexcept {
-
-		if (desc.mBufferUsage == EBufferUsage::Static) {
-
-			if (!desc.mMapFlags.HasOnly(EMapFlag::Read | EMapFlag::Coherent)) {
-				LUM_LOG_ERROR("Invalid buffer descriptor - Static buffers only allow Read and Coherent flags");
-				return false;
-			}
-
-		}
-		else if ((desc.mMapFlags.Has(EMapFlag::Coherent)) && !(desc.mMapFlags.Has(EMapFlag::Persistent))) {
-			LUM_LOG_ERROR("Invalid buffer descriptor");
-			return false;
-		}
-
-		if (mBuffers.DenseSize() >= skMaxBuffers) {
-			LUM_LOG_ERROR("Max buffers reached");
-			return false;
-		}
-
-		if (desc.mSize <= 0) {
-			LUM_LOG_WARN("Invalid buffer size");
-			return false;
-		}
-
-		if (desc.mBufferType == EBufferType::None) {
-			LUM_LOG_WARN("No buffer type given");
-			return false;
-		}
-
-
-		return true;
-
-	}
-
 
 }

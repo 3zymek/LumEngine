@@ -66,11 +66,18 @@ namespace lum::rhi {
 		RG32F,
 		R32F,
 
-		// Depth/Stencil
+		// Depth
+		Depth16,
 		Depth24,
+		Depth32,
 		Depth32F,
+
+		// Depth/Stencil
 		Depth24Stencil8,
 		Depth32FStencil8,
+
+		// Stencil
+		StencilIndex8
 
 	};
 

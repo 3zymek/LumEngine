@@ -158,6 +158,7 @@ namespace lum {
 				return (sProjectRoot / filepath).lexically_normal().string();
 			else if (root == ERootID::Internal)
 				return (sInternalRoot / filepath).lexically_normal().string();
+			return "";
 		}
 
 		AssetLoader( const AssetLoader& ) = delete;

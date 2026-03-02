@@ -6,11 +6,44 @@
 //=============================================================================//
 #pragma once
 #include "core/core_common.hpp"
+#include "rhi/core/rhi_device.hpp"
+#include "core/shaders_define.h"
+#include "render/mesh_manager.hpp"
+#include "render/material.hpp"
+
+namespace lum {
+	/// Forward declare ///
+	class MTextureManager;
+	class MMaterialManager;
+	class MShaderManager;
+	class EditorCamera;
+	class MShaderManager;
+	///////////////////////
+}
 
 namespace lum::render {
 
 #	define LUM_UNIFORM_BUFFER_STRUCT struct alignas(16)
 
+	/* @brief Aggregates all external subsystem pointers required to initialize the renderer. */
+	struct FRendererContext {
+
+		/* @brief Pointer to the active RHI device. */
+		rhi::RDevice* mRenderDevice = nullptr;
+
+		/* @brief Pointer to the active texture manager. */
+		MTextureManager* mTextureMgr = nullptr;
+
+		/* @brief Pointer to the active material manager. */
+		MMaterialManager* mMaterialMgr = nullptr;
+
+		/* @brief Pointer to the active mesh manager. */
+		MMeshManager* mMeshMgr = nullptr;
+
+		/* @brief Pointer to the active shader manager. */
+		MShaderManager* mShaderMgr = nullptr;
+
+	};
 
 	/* @brief Directional light source — infinite distance, uniform direction.
 	*  Aligned to 16 bytes for std140 uniform buffer compatibility.
@@ -85,7 +118,7 @@ namespace lum::render {
 	namespace detail {
 
 		/* @brief Internal state for the environment (skybox) render pass. */
-		struct FEnvironmentPass {
+		struct FCubemapData {
 
 			/* @brief Shader program used for skybox rendering. */
 			rhi::RShaderHandle mShader;
@@ -107,57 +140,6 @@ namespace lum::render {
 
 			/* @brief Number of indices in the skybox index buffer. */
 			uint32 mNumIndices = 0;
-
-		};
-
-
-		/* @brief Internal state for the shadow map render pass. */
-		struct FShadowPass {
-
-			/* @brief Shader program used for depth-only shadow rendering. */
-			rhi::RShaderHandle mShader;
-
-			/* @brief Pipeline state for the shadow pass. */
-			rhi::RPipelineHandle mPipeline;
-
-			/* @brief Depth texture storing the shadow map. */
-			rhi::RTextureHandle	mDepthTexture;
-
-			/* @brief Framebuffer targeting the depth texture. */
-			rhi::RFramebufferHandle mDepthBuffer;
-
-			/* @brief Combined view-projection matrix from the light's perspective. */
-			glm::mat4 mLightSpaceMatrix = glm::mat4(1.f);
-
-		};
-
-		/* @brief Internal state for the main geometry render pass. */
-		struct FGeometryPass {
-
-			/* @brief Pipeline state for geometry rendering. */
-			rhi::RPipelineHandle mPipeline;
-
-			/* @brief Shader program used for geometry rendering. */
-			rhi::RShaderHandle mShader;
-
-		};
-
-		/* @brief Handles to all GPU uniform and storage buffers used by the renderer. */
-		struct FRendererUniforms {
-
-			/* @brief Uniform buffer holding per-frame camera matrices and position. */
-			rhi::RBufferHandle mCameraUniform;
-
-			/* @brief Uniform buffer holding per-draw model matrix. */
-			rhi::RBufferHandle mModelUniform;
-
-			/* @brief Uniform buffer holding per-draw material parameters. */
-			rhi::RBufferHandle mMaterialUniform;
-
-			/* @brief Shader storage buffer holding all active point lights. */
-			rhi::RBufferHandle mPointLights;
-
-			rhi::RBufferHandle mDirectionalLight;
 
 		};
 
@@ -196,20 +178,6 @@ namespace lum::render {
 			float32 _pad2 = 0.f;
 		};
 
-
-		/* @brief Aggregates all active lights for a single frame. */
-		struct FRenderLights {
-
-			/* @brief Active directional light for this frame. */
-			FDirectionalLight mDirectional;
-
-			/* @brief Array of active point lights for this frame. */
-			std::array<FPointLight, LUM_MAX_LIGHTS> mPoints{};
-
-			/* @brief Number of currently active point lights. */
-			uint32 mActivePoints = 0;
-
-		};
 
 	} // namespace lum::render::detail
 
