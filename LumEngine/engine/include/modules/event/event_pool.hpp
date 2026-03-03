@@ -131,12 +131,12 @@ namespace lum {
 
 				void init() {
 
-					mEventsCurrent.reserve(limits::gMaxCallbackPerFrame);
-					mEventsNext.reserve(limits::gMaxCallbackPerFrame);
+					mEventsCurrent.reserve(limits::gMaxCallbackPf);
+					mEventsNext.reserve(limits::gMaxCallbackPf);
 
 				}
 
-				std::array<Callback, limits::gMaxCallbackPerFrame>    mCallbacks;
+				std::array<Callback, limits::gMaxCallbackPf>    mCallbacks;
 				std::array<Callback, limits::gMaxPermanentCallbacks>  mPermCallbacks;
 				EventT mCurrentCallbacksID = 0;
 

@@ -690,10 +690,10 @@ namespace lum::rhi {
 
 	protected:
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static uint32 skMaxTextureUnits = 32;
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static uint32 skMaxSamplerUnits = 32;
 
 		std::array<RTextureHandle, skMaxTextureUnits> mCurrentTextures{};
@@ -733,13 +733,13 @@ namespace lum::rhi {
 
 #		endif
 
-		LUM_COMPILE_VARIABLE static uint32 skMaxShaders			= 8;
-		LUM_COMPILE_VARIABLE static uint32 skMaxSamplers		= 500;
-		LUM_COMPILE_VARIABLE static uint32 skMaxBuffers			= 10000;
-		LUM_COMPILE_VARIABLE static uint32 skMaxLayouts			= 10000;
-		LUM_COMPILE_VARIABLE static uint32 skMaxTextures		= 1000;
-		LUM_COMPILE_VARIABLE static uint32 skMaxFramebuffers	= 100;
-		LUM_COMPILE_VARIABLE static uint32 skMaxPipelines		= 100;
+		inline constexpr static uint32 skMaxShaders			= 8;
+		inline constexpr static uint32 skMaxSamplers		= 500;
+		inline constexpr static uint32 skMaxBuffers			= 10000;
+		inline constexpr static uint32 skMaxLayouts			= 10000;
+		inline constexpr static uint32 skMaxTextures		= 1000;
+		inline constexpr static uint32 skMaxFramebuffers	= 100;
+		inline constexpr static uint32 skMaxPipelines		= 100;
 
 		cstd::HandlePool<RSamplerHandle, FSampler, RSamplerID>				mSamplers{ skMaxSamplers };
 		cstd::HandlePool<RShaderHandle, FShader, RShaderID>					mShaders{ skMaxShaders };

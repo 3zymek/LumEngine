@@ -10,6 +10,10 @@
 #include "core/shaders_define.h"
 #include "render/mesh_manager.hpp"
 #include "render/material.hpp"
+#include "entity/components/transform.hpp"
+#include "entity/components/mesh.hpp"
+#include "entity/components/material.hpp"
+#include "entity/components/light.hpp"
 
 namespace lum {
 	/// Forward declare ///
@@ -65,17 +69,8 @@ namespace lum::render {
 	/* @brief Point light source — emits light in all directions from a single position. */
 	struct FPointLight {
 
-		/* @brief World-space position of the light. */
-		glm::vec3 mPosition;
-
-		/* @brief Intensity multiplier applied to the light color. */
-		float32 mIntensity;
-
-		/* @brief Linear RGB color of the light. */
-		glm::vec3 mColor;
-
-		/* @brief Maximum influence radius of the light in world units. */
-		float32 mRadius;
+		CPointLight* mLight = nullptr;
+		CTransform* mTransform = nullptr;
 
 	};
 
@@ -83,20 +78,11 @@ namespace lum::render {
 	/* @brief Represents a single renderable object submitted to the renderer per frame. */
 	struct FRenderInstance {
 
-		/* @brief World position. */
-		glm::vec3 mPosition = { 0.f, 0.f, 0.f };
+		CTransform* mTransform = nullptr;
 
-		/* @brief Non-uniform scale. */
-		glm::vec3 mScale = { 1.f, 1.f, 1.f };
+		CStaticMesh* mStaticMesh = nullptr;
 
-		/* @brief Euler rotation in degrees. */
-		glm::vec3 mRotation = { 0.f, 0.f, 0.f };
-
-		/* @brief Handle to the static mesh asset to render. */
-		StaticMeshHandle mStaticMesh;
-
-		/* @brief Material instance defining surface appearance. */
-		FMaterialInstance mMaterial;
+		CMaterial* mMaterial = nullptr;
 
 	};
 

@@ -25,7 +25,7 @@ namespace lum::render {
 		/* @brief Uploads uniforms and issues a draw call for the given render instance.
 		*  @param instance Render instance containing transform, mesh and material.
 		*/
-		void Draw( const FRenderInstance& instance );
+		void Submit( const FRenderInstance& instance );
 
 		/* @brief Begins the geometry pass — binds pipeline and prepares state. */
 		void BeginPass( );
@@ -34,6 +34,11 @@ namespace lum::render {
 		void EndPass( );
 
 	private:
+
+		std::vector<FRenderInstance> mInstances;
+
+		inline constexpr static uint32 mTempSize = 64;
+		std::vector<FRenderInstance> mTempInstances;
 
 		/* @brief Cached context holding all subsystem manager references. */
 		FRendererContext mContext;
@@ -55,6 +60,8 @@ namespace lum::render {
 
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
 		void init( );
+
+		void draw_instance(const FRenderInstance& instance);
 
 		/* @brief Computes and uploads the model matrix for the given instance.
 		*  @param instance Render instance to compute the model matrix from.

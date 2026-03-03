@@ -41,7 +41,7 @@ namespace lum {
 
 			inline std::array<bool, static_cast<int32>(Key::MAX_COUNT)> gKeyIsPressed{};
 
-			LUM_COMPILE_VARIABLE 
+			inline constexpr 
 			int32 gKeyMap[] = {
 				GLFW_KEY_SPACE,
 				GLFW_KEY_APOSTROPHE,

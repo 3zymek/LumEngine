@@ -34,6 +34,13 @@ namespace lum {
 
 			float32 aspect = (float32)window->GetWidth() / (float32)window->GetHeight();
 
+			if (ImGui::Button("Add transform")) {
+				if (!entityMgr->HasComponent<CTransform>(1))
+					entityMgr->AddComponent<CTransform>(1);
+				else
+					entityMgr->RemoveComponent<CTransform>(1);
+			}
+
 			entityMgr->Each<CCamera, CTransform>(
 				[&](CCamera& camera, CTransform& transform) {
 					FRenderCamera data;
@@ -96,34 +103,33 @@ namespace lum {
 				[&](CRender& render, CTransform& transform, CMaterial& material, CStaticMesh& mesh)
 				{
 					if (!render.bVisible) return;
-					render::FRenderInstance obj;
+					render::FRenderInstance inst;
 					
 					ImGui::DragFloat("Roughness", &material.mMat.mRoughnessValue, 0.01f, 0.0f, 1.0f);
 					ImGui::DragFloat("Metallic", &material.mMat.mMetallicValue, 0.01f, 0.0f, 1.0f);
 					ImGui::ColorEdit3("BaseColor", glm::value_ptr(material.mMat.mBaseColor), 0.01f);
 
-					obj.mMaterial = material.mMat;
-					obj.mStaticMesh = mesh.mMesh;
-					obj.mPosition = transform.mPosition;
-					obj.mRotation = transform.mRotation;
-					obj.mScale = transform.mScale;
-					mRenderer->Draw(obj);
+					inst.mMaterial = &material;
+					inst.mStaticMesh = &mesh;
+					inst.mTransform = &transform;
+
+					mRenderer->Submit(inst);
 				});
 			ImGui::End();
 
 			entityMgr->Each<CTransform, CPointLight>(
 				[&](CTransform& transform, CPointLight& light) {
 					FPointLight pointL;
-					pointL.mColor = light.mColor;
-					pointL.mIntensity = light.mIntensity;
-					pointL.mPosition = transform.mPosition;
-					pointL.mRadius = light.mRadius;
+
+					pointL.mLight = &light;
+					pointL.mTransform = &transform;
+
 					mRenderer->AddPointLight(pointL);
 				}
 			);
 
 			if (ImGui::CollapsingHeader("Point Lights")) {
-				uint32_t i = 0;
+				uint32 i = 0;
 				entityMgr->Each<CTransform, CPointLight>(
 					[&](CTransform& transform, CPointLight& light) {
 						ImGui::PushID(i);

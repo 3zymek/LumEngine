@@ -75,7 +75,7 @@ namespace lum {
 			base = mDefaultMaterial;
 
 		FMaterialInstance instance;
-		FMaterialBase matBase = mBaseMaterials[base];
+		FMaterialBase& matBase = mBaseMaterials[base];
 
 		instance = static_cast<FMaterialInstance>(matBase);
 

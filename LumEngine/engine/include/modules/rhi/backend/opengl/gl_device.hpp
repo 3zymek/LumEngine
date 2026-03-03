@@ -216,7 +216,7 @@ namespace lum::rhi::gl {
 
 	protected:
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skTopologyModeLookup[] = 
 		{ 
 			GL_POINT, 
@@ -224,7 +224,7 @@ namespace lum::rhi::gl {
 			GL_FILL 
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skFacesLookup[] =
 		{ 
 			GL_FRONT, 
@@ -232,7 +232,7 @@ namespace lum::rhi::gl {
 			GL_FRONT_AND_BACK 
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skTextureMinFilterLookup[] =
 		{
 			GL_LINEAR,
@@ -244,7 +244,7 @@ namespace lum::rhi::gl {
 			GL_NEAREST_MIPMAP_LINEAR
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skSamplerWrapLookup[] =
 		{
 			GL_REPEAT,
@@ -254,7 +254,7 @@ namespace lum::rhi::gl {
 			GL_CLAMP_TO_BORDER
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skCompareFlagLookup[] =
 		{
 			GL_EQUAL,
@@ -267,7 +267,7 @@ namespace lum::rhi::gl {
 			GL_NEVER
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skBlendFactorLookup[] =
 		{
 			GL_ZERO,
@@ -297,7 +297,7 @@ namespace lum::rhi::gl {
 
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skBlendOpLookup[] =
 		{
 			GL_FUNC_ADD,
@@ -307,7 +307,7 @@ namespace lum::rhi::gl {
 			GL_MAX
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skStencilOpLookup[] =
 		{
 			GL_ZERO,
@@ -321,7 +321,7 @@ namespace lum::rhi::gl {
 			GL_INVERT
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skClearOpLookup[] =
 		{
 			GL_COLOR_BUFFER_BIT,
@@ -329,7 +329,7 @@ namespace lum::rhi::gl {
 			GL_STENCIL_BUFFER_BIT
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skTextureTypeLookup[] =
 		{
 			GL_NONE,
@@ -338,7 +338,7 @@ namespace lum::rhi::gl {
 			GL_TEXTURE_CUBE_MAP
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skImageLayoutLookup[] =
 		{
 			GL_RGBA8,
@@ -369,7 +369,7 @@ namespace lum::rhi::gl {
 
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skImageFormatLookup[] =
 		{
 			GL_RGBA,
@@ -381,7 +381,7 @@ namespace lum::rhi::gl {
 			GL_DEPTH_STENCIL
 		};
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static GLenum skTextureDataTypeLookup[] =
 		{
 			GL_UNSIGNED_BYTE,

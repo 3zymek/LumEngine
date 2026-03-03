@@ -56,7 +56,7 @@ namespace lum::render {
 		/* @brief Submits a render instance for drawing in the current frame.
 		*  @param obj Render instance containing transform, mesh and material.
 		*/
-		void Draw( const FRenderInstance& instance ) { mGeometryPass.Draw(instance); }
+		void Submit( const FRenderInstance& instance ) { mGeometryPass.Submit(instance); }
 
 		/* @brief Begins a new frame — clears per-frame state and prepares passes. */
 		void BeginFrame( );

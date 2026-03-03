@@ -28,7 +28,3 @@
 #else
 #   define LUM_NODISCARD
 #endif
-
-#define LUM_NOEXCEPT      noexcept
-
-#define LUM_COMPILE_VARIABLE inline constexpr

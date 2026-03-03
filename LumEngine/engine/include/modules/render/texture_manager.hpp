@@ -160,7 +160,7 @@ namespace lum {
 		};
 
 		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static uint16 skTextureBindingLookups[] = {
 			LUM_TEX_ALBEDO,
 			LUM_TEX_NORMAL,

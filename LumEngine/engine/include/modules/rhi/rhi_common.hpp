@@ -190,7 +190,7 @@ namespace lum {
 			/* @brief Lookup table mapping EDataFormat enum values to their component counts.
 			* Indexed by the underlying value of EDataFormat.
 			*/
-			LUM_COMPILE_VARIABLE
+			inline constexpr
 			uint8 gDataFormatLookup[] = { 1, 2, 3, 4, 9, 16 };
 
 		} // namespace lum::rhi::detail

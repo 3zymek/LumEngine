@@ -118,13 +118,13 @@ namespace lum {
 
 	private:
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static uint32 sMaxColorLength = 6;   /* Max ANSI color code length (with \0). */
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static uint32 sMaxSeverityLength = 6;   /* Max severity string length (with \0). */
 
-		LUM_COMPILE_VARIABLE
+		inline constexpr
 		static uint32 sMaxDescriptionLength = 128; /* Max formatted description buffer length. */
 
 		/* @brief Buffers used for formatting log output. */

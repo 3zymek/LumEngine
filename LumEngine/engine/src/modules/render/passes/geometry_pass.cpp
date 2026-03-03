@@ -22,31 +22,32 @@ namespace lum::render {
 
 		mContext = ctx;
 
+		mInstances.reserve(limits::gMaxDrawCallsPf);
+		mTempInstances.reserve(mTempSize);
+
 		init();
 
 	}
 
-	void GeometryPass::Draw( const FRenderInstance& instance ) {
-		
-		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic(instance.mStaticMesh);
-		const auto& mat = instance.mMaterial;
+	void GeometryPass::Submit( const FRenderInstance& instance ) {
+	
+		LUM_HOTCHK_RETURN_VOID(
+			(mInstances.size() < limits::gMaxDrawCallsPf), 
+			LUM_SEV_WARN, 
+			"Draw calls per frame limit reached"
+		);
 
-		upload_model_matrix(instance);
-		upload_material(mat);
-
-		mContext.mRenderDevice->BindPipeline(mPipeline);
-		mContext.mRenderDevice->BindShader(mShader);
-		mContext.mRenderDevice->BindTexture(mat.mAlbedoTex, LUM_TEX_ALBEDO);
-		mContext.mRenderDevice->BindTexture(mat.mNormalTex, LUM_TEX_NORMAL);
-		mContext.mRenderDevice->BindTexture(mat.mMetallicTex, LUM_TEX_METALNESS);
-		mContext.mRenderDevice->BindTexture(mat.mRoughnessTex, LUM_TEX_ROUGHNESS);
-
-		mContext.mRenderDevice->DrawElements(res.mVao, res.mNumIndices);
+		mInstances.push_back(instance);
 
 	}
 
 	void GeometryPass::BeginPass( ) {
 		
+		for (auto& instance : mInstances)
+			draw_instance(instance);
+
+		mInstances.clear();
+
 	}
 	void GeometryPass::EndPass( ) {
 
@@ -88,15 +89,35 @@ namespace lum::render {
 		}
 		
 	}
+
+	void GeometryPass::draw_instance(const FRenderInstance& instance) {
+		
+		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic(instance.mStaticMesh->mMesh);
+		const auto& mat = instance.mMaterial->mMat;
+
+		upload_model_matrix(instance);
+		upload_material(mat);
+
+		mContext.mRenderDevice->BindPipeline(mPipeline);
+		mContext.mRenderDevice->BindShader(mShader);
+		mContext.mRenderDevice->BindTexture(mat.mAlbedoTex, LUM_TEX_ALBEDO);
+		mContext.mRenderDevice->BindTexture(mat.mNormalTex, LUM_TEX_NORMAL);
+		mContext.mRenderDevice->BindTexture(mat.mMetallicTex, LUM_TEX_METALNESS);
+		mContext.mRenderDevice->BindTexture(mat.mRoughnessTex, LUM_TEX_ROUGHNESS);
+
+		mContext.mRenderDevice->DrawElements(res.mVao, res.mNumIndices);
+
+	}
+
 	void GeometryPass::upload_model_matrix( const FRenderInstance& instance ) {
 
-		glm::quat rot = glm::quat(glm::radians(instance.mRotation));
+		glm::quat rot = glm::quat(glm::radians(instance.mTransform->mRotation));
 		glm::mat4 rotation = glm::mat4_cast(rot);
 		glm::mat4 model = glm::mat4(1.f);
 		model = glm::mat4(1.f);
-		model = glm::translate(model, instance.mPosition);
+		model = glm::translate(model, instance.mTransform->mPosition);
 		model = model * rotation;
-		model = glm::scale(model, instance.mScale);
+		model = glm::scale(model, instance.mTransform->mScale);
 
 		mContext.mRenderDevice->UpdateBuffer(mModelUniform, glm::value_ptr(model), 0, 0);
 

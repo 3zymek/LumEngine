@@ -202,48 +202,48 @@ namespace lum {
 	*/
 	namespace cmdcolor {
 
-		LUM_COMPILE_VARIABLE ccharptr Reset = "\033[0m";
-		LUM_COMPILE_VARIABLE ccharptr Black = "\033[30m";
-		LUM_COMPILE_VARIABLE ccharptr Red = "\033[31m";
-		LUM_COMPILE_VARIABLE ccharptr Green = "\033[32m";
-		LUM_COMPILE_VARIABLE ccharptr Yellow = "\033[33m";
-		LUM_COMPILE_VARIABLE ccharptr Blue = "\033[34m";
-		LUM_COMPILE_VARIABLE ccharptr Magenta = "\033[35m";
-		LUM_COMPILE_VARIABLE ccharptr Cyan = "\033[36m";
-		LUM_COMPILE_VARIABLE ccharptr White = "\033[37m";
+		inline constexpr ccharptr Reset = "\033[0m";
+		inline constexpr ccharptr Black = "\033[30m";
+		inline constexpr ccharptr Red = "\033[31m";
+		inline constexpr ccharptr Green = "\033[32m";
+		inline constexpr ccharptr Yellow = "\033[33m";
+		inline constexpr ccharptr Blue = "\033[34m";
+		inline constexpr ccharptr Magenta = "\033[35m";
+		inline constexpr ccharptr Cyan = "\033[36m";
+		inline constexpr ccharptr White = "\033[37m";
 
-		LUM_COMPILE_VARIABLE ccharptr LightBlack = "\033[90m";
-		LUM_COMPILE_VARIABLE ccharptr LightRed = "\033[91m";
-		LUM_COMPILE_VARIABLE ccharptr LightGreen = "\033[92m";
-		LUM_COMPILE_VARIABLE ccharptr LightYellow = "\033[93m";
-		LUM_COMPILE_VARIABLE ccharptr LightBlue = "\033[94m";
-		LUM_COMPILE_VARIABLE ccharptr LightMagenta = "\033[95m";
-		LUM_COMPILE_VARIABLE ccharptr LightCyan = "\033[96m";
-		LUM_COMPILE_VARIABLE ccharptr LightWhite = "\033[97m";
+		inline constexpr ccharptr LightBlack = "\033[90m";
+		inline constexpr ccharptr LightRed = "\033[91m";
+		inline constexpr ccharptr LightGreen = "\033[92m";
+		inline constexpr ccharptr LightYellow = "\033[93m";
+		inline constexpr ccharptr LightBlue = "\033[94m";
+		inline constexpr ccharptr LightMagenta = "\033[95m";
+		inline constexpr ccharptr LightCyan = "\033[96m";
+		inline constexpr ccharptr LightWhite = "\033[97m";
 
-		LUM_COMPILE_VARIABLE ccharptr BgBlack = "\033[40m";
-		LUM_COMPILE_VARIABLE ccharptr BgRed = "\033[41m";
-		LUM_COMPILE_VARIABLE ccharptr BgGreen = "\033[42m";
-		LUM_COMPILE_VARIABLE ccharptr BgYellow = "\033[43m";
-		LUM_COMPILE_VARIABLE ccharptr BgBlue = "\033[44m";
-		LUM_COMPILE_VARIABLE ccharptr BgMagenta = "\033[45m";
-		LUM_COMPILE_VARIABLE ccharptr BgCyan = "\033[46m";
-		LUM_COMPILE_VARIABLE ccharptr BgWhite = "\033[47m";
+		inline constexpr ccharptr BgBlack = "\033[40m";
+		inline constexpr ccharptr BgRed = "\033[41m";
+		inline constexpr ccharptr BgGreen = "\033[42m";
+		inline constexpr ccharptr BgYellow = "\033[43m";
+		inline constexpr ccharptr BgBlue = "\033[44m";
+		inline constexpr ccharptr BgMagenta = "\033[45m";
+		inline constexpr ccharptr BgCyan = "\033[46m";
+		inline constexpr ccharptr BgWhite = "\033[47m";
 
-		LUM_COMPILE_VARIABLE ccharptr BgLightBlack = "\033[100m";
-		LUM_COMPILE_VARIABLE ccharptr BgLightRed = "\033[101m";
-		LUM_COMPILE_VARIABLE ccharptr BgLightGreen = "\033[102m";
-		LUM_COMPILE_VARIABLE ccharptr BgLightYellow = "\033[103m";
-		LUM_COMPILE_VARIABLE ccharptr BgLightBlue = "\033[104m";
-		LUM_COMPILE_VARIABLE ccharptr BgLightMagenta = "\033[105m";
-		LUM_COMPILE_VARIABLE ccharptr BgLightCyan = "\033[106m";
-		LUM_COMPILE_VARIABLE ccharptr BgLightWhite = "\033[107m";
+		inline constexpr ccharptr BgLightBlack = "\033[100m";
+		inline constexpr ccharptr BgLightRed = "\033[101m";
+		inline constexpr ccharptr BgLightGreen = "\033[102m";
+		inline constexpr ccharptr BgLightYellow = "\033[103m";
+		inline constexpr ccharptr BgLightBlue = "\033[104m";
+		inline constexpr ccharptr BgLightMagenta = "\033[105m";
+		inline constexpr ccharptr BgLightCyan = "\033[106m";
+		inline constexpr ccharptr BgLightWhite = "\033[107m";
 
-		LUM_COMPILE_VARIABLE ccharptr FontBold = "\033[1m";
-		LUM_COMPILE_VARIABLE ccharptr FontItalic = "\033[3m";
-		LUM_COMPILE_VARIABLE ccharptr FontUnderline = "\033[4m";
-		LUM_COMPILE_VARIABLE ccharptr FontStrikethrough = "\033[9m";
-		LUM_COMPILE_VARIABLE ccharptr FontReserve = "\033[7m";
+		inline constexpr ccharptr FontBold = "\033[1m";
+		inline constexpr ccharptr FontItalic = "\033[3m";
+		inline constexpr ccharptr FontUnderline = "\033[4m";
+		inline constexpr ccharptr FontStrikethrough = "\033[9m";
+		inline constexpr ccharptr FontReserve = "\033[7m";
 
 	} // namespace lum::cmdcolor
 

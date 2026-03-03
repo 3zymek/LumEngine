@@ -19,7 +19,7 @@ namespace lum {
 			
 			using SubscribtionID = uint32;
 
-			LUM_COMPILE_VARIABLE 
+			inline constexpr 
 			usize gMaxDeleteCallbacksPerFrame = 2;
 
 			struct Callback {
