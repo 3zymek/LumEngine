@@ -88,15 +88,11 @@ namespace lum::render::detail {
 		}
 
 		void init() {
-			
-			mContext.mEventBus->SubscribePermanently<EWindowResized>([this](const EWindowResized& e) {
-				
-				});
 
 			{
 				rhi::RFramebufferDescriptor desc;
-				desc.mColorTex[0] = mAlbedo;
-				desc.mColorTex[1] = mNormal;
+				desc.mColorTex[LUM_GBUFFER_ALBEDO] = mAlbedo;
+				desc.mColorTex[LUM_GBUFFER_NORMAL] = mNormal;
 				desc.mNumColorTex = 2;
 				desc.mDepthTex = mDepth;
 				mFramebuffer = mContext.mRenderDevice->CreateFramebuffer(desc);
