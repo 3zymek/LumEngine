@@ -281,27 +281,38 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::DrawInstanced(const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount) {
+	void GLDevice::DrawInstanced(const RVertexLayoutHandle& vao, uint32 numVertices, uint32 numInstances) {
 
 	}
-	void GLDevice::DrawInstancedBase(const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount, uint32 baseInstance) {
+	void GLDevice::DrawInstancedBase(const RVertexLayoutHandle& vao, uint32 numVertices, uint32 numInstances, uint32 baseInstance) {
 
 	}
 
-	void GLDevice::DrawElements(const RVertexLayoutHandle& vao, uint32 indices_count) {
-		LUM_HOTCHK_RETURN_VOID(mLayouts.Contains(vao), LUM_SEV_WARN, "Cannot draw, invalid vertex layout");
+	void GLDevice::DrawElements( const RVertexLayoutHandle& layout, uint32 numIndices ) {
 
-		glBindVertexArray(mLayouts[vao].mHandle);
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices_count), GL_UNSIGNED_INT, nullptr);
+		LUM_HOTCHK_RETURN_VOID(
+			mLayouts.Contains(layout), 
+			LUM_SEV_WARN, 
+			"Cannot draw, invalid vertex layout"
+		);
+
+		LUM_HOTCHK_RETURN_VOID(
+			mBuffers.Contains(mLayouts[layout].mElementBuff), 
+			LUM_SEV_WARN, 
+			"Layout doesn't have attached any element buffers"
+		);
+
+		glBindVertexArray(mLayouts[layout].mHandle);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(numIndices), GL_UNSIGNED_INT, nullptr);
 
 		LUM_PROFILER_DRAW_CALL();
 
 	}
 
-	void GLDevice::DrawElementsInstanced ( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount) {
+	void GLDevice::DrawElementsInstanced( const RVertexLayoutHandle& layout, uint32 numIndices, uint32 numInstances) {
 
 	}
-	void GLDevice::DrawElementsInstancedBase ( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance) {
+	void GLDevice::DrawElementsInstancedBase( const RVertexLayoutHandle& layout, uint32 numIndices, uint32 numInstances, uint32 baseInstance) {
 
 	}
 

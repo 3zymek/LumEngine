@@ -9,30 +9,30 @@
 
 namespace lum::rhi::gl {
 
-	RTextureHandle GLDevice::CreateTexture(const RTextureDescriptor& desc) {
+	RTextureHandle GLDevice::CreateTexture( const FTextureDescriptor& desc ) {
 
-		if (desc.mTextureType == RTextureType::None) {
+		if (desc.mTextureType == TextureType::None) {
 			LUM_LOG_WARN("No texture type given");
 			return {};
 		}
 
-		if (desc.mTextureType == RTextureType::Texture2D)
+		if (desc.mTextureType == TextureType::Texture2D)
 			return create_texture_2d(desc);
 
-		else if (desc.mTextureType == RTextureType::Texture3D)
+		else if (desc.mTextureType == TextureType::Texture3D)
 			return create_texture_3d(desc);
 
-		else if (desc.mTextureType == RTextureType::Cubemap)
+		else if (desc.mTextureType == TextureType::Cubemap)
 			return create_texture_cubemap(desc);
 
 		return {};
 	}
-	void GLDevice::UnbindTexture(RTextureType type) {
+	void GLDevice::UnbindTexture( TextureType type ) {
 
 		glBindTextureUnit(skTextureTypeLookup[LookupCast(type)], 0);
 
 	}
-	void GLDevice::UpdateTexture(const RTextureHandle& tex, const RTextureUpdateDescriptor& desc) {
+	void GLDevice::UpdateTexture( const RTextureHandle& tex, const FTextureUpdateDescriptor& desc ) {
 
 		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(tex), LUM_SEV_WARN, "Texture doesn't exist");
 
@@ -76,7 +76,7 @@ namespace lum::rhi::gl {
 		}
 
 	}
-	void GLDevice::DeleteTexture(RTextureHandle& texture) {
+	void GLDevice::DeleteTexture( RTextureHandle& texture ) {
 
 		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(texture), LUM_SEV_WARN, "Texture doesn't exist");
 
@@ -85,7 +85,7 @@ namespace lum::rhi::gl {
 		mTextures.Remove(texture);
 
 	}
-	void GLDevice::BindTexture(const RTextureHandle& texture, uint16 binding) {
+	void GLDevice::BindTexture( const RTextureHandle& texture, uint16 binding ) {
 
 		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(texture) && binding < skMaxTextureUnits, LUM_SEV_WARN, "Texture doesn't exist");
 
@@ -103,7 +103,7 @@ namespace lum::rhi::gl {
 
 	}
 	
-	RTextureHandle GLDevice::create_texture_2d(const RTextureDescriptor& desc) {
+	RTextureHandle GLDevice::create_texture_2d( const FTextureDescriptor& desc ) {
 
 		FTexture texture;
 
@@ -124,16 +124,17 @@ namespace lum::rhi::gl {
 			height
 		);
 
-		glTextureSubImage2D(
-			texture.mHandle,
-			0,
-			0, 0,
-			width,
-			height,
-			skImageFormatLookup[LookupCast(desc.mImageFormat)],
-			skTextureDataTypeLookup[LookupCast(desc.mDataType)],
-			data
-		);
+		if(data != nullptr)
+			glTextureSubImage2D(
+				texture.mHandle,
+				0,
+				0, 0,
+				width,
+				height,
+				skImageFormatLookup[LookupCast(desc.mImageFormat)],
+				skTextureDataTypeLookup[LookupCast(desc.mDataType)],
+				data
+			);
 
 		if (mipmapLevels > 1) {
 			glGenerateTextureMipmap(texture.mHandle);
@@ -144,7 +145,7 @@ namespace lum::rhi::gl {
 		texture.mInternalFormat = desc.mImageLayout;
 		texture.mRect.mWidth = width;
 		texture.mRect.mHeight = height;
-		texture.mType = RTextureType::Texture2D;
+		texture.mType = TextureType::Texture2D;
 		texture.mMipmapLevels = mipmapLevels;
 
 		auto textureHandle = mTextures.Append(std::move(texture));
@@ -154,14 +155,14 @@ namespace lum::rhi::gl {
 		return textureHandle;
 
 	}
-	RTextureHandle GLDevice::create_texture_3d(const RTextureDescriptor&) {
+	RTextureHandle GLDevice::create_texture_3d( const FTextureDescriptor& ) {
 
 		// TODO IMPLEMENT
 		return {};
 
 	}
 
-	RTextureHandle GLDevice::create_texture_cubemap(const RTextureDescriptor& desc) {
+	RTextureHandle GLDevice::create_texture_cubemap( const FTextureDescriptor& desc ) {
 	
 		FTexture tex;
 

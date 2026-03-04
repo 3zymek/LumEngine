@@ -72,6 +72,8 @@ namespace lum::render {
 
 		detail::GBuffer mGBuffer;
 
+		detail::FScreenQuad mScreenQuad;
+
 		//---------------------------------------------------------
 		// Passes
 		//---------------------------------------------------------

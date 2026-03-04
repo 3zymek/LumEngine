@@ -3,7 +3,7 @@
 #include "rhi/backend/opengl/gl_device.hpp"
 namespace lum::rhi {
 
-	bool RDevice::validate_texture_descriptor(const RTextureDescriptor& desc) {
+	bool RDevice::validate_texture_descriptor(const FTextureDescriptor& desc) {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mTextures.DenseSize() <= skMaxTextures,
@@ -22,9 +22,9 @@ namespace lum::rhi {
 		return true;
 
 	}
-	bool RDevice::validate_buffer_descriptor(const FBufferDescriptor& desc) {
+	bool RDevice::validate_buffer_descriptor( const FBufferDescriptor& desc ) {
 
-		if (desc.mBufferUsage == EBufferUsage::Static) {
+		if (desc.mBufferUsage == BufferUsage::Static) {
 			LUM_ASSERT(
 				desc.mMapFlags.IsEmpty(),
 				"Static buffers cannot be mapped"
@@ -32,17 +32,17 @@ namespace lum::rhi {
 		}
 
 		// Coherent wymaga Persistent
-		if (desc.mMapFlags.Has(EMapFlag::Coherent)) {
+		if (desc.mMapFlags.Has(MapFlag::Coherent)) {
 			LUM_ASSERT(
-				desc.mMapFlags.Has(EMapFlag::Persistent),
+				desc.mMapFlags.Has(MapFlag::Persistent),
 				"Coherent flag requires Persistent flag"
 			);
 		}
 
 		// Persistent wymaga Read lub Write
-		if (desc.mMapFlags.Has(EMapFlag::Persistent)) {
+		if (desc.mMapFlags.Has(MapFlag::Persistent)) {
 			LUM_ASSERT(
-				desc.mMapFlags.Has(EMapFlag::Read) || desc.mMapFlags.Has(EMapFlag::Write),
+				desc.mMapFlags.Has(MapFlag::Read) || desc.mMapFlags.Has(MapFlag::Write),
 				"Persistent flag requires Read or Write flag"
 			);
 		}
@@ -55,26 +55,26 @@ namespace lum::rhi {
 		);
 
 		LUM_ASSERT(desc.mSize > 0, "Invalid buffer size");
-		LUM_ASSERT(desc.mBufferType != EBufferType::None, "No buffer type given");
+		LUM_ASSERT(desc.mBufferType != BufferType::None, "No buffer type given");
 
 		return true;
 
 	}
 
-	bool RDevice::is_depth_format(RImageLayout fmt) {
-		return fmt == RImageLayout::Depth16 ||
-			fmt == RImageLayout::Depth24 ||
-			fmt == RImageLayout::Depth32 ||
-			fmt == RImageLayout::Depth32F ||
-			fmt == RImageLayout::Depth24Stencil8 ||
-			fmt == RImageLayout::Depth32FStencil8;
+	bool RDevice::is_depth_format(ImageLayout fmt) {
+		return fmt == ImageLayout::Depth16 ||
+			fmt == ImageLayout::Depth24 ||
+			fmt == ImageLayout::Depth32 ||
+			fmt == ImageLayout::Depth32F ||
+			fmt == ImageLayout::Depth24Stencil8 ||
+			fmt == ImageLayout::Depth32FStencil8;
 	}
-	bool RDevice::is_stencil_format(RImageLayout fmt) {
-		return fmt == RImageLayout::StencilIndex8 ||
-			fmt == RImageLayout::Depth24Stencil8 ||
-			fmt == RImageLayout::Depth32FStencil8;
+	bool RDevice::is_stencil_format(ImageLayout fmt) {
+		return fmt == ImageLayout::StencilIndex8 ||
+			fmt == ImageLayout::Depth24Stencil8 ||
+			fmt == ImageLayout::Depth32FStencil8;
 	}
-	bool RDevice::is_color_format(RImageLayout fmt) {
+	bool RDevice::is_color_format(ImageLayout fmt) {
 		return !is_depth_format(fmt) && !is_stencil_format(fmt);
 	}
 

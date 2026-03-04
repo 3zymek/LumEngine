@@ -19,7 +19,7 @@ namespace lum {
 
 
 	/* @brief Defines texture type presets used to configure format and sampling. */
-	enum class ETexturePreset : uint8 {
+	enum class TexturePreset : uint8 {
 		Albedo,
 		Normal,
 		Metallic,
@@ -27,7 +27,7 @@ namespace lum {
 	};
 
 	/* @brief Built-in fallback texture types for missing or unset assets. */
-	enum class EFallbackTexture : uint8 {
+	enum class FallbackTexture : uint8 {
 		Missing,       // Checkered texture indicating missing asset
 		DefaultAlbedo, // 1x1 white (255, 255, 255) neutral fallback for albedo and non-color maps
 		DefaultNormal, // 1x1 flat normal (128, 128, 255) fallback when no normal map is provided
@@ -64,7 +64,7 @@ namespace lum {
 		* @param path Path to the texture asset.
 		* @param id Root directory identifier.
 		*/
-		rhi::RTextureHandle Get( StringView path, ERootID id = ERootID::External );
+		rhi::RTextureHandle Get( StringView path, RootID id = RootID::External );
 
 		/* @brief Loads a texture from disk or returns cached version.
 		* Applies preset configuration (format, mipmaps) based on texture type.
@@ -73,25 +73,25 @@ namespace lum {
 		* @param preset Texture type preset (Albedo, Normal, Metalness, Roughness).
 		* @param id Root directory identifier.
 		*/
-		rhi::RTextureHandle Load( StringView path, ETexturePreset preset, ERootID id = ERootID::External );
+		rhi::RTextureHandle Load( StringView path, TexturePreset preset, RootID id = RootID::External );
 
 		/* @brief Maps a channel count to the corresponding RImageFormat.
 		* @param channels Number of color channels (1 = R, 2 = RG, 3 = RGB, 4 = RGBA).
 		* @return Matching RImageFormat. Defaults to RGBA for unknown values.
 		*/
-		rhi::RImageFormat ChannelsToFormat( uint32 channels );
+		rhi::ImageFormat ChannelsToFormat( uint32 channels );
 
 		/* @brief Loads an equirectangular HDR image and converts it to a cubemap.
 		* @param path Path to the equirectangular texture asset.
 		* @param faceSize Resolution of each cubemap face in pixels.
 		* @param root Root directory identifier.
 		*/
-		rhi::RTextureHandle LoadEquirectangularCubemap( StringView path, int32 faceSize, ERootID root = ERootID::External );
+		rhi::RTextureHandle LoadEquirectangularCubemap( StringView path, int32 faceSize, RootID root = RootID::External );
 
 		/* @brief Returns a built-in fallback texture.
 		* @param fallback Fallback type (Missing = checkered, Default = white 1x1).
 		*/
-		rhi::RTextureHandle GetFallbackTexture( EFallbackTexture fallback );
+		rhi::RTextureHandle GetFallbackTexture( FallbackTexture fallback );
 
 
 	private:
@@ -132,29 +132,29 @@ namespace lum {
 		std::array<FTextureData, 6> convert_equirectangular_to_cubemap( const FTextureData& equirect, int32 faceSize = 4096 );
 
 		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
-		static inline rhi::RTextureDescriptor sTexturePresetsLookup[] = {
+		static inline rhi::FTextureDescriptor sTexturePresetsLookup[] = {
 			{ // ALBEDO
-				.mImageLayout = rhi::RImageLayout::SRGB8_Alpha8,
-				.mImageFormat = rhi::RImageFormat::RGBA,
-				.mDataType = rhi::RTextureDataType::UnsignedByte,
+				.mImageLayout = rhi::ImageLayout::SRGB8_Alpha8,
+				.mImageFormat = rhi::ImageFormat::RGBA,
+				.mDataType = rhi::TextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true,
 			},
 			{ // NORMAL
-				.mImageLayout = rhi::RImageLayout::RGB8,
-				.mImageFormat = rhi::RImageFormat::RGB,
-				.mDataType = rhi::RTextureDataType::UnsignedByte,
+				.mImageLayout = rhi::ImageLayout::RGB8,
+				.mImageFormat = rhi::ImageFormat::RGB,
+				.mDataType = rhi::TextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // METALNESS
-				.mImageLayout = rhi::RImageLayout::R8,
-				.mImageFormat = rhi::RImageFormat::R,
-				.mDataType = rhi::RTextureDataType::UnsignedByte,
+				.mImageLayout = rhi::ImageLayout::R8,
+				.mImageFormat = rhi::ImageFormat::R,
+				.mDataType = rhi::TextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // ROUGHNESS
-				.mImageLayout = rhi::RImageLayout::R8,
-				.mImageFormat = rhi::RImageFormat::R,
-				.mDataType = rhi::RTextureDataType::UnsignedByte,
+				.mImageLayout = rhi::ImageLayout::R8,
+				.mImageFormat = rhi::ImageFormat::R,
+				.mDataType = rhi::TextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 		};

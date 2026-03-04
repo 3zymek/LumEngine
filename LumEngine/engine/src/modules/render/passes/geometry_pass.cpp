@@ -64,17 +64,17 @@ namespace lum::render {
 	void GeometryPass::init( ) {
 
 		rhi::FBufferDescriptor desc;
-		desc.mBufferUsage = rhi::EBufferUsage::Dynamic;
-		desc.mMapFlags = rhi::EMapFlag::Write;
+		desc.mBufferUsage = rhi::BufferUsage::Dynamic;
+		desc.mMapFlags = rhi::MapFlag::Write;
 		{ // Model Uniform
 			desc.mSize = sizeof(detail::FModelUniformBuffer);
-			desc.mBufferType = rhi::EBufferType::Uniform;
+			desc.mBufferType = rhi::BufferType::Uniform;
 			mModelUniform = mContext.mRenderDevice->CreateBuffer(desc);
 			mContext.mRenderDevice->SetUniformBufferBinding(mModelUniform, LUM_UBO_MODEL_BINDING);
 		}
 		{ // Material Uniform
 			desc.mSize = sizeof(detail::FMaterialUniformBuffer);
-			desc.mBufferType = rhi::EBufferType::Uniform;
+			desc.mBufferType = rhi::BufferType::Uniform;
 			mMaterialUniform = mContext.mRenderDevice->CreateBuffer(desc);
 			mContext.mRenderDevice->SetUniformBufferBinding(mMaterialUniform, LUM_UBO_MATERIAL_BINDING);
 		}
@@ -82,10 +82,10 @@ namespace lum::render {
 			rhi::FPipelineDescriptor desc;
 			desc.mDepthStencil.mDepth.bEnabled = true;
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = true;
-			desc.mDepthStencil.mDepth.mCompare = rhi::RCompareFlag::Less;
+			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::Less;
 			desc.mCull.bEnabled = true;
 			mPipeline = mContext.mRenderDevice->CreatePipeline(desc);
-			mShader = mContext.mShaderMgr->LoadShader("shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ERootID::Internal);
+			mShader = mContext.mShaderMgr->LoadShader("shaders/geometry_pass.vert", "shaders/geometry_pass.frag", RootID::Internal);
 		}
 		
 	}

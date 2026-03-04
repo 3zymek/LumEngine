@@ -40,10 +40,10 @@ namespace lum::rhi::gl {
 		SetDepthFunc(depth.mCompare);
 
 		ToggleStencilTest(stencil.bEnabled);
-		SetStencilReference(stencil.mFront.mReference, EFace::Front);
-		SetStencilReference(stencil.mBack.mReference, EFace::Back);
-		SetStencilOp(stencil.mFront.mStencilFailOp, stencil.mFront.mDepthFailOp, stencil.mFront.mPassOp, EFace::Front);
-		SetStencilOp(stencil.mBack.mStencilFailOp, stencil.mBack.mDepthFailOp, stencil.mBack.mPassOp, EFace::Back);
+		SetStencilReference(stencil.mFront.mReference, Face::Front);
+		SetStencilReference(stencil.mBack.mReference, Face::Back);
+		SetStencilOp(stencil.mFront.mStencilFailOp, stencil.mFront.mDepthFailOp, stencil.mFront.mPassOp, Face::Front);
+		SetStencilOp(stencil.mBack.mStencilFailOp, stencil.mBack.mDepthFailOp, stencil.mBack.mPassOp, Face::Back);
 		
 	}
 	void GLDevice::bind_check_scissors ( const FPipeline& pip ) noexcept {

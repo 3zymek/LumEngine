@@ -16,7 +16,7 @@ namespace lum {
     namespace fmt {
 
         /* @brief Token types produced by the lexer. */
-        enum class ETokenType : byte {
+        enum class TokenType : byte {
             Identifier, // Named keyword or symbol
             LBracket,   // Opening bracket '{'
             RBracket,   // Closing bracket '}'
@@ -30,14 +30,14 @@ namespace lum {
         };
 
         /* @brief Supported file format types. */
-        enum class EFormat : byte {
+        enum class Format : byte {
             Scene,    // .lsc scene file
             Material  // .lmt material file
         };
 
         /* @brief A single token produced by the lexer. */
         struct FToken {
-            ETokenType mType;  // Token type
+            TokenType mType;  // Token type
             String mValue;     // Raw string value of the token
         };
 
@@ -46,7 +46,7 @@ namespace lum {
         * @param format Expected format type.
         * @return True if extension matches the format (.lsc or .lmt).
         */
-        inline bool IsValidFormat(StringView str, EFormat format) {
+        inline bool IsValidFormat(StringView str, Format format) {
             
             usize dot = str.find_last_of('.');
             if (dot == StringView::npos)
@@ -54,9 +54,9 @@ namespace lum {
 
             StringView result = str.substr(dot + 1);
 
-            if (result == "lsc" && format == EFormat::Scene)
+            if (result == "lsc" && format == Format::Scene)
                 return true;
-            if (result == "lmt" && format == EFormat::Material)
+            if (result == "lmt" && format == Format::Material)
                 return true;
 
             return false;
@@ -68,14 +68,14 @@ namespace lum {
             /* @brief Advances index and asserts the next token is an opening bracket. */
             inline void ExpectOpeningBracket(std::vector<FToken>& tokens, int32& i) {
                 ++i;
-                LUM_ASSERT(tokens[i].mType == ETokenType::LBracket, "Opening bracket expected");
+                LUM_ASSERT(tokens[i].mType == TokenType::LBracket, "Opening bracket expected");
                 ++i;
             }
 
             /* @brief Advances index and asserts the next token is a colon. */
             inline void ExpectColon(std::vector<FToken>& tokens, int32& i) {
                 ++i;
-                LUM_ASSERT(tokens[i].mType == ETokenType::Colon, "Colon expected");
+                LUM_ASSERT(tokens[i].mType == TokenType::Colon, "Colon expected");
                 ++i;
             }
 
@@ -83,7 +83,7 @@ namespace lum {
             inline String ReadStringParameter(std::vector<FToken>& tokens, int32& i) {
                 ExpectColon(tokens, i);
                 String value = tokens[i].mValue;
-                LUM_ASSERT(i + 1 >= tokens.size() || tokens[i + 1].mType != ETokenType::String, "String expected");
+                LUM_ASSERT(i + 1 >= tokens.size() || tokens[i + 1].mType != TokenType::String, "String expected");
                 return value;
             }
 
@@ -91,7 +91,7 @@ namespace lum {
             inline bool ReadBoolParameter(std::vector<FToken>& tokens, int32& i) {
                 ExpectColon(tokens, i);
                 bool value = std::stof(tokens[i].mValue) > 0;
-                LUM_ASSERT(i + 1 >= tokens.size() || tokens[i + 1].mType != ETokenType::Number, "Boolean expected");
+                LUM_ASSERT(i + 1 >= tokens.size() || tokens[i + 1].mType != TokenType::Number, "Boolean expected");
                 return value;
             }
 
@@ -99,7 +99,7 @@ namespace lum {
             inline float32 ReadFloatParameter(std::vector<FToken>& tokens, int32& i) {
                 ExpectColon(tokens, i);
                 float32 value = std::stof(tokens[i].mValue);
-                LUM_ASSERT(i + 1 >= tokens.size() || tokens[i + 1].mType != ETokenType::Number, "Float expected");
+                LUM_ASSERT(i + 1 >= tokens.size() || tokens[i + 1].mType != TokenType::Number, "Float expected");
                 return value;
             }
 
@@ -109,17 +109,17 @@ namespace lum {
                 float32 x = std::stof(tokens[i++].mValue);
                 float32 y = std::stof(tokens[i++].mValue);
                 float32 z = std::stof(tokens[i].mValue);
-                LUM_ASSERT(i + 1 >= tokens.size() || tokens[i + 1].mType != ETokenType::Number, "Vec3 expected");
+                LUM_ASSERT(i + 1 >= tokens.size() || tokens[i + 1].mType != TokenType::Number, "Vec3 expected");
                 return glm::vec3(x, y, z);
             }
 
             /* @brief Reads two consecutive float values as a vec2 after a colon separator. */
             inline glm::vec2 ReadVec2Parameter(std::vector<FToken>& tokens, int32& i) {
-                LUM_ASSERT(tokens[i].mType == ETokenType::Colon, "Colon expected");
+                LUM_ASSERT(tokens[i].mType == TokenType::Colon, "Colon expected");
                 ++i;
                 float32 x = std::stof(tokens[i++].mValue);
                 float32 y = std::stof(tokens[i].mValue);
-                LUM_ASSERT(tokens[i + 1].mType != ETokenType::Number, "Vec2 expected");
+                LUM_ASSERT(tokens[i + 1].mType != TokenType::Number, "Vec2 expected");
                 return glm::vec2(x, y);
             }
 

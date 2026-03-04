@@ -20,7 +20,7 @@ namespace lum::fmt {
 
 		for (int32 i = 0; i < tokens.size(); i++) {
 
-			if (tokens[i].mType == ETokenType::Parameter) {
+			if (tokens[i].mType == TokenType::Parameter) {
 				
 				if (tokens[i].mValue == "albedo") {
 					

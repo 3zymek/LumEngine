@@ -8,6 +8,10 @@
 /* @brief Pi constant for use in lighting calculations. */
 #define LUM_PI 3.14159265359
 
+#define LUM_GBUFFER_ALBEDO	0
+#define LUM_GBUFFER_NORMAL	1
+#define LUM_GBUFFER_DEPTH	2
+
 // Vertex attribute locations
 #define LUM_LAYOUT_POSITION  0 // Vertex position attribute location.
 #define LUM_LAYOUT_NORMAL    1 // Vertex normal attribute location.

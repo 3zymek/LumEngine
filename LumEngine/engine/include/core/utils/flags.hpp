@@ -121,9 +121,9 @@ namespace lum {
 	* @param T Enum class type to enable flag operations for.
 	*
 	* @example
-	*   enum class EShaderStage { Vertex = 1, Fragment = 2, Compute = 4 };
-	*   LUM_ENUM_OPERATIONS(EShaderStage);
-	*   EShaderStage stages = EShaderStage::Vertex | EShaderStage::Fragment;
+	*   enum class ShaderStage { Vertex = 1, Fragment = 2, Compute = 4 };
+	*   LUM_ENUM_OPERATIONS(ShaderStage);
+	*   ShaderStage stages = ShaderStage::Vertex | ShaderStage::Fragment;
 	*/
 #	define LUM_ENUM_OPERATIONS(T) \
 		template<> \

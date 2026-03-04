@@ -76,12 +76,12 @@ namespace lum::rhi {
 			device->ToggleCull(toggle);
 			});
 	}
-	void REncoder::SetCullFace(EFace face) {
+	void REncoder::SetCullFace(Face face) {
 		setup_command([face](RDevice* device) {
 			device->SetCullFace(face);
 			});
 	}
-	void REncoder::SetFrontFace(EWindingOrder order) {
+	void REncoder::SetFrontFace(WindingOrder order) {
 		setup_command([order](RDevice* device) {
 			device->SetFrontFace(order);
 			});
@@ -97,52 +97,52 @@ namespace lum::rhi {
 			device->SetBlendConstantColor(rgba);
 			});
 	}
-	void REncoder::SetBlendFactors(EBlendFactor srcColor, EBlendFactor dstColor, EBlendFactor srcAlpha, EBlendFactor dstAlpha) {
+	void REncoder::SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha) {
 		setup_command([srcColor, dstColor, srcAlpha, dstAlpha](RDevice* device) {
 			device->SetBlendFactors(srcColor, dstColor, srcAlpha, dstAlpha);
 			});
 	}
-	void REncoder::SetBlendColorFactors(EBlendFactor srcColor, EBlendFactor dstColor) {
+	void REncoder::SetBlendColorFactors(BlendFactor srcColor, BlendFactor dstColor) {
 		setup_command([srcColor, dstColor](RDevice* device) {
 			device->SetBlendColorFactors(srcColor, dstColor);
 			});
 	}
-	void REncoder::SetBlendAlphaFactors(EBlendFactor srcAlpha, EBlendFactor dstAlpha) {
+	void REncoder::SetBlendAlphaFactors(BlendFactor srcAlpha, BlendFactor dstAlpha) {
 		setup_command([srcAlpha, dstAlpha](RDevice* device) {
 			device->SetBlendAlphaFactors(srcAlpha, dstAlpha);
 			});
 	}
-	void REncoder::SetBlendSrcColorFactor(EBlendFactor factor) {
+	void REncoder::SetBlendSrcColorFactor(BlendFactor factor) {
 		setup_command([factor](RDevice* device) {
 			device->SetBlendSrcColorFactor(factor);
 			});
 	}
-	void REncoder::SetBlendDstColorFactor(EBlendFactor factor) {
+	void REncoder::SetBlendDstColorFactor(BlendFactor factor) {
 		setup_command([factor](RDevice* device) {
 			device->SetBlendDstColorFactor(factor);
 			});
 	}
-	void REncoder::SetBlendSrcAlphaFactor(EBlendFactor factor) {
+	void REncoder::SetBlendSrcAlphaFactor(BlendFactor factor) {
 		setup_command([factor](RDevice* device) {
 			device->SetBlendSrcAlphaFactor(factor);
 			});
 	}
-	void REncoder::SetBlendDstAlphaFactor(EBlendFactor factor) {
+	void REncoder::SetBlendDstAlphaFactor(BlendFactor factor) {
 		setup_command([factor](RDevice* device) {
 			device->SetBlendDstAlphaFactor(factor);
 			});
 	}
-	void REncoder::SetBlendOp(EBlendOp colorOp, EBlendOp alphaOp) {
+	void REncoder::SetBlendOp(BlendOp colorOp, BlendOp alphaOp) {
 		setup_command([colorOp, alphaOp](RDevice* device) {
 			device->SetBlendOp(colorOp, alphaOp);
 			});
 	}
-	void REncoder::SetBlendColorOp(EBlendOp op) {
+	void REncoder::SetBlendColorOp(BlendOp op) {
 		setup_command([op](RDevice* device) {
 			device->SetBlendColorOp(op);
 			});
 	}
-	void REncoder::SetBlendAlphaOp(EBlendOp op) {
+	void REncoder::SetBlendAlphaOp(BlendOp op) {
 		setup_command([op](RDevice* device) {
 			device->SetBlendAlphaOp(op);
 			});
@@ -168,7 +168,7 @@ namespace lum::rhi {
 			device->ToggleDepthTest(enable);
 			});
 	}
-	void REncoder::SetDepthFunc(RCompareFlag func) {
+	void REncoder::SetDepthFunc(CompareFlag func) {
 		setup_command([func](RDevice* device) {
 			device->SetDepthFunc(func);
 			});
@@ -179,27 +179,27 @@ namespace lum::rhi {
 			device->ToggleStencilTest(toggle);
 			});
 	}
-	void REncoder::SetStencilReference(int32 ref, EFace face) {
+	void REncoder::SetStencilReference(int32 ref, Face face) {
 		setup_command([ref, face](RDevice* device) {
 			device->SetStencilReference(ref, face);
 			});
 	}
-	void REncoder::SetStencilOp(EStencilOp stencilFailOp, EStencilOp depthFailOp, EStencilOp passOp, EFace face) {
+	void REncoder::SetStencilOp(StencilOp stencilFailOp, StencilOp depthFailOp, StencilOp passOp, Face face) {
 		setup_command([stencilFailOp, depthFailOp, passOp, face](RDevice* device) {
 			device->SetStencilOp(stencilFailOp, depthFailOp, passOp, face);
 			});
 	}
-	void REncoder::SetStencilOpOnStencilFail(EStencilOp op, EFace face) {
+	void REncoder::SetStencilOpOnStencilFail(StencilOp op, Face face) {
 		setup_command([op, face](RDevice* device) {
 			device->SetStencilOpOnStencilFail(op, face);
 			});
 	}
-	void REncoder::SetStencilOpOnDepthFail(EStencilOp op, EFace face) {
+	void REncoder::SetStencilOpOnDepthFail(StencilOp op, Face face) {
 		setup_command([op, face](RDevice* device) {
 			device->SetStencilOpOnDepthFail(op, face);
 			});
 	}
-	void REncoder::SetStencilOpOnDepthPass(EStencilOp op, EFace face) {
+	void REncoder::SetStencilOpOnDepthPass(StencilOp op, Face face) {
 		setup_command([op, face](RDevice* device) {
 			device->SetStencilOpOnDepthPass(op, face);
 			});
@@ -230,7 +230,7 @@ namespace lum::rhi {
 			device->SetDepthBiasConstant(constantBias);
 			});
 	}
-	void REncoder::SetTopology(ETopologyMode mode, EFace face) {
+	void REncoder::SetTopology(TopologyMode mode, Face face) {
 		setup_command([mode, face](RDevice* device) {
 			device->SetTopology(mode, face);
 			});

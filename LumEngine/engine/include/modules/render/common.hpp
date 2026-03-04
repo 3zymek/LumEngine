@@ -14,6 +14,7 @@
 #include "entity/components/mesh.hpp"
 #include "entity/components/material.hpp"
 #include "entity/components/light.hpp"
+#include "event/event_bus.hpp"
 
 namespace lum {
 	/// Forward declare ///
@@ -21,7 +22,6 @@ namespace lum {
 	class MMaterialManager;
 	class MShaderManager;
 	class EditorCamera;
-	class MShaderManager;
 	///////////////////////
 }
 
@@ -46,6 +46,8 @@ namespace lum::render {
 
 		/* @brief Pointer to the active shader manager. */
 		MShaderManager* mShaderMgr = nullptr;
+
+		ev::EventBus* mEventBus = nullptr;
 
 	};
 
@@ -102,6 +104,14 @@ namespace lum::render {
 	};
 
 	namespace detail {
+
+		struct FScreenQuad {
+
+			rhi::RVertexLayoutHandle mVao;
+			rhi::RBufferHandle mVbo;
+			rhi::RBufferHandle mEbo;
+
+		};
 
 		/* @brief Internal state for the environment (skybox) render pass. */
 		struct FCubemapData {

@@ -21,23 +21,29 @@ namespace lum::rhi::gl {
 
 		glCreateFramebuffers(1, &fbo.mHandle);
 
+		GLenum drawBuffers[8];
 		for (uint8 i = 0; i < desc.mNumColorTex; i++) {
 
 			if (mTextures.Contains(desc.mColorTex[i])) {
 				
 				const FTexture* tex = mTextures.Get(desc.mColorTex[i]);
 
-				LUM_ASSERT(is_color_format(tex), "Invalid framebuffer color texture format");
+				LUM_ASSERT(is_color_format(tex->mInternalFormat), "Invalid framebuffer color texture format");
 				glNamedFramebufferTexture(fbo.mHandle, GL_COLOR_ATTACHMENT0 + i, tex->mHandle, 0);
 
+				drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
+
 			}
+
+			glNamedFramebufferDrawBuffers(fbo.mHandle, desc.mNumColorTex, drawBuffers);
+
 		}
 
 		if (mTextures.Contains(desc.mDepthTex)) {
 			
 			const FTexture* tex = mTextures.Get(desc.mDepthTex);
 
-			LUM_ASSERT(is_depth_format(tex), "Invalid framebuffer depth texture format");
+			LUM_ASSERT(is_depth_format(tex->mInternalFormat), "Invalid framebuffer depth texture format");
 			glNamedFramebufferTexture(fbo.mHandle, GL_DEPTH_ATTACHMENT, mTextures.Get(desc.mDepthTex)->mHandle, 0);
 		}
 
@@ -45,7 +51,7 @@ namespace lum::rhi::gl {
 
 			const FTexture* tex = mTextures.Get(desc.mStencilTex);
 
-			LUM_ASSERT(is_stencil_format(tex), "Invalid framebuffer stencil texture format");
+			LUM_ASSERT(is_stencil_format(tex->mInternalFormat), "Invalid framebuffer stencil texture format");
 			glNamedFramebufferTexture(fbo.mHandle, GL_STENCIL_ATTACHMENT, mTextures.Get(desc.mStencilTex)->mHandle, 0);
 
 		}
@@ -67,7 +73,7 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::DeleteFramebuffer(RFramebufferHandle& buff) {
-		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.Contains(buff), LUM_SEV_DEBUG, "Framebuffer doesn't exists");
+		LUM_HOTCHK_RETURN_VOID(mFramebuffers.Contains(buff), LUM_SEV_DEBUG, "Framebuffer doesn't exists");
 
 		FFramebuffer& fbo = mFramebuffers[buff];
 		glDeleteFramebuffers(1, &fbo.mHandle);
@@ -76,7 +82,7 @@ namespace lum::rhi::gl {
 	}
 
 	void GLDevice::BindFramebuffer(const RFramebufferHandle& buff) {
-		LUM_HOTCHK_RETURN_VOID(!mFramebuffers.Contains(buff), LUM_SEV_DEBUG, "Framebuffer doesn't exists");
+		LUM_HOTCHK_RETURN_VOID(mFramebuffers.Contains(buff), LUM_SEV_DEBUG, "Framebuffer doesn't exists");
 
 		if (mCurrentFramebuffer == buff) {
 			LUM_PROFILER_CACHE_HIT();

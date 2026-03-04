@@ -9,7 +9,7 @@ namespace lum {
 				virtual void PollEvents() = 0;
 			};
 
-			template<LumEvent tType>
+			template<detail::tEvent tType>
 			class EventPool : public BasePool {
 
 			public:
@@ -18,8 +18,6 @@ namespace lum {
 
 				template<typename tLambda>
 				SubscribtionID Subscribe(tLambda&& lambda) {
-
-					
 
 					setup_callback(std::forward<tLambda>(lambda), mCallbacks[mCurrentCallbacksID]);
 
@@ -121,8 +119,7 @@ namespace lum {
 					mCurrentCallbacksID = 0;
 
 					// Permament Callbacks
-					for (auto& slot : mPermCallbacks) {
-						auto& callback = mPermCallbacks[slot];
+					for (auto& callback : mPermCallbacks) {
 						if(callback.bActive)
 							callback.mInvoke(&callback.mStorage, &event);
 					}

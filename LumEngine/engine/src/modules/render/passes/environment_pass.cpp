@@ -61,31 +61,31 @@ namespace lum::render {
 
 		{ // Environment VBO
 			rhi::FBufferDescriptor desc;
-			desc.mBufferUsage = rhi::EBufferUsage::Static;
-			desc.mMapFlags = rhi::EMapFlag::Read;
+			desc.mBufferUsage = rhi::BufferUsage::Static;
+			desc.mMapFlags = rhi::MapFlag::None;
 			desc.mSize = ByteSize(vertices);
 			desc.mData = vertices;
-			desc.mBufferType = rhi::EBufferType::Vertex;
+			desc.mBufferType = rhi::BufferType::Vertex;
 			mCubemap.mVbo = mContext.mRenderDevice->CreateBuffer(desc);
 		}
 		{ // Environment EBO
 			rhi::FBufferDescriptor desc;
-			desc.mBufferUsage = rhi::EBufferUsage::Static;
-			desc.mMapFlags = rhi::EMapFlag::Read;
+			desc.mBufferUsage = rhi::BufferUsage::Static;
+			desc.mMapFlags = rhi::MapFlag::None;
 			desc.mSize = ByteSize(indices);
 			desc.mData = indices;
-			desc.mBufferType = rhi::EBufferType::Element;
+			desc.mBufferType = rhi::BufferType::Element;
 			mCubemap.mEbo = mContext.mRenderDevice->CreateBuffer(desc);
 		}
 		{ // Environment VAO
-			rhi::RVertexAttribute attrs[]{
+			rhi::FVertexAttribute attrs[]{
 				{
-					.mFormat = rhi::EDataFormat::Vec3,
+					.mFormat = rhi::DataFormat::Vec3,
 					.mRelativeOffset = 0,
 					.mShaderLocation = LUM_LAYOUT_POSITION
 				}
 			};
-			rhi::RVertexLayoutDescriptor desc;
+			rhi::FVertexLayoutDescriptor desc;
 			desc.mStride = 3 * sizeof(float32);
 			desc.mAttributes = attrs;
 			mCubemap.mVao = mContext.mRenderDevice->CreateVertexLayout(desc, mCubemap.mVbo);
@@ -95,11 +95,11 @@ namespace lum::render {
 			rhi::FPipelineDescriptor desc;
 			desc.mDepthStencil.mDepth.bEnabled = true;
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = false;
-			desc.mDepthStencil.mDepth.mCompare = rhi::RCompareFlag::LessEqual;
+			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::LessEqual;
 			mCubemap.mPipeline = mContext.mRenderDevice->CreatePipeline(desc);
 		}
 
-		mCubemap.mShader = mContext.mShaderMgr->LoadShader("shaders/skybox_pass.vert", "shaders/skybox_pass.frag", ERootID::Internal);
+		mCubemap.mShader = mContext.mShaderMgr->LoadShader("shaders/skybox_pass.vert", "shaders/skybox_pass.frag", RootID::Internal);
 
 
 	}

@@ -8,7 +8,7 @@
 
 namespace lum::rhi::gl {
 
-	RShaderHandle GLDevice::CreateShader ( const RShaderDescriptor& desc ) {
+	RShaderHandle GLDevice::CreateShader( const RShaderDescriptor& desc ) {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mShaders.DenseSize() < skMaxShaders,
@@ -25,9 +25,9 @@ namespace lum::rhi::gl {
 		glShaderSource(vshader, 1, &desc.mVertexContent, nullptr);
 		glShaderSource(fshader, 1, &desc.mFragmentContent, nullptr);
 
-		if (!compile_shader( vshader ))
+		if (!compile_shader( vshader, desc.mVertexContent ))
 			return RShaderHandle{};
-		if (!compile_shader( fshader ))
+		if (!compile_shader( fshader, desc.mFragmentContent ))
 			return RShaderHandle{};
 
 		shader.mHandle = glCreateProgram();
@@ -86,7 +86,7 @@ namespace lum::rhi::gl {
 
 	}
 	
-	bool GLDevice::compile_shader ( GLuint shader ) {
+	bool GLDevice::compile_shader( GLuint shader, ccharptr name ) {
 
 		glCompileShader(shader);
 		int32 success;
@@ -95,7 +95,7 @@ namespace lum::rhi::gl {
 			
 			char buff[2048];
 			glGetShaderInfoLog(shader, 2048, nullptr, buff);
-			LUM_LOG_FATAL("Failed to compile shader: %s", buff);
+			LUM_LOG_FATAL("Failed to compile shader %s: %s", name, buff);
 			return false;
 
 		}

@@ -11,33 +11,34 @@
 
 namespace lum {
 
+	/* @brief Interleaved vertex structure passed to the GPU per draw call.
+	* Aligned to 16 bytes for optimal GPU memory access.
+	*/
+	struct alignas(16) FVertex {
+
+		/* @brief Vertex position in 3D space. */
+		glm::vec3 mPosition;
+
+		/* @brief Vertex normal vector. */
+		glm::vec3 mNormal;
+
+		/* @brief Texture coordinates. */
+		glm::vec2 mUv;
+
+		/* @brief Tangent vector used for TBN matrix construction. */
+		glm::vec3 mTangent;
+
+		/* @brief Bitangent vector used for TBN matrix construction. */
+		glm::vec3 mBitangent;
+
+	};
+
+
 	/* @brief Render Hardware Interface namespace.
 	*  Provides a thin abstraction over the underlying graphics API (OpenGL).
 	*  Contains handles, descriptors, enums and utilities for GPU resource management.
 	*/
 	namespace rhi {
-
-		/* @brief Interleaved vertex structure passed to the GPU per draw call.
-		* Aligned to 16 bytes for optimal GPU memory access.
-		*/
-		struct alignas(16) FVertex {
-
-			/* @brief Vertex position in 3D space. */
-			glm::vec3 mPosition;
-
-			/* @brief Vertex normal vector. */
-			glm::vec3 mNormal;
-
-			/* @brief Texture coordinates. */
-			glm::vec2 mUv;
-
-			/* @brief Tangent vector used for TBN matrix construction. */
-			glm::vec3 mTangent;
-
-			/* @brief Bitangent vector used for TBN matrix construction. */
-			glm::vec3 mBitangent;
-
-		};
 
 		/* @brief Returns the number of mipmap levels for a given texture resolution.
 		* @param width  Width of the texture in pixels.
@@ -117,7 +118,7 @@ namespace lum {
 		/* @brief Vertex attribute data format passed to the GPU.
 		* Describes the component count and type of a single vertex attribute.
 		*/
-		enum class EDataFormat : byte {
+		enum class DataFormat : byte {
 			Float1, /* @brief Single float scalar. */
 			Vec2,   /* @brief 2-component float vector (x, y). */
 			Vec3,   /* @brief 3-component float vector (x, y, z). */
@@ -127,7 +128,7 @@ namespace lum {
 		};
 
 		/* @brief Type of a GPU buffer object. */
-		enum class EBufferType : byte {
+		enum class BufferType : byte {
 			None,
 			Vertex,        /* @brief Vertex buffer object (VBO). */
 			Element,       /* @brief Index buffer object (EBO). */
@@ -138,20 +139,21 @@ namespace lum {
 		/* @brief Intended usage pattern of a GPU buffer.
 		* Hints the driver on how to optimize memory allocation.
 		*/
-		enum class EBufferUsage : byte {
+		enum class BufferUsage : byte {
 			Static,  /* @brief Data is set once and never changed (fast reads). */
 			Dynamic  /* @brief Data is updated frequently during runtime. */
 		};
 
 		/* @brief Polygon rasterization mode. */
-		enum class ETopologyMode : byte {
+		enum class TopologyMode : byte {
 			Point, /* @brief Render vertices as individual points. */
 			Line,  /* @brief Render polygon edges as lines (wireframe). */
 			Fill   /* @brief Fill polygon interiors (solid rendering). */
 		};
 
 		/* @brief Bitmask flags controlling CPU-side buffer mapping behavior. */
-		enum class EMapFlag : bitfield {
+		enum class MapFlag : bitfield {
+			None = 0,
 			Persistent = 1 << 0, /* @brief Mapping persists across multiple frames. */
 			Write = 1 << 1, /* @brief CPU may write to the mapped range. */
 			Read = 1 << 2, /* @brief CPU may read from the mapped range. */
@@ -162,14 +164,14 @@ namespace lum {
 		};
 
 		/* @brief Specifies which polygon face(s) an operation applies to. */
-		enum class EFace : byte {
+		enum class Face : byte {
 			Front,     /* @brief Apply to front-facing polygons only. */
 			Back,      /* @brief Apply to back-facing polygons only. */
 			FrontBack, /* @brief Apply to both front and back-facing polygons. */
 		};
 
 		/* @brief Determines which polygon winding order is considered front-facing. */
-		enum class EWindingOrder : byte {
+		enum class WindingOrder : byte {
 			CounterClockwise, /* @brief Triangles wound counter-clockwise are front-facing. */
 			Clockwise         /* @brief Triangles wound clockwise are front-facing. */
 		};
@@ -197,7 +199,7 @@ namespace lum {
 
 	} // namespace lum::rhi
 
-	LUM_ENUM_OPERATIONS(rhi::EMapFlag);
+	LUM_ENUM_OPERATIONS(rhi::MapFlag);
 	LUM_ENUM_OPERATIONS(rhi::EClearFlag);
 
 } // namespace lum

@@ -35,7 +35,7 @@ namespace lum::rhi {
 	};
 
 	/* @brief Dimensionality and type of a GPU texture resource. */
-	enum class RTextureType : byte {
+	enum class TextureType : byte {
 		None,
 		Texture2D,
 		Texture3D,
@@ -45,7 +45,7 @@ namespace lum::rhi {
 	/* @brief GPU-side internal storage format for a texture.
 	* Determines how pixel data is stored and sampled on the GPU.
 	*/
-	enum class RImageLayout : byte {
+	enum class ImageLayout : byte {
 		
 		// 8-bit normalized
 		RGBA8,
@@ -84,7 +84,7 @@ namespace lum::rhi {
 	/* @brief CPU-side pixel channel layout of the source texture data.
 	* Describes how channels are ordered in the raw pixel buffer passed to the GPU.
 	*/
-	enum class RImageFormat : byte {
+	enum class ImageFormat : byte {
 		RGBA,
 		RGB,
 		RG,
@@ -95,7 +95,7 @@ namespace lum::rhi {
 	};
 
 	/* @brief Data type of each pixel channel in the CPU-side pixel buffer. */
-	enum class RTextureDataType : byte {
+	enum class TextureDataType : byte {
 		UnsignedByte,
 		Byte,
 		UnsignedShort,
@@ -129,19 +129,19 @@ namespace lum::rhi {
 	* @param mDepth             Depth in pixels, used for Texture3D only.
 	* @param mCubemap           Per-face pixel data, used for Cubemap only.
 	*/
-	struct RTextureDescriptor {
+	struct FTextureDescriptor {
 
 		/* @brief Raw pixel data loaded from the CPU side. */
 		FTextureData mData;
 
 		/* @brief GPU-side storage format for the texture. */
-		RImageLayout mImageLayout = RImageLayout::RGBA8;
+		ImageLayout mImageLayout = ImageLayout::RGBA8;
 
 		/* @brief CPU-side pixel channel layout of the source data. */
-		RImageFormat mImageFormat = RImageFormat::RGBA;
+		ImageFormat mImageFormat = ImageFormat::RGBA;
 
 		/* @brief Data type of each pixel channel in the source buffer. */
-		RTextureDataType mDataType = RTextureDataType::UnsignedByte;
+		TextureDataType mDataType = TextureDataType::UnsignedByte;
 
 		/* @brief Whether to automatically generate mipmaps after upload. */
 		bool bGenerateMipmaps = false;
@@ -153,7 +153,7 @@ namespace lum::rhi {
 		uint32 mSamples = 0;
 
 		/* @brief Dimensionality and type of the texture. */
-		RTextureType mTextureType = RTextureType::None;
+		TextureType mTextureType = TextureType::None;
 
 		/* @brief Texture width in pixels. 0 = infer from mData. */
 		uint32 mWidth = 0;
@@ -178,7 +178,7 @@ namespace lum::rhi {
 	/* @brief Describes a partial update to an existing GPU texture.
 	* Used to upload new pixel data to a specific region without recreating the texture.
 	*/
-	struct RTextureUpdateDescriptor {
+	struct FTextureUpdateDescriptor {
 
 		/* @brief Target region within the texture to update. */
 		RTextureRect mRect;
@@ -200,16 +200,16 @@ namespace lum::rhi {
 		RTextureRect mRect;
 
 		/* @brief Dimensionality and type of the texture. */
-		RTextureType mType = RTextureType::None;
+		TextureType mType = TextureType::None;
 
 		/* @brief GPU-side internal storage format. */
-		RImageLayout mInternalFormat = RImageLayout::RGBA8;
+		ImageLayout mInternalFormat = ImageLayout::RGBA8;
 
 		/* @brief CPU-side pixel channel layout used during upload. */
-		RImageFormat mDataFormat = RImageFormat::RGBA;
+		ImageFormat mDataFormat = ImageFormat::RGBA;
 
 		/* @brief Data type of each pixel channel used during upload. */
-		RTextureDataType mDataType = RTextureDataType::UnsignedByte;
+		TextureDataType mDataType = TextureDataType::UnsignedByte;
 
 		/* @brief Number of mip levels generated for this texture. */
 		uint32 mMipmapLevels = 0;

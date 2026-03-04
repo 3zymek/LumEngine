@@ -13,7 +13,7 @@ namespace lum {
 
 	namespace detail {
 
-		enum class EMeshType : byte {
+		enum class MeshType : byte {
 			Static,
 			Dynamic
 		};
@@ -58,14 +58,14 @@ namespace lum {
 		* @param root Root directory identifier.
 		* @return Handle to the uploaded static mesh.
 		*/
-		StaticMeshHandle CreateStatic( ccharptr path, ERootID root = ERootID::External );
+		StaticMeshHandle CreateStatic( ccharptr path, RootID root = RootID::External );
 
 		/* @brief Loads a dynamic mesh instance from disk.
 		* @param path Path to the mesh file.
 		* @param root Root directory identifier.
 		* @return Dynamic mesh instance.
 		*/
-		FDynamicMeshInstance CreateDynamic( ccharptr path, ERootID root = ERootID::External );
+		FDynamicMeshInstance CreateDynamic( ccharptr path, RootID root = RootID::External );
 
 	private:
 
@@ -77,7 +77,7 @@ namespace lum {
 		std::unordered_map<uint64, StaticMeshHandle> mStaticMeshCache; // Path hash -> handle cache.
 		cstd::HandlePool<StaticMeshHandle, FStaticMeshResource> mStaticMeshes{ limits::gMaxModels };
 
-		std::vector<rhi::FVertex> mBasicVertices = {
+		std::vector<FVertex> mBasicVertices = {
 			// position                normal               uv
 			{{ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }},
 			{{  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }},
@@ -95,7 +95,7 @@ namespace lum {
 		* @param data   CPU-side mesh data to upload.
 		* @return Render resources containing VBO, EBO, and VAO handles.
 		*/
-		detail::FRenderResources upload_gpu( detail::EMeshType type, const FMeshData& data );
+		detail::FRenderResources upload_gpu( detail::MeshType type, const FMeshData& data );
 
 		/* @brief Creates and uploads built-in meshes (default, error). */
 		void create_meshes( );

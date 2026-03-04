@@ -21,7 +21,7 @@ namespace lum {
 		mRenderDevice = device;
 	}
 
-	rhi::RShaderHandle MShaderManager::LoadShader( ccharptr vertexPath, ccharptr fragmentPath, ERootID root ) {
+	rhi::RShaderHandle MShaderManager::LoadShader( ccharptr vertexPath, ccharptr fragmentPath, RootID root ) {
 
 		uint64 hash = HashStr(vertexPath) ^ HashStr(fragmentPath);
 		if (mShaders.contains(hash))

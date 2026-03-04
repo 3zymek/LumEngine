@@ -12,7 +12,7 @@ namespace lum {
     /* @brief ECS component representing a camera.
     * Stores projection and view parameters used for rendering.
     */
-    struct CCamera : Component {
+    struct CCamera : public Component {
 
         /* @brief Vertical field of view in degrees. */
         float32 mFov = 0;

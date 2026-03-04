@@ -21,6 +21,7 @@ namespace lum {
 		public:
 
 			EventBus( ) { init(); }
+			~EventBus( ) { destruct(); }
 
 			/*! @brief Emits an event to all subscribers of the given type.
 			*
@@ -30,7 +31,7 @@ namespace lum {
 			*  @param event Reference to the event instance to dispatch.
 			*  @thread_safety Call from the main thread or the thread that owns the EventBus.
 			*/
-			template< detail::LumEvent EventType >
+			template< detail::tEvent EventType >
 			void Emit( const EventType& event ) {
 				get_pool<EventType>().Emit(event);
 			}
@@ -45,7 +46,7 @@ namespace lum {
 			*  @return SubscribtionID Handle to unsubscribe manually if needed.
 			*  @thread_safety Call from the main thread or bus-owning thread.
 			*/
-			template< detail::LumEvent EventType, typename Lambda >
+			template< detail::tEvent EventType, typename Lambda >
 			detail::SubscribtionID Subscribe( Lambda&& lambda ) {
 				return get_pool<EventType>().Subscribe(std::forward<Lambda>(lambda));
 			}
@@ -60,7 +61,7 @@ namespace lum {
 			*  @return SubscribtionID Handle for manual unsubscription.
 			*  @thread_safety Call from the main thread or bus-owning thread.
 			*/
-			template< detail::LumEvent EventType, typename Lambda >
+			template< detail::tEvent EventType, typename Lambda >
 			detail::SubscribtionID SubscribePermanently( Lambda&& lambda ) {
 				return get_pool<EventType>().SubscribePermanently(std::forward<Lambda>(lambda));
 			}
@@ -73,7 +74,7 @@ namespace lum {
 			*  @param id Handle returned by Subscribe().
 			*  @thread_safety Call from the main thread or bus-owning thread.
 			*/
-			template< detail::LumEvent EventType >
+			template< detail::tEvent EventType >
 			void Unsubscribe( detail::SubscribtionID id ) {
 				get_pool<EventType>().Unsubscribe(id);
 			}
@@ -86,7 +87,7 @@ namespace lum {
 			*  @param id Handle returned by SubscribePermanently().
 			*  @thread_safety Call from the main thread or bus-owning thread.
 			*/
-			template< detail::LumEvent EventType >
+			template< detail::tEvent EventType >
 			void UnsubscribePermanent( detail::SubscribtionID id ) {
 				get_pool<EventType>().UnsubscribePermanent(id);
 			}
@@ -108,13 +109,13 @@ namespace lum {
 
 		private:
 
-			template< detail::LumEvent EventType >
-			detail::EventPool<EventType>& get_pool( ) {
-				auto typeID = detail::GetEventTypeID::Get<EventType>();
+			template< detail::tEvent tType >
+			detail::EventPool<tType>& get_pool( ) {
+				auto typeID = detail::GetEventTypeID::Get<tType>();
 				if (!mPools[typeID]) {
-					mPools[typeID] = new detail::EventPool<EventType>();
+					mPools[typeID] = new detail::EventPool<tType>();
 				}
-				return *static_cast<detail::EventPool<EventType>*>(mPools[typeID]);
+				return *static_cast<detail::EventPool<tType>*>(mPools[typeID]);
 			}
 
 			void init( ) {
@@ -125,8 +126,10 @@ namespace lum {
 
 			void destruct( ) {
 				for (usize i = 0; i < limits::gMaxEventTypes; i++) {
-					if (mPools[i] != nullptr)
+					if (mPools[i] != nullptr) {
 						delete mPools[i];
+						mPools[i] = nullptr;
+					}
 				}
 			}
 

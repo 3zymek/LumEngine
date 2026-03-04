@@ -19,7 +19,7 @@ namespace lum::rhi::gl {
 		FSampler sampler;
 
 		glCreateSamplers	( 1, &sampler.mHandle );
-		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_MAG_FILTER, (desc.mMagFilter == RSamplerMagFilter::Nearest) ? GL_NEAREST : GL_LINEAR);
+		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_MAG_FILTER, (desc.mMagFilter == SamplerMagFilter::Nearest) ? GL_NEAREST : GL_LINEAR);
 		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_MIN_FILTER, skTextureMinFilterLookup[LookupCast(desc.mMinFilter)]);
 
 		glSamplerParameteri ( sampler.mHandle, GL_TEXTURE_WRAP_S, skSamplerWrapLookup[LookupCast(desc.mWrapS)] );

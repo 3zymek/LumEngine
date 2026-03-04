@@ -10,32 +10,40 @@
 namespace lum::rhi {
 
 	// Attributes for single vertex in vertex layout
-	struct RVertexAttribute {
+	struct FVertexAttribute {
+
 		// Data in buffer format (Float, Float2, Mat4, etc.)
-		EDataFormat mFormat{};
+		DataFormat mFormat{};
+
 		// Offset where to start reading single attribute. 
 		// example: offsetof(Vertex, color).
 		usize mRelativeOffset = 0;
+
 		// Location to shader attribute.
 		usize mShaderLocation = 0;
 		
 	};
-	struct RVertexLayoutDescriptor {
+	struct FVertexLayoutDescriptor {
 
 		// Pointer to the array of vertex attributes.
-		std::span<const RVertexAttribute> mAttributes;
+		std::span<const FVertexAttribute> mAttributes;
+
 		// Sizeof single element in buffer.
 		usize mStride = 0;
+
 		// Binding slot (use only when you're making multiple buffers in one layout, otherwise binding = 0).
 		usize mBinding = 0;
+
 		// Offset where to start reading buffer (use only when you're making multiple buffers in one layout, otherwise offset = 0).
 		usize mOffset = 0;
+
 
 	};
 
 	struct FVertexLayout {
 		
-		RLayoutID mHandle = 0;
+		RLayoutID		mHandle = 0;
+		RBufferHandle	mElementBuff;
 
 	};
 

@@ -9,7 +9,7 @@
 
 namespace lum::rhi {
 
-	enum class RState : bitfield {
+	enum class State : bitfield {
 		None = 1 << 0, // No state
 		DepthTest = 1 << 1, // Depth testing enabled
 		DepthWrite = 1 << 2, // Depth writes enabled
@@ -25,7 +25,7 @@ namespace lum::rhi {
 	};
 
 	// Specifies the comparison function used in LumEngine RHI.
-	enum class RCompareFlag : byte {
+	enum class CompareFlag : byte {
 		Equal,			// Passes if the incoming depth value is equal to the stored depth value.
 		NotEqual,		// Passes if the incoming depth value is not equal to the stored depth value.
 		LessEqual,		// Passes if the incoming depth value is less than or equal to the stored depth value.
@@ -53,10 +53,10 @@ namespace lum::rhi {
 		*/
 		struct RPolygonState {
 			// Polygon rasterization mode (fill, wireframe, or points)
-			ETopologyMode mTopologyMode = ETopologyMode::Fill;
+			TopologyMode mTopologyMode = TopologyMode::Fill;
 
 			// Faces affected by the rasterization mode
-			EFace mTopologyModeFaces = EFace::FrontBack;
+			Face mTopologyModeFaces = Face::FrontBack;
 
 			// Point size for point topology
 			float32 mPointSize = 1.f;
@@ -95,7 +95,7 @@ namespace lum::rhi {
 	};
 
 	// Front and back stencil test actions.
-	enum class EStencilOp : byte {
+	enum class StencilOp : byte {
 		Zero,			// Sets the stencil buffer value to 0. 
 		One,			// Sets the stencil buffer value to 1. 
 		Keep,			// Keeps the current value. 
@@ -127,21 +127,21 @@ namespace lum::rhi {
 
 		// Specifies the test function. 
 		// The initial value is CompareFlag::Always. 
-		RCompareFlag mCompareFlag = RCompareFlag::Always;
+		CompareFlag mCompareFlag = CompareFlag::Always;
 
 		// Specifies the action to take when the stencil test fails. 
 		// The initial value is StencilOp::Keep. 
-		EStencilOp mStencilFailOp = EStencilOp::Keep;
+		StencilOp mStencilFailOp = StencilOp::Keep;
 
 		// Specifies the stencil action when the stencil test passes, but the depth test fails. dpfail accepts the same symbolic 
 		// constants as sfail. 
 		// The initial value is StencilOp::Keep.
-		EStencilOp mDepthFailOp = EStencilOp::Keep;
+		StencilOp mDepthFailOp = StencilOp::Keep;
 
 		// Specifies the stencil action when both the stencil test and the depth test pass, or when the stencil test passes and 
 		// either there is no depth buffer or depth testing is not enabled. dppass accepts the same symbolic constants as sfail. 
 		// The initial value is StencilOp::Keep. 
-		EStencilOp mPassOp = EStencilOp::Keep;
+		StencilOp mPassOp = StencilOp::Keep;
 
 	};
 
@@ -163,7 +163,7 @@ namespace lum::rhi {
 
 			// Specifies the depth comparison function. 
 			// The initial value is CompareFlag::Less. 
-			RCompareFlag	mCompare = RCompareFlag::Less;
+			CompareFlag	mCompare = CompareFlag::Less;
 
 		} mDepth;
 
@@ -199,11 +199,11 @@ namespace lum::rhi {
 		
 		// Specifies whether front- or back-facing facets are candidates for culling. 
 		// The initial value is Face::Back. 
-		EFace mFace = EFace::Back;
+		Face mFace = Face::Back;
 		
 		// Specifies the orientation of front-facing polygons. 
 		// The initial value is WindingOrder::CounterClockwise. 
-		EWindingOrder mWindingOrder = EWindingOrder::CounterClockwise;
+		WindingOrder mWindingOrder = WindingOrder::CounterClockwise;
 
 	};
 
@@ -232,7 +232,7 @@ namespace lum::rhi {
 	};
 
 	// Specifies the blending factor used for source or destination color in blending operations.
-	enum class EBlendFactor : byte {
+	enum class BlendFactor : byte {
 
 		Zero,					// Multiply by 0, effectively ignoring this component.
 		One,					// Multiply by 1, use full value of this component.
@@ -264,7 +264,7 @@ namespace lum::rhi {
 	};
 
 	// Specifies the operation used to combine source and destination colors in blending.
-	enum class EBlendOp : byte {
+	enum class BlendOp : byte {
 
 		// Add the weighted source and destination colors.
 		//( C_out = C_src * F_src + C_dst * F_dst )
@@ -293,27 +293,27 @@ namespace lum::rhi {
 
 		// Specified how the alpha source blending factor is computed.
 		// The initial value is BlendFactor::One.
-		EBlendFactor mSrcAlphaFactor = EBlendFactor::One;
+		BlendFactor mSrcAlphaFactor = BlendFactor::One;
 
 		// Specified how the alpha destination blending factor is computed.
 		// The initial value is BlendFactor::Zero.
-		EBlendFactor mDstAlphaFactor = EBlendFactor::Zero;
+		BlendFactor mDstAlphaFactor = BlendFactor::Zero;
 
 		// specifies the alpha blend equation, how the alpha component of the source and destination colors are combined.
 		// The initial value is BlendOp::Add.
-		EBlendOp mAlphaOp = EBlendOp::Add;
+		BlendOp mAlphaOp = BlendOp::Add;
 
 		// Specifies how the red, green, and blue blending factors are computed.
 		// The initial value is BlendFactor::One.
-		EBlendFactor mSrcColorFactor = EBlendFactor::One;
+		BlendFactor mSrcColorFactor = BlendFactor::One;
 
 		// Specifies how the red, green, and blue destination blending factors are computed.
 		// The initial value is BlendFactor::Zero.
-		EBlendFactor mDstColorFactor = EBlendFactor::Zero;
+		BlendFactor mDstColorFactor = BlendFactor::Zero;
 
 		// Specifies the RGB blend equation, how the red, green, and blue components of the source and destination colors are combined.
 		// The initial value is BlendOp::Add.
-		EBlendOp mColorOp = EBlendOp::Add;
+		BlendOp mColorOp = BlendOp::Add;
 
 		// Constant blend color used when blend factors are set to BlendFactor::ConstantColor or BlendFactor::OneMinusConstantColor.
 		// This color is independent of source and destination and acts as a fixed reference value in the blend equation.

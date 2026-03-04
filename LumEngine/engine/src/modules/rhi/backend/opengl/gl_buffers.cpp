@@ -9,10 +9,9 @@
 
 namespace lum::rhi::gl {
 
-	RBufferHandle GLDevice::CreateBuffer(const FBufferDescriptor& desc) {
+	RBufferHandle GLDevice::CreateBuffer( const FBufferDescriptor& desc ) {
 
-		if (!validate_buffer_descriptor(desc))
-			return RBufferHandle{};
+		LUM_ASSERT(validate_buffer_descriptor(desc), "Invalid buffer descriptor");
 
 		FBuffer buffer;
 
@@ -22,7 +21,7 @@ namespace lum::rhi::gl {
 		buffer.mUsage = desc.mBufferUsage;
 
 		GLbitfield initFlags =
-			((buffer.mUsage == EBufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
+			((buffer.mUsage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
 			| translate_mapping_flags(buffer.mFlags);
 
 		glCreateBuffers(1, &buffer.mHandle);
@@ -53,14 +52,14 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(offset + size <= buffer.mSize, LUM_SEV_WARN, "Invalid offset or size");
 
 		LUM_HOTCHK_RETURN_VOID(
-			buffer.mUsage != EBufferUsage::Static,
+			buffer.mUsage != BufferUsage::Static,
 			LUM_SEV_WARN,
 			"Buffer %d is static, cannot be updated",
 			vbo.mID
 		);
 
 		LUM_HOTCHK_RETURN_VOID(
-			buffer.mFlags.Has(EMapFlag::Write),
+			buffer.mFlags.Has(MapFlag::Write),
 			LUM_SEV_WARN,
 			"Buffer %d has no write flags enabled",
 			vbo.mID
@@ -97,7 +96,7 @@ namespace lum::rhi::gl {
 		LUM_LOG_INFO("Deleted buffer %d", vbo.mID);
 	}
 
-	vptr GLDevice::MapBuffer(const RBufferHandle& vbo, Flags<EMapFlag> flags, usize offset, usize size) {
+	vptr GLDevice::MapBuffer(const RBufferHandle& vbo, Flags<MapFlag> flags, usize offset, usize size) {
 
 		LUM_HOTCHK_RETURN_NPTR(mBuffers.Contains(vbo), LUM_SEV_DEBUG, "Buffer doesn't exist");
 
@@ -141,12 +140,16 @@ namespace lum::rhi::gl {
 		LUM_HOTCHK_RETURN_VOID(mBuffers.Contains(ebo), LUM_SEV_DEBUG, "Buffer doesn't exist");
 
 		glVertexArrayElementBuffer(mLayouts[vao].mHandle, mBuffers[ebo].mHandle);
+		mLayouts[vao].mElementBuff = ebo;
+
+		
 
 		LUM_LOG_DEBUG("Attached EBO %d to VAO %d", ebo.mID, vao.mID);
 
 	}
 
 	void GLDevice::SetUniformBufferBinding(const RBufferHandle& ubo, int32 binding) {
+
 		LUM_HOTCHK_RETURN_VOID(mBuffers.Contains(ubo), LUM_SEV_DEBUG, "Uniform buffer doesn't exist");
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, mBuffers[ubo].mHandle);

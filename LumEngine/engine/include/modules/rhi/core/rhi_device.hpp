@@ -24,8 +24,12 @@
 #include "rhi/core/rhi_framebuffer.hpp"
 #include "rhi/core/rhi_pipeline.hpp"
 
-#if LUM_ENABLE_RENDER_PROFILER == 1
-#	include "rhi/rhi_profiler.hpp"
+#ifdef LUM_ENABLE_RENDER_PROFILER
+#	if LUM_ENABLE_RENDER_PROFILER == 1
+#		include "rhi/rhi_profiler.hpp"
+#	endif
+#else
+#	error "LUM_ENABLE_RENDER_PROFILER should be defined"
 #endif
 
 namespace lum { class Window; }
@@ -81,7 +85,7 @@ namespace lum::rhi {
 		* @note Must be followed by UnmapBuffer() when done.
 		*/
 		LUM_NODISCARD
-		virtual vptr MapBuffer( const RBufferHandle& buff, Flags<EMapFlag> flags, usize offset = 0, usize size = 0 ) = 0;
+		virtual vptr MapBuffer( const RBufferHandle& buff, Flags<MapFlag> flags, usize offset = 0, usize size = 0 ) = 0;
 
 		/* @brief Unmaps a previously mapped buffer and synchronizes with the GPU.
 		* @param buff Handle of the buffer to unmap.
@@ -151,7 +155,7 @@ namespace lum::rhi {
 		* @return Handle to the created vertex layout.
 		*/
 		LUM_NODISCARD
-		virtual RVertexLayoutHandle CreateVertexLayout( const RVertexLayoutDescriptor& desc, const RBufferHandle& vbo ) = 0;
+		virtual RVertexLayoutHandle CreateVertexLayout( const FVertexLayoutDescriptor& desc, const RBufferHandle& vbo ) = 0;
 
 		/* @brief Destroys a vertex layout and releases its GPU resources.
 		* @param layout Handle to delete. Becomes invalid after this call.
@@ -190,18 +194,18 @@ namespace lum::rhi {
 		* @return Handle to the created texture.
 		*/
 		LUM_NODISCARD
-		virtual RTextureHandle CreateTexture( const RTextureDescriptor& desc ) = 0;
+		virtual RTextureHandle CreateTexture( const FTextureDescriptor& desc ) = 0;
 
 		/* @brief Unbinds any texture of the given type from the pipeline.
 		* @param type Texture type to unbind (e.g. Texture2D, Cubemap).
 		*/
-		virtual void UnbindTexture( RTextureType type ) = 0;
+		virtual void UnbindTexture( TextureType type ) = 0;
 
 		/* @brief Updates the contents of an existing texture.
 		* @param tex  Handle of the texture to update.
 		* @param desc Update descriptor specifying region, format, and data.
 		*/
-		virtual void UpdateTexture( const RTextureHandle& tex, const RTextureUpdateDescriptor& desc ) = 0;
+		virtual void UpdateTexture( const RTextureHandle& tex, const FTextureUpdateDescriptor& desc ) = 0;
 
 		/* @brief Destroys a texture and frees its GPU memory.
 		* @param texture Handle to delete. Becomes invalid after this call.
@@ -337,12 +341,12 @@ namespace lum::rhi {
 		/* @brief Selects which polygon faces are culled.
 		* @param face Cull face selection (Front, Back, or FrontBack).
 		*/
-		virtual void SetCullFace( EFace face ) = 0;
+		virtual void SetCullFace( Face face ) = 0;
 
 		/* @brief Sets the front-face winding order.
 		* @param order Winding order (Clockwise or CounterClockwise).
 		*/
-		virtual void SetFrontFace( EWindingOrder order ) = 0;
+		virtual void SetFrontFace( WindingOrder order ) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -367,43 +371,43 @@ namespace lum::rhi {
 		* @param srcAlpha Source factor for alpha.
 		* @param dstAlpha Destination factor for alpha.
 		*/
-		virtual void SetBlendFactors( EBlendFactor srcColor, EBlendFactor dstColor, EBlendFactor srcAlpha, EBlendFactor dstAlpha ) = 0;
+		virtual void SetBlendFactors( BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha ) = 0;
 
 		/* @brief Sets blend factors for RGB channels only. Alpha factors remain unchanged.
 		* @param srcColor Source factor for RGB.
 		* @param dstColor Destination factor for RGB.
 		*/
-		virtual void SetBlendColorFactors( EBlendFactor srcColor, EBlendFactor dstColor ) = 0;
+		virtual void SetBlendColorFactors( BlendFactor srcColor, BlendFactor dstColor ) = 0;
 
 		/* @brief Sets blend factors for alpha channel only. RGB factors remain unchanged.
 		* @param srcAlpha Source factor for alpha.
 		* @param dstAlpha Destination factor for alpha.
 		*/
-		virtual void SetBlendAlphaFactors( EBlendFactor srcAlpha, EBlendFactor dstAlpha ) = 0;
+		virtual void SetBlendAlphaFactors( BlendFactor srcAlpha, BlendFactor dstAlpha ) = 0;
 
 		/* @brief Sets the source blend factor for RGB channels. */
-		virtual void SetBlendSrcColorFactor( EBlendFactor factor ) = 0;
+		virtual void SetBlendSrcColorFactor( BlendFactor factor ) = 0;
 
 		/* @brief Sets the destination blend factor for RGB channels. */
-		virtual void SetBlendDstColorFactor( EBlendFactor factor ) = 0;
+		virtual void SetBlendDstColorFactor( BlendFactor factor ) = 0;
 
 		/* @brief Sets the source blend factor for alpha channel. */
-		virtual void SetBlendSrcAlphaFactor( EBlendFactor factor ) = 0;
+		virtual void SetBlendSrcAlphaFactor( BlendFactor factor ) = 0;
 
 		/* @brief Sets the destination blend factor for alpha channel. */
-		virtual void SetBlendDstAlphaFactor( EBlendFactor factor ) = 0;
+		virtual void SetBlendDstAlphaFactor( BlendFactor factor ) = 0;
 
 		/* @brief Sets the blend operation for both color and alpha channels.
 		* @param colorOp Blend operation for RGB (e.g. Add, Subtract, Min, Max).
 		* @param alphaOp Blend operation for alpha.
 		*/
-		virtual void SetBlendOp( EBlendOp colorOp, EBlendOp alphaOp ) = 0;
+		virtual void SetBlendOp( BlendOp colorOp, BlendOp alphaOp ) = 0;
 
 		/* @brief Sets the blend operation for RGB channels only. */
-		virtual void SetBlendColorOp( EBlendOp op ) = 0;
+		virtual void SetBlendColorOp( BlendOp op ) = 0;
 
 		/* @brief Sets the blend operation for alpha channel only. */
-		virtual void SetBlendAlphaOp( EBlendOp op ) = 0;
+		virtual void SetBlendAlphaOp( BlendOp op ) = 0;
 
 		/* @brief Sets blend factors for a specific render target index. */
 		virtual void SetBlendFactorsForTarget( uint8 target ) = 0;
@@ -437,7 +441,7 @@ namespace lum::rhi {
 		/* @brief Sets the depth comparison function.
 		* @param func Comparison function (e.g. Less, LessOrEqual, Always).
 		*/
-		virtual void SetDepthFunc( RCompareFlag func ) = 0;
+		virtual void SetDepthFunc( CompareFlag func ) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -457,7 +461,7 @@ namespace lum::rhi {
 		* @param ref  Reference value (typically 0-255).
 		* @param face Polygon faces this applies to (Front, Back, or FrontBack).
 		*/
-		virtual void SetStencilReference( int32 ref, EFace face = EFace::FrontBack ) = 0;
+		virtual void SetStencilReference( int32 ref, Face face = Face::FrontBack ) = 0;
 
 		/* @brief Sets stencil buffer operations for all test outcomes.
 		* @param stencilFailOp Operation when stencil test fails.
@@ -465,25 +469,25 @@ namespace lum::rhi {
 		* @param passOp        Operation when both tests pass.
 		* @param face          Polygon faces this applies to.
 		*/
-		virtual void SetStencilOp( EStencilOp stencilFailOp, EStencilOp depthFailOp, EStencilOp passOp, EFace face = EFace::FrontBack ) = 0;
+		virtual void SetStencilOp( StencilOp stencilFailOp, StencilOp depthFailOp, StencilOp passOp, Face face = Face::FrontBack ) = 0;
 
 		/* @brief Sets the stencil operation applied when the stencil test fails.
 		* @param op   Operation to apply.
 		* @param face Polygon faces this applies to.
 		*/
-		virtual void SetStencilOpOnStencilFail( EStencilOp op, EFace face = EFace::FrontBack ) = 0;
+		virtual void SetStencilOpOnStencilFail( StencilOp op, Face face = Face::FrontBack ) = 0;
 
 		/* @brief Sets the stencil operation applied when the depth test fails.
 		* @param op   Operation to apply.
 		* @param face Polygon faces this applies to.
 		*/
-		virtual void SetStencilOpOnDepthFail( EStencilOp op, EFace face = EFace::FrontBack ) = 0;
+		virtual void SetStencilOpOnDepthFail( StencilOp op, Face face = Face::FrontBack ) = 0;
 
 		/* @brief Sets the stencil operation applied when both tests pass.
 		* @param op   Operation to apply.
 		* @param face Polygon faces this applies to.
 		*/
-		virtual void SetStencilOpOnDepthPass( EStencilOp op, EFace face = EFace::FrontBack ) = 0;
+		virtual void SetStencilOpOnDepthPass( StencilOp op, Face face = Face::FrontBack ) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -521,7 +525,7 @@ namespace lum::rhi {
 		* @param mode Rasterization mode (Point, Line, or Fill).
 		* @param face Polygon faces this applies to (default FrontBack).
 		*/
-		virtual void SetTopology( ETopologyMode mode, EFace face = EFace::FrontBack ) = 0;
+		virtual void SetTopology( TopologyMode mode, Face face = Face::FrontBack ) = 0;
 
 		/* @brief Sets the size of rendered points in pixels. */
 		virtual void SetPointSize( float32 size ) = 0;
@@ -711,7 +715,7 @@ namespace lum::rhi {
 		FViewportState		mViewportState{};
 		FColorMask			mColorMask{};
 
-		Flags<RState>		mEnabledStates{};
+		Flags<State>		mEnabledStates{};
 		ChannelRGBA			mClearColor{};
 
 #		if LUM_ENABLE_RENDER_PROFILER == 1
@@ -749,12 +753,12 @@ namespace lum::rhi {
 		cstd::HandlePool<RFramebufferHandle, FFramebuffer, RFramebufferID>	mFramebuffers{ skMaxFramebuffers };
 		cstd::HandlePool<RPipelineHandle, FPipeline, RPipelineID>			mPipelines{ skMaxPipelines };
 
-		bool validate_texture_descriptor(const RTextureDescriptor&);
+		bool validate_texture_descriptor(const FTextureDescriptor&);
 		bool validate_buffer_descriptor(const FBufferDescriptor&);
 
-		bool is_depth_format(RImageLayout fmt);
-		bool is_stencil_format(RImageLayout fmt);
-		bool is_color_format(RImageLayout fmt);
+		bool is_depth_format(ImageLayout fmt);
+		bool is_stencil_format(ImageLayout fmt);
+		bool is_color_format(ImageLayout fmt);
 
 	};
 

@@ -7,6 +7,7 @@
 //  [X] Renderer: User texture binding. Use 'GLuint' OpenGL texture as texture identifier. Read the FAQ about ImTextureID/ImTextureRef!
 //  [x] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset) [Desktop OpenGL only!]
 //  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
+//  [X] Renderer: Multi-viewport support (multiple windows). Enable with 'io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable'.
 
 // About WebGL/ES:
 // - You need to '#define IMGUI_IMPL_OPENGL_ES2' or '#define IMGUI_IMPL_OPENGL_ES3' to use WebGL or OpenGL ES.
@@ -23,6 +24,8 @@
 
 // CHANGELOG
 // (minor and older changes stripped away, please see git history for details)
+//  2026-XX-XX: Platform: Added support for multiple windows via the ImGuiPlatformIO interface.
+//  2025-12-11: OpenGL: Fixed embedded loader multiple init/shutdown cycles broken on some platforms. (#8792, #9112)
 //  2025-09-18: Call platform_io.ClearRendererHandlers() on shutdown.
 //  2025-07-22: OpenGL: Add and call embedded loader shutdown during ImGui_ImplOpenGL3_Shutdown() to facilitate multiple init/shutdown cycles in same process. (#8792)
 //  2025-07-15: OpenGL: Set GL_UNPACK_ALIGNMENT to 1 before updating textures (#8802) + restore non-WebGL/ES update path that doesn't require a CPU-side copy.
@@ -40,7 +43,7 @@
 //  2023-05-09: OpenGL: Support for glBindSampler() backup/restore on ES3. (#6375)
 //  2023-04-18: OpenGL: Restore front and back polygon mode separately when supported by context. (#6333)
 //  2023-03-23: OpenGL: Properly restoring "no shader program bound" if it was the case prior to running the rendering function. (#6267, #6220, #6224)
-//  2023-03-15: OpenGL: Fixed GL loader crash when GL_VERSION returns NULL. (#6154, #4445, #3530)
+//  2023-03-15: OpenGL: Fixed GL loader crash when GL_VERSION returns nullptr. (#6154, #4445, #3530)
 //  2023-03-06: OpenGL: Fixed restoration of a potentially deleted OpenGL program, by calling glIsProgram(). (#6220, #6224)
 //  2022-11-09: OpenGL: Reverted use of glBufferSubData(), too many corruptions issues + old issues seemingly can't be reproed with Intel drivers nowadays (revert 2021-12-15 and 2022-05-23 changes).
 //  2022-10-11: Using 'nullptr' instead of 'NULL' as per our switch to C++11.
@@ -262,6 +265,10 @@ static ImGui_ImplOpenGL3_Data* ImGui_ImplOpenGL3_GetBackendData()
     return ImGui::GetCurrentContext() ? (ImGui_ImplOpenGL3_Data*)ImGui::GetIO().BackendRendererUserData : nullptr;
 }
 
+// Forward Declarations
+static void ImGui_ImplOpenGL3_InitMultiViewportSupport();
+static void ImGui_ImplOpenGL3_ShutdownMultiViewportSupport();
+
 // OpenGL vertex attribute state (for ES 1.0 and ES 2.0 only)
 #ifndef IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 struct ImGui_ImplOpenGL3_VtxAttribState
@@ -290,7 +297,8 @@ struct ImGui_ImplOpenGL3_VtxAttribState
 bool ImGui_ImplOpenGL3_InitLoader();
 bool ImGui_ImplOpenGL3_InitLoader()
 {
-    // Initialize our loader
+    // Lazily initialize our loader if not already done
+    // (to facilitate handling multiple DLL boundaries and multiple context shutdowns we call this from all main entry points)
 #ifdef IMGUI_IMPL_OPENGL_LOADER_IMGL3W
     if (glGetIntegerv == nullptr && imgl3wInit() != 0)
     {
@@ -299,6 +307,13 @@ bool ImGui_ImplOpenGL3_InitLoader()
     }
 #endif
     return true;
+}
+
+static void ImGui_ImplOpenGL3_ShutdownLoader()
+{
+#ifdef IMGUI_IMPL_OPENGL_LOADER_IMGL3W
+    imgl3wShutdown();
+#endif
 }
 
 // Functions
@@ -368,6 +383,7 @@ bool    ImGui_ImplOpenGL3_Init(const char* glsl_version)
         io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
 #endif
     io.BackendFlags |= ImGuiBackendFlags_RendererHasTextures;       // We can honor ImGuiPlatformIO::Textures[] requests during render.
+    io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;      // We can create multi-viewports on the Renderer side (optional)
 
     ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
     platform_io.Renderer_TextureMaxWidth = platform_io.Renderer_TextureMaxHeight = (int)bd->MaxTextureSize;
@@ -386,7 +402,7 @@ bool    ImGui_ImplOpenGL3_Init(const char* glsl_version)
         glsl_version = "#version 130";
 #endif
     }
-    IM_ASSERT((int)strlen(glsl_version) + 2 < IM_ARRAYSIZE(bd->GlslVersionString));
+    IM_ASSERT((int)strlen(glsl_version) + 2 < IM_COUNTOF(bd->GlslVersionString));
     strcpy(bd->GlslVersionString, glsl_version);
     strcat(bd->GlslVersionString, "\n");
 
@@ -414,6 +430,8 @@ bool    ImGui_ImplOpenGL3_Init(const char* glsl_version)
     }
 #endif
 
+    ImGui_ImplOpenGL3_InitMultiViewportSupport();
+
     return true;
 }
 
@@ -424,17 +442,16 @@ void    ImGui_ImplOpenGL3_Shutdown()
     ImGuiIO& io = ImGui::GetIO();
     ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
 
+    ImGui_ImplOpenGL3_ShutdownMultiViewportSupport();
     ImGui_ImplOpenGL3_DestroyDeviceObjects();
 
     io.BackendRendererName = nullptr;
     io.BackendRendererUserData = nullptr;
-    io.BackendFlags &= ~(ImGuiBackendFlags_RendererHasVtxOffset | ImGuiBackendFlags_RendererHasTextures);
+    io.BackendFlags &= ~(ImGuiBackendFlags_RendererHasVtxOffset | ImGuiBackendFlags_RendererHasTextures | ImGuiBackendFlags_RendererHasViewports);
     platform_io.ClearRendererHandlers();
     IM_DELETE(bd);
 
-#ifdef IMGUI_IMPL_OPENGL_LOADER_IMGL3W
-    imgl3wShutdown();
-#endif
+    ImGui_ImplOpenGL3_ShutdownLoader();
 }
 
 void    ImGui_ImplOpenGL3_NewFrame()
@@ -442,8 +459,7 @@ void    ImGui_ImplOpenGL3_NewFrame()
     ImGui_ImplOpenGL3_Data* bd = ImGui_ImplOpenGL3_GetBackendData();
     IM_ASSERT(bd != nullptr && "Context or backend not initialized! Did you call ImGui_ImplOpenGL3_Init()?");
 
-    ImGui_ImplOpenGL3_InitLoader(); // Lazily init loader if not already done for e.g. DLL boundaries.
-
+    ImGui_ImplOpenGL3_InitLoader();
     if (!bd->ShaderHandle)
         if (!ImGui_ImplOpenGL3_CreateDeviceObjects())
             IM_ASSERT(0 && "ImGui_ImplOpenGL3_CreateDeviceObjects() failed!");
@@ -534,7 +550,7 @@ void    ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data)
     if (fb_width <= 0 || fb_height <= 0)
         return;
 
-    ImGui_ImplOpenGL3_InitLoader(); // Lazily init loader if not already done for e.g. DLL boundaries.
+    ImGui_ImplOpenGL3_InitLoader();
 
     ImGui_ImplOpenGL3_Data* bd = ImGui_ImplOpenGL3_GetBackendData();
 
@@ -542,7 +558,7 @@ void    ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data)
     // (This almost always points to ImGui::GetPlatformIO().Textures[] but is part of ImDrawData to allow overriding or disabling texture updates).
     if (draw_data->Textures != nullptr)
         for (ImTextureData* tex : *draw_data->Textures)
-            if (tex->Status != ImTexturestatus_OK)
+            if (tex->Status != ImTextureStatus_OK)
                 ImGui_ImplOpenGL3_UpdateTexture(tex);
 
     // Backup GL state
@@ -718,13 +734,13 @@ static void ImGui_ImplOpenGL3_DestroyTexture(ImTextureData* tex)
 
     // Clear identifiers and mark as destroyed (in order to allow e.g. calling InvalidateDeviceObjects while running)
     tex->SetTexID(ImTextureID_Invalid);
-    tex->SetStatus(ImTexturestatus_Destroyed);
+    tex->SetStatus(ImTextureStatus_Destroyed);
 }
 
 void ImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex)
 {
     // FIXME: Consider backing up and restoring
-    if (tex->Status == ImTexturestatus_WantCreate || tex->Status == ImTexturestatus_WantUpdates)
+    if (tex->Status == ImTextureStatus_WantCreate || tex->Status == ImTextureStatus_WantUpdates)
     {
 #ifdef GL_UNPACK_ROW_LENGTH // Not on WebGL/ES
         GL_CALL(glPixelStorei(GL_UNPACK_ROW_LENGTH, 0));
@@ -734,7 +750,7 @@ void ImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex)
 #endif
     }
 
-    if (tex->Status == ImTexturestatus_WantCreate)
+    if (tex->Status == ImTextureStatus_WantCreate)
     {
         // Create and upload new texture to graphics system
         //IMGUI_DEBUG_LOG("UpdateTexture #%03d: WantCreate %dx%d\n", tex->UniqueID, tex->Width, tex->Height);
@@ -757,12 +773,12 @@ void ImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex)
 
         // Store identifiers
         tex->SetTexID((ImTextureID)(intptr_t)gl_texture_id);
-        tex->SetStatus(ImTexturestatus_OK);
+        tex->SetStatus(ImTextureStatus_OK);
 
         // Restore state
         GL_CALL(glBindTexture(GL_TEXTURE_2D, last_texture));
     }
-    else if (tex->Status == ImTexturestatus_WantUpdates)
+    else if (tex->Status == ImTextureStatus_WantUpdates)
     {
         // Update selected blocks. We only ever write to textures regions which have never been used before!
         // This backend choose to use tex->Updates[] but you can use tex->UpdateRect to upload a single region.
@@ -790,10 +806,10 @@ void ImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex)
             GL_CALL(glTexSubImage2D(GL_TEXTURE_2D, 0, r.x, r.y, r.w, r.h, GL_RGBA, GL_UNSIGNED_BYTE, bd->TempBuffer.Data));
         }
 #endif
-        tex->SetStatus(ImTexturestatus_OK);
+        tex->SetStatus(ImTextureStatus_OK);
         GL_CALL(glBindTexture(GL_TEXTURE_2D, last_texture)); // Restore state
     }
-    else if (tex->Status == ImTexturestatus_WantDestroy && tex->UnusedFrames > 0)
+    else if (tex->Status == ImTextureStatus_WantDestroy && tex->UnusedFrames > 0)
         ImGui_ImplOpenGL3_DestroyTexture(tex);
 }
 
@@ -837,6 +853,7 @@ static bool CheckProgram(GLuint handle, const char* desc)
 
 bool    ImGui_ImplOpenGL3_CreateDeviceObjects()
 {
+    ImGui_ImplOpenGL3_InitLoader();
     ImGui_ImplOpenGL3_Data* bd = ImGui_ImplOpenGL3_GetBackendData();
 
     // Backup GL state
@@ -1035,6 +1052,7 @@ bool    ImGui_ImplOpenGL3_CreateDeviceObjects()
 
 void    ImGui_ImplOpenGL3_DestroyDeviceObjects()
 {
+    ImGui_ImplOpenGL3_InitLoader();
     ImGui_ImplOpenGL3_Data* bd = ImGui_ImplOpenGL3_GetBackendData();
     if (bd->VboHandle)      { glDeleteBuffers(1, &bd->VboHandle); bd->VboHandle = 0; }
     if (bd->ElementsHandle) { glDeleteBuffers(1, &bd->ElementsHandle); bd->ElementsHandle = 0; }
@@ -1044,6 +1062,34 @@ void    ImGui_ImplOpenGL3_DestroyDeviceObjects()
     for (ImTextureData* tex : ImGui::GetPlatformIO().Textures)
         if (tex->RefCount == 1)
             ImGui_ImplOpenGL3_DestroyTexture(tex);
+}
+
+//--------------------------------------------------------------------------------------------------------
+// MULTI-VIEWPORT / PLATFORM INTERFACE SUPPORT
+// This is an _advanced_ and _optional_ feature, allowing the backend to create and handle multiple viewports simultaneously.
+// If you are new to dear imgui or creating a new binding for dear imgui, it is recommended that you completely ignore this section first..
+//--------------------------------------------------------------------------------------------------------
+
+static void ImGui_ImplOpenGL3_RenderWindow(ImGuiViewport* viewport, void*)
+{
+    if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear))
+    {
+        ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+    ImGui_ImplOpenGL3_RenderDrawData(viewport->DrawData);
+}
+
+static void ImGui_ImplOpenGL3_InitMultiViewportSupport()
+{
+    ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
+    platform_io.Renderer_RenderWindow = ImGui_ImplOpenGL3_RenderWindow;
+}
+
+static void ImGui_ImplOpenGL3_ShutdownMultiViewportSupport()
+{
+    ImGui::DestroyPlatformWindows();
 }
 
 //-----------------------------------------------------------------------------

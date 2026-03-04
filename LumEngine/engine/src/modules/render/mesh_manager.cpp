@@ -28,7 +28,7 @@ namespace lum {
 			return mStaticMeshes[mDefaultMesh];
 	}
 
-	StaticMeshHandle MMeshManager::CreateStatic( ccharptr path, ERootID root ) {
+	StaticMeshHandle MMeshManager::CreateStatic( ccharptr path, RootID root ) {
 
 		uint64 hash = HashStr(path);
 
@@ -42,7 +42,7 @@ namespace lum {
 			return mErrorMesh;
 		}
 
-		detail::FRenderResources res = upload_gpu(detail::EMeshType::Static, data.value());
+		detail::FRenderResources res = upload_gpu(detail::MeshType::Static, data.value());
 
 		FStaticMeshResource meshResource;
 		meshResource.mVbo = res.mVbo;
@@ -57,7 +57,7 @@ namespace lum {
 		return meshHandle;
 	}
 
-	FDynamicMeshInstance MMeshManager::CreateDynamic(ccharptr path, ERootID root ) {
+	FDynamicMeshInstance MMeshManager::CreateDynamic(ccharptr path, RootID root ) {
 
 		std::optional<FMeshData> data = AssetLoader::LoadMesh(root, path);
 
@@ -69,7 +69,7 @@ namespace lum {
 			data = fallback;
 		}
 
-		detail::FRenderResources res = upload_gpu(detail::EMeshType::Dynamic, data.value());
+		detail::FRenderResources res = upload_gpu(detail::MeshType::Dynamic, data.value());
 
 		FDynamicMeshInstance meshInstance;
 		meshInstance.mData = data.value();
@@ -93,21 +93,21 @@ namespace lum {
 
 	}
 
-	detail::FRenderResources MMeshManager::upload_gpu( detail::EMeshType type, const FMeshData& data ) {
+	detail::FRenderResources MMeshManager::upload_gpu( detail::MeshType type, const FMeshData& data ) {
 
-		Flags<rhi::EMapFlag> mapFlag{};
-		rhi::EBufferUsage usage{};
+		Flags<rhi::MapFlag> mapFlag{};
+		rhi::BufferUsage usage{};
 
-		if (type == detail::EMeshType::Static) {
+		if (type == detail::MeshType::Static) {
 
-			mapFlag = rhi::EMapFlag::Read;
-			usage = rhi::EBufferUsage::Static;
+			mapFlag = rhi::MapFlag::None;
+			usage = rhi::BufferUsage::Static;
 
 		}
-		else if (type == detail::EMeshType::Dynamic) {
+		else if (type == detail::MeshType::Dynamic) {
 
-			mapFlag = rhi::EMapFlag::Read | rhi::EMapFlag::Write;
-			usage = rhi::EBufferUsage::Dynamic;
+			mapFlag = rhi::MapFlag::Read | rhi::MapFlag::Write;
+			usage = rhi::BufferUsage::Dynamic;
 
 		}
 
@@ -118,7 +118,7 @@ namespace lum {
 		vboDesc.mData = data.mVertices.data();
 		vboDesc.mMapFlags = mapFlag;
 		vboDesc.mSize = ByteSize(data.mVertices);
-		vboDesc.mBufferType = rhi::EBufferType::Vertex;
+		vboDesc.mBufferType = rhi::BufferType::Vertex;
 		res.mVbo = mRenderDevice->CreateBuffer(vboDesc);
 
 		rhi::FBufferDescriptor eboDesc;
@@ -126,39 +126,39 @@ namespace lum {
 		eboDesc.mData = data.mIndices.data();
 		eboDesc.mMapFlags = mapFlag;
 		eboDesc.mSize = ByteSize(data.mIndices);
-		eboDesc.mBufferType = rhi::EBufferType::Element;
+		eboDesc.mBufferType = rhi::BufferType::Element;
 		res.mEbo = mRenderDevice->CreateBuffer(eboDesc);
 
-		rhi::RVertexAttribute vaoAttrib[5];
+		rhi::FVertexAttribute vaoAttrib[5];
 
 		auto& position = vaoAttrib[0];
-		position.mFormat = rhi::EDataFormat::Vec3;
-		position.mRelativeOffset = offsetof(rhi::FVertex, mPosition);
+		position.mFormat = rhi::DataFormat::Vec3;
+		position.mRelativeOffset = offsetof(FVertex, mPosition);
 		position.mShaderLocation = LUM_LAYOUT_POSITION;
 
 		auto& normal = vaoAttrib[1];
-		normal.mFormat = rhi::EDataFormat::Vec3;
-		normal.mRelativeOffset = offsetof(rhi::FVertex, mNormal);
+		normal.mFormat = rhi::DataFormat::Vec3;
+		normal.mRelativeOffset = offsetof(FVertex, mNormal);
 		normal.mShaderLocation = LUM_LAYOUT_NORMAL;
 
 		auto& uv = vaoAttrib[2];
-		uv.mFormat = rhi::EDataFormat::Vec2;
-		uv.mRelativeOffset = offsetof(rhi::FVertex, mUv);
+		uv.mFormat = rhi::DataFormat::Vec2;
+		uv.mRelativeOffset = offsetof(FVertex, mUv);
 		uv.mShaderLocation = LUM_LAYOUT_UV;
 
 		auto& tg = vaoAttrib[3];
-		tg.mFormat = rhi::EDataFormat::Vec3;
-		tg.mRelativeOffset = offsetof(rhi::FVertex, mTangent);
+		tg.mFormat = rhi::DataFormat::Vec3;
+		tg.mRelativeOffset = offsetof(FVertex, mTangent);
 		tg.mShaderLocation = LUM_LAYOUT_TANGENT;
 
 		auto& btg = vaoAttrib[4];
-		btg.mFormat = rhi::EDataFormat::Vec3;
-		btg.mRelativeOffset = offsetof(rhi::FVertex, mBitangent);
+		btg.mFormat = rhi::DataFormat::Vec3;
+		btg.mRelativeOffset = offsetof(FVertex, mBitangent);
 		btg.mShaderLocation = LUM_LAYOUT_BITANGENT;
 
-		rhi::RVertexLayoutDescriptor vaoDesc;
+		rhi::FVertexLayoutDescriptor vaoDesc;
 		vaoDesc.mAttributes = vaoAttrib;
-		vaoDesc.mStride = sizeof(rhi::FVertex);
+		vaoDesc.mStride = sizeof(FVertex);
 		res.mVao = mRenderDevice->CreateVertexLayout(vaoDesc, res.mVbo);
 
 		mRenderDevice->AttachElementBufferToLayout(res.mEbo, res.mVao);
@@ -173,7 +173,7 @@ namespace lum {
 			data.mVertices = mBasicVertices;
 			data.mIndices = mBasicIndices;
 
-			detail::FRenderResources res = upload_gpu(detail::EMeshType::Static, data);
+			detail::FRenderResources res = upload_gpu(detail::MeshType::Static, data);
 
 			FStaticMeshResource staticMesh;
 			staticMesh.mVbo = res.mVbo;
@@ -185,13 +185,13 @@ namespace lum {
 
 		}
 		{ // Error mesh
-			std::optional<FMeshData> data = AssetLoader::LoadMesh(ERootID::Internal, "models/ERRORText.fbx");
+			std::optional<FMeshData> data = AssetLoader::LoadMesh(RootID::Internal, "models/ERRORText.fbx");
 			if (!data) {
 				LUM_LOG_ERROR("Failed to load fallback error model: %s", AssetLoader::GetErrorMessage());
 				mErrorMesh = mDefaultMesh;
 				return;
 			}
-			detail::FRenderResources res = upload_gpu(detail::EMeshType::Static, data.value());
+			detail::FRenderResources res = upload_gpu(detail::MeshType::Static, data.value());
 
 			FStaticMeshResource staticMesh;
 			staticMesh.mVbo = res.mVbo;

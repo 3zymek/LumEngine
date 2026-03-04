@@ -12,7 +12,7 @@ namespace lum {
 	/* @brief Base tag struct for all ECS components.
 	* Inherit from this to mark a struct as a valid component.
 	*/
-	struct Component : std::true_type {};
+	struct Component {};
 
 	/* @brief Entity Component System namespace.
 	*  Provides core ECS primitives including entity management,

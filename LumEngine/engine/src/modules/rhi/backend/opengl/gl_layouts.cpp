@@ -2,7 +2,7 @@
 
 namespace lum::rhi::gl {
 
-	RVertexLayoutHandle GLDevice::CreateVertexLayout ( const RVertexLayoutDescriptor& desc, const RBufferHandle& vbo ) {
+	RVertexLayoutHandle GLDevice::CreateVertexLayout ( const FVertexLayoutDescriptor& desc, const RBufferHandle& vbo ) {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mBuffers.Contains(vbo),

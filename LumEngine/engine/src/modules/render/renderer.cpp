@@ -20,10 +20,10 @@ namespace lum::render {
 
 		mContext = ctx;
 
-		mGeometryPass.Initialize(mContext);
-		mLightPass.Initialize(mContext);
-		mEnvironmentPass.Initialize(mContext);
-		mGBuffer.Initialize(mContext, 500, 500);
+		mGeometryPass.		Initialize(mContext);
+		mLightPass.			Initialize(mContext);
+		mEnvironmentPass.	Initialize(mContext);
+		mGBuffer.			Initialize(mContext, 500, 500);
 
 		init();
 
@@ -43,19 +43,17 @@ namespace lum::render {
 
 		mContext.mRenderDevice->BeginFrame();
 
-		mGBuffer.BeginPass();
+		//mGBuffer.BeginPass();
 		mGeometryPass.BeginPass();
 		mLightPass.BeginPass();
-		mEnvironmentPass.BeginPass();
 
 	}
 
 	void Renderer::EndFrame() {
 		
-		mGeometryPass.EndPass();
+		//mGeometryPass.EndPass();
 		mGBuffer.EndPass();
 		mLightPass.EndPass();
-		mEnvironmentPass.EndPass();
 
 		mContext.mRenderDevice->EndFrame();
 
@@ -71,12 +69,12 @@ namespace lum::render {
 
 	void Renderer::init() {
 		rhi::FBufferDescriptor desc;
-		desc.mBufferUsage = rhi::EBufferUsage::Dynamic;
-		desc.mMapFlags = rhi::EMapFlag::Write;
+		desc.mBufferUsage = rhi::BufferUsage::Dynamic;
+		desc.mMapFlags = rhi::MapFlag::Write;
 
 		{ // Camera Uniform
 			desc.mSize = sizeof(detail::FCameraUniformBuffer);
-			desc.mBufferType = rhi::EBufferType::Uniform;
+			desc.mBufferType = rhi::BufferType::Uniform;
 			mCameraBuffer = mContext.mRenderDevice->CreateBuffer(desc);
 			mContext.mRenderDevice->SetUniformBufferBinding(mCameraBuffer, LUM_UBO_CAMERA_BINDING);
 		}

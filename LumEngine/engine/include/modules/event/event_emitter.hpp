@@ -9,8 +9,8 @@ namespace lum {
 			using UnsubscribeInvoke = void (*)(SubscribtionID, EventBus&);
 
 			struct EmitterSlot {
-				SubscribtionID		id = std::numeric_limits<SubscribtionID>::max();
-				UnsubscribeInvoke	unsub;
+				SubscribtionID		mID = MaxVal<SubscribtionID>();
+				UnsubscribeInvoke	mUnsub;
 			};
 
 		}
@@ -40,8 +40,8 @@ namespace lum {
 			*  @param bus Reference to the EventBus to use.
 			*  @thread_safety Must be called from the main thread or EventBus owner context.
 			*/
-			explicit EventEmitter(EventBus& bus) : m_bus(bus) { mSubscriptions.reserve(limits::gMaxPermanentCallbacks); }
-			~EventEmitter() { Destroy(); }
+			explicit EventEmitter(EventBus& bus) : mBus(bus) { mSubscriptions.reserve(limits::gMaxPermanentCallbacks); }
+			~EventEmitter() { destroy(); }
 
 			/*! @brief Emits an event to all subscribers of the specified type.
 			*
@@ -50,9 +50,9 @@ namespace lum {
 			*  @tparam EventType Type of the event to emit.
 			*  @param event Reference to the event instance to dispatch.
 			*/
-			template<detail::LumEvent EventType>
+			template<detail::tEvent EventType>
 			void Emit(const EventType& event) {
-				m_bus.Emit<EventType>(event);
+				mBus.Emit<EventType>(event);
 			}
 
 			/*! @brief Subscribes a one-time callback for the specified event type.
@@ -63,9 +63,9 @@ namespace lum {
 			*  @tparam Lambda Type of the callback function or lambda.
 			*  @param lambda Function to call when the event is emitted.
 			*/
-			template<detail::LumEvent EventType, typename Lambda>
+			template<detail::tEvent EventType, typename Lambda>
 			void Subscribe(Lambda&& lambda) {
-				m_bus.Subscribe<EventType>(std::forward<Lambda>(lambda));
+				mBus.Subscribe<EventType>(std::forward<Lambda>(lambda));
 			}
 
 			/*! @brief Subscribes a permanent callback for the specified event type.
@@ -78,12 +78,12 @@ namespace lum {
 			*  @param lambda Function to call when the event is emitted.
 			*  @note Subscription will be ignored if MAX_PERM_CALLBACKS limit is reached.
 			*/
-			template<detail::LumEvent EventType, typename Lambda>
+			template<detail::tEvent EventType, typename Lambda>
 			void SubscribePermamently(Lambda&& lambda) {
 				if (mSubscriptions.size() >= limits::gMaxPermanentCallbacks)
 					return;
 
-				auto id = m_bus.SubscribePermanently<EventType>(std::forward<Lambda>(lambda));
+				auto id = mBus.SubscribePermanently<EventType>(std::forward<Lambda>(lambda));
 				mSubscriptions.push_back({ id, [](SubscribtionID id, EventBus& bus)
 					{ bus.UnsubscribePermanent<EventType>(id); }
 					});
@@ -91,14 +91,14 @@ namespace lum {
 
 		private:
 
-			void Destroy() {
+			void destroy() {
 				for (auto& slot : mSubscriptions) {
-					slot.unsub(slot.id, m_bus);
+					slot.mUnsub(slot.mID, mBus);
 				}
 				LUM_LOG_DEBUG("Destroyed emitter and unsubscribed all callbacks");
 			}
 
-			EventBus& m_bus;
+			EventBus& mBus;
 
 			std::vector<EmitterSlot> mSubscriptions;
 

@@ -59,7 +59,7 @@ namespace lum::fmt {
 		* @param i      Current token index.
 		*/
 		static inline bool in_block(std::vector<FToken>& tokens, int32 i) 
-			{ return i < tokens.size() && tokens[i].mType != ETokenType::RBracket; }
+			{ return i < tokens.size() && tokens[i].mType != TokenType::RBracket; }
 
 		/* @brief Parses the world block and applies global scene settings. */
 		static void parse_world( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
@@ -84,9 +84,6 @@ namespace lum::fmt {
 
 		/* @brief Parses a name component and attaches it to the current entity. */
 		static void parse_name( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
-		/* @brief Parses a directional light component and attaches it to the current entity. */
-		static void parse_directional_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 
 		/* @brief Parses a point light component and attaches it to the current entity. */
 		static void parse_point_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
@@ -121,7 +118,6 @@ namespace lum::fmt {
 			{ HashStr("render"),            parse_render             },
 			{ HashStr("material"),          parse_material           },
 			{ HashStr("name"),              parse_name               },
-			{ HashStr("directional_light"), parse_directional_light  },
 			{ HashStr("point_light"),       parse_point_light        }
 		};
 

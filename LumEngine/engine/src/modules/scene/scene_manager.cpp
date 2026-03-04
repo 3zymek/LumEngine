@@ -30,13 +30,13 @@ namespace lum {
 
 		if (!mScenes.contains(hash)) {
 
-			std::optional<String> content = AssetLoader::ReadFile(ERootID::External, scenePath);
+			std::optional<String> content = AssetLoader::ReadFile(RootID::External, scenePath);
 
 			if (!content) {
 				LUM_LOG_ERROR("Failed to load scene %s: %s", scenePath, AssetLoader::GetErrorMessage());
 				return;
 			}
-			if (!fmt::IsValidFormat(scenePath, fmt::EFormat::Scene)) {
+			if (!fmt::IsValidFormat(scenePath, fmt::Format::Scene)) {
 				LUM_LOG_ERROR("Invalid scene format: %s", scenePath);
 				return;
 			}
@@ -60,13 +60,13 @@ namespace lum {
 
 		uint64 hash = HashStr(scenePath);
 
-		std::optional<String> content = AssetLoader::ReadFile(ERootID::External, scenePath);
+		std::optional<String> content = AssetLoader::ReadFile(RootID::External, scenePath);
 
 		if (!content) {
 			LUM_LOG_ERROR("Failed to load scene %s: %s", scenePath, AssetLoader::GetErrorMessage());
 			return;
 		}
-		if (!fmt::IsValidFormat(scenePath, fmt::EFormat::Scene)) {
+		if (!fmt::IsValidFormat(scenePath, fmt::Format::Scene)) {
 			LUM_LOG_ERROR("Invalid scene format: %s", scenePath);
 			return;
 		}

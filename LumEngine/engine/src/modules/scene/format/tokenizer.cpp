@@ -36,7 +36,7 @@ namespace lum::fmt {
 					value += str[pos++];
 				}
 
-				mTokens.push_back({ ETokenType::String, value });
+				mTokens.push_back({ TokenType::String, value });
 
 			}
 
@@ -51,7 +51,7 @@ namespace lum::fmt {
 					value += str[pos++];
 				}
 
-				mTokens.push_back({ ETokenType::Component, value });
+				mTokens.push_back({ TokenType::Component, value });
 
 			}
 
@@ -75,12 +75,12 @@ namespace lum::fmt {
 				}
 
 				if (isParameter)
-					mTokens.push_back({ ETokenType::Parameter, value });
+					mTokens.push_back({ TokenType::Parameter, value });
 				else
-					mTokens.push_back({ ETokenType::Identifier, value });
+					mTokens.push_back({ TokenType::Identifier, value });
 
 				if (str[npos] == ':')
-					mTokens.push_back({ ETokenType::Colon, ":" });
+					mTokens.push_back({ TokenType::Colon, ":" });
 
 			}
 
@@ -95,7 +95,7 @@ namespace lum::fmt {
 					LUM_LOG_ERROR("Invalid number token: %s", value.c_str());
 				}
 				else {
-					mTokens.push_back({ ETokenType::Number, value });
+					mTokens.push_back({ TokenType::Number, value });
 				}
 
 			}
@@ -105,7 +105,7 @@ namespace lum::fmt {
 
 				++pos;
 
-				mTokens.push_back({ ETokenType::LBracket, "{" });
+				mTokens.push_back({ TokenType::LBracket, "{" });
 
 			}
 
@@ -114,7 +114,7 @@ namespace lum::fmt {
 
 				++pos;
 
-				mTokens.push_back({ ETokenType::RBracket, "}" });
+				mTokens.push_back({ TokenType::RBracket, "}" });
 
 			}
 

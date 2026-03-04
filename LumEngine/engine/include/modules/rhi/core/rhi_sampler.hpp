@@ -11,13 +11,13 @@
 namespace lum::rhi {
 
 	// Filter that applies to texture, when texture is magnified ( scaled up )
-	enum class RSamplerMagFilter : byte {
+	enum class SamplerMagFilter : byte {
 		Linear,	// Takes 4 neighbouring texels and calculates it weighted average value (Effect: Smoothness, Fuzzy, no sharp edges).
 		Nearest	// Takes texture coordinate from UV map, rounds it and takes 1 texel (Effect: Sharpness). 
 	};
 
 	// Filter that applies to texture, when texture is minified ( scaled down )
-	enum class RSamplerMinFilter : byte {
+	enum class SamplerMinFilter : byte {
 		Linear,					// Takes 4 neighbouring texels and calculates it weighted average value ( Effect: Smoothness, Fuzzy, no sharp edges, NO MIPMAP ).
 		LinearMipmapNearest,	// Takes 4 neighbouring texels from single mipmap and calculates it weighted average value ( Effect: Compromise for quality and performance, smoothness ).
 		LinearMipmapLinear,		// Takes 4 neighbouring texels from 2 mipmaps and calculates it weighted average value ( Effect: Best quality, smooth but not fuzzy ).
@@ -27,7 +27,7 @@ namespace lum::rhi {
 	};
 
 	// Defines what will happen to texture when out of bounds
-	enum class RSamplerWrap : byte {
+	enum class SamplerWrap : byte {
 		Repeat,				// Texture will repeat
 		RepeatMirrored,	// Texture will repeat and every second repeat is mirrored
 		ClampEdge,			// Last texture pixel will be streched
@@ -37,16 +37,16 @@ namespace lum::rhi {
 	struct RSamplerDescriptor {
 
 		// Filter that applies to texture, when texture is magnified ( scaled up )
-		RSamplerMagFilter mMagFilter{};
+		SamplerMagFilter mMagFilter{};
 		// Filter that applies to texture, when texture is minified ( scaled down )
-		RSamplerMinFilter mMinFilter{};
+		SamplerMinFilter mMinFilter{};
 
 		// How texture is acting out of bounds on s( x ) axis ( when s > 1 )
-		RSamplerWrap mWrapS{};
+		SamplerWrap mWrapS{};
 		// How texture is acting out of bounds on t( y ) axis ( when t > 1 )
-		RSamplerWrap mWrapT{};
+		SamplerWrap mWrapT{};
 		// How texture is acting out of bounds on r( z ) axis ( when r > 1, ONLY FOR 3D TEXTURES )
-		RSamplerWrap mWrapR{};
+		SamplerWrap mWrapR{};
 
 		// Level of anisotropic filtering ( sharpens textures at steep viewing angles, prevents blur and stretch )
 		float32 mAnisotropy = 0.0f;

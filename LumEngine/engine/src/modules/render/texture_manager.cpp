@@ -22,7 +22,7 @@ namespace lum {
 
 	}
 
-	rhi::RTextureHandle MTextureManager::Get( StringView path, ERootID id ) {
+	rhi::RTextureHandle MTextureManager::Get( StringView path, RootID id ) {
 
 		uint64 hash = HashStr(path);
 
@@ -34,7 +34,7 @@ namespace lum {
 
 	}
 
-	rhi::RTextureHandle MTextureManager::Load( StringView path, ETexturePreset preset, ERootID id ) {
+	rhi::RTextureHandle MTextureManager::Load( StringView path, TexturePreset preset, RootID id ) {
 
 		uint64 hash = HashStr(path);
 
@@ -48,10 +48,10 @@ namespace lum {
 			return mMissingTexture;
 		}
 
-		rhi::RTextureDescriptor desc = sTexturePresetsLookup[ToUnderlyingEnum(preset)];
+		rhi::FTextureDescriptor desc = sTexturePresetsLookup[ToUnderlyingEnum(preset)];
 
 		desc.mData = data.value();
-		desc.mTextureType = rhi::RTextureType::Texture2D;
+		desc.mTextureType = rhi::TextureType::Texture2D;
 		desc.mImageFormat = ChannelsToFormat(data.value().mChannels);
 		rhi::RTextureHandle handle = mRenderDevice->CreateTexture(desc);
 
@@ -60,18 +60,18 @@ namespace lum {
 		return handle;
 	}
 
-	rhi::RImageFormat MTextureManager::ChannelsToFormat( uint32 channels ) {
+	rhi::ImageFormat MTextureManager::ChannelsToFormat( uint32 channels ) {
 		switch (channels) {
-		case 1: { return rhi::RImageFormat::R; }; break;
-		case 2: { return rhi::RImageFormat::RG; }; break;
-		case 3: { return rhi::RImageFormat::RGB; }; break;
-		case 4: { return rhi::RImageFormat::RGBA; }; break;
-		default: { return rhi::RImageFormat::RGBA; }; break;
+		case 1: { return rhi::ImageFormat::R; }; break;
+		case 2: { return rhi::ImageFormat::RG; }; break;
+		case 3: { return rhi::ImageFormat::RGB; }; break;
+		case 4: { return rhi::ImageFormat::RGBA; }; break;
+		default: { return rhi::ImageFormat::RGBA; }; break;
 		}
-		return rhi::RImageFormat::RGBA;
+		return rhi::ImageFormat::RGBA;
 	}
 
-	rhi::RTextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, int32 faceSize, ERootID root ) {
+	rhi::RTextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, int32 faceSize, RootID root ) {
 
 		uint64 hash = HashStr(path);
 
@@ -86,24 +86,24 @@ namespace lum {
 
 		std::array<FTextureData, 6> convertedData = convert_equirectangular_to_cubemap(data.value(), faceSize);
 
-		rhi::RTextureDescriptor desc;
+		rhi::FTextureDescriptor desc;
 		for (int32 i = 0; i < 6; i++)
 			desc.mCubemap.mFaces[i] = convertedData[i];
 
-		desc.mImageLayout = rhi::RImageLayout::RGB8;
-		desc.mImageFormat = rhi::RImageFormat::RGB;
-		desc.mTextureType = rhi::RTextureType::Cubemap;
+		desc.mImageLayout = rhi::ImageLayout::RGB8;
+		desc.mImageFormat = rhi::ImageFormat::RGB;
+		desc.mTextureType = rhi::TextureType::Cubemap;
 
 		rhi::RTextureHandle handle = mRenderDevice->CreateTexture(desc);
 		mTextures[hash] = handle;
 		return handle;
 	}
 
-	rhi::RTextureHandle MTextureManager::GetFallbackTexture( EFallbackTexture fallback ) {
+	rhi::RTextureHandle MTextureManager::GetFallbackTexture( FallbackTexture fallback ) {
 		switch (fallback) {
-		case EFallbackTexture::Missing: return mMissingTexture;
-		case EFallbackTexture::DefaultAlbedo: return mDefaultAlbedoTexture;
-		case EFallbackTexture::DefaultNormal: return mDefaultNormalTexture;
+		case FallbackTexture::Missing: return mMissingTexture;
+		case FallbackTexture::DefaultAlbedo: return mDefaultAlbedoTexture;
+		case FallbackTexture::DefaultNormal: return mDefaultNormalTexture;
 		default: return mDefaultAlbedoTexture;
 		}
 	}
@@ -129,11 +129,11 @@ namespace lum {
 			data.mWidth = 1;
 			data.mHeight = 1;
 			data.mChannels = 4;
-			rhi::RTextureDescriptor desc;
+			rhi::FTextureDescriptor desc;
 			desc.mData = data;
-			desc.mImageLayout = rhi::RImageLayout::SRGB8_Alpha8;
-			desc.mImageFormat = rhi::RImageFormat::RGBA;
-			desc.mTextureType = rhi::RTextureType::Texture2D;
+			desc.mImageLayout = rhi::ImageLayout::SRGB8_Alpha8;
+			desc.mImageFormat = rhi::ImageFormat::RGBA;
+			desc.mTextureType = rhi::TextureType::Texture2D;
 			mDefaultAlbedoTexture = mRenderDevice->CreateTexture(desc);
 		}
 		{ // Default normal texture
@@ -142,25 +142,25 @@ namespace lum {
 			data.mWidth = 1;
 			data.mHeight = 1;
 			data.mChannels = 3;
-			rhi::RTextureDescriptor desc;
+			rhi::FTextureDescriptor desc;
 			desc.mData = data;
-			desc.mImageLayout = rhi::RImageLayout::RGB8;
-			desc.mImageFormat = rhi::RImageFormat::RGB;
-			desc.mTextureType = rhi::RTextureType::Texture2D;
+			desc.mImageLayout = rhi::ImageLayout::RGB8;
+			desc.mImageFormat = rhi::ImageFormat::RGB;
+			desc.mTextureType = rhi::TextureType::Texture2D;
 			mDefaultNormalTexture = mRenderDevice->CreateTexture(desc);
 		}
 		{ // Missing texture
-			std::optional<FTextureData> data = AssetLoader::LoadTexture(ERootID::Internal, "textures/missingTex.png");
+			std::optional<FTextureData> data = AssetLoader::LoadTexture(RootID::Internal, "textures/missingTex.png");
 			if (!data) {
 				LUM_LOG_ERROR("Failed to load missing texture fallback");
 				mMissingTexture = mDefaultAlbedoTexture;
 				return;
 			}
-			rhi::RTextureDescriptor desc;
+			rhi::FTextureDescriptor desc;
 			desc.mData = data.value();
-			desc.mImageLayout = rhi::RImageLayout::RGB8;
-			desc.mImageFormat = rhi::RImageFormat::RGB;
-			desc.mTextureType = rhi::RTextureType::Texture2D;
+			desc.mImageLayout = rhi::ImageLayout::RGB8;
+			desc.mImageFormat = rhi::ImageFormat::RGB;
+			desc.mTextureType = rhi::TextureType::Texture2D;
 			mMissingTexture = mRenderDevice->CreateTexture(desc);
 		}
 	}

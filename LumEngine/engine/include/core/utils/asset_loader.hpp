@@ -4,13 +4,15 @@
 // 
 //=============================================================================//
 #pragma once
+
 #include "core/core_pch.hpp"
 #include "core/core_defines.hpp"
 #include "core/types.hpp"
 #include "core/limits.hpp"
+
 namespace lum {
 
-	namespace rhi { struct FVertex; }
+	struct FVertex;
 	namespace detail {
 
 		namespace fs = std::filesystem;
@@ -18,7 +20,7 @@ namespace lum {
 	} // namespace lum::detail
 
 	/* @brief Identifies the root directory used for asset path resolution. */
-	enum class ERootID : byte {
+	enum class RootID : byte {
 		Internal, // Engine internal assets directory.
 		External  // Project root directory set by the user.
 	};
@@ -38,7 +40,7 @@ namespace lum {
 	/* @brief Raw mesh data loaded from disk. */
 	struct FMeshData {
 		/* @brief List of vertices. */
-		std::vector<rhi::FVertex> mVertices;
+		std::vector<FVertex> mVertices;
 		/* @brief List of indices. */
 		std::vector<uint32> mIndices;
 	};
@@ -80,7 +82,7 @@ namespace lum {
 		* @return FTextureData on success, or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<FTextureData> LoadTexture( ERootID root, StringView filepath, uint8 expectedFormat = 0 );
+		static std::optional<FTextureData> LoadTexture( RootID root, StringView filepath, uint8 expectedFormat = 0 );
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.
@@ -88,7 +90,7 @@ namespace lum {
 		* @return Populated FMeshData or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<FMeshData> LoadMesh( ERootID root, StringView filepath );
+		static std::optional<FMeshData> LoadMesh( RootID root, StringView filepath );
 
 		/* @brief Loads an audio file from disk.
 		* @param root Root directory identifier.
@@ -96,7 +98,7 @@ namespace lum {
 		* @return File contents as String or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<String> LoadAudio( ERootID root, StringView filepath );
+		static std::optional<String> LoadAudio( RootID root, StringView filepath );
 
 		/* @brief Loads a shader source file from disk.
 		* Prepends the engine shader define header automatically.
@@ -105,7 +107,7 @@ namespace lum {
 		* @return Shader source as String or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<String> LoadShader( ERootID root, StringView filepath );
+		static std::optional<String> LoadShader( RootID root, StringView filepath );
 
 		/* @brief Writes text content to a file at the given path.
 		* Creates the file if it does not exist, overwrites if it does.
@@ -114,7 +116,7 @@ namespace lum {
 		* @param content Text content to write.
 		* @return If operation went succesfully.
 		*/
-		static bool WriteFile( ERootID root, StringView filepath, const String& content );
+		static bool WriteFile( RootID root, StringView filepath, const String& content );
 
 		/* @brief Reads raw text content from a file.
 		* @param root Root directory identifier.
@@ -122,7 +124,7 @@ namespace lum {
 		* @return File contents as String or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<String> ReadFile( ERootID root, StringView filepath );
+		static std::optional<String> ReadFile( RootID root, StringView filepath );
 
 		/* @brief Returns the last error message set by a failed load operation. */
 		static ccharptr GetErrorMessage( ) { return sLastErrorMessage; }
@@ -153,10 +155,10 @@ namespace lum {
 			std::strncpy(sLastErrorMessage, msg.data(), sizeof(sLastErrorMessage));
 		}
 
-		static String get_full_path( ERootID root, StringView filepath ) {
-			if (root == ERootID::External)
+		static String get_full_path( RootID root, StringView filepath ) {
+			if (root == RootID::External)
 				return (sProjectRoot / filepath).lexically_normal().string();
-			else if (root == ERootID::Internal)
+			else if (root == RootID::Internal)
 				return (sInternalRoot / filepath).lexically_normal().string();
 			return "";
 		}

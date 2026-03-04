@@ -62,7 +62,7 @@ namespace lum {
 		MShaderManager		mShaderMgr;
 
 		void Initialize( PlatformModule& platform ) {
-
+			
 			mTextureMgr.	Initialize(platform.mRenderDevice);
 			mMeshMgr.		Initialize(platform.mRenderDevice);
 			mShaderMgr.		Initialize(platform.mRenderDevice);
@@ -77,14 +77,15 @@ namespace lum {
 		render::Renderer mRenderer;
 		render::RenderSystem mRenderSys;
 
-		void Initialize( PlatformModule& platform, ResourceModule& res ) {
+		void Initialize( PlatformModule& platform, ResourceModule& res, ev::EventBus& bus) {
+
 			render::FRendererContext ctx;
 			ctx.mMaterialMgr = &res.mMaterialMgr;
 			ctx.mMeshMgr = &res.mMeshMgr;
 			ctx.mTextureMgr = &res.mTextureMgr;
 			ctx.mRenderDevice = platform.mRenderDevice;
 			ctx.mShaderMgr = &res.mShaderMgr;
-
+			ctx.mEventBus = &bus;
 			mRenderer.Initialize(ctx);
 
 			mRenderSys.Initialize(&mRenderer);
@@ -117,7 +118,7 @@ namespace lum {
 
 		Engine( ) = default;
 
-		void Initialize( ccharptr projectDir ) {
+		void Initialize( String projectDir ) {
 			
 			AssetLoader::SetProjectRoot(projectDir);
 
@@ -174,7 +175,7 @@ namespace lum {
 
 			mPlatform.	Initialize();
 			mRes.		Initialize(mPlatform);
-			mRender.	Initialize(mPlatform, mRes);
+			mRender.	Initialize(mPlatform, mRes, mEvBus);
 			mScene.		Initialize(mRes, mRender);
 
 		}

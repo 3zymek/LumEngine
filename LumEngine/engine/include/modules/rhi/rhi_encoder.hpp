@@ -101,12 +101,12 @@ namespace lum::rhi {
 		/* @brief Selects which polygon faces are culled.
 		* @param face Cull face selection (Front, Back, or FrontBack).
 		*/
-		void SetCullFace(EFace face);
+		void SetCullFace(Face face);
 
 		/* @brief Sets the front-face winding order.
 		* @param order Winding order (Clockwise or CounterClockwise).
 		*/
-		void SetFrontFace(EWindingOrder order);
+		void SetFrontFace(WindingOrder order);
 
 
 		///////////////////////////////////////////////////
@@ -128,43 +128,43 @@ namespace lum::rhi {
 		* @param srcAlpha Source factor for alpha.
 		* @param dstAlpha Destination factor for alpha.
 		*/
-		void SetBlendFactors(EBlendFactor srcColor, EBlendFactor dstColor, EBlendFactor srcAlpha, EBlendFactor dstAlpha);
+		void SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha);
 
 		/* @brief Sets blend factors for RGB channels only. Alpha factors remain unchanged.
 		* @param srcColor Source factor for RGB.
 		* @param dstColor Destination factor for RGB.
 		*/
-		void SetBlendColorFactors(EBlendFactor srcColor, EBlendFactor dstColor);
+		void SetBlendColorFactors(BlendFactor srcColor, BlendFactor dstColor);
 
 		/* @brief Sets blend factors for alpha channel only. RGB factors remain unchanged.
 		* @param srcAlpha Source factor for alpha.
 		* @param dstAlpha Destination factor for alpha.
 		*/
-		void SetBlendAlphaFactors(EBlendFactor srcAlpha, EBlendFactor dstAlpha);
+		void SetBlendAlphaFactors(BlendFactor srcAlpha, BlendFactor dstAlpha);
 
 		/* @brief Sets the source blend factor for RGB channels. */
-		void SetBlendSrcColorFactor(EBlendFactor factor);
+		void SetBlendSrcColorFactor(BlendFactor factor);
 
 		/* @brief Sets the destination blend factor for RGB channels. */
-		void SetBlendDstColorFactor(EBlendFactor factor);
+		void SetBlendDstColorFactor(BlendFactor factor);
 
 		/* @brief Sets the source blend factor for alpha channel. */
-		void SetBlendSrcAlphaFactor(EBlendFactor factor);
+		void SetBlendSrcAlphaFactor(BlendFactor factor);
 
 		/* @brief Sets the destination blend factor for alpha channel. */
-		void SetBlendDstAlphaFactor(EBlendFactor factor);
+		void SetBlendDstAlphaFactor(BlendFactor factor);
 
 		/* @brief Sets the blend operation for both color and alpha channels.
 		* @param colorOp Blend operation for RGB (e.g. Add, Subtract, Min, Max).
 		* @param alphaOp Blend operation for alpha.
 		*/
-		void SetBlendOp(EBlendOp colorOp, EBlendOp alphaOp);
+		void SetBlendOp(BlendOp colorOp, BlendOp alphaOp);
 
 		/* @brief Sets the blend operation for RGB channels only. */
-		void SetBlendColorOp(EBlendOp op);
+		void SetBlendColorOp(BlendOp op);
 
 		/* @brief Sets the blend operation for alpha channel only. */
-		void SetBlendAlphaOp(EBlendOp op);
+		void SetBlendAlphaOp(BlendOp op);
 
 		/* @brief Sets blend factors for a specific render target index. */
 		void SetBlendFactorsForTarget(uint8 target);
@@ -192,7 +192,7 @@ namespace lum::rhi {
 		/* @brief Sets the depth comparison function.
 		* @param func Comparison function (e.g. Less, LessOrEqual, Always).
 		*/
-		void SetDepthFunc(RCompareFlag func);
+		void SetDepthFunc(CompareFlag func);
 
 
 		///////////////////////////////////////////////////
@@ -209,7 +209,7 @@ namespace lum::rhi {
 		* @param ref  Reference value (typically 0-255).
 		* @param face Polygon faces this applies to (Front, Back, or FrontBack).
 		*/
-		void SetStencilReference(int32 ref, EFace face = EFace::FrontBack);
+		void SetStencilReference(int32 ref, Face face = Face::FrontBack);
 
 		/* @brief Sets stencil buffer operations for all test outcomes.
 		* @param stencilFailOp Operation when stencil test fails.
@@ -217,25 +217,25 @@ namespace lum::rhi {
 		* @param passOp        Operation when both tests pass.
 		* @param face          Polygon faces this applies to.
 		*/
-		void SetStencilOp(EStencilOp stencilFailOp, EStencilOp depthFailOp, EStencilOp passOp, EFace face = EFace::FrontBack);
+		void SetStencilOp(StencilOp stencilFailOp, StencilOp depthFailOp, StencilOp passOp, Face face = Face::FrontBack);
 
 		/* @brief Sets the stencil operation applied when the stencil test fails.
 		* @param op   Operation to apply.
 		* @param face Polygon faces this applies to.
 		*/
-		void SetStencilOpOnStencilFail(EStencilOp op, EFace face = EFace::FrontBack);
+		void SetStencilOpOnStencilFail(StencilOp op, Face face = Face::FrontBack);
 
 		/* @brief Sets the stencil operation applied when the depth test fails.
 		* @param op   Operation to apply.
 		* @param face Polygon faces this applies to.
 		*/
-		void SetStencilOpOnDepthFail(EStencilOp op, EFace face = EFace::FrontBack);
+		void SetStencilOpOnDepthFail(StencilOp op, Face face = Face::FrontBack);
 
 		/* @brief Sets the stencil operation applied when both tests pass.
 		* @param op   Operation to apply.
 		* @param face Polygon faces this applies to.
 		*/
-		void SetStencilOpOnDepthPass(EStencilOp op, EFace face = EFace::FrontBack);
+		void SetStencilOpOnDepthPass(StencilOp op, Face face = Face::FrontBack);
 
 
 		///////////////////////////////////////////////////
@@ -270,7 +270,7 @@ namespace lum::rhi {
 		* @param mode Rasterization mode (Point, Line, or Fill).
 		* @param face Polygon faces this applies to (default FrontBack).
 		*/
-		void SetTopology(ETopologyMode mode, EFace face = EFace::FrontBack);
+		void SetTopology(TopologyMode mode, Face face = Face::FrontBack);
 
 		/* @brief Sets the size of rendered points in pixels. */
 		void SetPointSize(float32 size);

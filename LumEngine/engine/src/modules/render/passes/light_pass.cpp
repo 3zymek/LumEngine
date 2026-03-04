@@ -26,8 +26,8 @@ namespace lum::render {
 	}
 
 	void LightPass::AddPointLight(const FPointLight& light) {
-
-		LUM_ASSERT(mLights.mActivePoints + 1 <= mLights.mPoints.size(), "Max point lights reached");
+		
+		LUM_ASSERT(mActivePoints + 1 <= mPointLights.size(), "Max point lights reached");
 
 		mPointLights[mActivePoints++] = light;
 
@@ -56,18 +56,18 @@ namespace lum::render {
 	void LightPass::init() {
 
 		rhi::FBufferDescriptor desc;
-		desc.mBufferUsage = rhi::EBufferUsage::Dynamic;
-		desc.mMapFlags = rhi::EMapFlag::Write;
+		desc.mBufferUsage = rhi::BufferUsage::Dynamic;
+		desc.mMapFlags = rhi::MapFlag::Write;
 
 		{ // Point Lights SSBO
 			desc.mSize = sizeof(FPointLight) * LUM_MAX_LIGHTS + sizeof(int);
-			desc.mBufferType = rhi::EBufferType::ShaderStorage;
+			desc.mBufferType = rhi::BufferType::ShaderStorage;
 			mPointLightsBuffer = mContext.mRenderDevice->CreateBuffer(desc);
 			mContext.mRenderDevice->SetShaderStorageBinding(mPointLightsBuffer, LUM_SSBO_LIGHTS_BINDING);
 		}
 		{ // Directional Light UBO
 			desc.mSize = sizeof(mDirectionalLightStruct);
-			desc.mBufferType = rhi::EBufferType::Uniform;
+			desc.mBufferType = rhi::BufferType::Uniform;
 			mDirectionalLightBuffer = mContext.mRenderDevice->CreateBuffer(desc);
 			mContext.mRenderDevice->SetUniformBufferBinding(mDirectionalLightBuffer, LUM_UBO_DIRECTIONAL_LIGHT);
 		}

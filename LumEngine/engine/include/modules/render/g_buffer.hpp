@@ -1,6 +1,7 @@
 #pragma once
 
 #include "render/common.hpp"
+#include "event/events/window_events.hpp"
 
 namespace lum::render::detail {
 
@@ -58,28 +59,29 @@ namespace lum::render::detail {
 			mContext.mRenderDevice->DeleteTexture(mNormal);
 			mContext.mRenderDevice->DeleteTexture(mDepth);
 
+			rhi::FTextureDescriptor desc;
 			{
-				rhi::RTextureDescriptor desc;
-				desc.mImageFormat = rhi::RImageFormat::RGBA;
-				desc.mImageLayout = rhi::RImageLayout::SRGB8_Alpha8;
+				desc.mImageFormat = rhi::ImageFormat::RGBA;
+				desc.mImageLayout = rhi::ImageLayout::SRGB8_Alpha8;
 				desc.mWidth = mWidth;
 				desc.mHeight = mHeight;
+				desc.mTextureType = rhi::TextureType::Texture2D;
 				mAlbedo = mContext.mRenderDevice->CreateTexture(desc);
 			}
 			{
-				rhi::RTextureDescriptor desc;
-				desc.mImageFormat = rhi::RImageFormat::RGB;
-				desc.mImageLayout = rhi::RImageLayout::RGB8;
+				desc.mImageFormat = rhi::ImageFormat::RGB;
+				desc.mImageLayout = rhi::ImageLayout::RGB8;
 				desc.mWidth = mWidth;
 				desc.mHeight = mHeight;
+				desc.mTextureType = rhi::TextureType::Texture2D;
 				mNormal = mContext.mRenderDevice->CreateTexture(desc);
 			}
 			{
-				rhi::RTextureDescriptor desc;
-				desc.mImageFormat = rhi::RImageFormat::DepthComponent;
-				desc.mImageLayout = rhi::RImageLayout::Depth32F;
+				desc.mImageFormat = rhi::ImageFormat::DepthComponent;
+				desc.mImageLayout = rhi::ImageLayout::Depth32F;
 				desc.mWidth = mWidth;
 				desc.mHeight = mHeight;
+				desc.mTextureType = rhi::TextureType::Texture2D;
 				mDepth = mContext.mRenderDevice->CreateTexture(desc);
 			}
 
@@ -87,6 +89,10 @@ namespace lum::render::detail {
 
 		void init() {
 			
+			mContext.mEventBus->SubscribePermanently<EWindowResized>([this](const EWindowResized& e) {
+				
+				});
+
 			{
 				rhi::RFramebufferDescriptor desc;
 				desc.mColorTex[0] = mAlbedo;

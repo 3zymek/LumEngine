@@ -35,7 +35,7 @@ namespace lum::fmt {
 		auto tokens = mTokenizer.GetTokens();
 
 		for (int32 i = 0; i < tokens.size(); i++) {
-			if (tokens[i].mType == ETokenType::Identifier) {
+			if (tokens[i].mType == TokenType::Identifier) {
 				auto it = sIdentifiersParseFunctions.find(HashStr(ToLower(tokens[i].mValue)));
 				if (it != sIdentifiersParseFunctions.end()) {
 					it->second(tokens, i, ctx);
@@ -58,13 +58,13 @@ namespace lum::fmt {
 
 		while (in_block(tokens, i)) {
 
-			if (tokens[i].mType == ETokenType::Component) {
+			if (tokens[i].mType == TokenType::Component) {
 
 				detail::ExpectOpeningBracket(tokens, i);
 
 				while (in_block(tokens, i)) {
 
-					if (tokens[i].mType == ETokenType::Parameter) {
+					if (tokens[i].mType == TokenType::Parameter) {
 
 						if (ToLower(tokens[i].mValue) == "path") {
 							detail::ExpectColon(tokens, i);
@@ -96,7 +96,7 @@ namespace lum::fmt {
 
 		while (in_block(tokens, i)) {
 
-			if (tokens[i].mType == ETokenType::Component) {
+			if (tokens[i].mType == TokenType::Component) {
 				auto it = sComponentsParseFunctions.find(HashStr(ToLower(tokens[i].mValue)));
 				if (it != sComponentsParseFunctions.end()) {
 					it->second(tokens, i, ctx);
@@ -117,7 +117,7 @@ namespace lum::fmt {
 
 		while (in_block(tokens, i)) {
 
-			if (tokens[i].mType == ETokenType::Parameter) {
+			if (tokens[i].mType == TokenType::Parameter) {
 				if (ToLower(tokens[i].mValue) == "position") {
 
 					transform.mPosition = detail::ReadVec3Parameter(tokens, i);
@@ -149,7 +149,7 @@ namespace lum::fmt {
 
 		while (in_block(tokens, i)) {
 
-			if (tokens[i].mType == ETokenType::Parameter) {
+			if (tokens[i].mType == TokenType::Parameter) {
 
 				if (ToLower(tokens[i].mValue) == "path") {
 
@@ -174,7 +174,7 @@ namespace lum::fmt {
 
 		while (in_block(tokens, i)) {
 
-			if (tokens[i].mType == ETokenType::Parameter) {
+			if (tokens[i].mType == TokenType::Parameter) {
 
 				if (ToLower(tokens[i].mValue) == "fov") {
 
@@ -220,7 +220,7 @@ namespace lum::fmt {
 
 		while (in_block(tokens, i)) {
 
-			if (tokens[i].mType == ETokenType::Parameter) {
+			if (tokens[i].mType == TokenType::Parameter) {
 
 				if (ToLower(tokens[i].mValue) == "visible") {
 
@@ -245,11 +245,11 @@ namespace lum::fmt {
 
 		while (in_block(tokens, i)) {
 
-			if (tokens[i].mType == ETokenType::Parameter) {
+			if (tokens[i].mType == TokenType::Parameter) {
 
 				if (ToLower(tokens[i].mValue) == "path") {
 
-					std::optional<String> content = AssetLoader::ReadFile(ERootID::External, detail::ReadStringParameter(tokens, i));
+					std::optional<String> content = AssetLoader::ReadFile(RootID::External, detail::ReadStringParameter(tokens, i));
 
 					if (!content) {
 						LUM_LOG_ERROR("Failed to load material %s: %s", tokens[i].mValue.c_str(), AssetLoader::GetErrorMessage());
@@ -290,7 +290,7 @@ namespace lum::fmt {
 
 		while (in_block(tokens, i)) {
 
-			if (tokens[i].mType == ETokenType::Parameter) {
+			if (tokens[i].mType == TokenType::Parameter) {
 
 				if (ToLower(tokens[i].mValue) == "name") {
 
@@ -306,38 +306,6 @@ namespace lum::fmt {
 		}
 
 		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, name);
-
-	}
-	void SceneParser::parse_directional_light(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
-
-		detail::ExpectOpeningBracket(tokens, i);
-		CDirectionalLight light;
-
-		while (in_block(tokens, i)) {
-			if (tokens[i].mType == ETokenType::Parameter) {
-
-				if (ToLower(tokens[i].mValue) == "direction") {
-
-					light.mDirection = detail::ReadVec3Parameter(tokens, i);
-
-				}
-				else if (ToLower(tokens[i].mValue) == "intensity") {
-
-					light.mIntensity = detail::ReadFloatParameter(tokens, i);
-
-				}
-				else if (ToLower(tokens[i].mValue) == "color") {
-
-					light.mColor = detail::ReadVec3Parameter(tokens, i);
-
-				}
-
-			}
-
-			i++;
-		}
-
-		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, light);
 
 	}
 	void SceneParser::parse_point_light(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
