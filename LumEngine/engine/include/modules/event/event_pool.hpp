@@ -99,7 +99,7 @@ namespace lum {
 						(*l)(*reinterpret_cast<const tType*>(event));
 						};
 					callback.mDestroy = [](vptr userParam) {
-						reinterpret_cast<tLambda*>(userParam)->~Lambda();
+						reinterpret_cast<tLambda*>(userParam)->~tLambda();
 						};
 					callback.bActive = true;
 

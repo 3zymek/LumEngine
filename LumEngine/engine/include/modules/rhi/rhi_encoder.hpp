@@ -326,7 +326,7 @@ namespace lum::rhi {
 		/* @brief Clears the specified buffers in a single operation.
 		* @param flags Combination of EClearFlag values (Color, Depth, Stencil).
 		*/
-		void Clear(Flags<EClearFlag> flags);
+		void Clear(Flags<ClearFlag> flags);
 
 
 		///////////////////////////////////////////////////

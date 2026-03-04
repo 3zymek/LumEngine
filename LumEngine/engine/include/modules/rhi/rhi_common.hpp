@@ -108,8 +108,13 @@ namespace lum {
 		/* @brief RGBA color channel represented as a vec4 (r, g, b, a). */
 		using ChannelRGBA = glm::vec4;
 
+		enum class RenderBackend : byte {
+			OpenGL,
+			/*Vulkan*/
+		};
+
 		/* @brief Bitmask flags controlling which framebuffer attachments are cleared. */
-		enum class EClearFlag : bitfield {
+		enum class ClearFlag : bitfield {
 			Color = 1 << 0, /* @brief Clear the color buffer. */
 			Depth = 1 << 1, /* @brief Clear the depth buffer. */
 			Stencil = 1 << 2  /* @brief Clear the stencil buffer. */
@@ -189,6 +194,29 @@ namespace lum {
 		*/
 		namespace detail {
 
+#		if LUM_ENABLE_DEBUG_RENDER == 1
+				void APIENTRY GLDebugCallback(
+					GLenum src,
+					GLenum type,
+					GLuint id,
+					GLenum severity,
+					GLsizei length,
+					const char* msg,
+					const void* usrParam
+				)
+				{
+					if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+						LUM_LOG_DEBUG(msg);
+					if (severity == GL_DEBUG_SEVERITY_LOW);
+					LUM_LOG_INFO(msg);
+					if (severity == GL_DEBUG_SEVERITY_MEDIUM);
+					LUM_LOG_WARN(msg);
+					if (severity == GL_DEBUG_SEVERITY_HIGH);
+					LUM_LOG_ERROR(msg);
+
+				}
+#		endif
+
 			/* @brief Lookup table mapping EDataFormat enum values to their component counts.
 			* Indexed by the underlying value of EDataFormat.
 			*/
@@ -200,6 +228,6 @@ namespace lum {
 	} // namespace lum::rhi
 
 	LUM_ENUM_OPERATIONS(rhi::MapFlag);
-	LUM_ENUM_OPERATIONS(rhi::EClearFlag);
+	LUM_ENUM_OPERATIONS(rhi::ClearFlag);
 
 } // namespace lum

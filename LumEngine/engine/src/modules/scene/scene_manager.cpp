@@ -21,7 +21,7 @@ namespace lum {
 	void MSceneManager::Initialize( FSceneManagerContext& ctx ) {
 
 		mContext = ctx;
-
+		
 	}
 
 	void MSceneManager::SetScene( StringView scenePath ) {

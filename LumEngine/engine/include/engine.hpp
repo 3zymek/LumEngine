@@ -1,20 +1,11 @@
 #pragma once
 #include "core/core_pch.hpp"
-#include "lum_packages/lum_audio.hpp"
-#include "lum_packages/lum_ecs.hpp"
-#include "lum_packages/lum_events.hpp"
-#include "lum_packages/lum_render.hpp"
 #include "platform/input_common.hpp"
 #include "core/utils/logger.hpp"
-#include "audio/components/c_audio_listener.hpp"
 #include "platform/window.hpp"
 #include "rhi/core/rhi_device.hpp"
 #include "core/utils/asset_loader.hpp"
 #include "rhi/rhi_common.hpp"
-#include "core/shaders_define.h"
-#include "core/math/backend/gtx/string_cast.hpp"
-#include "core/utils/flags.hpp"
-#include "core/utils/fixed_string.hpp"
 #include "render/texture_manager.hpp"
 #include "render/mesh_manager.hpp"
 #include "render/shader_manager.hpp"
@@ -22,6 +13,7 @@
 #include "render/renderer.hpp"
 #include "render/render_system.hpp"
 #include "render/common.hpp"
+#include "imgui.h"
 
 #include "scene/scene_manager.hpp"
 
@@ -38,12 +30,19 @@ namespace lum {
 		Window* mWindow = nullptr;
 		rhi::RDevice* mRenderDevice = nullptr;
 
-		void Initialize( ) {
+		void Initialize( ev::EventBus& bus ) {
 
-			mWindow = CreateWindow({});
+			WindowDescriptor desc;
+			desc.mEventBus = &bus;
+
+			mWindow = CreateWindow(desc);
+			if (!mWindow) {
+				LUM_LOG_FATAL("Failed to create window");
+				return;
+			}
 			input::SetActiveWindow(static_cast<GLFWwindow*>(mWindow->GetNativeWindow()));
 
-			mRenderDevice = rhi::CreateDevice(mWindow);
+			mRenderDevice = rhi::CreateDevice(mWindow, rhi::RenderBackend::OpenGL);
 
 		}
 
@@ -133,7 +132,7 @@ namespace lum {
 		void Run( ) {
 
 			while (mPlatform.mWindow->IsOpen()) {
-				mPlatform.mWindow->PollEvents();
+				mPlatform.mWindow->Update();
 				mRender.mRenderer.BeginFrame();
 
 				ImGui::Begin("Scene");
@@ -173,7 +172,7 @@ namespace lum {
 
 		void init() {
 
-			mPlatform.	Initialize();
+			mPlatform.	Initialize(mEvBus);
 			mRes.		Initialize(mPlatform);
 			mRender.	Initialize(mPlatform, mRes, mEvBus);
 			mScene.		Initialize(mRes, mRender);

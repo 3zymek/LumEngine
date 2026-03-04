@@ -7,14 +7,11 @@
 //=============================================================================//
 
 #include "core/core_pch.hpp"
-#include "core/core_defines.hpp"
-#include "core/utils/asset_loader.hpp"
 
 #include "rhi/rhi_pch.hpp"
 #include "rhi/backend/opengl/gl_device.hpp"
 #include "rhi/core/rhi_vertex_layout.hpp"
 #include "rhi/core/rhi_device.hpp"
-#include "rhi/core/rhi_buffer.hpp"
 #include "rhi/rhi_common.hpp"
 
 #include "platform/window.hpp"
@@ -26,6 +23,31 @@
 #endif
 
 namespace lum::rhi::gl {
+
+	void GLDevice::Initialize( Window* window ) {
+
+		GLFWwindow* w = static_cast<GLFWwindow*>(window->GetNativeWindow());
+
+		glfwMakeContextCurrent(w);
+
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+			glfwTerminate();
+			return;
+		}
+
+#		if LUM_ENABLE_IMGUI == 1
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGui_ImplGlfw_InitForOpenGL(w, true);
+		ImGui_ImplOpenGL3_Init("#version 450");
+#		endif
+#		if LUM_ENABLE_DEBUG_RENDER == 1
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(rhi::detail::GLDebugCallback, nullptr);
+#		endif
+
+	}
 
 	void GLDevice::SetViewport ( int32 x, int32 y, int32 width, int32 height ) {
 
@@ -256,13 +278,13 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::Clear ( Flags<EClearFlag> flags ) {
+	void GLDevice::Clear ( Flags<ClearFlag> flags ) {
 		
 		GLbitfield mask = 0;
 
-		mask |= (flags.Has(EClearFlag::Color)) ? GL_COLOR_BUFFER_BIT : 0;
-		mask |= (flags.Has(EClearFlag::Depth)) ? GL_DEPTH_BUFFER_BIT : 0;
-		mask |= (flags.Has(EClearFlag::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0;
+		mask |= (flags.Has(ClearFlag::Color)) ? GL_COLOR_BUFFER_BIT : 0;
+		mask |= (flags.Has(ClearFlag::Depth)) ? GL_DEPTH_BUFFER_BIT : 0;
+		mask |= (flags.Has(ClearFlag::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0;
 
 		glClear(mask);
 
@@ -319,9 +341,9 @@ namespace lum::rhi::gl {
 	void GLDevice::BeginFrame() {
 
 		LUM_PROFILER_BEGIN_FRAME();
-
-		SetViewport(0, 0, window->GetWidth(), window->GetHeight());
-		Clear(EClearFlag::Color | EClearFlag::Depth | EClearFlag::Stencil);
+		
+		SetViewport(0, 0, mWindow->GetWidth(), mWindow->GetHeight());
+		Clear(ClearFlag::Color | ClearFlag::Depth | ClearFlag::Stencil);
 
 #		if LUM_ENABLE_IMGUI == 1
 			ImGui_ImplOpenGL3_NewFrame();
@@ -342,7 +364,7 @@ namespace lum::rhi::gl {
 
 #		endif
 
-		glfwSwapBuffers(static_cast<GLFWwindow*>(window->GetNativeWindow()));
+		glfwSwapBuffers(static_cast<GLFWwindow*>(mWindow->GetNativeWindow()));
 
 		LUM_PROFILER_END_FRAME();
 

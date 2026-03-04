@@ -3,57 +3,39 @@
 #include "core/core_common.hpp"
 namespace lum {
 
-	enum class RenderBackend : bitfield { OpenGL, /*Vulkan*/ };
+	namespace ev { class EventBus; }
 
 	struct WindowDescriptor {
-		ccharptr mTitle			= "LumEngine";
-		bool bFullscreen		= false;
+
+		String mTitle			= "LumEngine";
 		uint32 mHeight			= 500;
 		uint32 mWidth			= 500;
-		RenderBackend mBackend	= RenderBackend::OpenGL;
+		ev::EventBus* mEventBus = nullptr;
+
 	};
 
 	class Window {
 	public:
 
-		virtual void	SetWidth			( uint32 ) noexcept = 0;
-		virtual void	SetHeight			( uint32 ) noexcept = 0;
-		virtual uint32	GetWidth			( ) const noexcept = 0;
-		virtual uint32	GetHeight			( ) const noexcept = 0;
-		virtual vptr	GetNativeWindow		( ) const noexcept = 0;
-		virtual void	PollEvents			( ) noexcept = 0;
-		virtual bool	IsOpen				( ) const noexcept = 0;
-		virtual RenderBackend	GetBackend	( )	const noexcept = 0;
+		void Initialize( const WindowDescriptor& desc );
+
+		void SetWidth( uint32 );
+		void SetHeight( uint32 );
+		uint32 GetWidth( ) const noexcept;
+		uint32 GetHeight( ) const noexcept;
+		vptr GetNativeWindow( ) const noexcept;
+		void Update( ) noexcept;
+		bool IsOpen( ) const noexcept;
 
 	protected:
 
-		virtual void Init( const WindowDescriptor& ) = 0;
-		RenderBackend mBackend{};
-
-	};
-
-	class OpenGLWindow : public Window {
-	public:
-
-		OpenGLWindow( const WindowDescriptor& desc ) { Init(desc); }
-
-		void					SetWidth		( uint32	) noexcept override ;
-		void					SetHeight		( uint32	) noexcept override;
-		uint32					GetWidth		(			) const noexcept override;
-		uint32					GetHeight		(			) const noexcept override;
-		vptr					GetNativeWindow	(			) const noexcept override;
-		void					PollEvents		(			) noexcept override;
-		bool					IsOpen			(			) const noexcept override;
-		RenderBackend			GetBackend		(			) const noexcept override;
-
-	private:
+		GLFWwindow* mWindow = nullptr;
+		ev::EventBus* mEventBus = nullptr;
 
 		uint32 mWidth = 0;
 		uint32 mHeight = 0;
-		
-		GLFWwindow* mWindow = nullptr;
 
-		void Init( const WindowDescriptor& ) override;
+		void init( const WindowDescriptor& );
 
 	};
 

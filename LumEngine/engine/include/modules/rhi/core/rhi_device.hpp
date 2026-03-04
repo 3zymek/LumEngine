@@ -52,6 +52,8 @@ namespace lum::rhi {
 	class RDevice {
 	public:
 
+		virtual void Initialize( Window* window ) = 0;
+
 		///////////////////////////////////////////////////
 		/// Buffers
 		///////////////////////////////////////////////////
@@ -630,7 +632,7 @@ namespace lum::rhi {
 		/* @brief Clears the specified buffers in a single operation.
 		* @param flags Combination of EClearFlag values (Color, Depth, Stencil).
 		*/
-		virtual void Clear( Flags<EClearFlag> flags ) = 0;
+		virtual void Clear( Flags<ClearFlag> flags ) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -767,6 +769,6 @@ namespace lum::rhi {
 	* @param window Pointer to the target window.
 	* @return Pointer to the created device.
 	*/
-	RDevice* CreateDevice(Window* window);
+	RDevice* CreateDevice(Window* window, RenderBackend backend);
 
 } // namespace lum::rhi

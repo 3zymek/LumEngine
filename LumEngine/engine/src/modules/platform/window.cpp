@@ -1,7 +1,8 @@
 #pragma once
 #include "platform/window.hpp"
-#include "core/core_defines.hpp"
+#include "event/event_bus.hpp"
 #include "core/utils/lum_assert.hpp"
+#include "event/events/window_events.hpp"
 #if LUM_ENABLE_IMGUI == 1
 	#include "imgui.h"
 	#include "imgui_impl_glfw.h"
@@ -9,80 +10,68 @@
 #endif
 namespace lum {
 
-	namespace rhi::detail {
-#		if LUM_ENABLE_DEBUG_RENDER == 1
-		void APIENTRY GLDebugCallback(
-			GLenum src,
-			GLenum type,
-			GLuint id,
-			GLenum severity,
-			GLsizei length,
-			const char* msg,
-			const void* usrParam
-		)
-		{
-			if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
-				LUM_LOG_DEBUG(msg);
-			if (severity == GL_DEBUG_SEVERITY_LOW);
-				LUM_LOG_INFO(msg);
-			if (severity == GL_DEBUG_SEVERITY_MEDIUM);
-				LUM_LOG_WARN(msg);
-			if (severity == GL_DEBUG_SEVERITY_HIGH);
-				LUM_LOG_ERROR(msg);
+	void Window::Initialize( const WindowDescriptor& desc ) {
+		
+		mEventBus = desc.mEventBus;
 
-		}
-#		endif
+		init(desc);
+
 	}
 
-	///  OpenGL window
-
-	void OpenGLWindow::SetWidth(uint32 width) noexcept {
+	void Window::SetWidth(uint32 width) {
 		mWidth = width;
+		glfwSetWindowSize(mWindow, mWidth, mHeight);
 	}
-	void OpenGLWindow::SetHeight(uint32 height) noexcept {
+	void Window::SetHeight(uint32 height) {
 		mHeight = height;
+		glfwSetWindowSize(mWindow, mWidth, mHeight);
 	}
-	uint32 OpenGLWindow::GetWidth( ) const noexcept {
-		int32 width;
-		glfwGetWindowSize(mWindow, &width, nullptr);
-		return width;
+	uint32 Window::GetWidth() const noexcept {
+		if (!mWindow) return 0;
+		int32 w, h;
+		glfwGetWindowSize(mWindow, &w, &h);
+		return w;
 	}
-	uint32 OpenGLWindow::GetHeight( ) const noexcept {
-		int32 height;
-		glfwGetWindowSize(mWindow, nullptr, &height);
-		return height;
+
+	uint32 Window::GetHeight() const noexcept {
+		if (!mWindow) return 0;
+		int32 w, h;
+		glfwGetWindowSize(mWindow, &w, &h);
+		return h;
 	}
-	void* OpenGLWindow::GetNativeWindow( ) const noexcept {
+	vptr Window::GetNativeWindow( ) const noexcept {
 		return mWindow;
 	}
-	void OpenGLWindow::PollEvents() noexcept {
+	void Window::Update() noexcept {
+
+		int32 width, height;
+		glfwGetWindowSize(mWindow, &width, &height);
+		if (width != mWidth || height != mHeight) {
+			EWindowResized ev;
+
+			mWidth = width;
+			mHeight = height;
+
+			ev.mWidth = width;
+			ev.mHeight = height;
+
+			mEventBus->Emit(ev);
+		}
+
 		glfwPollEvents();
 	}
-	bool OpenGLWindow::IsOpen( ) const noexcept {
+	bool Window::IsOpen( ) const noexcept {
 		return !glfwWindowShouldClose(mWindow);
 	}
-	RenderBackend OpenGLWindow::GetBackend( ) const noexcept {
-		return mBackend;
-	}
 
-	void OpenGLWindow::Init( const WindowDescriptor& desc ) {
+	void Window::init( const WindowDescriptor& desc ) {
 
 		if (!glfwInit()) {
+			LUM_LOG_FATAL("Failed to initialize GLFW");
 			return;
 		}
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-#		if LUM_ENABLE_DEBUG_RENDER == 1
-			glfwWindowHint(GLFW_CONTEXT_DEBUG, GLFW_OPENGL_DEBUG_CONTEXT);
-#		endif
-
-		if (desc.bFullscreen) {
-			mWindow = glfwCreateWindow(desc.mWidth, desc.mHeight, desc.mTitle, glfwGetPrimaryMonitor(), nullptr);
-		}
-		else mWindow = glfwCreateWindow(desc.mWidth, desc.mHeight, desc.mTitle, nullptr, nullptr);
+		mWindow = glfwCreateWindow(desc.mWidth, desc.mHeight, desc.mTitle.c_str(), nullptr, nullptr);
 
 		mWidth = desc.mWidth;
 		mHeight = desc.mHeight;
@@ -92,35 +81,13 @@ namespace lum {
 			return;
 		}
 
-		glfwMakeContextCurrent(mWindow);
-
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-			glfwTerminate();
-			return;
-		}
-
-#		if LUM_ENABLE_IMGUI == 1
-			IMGUI_CHECKVERSION();
-			ImGui::CreateContext();
-			ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
-			ImGui_ImplOpenGL3_Init("#version 450");
-#		endif
-#		if LUM_ENABLE_DEBUG_RENDER == 1
-			glEnable(GL_DEBUG_OUTPUT);
-			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-			glDebugMessageCallback(rhi::detail::GLDebugCallback, nullptr);
-#		endif
-
-		mBackend = RenderBackend::OpenGL;
-
 	}
 
 
 	Window* CreateWindow( const WindowDescriptor& desc ) {
-		switch (desc.mBackend) {
-		case RenderBackend::OpenGL: return new OpenGLWindow(desc);
-		}
-		return nullptr;
+		Window* window = new Window();
+		window->Initialize(desc);
+		return window;
 	}
 
 }

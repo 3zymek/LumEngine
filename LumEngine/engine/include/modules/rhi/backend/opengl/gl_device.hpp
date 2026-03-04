@@ -18,7 +18,7 @@ namespace lum::rhi::gl {
 	class GLDevice : public RDevice {
 	public:
 
-		GLDevice(Window* win) : window(win) {}
+		void Initialize( Window* window ) override;
 
 		//=================================================
 		// Buffers
@@ -192,7 +192,7 @@ namespace lum::rhi::gl {
 		void ClearColor		( ChannelRGBA color )	override;
 		void ClearDepth		( )						override;
 		void ClearStencil	( )						override;
-		void Clear			( Flags<EClearFlag> )	override;
+		void Clear			( Flags<ClearFlag> )	override;
 
 		void SetPointSize ( float32 size )	override;
 		void SetLineWidth ( float32 width )	override;
@@ -400,7 +400,7 @@ namespace lum::rhi::gl {
 			GL_FLOAT_32_UNSIGNED_INT_24_8_REV
 		};
 
-		Window* window = nullptr;
+		Window* mWindow = nullptr;
 
 		//=================================================
 		// Private helpers

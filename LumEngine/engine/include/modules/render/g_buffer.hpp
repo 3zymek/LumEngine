@@ -13,24 +13,16 @@ namespace lum::render::detail {
 
 			mContext = ctx;
 
-			Resize(w, h);
-			create_textures();
+			create_textures(w, h);
 
 			init();
-
-		}
-
-		void Resize(uint32 w, uint32 h) {
-
-			mWidth = w;
-			mHeight = h;
 
 		}
 
 		void BeginPass() {
 
 			mContext.mRenderDevice->BindFramebuffer(mFramebuffer);
-			mContext.mRenderDevice->Clear(rhi::EClearFlag::Color | rhi::EClearFlag::Depth);
+			mContext.mRenderDevice->Clear(rhi::ClearFlag::Color | rhi::ClearFlag::Depth);
 
 		}
 
@@ -50,10 +42,7 @@ namespace lum::render::detail {
 		rhi::RTextureHandle mNormal;
 		rhi::RTextureHandle mDepth;
 
-		uint32 mWidth = 0;
-		uint32 mHeight = 0;
-
-		void create_textures() {
+		void create_textures(uint32 mWidth, uint32 mHeight) {
 
 			mContext.mRenderDevice->DeleteTexture(mAlbedo);
 			mContext.mRenderDevice->DeleteTexture(mNormal);
@@ -88,6 +77,10 @@ namespace lum::render::detail {
 		}
 
 		void init() {
+
+			mContext.mEventBus->SubscribePermanently<EWindowResized>([this](const EWindowResized& ev) {
+				this->create_textures(ev.mWidth, ev.mHeight);
+			});
 
 			{
 				rhi::RFramebufferDescriptor desc;

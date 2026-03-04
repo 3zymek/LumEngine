@@ -78,12 +78,17 @@ namespace lum::rhi {
 		return !is_depth_format(fmt) && !is_stencil_format(fmt);
 	}
 
-	RDevice* CreateDevice(Window* window) {
-		RenderBackend backend = window->GetBackend();
+	RDevice* CreateDevice(Window* window, RenderBackend backend) {
+		
+		rhi::RDevice* device = nullptr;
+
 		switch (backend) {
-		case RenderBackend::OpenGL: return new gl::GLDevice(window);
+		case RenderBackend::OpenGL: device = new gl::GLDevice();
 		}
-		return nullptr;
+
+		device->Initialize(window);
+	
+		return device;
 	}
 
 }

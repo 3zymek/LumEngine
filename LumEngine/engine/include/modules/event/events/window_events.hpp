@@ -6,8 +6,8 @@ namespace lum {
 
 	struct EWindowResized : public Event {
 		
-		uint32 mWidth = 0;
-		uint32 mHeight = 0;
+		uint32 mWidth;
+		uint32 mHeight;
 
 	};
 
