@@ -54,7 +54,7 @@ namespace lum::render {
 	/* @brief Directional light source — infinite distance, uniform direction.
 	*  Aligned to 16 bytes for std140 uniform buffer compatibility.
 	*/
-	LUM_UNIFORM_BUFFER_STRUCT FDirectionalLight {
+	struct FDirectionalLight {
 
 		/* @brief Normalized direction vector the light is pointing towards. */
 		glm::vec3 mDirection = glm::vec3(0.f);
@@ -71,8 +71,10 @@ namespace lum::render {
 	/* @brief Point light source — emits light in all directions from a single position. */
 	struct FPointLight {
 
-		CPointLight* mLight = nullptr;
-		CTransform* mTransform = nullptr;
+		glm::vec3 mPosition = glm::vec3(0.0f);
+		float32 mIntensity = 1.f;
+		glm::vec3 mColor = glm::vec3(1.0f);
+		float32 mRadius = 10.f;
 
 	};
 
@@ -144,6 +146,7 @@ namespace lum::render {
 		LUM_UNIFORM_BUFFER_STRUCT FCameraUniformBuffer {
 			glm::mat4 mView = glm::mat4(1.0f);
 			glm::mat4 mProjection = glm::mat4(1.0f);
+			glm::mat4 mInvViewProj = glm::mat4(1.0f);
 			glm::vec4 mPosition = glm::vec4(1.0f);
 		};
 

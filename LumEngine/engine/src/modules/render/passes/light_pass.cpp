@@ -25,8 +25,8 @@ namespace lum::render {
 
 	}
 
-	void LightPass::AddPointLight(const FPointLight& light) {
-		
+	void LightPass::AddPointLight( const FPointLight& light ) {
+
 		LUM_ASSERT(mActivePoints + 1 <= mPointLights.size(), "Max point lights reached");
 
 		mPointLights[mActivePoints++] = light;
@@ -36,6 +36,7 @@ namespace lum::render {
 	void LightPass::BeginPass() {
 
 		clear_point_lights();
+		mContext.mRenderDevice->BindShader(mShader);
 
 	}
 	void LightPass::EndPass() {
@@ -71,6 +72,8 @@ namespace lum::render {
 			mDirectionalLightBuffer = mContext.mRenderDevice->CreateBuffer(desc);
 			mContext.mRenderDevice->SetUniformBufferBinding(mDirectionalLightBuffer, LUM_UBO_DIRECTIONAL_LIGHT);
 		}
+		
+		mShader = mContext.mShaderMgr->LoadShader("shaders/light_pass.vert", "shaders/light_pass.frag", RootID::Internal);
 
 	}
 	void LightPass::upload_lightspace_matrix(const glm::mat4& mat) {
@@ -82,7 +85,7 @@ namespace lum::render {
 			mPointLightsBuffer,
 			mPointLights.data(),
 			0,
-			sizeof(FPointLight) * mActivePoints
+			sizeof(FPointLight) * LUM_MAX_LIGHTS
 		);
 
 		mContext.mRenderDevice->UpdateBuffer(

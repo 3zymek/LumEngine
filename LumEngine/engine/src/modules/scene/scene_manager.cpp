@@ -31,7 +31,7 @@ namespace lum {
 		if (!mScenes.contains(hash)) {
 
 			std::optional<String> content = AssetLoader::ReadFile(RootID::External, scenePath);
-
+			
 			if (!content) {
 				LUM_LOG_ERROR("Failed to load scene %s: %s", scenePath, AssetLoader::GetErrorMessage());
 				return;
@@ -49,11 +49,11 @@ namespace lum {
 			parser.Parse(scene);
 
 			mScenes.emplace(hash, std::move(scene));
-			
+
 		}
 
 		mCurrentScene = &mScenes[hash];
-
+		
 	}
 
 	void MSceneManager::LoadScene( StringView scenePath ) {

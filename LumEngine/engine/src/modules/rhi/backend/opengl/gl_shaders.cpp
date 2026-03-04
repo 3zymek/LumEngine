@@ -22,12 +22,15 @@ namespace lum::rhi::gl {
 		GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
 		GLuint fshader = glCreateShader(GL_FRAGMENT_SHADER);
 
-		glShaderSource(vshader, 1, &desc.mVertexContent, nullptr);
-		glShaderSource(fshader, 1, &desc.mFragmentContent, nullptr);
+		ccharptr vertexContent = desc.mVertexContent.c_str();
+		glShaderSource(vshader, 1, &vertexContent, nullptr);
 
-		if (!compile_shader( vshader, desc.mVertexContent ))
+		ccharptr fragmentContent = desc.mFragmentContent.c_str();
+		glShaderSource(fshader, 1, &fragmentContent, nullptr);
+
+		if (!compile_shader(vshader))
 			return RShaderHandle{};
-		if (!compile_shader( fshader, desc.mFragmentContent ))
+		if (!compile_shader(fshader))
 			return RShaderHandle{};
 
 		shader.mHandle = glCreateProgram();
@@ -86,7 +89,7 @@ namespace lum::rhi::gl {
 
 	}
 	
-	bool GLDevice::compile_shader( GLuint shader, ccharptr name ) {
+	bool GLDevice::compile_shader( GLuint shader ) {
 
 		glCompileShader(shader);
 		int32 success;
@@ -95,7 +98,7 @@ namespace lum::rhi::gl {
 			
 			char buff[2048];
 			glGetShaderInfoLog(shader, 2048, nullptr, buff);
-			LUM_LOG_FATAL("Failed to compile shader %s: %s", name, buff);
+			LUM_LOG_ERROR("Failed to compile shader: %s", buff);
 			return false;
 
 		}

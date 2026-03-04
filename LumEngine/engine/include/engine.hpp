@@ -27,7 +27,7 @@ namespace lum {
 
 	struct PlatformModule {
 
-		Window* mWindow = nullptr;
+		Window mWindow;
 		rhi::RDevice* mRenderDevice = nullptr;
 
 		void Initialize( ev::EventBus& bus ) {
@@ -35,19 +35,14 @@ namespace lum {
 			WindowDescriptor desc;
 			desc.mEventBus = &bus;
 
-			mWindow = CreateWindow(desc);
-			if (!mWindow) {
-				LUM_LOG_FATAL("Failed to create window");
-				return;
-			}
-			input::SetActiveWindow(static_cast<GLFWwindow*>(mWindow->GetNativeWindow()));
+			mWindow.Initialize(desc);
+			input::SetActiveWindow(static_cast<GLFWwindow*>(mWindow.GetNativeWindow()));
 
-			mRenderDevice = rhi::CreateDevice(mWindow, rhi::RenderBackend::OpenGL);
+			mRenderDevice = rhi::CreateDevice(&mWindow, rhi::RenderBackend::OpenGL);
 
 		}
 
 		void Finalize( ) {
-			delete mWindow;
 			delete mRenderDevice;
 		}
 
@@ -124,22 +119,25 @@ namespace lum {
 			init();
 
 		}
-		void SetScene( ccharptr path ) {
+		void SetScene( StringView path ) {
 
 			mScene.mSceneMgr.SetScene(path);
 		
 		}
 		void Run( ) {
+			
+			while (mPlatform.mWindow.IsOpen()) {
 
-			while (mPlatform.mWindow->IsOpen()) {
-				mPlatform.mWindow->Update();
+				mEvBus.PollEvents();
+
+				mPlatform.mWindow.Update();
 				mRender.mRenderer.BeginFrame();
 
 				ImGui::Begin("Scene");
 
 				if (ImGui::Button("Reload scene"))
 					SetScene("scene.lsc");
-
+				
 				ImGui::Separator();
 				ImGui::Text("Directional Light");
 
@@ -157,7 +155,7 @@ namespace lum {
 
 				ImGui::End();
 
-				mRender.mRenderSys.Update(&mScene.mSceneMgr.GetCurrentScene()->mEntityMgr, mPlatform.mWindow);
+				mRender.mRenderSys.Update(&mScene.mSceneMgr.GetCurrentScene()->mEntityMgr, &mPlatform.mWindow);
 				mRender.mRenderer.EndFrame();
 			}
 

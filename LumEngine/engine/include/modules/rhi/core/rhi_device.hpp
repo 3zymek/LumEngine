@@ -24,12 +24,8 @@
 #include "rhi/core/rhi_framebuffer.hpp"
 #include "rhi/core/rhi_pipeline.hpp"
 
-#ifdef LUM_ENABLE_RENDER_PROFILER
-#	if LUM_ENABLE_RENDER_PROFILER == 1
-#		include "rhi/rhi_profiler.hpp"
-#	endif
-#else
-#	error "LUM_ENABLE_RENDER_PROFILER should be defined"
+#if LUM_ENABLE_RENDER_PROFILER == 1
+#	include "rhi/rhi_profiler.hpp"
 #endif
 
 namespace lum { class Window; }
@@ -52,6 +48,11 @@ namespace lum::rhi {
 	class RDevice {
 	public:
 
+		/* @brief Initializes the rendering device and binds it to the given window.
+		*  Sets up the graphics context, surface and any backend-specific resources.
+		*  Must be called before any rendering operations.
+		*  @param window Pointer to the engine window to render into.
+		*/
 		virtual void Initialize( Window* window ) = 0;
 
 		///////////////////////////////////////////////////
@@ -682,10 +683,10 @@ namespace lum::rhi {
 		virtual void DrawElementsInstancedBase( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance ) = 0;
 
 		/* @brief Begins a new frame. Call before any draw operations. */
-		virtual void BeginFrame( ) = 0;
+		virtual void NewFrame( ) = 0;
 
 		/* @brief Ends the current frame and presents the result. */
-		virtual void EndFrame( ) = 0;
+		virtual void SwapBuffers( ) = 0;
 
 
 #		if LUM_ENABLE_RENDER_PROFILER == 1
@@ -696,11 +697,9 @@ namespace lum::rhi {
 
 	protected:
 
-		inline constexpr
-		static uint32 skMaxTextureUnits = 32;
+		inline constexpr static uint32 skMaxTextureUnits = 32;
 
-		inline constexpr
-		static uint32 skMaxSamplerUnits = 32;
+		inline constexpr static uint32 skMaxSamplerUnits = 32;
 
 		std::array<RTextureHandle, skMaxTextureUnits> mCurrentTextures{};
 		std::array<RSamplerHandle, skMaxSamplerUnits> mCurrentSamplers{};
@@ -755,18 +754,33 @@ namespace lum::rhi {
 		cstd::HandlePool<RFramebufferHandle, FFramebuffer, RFramebufferID>	mFramebuffers{ skMaxFramebuffers };
 		cstd::HandlePool<RPipelineHandle, FPipeline, RPipelineID>			mPipelines{ skMaxPipelines };
 
-		bool validate_texture_descriptor(const FTextureDescriptor&);
-		bool validate_buffer_descriptor(const FBufferDescriptor&);
+		/* @brief Validates a texture descriptor before resource creation.
+		*  @param desc Texture descriptor to validate.
+		*  @return True if the descriptor is valid, false otherwise.
+		*/
+		bool validate_texture_descriptor( const FTextureDescriptor& );
 
-		bool is_depth_format(ImageLayout fmt);
-		bool is_stencil_format(ImageLayout fmt);
-		bool is_color_format(ImageLayout fmt);
+		/* @brief Validates a buffer descriptor before resource creation.
+		*  @param desc Buffer descriptor to validate.
+		*  @return True if the descriptor is valid, false otherwise.
+		*/
+		bool validate_buffer_descriptor( const FBufferDescriptor& );
+
+		/* @brief Returns true if the given image layout is a depth format. */
+		bool is_depth_format( ImageLayout fmt );
+
+		/* @brief Returns true if the given image layout is a stencil format. */
+		bool is_stencil_format( ImageLayout fmt );
+
+		/* @brief Returns true if the given image layout is a color format. */
+		bool is_color_format( ImageLayout fmt );
 
 	};
 
 	/* @brief Creates a render device tied to the given window.
-	* Initializes the underlying graphics backend (currently OpenGL).
+	* Initializes the underlying graphics backend.
 	* @param window Pointer to the target window.
+	* @param backend Backend used.
 	* @return Pointer to the created device.
 	*/
 	RDevice* CreateDevice(Window* window, RenderBackend backend);

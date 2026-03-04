@@ -8,6 +8,123 @@
 
 namespace lum::rhi::gl {
 
+	// Viewport setters
+
+	void GLDevice::SetViewport(int32 x, int32 y, int32 width, int32 height) {
+
+		if (mViewportState.x == x && mViewportState.y == y && mViewportState.mWidth == width && mViewportState.mHeight == height) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glViewport(x, y, width, height);
+
+		mViewportState.x = x;
+		mViewportState.y = y;
+		mViewportState.mWidth = width;
+		mViewportState.mHeight = height;
+
+		LUM_PROFILER_CACHE_MISS();
+
+	}
+	void GLDevice::SetViewportX(int32 x) {
+
+		if (mViewportState.x == x) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glViewport(
+			x,
+			mViewportState.y,
+			mViewportState.mWidth,
+			mViewportState.mHeight
+		);
+
+		mViewportState.x = x;
+
+		LUM_PROFILER_CACHE_MISS();
+
+	}
+	void GLDevice::SetViewportY(int32 y) {
+
+		if (mViewportState.y == y) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glViewport(
+			mViewportState.x,
+			y,
+			mViewportState.mWidth,
+			mViewportState.mHeight
+		);
+
+		mViewportState.y = y;
+
+		LUM_PROFILER_CACHE_MISS();
+
+	}
+	void GLDevice::SetViewportWidth(int32 width) {
+
+		if (mViewportState.mWidth == width) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glViewport(
+			mViewportState.x,
+			mViewportState.y,
+			width,
+			mViewportState.mHeight
+		);
+
+		mViewportState.mWidth = width;
+
+		LUM_PROFILER_CACHE_MISS();
+
+	}
+	void GLDevice::SetViewportHeight(int32 height) {
+
+		if (mViewportState.mHeight == height) {
+			LUM_PROFILER_CACHE_HIT();
+			return;
+		}
+
+		glViewport(
+			mViewportState.x,
+			mViewportState.y,
+			mViewportState.mWidth,
+			height
+		);
+
+		mViewportState.mHeight = height;
+
+		LUM_PROFILER_CACHE_MISS();
+
+	}
+
+	const FBlendState& GLDevice::GetBlendState() const noexcept {
+		return mBlendState;
+	}
+	const FCullState& GLDevice::GetCullState() const noexcept {
+		return mCullState;
+	}
+	const FScissorState& GLDevice::GetScissorState() const noexcept {
+		return mScissorState;
+	}
+	const FDepthStencilState& GLDevice::GetDepthStencilState() const noexcept {
+		return mDepthStencilState;
+	}
+	const FRasterizerState& GLDevice::GetRasterizerState() const noexcept {
+		return mRasterizerState;
+	}
+	const FViewportState& GLDevice::GetViewport() const noexcept {
+		return mViewportState;
+	}
+
+
+
 	// Scissors setters
 
 	void GLDevice::ToggleScissors ( bool toggle ) {

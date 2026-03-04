@@ -8,6 +8,7 @@ layout( std140, binding = LUM_UBO_CAMERA_BINDING ) uniform CameraUniforms {
 	
 	mat4 uCameraView;
 	mat4 uCameraProj;
+	mat4 uCameraInvProj;
 	vec4 uCameraPos;
 
 };
@@ -19,8 +20,6 @@ layout( std140, binding = LUM_UBO_MODEL_BINDING ) uniform ModelUniforms {
 
 out vec2 fUV;
 out vec3 fPos;
-out vec3 fTangent;
-out vec3 fBitangent;
 
 out mat3 fTBN;
 

@@ -1,67 +1,161 @@
 #version 450 core
+layout( binding = LUM_GBUFFER_ALBEDO    ) uniform sampler2D gAlbedo;
+layout( binding = LUM_GBUFFER_NORMAL    ) uniform sampler2D gNormal;
+layout( binding = LUM_GBUFFER_DEPTH     ) uniform sampler2D gDepth;
 
-// Inputs z vertex shadera
-in vec3 FragPos;
-in vec3 Normal;
-in vec2 TexCoord;
+struct PointLight {
 
-// Output
-out vec4 FragColor;
+	vec3 mPosition;
+	float mIntensity;
+	vec3 mColor;
+	float mRadius;
 
-// Uniforms
-uniform vec3 viewPos;
-uniform sampler2D albedoMap;
+};
 
-// Œwiat³a - UBO
-layout(std140, binding = 1) uniform Lights {
-    vec4 positionAndRadius[16];  // xyz = pos, w = radius
-    vec4 colorAndIntensity[16];  // rgb = color, a = intensity
-} lights;
+layout( std140, binding = LUM_UBO_CAMERA_BINDING ) uniform CameraUniforms {
+	
+	mat4 uCameraView;
+	mat4 uCameraProj;
+	mat4 uCameraInvViewProj;
+	vec4 uCameraPos;
 
-void main() {
-    // Material
-    vec3 albedo = texture(albedoMap, TexCoord).rgb;
-    vec3 normal = normalize(Normal);
-    vec3 viewDir = normalize(viewPos - FragPos);
-    
-    // Ambient
-    vec3 result = vec3(0.03) * albedo;
-    
-    // Loop przez wszystkie œwiat³a
-    for (int i = 0; i < 16; i++) {
-        float intensity = lights.colorAndIntensity[i].a;
-        
-        // Jeœli intensity == 0, to koniec œwiate³
-        if (intensity == 0.0) break;
-        
-        vec3 lightPos = lights.positionAndRadius[i].xyz;
-        float radius = lights.positionAndRadius[i].w;
-        vec3 lightColor = lights.colorAndIntensity[i].rgb;
-        
-        // Light direction & distance
-        vec3 lightDir = lightPos - FragPos;
-        float distance = length(lightDir);
-        lightDir = normalize(lightDir);
-        
-        // Attenuation
-        float attenuation = 1.0 / (1.0 + distance * distance / (radius * radius));
-        attenuation = clamp(attenuation, 0.0, 1.0);
-        
-        // Diffuse
-        float diff = max(dot(normal, lightDir), 0.0);
-        vec3 diffuse = lightColor * diff * albedo;
-        
-        // Specular (Blinn-Phong)
-        vec3 halfwayDir = normalize(lightDir + viewDir);
-        float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-        vec3 specular = lightColor * spec * 0.5;
-        
-        // Add to result
-        result += (diffuse + specular) * intensity * attenuation;
-    }
-    
-    // Gamma correction
-    result = pow(result, vec3(1.0/2.2));
-    
-    FragColor = vec4(result, 1.0);
+};
+
+layout( std430, binding = LUM_SSBO_LIGHTS_BINDING ) readonly buffer LightBuffer {
+	
+	PointLight uPointLights[LUM_MAX_LIGHTS];
+	int uActiveLights;
+
+} aLightBuffer;
+
+layout( std140, binding = LUM_UBO_DIRECTIONAL_LIGHT ) uniform DirectionalLight {
+
+	vec4 mDirDirection;
+	vec4 mDirColor;
+	float mDirIntensity;
+
+};
+
+vec3 FresnelSchlick( float cosTheta, vec3 F0 ) {
+	return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+float DistributionGXX( vec3 N, vec3 H, float roughness ) {
+
+	float a = roughness * roughness;
+	float a2 = a * a;
+	float NdotH = max(dot(N, H), 0.0);
+	float NdotH2 = NdotH * NdotH;
+
+	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+	denom = LUM_PI * denom * denom;
+
+	return a2 / denom;
+
+}
+float GeometrySchlickGGX( float NdotV, float roughness ) {
+
+	float r = roughness + 1.0;
+	float k = (r*r) / 8.0;
+	return NdotV / (NdotV * (1.0 - k) + k);
+
+}
+float GeometrySmith( vec3 N, vec3 V, vec3 L, float roughness ) {
+
+	float NdotV = max(dot(N, V), 0.0);
+	float NdotL = max(dot(N, L), 0.0);
+	float ggx1 = GeometrySchlickGGX(NdotV, roughness);
+	float ggx2 = GeometrySchlickGGX(NdotL, roughness);
+	return ggx1 * ggx2;
+
+}
+vec3 CookTorrance( vec3 N, vec3 V, vec3 L, float roughness, vec3 F0 ) {
+
+	vec3 H = normalize(V + L);
+
+	float D = DistributionGXX(N, H, roughness);
+	float G = GeometrySmith(N, V, L, roughness);
+	vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+
+	vec3 numerator = D * G * F;
+	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+	return numerator / denominator;
+
+}
+vec3 TonemapACES(vec3 color){
+	return clamp((color*(2.51 * color + 0.03)) / (color * (2.43 * color + 0.59) + 0.14), 0.0, 1.0);
+}
+vec3 GammaCorrection22(vec3 color){
+	return pow(color, vec3(1.0/2.2));
+}
+
+in vec2 fUV;
+
+out vec4 oFinalColor;
+
+void main( ) {
+
+	vec4 albedoTex = texture(gAlbedo, fUV);
+	vec3 albedo = albedoTex.rgb;
+	float roughness = albedoTex.a;
+
+	vec4 normalTex = texture(gNormal, fUV);
+	float metallic = normalTex.a;
+	vec3 normalMap = normalTex.rgb;
+
+    float depth = texture(gDepth, fUV).r;
+    vec4 ndc = vec4(fUV * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
+    vec4 worldPos = uCameraInvViewProj * ndc;
+    worldPos /= worldPos.w;
+    vec3 fPos = worldPos.xyz;
+
+	vec3 Lo = vec3(0.0);
+
+	vec3 V = normalize(uCameraPos.xyz - fPos);
+	vec3 N = normalize(normalMap);
+	vec3 F0 = mix(vec3(0.04), albedo, metallic);
+
+	for(uint i = 0; i < aLightBuffer.uActiveLights; i++) {
+
+		PointLight light = aLightBuffer.uPointLights[i];
+
+		vec3 L = normalize(light.mPosition - fPos);
+		vec3 H = normalize(V + L);
+		float NdotL = max(dot(N, L), 0.0);
+
+		vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+
+		vec3 kS = F;
+		vec3 kD = (1.0 - kS) * (1.0 - metallic);
+
+		vec3 specular = CookTorrance(N, V, L, roughness, F0);
+		vec3 diffuse = (albedo / LUM_PI) * kD;
+
+		float dist = length(light.mPosition - fPos);
+    	float attenuation = clamp(1.0 - (dist * dist) / (light.mRadius * light.mRadius), 0.0, 1.0);
+
+		Lo += (diffuse + specular) * NdotL * light.mColor * light.mIntensity * attenuation;
+
+	}
+	
+	vec3 L = normalize(-mDirDirection.xyz);
+	vec3 H = normalize(V + L);
+	float NdotL = max(dot(N, L), 0.0);
+
+	vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+
+	vec3 kS = F;
+	vec3 kD = (1.0 - kS) * (1.0 - metallic);
+
+	vec3 specular = CookTorrance(N, V, L, roughness, F0);
+	vec3 diffuse = (albedo / LUM_PI) * kD;
+
+	Lo += (diffuse + specular) * NdotL * mDirColor.rgb * mDirIntensity;
+
+	vec3 ambient = vec3(0.03) * albedo;
+    Lo = Lo + ambient;
+    Lo = TonemapACES(Lo);
+    Lo = GammaCorrection22(Lo);
+
+	oFinalColor = vec4(Lo, 1.0);
+
 }

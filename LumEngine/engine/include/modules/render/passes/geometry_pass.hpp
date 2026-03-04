@@ -28,10 +28,7 @@ namespace lum::render {
 		void Submit( const FRenderInstance& instance );
 
 		/* @brief Begins the geometry pass — binds pipeline and prepares state. */
-		void BeginPass( );
-
-		/* @brief Ends the geometry pass. */
-		void EndPass( );
+		void Execute( );
 
 	private:
 

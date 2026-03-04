@@ -47,119 +47,8 @@ namespace lum::rhi::gl {
 		glDebugMessageCallback(rhi::detail::GLDebugCallback, nullptr);
 #		endif
 
-	}
+		mWindow = window;
 
-	void GLDevice::SetViewport ( int32 x, int32 y, int32 width, int32 height ) {
-
-		if (mViewportState.x == x && mViewportState.y == y && mViewportState.mWidth == width && mViewportState.mHeight == height) {
-			LUM_PROFILER_CACHE_HIT();
-			return;
-		}
-
-		glViewport(x, y, width, height);
-
-		mViewportState.x = x;
-		mViewportState.y = y;
-		mViewportState.mWidth = width;
-		mViewportState.mHeight = height;
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-	void GLDevice::SetViewportX ( int32 x ) {
-		
-		if (mViewportState.x == x) {
-			LUM_PROFILER_CACHE_HIT();
-			return;
-		}
-
-		glViewport(
-			x,
-			mViewportState.y,
-			mViewportState.mWidth,
-			mViewportState.mHeight
-		);
-
-		mViewportState.x = x;
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-	void GLDevice::SetViewportY ( int32 y ) {
-
-		if (mViewportState.y == y) {
-			LUM_PROFILER_CACHE_HIT();
-			return;
-		}
-
-		glViewport(
-			mViewportState.x,
-			y,
-			mViewportState.mWidth,
-			mViewportState.mHeight
-		);
-
-		mViewportState.y = y;
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-	void GLDevice::SetViewportWidth ( int32 width ) {
-
-		if (mViewportState.mWidth == width) {
-			LUM_PROFILER_CACHE_HIT();
-			return;
-		}
-
-		glViewport(
-			mViewportState.x,
-			mViewportState.y,
-			width,
-			mViewportState.mHeight
-		);
-
-		mViewportState.mWidth = width;
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-	void GLDevice::SetViewportHeight ( int32 height ) {
-
-		if (mViewportState.mHeight == height) {
-			LUM_PROFILER_CACHE_HIT();
-			return;
-		}
-
-		glViewport(
-			mViewportState.x,
-			mViewportState.y,
-			mViewportState.mWidth,
-			height
-		);
-		
-		mViewportState.mHeight = height;
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-
-	const FBlendState& GLDevice::GetBlendState ( ) const noexcept {
-		return mBlendState;
-	}
-	const FCullState& GLDevice::GetCullState ( ) const noexcept {
-		return mCullState;
-	}
-	const FScissorState& GLDevice::GetScissorState ( ) const noexcept {
-		return mScissorState;
-	}
-	const FDepthStencilState& GLDevice::GetDepthStencilState ( ) const noexcept {
-		return mDepthStencilState;
-	}
-	const FRasterizerState& GLDevice::GetRasterizerState ( ) const noexcept {
-		return mRasterizerState;
-	}
-	const FViewportState& GLDevice::GetViewport ( ) const noexcept {
-		return mViewportState;
 	}
 
 	bool GLDevice::IsValid ( RBufferHandle handle ) const {
@@ -278,7 +167,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::Clear ( Flags<ClearFlag> flags ) {
+	void GLDevice::Clear( Flags<ClearFlag> flags ) {
 		
 		GLbitfield mask = 0;
 
@@ -338,12 +227,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::BeginFrame() {
-
-		LUM_PROFILER_BEGIN_FRAME();
-		
-		SetViewport(0, 0, mWindow->GetWidth(), mWindow->GetHeight());
-		Clear(ClearFlag::Color | ClearFlag::Depth | ClearFlag::Stencil);
+	void GLDevice::NewFrame( ) {
 
 #		if LUM_ENABLE_IMGUI == 1
 			ImGui_ImplOpenGL3_NewFrame();
@@ -351,23 +235,17 @@ namespace lum::rhi::gl {
 			ImGui::NewFrame();
 #		endif
 
-		glfwPollEvents();
-
 	}
 
-	void GLDevice::EndFrame() {
+	void GLDevice::SwapBuffers( ) {
 
 #		if LUM_ENABLE_IMGUI == 1
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 #		endif
 
 		glfwSwapBuffers(static_cast<GLFWwindow*>(mWindow->GetNativeWindow()));
-
-		LUM_PROFILER_END_FRAME();
-
+		
 	}
 
 }

@@ -1,6 +1,6 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: OpenGL implementation of Render Hardware Interface
+// Purpose: OpenGL implementation of Render Hardware Interface.
 //
 //=============================================================================//
 #pragma once
@@ -18,20 +18,20 @@ namespace lum::rhi::gl {
 	class GLDevice : public RDevice {
 	public:
 
-		void Initialize( Window* window ) override;
+		void Initialize(Window* window) override;
 
 		//=================================================
 		// Buffers
 		//=================================================
 
-		RBufferHandle	CreateBuffer				( const FBufferDescriptor& desc )						override;
-		void			UpdateBuffer				( const RBufferHandle&, cvptr, usize, usize )			override;
-		void			DeleteBuffer				( RBufferHandle& )										override;
-		vptr			MapBuffer					( const RBufferHandle&, Flags<MapFlag>, usize, usize )	override;
-		void			UnmapBuffer					( const RBufferHandle& )								override;
-		void			SetShaderStorageBinding		( const RBufferHandle& ssbo, uint32 binding )			override;
-		void			AttachElementBufferToLayout	( const RBufferHandle&, const RVertexLayoutHandle& )	override;
-		void			SetUniformBufferBinding		( const RBufferHandle&, int32 )							override;
+		RBufferHandle	CreateBuffer(const FBufferDescriptor& desc)						override;
+		void			UpdateBuffer(const RBufferHandle&, cvptr, usize, usize)			override;
+		void			DeleteBuffer(RBufferHandle&)										override;
+		vptr			MapBuffer(const RBufferHandle&, Flags<MapFlag>, usize, usize)	override;
+		void			UnmapBuffer(const RBufferHandle&)								override;
+		void			SetShaderStorageBinding(const RBufferHandle& ssbo, uint32 binding)			override;
+		void			AttachElementBufferToLayout(const RBufferHandle&, const RVertexLayoutHandle&)	override;
+		void			SetUniformBufferBinding(const RBufferHandle&, int32)							override;
 
 
 
@@ -39,11 +39,11 @@ namespace lum::rhi::gl {
 		// Framebuffers
 		//=================================================
 
-		RFramebufferHandle	CreateFramebuffer			( const RFramebufferDescriptor& )			override;
-		void				ClearFramebuffer			( RFramebufferHandle, ChannelRGBA, float32)	override;
-		void				DeleteFramebuffer			( RFramebufferHandle& )						override;
-		void				BindFramebuffer				( const RFramebufferHandle& )				override;
-		void				UnbindFramebuffer			( )											override;
+		RFramebufferHandle	CreateFramebuffer(const RFramebufferDescriptor&)			override;
+		void				ClearFramebuffer(RFramebufferHandle, ChannelRGBA, float32)	override;
+		void				DeleteFramebuffer(RFramebufferHandle&)						override;
+		void				BindFramebuffer(const RFramebufferHandle&)				override;
+		void				UnbindFramebuffer()											override;
 
 
 
@@ -51,8 +51,8 @@ namespace lum::rhi::gl {
 		// Layouts
 		//=================================================
 
-		RVertexLayoutHandle	CreateVertexLayout ( const FVertexLayoutDescriptor&, const RBufferHandle&)	override;
-		void				DeleteVertexLayout ( RVertexLayoutHandle& )									override;
+		RVertexLayoutHandle	CreateVertexLayout(const FVertexLayoutDescriptor&, const RBufferHandle&)	override;
+		void				DeleteVertexLayout(RVertexLayoutHandle&)									override;
 
 
 
@@ -60,9 +60,9 @@ namespace lum::rhi::gl {
 		// Shaders
 		//=================================================
 
-		RShaderHandle	CreateShader ( const RShaderDescriptor& )							override;
-		void			BindShader	 ( const RShaderHandle& )								override;
-		void			DeleteShader ( RShaderHandle& )										override;
+		RShaderHandle	CreateShader(const RShaderDescriptor&)							override;
+		void			BindShader(const RShaderHandle&)								override;
+		void			DeleteShader(RShaderHandle&)										override;
 
 
 
@@ -70,11 +70,11 @@ namespace lum::rhi::gl {
 		// Textures
 		//=================================================
 
-		RTextureHandle	CreateTexture		 ( const FTextureDescriptor& desc ) override;
-		void			UnbindTexture		 ( TextureType )						override;
-		void			UpdateTexture		 ( const RTextureHandle&, const FTextureUpdateDescriptor& ) override;
-		void			DeleteTexture		 ( RTextureHandle& )							override;
-		void			BindTexture			 ( const RTextureHandle&, uint16 )			override;
+		RTextureHandle	CreateTexture(const FTextureDescriptor& desc) override;
+		void			UnbindTexture(TextureType)						override;
+		void			UpdateTexture(const RTextureHandle&, const FTextureUpdateDescriptor&) override;
+		void			DeleteTexture(RTextureHandle&)							override;
+		void			BindTexture(const RTextureHandle&, uint16)			override;
 
 
 
@@ -82,9 +82,9 @@ namespace lum::rhi::gl {
 		// Samplers
 		//=================================================
 
-		RSamplerHandle	CreateSampler	( const RSamplerDescriptor& )		override;
-		void			BindSampler		( const RSamplerHandle&, uint16 )	override;
-		void			DeleteSampler	( RSamplerHandle )					override;
+		RSamplerHandle	CreateSampler(const RSamplerDescriptor&)		override;
+		void			BindSampler(const RSamplerHandle&, uint16)	override;
+		void			DeleteSampler(RSamplerHandle)					override;
 
 
 
@@ -92,9 +92,9 @@ namespace lum::rhi::gl {
 		// Pipelines
 		//=================================================
 
-		RPipelineHandle		CreatePipeline	( const FPipelineDescriptor& )	override;
-		void				DeletePipeline	( RPipelineHandle& )			override;
-		void				BindPipeline	( const RPipelineHandle& )		override;
+		RPipelineHandle		CreatePipeline(const FPipelineDescriptor&)	override;
+		void				DeletePipeline(RPipelineHandle&)			override;
+		void				BindPipeline(const RPipelineHandle&)		override;
 
 
 
@@ -102,160 +102,162 @@ namespace lum::rhi::gl {
 		// Other
 		//=================================================
 
-		void SetViewport		( int32 x, int32 y, int32 width, int32 height )	override;
-		void SetViewportX		( int32 x )			override;
-		void SetViewportY		( int32 y )			override;
-		void SetViewportWidth	( int32 width )		override;
-		void SetViewportHeight	( int32 height )	override;
+		void SetViewport(int32 x, int32 y, int32 width, int32 height)	override;
+		void SetViewportX(int32 x)			override;
+		void SetViewportY(int32 y)			override;
+		void SetViewportWidth(int32 width)		override;
+		void SetViewportHeight(int32 height)	override;
 
 		// Scissors setters
-		void ToggleScissors			( bool )										override;
-		bool IsScissorEnabled		( )												const noexcept override;
-		void SetScissors			( int32 x, int32 y, int32 width, int32 height )	override;
-		void SetScissorX			( int32 x )			override;
-		void SetScissorY			( int32 y )			override;
-		void SetScissorWidth		( int32 width )		override;
-		void SetScissorHeight		( int32 height )	override;
+		void ToggleScissors(bool)										override;
+		bool IsScissorEnabled()												const noexcept override;
+		void SetScissors(int32 x, int32 y, int32 width, int32 height)	override;
+		void SetScissorX(int32 x)			override;
+		void SetScissorY(int32 y)			override;
+		void SetScissorWidth(int32 width)		override;
+		void SetScissorHeight(int32 height)	override;
 
 
 		// Cull setters
-		void ToggleCull		( bool )			override;
-		bool IsCullEnabled	( )					const noexcept override;
-		void SetCullFace	( Face face )		override;
-		void SetFrontFace	( WindingOrder )	override;
+		void ToggleCull(bool)			override;
+		bool IsCullEnabled()					const noexcept override;
+		void SetCullFace(Face face)		override;
+		void SetFrontFace(WindingOrder)	override;
 
 
 		// Blend setters
-		void ToggleBlend				( bool enabled )		override;
-		bool IsBlendEnabled				( )						const noexcept override;
-		void SetBlendConstantColor		( ChannelRGBA rgba )	override;
-		void SetBlendFactors			( BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha ) override;
-		void SetBlendColorFactors		( BlendFactor srcColor, BlendFactor dstColor )	override;
-		void SetBlendAlphaFactors		( BlendFactor srcAlpha, BlendFactor dstAlpha )	override;
-		void SetBlendSrcColorFactor		( BlendFactor factor )							override;
-		void SetBlendDstColorFactor		( BlendFactor factor )							override;
-		void SetBlendSrcAlphaFactor		( BlendFactor factor )							override;
-		void SetBlendDstAlphaFactor		( BlendFactor factor )							override;
-		void SetBlendOp					( BlendOp colorOp, BlendOp alphaOp )			override;
-		void SetBlendColorOp			( BlendOp op )									override;
-		void SetBlendAlphaOp			( BlendOp op )									override;
-		void SetBlendFactorsForTarget	( uint8 target )								override;
-		void ToggleBlendForTarget		( uint8 target, bool enable )					override;
+		void ToggleBlend(bool enabled)		override;
+		bool IsBlendEnabled()						const noexcept override;
+		void SetBlendConstantColor(ChannelRGBA rgba)	override;
+		void SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha) override;
+		void SetBlendColorFactors(BlendFactor srcColor, BlendFactor dstColor)	override;
+		void SetBlendAlphaFactors(BlendFactor srcAlpha, BlendFactor dstAlpha)	override;
+		void SetBlendSrcColorFactor(BlendFactor factor)							override;
+		void SetBlendDstColorFactor(BlendFactor factor)							override;
+		void SetBlendSrcAlphaFactor(BlendFactor factor)							override;
+		void SetBlendDstAlphaFactor(BlendFactor factor)							override;
+		void SetBlendOp(BlendOp colorOp, BlendOp alphaOp)			override;
+		void SetBlendColorOp(BlendOp op)									override;
+		void SetBlendAlphaOp(BlendOp op)									override;
+		void SetBlendFactorsForTarget(uint8 target)								override;
+		void ToggleBlendForTarget(uint8 target, bool enable)					override;
 
 		// Depth setters
-		void ToggleDepthWrite		( bool )	override;
-		bool IsDepthWriteEnabled	( )			const noexcept override;
+		void ToggleDepthWrite(bool)	override;
+		bool IsDepthWriteEnabled()			const noexcept override;
 
-		void ToggleDepthTest		( bool )			override;
-		bool IsDepthTestEnabled		( )					const noexcept override;
-		void SetDepthFunc			( CompareFlag )	override;
+		void ToggleDepthTest(bool)			override;
+		bool IsDepthTestEnabled()					const noexcept override;
+		void SetDepthFunc(CompareFlag)	override;
 
 		// Stencil setters
-		void ToggleStencilTest			( bool )			override;
-		bool IsStencilTestEnabled		( )					const noexcept override;
-		void SetStencilReference		( int32 ref, Face )	override;
-		void SetStencilOp				( StencilOp sfail, StencilOp dpfail, StencilOp dppass, Face face)	override;
-		void SetStencilOpOnStencilFail	( StencilOp op, Face face )	override;
-		void SetStencilOpOnDepthFail	( StencilOp op, Face face )	override;
-		void SetStencilOpOnDepthPass	( StencilOp op, Face face )	override;
+		void ToggleStencilTest(bool)			override;
+		bool IsStencilTestEnabled()					const noexcept override;
+		void SetStencilReference(int32 ref, Face)	override;
+		void SetStencilOp(StencilOp sfail, StencilOp dpfail, StencilOp dppass, Face face)	override;
+		void SetStencilOpOnStencilFail(StencilOp op, Face face)	override;
+		void SetStencilOpOnDepthFail(StencilOp op, Face face)	override;
+		void SetStencilOpOnDepthPass(StencilOp op, Face face)	override;
 
 
 		// Rasterizer setters
-		void ToggleDepthBias		( bool )							override;
-		bool IsDepthBiasEnabled		( )									const noexcept override;
-		void SetDepthBiasFactors	( float32 slope, float32 constant ) override;
-		void SetDepthBiasClamp		( float32 clamp )					override;
-		void SetDepthBiasSlope		( float32 )							override;
-		void SetDepthBiasConstant	( float32 )							override;
-		void SetTopology			( TopologyMode mode, Face face )	override;
+		void ToggleDepthBias(bool)							override;
+		bool IsDepthBiasEnabled()									const noexcept override;
+		void SetDepthBiasFactors(float32 slope, float32 constant) override;
+		void SetDepthBiasClamp(float32 clamp)					override;
+		void SetDepthBiasSlope(float32)							override;
+		void SetDepthBiasConstant(float32)							override;
+		void SetTopology(TopologyMode mode, Face face)	override;
 
-		const FBlendState&			GetBlendState		 ( ) const noexcept override;
-		const FCullState&			GetCullState		 ( ) const noexcept override;
-		const FScissorState&		GetScissorState		 ( ) const noexcept override;
-		const FDepthStencilState&	GetDepthStencilState ( ) const noexcept override;
-		const FRasterizerState&		GetRasterizerState	 ( ) const noexcept override;
-		const FViewportState&		GetViewport			 ( ) const noexcept override;
+		const FBlendState& GetBlendState() const noexcept override;
+		const FCullState& GetCullState() const noexcept override;
+		const FScissorState& GetScissorState() const noexcept override;
+		const FDepthStencilState& GetDepthStencilState() const noexcept override;
+		const FRasterizerState& GetRasterizerState() const noexcept override;
+		const FViewportState& GetViewport() const noexcept override;
 
-		bool IsValid ( RBufferHandle handle )		const override;
-		bool IsValid ( RTextureHandle handle )		const override;
-		bool IsValid ( RShaderHandle handle )		const override;
-		bool IsValid ( RFramebufferHandle handle )	const override;
-		bool IsValid ( RVertexLayoutHandle handle )  const override;
-		bool IsValid ( RPipelineHandle handle )		const override;
-		bool IsValid ( RSamplerHandle handle )		const override;
+		bool IsValid(RBufferHandle handle)		const override;
+		bool IsValid(RTextureHandle handle)		const override;
+		bool IsValid(RShaderHandle handle)		const override;
+		bool IsValid(RFramebufferHandle handle)	const override;
+		bool IsValid(RVertexLayoutHandle handle)  const override;
+		bool IsValid(RPipelineHandle handle)		const override;
+		bool IsValid(RSamplerHandle handle)		const override;
 
-		void SetColorMask ( bool r, bool g, bool b, bool a )	override;
-		void SetColorMask ( FColorMask rgba )					override;
+		void SetColorMask(bool r, bool g, bool b, bool a)	override;
+		void SetColorMask(FColorMask rgba)					override;
 
-		void SetClearColor	( ChannelRGBA color )	override;
-		void ClearColor		( )						override;
-		void ClearColor		( ChannelRGBA color )	override;
-		void ClearDepth		( )						override;
-		void ClearStencil	( )						override;
-		void Clear			( Flags<ClearFlag> )	override;
+		void SetClearColor(ChannelRGBA color)	override;
+		void ClearColor()						override;
+		void ClearColor(ChannelRGBA color)	override;
+		void ClearDepth()						override;
+		void ClearStencil()						override;
+		void Clear(Flags<ClearFlag>)	override;
 
-		void SetPointSize ( float32 size )	override;
-		void SetLineWidth ( float32 width )	override;
+		void SetPointSize(float32 size)	override;
+		void SetLineWidth(float32 width)	override;
 
-		void ToggleMultisample			 ( bool toggle ) override;
-		void ToggleSampleCoverage		 ( bool toggle ) override;
-		void ToggleSampleAlphaToCoverage ( bool toggle ) override;
-		void ToggleSampleAlphaToOne		 ( bool toggle ) override;
-		void SetSampleCoverage			 ( float32 value, bool invert ) override;
+		void ToggleMultisample(bool toggle) override;
+		void ToggleSampleCoverage(bool toggle) override;
+		void ToggleSampleAlphaToCoverage(bool toggle) override;
+		void ToggleSampleAlphaToOne(bool toggle) override;
+		void SetSampleCoverage(float32 value, bool invert) override;
 
-		void Draw						( const RVertexLayoutHandle&, uint32 )	override;
-		void DrawInstanced				( const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount ) override;
-		void DrawInstancedBase			( const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount, uint32 baseInstance ) override;
-		void DrawElements				( const RVertexLayoutHandle&, uint32 )	override;
-		void DrawElementsInstanced		( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount ) override;
-		void DrawElementsInstancedBase	( const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance ) override;
+		void Draw(const RVertexLayoutHandle&, uint32)	override;
+		void DrawInstanced(const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount) override;
+		void DrawInstancedBase(const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount, uint32 baseInstance) override;
+		void DrawElements(const RVertexLayoutHandle&, uint32)	override;
+		void DrawElementsInstanced(const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount) override;
+		void DrawElementsInstancedBase(const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance) override;
 
-		void BeginFrame	( )	override;
-		void EndFrame	( )	override;
+		void NewFrame()	override;
+		void SwapBuffers()		override;
 
 
 	protected:
 
-		inline constexpr
-		static GLenum skTopologyModeLookup[] = 
-		{ 
-			GL_POINT, 
-			GL_LINE, 
-			GL_FILL 
+		//=================================================
+		// Lookup tables
+		//=================================================
+
+		/* @brief Maps TopologyMode to GL polygon mode (GL_POINT, GL_LINE, GL_FILL). */
+		inline constexpr static GLenum skTopologyModeLookup[] =
+		{
+			GL_POINT,
+			GL_LINE,
+			GL_FILL
 		};
 
-		inline constexpr
-		static GLenum skFacesLookup[] =
-		{ 
-			GL_FRONT, 
-			GL_BACK, 
-			GL_FRONT_AND_BACK 
+		/* @brief Maps Face enum to GL face target (GL_FRONT, GL_BACK, GL_FRONT_AND_BACK). */
+		inline constexpr static GLenum skFacesLookup[] =
+		{
+			GL_FRONT,
+			GL_BACK,
+			GL_FRONT_AND_BACK
 		};
 
-		inline constexpr
-		static GLenum skTextureMinFilterLookup[] =
+		/* @brief Maps texture minification filter modes to GL equivalents. */
+		inline constexpr static GLenum skTextureMinFilterLookup[] =
 		{
 			GL_LINEAR,
 			GL_LINEAR_MIPMAP_NEAREST,
 			GL_LINEAR_MIPMAP_LINEAR,
-
 			GL_NEAREST,
 			GL_NEAREST_MIPMAP_NEAREST,
 			GL_NEAREST_MIPMAP_LINEAR
 		};
 
-		inline constexpr
-		static GLenum skSamplerWrapLookup[] =
+		/* @brief Maps sampler wrap modes to GL wrap targets. */
+		inline constexpr static GLenum skSamplerWrapLookup[] =
 		{
 			GL_REPEAT,
 			GL_MIRRORED_REPEAT,
-
 			GL_CLAMP_TO_EDGE,
 			GL_CLAMP_TO_BORDER
 		};
 
-		inline constexpr
-		static GLenum skCompareFlagLookup[] =
+		/* @brief Maps CompareFlag to GL comparison functions. */
+		inline constexpr static GLenum skCompareFlagLookup[] =
 		{
 			GL_EQUAL,
 			GL_NOTEQUAL,
@@ -267,38 +269,32 @@ namespace lum::rhi::gl {
 			GL_NEVER
 		};
 
-		inline constexpr
-		static GLenum skBlendFactorLookup[] =
+		/* @brief Maps BlendFactor to GL blend factor constants. */
+		inline constexpr static GLenum skBlendFactorLookup[] =
 		{
 			GL_ZERO,
 			GL_ONE,
-
 			GL_SRC_COLOR,
 			GL_ONE_MINUS_SRC_COLOR,
 			GL_SRC_ALPHA,
 			GL_ONE_MINUS_SRC_ALPHA,
-
 			GL_DST_COLOR,
 			GL_ONE_MINUS_DST_COLOR,
 			GL_DST_ALPHA,
 			GL_ONE_MINUS_DST_ALPHA,
-
 			GL_CONSTANT_COLOR,
 			GL_ONE_MINUS_CONSTANT_COLOR,
 			GL_CONSTANT_ALPHA,
 			GL_ONE_MINUS_CONSTANT_ALPHA,
-
 			GL_SRC_ALPHA_SATURATE,
-
 			GL_SRC1_COLOR,
 			GL_ONE_MINUS_SRC1_COLOR,
 			GL_SRC1_ALPHA,
 			GL_ONE_MINUS_SRC1_ALPHA,
-
 		};
 
-		inline constexpr
-		static GLenum skBlendOpLookup[] =
+		/* @brief Maps BlendOp to GL blend equation modes. */
+		inline constexpr static GLenum skBlendOpLookup[] =
 		{
 			GL_FUNC_ADD,
 			GL_FUNC_SUBTRACT,
@@ -307,8 +303,8 @@ namespace lum::rhi::gl {
 			GL_MAX
 		};
 
-		inline constexpr
-		static GLenum skStencilOpLookup[] =
+		/* @brief Maps StencilOp to GL stencil operation constants. */
+		inline constexpr static GLenum skStencilOpLookup[] =
 		{
 			GL_ZERO,
 			GL_ONE,
@@ -321,16 +317,16 @@ namespace lum::rhi::gl {
 			GL_INVERT
 		};
 
-		inline constexpr
-		static GLenum skClearOpLookup[] =
+		/* @brief Maps ClearFlag bits to GL clear buffer bits. */
+		inline constexpr static GLenum skClearOpLookup[] =
 		{
 			GL_COLOR_BUFFER_BIT,
 			GL_DEPTH_BUFFER_BIT,
 			GL_STENCIL_BUFFER_BIT
 		};
 
-		inline constexpr
-		static GLenum skTextureTypeLookup[] =
+		/* @brief Maps TextureType to GL texture targets. */
+		inline constexpr static GLenum skTextureTypeLookup[] =
 		{
 			GL_NONE,
 			GL_TEXTURE_2D,
@@ -338,39 +334,33 @@ namespace lum::rhi::gl {
 			GL_TEXTURE_CUBE_MAP
 		};
 
-		inline constexpr
-		static GLenum skImageLayoutLookup[] =
+		/* @brief Maps ImageLayout to GL sized internal formats. */
+		inline constexpr static GLenum skImageLayoutLookup[] =
 		{
 			GL_RGBA8,
 			GL_SRGB8_ALPHA8,
 			GL_RGB8,
 			GL_RG8,
 			GL_R8,
-
 			GL_RGBA16F,
 			GL_RGB16F,
 			GL_RG16F,
 			GL_R16F,
-
 			GL_RGBA32F,
 			GL_RGB32F,
 			GL_RG32F,
 			GL_R32F,
-			
 			GL_DEPTH_COMPONENT16,
 			GL_DEPTH_COMPONENT24,
 			GL_DEPTH_COMPONENT32,
 			GL_DEPTH_COMPONENT32F,
-
 			GL_DEPTH24_STENCIL8,
 			GL_DEPTH32F_STENCIL8,
-
 			GL_STENCIL_INDEX8
-
 		};
 
-		inline constexpr
-		static GLenum skImageFormatLookup[] =
+		/* @brief Maps image channel layout to GL base format (GL_RGBA, GL_DEPTH_COMPONENT, etc.). */
+		inline constexpr static GLenum skImageFormatLookup[] =
 		{
 			GL_RGBA,
 			GL_RGB,
@@ -381,64 +371,81 @@ namespace lum::rhi::gl {
 			GL_DEPTH_STENCIL
 		};
 
-		inline constexpr
-		static GLenum skTextureDataTypeLookup[] =
+		/* @brief Maps texture data types to GL data type constants. */
+		inline constexpr static GLenum skTextureDataTypeLookup[] =
 		{
 			GL_UNSIGNED_BYTE,
 			GL_BYTE,
-
 			GL_UNSIGNED_SHORT,
 			GL_SHORT,
-
 			GL_UNSIGNED_INT,
 			GL_INT,
-
 			GL_HALF_FLOAT,
 			GL_FLOAT,
-
 			GL_UNSIGNED_INT_24_8,
 			GL_FLOAT_32_UNSIGNED_INT_24_8_REV
 		};
 
+		/* @brief Pointer to the engine window this device renders into. */
 		Window* mWindow = nullptr;
 
 		//=================================================
 		// Private helpers
 		//=================================================
 
+		/* @brief Checks and applies shader state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_shader(const FPipeline&) noexcept;
+		void bind_check_shader( const FPipeline& ) noexcept;
 
+		/* @brief Checks and applies rasterizer state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_rasterizer(const FPipeline&) noexcept;
+		void bind_check_rasterizer( const FPipeline& ) noexcept;
 
+		/* @brief Checks and applies depth/stencil state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_depth_stencil(const FPipeline&) noexcept;
+		void bind_check_depth_stencil( const FPipeline& ) noexcept;
 
+		/* @brief Checks and applies scissor state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_scissors(const FPipeline&) noexcept;
+		void bind_check_scissors( const FPipeline& ) noexcept;
 
+		/* @brief Checks and applies blend state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_blend(const FPipeline&) noexcept;
+		void bind_check_blend( const FPipeline& ) noexcept;
 
+		/* @brief Checks and applies cull state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_cull(const FPipeline&) noexcept;
+		void bind_check_cull( const FPipeline& ) noexcept;
 
+		/* @brief Checks and applies color mask from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_color_mask(const FPipeline&) noexcept;
+		void bind_check_color_mask( const FPipeline& ) noexcept;
 
-
-
+		/* @brief Compiles a GLSL shader object and logs any errors.
+		*  @param shader OpenGL shader handle to compile.
+		*  @param name Shader name used in error messages.
+		*  @return True if compilation succeeded.
+		*/
 		LUM_FORCEINLINE
-		bool compile_shader( GLuint shader, ccharptr name );
+		bool compile_shader( GLuint shader );
 
+		/* @brief Links a GLSL program and logs any errors.
+		*  @param program OpenGL program handle to link.
+		*  @return True if linking succeeded.
+		*/
 		LUM_FORCEINLINE
 		bool link_program( GLuint program );
 
-		RTextureHandle create_texture_2d(const FTextureDescriptor&);
-		RTextureHandle create_texture_3d(const FTextureDescriptor&);
-		RTextureHandle create_texture_cubemap(const FTextureDescriptor&);
-		
+		/* @brief Creates a 2D texture from the given descriptor. */
+		RTextureHandle create_texture_2d( const FTextureDescriptor& );
+
+		/* @brief Creates a 3D texture from the given descriptor. */
+		RTextureHandle create_texture_3d( const FTextureDescriptor& );
+
+		/* @brief Creates a cubemap texture from the given descriptor. */
+		RTextureHandle create_texture_cubemap( const FTextureDescriptor& );
+
+		/* @brief Translates engine MapFlag bits to the corresponding GL map access flags. */
 		GLbitfield translate_mapping_flags( Flags<MapFlag> ) noexcept;
 
 	};

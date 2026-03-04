@@ -344,14 +344,14 @@ namespace lum::rhi {
 	}
 
 	void REncoder::BeginPass() {
-		mRenderDevice->BeginFrame();
+		mRenderDevice->NewFrame();
 	}
 
 	void REncoder::EndPass() {
 		
 
 
-		mRenderDevice->EndFrame();
+		mRenderDevice->SwapBuffers();
 	}
 
 	void REncoder::init() {

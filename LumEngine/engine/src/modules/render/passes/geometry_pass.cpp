@@ -41,15 +41,12 @@ namespace lum::render {
 
 	}
 
-	void GeometryPass::BeginPass( ) {
+	void GeometryPass::Execute( ) {
 		
 		for (auto& instance : mInstances)
 			draw_instance(instance);
 
 		mInstances.clear();
-
-	}
-	void GeometryPass::EndPass( ) {
 
 	}
 

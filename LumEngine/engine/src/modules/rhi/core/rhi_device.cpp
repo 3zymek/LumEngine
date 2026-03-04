@@ -31,7 +31,6 @@ namespace lum::rhi {
 			);
 		}
 
-		// Coherent wymaga Persistent
 		if (desc.mMapFlags.Has(MapFlag::Coherent)) {
 			LUM_ASSERT(
 				desc.mMapFlags.Has(MapFlag::Persistent),
@@ -39,7 +38,6 @@ namespace lum::rhi {
 			);
 		}
 
-		// Persistent wymaga Read lub Write
 		if (desc.mMapFlags.Has(MapFlag::Persistent)) {
 			LUM_ASSERT(
 				desc.mMapFlags.Has(MapFlag::Read) || desc.mMapFlags.Has(MapFlag::Write),
@@ -61,24 +59,30 @@ namespace lum::rhi {
 
 	}
 
-	bool RDevice::is_depth_format(ImageLayout fmt) {
+	bool RDevice::is_depth_format( ImageLayout fmt ) {
+
 		return fmt == ImageLayout::Depth16 ||
 			fmt == ImageLayout::Depth24 ||
 			fmt == ImageLayout::Depth32 ||
 			fmt == ImageLayout::Depth32F ||
 			fmt == ImageLayout::Depth24Stencil8 ||
 			fmt == ImageLayout::Depth32FStencil8;
+
 	}
-	bool RDevice::is_stencil_format(ImageLayout fmt) {
+	bool RDevice::is_stencil_format( ImageLayout fmt ) {
+
 		return fmt == ImageLayout::StencilIndex8 ||
 			fmt == ImageLayout::Depth24Stencil8 ||
 			fmt == ImageLayout::Depth32FStencil8;
+
 	}
-	bool RDevice::is_color_format(ImageLayout fmt) {
+	bool RDevice::is_color_format( ImageLayout fmt ) {
+
 		return !is_depth_format(fmt) && !is_stencil_format(fmt);
+
 	}
 
-	RDevice* CreateDevice(Window* window, RenderBackend backend) {
+	RDevice* CreateDevice( Window* window, RenderBackend backend ) {
 		
 		rhi::RDevice* device = nullptr;
 

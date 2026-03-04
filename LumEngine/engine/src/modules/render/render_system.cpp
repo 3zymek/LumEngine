@@ -121,8 +121,10 @@ namespace lum {
 				[&](CTransform& transform, CPointLight& light) {
 					FPointLight pointL;
 
-					pointL.mLight = &light;
-					pointL.mTransform = &transform;
+					pointL.mPosition = transform.mPosition;
+					pointL.mIntensity = light.mIntensity;
+					pointL.mColor = light.mColor;
+					pointL.mRadius = light.mRadius;
 
 					mRenderer->AddPointLight(pointL);
 				}

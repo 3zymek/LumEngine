@@ -34,6 +34,7 @@ namespace lum::render {
 		mCameraStruct.mPosition = glm::vec4(camera.mPosition, 0.0);
 		mCameraStruct.mProjection = camera.mProjection;
 		mCameraStruct.mView = camera.mView;
+		mCameraStruct.mInvViewProj = glm::inverse(camera.mView * camera.mProjection);
 
 		upload_camera_uniform();
 
@@ -41,21 +42,24 @@ namespace lum::render {
 
 	void Renderer::BeginFrame() {
 
-		mContext.mRenderDevice->BeginFrame();
+		mContext.mRenderDevice->Clear(rhi::ClearFlag::Color | rhi::ClearFlag::Depth | rhi::ClearFlag::Stencil);
 
-		//mGBuffer.BeginPass();
-		mGeometryPass.BeginPass();
+		mContext.mRenderDevice->NewFrame();
+
+		mGBuffer.BeginPass();
+		mGeometryPass.Execute();
+		mGBuffer.EndPass();
+
 		mLightPass.BeginPass();
+		mEnvironmentPass.BeginPass();
 
 	}
 
 	void Renderer::EndFrame() {
-		
-		//mGeometryPass.EndPass();
-		mGBuffer.EndPass();
+
 		mLightPass.EndPass();
 
-		mContext.mRenderDevice->EndFrame();
+		mContext.mRenderDevice->SwapBuffers();
 
 	}
 
@@ -68,6 +72,11 @@ namespace lum::render {
 	//---------------------------------------------------------
 
 	void Renderer::init() {
+
+		mContext.mEventBus->SubscribePermanently<EWindowResized>([this](const EWindowResized& e) {
+			this->mContext.mRenderDevice->SetViewport(0, 0, e.mWidth, e.mHeight);
+		});
+
 		rhi::FBufferDescriptor desc;
 		desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 		desc.mMapFlags = rhi::MapFlag::Write;
