@@ -9,7 +9,7 @@
 
 namespace lum::rhi::gl {
 
-	RFramebufferHandle GLDevice::CreateFramebuffer(const RFramebufferDescriptor& desc) {
+	RFramebufferHandle GLDevice::CreateFramebuffer(const FFramebufferDescriptor& desc) {
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mFramebuffers.DenseSize() <= skMaxFramebuffers,
 			LUM_SEV_ERROR,
@@ -21,23 +21,18 @@ namespace lum::rhi::gl {
 
 		glCreateFramebuffers(1, &fbo.mHandle);
 
-		GLenum drawBuffers[8];
-		for (uint8 i = 0; i < desc.mNumColorTex; i++) {
-
-			if (mTextures.Contains(desc.mColorTex[i])) {
-				
-				const FTexture* tex = mTextures.Get(desc.mColorTex[i]);
-
-				LUM_ASSERT(is_color_format(tex->mInternalFormat), "Invalid framebuffer color texture format");
-				glNamedFramebufferTexture(fbo.mHandle, GL_COLOR_ATTACHMENT0 + i, tex->mHandle, 0);
-
-				drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
-
-			}
-
-			glNamedFramebufferDrawBuffers(fbo.mHandle, desc.mNumColorTex, drawBuffers);
+		std::vector<GLenum> drawBuffers;
+		
+		for (auto& [slot, texHandle] : desc.mColorTex) {
+			
+			const FTexture* tex = mTextures.Get(texHandle);
+			
+			glNamedFramebufferTexture(fbo.mHandle, GL_COLOR_ATTACHMENT0 + slot, tex->mHandle, 0);
+			drawBuffers.push_back(GL_COLOR_ATTACHMENT0 + slot);
 
 		}
+
+		glNamedFramebufferDrawBuffers(fbo.mHandle, drawBuffers.size(), drawBuffers.data());
 
 		if (mTextures.Contains(desc.mDepthTex)) {
 			

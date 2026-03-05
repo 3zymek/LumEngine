@@ -8,7 +8,7 @@
 #include "modules/audio/audio_listener_wrapper.hpp"
 
 #include "core/core_common.hpp"
-#include "core/core_pch.hpp"
+#include "core/core_common.hpp"
 #include "audio/audio_pch.hpp"
 
 #include "event/event_bus.hpp"

@@ -60,7 +60,7 @@ namespace lum {
 		* @return Handle to the uploaded base material.
 		*/
 		LUM_NODISCARD
-		MaterialBaseHandle UploadBase(const FMaterialDescriptor& base);
+		MaterialBaseHandle UploadBase( const FMaterialDescriptor& base );
 
 		/* @brief Creates a material instance from a base handle.
 		* Resolves invalid texture handles to fallback textures.

@@ -1,7 +1,13 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Core event dispatch system for the Lum Engine.
+//
+//=============================================================================//
 #pragma once
-#include "core/core_pch.hpp"
+
 #include "event/event_common.hpp"
 #include "event/event_pool.hpp"
+
 namespace lum {
 	namespace ev {
 
@@ -111,7 +117,7 @@ namespace lum {
 
 			template< detail::tEvent tType >
 			detail::EventPool<tType>& get_pool( ) {
-				auto typeID = detail::GetEventTypeID::Get<tType>();
+				auto typeID = GenerateTypeID::Get<tType>();
 				if (!mPools[typeID]) {
 					mPools[typeID] = new detail::EventPool<tType>();
 				}

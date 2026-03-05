@@ -1,7 +1,7 @@
 #pragma once
 #include "audio/audio_common.hpp"
 #include "audio/audio_manager.hpp"
-#include "core/core_pch.hpp"
+#include "core/core_common.hpp"
 namespace lum {
 	namespace audio {
 		namespace detail {

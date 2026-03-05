@@ -39,7 +39,7 @@ namespace lum {
 			LUM_DEBUGBREAK();
 		}
 
-		rhi::RShaderDescriptor desc;
+		rhi::FShaderDescriptor desc;
 		desc.mVertexContent = vertexData.value();
 		desc.mFragmentContent = fragmentData.value();
 

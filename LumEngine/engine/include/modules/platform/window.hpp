@@ -1,6 +1,6 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Platform window abstraction for the Lum engine.
+// Purpose: Platform window abstraction for the Lum Engine.
 //
 //=============================================================================//
 #pragma once

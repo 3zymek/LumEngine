@@ -10,10 +10,9 @@
 
 namespace lum::rhi {
 
-	struct RFramebufferDescriptor {
+	struct FFramebufferDescriptor {
 
-		RTextureHandle	mColorTex[8];
-		uint8			mNumColorTex = 0;
+		std::vector<std::pair<uint8, RTextureHandle>> mColorTex;
 
 		RTextureHandle mDepthTex;
 		RTextureHandle mStencilTex;

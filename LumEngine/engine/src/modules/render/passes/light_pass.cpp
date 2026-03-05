@@ -33,13 +33,13 @@ namespace lum::render {
 
 	}
 
-	void LightPass::BeginPass() {
+	void LightPass::ClearLights( ) {
 
 		clear_point_lights();
 		mContext.mRenderDevice->BindShader(mShader);
 
 	}
-	void LightPass::EndPass() {
+	void LightPass::UploadLights( ) {
 
 		upload_directional_light();
 		upload_point_lights();

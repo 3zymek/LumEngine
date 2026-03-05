@@ -10,7 +10,7 @@
 
 namespace lum::rhi {
 
-	struct RShaderDescriptor {
+	struct FShaderDescriptor {
 		String mVertexContent;
 		String mFragmentContent;
 	};

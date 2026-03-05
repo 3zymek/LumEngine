@@ -6,11 +6,7 @@
 //
 //=============================================================================//
 
-#include "core/core_pch.hpp"
-
-#include "rhi/rhi_pch.hpp"
 #include "rhi/backend/opengl/gl_device.hpp"
-#include "rhi/core/rhi_vertex_layout.hpp"
 #include "rhi/core/rhi_device.hpp"
 #include "rhi/rhi_common.hpp"
 
@@ -36,15 +32,15 @@ namespace lum::rhi::gl {
 		}
 
 #		if LUM_ENABLE_IMGUI == 1
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGui_ImplGlfw_InitForOpenGL(w, true);
-		ImGui_ImplOpenGL3_Init("#version 450");
+			IMGUI_CHECKVERSION();
+			ImGui::CreateContext();
+			ImGui_ImplGlfw_InitForOpenGL(w, true);
+			ImGui_ImplOpenGL3_Init("#version 450");
 #		endif
 #		if LUM_ENABLE_DEBUG_RENDER == 1
-		glEnable(GL_DEBUG_OUTPUT);
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		glDebugMessageCallback(rhi::detail::GLDebugCallback, nullptr);
+			glEnable(GL_DEBUG_OUTPUT);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			glDebugMessageCallback(rhi::detail::GLDebugCallback, nullptr);
 #		endif
 
 		mWindow = window;

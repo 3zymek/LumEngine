@@ -1,3 +1,9 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: G-Buffer management for deferred rendering.
+//          Handles creation, resizing and binding of geometry buffers.
+//
+//=============================================================================//
 #pragma once
 
 #include "render/common.hpp"
@@ -5,94 +11,56 @@
 
 namespace lum::render::detail {
 
+	/* @brief G-Buffer used in deferred rendering.
+	*  Manages albedo, normal and depth textures and the framebuffer
+	*  they are attached to. Automatically recreates on window resize.
+	*
+	*  @brief Albedo  (RGBA)  — rgb: albedo color, a: roughness
+	*  @brief Normal  (RGBA)  — rgb: world space normal, a: metallic
+	*  @brief Depth   (D32F)  — depth buffer for position reconstruction
+	*/
 	class GBuffer {
 	public:
 
+		/* @brief Initializes the G-Buffer with the given renderer context and dimensions.
+		*  Creates all textures, framebuffer and subscribes to window resize events.
+		*  @param ctx Renderer context providing access to RHI and event bus.
+		*  @param w Initial width in pixels.
+		*  @param h Initial height in pixels.
+		*/
+		void Initialize( const FRendererContext& ctx, uint32 w, uint32 h );
 
-		void Initialize(const FRendererContext& ctx, uint32 w, uint32 h) {
+		/* @brief Binds all G-Buffer textures to their respective sampler slots.
+		*  Call before the light pass draw call.
+		*/
+		void BindTextures( );
 
-			mContext = ctx;
+		/* @brief Binds the G-Buffer framebuffer as the active render target.
+		*  Call before the geometry pass draw calls.
+		*/
+		void BindBuffer( );
 
-			create_textures(w, h);
-
-			init();
-
-		}
-
-		void BeginPass() {
-
-			mContext.mRenderDevice->BindFramebuffer(mFramebuffer);
-			mContext.mRenderDevice->Clear(rhi::ClearFlag::Color | rhi::ClearFlag::Depth);
-
-		}
-
-		void EndPass() {
-
-			mContext.mRenderDevice->UnbindFramebuffer();
-
-		}
+		/* @brief Unbinds the G-Buffer framebuffer, restoring the default render target. */
+		void UnbindBuffer( );
 
 	private:
 
 		FRendererContext mContext;
 
-		rhi::RFramebufferHandle mFramebuffer;
+		rhi::RFramebufferHandle mFramebuffer; /* @brief Framebuffer with albedo and normal attachments. */
+		rhi::RTextureHandle mAlbedo;          /* @brief Albedo + roughness texture (SRGB8_Alpha8). */
+		rhi::RTextureHandle mNormal;          /* @brief World space normal + metallic texture (RGBA16F). */
+		rhi::RTextureHandle mDepth;           /* @brief Depth texture for position reconstruction (Depth32F). */
 
-		rhi::RTextureHandle mAlbedo;
-		rhi::RTextureHandle mNormal;
-		rhi::RTextureHandle mDepth;
+		/* @brief Creates or recreates all G-Buffer textures at the given dimensions. */
+		void create_textures( uint32 width, uint32 height );
 
-		void create_textures(uint32 mWidth, uint32 mHeight) {
+		/* @brief Creates or recreates the framebuffer with current texture handles. */
+		void create_framebuffer( );
 
-			mContext.mRenderDevice->DeleteTexture(mAlbedo);
-			mContext.mRenderDevice->DeleteTexture(mNormal);
-			mContext.mRenderDevice->DeleteTexture(mDepth);
-
-			rhi::FTextureDescriptor desc;
-			{
-				desc.mImageFormat = rhi::ImageFormat::RGBA;
-				desc.mImageLayout = rhi::ImageLayout::SRGB8_Alpha8;
-				desc.mWidth = mWidth;
-				desc.mHeight = mHeight;
-				desc.mTextureType = rhi::TextureType::Texture2D;
-				mAlbedo = mContext.mRenderDevice->CreateTexture(desc);
-			}
-			{
-				desc.mImageFormat = rhi::ImageFormat::RGB;
-				desc.mImageLayout = rhi::ImageLayout::RGB8;
-				desc.mWidth = mWidth;
-				desc.mHeight = mHeight;
-				desc.mTextureType = rhi::TextureType::Texture2D;
-				mNormal = mContext.mRenderDevice->CreateTexture(desc);
-			}
-			{
-				desc.mImageFormat = rhi::ImageFormat::DepthComponent;
-				desc.mImageLayout = rhi::ImageLayout::Depth32F;
-				desc.mWidth = mWidth;
-				desc.mHeight = mHeight;
-				desc.mTextureType = rhi::TextureType::Texture2D;
-				mDepth = mContext.mRenderDevice->CreateTexture(desc);
-			}
-
-		}
-
-		void init() {
-
-			mContext.mEventBus->SubscribePermanently<EWindowResized>([this](const EWindowResized& ev) {
-				this->create_textures(ev.mWidth, ev.mHeight);
-			});
-
-			{
-				rhi::RFramebufferDescriptor desc;
-				desc.mColorTex[LUM_GBUFFER_ALBEDO] = mAlbedo;
-				desc.mColorTex[LUM_GBUFFER_NORMAL] = mNormal;
-				desc.mNumColorTex = 2;
-				desc.mDepthTex = mDepth;
-				mFramebuffer = mContext.mRenderDevice->CreateFramebuffer(desc);
-			}
-
-		}
+		/* @brief Subscribes to window resize events to recreate textures and framebuffer. */
+		void init( );
 
 	};
 
-}
+} // namespace lum::render::detail

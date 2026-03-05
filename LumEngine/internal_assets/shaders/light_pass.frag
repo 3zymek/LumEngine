@@ -112,6 +112,7 @@ void main( ) {
 
 	vec3 V = normalize(uCameraPos.xyz - fPos);
 	vec3 N = normalize(normalMap);
+	
 	vec3 F0 = mix(vec3(0.04), albedo, metallic);
 
 	for(uint i = 0; i < aLightBuffer.uActiveLights; i++) {

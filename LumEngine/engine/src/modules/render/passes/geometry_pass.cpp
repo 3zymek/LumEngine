@@ -99,9 +99,9 @@ namespace lum::render {
 		mContext.mRenderDevice->BindShader(mShader);
 		mContext.mRenderDevice->BindTexture(mat.mAlbedoTex, LUM_TEX_ALBEDO);
 		mContext.mRenderDevice->BindTexture(mat.mNormalTex, LUM_TEX_NORMAL);
-		mContext.mRenderDevice->BindTexture(mat.mMetallicTex, LUM_TEX_METALNESS);
 		mContext.mRenderDevice->BindTexture(mat.mRoughnessTex, LUM_TEX_ROUGHNESS);
-
+		mContext.mRenderDevice->BindTexture(mat.mMetallicTex, LUM_TEX_METALNESS);
+		
 		mContext.mRenderDevice->DrawElements(res.mVao, res.mNumIndices);
 
 	}

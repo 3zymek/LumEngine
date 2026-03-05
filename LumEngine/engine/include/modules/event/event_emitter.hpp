@@ -1,5 +1,4 @@
 #pragma once
-#include "core/core_pch.hpp"
 #include "event/event_common.hpp"
 #include "event/event_bus.hpp"
 namespace lum {

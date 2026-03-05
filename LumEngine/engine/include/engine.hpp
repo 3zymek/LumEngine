@@ -1,5 +1,4 @@
 #pragma once
-#include "core/core_pch.hpp"
 #include "platform/input_common.hpp"
 #include "core/utils/logger.hpp"
 #include "platform/window.hpp"
@@ -14,6 +13,7 @@
 #include "render/render_system.hpp"
 #include "render/common.hpp"
 #include "imgui.h"
+#include "event/event_bus.hpp"
 
 #include "scene/scene_manager.hpp"
 

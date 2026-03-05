@@ -8,7 +8,7 @@
 
 namespace lum::rhi::gl {
 
-	RShaderHandle GLDevice::CreateShader( const RShaderDescriptor& desc ) {
+	RShaderHandle GLDevice::CreateShader( const FShaderDescriptor& desc ) {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mShaders.DenseSize() < skMaxShaders,

@@ -43,11 +43,13 @@ namespace lum::render {
 			};
 		}
 
+		void BindShader( ) { mContext.mRenderDevice->BindShader(mShader); }
+
 		/* @brief Begins the geometry pass — binds pipeline and prepares state. */
-		void BeginPass( );
+		void ClearLights( );
 
 		/* @brief Ends the geometry pass. */
-		void EndPass( );
+		void UploadLights( );
 
 	private:
 

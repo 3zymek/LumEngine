@@ -104,6 +104,8 @@ namespace lum {
 		case FallbackTexture::Missing: return mMissingTexture;
 		case FallbackTexture::DefaultAlbedo: return mDefaultAlbedoTexture;
 		case FallbackTexture::DefaultNormal: return mDefaultNormalTexture;
+		case FallbackTexture::DefaultRoughness: return mDefaultRoughnessTexture;
+		case FallbackTexture::DefaultMetallic: return mDefaultMetallicTexture;
 		default: return mDefaultAlbedoTexture;
 		}
 	}
@@ -144,10 +146,36 @@ namespace lum {
 			data.mChannels = 3;
 			rhi::FTextureDescriptor desc;
 			desc.mData = data;
-			desc.mImageLayout = rhi::ImageLayout::RGB8;
-			desc.mImageFormat = rhi::ImageFormat::RGB;
+			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
+			desc.mImageFormat = rhi::ImageFormat::RGBA;
 			desc.mTextureType = rhi::TextureType::Texture2D;
 			mDefaultNormalTexture = mRenderDevice->CreateTexture(desc);
+		}
+		{ // Default roughness texture
+			FTextureData data;
+			data.mPixels = { 128 };
+			data.mWidth = 1;
+			data.mHeight = 1;
+			data.mChannels = 1;
+			rhi::FTextureDescriptor desc;
+			desc.mData = data;
+			desc.mImageLayout = rhi::ImageLayout::R8;
+			desc.mImageFormat = rhi::ImageFormat::R;
+			desc.mTextureType = rhi::TextureType::Texture2D;
+			mDefaultRoughnessTexture = mRenderDevice->CreateTexture(desc);
+		}
+		{ // Default metallic texture
+			FTextureData data;
+			data.mPixels = { 255 };
+			data.mWidth = 1;
+			data.mHeight = 1;
+			data.mChannels = 1;
+			rhi::FTextureDescriptor desc;
+			desc.mData = data;
+			desc.mImageLayout = rhi::ImageLayout::R8;
+			desc.mImageFormat = rhi::ImageFormat::R;
+			desc.mTextureType = rhi::TextureType::Texture2D;
+			mDefaultMetallicTexture = mRenderDevice->CreateTexture(desc);
 		}
 		{ // Missing texture
 			std::optional<FTextureData> data = AssetLoader::LoadTexture(RootID::Internal, "textures/missingTex.png");

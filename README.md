@@ -21,20 +21,20 @@ This is my personal project where I'm learning game engine architecture by build
 
 ## Currently Implemented
 
-- OpenGL backend with state caching
+- OpenGL RHI with state caching
 - Basic rendering pipeline
-- Entity Component System (in progress)
+- Entity Component System
 - Event system
-- Audio system (basic)
+- .lmt and .lsc formats passer
 - Logging and profiling utilities
 
-## Work in Progress
+## Contributing
+I'm looking for contributors! If you're interested in game engine development and want to learn together, feel free to reach out.
 
-- Fundamental renderer
-- Clean code
-- Scene loading and management
-- PBR
-- Own engine format
+**Discord:** `br.eeze` <br>
+**Email:** `szymonpyrtek@gmail.com`
+
+Any help is welcome — bug fixes, new features, or just feedback on the code.
 
 ## Project Structure
 ````
@@ -53,18 +53,13 @@ LumEngine/
 │   └── scene/          # Scene management
 ````
 
-# My Time spent on developing
-![time](https://wakatime.com/share/@3zymek/7a14911b-2a12-44ae-984a-4b45b47d27a9.svg)
-
 ### Prefixes
 ````bash
 M (Manager)     - Class that manages data flow and object lifetime
-S (System)      - Class that processes data each frame, no ownership
 C (Component)   - Component in ECS
-R (Render)      - Render Hardware Interface handles and types
+R (Render)      - Render Hardware Interface handles
 F (Plain Data)  - Stores only data
-E (Enum)        - Enum or enum class
-I (Interface)   - Abstract class
+E (Event)       - Event derived class
 
 m (member)  - Variable is a member of a class
 s (static)  - Variable is static
@@ -96,12 +91,7 @@ This is a learning project, so expect:
 - Missing error handling in some areas
 - Documentation gaps
 
-## Current Quests
-
-1. Finishing ECS implementation
-2. Improving asset loading system
-3. Adding basic material system
-4. Learning and implementing PBR rendering
+## Quality
 
 The code quality varies as I learn. Older parts might not follow current best practices. I'm refactoring as I go and learning better approaches along the way.
 

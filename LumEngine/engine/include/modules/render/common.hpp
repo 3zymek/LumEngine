@@ -5,23 +5,27 @@
 //
 //=============================================================================//
 #pragma once
+
+#include "rhi/rhi_common.hpp"
+
 #include "core/core_common.hpp"
-#include "rhi/core/rhi_device.hpp"
-#include "core/shaders_define.h"
-#include "render/mesh_manager.hpp"
+
 #include "render/material.hpp"
+
 #include "entity/components/transform.hpp"
 #include "entity/components/mesh.hpp"
 #include "entity/components/material.hpp"
 #include "entity/components/light.hpp"
-#include "event/event_bus.hpp"
 
 namespace lum {
+
+	namespace ev { class EventBus; }
+
 	/// Forward declare ///
 	class MTextureManager;
 	class MMaterialManager;
 	class MShaderManager;
-	class EditorCamera;
+	class MMeshManager;
 	///////////////////////
 }
 
@@ -47,6 +51,7 @@ namespace lum::render {
 		/* @brief Pointer to the active shader manager. */
 		MShaderManager* mShaderMgr = nullptr;
 
+		/* @brief Pointer to the active event bus. */
 		ev::EventBus* mEventBus = nullptr;
 
 	};

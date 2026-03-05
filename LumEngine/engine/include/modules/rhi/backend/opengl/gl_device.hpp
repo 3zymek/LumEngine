@@ -6,19 +6,14 @@
 #pragma once
 
 #include "rhi/core/rhi_device.hpp"
-#include "rhi/core/rhi_buffer.hpp"
-#include "rhi/rhi_pch.hpp"
-
 #include "core/core_defines.hpp"
-#include "core/utils/asset_loader.hpp"
-#include "core/utils/sparse_set.hpp"
 
 namespace lum::rhi::gl {
 
 	class GLDevice : public RDevice {
 	public:
 
-		void Initialize(Window* window) override;
+		void Initialize( Window* window ) override;
 
 		//=================================================
 		// Buffers
@@ -39,7 +34,7 @@ namespace lum::rhi::gl {
 		// Framebuffers
 		//=================================================
 
-		RFramebufferHandle	CreateFramebuffer(const RFramebufferDescriptor&)			override;
+		RFramebufferHandle	CreateFramebuffer(const FFramebufferDescriptor&)			override;
 		void				ClearFramebuffer(RFramebufferHandle, ChannelRGBA, float32)	override;
 		void				DeleteFramebuffer(RFramebufferHandle&)						override;
 		void				BindFramebuffer(const RFramebufferHandle&)				override;
@@ -60,9 +55,9 @@ namespace lum::rhi::gl {
 		// Shaders
 		//=================================================
 
-		RShaderHandle	CreateShader(const RShaderDescriptor&)							override;
+		RShaderHandle	CreateShader(const FShaderDescriptor&)							override;
 		void			BindShader(const RShaderHandle&)								override;
-		void			DeleteShader(RShaderHandle&)										override;
+		void			DeleteShader(RShaderHandle&)									override;
 
 
 
@@ -210,7 +205,7 @@ namespace lum::rhi::gl {
 		void DrawElementsInstanced(const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount) override;
 		void DrawElementsInstancedBase(const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance) override;
 
-		void NewFrame()	override;
+		void NewFrame()			override;
 		void SwapBuffers()		override;
 
 

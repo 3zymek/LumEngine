@@ -8,10 +8,6 @@
 /* @brief Pi constant for use in lighting calculations. */
 #define LUM_PI 3.14159265359
 
-#define LUM_GBUFFER_ALBEDO	0
-#define LUM_GBUFFER_NORMAL	1
-#define LUM_GBUFFER_DEPTH	2
-
 // Vertex attribute locations
 #define LUM_LAYOUT_POSITION  0 // Vertex position attribute location.
 #define LUM_LAYOUT_NORMAL    1 // Vertex normal attribute location.
@@ -19,31 +15,29 @@
 #define LUM_LAYOUT_TANGENT   3 // Vertex tangent attribute location.
 #define LUM_LAYOUT_BITANGENT 4 // Vertex bitangent attribute location.
 
-// Uniform buffer bindings
-#define LUM_UBO_CAMERA_BINDING     1 // Camera matrices and position.
-#define LUM_UBO_MODEL_BINDING      2 // Model matrix.
-#define LUM_UBO_MATERIAL_BINDING   3 // Material parameters.
-#define LUM_UBO_DIRECTIONAL_LIGHT  6 // Directional light data.
-
-// Shader storage buffer bindings
-#define LUM_SSBO_LIGHTS_BINDING 4 // Point light array.
-
-/* @brief Maximum number of point lights active in a single frame. */
-#define LUM_MAX_LIGHTS 64
-
-// Sampler binding slots
-#define LUM_SAMPLER_ALBEDO    0 // Albedo texture sampler.
-#define LUM_SAMPLER_NORMAL    1 // Normal map sampler.
-#define LUM_SAMPLER_ROUGHNESS 2 // Roughness map sampler.
-#define LUM_SAMPLER_METALNESS 3 // Metalness map sampler.
-#define LUM_SAMPLER_CUBEMAP   8 // Cubemap sampler.
-
-// Texture binding slots
+// Texture binding slots - geometry pass
 #define LUM_TEX_ALBEDO    0 // Albedo texture binding.
 #define LUM_TEX_NORMAL    1 // Normal map binding.
 #define LUM_TEX_ROUGHNESS 2 // Roughness map binding.
 #define LUM_TEX_METALNESS 3 // Metalness map binding.
-#define LUM_TEX_CUBEMAP   8 // Cubemap texture binding.
+#define LUM_TEX_CUBEMAP   4 // Cubemap texture binding.
+
+// GBuffer sampler bindings - light pass
+#define LUM_GBUFFER_ALBEDO  0 // Albedo GBuffer sampler binding.
+#define LUM_GBUFFER_NORMAL  1 // Normal GBuffer sampler binding.
+#define LUM_GBUFFER_DEPTH   2 // Depth GBuffer sampler binding.
+
+// Uniform buffer bindings
+#define LUM_UBO_CAMERA_BINDING     0 // Camera matrices and position.
+#define LUM_UBO_MODEL_BINDING      1 // Model matrix.
+#define LUM_UBO_MATERIAL_BINDING   2 // Material parameters.
+#define LUM_UBO_DIRECTIONAL_LIGHT  3 // Directional light data.
+
+// Shader storage buffer bindings
+#define LUM_SSBO_LIGHTS_BINDING 0 // Point light array.
+
+/* @brief Maximum number of point lights active in a single frame. */
+#define LUM_MAX_LIGHTS 64
 
 // Cubemap face indices
 #define LUM_CUBEMAP_POSITIVE_X 0 // +X face.

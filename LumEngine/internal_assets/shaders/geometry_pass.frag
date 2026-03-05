@@ -35,13 +35,15 @@ void main( ) {
 
 	float roughness = texture(tRoughness, fUV).r * uMatRoughness;
 	float metallic = texture(tMetalness, fUV).r * uMatMetallic;
+	//if(metallic == 0)
+		//metallic = uMatMetallic;
 
 	vec3 normal = texture(tNormal, fUV).rgb;
 
 	normal = normalize(normal * 2.0 - 1.0);
-	normal = normalize(normal * fTBN);
+	normal = normalize(fTBN * normal);
 
 	gAlbedo = vec4(albedo, roughness);
 	gNormal = vec4(normal, metallic);
-
+	//gNormal = vec4(normal, 1.0);
 }

@@ -5,9 +5,8 @@
 //=============================================================================//
 #pragma once
 
-#include "core/core_pch.hpp"
+#include "core/core_common.hpp"
 #include "core/core_defines.hpp"
-#include "core/types.hpp"
 #include "core/limits.hpp"
 
 namespace lum {
@@ -27,22 +26,30 @@ namespace lum {
 
 	/* @brief Raw texture data loaded from disk. */
 	struct FTextureData {
+
 		/* @brief Texture width in pixels. */
 		int32 mWidth = 0;
+
 		/* @brief Texture height in pixels. */
 		int32 mHeight = 0;
+
 		/* @brief Number of color channels (e.g. 3 = RGB, 4 = RGBA). */
 		int32 mChannels = 0;
+
 		/* @brief Raw pixel data. */
 		std::vector<uint8> mPixels;
+
 	};
 
 	/* @brief Raw mesh data loaded from disk. */
 	struct FMeshData {
+
 		/* @brief List of vertices. */
 		std::vector<FVertex> mVertices;
+
 		/* @brief List of indices. */
 		std::vector<uint32> mIndices;
+
 	};
 
 

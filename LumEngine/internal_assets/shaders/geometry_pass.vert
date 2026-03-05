@@ -30,7 +30,7 @@ void main( ) {
 		uCameraView *
 		uModelMatrix *
 		vec4(aPos, 1.0);
-
+	
 	mat3 normalMatrix = transpose(inverse(mat3(uModelMatrix)));
 	fUV = aUV;
 	fPos = (uModelMatrix * vec4(aPos, 1.0)).xyz;

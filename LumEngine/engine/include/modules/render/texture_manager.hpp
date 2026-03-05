@@ -31,6 +31,8 @@ namespace lum {
 		Missing,       // Checkered texture indicating missing asset
 		DefaultAlbedo, // 1x1 white (255, 255, 255) neutral fallback for albedo and non-color maps
 		DefaultNormal, // 1x1 flat normal (128, 128, 255) fallback when no normal map is provided
+		DefaultRoughness,
+		DefaultMetallic
 	};
 
 	/* @brief Descriptor for loading a cubemap from 6 individual face textures. */
@@ -107,6 +109,9 @@ namespace lum {
 
 		/* @brief Default 1x1 (128, 128, 255) texture representing a flat normal, used when no normal map is provided. */
 		rhi::RTextureHandle mDefaultNormalTexture;
+
+		rhi::RTextureHandle mDefaultRoughnessTexture;
+		rhi::RTextureHandle mDefaultMetallicTexture;
 
 		/* @brief Cache mapping texture path hashes to their GPU handles. */
 		std::unordered_map<uint64, rhi::RTextureHandle> mTextures;

@@ -24,12 +24,15 @@
 #include "rhi/core/rhi_framebuffer.hpp"
 #include "rhi/core/rhi_pipeline.hpp"
 
+
 #if LUM_ENABLE_RENDER_PROFILER == 1
 #	include "rhi/rhi_profiler.hpp"
 #endif
 
 namespace lum { class Window; }
 namespace lum::rhi {
+
+
 
 	/* @brief Backend-agnostic GPU interface for resource creation and rendering.
 	*
@@ -123,7 +126,7 @@ namespace lum::rhi {
 		* @return Handle to the created framebuffer.
 		*/
 		LUM_NODISCARD
-		virtual RFramebufferHandle CreateFramebuffer( const RFramebufferDescriptor& desc ) = 0;
+		virtual RFramebufferHandle CreateFramebuffer( const FFramebufferDescriptor& desc ) = 0;
 
 		/* @brief Clears color and depth buffers of the given framebuffer.
 		* @param fbo   Handle of the framebuffer to clear.
@@ -175,7 +178,7 @@ namespace lum::rhi {
 		* @return Handle to the created shader.
 		*/
 		LUM_NODISCARD
-		virtual RShaderHandle CreateShader( const RShaderDescriptor& desc ) = 0;
+		virtual RShaderHandle CreateShader( const FShaderDescriptor& desc ) = 0;
 
 		/* @brief Binds a shader for use in subsequent draw or dispatch calls.
 		* @param shader Handle of the shader to bind.
