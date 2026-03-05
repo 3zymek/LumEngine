@@ -33,12 +33,21 @@ namespace lum::render {
 
 	}
 
-	void LightPass::ClearLights( ) {
-
-		clear_point_lights();
-		mContext.mRenderDevice->BindShader(mShader);
+	void LightPass::SetDirectionalLight( const FDirectionalLight& light ) {
+		mDirectionalLightStruct.mColor = glm::vec4(light.mColor, 0.0);
+		mDirectionalLightStruct.mDirection = glm::vec4(light.mDirection, 0.0);
+		mDirectionalLightStruct.mIntensity = light.mIntensity;
 
 	}
+
+	FDirectionalLight LightPass::GetDirectionalLight( ) {
+		return {
+			glm::vec3(mDirectionalLightStruct.mDirection),
+			mDirectionalLightStruct.mIntensity,
+			glm::vec3(mDirectionalLightStruct.mColor)
+		};
+	}
+
 	void LightPass::UploadLights( ) {
 
 		upload_directional_light();

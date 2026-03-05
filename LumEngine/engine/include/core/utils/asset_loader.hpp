@@ -70,17 +70,11 @@ namespace lum {
 		/* @brief Sets the project root directory for external asset resolution.
 		* @param path Absolute path to the project root.
 		*/
-		LUM_FORCEINLINE
-		static void SetProjectRoot( Path path ) {
-			sProjectRoot = path;
-			LUM_LOG_INFO("Project root path has been set to %s", path.string().c_str());
-		}
+		static void SetProjectRoot( Path path );
 
 		/* @brief Returns the current project root path as a string. */
 		LUM_NODISCARD
-		static String GetProjectRoot( ) {
-			return sProjectRoot.string();
-		}
+		static String GetProjectRoot( );
 		
 		/* @brief Loads a texture from disk.
 		* @param root           Root directory identifier.

@@ -38,10 +38,12 @@ namespace lum::render::detail {
 		/* @brief Binds the G-Buffer framebuffer as the active render target.
 		*  Call before the geometry pass draw calls.
 		*/
-		void BindBuffer( );
+		LUM_FORCEINLINE 
+		void BindBuffer( ) { mContext.mRenderDevice->BindFramebuffer(mFramebuffer); }
 
 		/* @brief Unbinds the G-Buffer framebuffer, restoring the default render target. */
-		void UnbindBuffer( );
+		LUM_FORCEINLINE
+		void UnbindBuffer( ) { mContext.mRenderDevice->UnbindFramebuffer(); }
 
 	private:
 

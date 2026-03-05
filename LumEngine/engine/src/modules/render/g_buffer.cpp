@@ -3,6 +3,10 @@
 
 namespace lum::render::detail {
 
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
+
 	void GBuffer::Initialize( const FRendererContext& ctx, uint32 w, uint32 h ) {
 
 		mContext = ctx;
@@ -22,21 +26,12 @@ namespace lum::render::detail {
 
 	}
 
-	void GBuffer::BindBuffer( ) {
-
-		mContext.mRenderDevice->BindFramebuffer(mFramebuffer);
-
-	}
-
-	void GBuffer::UnbindBuffer() {
-
-		mContext.mRenderDevice->UnbindFramebuffer();
-
-	}
 
 
 
-
+	//---------------------------------------------------------
+	// Private
+	//---------------------------------------------------------
 
 	void GBuffer::create_textures(uint32 mWidth, uint32 mHeight) {
 

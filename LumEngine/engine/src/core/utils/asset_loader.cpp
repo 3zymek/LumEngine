@@ -5,6 +5,10 @@
 //=============================================================================//
 #pragma once
 
+#include "core/utils/asset_loader.hpp"
+#include "core/utils/lum_assert.hpp"
+#include "rhi/rhi_common.hpp"
+
 //====== Backend ======
 #include <stb_image.h>			// Loading textures
 #include <assimp/Importer.hpp>	// Loading Models
@@ -12,16 +16,20 @@
 #include <assimp/postprocess.h> // Loading Models
 //=====================
 
-#include "core/utils/asset_loader.hpp"
-#include "core/utils/lum_assert.hpp"
-#include "rhi/rhi_common.hpp"
-
-
 namespace lum {
 
 	//---------------------------------------------------------
 	// Public
 	//---------------------------------------------------------
+
+	void AssetLoader::SetProjectRoot( AssetLoader::Path path ) {
+		sProjectRoot = path;
+		LUM_LOG_INFO("Project root path has been set to %s", path.string().c_str());
+	}
+
+	String AssetLoader::GetProjectRoot( ) {
+		return sProjectRoot.string();
+	}
 
 	std::optional<FTextureData> AssetLoader::LoadTexture( RootID root, StringView filepath, uint8 expectedFormat) {
 
@@ -53,7 +61,6 @@ namespace lum {
 
 		return texture;
 	}
-
 
 	std::optional<FMeshData> AssetLoader::LoadMesh( RootID root, StringView filepath ) {
 
