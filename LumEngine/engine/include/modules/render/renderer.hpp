@@ -53,6 +53,7 @@ namespace lum::render {
 
 		/* @brief Returns the currently active directional light. */
 		FDirectionalLight GetDirectionalLight( ) { return mLightPass.GetDirectionalLight(); }
+
 		/* @brief Submits a render instance for drawing in the current frame.
 		*  @param obj Render instance containing transform, mesh and material.
 		*/

@@ -40,9 +40,13 @@ namespace lum::render {
 
 	}
 
-	void Renderer::BeginFrame() {
+	void Renderer::BeginFrame( ) {
 
-		mContext.mRenderDevice->Clear(rhi::ClearFlag::Color | rhi::ClearFlag::Depth | rhi::ClearFlag::Stencil);
+		mContext.mRenderDevice->Clear(
+			rhi::ClearFlag::Color |
+			rhi::ClearFlag::Depth |
+			rhi::ClearFlag::Stencil
+		);
 
 		mContext.mRenderDevice->NewFrame();
 
@@ -51,13 +55,15 @@ namespace lum::render {
 		mGBuffer.EndPass();
 
 		mLightPass.BeginPass();
-		mEnvironmentPass.BeginPass();
 
 	}
 
-	void Renderer::EndFrame() {
+	void Renderer::EndFrame( ) {
 
 		mLightPass.EndPass();
+
+		mEnvironmentPass.BeginPass();
+		mEnvironmentPass.EndPass();
 
 		mContext.mRenderDevice->SwapBuffers();
 

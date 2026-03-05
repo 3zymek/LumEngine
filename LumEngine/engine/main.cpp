@@ -7,7 +7,7 @@ int main() {
     
     Engine e;
 
-    e.Initialize("C:/Users/szymek/Desktop/lumen_assets");
+    e.Initialize("C:/Users/Asso3/Desktop/lumen_assets");
 
     e.SetScene("scene.lsc");
     
