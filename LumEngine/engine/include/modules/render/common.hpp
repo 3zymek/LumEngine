@@ -70,6 +70,8 @@ namespace lum::render {
 		/* @brief Linear RGB color of the light. */
 		glm::vec3 mColor = { 1.0f, 1.0f, 1.0f };
 
+		glm::mat4 mLightSpaceMatrix = glm::mat4(1.0f);
+
 	};
 
 
@@ -143,6 +145,12 @@ namespace lum::render {
 
 			/* @brief Number of indices in the skybox index buffer. */
 			uint32 mNumIndices = 0;
+
+		};
+
+		LUM_UNIFORM_BUFFER_STRUCT FLightSpaceMatrices {
+
+			glm::mat4 mDirectionalLightSpaceMatrix = glm::mat4(1.0f);
 
 		};
 

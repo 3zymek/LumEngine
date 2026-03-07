@@ -63,7 +63,9 @@ namespace lum::render {
 		uint32 mActivePoints = 0;
 
 		/* @brief GPU-ready uniform buffer representation of the active directional light. */
-		detail::FDirectionalLightUniformBuffer mDirectionalLightStruct{};
+		detail::FDirectionalLightUniformBuffer mDirectionalLightData{};
+
+		detail::FLightSpaceMatrices mLightSpaceMatrices;
 
 		/* @brief Shader storage buffer holding all active point lights. */
 		rhi::RBufferHandle mPointLightsBuffer;
@@ -83,7 +85,7 @@ namespace lum::render {
 		/* @brief Uploads the light-space transformation matrix used for shadow mapping.
 		*  @param mat Light-space matrix to upload.
 		*/
-		void upload_lightspace_matrix( const glm::mat4& mat );
+		void upload_lightspace_matrices( const detail::FLightSpaceMatrices& matrices );
 
 		/* @brief Uploads all active point lights to the GPU shader storage buffer. */
 		void upload_point_lights( );

@@ -27,11 +27,14 @@
 #define LUM_GBUFFER_NORMAL  1 // Normal GBuffer sampler binding.
 #define LUM_GBUFFER_DEPTH   2 // Depth GBuffer sampler binding.
 
+#define LUM_SHADOW_MAP 6
+
 // Uniform buffer bindings
 #define LUM_UBO_CAMERA_BINDING     0 // Camera matrices and position.
 #define LUM_UBO_MODEL_BINDING      1 // Model matrix.
 #define LUM_UBO_MATERIAL_BINDING   2 // Material parameters.
 #define LUM_UBO_DIRECTIONAL_LIGHT  3 // Directional light data.
+#define LUM_UBO_LIGHTSPACE_MATRIX  10
 
 // Shader storage buffer bindings
 #define LUM_SSBO_LIGHTS_BINDING 0 // Point light array.

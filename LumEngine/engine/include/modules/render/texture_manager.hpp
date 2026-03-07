@@ -53,7 +53,7 @@ namespace lum {
 	class MTextureManager {
 	public:
 		
-		MTextureManager( ) {}
+		MTextureManager( ) = default;
 
 		/* @brief Initializes the texture manager with a render device.
 		* Automatically creates default and missing fallback textures.

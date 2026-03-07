@@ -135,10 +135,6 @@ namespace lum {
 
 				ImGui::Begin("Scene");
 
-				if (ImGui::Button("Reload scene"))
-					SetScene("scene.lsc");
-				
-				ImGui::Separator();
 				ImGui::Text("Directional Light");
 
 				render::FDirectionalLight light = mRender.mRenderer.GetDirectionalLight();

@@ -31,6 +31,12 @@ namespace lum::render {
 		/* @brief Begins the geometry pass — binds pipeline and prepares state. */
 		void Execute( );
 
+		void ExecuteShadows();
+
+		void Clear( );
+
+		void BindShader( );
+
 	private:
 
 		std::vector<FRenderInstance> mInstances;
@@ -60,6 +66,7 @@ namespace lum::render {
 		void init( );
 
 		void draw_instance(const FRenderInstance& instance);
+		void draw_instance_shadow(const FRenderInstance& instance);
 
 		/* @brief Computes and uploads the model matrix for the given instance.
 		*  @param instance Render instance to compute the model matrix from.

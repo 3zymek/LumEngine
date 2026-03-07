@@ -17,7 +17,7 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void LightPass::Initialize(const FRendererContext& ctx) {
+	void LightPass::Initialize( const FRendererContext& ctx ) {
 
 		mContext = ctx;
 
@@ -34,17 +34,18 @@ namespace lum::render {
 	}
 
 	void LightPass::SetDirectionalLight( const FDirectionalLight& light ) {
-		mDirectionalLightStruct.mColor = glm::vec4(light.mColor, 0.0);
-		mDirectionalLightStruct.mDirection = glm::vec4(light.mDirection, 0.0);
-		mDirectionalLightStruct.mIntensity = light.mIntensity;
+
+		mDirectionalLightData.mColor = glm::vec4(light.mColor, 0.0);
+		mDirectionalLightData.mDirection = glm::vec4(light.mDirection, 0.0);
+		mDirectionalLightData.mIntensity = light.mIntensity;
 
 	}
 
 	FDirectionalLight LightPass::GetDirectionalLight( ) {
 		return {
-			glm::vec3(mDirectionalLightStruct.mDirection),
-			mDirectionalLightStruct.mIntensity,
-			glm::vec3(mDirectionalLightStruct.mColor)
+			glm::vec3(mDirectionalLightData.mDirection),
+			mDirectionalLightData.mIntensity,
+			glm::vec3(mDirectionalLightData.mColor)
 		};
 	}
 
@@ -63,7 +64,7 @@ namespace lum::render {
 	// Private
 	//---------------------------------------------------------
 
-	void LightPass::init() {
+	void LightPass::init( ) {
 
 		rhi::FBufferDescriptor desc;
 		desc.mBufferUsage = rhi::BufferUsage::Dynamic;
@@ -76,7 +77,7 @@ namespace lum::render {
 			mContext.mRenderDevice->SetShaderStorageBinding(mPointLightsBuffer, LUM_SSBO_LIGHTS_BINDING);
 		}
 		{ // Directional Light UBO
-			desc.mSize = sizeof(mDirectionalLightStruct);
+			desc.mSize = sizeof(mDirectionalLightData);
 			desc.mBufferType = rhi::BufferType::Uniform;
 			mDirectionalLightBuffer = mContext.mRenderDevice->CreateBuffer(desc);
 			mContext.mRenderDevice->SetUniformBufferBinding(mDirectionalLightBuffer, LUM_UBO_DIRECTIONAL_LIGHT);
@@ -85,10 +86,13 @@ namespace lum::render {
 		mShader = mContext.mShaderMgr->LoadShader("shaders/light_pass.vert", "shaders/light_pass.frag", RootID::Internal);
 
 	}
-	void LightPass::upload_lightspace_matrix(const glm::mat4& mat) {
+	void LightPass::upload_lightspace_matrices( const detail::FLightSpaceMatrices& matrices ) {
+
+
+
 
 	}
-	void LightPass::upload_point_lights() {
+	void LightPass::upload_point_lights( ) {
 
 		mContext.mRenderDevice->UpdateBuffer(
 			mPointLightsBuffer,
@@ -108,7 +112,7 @@ namespace lum::render {
 		
 		mContext.mRenderDevice->UpdateBuffer(
 			mDirectionalLightBuffer,
-			&mDirectionalLightStruct
+			&mDirectionalLightData
 		);
 	
 	}

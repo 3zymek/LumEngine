@@ -45,11 +45,28 @@ namespace lum::render {
 
 	void GeometryPass::Execute( ) {
 		
+		mContext.mRenderDevice->BindPipeline(mPipeline);
 		for (auto& instance : mInstances)
 			draw_instance(instance);
 
+	}
+
+	void GeometryPass::ExecuteShadows() {
+
+		for (auto& instance : mInstances)
+			draw_instance(instance);
+
+
+	}
+
+	void GeometryPass::Clear() {
+
 		mInstances.clear();
 
+	}
+
+	void GeometryPass::BindShader() {
+		mContext.mRenderDevice->BindShader(mShader);
 	}
 
 
@@ -89,7 +106,7 @@ namespace lum::render {
 		
 	}
 
-	void GeometryPass::draw_instance(const FRenderInstance& instance) {
+	void GeometryPass::draw_instance( const FRenderInstance& instance ) {
 		
 		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic(instance.mStaticMesh->mMesh);
 		const auto& mat = instance.mMaterial->mMat;
@@ -97,13 +114,20 @@ namespace lum::render {
 		upload_model_matrix(instance);
 		upload_material(mat);
 
-		mContext.mRenderDevice->BindPipeline(mPipeline);
-		mContext.mRenderDevice->BindShader(mShader);
 		mContext.mRenderDevice->BindTexture(mat.mAlbedoTex, LUM_TEX_ALBEDO);
 		mContext.mRenderDevice->BindTexture(mat.mNormalTex, LUM_TEX_NORMAL);
 		mContext.mRenderDevice->BindTexture(mat.mRoughnessTex, LUM_TEX_ROUGHNESS);
 		mContext.mRenderDevice->BindTexture(mat.mMetallicTex, LUM_TEX_METALNESS);
 		
+		mContext.mRenderDevice->DrawElements(res.mVao, res.mNumIndices);
+
+	}
+
+	void GeometryPass::draw_instance_shadow( const FRenderInstance& instance ) {
+
+		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic(instance.mStaticMesh->mMesh);
+
+		upload_model_matrix(instance);
 		mContext.mRenderDevice->DrawElements(res.mVao, res.mNumIndices);
 
 	}

@@ -2,6 +2,7 @@
 layout( binding = LUM_GBUFFER_ALBEDO    ) uniform sampler2D gAlbedo;
 layout( binding = LUM_GBUFFER_NORMAL    ) uniform sampler2D gNormal;
 layout( binding = LUM_GBUFFER_DEPTH     ) uniform sampler2D gDepth;
+layout( binding = LUM_SHADOW_MAP		) uniform sampler2D tShadowMap;
 
 struct PointLight {
 
@@ -35,6 +36,12 @@ layout( std140, binding = LUM_UBO_DIRECTIONAL_LIGHT ) uniform DirectionalLight {
 	float mDirIntensity;
 
 };
+layout(std140, binding = LUM_UBO_LIGHTSPACE_MATRIX) uniform LightSpaceMatrix {
+
+    mat4 lightSpaceMatrix;
+
+};
+
 
 vec3 FresnelSchlick( float cosTheta, vec3 F0 ) {
 	return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
@@ -137,8 +144,18 @@ void main( ) {
 		Lo += (diffuse + specular) * NdotL * light.mColor * light.mIntensity * attenuation;
 
 	}
-	
+
+	// Directional light
+
 	vec3 L = normalize(-mDirDirection.xyz);
+	vec4 lightSpaceFrag = lightSpaceMatrix * vec4(fPos, 1.0);
+	lightSpaceFrag /= lightSpaceFrag.w;
+	lightSpaceFrag = lightSpaceFrag * 0.5 + 0.5;
+	float closestDepth = texture(tShadowMap, lightSpaceFrag.xy).r;
+	float bias = max(0.5 * (1.0 - dot(N, L)), 0.005);
+	float shadow = step(closestDepth + bias, lightSpaceFrag.z);
+	shadow = mix(0.0, 0.7, shadow);
+
 	vec3 H = normalize(V + L);
 	float NdotL = max(dot(N, L), 0.0);
 
@@ -150,7 +167,8 @@ void main( ) {
 	vec3 specular = CookTorrance(N, V, L, roughness, F0);
 	vec3 diffuse = (albedo / LUM_PI) * kD;
 
-	Lo += (diffuse + specular) * NdotL * mDirColor.rgb * mDirIntensity;
+	Lo += (1.0 - shadow) * (diffuse + specular) * NdotL * mDirColor.rgb * mDirIntensity;
+	//================================================================
 
 	vec3 ambient = vec3(0.03) * albedo;
     Lo = Lo + ambient;

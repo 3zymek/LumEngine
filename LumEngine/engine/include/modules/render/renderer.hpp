@@ -14,6 +14,7 @@
 #include "render/passes/geometry_pass.hpp"
 #include "render/passes/light_pass.hpp"
 #include "render/passes/environment_pass.hpp"
+#include "render/passes/shadow_pass.hpp"
 #include "render/g_buffer.hpp"
 
 namespace lum::render {
@@ -87,6 +88,8 @@ namespace lum::render {
 
 		/* @brief Environment pass — renders the skybox cubemap. */
 		EnvironmentPass mEnvironmentPass;
+
+		ShadowPass mShadowPass;
 
 
 

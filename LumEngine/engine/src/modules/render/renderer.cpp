@@ -27,6 +27,7 @@ namespace lum::render {
 		mGeometryPass.		Initialize(mContext);
 		mLightPass.			Initialize(mContext);
 		mEnvironmentPass.	Initialize(mContext);
+		mShadowPass.		Initialize(mContext);
 		mGBuffer.			Initialize(mContext, 500, 500);
 
 		init();
@@ -61,6 +62,24 @@ namespace lum::render {
 
 		mLightPass.UploadLights();
 
+
+		auto viewport = mContext.mRenderDevice->GetViewport();
+		// Shadow pass ============================
+		mShadowPass.CalculateLightSpaceMatrix(mLightPass.GetDirectionalLight().mDirection);
+		mShadowPass.BindFramebuffer();
+		mContext.mRenderDevice->SetViewport(0, 0, 2024, 2024);
+		mContext.mRenderDevice->ClearDepth();
+		mShadowPass.BindShader();
+
+		mGeometryPass.ExecuteShadows();
+
+		mShadowPass.UnbindFramebuffer();
+		mContext.mRenderDevice->SetViewport(viewport.x, viewport.y, viewport.mWidth, viewport.mHeight);
+		//============================
+
+
+
+		// Geometry pass ============================
 		mGBuffer.BindBuffer();
 
 		mContext.mRenderDevice->Clear(
@@ -69,12 +88,20 @@ namespace lum::render {
 			rhi::ClearFlag::Stencil
 		);
 
+		mGeometryPass.BindShader();
 		mGeometryPass.Execute();
+		mGeometryPass.Clear();
 		mGBuffer.UnbindBuffer();
+		//============================
 
+
+
+		// Light pass ============================
 		mLightPass.BindShader();
 		mGBuffer.BindTextures();
+		mShadowPass.BindShadowMap();
 		mContext.mRenderDevice->DrawElements(mScreenQuad.mVao, 6);
+		//============================
 
 		mContext.mRenderDevice->SwapBuffers();
 
