@@ -20,7 +20,7 @@ namespace lum {
 	class SceneLoader {
 	public:
 		
-		FScene Load( ccharptr path, FSceneManagerContext& ctx );
+		FScene Load( StringView path, FSceneManagerContext& ctx );
 
 	};
 

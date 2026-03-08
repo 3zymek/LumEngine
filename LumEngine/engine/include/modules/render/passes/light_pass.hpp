@@ -10,6 +10,10 @@
 
 namespace lum::render {
 
+	namespace detail { class GBuffer; }
+	class ShadowPass;
+	class GeometryPass;
+
 	/* @brief Manages light data submission and GPU uploads for the deferred lighting pass.
 	*  Collects point lights and directional light each frame, uploads them to GPU
 	*  buffers and binds the light pass shader for the fullscreen quad draw call.
@@ -29,6 +33,8 @@ namespace lum::render {
 		*/
 		void AddPointLight( const FPointLight& light );
 
+		void AddSpotLight(const FSpotLight& light);
+
 		/* @brief Sets the active directional light for the current frame.
 		*  @param light Directional light to set.
 		*/
@@ -36,19 +42,25 @@ namespace lum::render {
 
 		/* @brief Returns the currently active directional light. */
 		FDirectionalLight GetDirectionalLight( );
-
-		/* @brief Binds the light pass shader for the fullscreen quad draw call. */
-		LUM_FORCEINLINE
-		void BindShader( ) { mContext.mRenderDevice->BindShader(mShader); }
+		FDirectionalLight GetDirectionalLight( ) const;
 
 		/* @brief Clears all point lights from the previous frame. */
 		LUM_FORCEINLINE
-		void ClearLights( ) { mActivePoints = 0; }
+		void ClearLights( ) { mActivePointLights = 0; mActiveSpotLights = 0; }
 
-		/* @brief Uploads all lights to GPU buffers. */
-		void UploadLights( );
+		/* @brief Binds GBuffer textures, shadow map and light uniforms, then issues the fullscreen quad draw call.
+		*  @param shadowPass Shadow pass to retrieve the shadow map from.
+		*  @param gbuffer GBuffer containing geometry data from the geometry pass.
+		*  @param quad Fullscreen quad VAO to draw the lighting onto.
+		*/
+		void Execute( const ShadowPass& shadowPass, const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad );
 
 	private:
+
+		static constexpr usize OFFSET_ACTIVE_POINT = 0;
+		static constexpr usize OFFSET_ACTIVE_SPOT = sizeof(int32);
+		static constexpr usize OFFSET_POINT_LIGHTS = sizeof(int32) * 2;
+		static constexpr usize OFFSET_SPOT_LIGHTS = OFFSET_POINT_LIGHTS + sizeof(FPointLight) * LUM_MAX_LIGHTS;
 
 		/* @brief Cached context holding all subsystem manager references. */
 		FRendererContext mContext;
@@ -58,17 +70,18 @@ namespace lum::render {
 
 		/* @brief Array of active point lights for this frame. */
 		std::array<FPointLight, LUM_MAX_LIGHTS> mPointLights{};
+		std::array<FSpotLight, LUM_MAX_LIGHTS> mSpotLights{};
 
 		/* @brief Number of currently active point lights. */
-		uint32 mActivePoints = 0;
+		uint32 mActivePointLights = 0;
+
+		uint32 mActiveSpotLights = 0;
 
 		/* @brief GPU-ready uniform buffer representation of the active directional light. */
 		detail::FDirectionalLightUniformBuffer mDirectionalLightData{};
 
-		detail::FLightSpaceMatrices mLightSpaceMatrices;
-
 		/* @brief Shader storage buffer holding all active point lights. */
-		rhi::RBufferHandle mPointLightsBuffer;
+		rhi::RBufferHandle mLightsBuffer;
 
 		/* @brief Uniform buffer holding the active directional light data. */
 		rhi::RBufferHandle mDirectionalLightBuffer;
@@ -82,13 +95,10 @@ namespace lum::render {
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
 		void init( );
 
-		/* @brief Uploads the light-space transformation matrix used for shadow mapping.
-		*  @param mat Light-space matrix to upload.
-		*/
-		void upload_lightspace_matrices( const detail::FLightSpaceMatrices& matrices );
-
 		/* @brief Uploads all active point lights to the GPU shader storage buffer. */
 		void upload_point_lights( );
+
+		void upload_spot_lights();
 
 		/* @brief Uploads the active directional light to its GPU uniform buffer. */
 		void upload_directional_light( );

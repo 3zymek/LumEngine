@@ -9,6 +9,8 @@
 #include "render/common.hpp"
 
 namespace lum::render {
+	
+	namespace detail { class GBuffer; }
 
 	/* @brief Handles the main geometry render pass — uploads per-draw uniforms
 	*  and issues draw calls for all submitted render instances.
@@ -23,25 +25,27 @@ namespace lum::render {
 		*/
 		void Initialize( const FRendererContext& ctx );
 
-		/* @brief Uploads uniforms and issues a draw call for the given render instance.
+		/* @brief Enqueues a render instance for drawing in the current frame.
 		*  @param instance Render instance containing transform, mesh and material.
 		*/
 		void Submit( const FRenderInstance& instance );
 
-		/* @brief Begins the geometry pass — binds pipeline and prepares state. */
-		void Execute( );
+		/* @brief Binds the GBuffer, pipeline and shader, then issues all queued draw calls.
+		*  @param gbuffer GBuffer to render geometry into.
+		*/
+		void Execute( const detail::GBuffer& gbuffer );
 
-		void ExecuteShadows();
-
-		void Clear( );
-
-		void BindShader( );
+		/* @brief Issues draw calls for all queued instances without binding any pipeline state.
+		*  Used by other passes (e.g. ShadowPass) that manage their own shader and pipeline.
+		*/
+		void DrawScene( );
 
 	private:
 
 		std::vector<FRenderInstance> mInstances;
 
 		inline constexpr static uint32 mTempSize = 64;
+
 		std::vector<FRenderInstance> mTempInstances;
 
 		/* @brief Cached context holding all subsystem manager references. */
@@ -65,8 +69,11 @@ namespace lum::render {
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
 		void init( );
 
-		void draw_instance(const FRenderInstance& instance);
-		void draw_instance_shadow(const FRenderInstance& instance);
+		/* @brief Uploads material uniforms, binds textures and issues a draw call for the given instance. */
+		void draw_instance( const FRenderInstance& instance );
+
+		/* @brief Uploads the model matrix and issues a draw call without binding any material state. */
+		void draw_mesh( const FRenderInstance& instance );
 
 		/* @brief Computes and uploads the model matrix for the given instance.
 		*  @param instance Render instance to compute the model matrix from.
@@ -79,5 +86,4 @@ namespace lum::render {
 		void upload_material( const FMaterialInstance& mat );
 
 	};
-
 } // namespace lum::render

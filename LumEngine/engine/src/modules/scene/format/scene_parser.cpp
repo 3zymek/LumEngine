@@ -315,22 +315,76 @@ namespace lum::fmt {
 
 		while (in_block(tokens, i)) {
 
-			if (tokens[i].mValue == "intensity") {
+			if (tokens[i].mType == TokenType::Parameter) {
 
-				light.mIntensity = detail::ReadFloatParameter(tokens, i);
+				if (tokens[i].mValue == "intensity") {
+
+					light.mIntensity = detail::ReadFloatParameter(tokens, i);
+
+				}
+				else if (tokens[i].mValue == "radius") {
+
+					light.mRadius = detail::ReadFloatParameter(tokens, i);
+
+				}
+				else if (tokens[i].mValue == "color") {
+
+					light.mColor = detail::ReadVec3Parameter(tokens, i);
+
+				}
 
 			}
-			else if (tokens[i].mValue == "radius") {
 
-				light.mRadius = detail::ReadFloatParameter(tokens, i);
+
+			i++;
+
+		}
+
+		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, light);
+
+	}
+
+	void SceneParser::parse_spot_light(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
+
+		detail::ExpectOpeningBracket(tokens, i);
+		CSpotLight light;
+
+		while (in_block(tokens, i)) {
+
+			if (tokens[i].mType == TokenType::Parameter) {
+
+				if (tokens[i].mValue == "intensity") {
+
+					light.mIntensity = detail::ReadFloatParameter(tokens, i);
+
+				}
+				else if (tokens[i].mValue == "radius") {
+
+					light.mRadius = detail::ReadFloatParameter(tokens, i);
+
+				}
+				else if (tokens[i].mValue == "color") {
+
+					light.mColor = detail::ReadVec3Parameter(tokens, i);
+
+				}
+				else if (tokens[i].mValue == "direction") {
+
+					light.mDirection = detail::ReadVec3Parameter(tokens, i);
+
+				}
+				else if (tokens[i].mValue == "inner_cone") {
+				
+					light.mInnerConeAngle = detail::ReadFloatParameter(tokens, i);
+
+				}
+				else if (tokens[i].mValue == "outer_cone") {
+
+					light.mOuterConeAngle = detail::ReadFloatParameter(tokens, i);
+
+				}
 
 			}
-			else if (tokens[i].mValue == "color") {
-
-				light.mColor = detail::ReadVec3Parameter(tokens, i);
-
-			}
-
 
 			i++;
 

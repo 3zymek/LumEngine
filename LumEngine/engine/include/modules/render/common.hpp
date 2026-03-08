@@ -85,6 +85,23 @@ namespace lum::render {
 
 	};
 
+	struct FSpotLight {
+
+		glm::vec3 mPosition;
+		float32 mIntensity;
+
+		glm::vec3 mDirection;
+		float32 mRadius;
+
+		glm::vec3 mColor;
+		float32 mInnerCone;
+
+		float32 mOuterCone;
+
+		float32 _pad[3];
+
+	};
+
 
 	/* @brief Represents a single renderable object submitted to the renderer per frame. */
 	struct FRenderInstance {

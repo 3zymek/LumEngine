@@ -141,6 +141,25 @@ namespace lum {
                 }
             );
 
+            entityMgr->Each<CTransform, CSpotLight>(
+                [&](CTransform& transform, CSpotLight& light) {
+
+                    FSpotLight spotL;
+
+                    spotL.mPosition = transform.mPosition;
+                    spotL.mIntensity = light.mIntensity;
+                    spotL.mColor = light.mColor;
+                    spotL.mRadius = light.mRadius;
+                    spotL.mDirection = glm::normalize(light.mDirection);
+                    spotL.mInnerCone = glm::cos(glm::radians(light.mInnerConeAngle));
+                    spotL.mOuterCone = glm::cos(glm::radians(light.mOuterConeAngle));
+
+                    mRenderer->AddSpotLight(spotL);
+
+                }
+            );
+
+
             static int sSelectedEntity = -1;
 
             ImGui::SetNextWindowPos(ImVec2(10, 200), ImGuiCond_Always);
@@ -196,6 +215,20 @@ namespace lum {
                         ImGui::DragFloat("Radius", &light.mRadius, 0.1f, 0.0f, 1000.0f);
                     }
                 );
+
+                entityMgr->EachWithID<CName, CSpotLight>(
+                    [&](ecs::EntityID id, CName& name, CSpotLight& light) {
+                        if ((int32)id != sSelectedEntity) return;
+                        ImGui::SeparatorText("Spot Light");
+                        ImGui::ColorEdit3("Color", glm::value_ptr(light.mColor));
+                        ImGui::DragFloat("Intensity", &light.mIntensity, 0.01f, 0.0f, 100.0f);
+                        ImGui::DragFloat("Radius", &light.mRadius, 0.1f, 0.0f, 1000.0f);
+                        ImGui::DragFloat3("Direction", glm::value_ptr(light.mDirection), 0.01f, -1.0f, 1.0f);
+                        ImGui::DragFloat("Inner Cone", &light.mInnerConeAngle, 0.5f, 0.0f, light.mOuterConeAngle);
+                        ImGui::DragFloat("Outer Cone", &light.mOuterConeAngle, 0.5f, light.mInnerConeAngle, 90.0f);
+                    }
+                );
+
             }
             else {
                 ImGui::TextDisabled("Select an entity...");

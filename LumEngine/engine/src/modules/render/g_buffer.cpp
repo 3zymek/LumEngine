@@ -18,7 +18,7 @@ namespace lum::render::detail {
 
 	}
 
-	void GBuffer::BindTextures( ) {
+	void GBuffer::BindTextures( ) const {
 
 		mContext.mRenderDevice->BindTexture(mAlbedo, LUM_GBUFFER_ALBEDO);
 		mContext.mRenderDevice->BindTexture(mNormal, LUM_GBUFFER_NORMAL);

@@ -47,6 +47,11 @@ namespace lum::render {
 		*/
 		void AddPointLight( const FPointLight& light ) { mLightPass.AddPointLight(light); }
 
+		/* @brief Submits a spot light to be included in the current frame's lighting.
+		*  @param light Spot light to add. Ignored if LUM_MAX_LIGHTS is reached.
+		*/
+		void AddSpotLight( const FSpotLight& light ) { mLightPass.AddSpotLight(light); }
+
 		/* @brief Sets the active directional light for the current frame.
 		*  @param light Directional light to set.
 		*/

@@ -88,6 +88,9 @@ namespace lum::fmt {
 		/* @brief Parses a point light component and attaches it to the current entity. */
 		static void parse_point_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 
+		/* @brief Parses a spot light component and attaches it to the current entity. */
+		static void parse_spot_light(std::vector<FToken>& tokens, int32& i, FParseContext& ctx);
+
 
 
 
@@ -112,13 +115,14 @@ namespace lum::fmt {
 		* Used to dispatch component blocks within an entity definition.
 		*/
 		static inline std::unordered_map<uint64, ParseFn> sComponentsParseFunctions = {
-			{ HashStr("transform"),         parse_transform          },
-			{ HashStr("static_mesh"),       parse_smesh              },
-			{ HashStr("camera"),            parse_camera             },
-			{ HashStr("render"),            parse_render             },
-			{ HashStr("material"),          parse_material           },
-			{ HashStr("name"),              parse_name               },
-			{ HashStr("point_light"),       parse_point_light        }
+			{ HashStr("transform"),         parse_transform         },
+			{ HashStr("static_mesh"),       parse_smesh             },
+			{ HashStr("camera"),            parse_camera            },
+			{ HashStr("render"),            parse_render            },
+			{ HashStr("material"),          parse_material          },
+			{ HashStr("name"),              parse_name              },
+			{ HashStr("point_light"),       parse_point_light       },
+			{ HashStr("spot_light"),		parse_spot_light		},
 		};
 
 	};

@@ -14,6 +14,8 @@
 #include "render/shader_manager.hpp"
 #include "render/mesh_manager.hpp"
 
+#include "render/g_buffer.hpp"
+
 namespace lum::render {
 
 	//---------------------------------------------------------
@@ -43,30 +45,32 @@ namespace lum::render {
 
 	}
 
-	void GeometryPass::Execute( ) {
+	void GeometryPass::Execute( const detail::GBuffer& gbuffer ) {
 		
+		gbuffer.BindBuffer();
+		mContext.mRenderDevice->Clear(
+			rhi::ClearFlag::Color |
+			rhi::ClearFlag::Depth |
+			rhi::ClearFlag::Stencil
+		);
+
+		mContext.mRenderDevice->BindShader(mShader);
+
 		mContext.mRenderDevice->BindPipeline(mPipeline);
 		for (auto& instance : mInstances)
 			draw_instance(instance);
 
+		mInstances.clear();
+
+		gbuffer.UnbindBuffer();
+
 	}
 
-	void GeometryPass::ExecuteShadows() {
+	void GeometryPass::DrawScene( ) {
 
 		for (auto& instance : mInstances)
 			draw_instance(instance);
 
-
-	}
-
-	void GeometryPass::Clear() {
-
-		mInstances.clear();
-
-	}
-
-	void GeometryPass::BindShader() {
-		mContext.mRenderDevice->BindShader(mShader);
 	}
 
 
@@ -100,6 +104,7 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = true;
 			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::Less;
 			desc.mCull.bEnabled = true;
+			desc.mCull.mFace = rhi::Face::Back;
 			mPipeline = mContext.mRenderDevice->CreatePipeline(desc);
 			mShader = mContext.mShaderMgr->LoadShader("shaders/geometry_pass.vert", "shaders/geometry_pass.frag", RootID::Internal);
 		}
@@ -108,10 +113,8 @@ namespace lum::render {
 
 	void GeometryPass::draw_instance( const FRenderInstance& instance ) {
 		
-		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic(instance.mStaticMesh->mMesh);
 		const auto& mat = instance.mMaterial->mMat;
 
-		upload_model_matrix(instance);
 		upload_material(mat);
 
 		mContext.mRenderDevice->BindTexture(mat.mAlbedoTex, LUM_TEX_ALBEDO);
@@ -119,11 +122,11 @@ namespace lum::render {
 		mContext.mRenderDevice->BindTexture(mat.mRoughnessTex, LUM_TEX_ROUGHNESS);
 		mContext.mRenderDevice->BindTexture(mat.mMetallicTex, LUM_TEX_METALNESS);
 		
-		mContext.mRenderDevice->DrawElements(res.mVao, res.mNumIndices);
+		draw_mesh(instance);
 
 	}
 
-	void GeometryPass::draw_instance_shadow( const FRenderInstance& instance ) {
+	void GeometryPass::draw_mesh( const FRenderInstance& instance ) {
 
 		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic(instance.mStaticMesh->mMesh);
 
@@ -137,6 +140,7 @@ namespace lum::render {
 		glm::quat rot = glm::quat(glm::radians(instance.mTransform->mRotation));
 		glm::mat4 rotation = glm::mat4_cast(rot);
 		glm::mat4 model = glm::mat4(1.f);
+
 		model = glm::mat4(1.f);
 		model = glm::translate(model, instance.mTransform->mPosition);
 		model = model * rotation;

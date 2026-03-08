@@ -6,8 +6,18 @@
 #pragma once
 
 #include "rhi/rhi_common.hpp"
+#include "rhi/core/rhi_sampler.hpp"
 
 namespace lum {
+
+	struct FMaterialTexture {
+
+		rhi::RTextureHandle mTexture;
+
+		float32 mTextureScale = 1.0f;
+		rhi::SamplerWrap mWrap = rhi::SamplerWrap::Repeat;
+
+	};
 
 	/* @brief Shared PBR material definition used as a base template.
 	* Defines default texture maps and parameters inherited by material instances.
@@ -38,9 +48,6 @@ namespace lum {
 		/* @brief Metallic scalar fallback when no map is bound. */
 		float32 mMetallicValue = 0.0f;
 
-		/* @brief Ambient occlusion scalar fallback when no map is bound. */
-		//float32 mAmbient = 1.0f;
-
 	};
 
 	/* @brief Descriptor for creating a material base.
@@ -56,7 +63,7 @@ namespace lum {
 
 		std::optional<glm::vec3> mBaseColor;   // Base color multiplier, defaults to (1, 1, 1)
 
-		std::optional<float32> mRoughnessValue = 0.0f; // Roughness multiplier, defaults to 0.5
+		std::optional<float32> mRoughnessValue = 0.5f; // Roughness multiplier, defaults to 0.5
 		std::optional<float32> mMetallicValue = 0.0f;  // Metallic multiplier, defaults to 0.0
 	
 	};

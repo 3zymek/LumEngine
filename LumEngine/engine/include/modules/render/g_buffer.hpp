@@ -33,17 +33,17 @@ namespace lum::render::detail {
 		/* @brief Binds all G-Buffer textures to their respective sampler slots.
 		*  Call before the light pass draw call.
 		*/
-		void BindTextures( );
+		void BindTextures( ) const;
 
 		/* @brief Binds the G-Buffer framebuffer as the active render target.
 		*  Call before the geometry pass draw calls.
 		*/
 		LUM_FORCEINLINE 
-		void BindBuffer( ) { mContext.mRenderDevice->BindFramebuffer(mFramebuffer); }
+		void BindBuffer( ) const { mContext.mRenderDevice->BindFramebuffer(mFramebuffer); }
 
 		/* @brief Unbinds the G-Buffer framebuffer, restoring the default render target. */
 		LUM_FORCEINLINE
-		void UnbindBuffer( ) { mContext.mRenderDevice->UnbindFramebuffer(); }
+		void UnbindBuffer( ) const { mContext.mRenderDevice->UnbindFramebuffer(); }
 
 	private:
 
