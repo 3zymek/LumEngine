@@ -33,7 +33,10 @@ namespace lum::render {
 		*/
 		void AddPointLight( const FPointLight& light );
 
-		void AddSpotLight(const FSpotLight& light);
+		/* @brief Submits a spot light to be included in the current frame's lighting.
+		* @param light Spot light to add.Ignored if LUM_MAX_LIGHTS is reached.
+		*/
+		void AddSpotLight( const FSpotLight& light );
 
 		/* @brief Sets the active directional light for the current frame.
 		*  @param light Directional light to set.
@@ -57,34 +60,34 @@ namespace lum::render {
 
 	private:
 
-		static constexpr usize OFFSET_ACTIVE_POINT = 0;
-		static constexpr usize OFFSET_ACTIVE_SPOT = sizeof(int32);
-		static constexpr usize OFFSET_POINT_LIGHTS = sizeof(int32) * 2;
-		static constexpr usize OFFSET_SPOT_LIGHTS = OFFSET_POINT_LIGHTS + sizeof(FPointLight) * LUM_MAX_LIGHTS;
+		static constexpr usize skOffsetPointLights = 0;
+		static constexpr usize skOffsetSpotLights = sizeof(FPointLight) * LUM_MAX_LIGHTS;
+		static constexpr usize skOffsetActivePoint = skOffsetSpotLights + sizeof(FSpotLight) * LUM_MAX_LIGHTS;
+		static constexpr usize skOffsetActiveSpot = skOffsetActivePoint + sizeof(int32);
 
 		/* @brief Cached context holding all subsystem manager references. */
 		FRendererContext mContext;
 
-		/* @brief Active directional light for this frame. */
-		FDirectionalLight mDirectionalLight;
-
 		/* @brief Array of active point lights for this frame. */
 		std::array<FPointLight, LUM_MAX_LIGHTS> mPointLights{};
+
+		/* @brief Array of active spot lights for this frame. */
 		std::array<FSpotLight, LUM_MAX_LIGHTS> mSpotLights{};
 
 		/* @brief Number of currently active point lights. */
 		uint32 mActivePointLights = 0;
 
+		/* @brief Number of currently active spot lights. */
 		uint32 mActiveSpotLights = 0;
 
 		/* @brief GPU-ready uniform buffer representation of the active directional light. */
 		detail::FDirectionalLightUniformBuffer mDirectionalLightData{};
 
 		/* @brief Shader storage buffer holding all active point lights. */
-		rhi::RBufferHandle mLightsBuffer;
+		rhi::RBufferHandle mLightsUBO;
 
 		/* @brief Uniform buffer holding the active directional light data. */
-		rhi::RBufferHandle mDirectionalLightBuffer;
+		rhi::RBufferHandle mDirectionalLightUBO;
 
 		/* @brief Pipeline state for the light pass. */
 		rhi::RPipelineHandle mPipeline;
@@ -98,6 +101,7 @@ namespace lum::render {
 		/* @brief Uploads all active point lights to the GPU shader storage buffer. */
 		void upload_point_lights( );
 
+		/* @brief Uploads all active spot lights to the GPU shader storage buffer. */
 		void upload_spot_lights();
 
 		/* @brief Uploads the active directional light to its GPU uniform buffer. */

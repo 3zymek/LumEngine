@@ -47,167 +47,29 @@ namespace lum::rhi::gl {
 
 	}
 
-	bool GLDevice::IsValid ( RBufferHandle handle ) const {
-		return mBuffers.Contains(handle);
-	}
-	bool GLDevice::IsValid ( RTextureHandle handle ) const {
-		return mTextures.Contains(handle);
-	}
-	bool GLDevice::IsValid ( RShaderHandle handle ) const {
-		return mShaders.Contains(handle);
-	}
-	bool GLDevice::IsValid ( RFramebufferHandle handle ) const {
-		return mFramebuffers.Contains(handle);
-	}
-	bool GLDevice::IsValid ( RVertexLayoutHandle handle ) const {
-		return mLayouts.Contains(handle);
-	}
-	bool GLDevice::IsValid ( RPipelineHandle handle ) const {
-		return mPipelines.Contains(handle);
-	}
-	bool GLDevice::IsValid ( RSamplerHandle handle ) const {
-		return mSamplers.Contains(handle);
-	}
+	void GLDevice::Draw( RVertexLayoutHandle layout, uint32 numVertices) {
 
-	void GLDevice::SetColorMask ( bool r, bool g, bool b, bool a ) {
+		LUM_ASSERT(mLayouts.Contains(layout), "Cannot draw, invalid vertex layout");
 
-		if (r == mColorMask.r &&
-			g == mColorMask.g &&
-			b == mColorMask.b &&
-			a == mColorMask.a)
-		{
-			LUM_PROFILER_CACHE_HIT();
-			return;
-		}
-
-		glColorMask(
-			r ? GL_TRUE : GL_FALSE,
-			g ? GL_TRUE : GL_FALSE,
-			b ? GL_TRUE : GL_FALSE,
-			a ? GL_TRUE : GL_FALSE
-		);
-
-		mColorMask.r = r;
-		mColorMask.g = g;
-		mColorMask.b = b;
-		mColorMask.a = a;
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-	void GLDevice::SetColorMask ( FColorMask rgba ) {
-
-		if (rgba.r == mColorMask.r &&
-			rgba.g == mColorMask.g &&
-			rgba.b == mColorMask.b &&
-			rgba.a == mColorMask.a)
-		{
-			LUM_PROFILER_CACHE_HIT();
-			return;
-		}
-
-		glColorMask(
-			rgba.r ? GL_TRUE : GL_FALSE,
-			rgba.g ? GL_TRUE : GL_FALSE,
-			rgba.b ? GL_TRUE : GL_FALSE,
-			rgba.a ? GL_TRUE : GL_FALSE
-		);
-
-		mColorMask.r = rgba.r;
-		mColorMask.g = rgba.g;
-		mColorMask.b = rgba.b;
-		mColorMask.a = rgba.a;
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-
-	void GLDevice::SetClearColor ( ChannelRGBA color ) {
-
-		if (mClearColor == color) {
-			LUM_PROFILER_CACHE_HIT();
-			return;
-		}
-
-		glClearColor(color.r, color.g, color.b, color.a);
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-	void GLDevice::ClearColor ( ) {
-
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-	void GLDevice::ClearColor ( ChannelRGBA color ) {
-
-		SetClearColor(color);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-	void GLDevice::ClearDepth ( ) {
-
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-	void GLDevice::ClearStencil ( ) {
-
-		glClear(GL_STENCIL_BUFFER_BIT);
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-	void GLDevice::Clear( Flags<ClearFlag> flags ) {
-		
-		GLbitfield mask = 0;
-
-		mask |= (flags.Has(ClearFlag::Color)) ? GL_COLOR_BUFFER_BIT : 0;
-		mask |= (flags.Has(ClearFlag::Depth)) ? GL_DEPTH_BUFFER_BIT : 0;
-		mask |= (flags.Has(ClearFlag::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0;
-
-		glClear(mask);
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-
-	void GLDevice::Draw(const RVertexLayoutHandle& vao, uint32 vertex_count) {
-
-		LUM_HOTCHK_RETURN_VOID(mLayouts.Contains(vao), LUM_SEV_WARN, "Cannot draw, invalid vertex layout");
-
-		glBindVertexArray(mLayouts[vao].mHandle);
-		glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+		glBindVertexArray(mLayouts[layout].mHandle);
+		glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
 		LUM_PROFILER_DRAW_CALL();
 
 	}
 
-	void GLDevice::DrawInstanced(const RVertexLayoutHandle& vao, uint32 numVertices, uint32 numInstances) {
+	void GLDevice::DrawInstanced( RVertexLayoutHandle layout, uint32 numVertices, uint32 numInstances ) {
 
 	}
-	void GLDevice::DrawInstancedBase(const RVertexLayoutHandle& vao, uint32 numVertices, uint32 numInstances, uint32 baseInstance) {
+	void GLDevice::DrawInstancedBase( RVertexLayoutHandle layout, uint32 numVertices, uint32 numInstances, uint32 baseInstance ) {
 
 	}
 
-	void GLDevice::DrawElements( const RVertexLayoutHandle& layout, uint32 numIndices ) {
+	void GLDevice::DrawElements( RVertexLayoutHandle layout, uint32 numIndices ) {
 
-		LUM_HOTCHK_RETURN_VOID(
-			mLayouts.Contains(layout), 
-			LUM_SEV_WARN, 
-			"Cannot draw, invalid vertex layout"
-		);
+		LUM_ASSERT(mLayouts.Contains(layout), "Cannot draw, invalid vertex layout");
 
-		LUM_HOTCHK_RETURN_VOID(
-			mBuffers.Contains(mLayouts[layout].mElementBuff), 
-			LUM_SEV_WARN, 
-			"Layout doesn't have attached any element buffers"
-		);
+		LUM_ASSERT(mBuffers.Contains(mLayouts[layout].mElementBuff), "Layout doesn't have attached any element buffers");
 
 		glBindVertexArray(mLayouts[layout].mHandle);
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(numIndices), GL_UNSIGNED_INT, nullptr);
@@ -216,10 +78,10 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::DrawElementsInstanced( const RVertexLayoutHandle& layout, uint32 numIndices, uint32 numInstances) {
+	void GLDevice::DrawElementsInstanced( RVertexLayoutHandle layout, uint32 numIndices, uint32 numInstances ) {
 
 	}
-	void GLDevice::DrawElementsInstancedBase( const RVertexLayoutHandle& layout, uint32 numIndices, uint32 numInstances, uint32 baseInstance) {
+	void GLDevice::DrawElementsInstancedBase( RVertexLayoutHandle layout, uint32 numIndices, uint32 numInstances, uint32 baseInstance ) {
 
 	}
 

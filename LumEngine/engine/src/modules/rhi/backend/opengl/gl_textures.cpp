@@ -11,10 +11,12 @@ namespace lum::rhi::gl {
 
 	RTextureHandle GLDevice::CreateTexture( const FTextureDescriptor& desc ) {
 
-		if (desc.mTextureType == TextureType::None) {
-			LUM_LOG_WARN("No texture type given");
-			return {};
-		}
+		LUM_HOTCHK_RETURN_CUSTOM(
+			desc.mTextureType != TextureType::None,
+			LUM_SEV_WARN,
+			{},
+			"No texture type given"
+		);
 
 		if (desc.mTextureType == TextureType::Texture2D)
 			return create_texture_2d(desc);
@@ -26,27 +28,18 @@ namespace lum::rhi::gl {
 			return create_texture_cubemap(desc);
 
 		return {};
+
 	}
 	void GLDevice::UnbindTexture( TextureType type ) {
 
 		glBindTextureUnit(skTextureTypeLookup[LookupCast(type)], 0);
 
 	}
-	void GLDevice::UpdateTexture( const RTextureHandle& tex, const FTextureUpdateDescriptor& desc ) {
+	void GLDevice::UpdateTexture( RTextureHandle tex, const FTextureUpdateDescriptor& desc ) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(tex), LUM_SEV_WARN, "Texture doesn't exist");
-
-		LUM_HOTCHK_RETURN_VOID(
-			desc.mData.mPixels.data() != nullptr,
-			LUM_SEV_WARN,
-			"Texture pixel data is null"
-		);
-
-		LUM_HOTCHK_RETURN_VOID(
-			desc.mData.mWidth > 0 && desc.mData.mHeight > 0,
-			LUM_SEV_WARN,
-			"Invalid texture dimensions"
-		);
+		LUM_HOTCHK_RETURN_VOID(IsValid(tex), LUM_SEV_WARN, "Texture doesn't exist");
+		LUM_ASSERT(desc.mData.mPixels.data() != nullptr, "Texture pixel data is null");
+		LUM_ASSERT(desc.mData.mWidth > 0 && desc.mData.mHeight > 0, "Invalid texture dimensions");
 		
 		const auto& texture = mTextures[tex];
 
@@ -78,16 +71,17 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::DeleteTexture( RTextureHandle& texture ) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(texture), LUM_SEV_WARN, "Texture doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(IsValid(texture), LUM_SEV_WARN, "Invalid texture");
 
 		glDeleteTextures(1, &mTextures[texture].mHandle);
 
 		mTextures.Remove(texture);
 
 	}
-	void GLDevice::BindTexture( const RTextureHandle& texture, uint16 binding ) {
+	void GLDevice::BindTexture( RTextureHandle texture, uint16 binding ) {
 
-		LUM_HOTCHK_RETURN_VOID(mTextures.Contains(texture) && binding < skMaxTextureUnits, LUM_SEV_WARN, "Texture doesn't exist");
+		LUM_ASSERT(binding < skMaxTextureUnits, "Invalid texture binding");
+		LUM_HOTCHK_RETURN_VOID(IsValid(texture), LUM_SEV_WARN, "Invalid texture");
 
 		if (mCurrentTextures[binding] == texture) {
 			LUM_PROFILER_CACHE_HIT();
@@ -96,8 +90,6 @@ namespace lum::rhi::gl {
 
 		mCurrentTextures[binding] = texture;
 		glBindTextureUnit(binding, mTextures[texture].mHandle);
-
-		LUM_LOG_DEBUG("Binded texture %d to binding %d", texture.mID, binding);
 
 		LUM_PROFILER_CACHE_MISS();
 
@@ -177,19 +169,8 @@ namespace lum::rhi::gl {
 
 			auto texture = desc.mCubemap.mFaces[i];
 
-			LUM_HOTCHK_RETURN_CUSTOM(
-				!texture.mPixels.empty(),
-				LUM_SEV_WARN,
-				{},
-				"Texture pixel data is null"
-			);
-
-			LUM_HOTCHK_RETURN_CUSTOM(
-				texture.mWidth > 0 && texture.mHeight > 0,
-				LUM_SEV_WARN,
-				{},
-				"Invalid texture dimensions"
-			);
+			LUM_ASSERT(!texture.mPixels.empty(), "Texture pixel data is null");
+			LUM_ASSERT(texture.mWidth > 0 && texture.mHeight > 0, "Invalid texture dimensions");
 
 			if (texture.mWidth != width || texture.mHeight != height) {
 				LUM_LOG_ERROR("Invalid cubemap height or width");

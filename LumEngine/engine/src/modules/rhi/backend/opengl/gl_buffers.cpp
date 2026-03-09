@@ -41,29 +41,17 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::UpdateBuffer(const RBufferHandle& vbo, cvptr data, usize offset, usize size) {
+	void GLDevice::UpdateBuffer( RBufferHandle buff, cvptr data, usize offset, usize size) {
 
-		LUM_HOTCHK_RETURN_VOID(mBuffers.Contains(vbo), LUM_SEV_DEBUG, "Buffer does not exist");
+		LUM_ASSERT(IsValid(buff), "Invalid buffer");
 
-		FBuffer& buffer = mBuffers[vbo];
+		FBuffer& buffer = mBuffers[buff];
 
 		if (size == 0) size = buffer.mSize;
 
-		LUM_HOTCHK_RETURN_VOID(offset + size <= buffer.mSize, LUM_SEV_WARN, "Invalid offset or size");
-
-		LUM_HOTCHK_RETURN_VOID(
-			buffer.mUsage != BufferUsage::Static,
-			LUM_SEV_WARN,
-			"Buffer %d is static, cannot be updated",
-			vbo.mID
-		);
-
-		LUM_HOTCHK_RETURN_VOID(
-			buffer.mFlags.Has(MapFlag::Write),
-			LUM_SEV_WARN,
-			"Buffer %d has no write flags enabled",
-			vbo.mID
-		);
+		LUM_ASSERT(offset + size <= buffer.mSize, "Invalid offset or size");
+		LUM_ASSERT(buffer.mUsage != BufferUsage::Static, "Buffer %d is static, cannot be updated");
+		LUM_ASSERT(buffer.mFlags.Has(MapFlag::Write), "Buffer %d has no write flags enabled");
 
 		vptr ptr =
 			glMapNamedBufferRange(
@@ -79,54 +67,52 @@ namespace lum::rhi::gl {
 
 		glUnmapNamedBuffer(buffer.mHandle);
 
-		LUM_LOG_DEBUG("Updated buffer %d", vbo.mID);
 	}
 
-	void GLDevice::DeleteBuffer(RBufferHandle& vbo) {
+	void GLDevice::DeleteBuffer(RBufferHandle& buff) {
 
-		LUM_HOTCHK_RETURN_VOID(mBuffers.Contains(vbo), LUM_SEV_DEBUG, "Buffer doesn't exist");
+		LUM_HOTCHK_RETURN_VOID(IsValid(buff), LUM_SEV_DEBUG, "Invalid buffer");
 
-		FBuffer& buffer = mBuffers[vbo];
-		LUM_HOTCHK_RETURN_VOID(buffer.bMapped, LUM_SEV_WARN, "Unable to delete buffer - still mapped");
+		FBuffer& buffer = mBuffers[buff];
+		LUM_HOTCHK_RETURN_VOID(buffer.bMapped, LUM_SEV_WARN, "Cannot delete buffer that still mapped");
 
 		glDeleteBuffers(1, &buffer.mHandle);
 		
-		mBuffers.Remove(vbo);
+		mBuffers.Remove(buff);
 
-		LUM_LOG_INFO("Deleted buffer %d", vbo.mID);
+		LUM_LOG_INFO("Deleted buffer %d", buff.mID);
 	}
 
-	vptr GLDevice::MapBuffer(const RBufferHandle& vbo, Flags<MapFlag> flags, usize offset, usize size) {
+	vptr GLDevice::MapBuffer(RBufferHandle buff, Flags<MapFlag> flags, usize offset, usize size) {
 
-		LUM_HOTCHK_RETURN_NPTR(mBuffers.Contains(vbo), LUM_SEV_DEBUG, "Buffer doesn't exist");
+		LUM_ASSERT(IsValid(buff), "Invalid buffer");
 
-		FBuffer& buffer = mBuffers[vbo];
+		FBuffer& buffer = mBuffers[buff];
 
-		LUM_HOTCHK_RETURN_NPTR(offset + size < buffer.mSize || size < buffer.mSize, LUM_SEV_WARN, "Invalid offset or size");
+		LUM_ASSERT(offset + size < buffer.mSize || size < buffer.mSize, "Invalid offset or size");
 		if (size <= 0) size = buffer.mSize;
 
 		vptr ptr = glMapNamedBufferRange(buffer.mHandle, offset, size, translate_mapping_flags(flags));
 
 		LUM_ASSERT(ptr, "Failed to map buffer");
 
-		LUM_LOG_DEBUG("Mapped buffer %d", vbo.mID);
 		return ptr;
 	}
 
-	void GLDevice::UnmapBuffer(const RBufferHandle& vbo) {
+	void GLDevice::UnmapBuffer(RBufferHandle buff) {
 
-		LUM_HOTCHK_RETURN_VOID(mBuffers.Contains(vbo), LUM_SEV_WARN, "Buffer does not exist");
+		LUM_ASSERT(IsValid(buff), "Invalid buffer");
 
-		FBuffer& buffer = mBuffers[vbo];
+		FBuffer& buffer = mBuffers[buff];
 		LUM_HOTCHK_RETURN_VOID(buffer.bMapped, LUM_SEV_WARN, "Buffer is already unmapped");
+
 		glUnmapNamedBuffer(buffer.mHandle);
 
-		LUM_LOG_DEBUG("Unmapped buffer %d", vbo.mID);
 	}
 
-	void GLDevice::SetShaderStorageBinding(const RBufferHandle& ssbo, uint32 binding) {
+	void GLDevice::SetShaderStorageBinding(RBufferHandle ssbo, uint32 binding) {
 
-		LUM_HOTCHK_RETURN_VOID(mBuffers.Contains(ssbo), LUM_SEV_WARN, "Buffer does not exist");
+		LUM_ASSERT(IsValid(ssbo), "Invalid buffer");
 
 		const auto& buffer = mBuffers[ssbo];
 
@@ -134,23 +120,21 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::AttachElementBufferToLayout(const RBufferHandle& ebo, const RVertexLayoutHandle& vao) {
+	void GLDevice::AttachElementBufferToLayout( RBufferHandle ebo, RVertexLayoutHandle vao ) {
 
-		LUM_HOTCHK_RETURN_VOID(mLayouts.Contains(vao), LUM_SEV_DEBUG, "Layout doesn't exist");
-		LUM_HOTCHK_RETURN_VOID(mBuffers.Contains(ebo), LUM_SEV_DEBUG, "Buffer doesn't exist");
+		LUM_ASSERT(mLayouts.Contains(vao), "Invalid layout");
+		LUM_ASSERT(mBuffers.Contains(ebo), "Invalid buffer");
 
 		glVertexArrayElementBuffer(mLayouts[vao].mHandle, mBuffers[ebo].mHandle);
 		mLayouts[vao].mElementBuff = ebo;
-
-		
 
 		LUM_LOG_DEBUG("Attached EBO %d to VAO %d", ebo.mID, vao.mID);
 
 	}
 
-	void GLDevice::SetUniformBufferBinding(const RBufferHandle& ubo, int32 binding) {
+	void GLDevice::SetUniformBufferBinding( RBufferHandle ubo, int32 binding ) {
 
-		LUM_HOTCHK_RETURN_VOID(mBuffers.Contains(ubo), LUM_SEV_DEBUG, "Uniform buffer doesn't exist");
+		LUM_ASSERT(IsValid(ubo), "Invalid buffer");
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, mBuffers[ubo].mHandle);
 

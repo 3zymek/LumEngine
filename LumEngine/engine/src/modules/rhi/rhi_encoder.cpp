@@ -306,7 +306,7 @@ namespace lum::rhi {
 			device->ClearStencil();
 			});
 	}
-	void REncoder::Clear(Flags<ClearFlag> flags) {
+	void REncoder::Clear(Flags<BufferBit> flags) {
 		setup_command([flags](RDevice* device) {
 			device->Clear(flags);
 			});

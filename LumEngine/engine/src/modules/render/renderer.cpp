@@ -51,9 +51,9 @@ namespace lum::render {
 
 		mLightPass.ClearLights();
 		mContext.mRenderDevice->Clear(
-			rhi::ClearFlag::Color |
-			rhi::ClearFlag::Depth |
-			rhi::ClearFlag::Stencil
+			rhi::BufferBit::Color |
+			rhi::BufferBit::Depth |
+			rhi::BufferBit::Stencil
 		);
 
 	}

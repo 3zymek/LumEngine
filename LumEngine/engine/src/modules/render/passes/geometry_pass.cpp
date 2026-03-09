@@ -49,9 +49,9 @@ namespace lum::render {
 		
 		gbuffer.BindBuffer();
 		mContext.mRenderDevice->Clear(
-			rhi::ClearFlag::Color |
-			rhi::ClearFlag::Depth |
-			rhi::ClearFlag::Stencil
+			rhi::BufferBit::Color |
+			rhi::BufferBit::Depth |
+			rhi::BufferBit::Stencil
 		);
 
 		mContext.mRenderDevice->BindShader(mShader);

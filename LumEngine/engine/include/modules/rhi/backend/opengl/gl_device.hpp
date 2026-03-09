@@ -19,14 +19,21 @@ namespace lum::rhi::gl {
 		// Buffers
 		//=================================================
 
-		RBufferHandle	CreateBuffer(const FBufferDescriptor& desc)						override;
-		void			UpdateBuffer(const RBufferHandle&, cvptr, usize, usize)			override;
-		void			DeleteBuffer(RBufferHandle&)										override;
-		vptr			MapBuffer(const RBufferHandle&, Flags<MapFlag>, usize, usize)	override;
-		void			UnmapBuffer(const RBufferHandle&)								override;
-		void			SetShaderStorageBinding(const RBufferHandle& ssbo, uint32 binding)			override;
-		void			AttachElementBufferToLayout(const RBufferHandle&, const RVertexLayoutHandle&)	override;
-		void			SetUniformBufferBinding(const RBufferHandle&, int32)							override;
+		RBufferHandle CreateBuffer( const FBufferDescriptor& desc ) override;
+
+		void UpdateBuffer( RBufferHandle, cvptr, usize, usize ) override;
+
+		void DeleteBuffer( RBufferHandle& ) override;
+
+		vptr MapBuffer( RBufferHandle, Flags<MapFlag>, usize, usize ) override;
+
+		void UnmapBuffer( RBufferHandle ) override;
+
+		void SetShaderStorageBinding( RBufferHandle ssbo, uint32 binding ) override;
+
+		void AttachElementBufferToLayout( RBufferHandle, RVertexLayoutHandle ) override;
+
+		void SetUniformBufferBinding( RBufferHandle, int32 ) override;
 
 
 
@@ -34,11 +41,17 @@ namespace lum::rhi::gl {
 		// Framebuffers
 		//=================================================
 
-		RFramebufferHandle	CreateFramebuffer(const FFramebufferDescriptor&)			override;
-		void				ClearFramebuffer(RFramebufferHandle, ChannelRGBA, float32)	override;
-		void				DeleteFramebuffer(RFramebufferHandle&)						override;
-		void				BindFramebuffer(const RFramebufferHandle&)				override;
-		void				UnbindFramebuffer()											override;
+		RFramebufferHandle CreateFramebuffer( const FFramebufferDescriptor& ) override;
+
+		void BlitFramebuffer( const FFramebufferBlitDescriptor& ) override;
+
+		void ClearFramebuffer( RFramebufferHandle, ChannelRGBA, float32 ) override;
+
+		void DeleteFramebuffer( RFramebufferHandle& ) override;
+
+		void BindFramebuffer( RFramebufferHandle ) override;
+
+		void UnbindFramebuffer( ) override;
 
 
 
@@ -46,8 +59,9 @@ namespace lum::rhi::gl {
 		// Layouts
 		//=================================================
 
-		RVertexLayoutHandle	CreateVertexLayout(const FVertexLayoutDescriptor&, const RBufferHandle&)	override;
-		void				DeleteVertexLayout(RVertexLayoutHandle&)									override;
+		RVertexLayoutHandle	CreateVertexLayout( const FVertexLayoutDescriptor&, RBufferHandle ) override;
+
+		void DeleteVertexLayout( RVertexLayoutHandle& ) override;
 
 
 
@@ -55,9 +69,11 @@ namespace lum::rhi::gl {
 		// Shaders
 		//=================================================
 
-		RShaderHandle	CreateShader(const FShaderDescriptor&)							override;
-		void			BindShader(const RShaderHandle&)								override;
-		void			DeleteShader(RShaderHandle&)									override;
+		RShaderHandle CreateShader( const FShaderDescriptor& ) override;
+
+		void BindShader( RShaderHandle ) override;
+
+		void DeleteShader( RShaderHandle& ) override;
 
 
 
@@ -65,11 +81,15 @@ namespace lum::rhi::gl {
 		// Textures
 		//=================================================
 
-		RTextureHandle	CreateTexture(const FTextureDescriptor& desc) override;
-		void			UnbindTexture(TextureType)						override;
-		void			UpdateTexture(const RTextureHandle&, const FTextureUpdateDescriptor&) override;
-		void			DeleteTexture(RTextureHandle&)							override;
-		void			BindTexture(const RTextureHandle&, uint16)			override;
+		RTextureHandle CreateTexture( const FTextureDescriptor& desc ) override;
+
+		void UnbindTexture( TextureType ) override;
+
+		void UpdateTexture( RTextureHandle, const FTextureUpdateDescriptor& ) override;
+
+		void DeleteTexture( RTextureHandle& ) override;
+
+		void BindTexture( RTextureHandle, uint16 ) override;
 
 
 
@@ -77,9 +97,11 @@ namespace lum::rhi::gl {
 		// Samplers
 		//=================================================
 
-		RSamplerHandle	CreateSampler(const RSamplerDescriptor&)		override;
-		void			BindSampler(const RSamplerHandle&, uint16)	override;
-		void			DeleteSampler(RSamplerHandle)					override;
+		RSamplerHandle CreateSampler( const RSamplerDescriptor& ) override;
+
+		void BindSampler( RSamplerHandle, uint16 )	override;
+
+		void DeleteSampler( RSamplerHandle ) override;
 
 
 
@@ -87,9 +109,12 @@ namespace lum::rhi::gl {
 		// Pipelines
 		//=================================================
 
-		RPipelineHandle		CreatePipeline(const FPipelineDescriptor&)	override;
-		void				DeletePipeline(RPipelineHandle&)			override;
-		void				BindPipeline(const RPipelineHandle&)		override;
+		RPipelineHandle CreatePipeline( const FPipelineDescriptor& ) override;
+
+		void DeletePipeline( RPipelineHandle& ) override;
+
+		void BindPipeline( RPipelineHandle ) override;
+
 
 
 
@@ -97,116 +122,159 @@ namespace lum::rhi::gl {
 		// Other
 		//=================================================
 
-		void SetViewport(int32 x, int32 y, int32 width, int32 height)	override;
-		void SetViewportX(int32 x)			override;
-		void SetViewportY(int32 y)			override;
-		void SetViewportWidth(int32 width)		override;
-		void SetViewportHeight(int32 height)	override;
+		// Viewport setters
+		void SetViewport( int32 x, int32 y, int32 width, int32 height ) override;
+
+		void SetViewportX( int32 x ) override;
+
+		void SetViewportY( int32 y ) override;
+
+		void SetViewportWidth( int32 width ) override;
+
+		void SetViewportHeight( int32 height ) override;
+
 
 		// Scissors setters
-		void ToggleScissors(bool)										override;
-		bool IsScissorEnabled()												const noexcept override;
-		void SetScissors(int32 x, int32 y, int32 width, int32 height)	override;
-		void SetScissorX(int32 x)			override;
-		void SetScissorY(int32 y)			override;
-		void SetScissorWidth(int32 width)		override;
-		void SetScissorHeight(int32 height)	override;
+		void ToggleScissors( bool ) override;
+
+		void SetScissors( int32 x, int32 y, int32 width, int32 height ) override;
+
+		void SetScissorX( int32 x ) override;
+
+		void SetScissorY( int32 y ) override;
+
+		void SetScissorWidth( int32 width ) override;
+
+		void SetScissorHeight( int32 height )	override;
+
 
 
 		// Cull setters
-		void ToggleCull(bool)			override;
-		bool IsCullEnabled()					const noexcept override;
-		void SetCullFace(Face face)		override;
-		void SetFrontFace(WindingOrder)	override;
+		void ToggleCull( bool ) override;
+
+		void SetCullFace( Face face ) override;
+
+		void SetFrontFace( WindingOrder ) override;
 
 
 		// Blend setters
-		void ToggleBlend(bool enabled)		override;
-		bool IsBlendEnabled()						const noexcept override;
-		void SetBlendConstantColor(ChannelRGBA rgba)	override;
-		void SetBlendFactors(BlendFactor srcColor, BlendFactor dstColor, BlendFactor srcAlpha, BlendFactor dstAlpha) override;
-		void SetBlendColorFactors(BlendFactor srcColor, BlendFactor dstColor)	override;
-		void SetBlendAlphaFactors(BlendFactor srcAlpha, BlendFactor dstAlpha)	override;
-		void SetBlendSrcColorFactor(BlendFactor factor)							override;
-		void SetBlendDstColorFactor(BlendFactor factor)							override;
-		void SetBlendSrcAlphaFactor(BlendFactor factor)							override;
-		void SetBlendDstAlphaFactor(BlendFactor factor)							override;
-		void SetBlendOp(BlendOp colorOp, BlendOp alphaOp)			override;
-		void SetBlendColorOp(BlendOp op)									override;
-		void SetBlendAlphaOp(BlendOp op)									override;
-		void SetBlendFactorsForTarget(uint8 target)								override;
-		void ToggleBlendForTarget(uint8 target, bool enable)					override;
+		void ToggleBlend( bool ) override;
+
+		void SetBlendConstantColor( ChannelRGBA rgba ) override;
+
+		void SetBlendFactors( BlendFactor, BlendFactor, BlendFactor, BlendFactor ) override;
+
+		void SetBlendColorFactors( BlendFactor, BlendFactor ) override;
+
+		void SetBlendAlphaFactors( BlendFactor, BlendFactor ) override;
+
+		void SetBlendSrcColorFactor( BlendFactor ) override;
+
+		void SetBlendDstColorFactor( BlendFactor ) override;
+
+		void SetBlendSrcAlphaFactor( BlendFactor ) override;
+
+		void SetBlendDstAlphaFactor( BlendFactor ) override;
+
+		void SetBlendOp( BlendOp, BlendOp ) override;
+
+		void SetBlendColorOp( BlendOp ) override;
+
+		void SetBlendAlphaOp( BlendOp ) override;
+
+		void SetBlendFactorsForTarget(uint8 target) override;
+
+		void ToggleBlendForTarget( uint8, bool ) override;
+
 
 		// Depth setters
-		void ToggleDepthWrite(bool)	override;
-		bool IsDepthWriteEnabled()			const noexcept override;
+		void ToggleDepthWrite( bool ) override;
 
-		void ToggleDepthTest(bool)			override;
-		bool IsDepthTestEnabled()					const noexcept override;
-		void SetDepthFunc(CompareFlag)	override;
+		void ToggleDepthTest( bool ) override;
+
+		void SetDepthFunc( CompareFlag ) override;
+
 
 		// Stencil setters
-		void ToggleStencilTest(bool)			override;
-		bool IsStencilTestEnabled()					const noexcept override;
-		void SetStencilReference(int32 ref, Face)	override;
-		void SetStencilOp(StencilOp sfail, StencilOp dpfail, StencilOp dppass, Face face)	override;
-		void SetStencilOpOnStencilFail(StencilOp op, Face face)	override;
-		void SetStencilOpOnDepthFail(StencilOp op, Face face)	override;
-		void SetStencilOpOnDepthPass(StencilOp op, Face face)	override;
+		void ToggleStencilTest( bool ) override;
+
+		void SetStencilReference( int32, Face ) override;
+
+		void SetStencilOp( StencilOp, StencilOp, StencilOp, Face ) override;
+
+		void SetStencilOpOnStencilFail( StencilOp, Face ) override;
+
+		void SetStencilOpOnDepthFail( StencilOp, Face ) override;
+
+		void SetStencilOpOnDepthPass( StencilOp, Face ) override;
 
 
 		// Rasterizer setters
-		void ToggleDepthBias(bool)							override;
-		bool IsDepthBiasEnabled()									const noexcept override;
-		void SetDepthBiasFactors(float32 slope, float32 constant) override;
-		void SetDepthBiasClamp(float32 clamp)					override;
-		void SetDepthBiasSlope(float32)							override;
-		void SetDepthBiasConstant(float32)							override;
-		void SetTopology(TopologyMode mode, Face face)	override;
+		void ToggleDepthBias( bool ) override;
 
-		const FBlendState& GetBlendState() const noexcept override;
-		const FCullState& GetCullState() const noexcept override;
-		const FScissorState& GetScissorState() const noexcept override;
-		const FDepthStencilState& GetDepthStencilState() const noexcept override;
-		const FRasterizerState& GetRasterizerState() const noexcept override;
-		const FViewportState& GetViewport() const noexcept override;
+		void SetDepthBiasFactors( float32, float32 ) override;
 
-		bool IsValid(RBufferHandle handle)		const override;
-		bool IsValid(RTextureHandle handle)		const override;
-		bool IsValid(RShaderHandle handle)		const override;
-		bool IsValid(RFramebufferHandle handle)	const override;
-		bool IsValid(RVertexLayoutHandle handle)  const override;
-		bool IsValid(RPipelineHandle handle)		const override;
-		bool IsValid(RSamplerHandle handle)		const override;
+		void SetDepthBiasClamp( float32 ) override;
 
-		void SetColorMask(bool r, bool g, bool b, bool a)	override;
-		void SetColorMask(FColorMask rgba)					override;
+		void SetDepthBiasSlope( float32 ) override;
 
-		void SetClearColor(ChannelRGBA color)	override;
-		void ClearColor()						override;
-		void ClearColor(ChannelRGBA color)	override;
-		void ClearDepth()						override;
-		void ClearStencil()						override;
-		void Clear(Flags<ClearFlag>)	override;
+		void SetDepthBiasConstant( float32 ) override;
 
-		void SetPointSize(float32 size)	override;
-		void SetLineWidth(float32 width)	override;
+		void SetTopology( TopologyMode, Face ) override;
 
-		void ToggleMultisample(bool toggle) override;
-		void ToggleSampleCoverage(bool toggle) override;
-		void ToggleSampleAlphaToCoverage(bool toggle) override;
-		void ToggleSampleAlphaToOne(bool toggle) override;
-		void SetSampleCoverage(float32 value, bool invert) override;
 
-		void Draw(const RVertexLayoutHandle&, uint32)	override;
-		void DrawInstanced(const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount) override;
-		void DrawInstancedBase(const RVertexLayoutHandle& vao, uint32 vertexCount, uint32 instanceCount, uint32 baseInstance) override;
-		void DrawElements(const RVertexLayoutHandle&, uint32)	override;
-		void DrawElementsInstanced(const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount) override;
-		void DrawElementsInstancedBase(const RVertexLayoutHandle& vao, uint32 indicesCount, uint32 instanceCount, uint32 baseInstance) override;
+		// Framebuffer operations
+		void SetColorMask( bool, bool, bool, bool ) override;
 
-		void NewFrame()			override;
-		void SwapBuffers()		override;
+		void SetColorMask( FColorMask ) override;
+
+		void SetClearColor( ChannelRGBA ) override;
+
+		void ClearColor( ) override;
+
+		void ClearColor( ChannelRGBA ) override;
+
+		void ClearDepth( ) override;
+
+		void ClearStencil( ) override;
+
+		void Clear( Flags<BufferBit> ) override;
+
+
+
+		void SetPointSize( float32 ) override;
+
+		void SetLineWidth( float32 ) override;
+
+		void ToggleMultisample( bool ) override;
+
+		void ToggleSampleCoverage( bool ) override;
+
+		void ToggleSampleAlphaToCoverage( bool ) override;
+
+		void ToggleSampleAlphaToOne( bool ) override;
+
+		void SetSampleCoverage( float32, bool ) override;
+
+
+
+		void Draw( RVertexLayoutHandle, uint32 ) override;
+
+		void DrawInstanced( RVertexLayoutHandle, uint32, uint32 ) override;
+
+		void DrawInstancedBase( RVertexLayoutHandle, uint32, uint32, uint32 ) override;
+
+		void DrawElements( RVertexLayoutHandle, uint32 ) override;
+
+		void DrawElementsInstanced( RVertexLayoutHandle, uint32, uint32 ) override;
+
+		void DrawElementsInstancedBase( RVertexLayoutHandle, uint32, uint32, uint32 ) override;
+
+
+
+		void NewFrame( ) override;
+
+		void SwapBuffers( ) override;
 
 
 	protected:

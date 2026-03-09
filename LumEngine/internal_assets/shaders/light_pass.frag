@@ -51,10 +51,10 @@ layout( std140, binding = LUM_UBO_CAMERA_BINDING ) uniform CameraUniforms {
 
 layout( std430, binding = LUM_SSBO_LIGHTS_BINDING ) readonly buffer LightBuffer {
 	
-	int uActivePointLights;
-	int uActiveSpotLights;
 	FPointLight uPointLights[LUM_MAX_LIGHTS];
 	FSpotLight uSpotLights[LUM_MAX_LIGHTS];
+	int uActivePointLights;
+	int uActiveSpotLights;
 
 } aLightBuffer;
 
@@ -146,13 +146,13 @@ float CalculateShadow( FLightningContext ctx ) {
 	float shadow = 0.0;
 	vec2 texelSize = 1.0 / textureSize(tShadowMap, 0);
 
-	for(int x = -1; x <= 1; x++){
-		for(int y = -1; y <= 1; y++){
+	for(int x = -2; x <= 2; x++){
+		for(int y = -2; y <= 2; y++){
 			float depth = texture(tShadowMap, lightSpaceFrag.xy + vec2(x, y) * texelSize).r;
 			shadow += step(depth + bias, lightSpaceFrag.z);
 		}
 	}
-	shadow /= 9.0;
+	shadow /= 25.0;
 	shadow = mix(0.0, 0.9, shadow);
 
 	return shadow;

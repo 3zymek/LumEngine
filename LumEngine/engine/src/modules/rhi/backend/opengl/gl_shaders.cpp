@@ -10,12 +10,7 @@ namespace lum::rhi::gl {
 
 	RShaderHandle GLDevice::CreateShader( const FShaderDescriptor& desc ) {
 
-		LUM_HOTCHK_RETURN_CUSTOM(
-			mShaders.DenseSize() < skMaxShaders,
-			LUM_SEV_WARN,
-			RShaderHandle{},
-			"Max shaders reached"
-		);
+		LUM_ASSERT(mShaders.DenseSize() < skMaxShaders, "Max shaders reached");
 
 		FShader shader;
 
@@ -49,14 +44,9 @@ namespace lum::rhi::gl {
 		return handle;
 
 	}
-	void GLDevice::BindShader ( const RShaderHandle& shader ) {
+	void GLDevice::BindShader( RShaderHandle shader ) {
 
-		LUM_HOTCHK_RETURN_VOID(
-			mShaders.Contains(shader),
-			LUM_SEV_WARN,
-			"Shader %d doesn't exist", 
-			shader.mID
-		);
+		LUM_HOTCHK_RETURN_VOID(IsValid(shader), LUM_SEV_WARN, "Invalid shader");
 
 		if (mCurrentShader == shader) {
 			LUM_PROFILER_CACHE_HIT();
@@ -67,19 +57,12 @@ namespace lum::rhi::gl {
 
 		glUseProgram(mShaders[shader].mHandle);
 
-		LUM_LOG_DEBUG("Shader %d binded", shader.mID);
-
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::DeleteShader ( RShaderHandle& shader ) {
+	void GLDevice::DeleteShader( RShaderHandle& shader ) {
 
-		LUM_HOTCHK_RETURN_VOID(
-			mShaders.Contains(shader),
-			LUM_SEV_WARN,
-			"Shader %d doesn't exist",
-			shader.mID
-		);
+		LUM_HOTCHK_RETURN_VOID(IsValid(shader), LUM_SEV_WARN, "Invalid shader");
 
 		glDeleteProgram(mShaders[shader].mHandle);
 
@@ -98,7 +81,7 @@ namespace lum::rhi::gl {
 			
 			char buff[2048];
 			glGetShaderInfoLog(shader, 2048, nullptr, buff);
-			LUM_LOG_ERROR("Failed to compile shader: %s", buff);
+			LUM_LOG_ERROR("Failed to compile shader: %s\n", buff);
 			return false;
 
 		}
@@ -114,7 +97,7 @@ namespace lum::rhi::gl {
 
 			char buff[2048];
 			glGetProgramInfoLog(program, 2048, nullptr, buff);
-			LUM_LOG_FATAL("Failed to link program: %s", buff);
+			LUM_LOG_FATAL("Failed to link program: %s\n", buff);
 			return false;
 
 		}

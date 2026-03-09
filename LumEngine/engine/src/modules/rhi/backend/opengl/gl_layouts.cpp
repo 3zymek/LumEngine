@@ -2,20 +2,10 @@
 
 namespace lum::rhi::gl {
 
-	RVertexLayoutHandle GLDevice::CreateVertexLayout ( const FVertexLayoutDescriptor& desc, const RBufferHandle& vbo ) {
+	RVertexLayoutHandle GLDevice::CreateVertexLayout( const FVertexLayoutDescriptor& desc, RBufferHandle vbo ) {
 
-		LUM_HOTCHK_RETURN_CUSTOM(
-			mBuffers.Contains(vbo),
-			LUM_SEV_WARN,
-			RVertexLayoutHandle{},
-			"Buffer doesn't exist"
-		);
-		LUM_HOTCHK_RETURN_CUSTOM(
-			desc.mAttributes.size() > 0,
-			LUM_SEV_WARN,
-			RVertexLayoutHandle{},
-			"VertexLayout has no attributes",
-		);
+		LUM_ASSERT(IsValid(vbo), "Invalid buffer");
+		LUM_ASSERT(desc.mAttributes.size() > 0, "Vertex layout has no attributes");
 
 		FVertexLayout layout;
 		FBuffer& buffer = mBuffers[vbo];
@@ -29,7 +19,7 @@ namespace lum::rhi::gl {
 			desc.mStride
 		);
 
-		for (int i = 0; i < desc.mAttributes.size(); i++) {
+		for (int32 i = 0; i < desc.mAttributes.size(); i++) {
 
 			glVertexArrayAttribFormat(
 				layout.mHandle,
@@ -50,15 +40,16 @@ namespace lum::rhi::gl {
 
 		}
 
-		auto layoutHandle = mLayouts.Append(std::move(layout));
+		RVertexLayoutHandle layoutHandle = mLayouts.Append(std::move(layout));
 
 		LUM_LOG_INFO("Created vertex layout %d", layoutHandle.mID);
 
 		return layoutHandle;
 
 	}
-	void GLDevice::DeleteVertexLayout ( RVertexLayoutHandle& layout ) {
-		LUM_HOTCHK_RETURN_VOID(!mLayouts.Contains(layout), LUM_SEV_WARN, "Layout doesn't exist");
+	void GLDevice::DeleteVertexLayout( RVertexLayoutHandle& layout ) {
+		 
+		LUM_HOTCHK_RETURN_VOID(IsValid(layout), LUM_SEV_WARN, "Invalid layout");
 
 		glDeleteVertexArrays(1, &mLayouts[layout].mHandle);
 		mLayouts.Remove(layout);

@@ -94,14 +94,14 @@ namespace lum::render {
 		{ // Point Lights SSBO
 			desc.mSize = (sizeof(FPointLight) * LUM_MAX_LIGHTS + sizeof(int32)) + (sizeof(FSpotLight) * LUM_MAX_LIGHTS + sizeof(int32));
 			desc.mBufferType = rhi::BufferType::ShaderStorage;
-			mLightsBuffer = mContext.mRenderDevice->CreateBuffer(desc);
-			mContext.mRenderDevice->SetShaderStorageBinding(mLightsBuffer, LUM_SSBO_LIGHTS_BINDING);
+			mLightsUBO = mContext.mRenderDevice->CreateBuffer(desc);
+			mContext.mRenderDevice->SetShaderStorageBinding(mLightsUBO, LUM_SSBO_LIGHTS_BINDING);
 		}
 		{ // Directional Light UBO
 			desc.mSize = sizeof(mDirectionalLightData);
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mDirectionalLightBuffer = mContext.mRenderDevice->CreateBuffer(desc);
-			mContext.mRenderDevice->SetUniformBufferBinding(mDirectionalLightBuffer, LUM_UBO_DIRECTIONAL_LIGHT);
+			mDirectionalLightUBO = mContext.mRenderDevice->CreateBuffer(desc);
+			mContext.mRenderDevice->SetUniformBufferBinding(mDirectionalLightUBO, LUM_UBO_DIRECTIONAL_LIGHT);
 		}
 		
 		mShader = mContext.mShaderMgr->LoadShader("shaders/light_pass.vert", "shaders/light_pass.frag", RootID::Internal);
@@ -111,33 +111,33 @@ namespace lum::render {
 	void LightPass::upload_point_lights( ) {
 
 		mContext.mRenderDevice->UpdateBuffer(
-			mLightsBuffer, &mActivePointLights,
-			OFFSET_ACTIVE_POINT, sizeof(int32)
+			mLightsUBO, &mActivePointLights,
+			skOffsetActivePoint, sizeof(int32)
 		);
 
 		mContext.mRenderDevice->UpdateBuffer(
-			mLightsBuffer, mPointLights.data(),
-			OFFSET_POINT_LIGHTS, sizeof(FPointLight) * LUM_MAX_LIGHTS
+			mLightsUBO, mPointLights.data(),
+			skOffsetPointLights, sizeof(FPointLight) * LUM_MAX_LIGHTS
 		);
 
 	}
 	void LightPass::upload_spot_lights( ) {
 
 		mContext.mRenderDevice->UpdateBuffer(
-			mLightsBuffer, &mActiveSpotLights,
-			OFFSET_ACTIVE_SPOT, sizeof(int32)
+			mLightsUBO, &mActiveSpotLights,
+			skOffsetActiveSpot, sizeof(int32)
 		);
 
 		mContext.mRenderDevice->UpdateBuffer(
-			mLightsBuffer, mSpotLights.data(),
-			OFFSET_SPOT_LIGHTS, sizeof(FSpotLight) * LUM_MAX_LIGHTS
+			mLightsUBO, mSpotLights.data(),
+			skOffsetSpotLights, sizeof(FSpotLight) * LUM_MAX_LIGHTS
 		);
 
 	}
 	void LightPass::upload_directional_light( ) {
 		
 		mContext.mRenderDevice->UpdateBuffer(
-			mDirectionalLightBuffer,
+			mDirectionalLightUBO,
 			&mDirectionalLightData
 		);
 	

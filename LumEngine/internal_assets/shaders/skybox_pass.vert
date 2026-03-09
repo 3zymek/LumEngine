@@ -17,7 +17,7 @@ void main( ) {
 	
 	V = aPos;
 
-	mat4 view = mat4(mat3(LUM_CAMERA_VIEW_MAT4));
+	mat4 view = mat4(mat3(uCameraView));
 
 	vec4 pos = uCameraProj * view * vec4(aPos, 1.0);
 
