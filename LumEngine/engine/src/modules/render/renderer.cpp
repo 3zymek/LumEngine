@@ -66,6 +66,8 @@ namespace lum::render {
 
 		mLightPass.Execute(mShadowPass, mGBuffer, mScreenQuad);
 
+		mEnvironmentPass.Execute(mGBuffer);
+
 		mContext.mRenderDevice->SwapBuffers();
 
 	}

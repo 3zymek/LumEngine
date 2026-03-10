@@ -58,30 +58,51 @@ namespace lum::rhi::gl {
 
 	void GLDevice::BlitFramebuffer( const FFramebufferBlitDescriptor& desc ) {
 
-		FFramebuffer srcBuffer = mFramebuffers[desc.mSource];
-		FFramebuffer dstBuffer = mFramebuffers[desc.mDestination];
-		/*
-		uint32 finalSrc = src.mID == NullID<RFramebufferID>() ? 0 : srcBuffer.mHandle;
-		uint32 finalDst = dst.mID == NullID<RFramebufferID>() ? 0 : dstBuffer.mHandle;
-
-		glBlitNamedFramebuffer(
-			(GLuint)finalSrc, (GLuint)finalDst,
-
+		LUM_ASSERT(validate_framebuffer_handle(desc.mDestination), "Invalid destination framebuffer");
+		LUM_ASSERT(validate_framebuffer_handle(desc.mSource), "Invalid source framebuffer handle");
+		LUM_ASSERT(
+			!(desc.mCopyMask.Has(BufferBit::Depth) || desc.mCopyMask.Has(BufferBit::Stencil))
+			|| desc.mFilter == SamplerMagFilter::Nearest,
+			"Depth and stencil blit requires Nearest filter"
 		);
 
-	   */
+		uint32 srcX1 = desc.mSrcX1 == 0 ? mViewportState.mWidth : desc.mSrcX1;
+		uint32 srcY1 = desc.mSrcY1 == 0 ? mViewportState.mHeight : desc.mSrcY1;
+		uint32 dstX1 = desc.mDstX1 == 0 ? mViewportState.mWidth : desc.mDstX1;
+		uint32 dstY1 = desc.mDstY1 == 0 ? mViewportState.mHeight : desc.mDstY1;
 
+		GLuint dstID = IsValid(desc.mDestination) ? mFramebuffers[desc.mDestination].mHandle : 0;
+		GLuint srcID = IsValid(desc.mSource) ? mFramebuffers[desc.mSource].mHandle : 0;
+
+		GLbitfield mask = 0;
+
+		mask |= (desc.mCopyMask.Has(BufferBit::Color)) ? GL_COLOR_BUFFER_BIT : 0;
+		mask |= (desc.mCopyMask.Has(BufferBit::Depth)) ? GL_DEPTH_BUFFER_BIT : 0;
+		mask |= (desc.mCopyMask.Has(BufferBit::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0;
+		
+		glBlitNamedFramebuffer(
+			srcID, dstID,
+			desc.mSrcX0, desc.mSrcY0, srcX1, srcY1,
+			desc.mDstX0, desc.mDstY0, dstX1, dstY1,
+			mask,
+			desc.mFilter == SamplerMagFilter::Linear ? GL_LINEAR : GL_NEAREST
+		);
+		
 	}
 
 	void GLDevice::ClearFramebuffer( RFramebufferHandle fbo, ChannelRGBA color, float32 depth ) {
+
 		BindFramebuffer(fbo);
+
 		glClearColor(color.r, color.g, color.b, color.a);
 		glClearDepth(std::clamp(depth, 0.0f, 1.0f));
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
 	}
 
 	void GLDevice::DeleteFramebuffer( RFramebufferHandle& buff ) {
-		LUM_HOTCHK_RETURN_VOID(IsValid(buff), LUM_SEV_WARN, "Framebuffer doesn't exists");
+
+		LUM_HOTCHK_RETURN_VOID(IsValid(buff), LUM_SEV_WARN, "Invalid framebuffer");
 
 		FFramebuffer& fbo = mFramebuffers[buff];
 		glDeleteFramebuffers(1, &fbo.mHandle);
@@ -91,7 +112,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::BindFramebuffer( RFramebufferHandle buff ) {
 
-		LUM_HOTCHK_RETURN_VOID(IsValid(buff), LUM_SEV_WARN, "Invalid framebuffer");
+		LUM_ASSERT(validate_framebuffer_handle(buff), "Invalid framebuffer");
 
 		if (mCurrentFramebuffer == buff) {
 			LUM_PROFILER_CACHE_HIT();
@@ -100,22 +121,8 @@ namespace lum::rhi::gl {
 
 		mCurrentFramebuffer = buff;
 
-		glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffers[buff].mHandle);
-
-		LUM_PROFILER_CACHE_MISS();
-
-	}
-
-	void GLDevice::UnbindFramebuffer( ) {
-
-		if (mCurrentFramebuffer == RFramebufferHandle{}) {
-			LUM_PROFILER_CACHE_HIT();
-			return;
-		}
-
-		mCurrentFramebuffer = RFramebufferHandle{};
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		GLuint handle = IsValid(buff) ? mFramebuffers[buff].mHandle : 0;
+		glBindFramebuffer(GL_FRAMEBUFFER, handle);
 
 		LUM_PROFILER_CACHE_MISS();
 
@@ -154,7 +161,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::SetColorMask(FColorMask rgba) {
+	void GLDevice::SetColorMask( FColorMask rgba ) {
 
 		if (rgba.r == mColorMask.r &&
 			rgba.g == mColorMask.g &&
@@ -181,7 +188,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::SetClearColor(ChannelRGBA color) {
+	void GLDevice::SetClearColor( ChannelRGBA color ) {
 
 		if (mClearColor == color) {
 			LUM_PROFILER_CACHE_HIT();
@@ -200,7 +207,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::ClearColor(ChannelRGBA color) {
+	void GLDevice::ClearColor( ChannelRGBA color ) {
 
 		SetClearColor(color);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -208,21 +215,21 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::ClearDepth() {
+	void GLDevice::ClearDepth( ) {
 
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::ClearStencil() {
+	void GLDevice::ClearStencil( ) {
 
 		glClear(GL_STENCIL_BUFFER_BIT);
 
 		LUM_PROFILER_CACHE_MISS();
 
 	}
-	void GLDevice::Clear(Flags<BufferBit> flags) {
+	void GLDevice::Clear( Flags<BufferBit> flags ) {
 
 		GLbitfield mask = 0;
 

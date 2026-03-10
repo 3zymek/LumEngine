@@ -26,12 +26,25 @@ namespace lum::render::detail {
 
 	}
 
+	rhi::RTextureHandle GBuffer::GetTexture( GBufferTexture tex ) {
+
+		switch (tex) {
+			case GBufferTexture::Albedo: return mAlbedo;
+			case GBufferTexture::Normal: return mNormal;
+			case GBufferTexture::Depth: return mDepth;
+			default: return mAlbedo;
+		}
+
+		return mAlbedo;
+
+	}
+
 
 	//---------------------------------------------------------
 	// Private
 	//---------------------------------------------------------
 
-	void GBuffer::create_textures( uint32 mWidth, uint32 mHeight ) {
+	void GBuffer::create_textures( uint32 width, uint32 height ) {
 
 		mContext.mRenderDevice->DeleteTexture(mAlbedo);
 		mContext.mRenderDevice->DeleteTexture(mNormal);
@@ -41,31 +54,31 @@ namespace lum::render::detail {
 		{ // Albedo
 			desc.mImageFormat = rhi::ImageFormat::RGBA;
 			desc.mImageLayout = rhi::ImageLayout::SRGB8_Alpha8;
-			desc.mWidth = mWidth;
-			desc.mHeight = mHeight;
+			desc.mWidth = width;
+			desc.mHeight = height;
 			desc.mTextureType = rhi::TextureType::Texture2D;
 			mAlbedo = mContext.mRenderDevice->CreateTexture(desc);
 		}
 		{ // Normal
 			desc.mImageFormat = rhi::ImageFormat::RGBA;
 			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
-			desc.mWidth = mWidth;
-			desc.mHeight = mHeight;
+			desc.mWidth = width;
+			desc.mHeight = height;
 			desc.mTextureType = rhi::TextureType::Texture2D;
 			mNormal = mContext.mRenderDevice->CreateTexture(desc);
 		}
 		{ // Depth
 			desc.mImageFormat = rhi::ImageFormat::DepthComponent;
 			desc.mImageLayout = rhi::ImageLayout::Depth32F;
-			desc.mWidth = mWidth;
-			desc.mHeight = mHeight;
+			desc.mWidth = width;
+			desc.mHeight = height;
 			desc.mTextureType = rhi::TextureType::Texture2D;
 			mDepth = mContext.mRenderDevice->CreateTexture(desc);
 		}
 
 	}
 
-	void GBuffer::create_framebuffer( ) {
+	void GBuffer::create_framebuffer() {
 
 		if (mContext.mRenderDevice->IsValid(mFramebuffer)) mContext.mRenderDevice->DeleteFramebuffer(mFramebuffer);
 

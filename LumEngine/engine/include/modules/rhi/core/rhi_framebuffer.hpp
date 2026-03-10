@@ -1,6 +1,6 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
 //
-// Purpose: Framebuffer configuration for the Rendering Hardware Interface
+// Purpose: Framebuffer configuration for the Rendering Hardware Interface.
 //
 //=============================================================================//
 #pragma once
@@ -21,12 +21,6 @@ namespace lum::rhi {
 
         /* @brief Optional stencil attachment texture. */
         RTextureHandle mStencilTex;
-
-        /* @brief Width of the framebuffer in pixels. */
-        uint32 mWidth = 0;
-
-        /* @brief Height of the framebuffer in pixels. */
-        uint32 mHeight = 0;
 
     };
 
@@ -62,7 +56,6 @@ namespace lum::rhi {
         SamplerMagFilter mFilter = SamplerMagFilter::Nearest;
 
     };
-
 
     /* @brief Internal GPU-side framebuffer resource. */
     struct FFramebuffer {

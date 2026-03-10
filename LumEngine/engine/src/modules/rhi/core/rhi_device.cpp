@@ -3,7 +3,7 @@
 #include "rhi/backend/opengl/gl_device.hpp"
 namespace lum::rhi {
 
-	bool RDevice::validate_texture_descriptor(const FTextureDescriptor& desc) {
+	bool RDevice::validate_texture_descriptor(const FTextureDescriptor& desc) const noexcept {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mTextures.DenseSize() <= skMaxTextures,
@@ -22,7 +22,7 @@ namespace lum::rhi {
 		return true;
 
 	}
-	bool RDevice::validate_buffer_descriptor( const FBufferDescriptor& desc ) {
+	bool RDevice::validate_buffer_descriptor( const FBufferDescriptor& desc ) const noexcept {
 
 		if (desc.mBufferUsage == BufferUsage::Static) {
 			LUM_ASSERT(
@@ -59,7 +59,7 @@ namespace lum::rhi {
 
 	}
 
-	bool RDevice::is_depth_format( ImageLayout fmt ) {
+	bool RDevice::is_depth_format( ImageLayout fmt ) const noexcept {
 
 		return fmt == ImageLayout::Depth16 ||
 			fmt == ImageLayout::Depth24 ||
@@ -69,14 +69,14 @@ namespace lum::rhi {
 			fmt == ImageLayout::Depth32FStencil8;
 
 	}
-	bool RDevice::is_stencil_format( ImageLayout fmt ) {
+	bool RDevice::is_stencil_format( ImageLayout fmt ) const noexcept {
 
 		return fmt == ImageLayout::StencilIndex8 ||
 			fmt == ImageLayout::Depth24Stencil8 ||
 			fmt == ImageLayout::Depth32FStencil8;
 
 	}
-	bool RDevice::is_color_format( ImageLayout fmt ) {
+	bool RDevice::is_color_format( ImageLayout fmt ) const noexcept {
 
 		return !is_depth_format(fmt) && !is_stencil_format(fmt);
 

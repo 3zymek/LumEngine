@@ -21,17 +21,15 @@ namespace lum::render {
 
 	}
 
-	void EnvironmentPass::BeginPass() {
+	void EnvironmentPass::Execute( detail::GBuffer& gbuffer ) {
 
-	}
-	void EnvironmentPass::EndPass() {
+		mContext.mRenderDevice->BindFramebuffer(rhi::gDefaultFramebuffer);
 
 		mContext.mRenderDevice->BindPipeline(mCubemap.mPipeline);
 
 		mContext.mRenderDevice->BindShader(mCubemap.mShader);
 		mContext.mRenderDevice->BindTexture(mCubemap.mTexture, LUM_TEX_CUBEMAP);
 		mContext.mRenderDevice->DrawElements(mCubemap.mVao, mCubemap.mNumIndices);
-		
 
 	}
 
@@ -51,11 +49,11 @@ namespace lum::render {
 		};
 		uint32 indices[] = {
 			0,1,2, 2,3,0, // front
-			4,5,6, 6,7,4, // back
-			0,3,7, 7,4,0, // left
-			1,2,6, 6,5,1, // right
+			5,4,7, 7,6,5, // back
+			4,0,3, 3,7,4, // left
+			1,5,6, 6,2,1, // right
 			3,2,6, 6,7,3, // top
-			0,1,5, 5,4,0  // bottom
+			4,5,1, 1,0,4  // bottom
 		};
 		mCubemap.mNumIndices = ArraySize(indices);
 
@@ -96,6 +94,8 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.bEnabled = true;
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = false;
 			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::LessEqual;
+			desc.mCull.bEnabled = false;
+			desc.mCull.mFace = rhi::Face::Back;
 			mCubemap.mPipeline = mContext.mRenderDevice->CreatePipeline(desc);
 		}
 

@@ -83,7 +83,7 @@ namespace lum {
 		struct RPipelineHandle : public cstd::BaseHandle<RPipelineID> {};
 
 		/* @brief Typed handle wrapping a framebuffer object ID. */
-		struct RFramebufferHandle : public cstd::BaseHandle<RFramebufferID> {};
+		struct RFramebufferHandle : public cstd::BaseHandle<RFramebufferID> { using BaseHandle::BaseHandle; };
 
 		/* @brief Typed handle wrapping a texture sampler ID. */
 		struct RSamplerHandle : public cstd::BaseHandle<RSamplerID> {};
@@ -99,6 +99,8 @@ namespace lum {
 
 		/* @brief Typed handle wrapping a vertex layout (VAO) ID. */
 		struct RVertexLayoutHandle : public cstd::BaseHandle<RLayoutID> {};
+
+		inline RFramebufferHandle gDefaultFramebuffer{ 0, MaxVal<RFramebufferID>() };
 
 
 		/* @brief Bitmask storage type used for RHI flag enums. */

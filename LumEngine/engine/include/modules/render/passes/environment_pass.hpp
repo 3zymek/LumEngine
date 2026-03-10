@@ -10,6 +10,8 @@
 
 namespace lum::render {
 
+	namespace detail { class GBuffer; }
+
 	/* @brief Handles the main geometry render pass — uploads per-draw uniforms
 	*  and issues draw calls for all submitted render instances.
 	*/
@@ -23,13 +25,9 @@ namespace lum::render {
 		*/
 		void Initialize( const FRendererContext& ctx );
 
-		void SetCubemapTexture(rhi::RTextureHandle tex) { mCubemap.mTexture = tex; }
+		void SetCubemapTexture( rhi::RTextureHandle tex ) { mCubemap.mTexture = tex; }
 
-		/* @brief Begins the geometry pass — binds pipeline and prepares state. */
-		void BeginPass();
-
-		/* @brief Ends the geometry pass. */
-		void EndPass();
+		void Execute( detail::GBuffer& gbuffer );
 
 	private:
 

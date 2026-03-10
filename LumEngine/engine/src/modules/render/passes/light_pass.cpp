@@ -66,6 +66,9 @@ namespace lum::render {
 
 	void LightPass::Execute( const ShadowPass& shadowPass, const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad ) {
 
+		mContext.mRenderDevice->BindFramebuffer(rhi::gDefaultFramebuffer);
+		mContext.mRenderDevice->BindPipeline(mPipeline);
+
 		upload_directional_light();
 		upload_point_lights();
 		upload_spot_lights();
@@ -102,6 +105,12 @@ namespace lum::render {
 			desc.mBufferType = rhi::BufferType::Uniform;
 			mDirectionalLightUBO = mContext.mRenderDevice->CreateBuffer(desc);
 			mContext.mRenderDevice->SetUniformBufferBinding(mDirectionalLightUBO, LUM_UBO_DIRECTIONAL_LIGHT);
+		}
+		{
+			rhi::FPipelineDescriptor desc;
+			desc.mDepthStencil.mDepth.bEnabled = false;
+			desc.mDepthStencil.mDepth.bWriteToZBuffer = false;
+			mPipeline = mContext.mRenderDevice->CreatePipeline(desc);
 		}
 		
 		mShader = mContext.mShaderMgr->LoadShader("shaders/light_pass.vert", "shaders/light_pass.frag", RootID::Internal);

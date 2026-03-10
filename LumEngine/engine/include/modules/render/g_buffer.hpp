@@ -11,6 +11,12 @@
 
 namespace lum::render::detail {
 
+	enum class GBufferTexture : byte {
+		Albedo,
+		Normal,
+		Depth
+	};
+
 	/* @brief G-Buffer used in deferred rendering.
 	*  Manages albedo, normal and depth textures and the framebuffer
 	*  they are attached to. Automatically recreates on window resize.
@@ -43,7 +49,9 @@ namespace lum::render::detail {
 
 		/* @brief Unbinds the G-Buffer framebuffer, restoring the default render target. */
 		LUM_FORCEINLINE
-		void UnbindBuffer( ) const { mContext.mRenderDevice->UnbindFramebuffer(); }
+		void UnbindBuffer( ) const { mContext.mRenderDevice->BindFramebuffer(rhi::gDefaultFramebuffer); }
+
+		rhi::RTextureHandle GetTexture( GBufferTexture tex );
 
 	private:
 

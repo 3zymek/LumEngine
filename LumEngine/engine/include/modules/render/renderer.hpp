@@ -6,8 +6,11 @@
 #pragma once
 
 #include "rhi/core/rhi_device.hpp"
+
 #include "core/core_common.hpp"
+
 #include "entity/components/transform.hpp"
+
 #include "render/material_manager.hpp"
 #include "render/mesh_manager.hpp"
 #include "render/common.hpp"
@@ -76,9 +79,10 @@ namespace lum::render {
 		/* @brief Cached context holding all subsystem manager references. */
 		FRendererContext mContext;
 
-
+		/* @brief GBuffer holding geometry pass output textures — albedo, normal and depth. */
 		detail::GBuffer mGBuffer;
 
+		/* @brief Fullscreen quad used for deferred lighting and post-process passes. */
 		detail::FScreenQuad mScreenQuad;
 
 		//---------------------------------------------------------
@@ -94,6 +98,7 @@ namespace lum::render {
 		/* @brief Environment pass — renders the skybox cubemap. */
 		EnvironmentPass mEnvironmentPass;
 
+		/* @brief Shadow map generation pass for lights. */
 		ShadowPass mShadowPass;
 
 

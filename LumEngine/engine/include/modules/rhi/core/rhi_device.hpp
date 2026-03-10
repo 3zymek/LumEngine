@@ -150,11 +150,6 @@ namespace lum::rhi {
 		*/
 		virtual void BindFramebuffer( RFramebufferHandle fbo ) = 0;
 
-		/* @brief Unbinds any currently bound framebuffer.
-		* Redirects rendering to the default (screen) framebuffer.
-		*/
-		virtual void UnbindFramebuffer( ) = 0;
-
 
 		///////////////////////////////////////////////////
 		/// Layouts
@@ -729,8 +724,6 @@ namespace lum::rhi {
 #		if LUM_ENABLE_RENDER_PROFILER == 1
 		performance::Profiler mProfiler{};
 
-#			define LUM_PROFILER_BEGIN_FRAME()	mProfiler.StartRecording()
-#			define LUM_PROFILER_END_FRAME()		mProfiler.EndRecording()
 #			define LUM_PROFILER_DRAW_CALL()		mProfiler.RegisterDrawCall()
 #			define LUM_PROFILER_CACHE_MISS()	mProfiler.RegisterCacheMiss()
 #			define LUM_PROFILER_CACHE_HIT()		mProfiler.RegisterCacheHit()
@@ -761,26 +754,29 @@ namespace lum::rhi {
 		cstd::HandlePool<RFramebufferHandle, FFramebuffer, RFramebufferID>	mFramebuffers{ skMaxFramebuffers };
 		cstd::HandlePool<RPipelineHandle, FPipeline, RPipelineID>			mPipelines{ skMaxPipelines };
 
+
+		bool validate_framebuffer_handle( RFramebufferHandle buff ) const noexcept { return IsValid(buff) || (buff == gDefaultFramebuffer); }
+
 		/* @brief Validates a texture descriptor before resource creation.
 		*  @param desc Texture descriptor to validate.
 		*  @return True if the descriptor is valid, false otherwise.
 		*/
-		bool validate_texture_descriptor( const FTextureDescriptor& );
+		bool validate_texture_descriptor( const FTextureDescriptor& ) const noexcept;
 
 		/* @brief Validates a buffer descriptor before resource creation.
 		*  @param desc Buffer descriptor to validate.
 		*  @return True if the descriptor is valid, false otherwise.
 		*/
-		bool validate_buffer_descriptor( const FBufferDescriptor& );
+		bool validate_buffer_descriptor( const FBufferDescriptor& ) const noexcept;
 
 		/* @brief Returns true if the given image layout is a depth format. */
-		bool is_depth_format( ImageLayout fmt );
+		bool is_depth_format( ImageLayout fmt ) const noexcept;
 
 		/* @brief Returns true if the given image layout is a stencil format. */
-		bool is_stencil_format( ImageLayout fmt );
+		bool is_stencil_format( ImageLayout fmt ) const noexcept;
 
 		/* @brief Returns true if the given image layout is a color format. */
-		bool is_color_format( ImageLayout fmt );
+		bool is_color_format( ImageLayout fmt ) const noexcept;
 
 	};
 

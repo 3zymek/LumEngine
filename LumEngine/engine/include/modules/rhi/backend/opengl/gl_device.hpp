@@ -51,8 +51,6 @@ namespace lum::rhi::gl {
 
 		void BindFramebuffer( RFramebufferHandle ) override;
 
-		void UnbindFramebuffer( ) override;
-
 
 
 		//=================================================

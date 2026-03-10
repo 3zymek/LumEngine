@@ -17,15 +17,22 @@ namespace lum::cstd {
 	*
 	* @tparam tType Unsigned arithmetic type used for ID and generation.
 	*/
-	template<typename tType = uint32>
-		requires std::is_arithmetic_v<tType> && std::is_unsigned_v<tType>
+	template<std::unsigned_integral tType = uint32>
 	struct alignas(8) BaseHandle {
-		tType mID = lum::MaxVal<tType>();  // Slot index. MaxVal means invalid/null.
-		tType mGeneration = 0;             // Incremented on Remove to invalidate old handles.
 
-		bool operator==(const BaseHandle& other) const noexcept {
+		BaseHandle( tType id, tType gen = 0 )	: mID( id ), mGeneration( gen ) {}
+		BaseHandle( )							: mID( MaxVal<tType>() ), mGeneration( 0 ) {}
+
+		tType mID; // Slot index. MaxVal means invalid/null.
+		tType mGeneration; // Incremented on Remove to invalidate old handles.
+
+		constexpr bool operator==(const BaseHandle& other) const noexcept {
 			return mID == other.mID && mGeneration == other.mGeneration;
 		}
+		constexpr bool operator!=(const BaseHandle& other) const noexcept {
+			return !(*this == other);
+		}
+
 	};
 	
 	/* @brief Generational handle pool with stable references.
@@ -39,8 +46,7 @@ namespace lum::cstd {
 	* @tparam tDense       Type of stored objects.
 	* @tparam tArithmetic  Unsigned integer type used for indices and generations.
 	*/
-	template<typename tHandle, typename tDense, typename tArithmetic = uint32>
-		requires std::is_arithmetic_v<tArithmetic> && std::is_unsigned_v<tArithmetic>
+	template<typename tHandle, typename tDense, std::unsigned_integral tArithmetic = uint32>
 	class HandlePool {
 
 		using GenerationT	= tArithmetic;

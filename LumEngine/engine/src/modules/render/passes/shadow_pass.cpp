@@ -40,7 +40,7 @@ namespace lum::render {
 
 		geometryPass.DrawScene();
 
-		mContext.mRenderDevice->UnbindFramebuffer();
+		mContext.mRenderDevice->BindFramebuffer(rhi::gDefaultFramebuffer);
 		mContext.mRenderDevice->SetViewport(0, 0, viewport.mWidth, viewport.mHeight);
 
 		mContext.mRenderDevice->ToggleCull(cull.bEnabled);
@@ -103,8 +103,6 @@ namespace lum::render {
 		{
 			rhi::FFramebufferDescriptor desc;
 			desc.mDepthTex = mShadowMap;
-			desc.mWidth = mShadowMapTexSize.x;
-			desc.mHeight = mShadowMapTexSize.y;
 			mFramebuffer = mContext.mRenderDevice->CreateFramebuffer(desc);
 		}
 		{
