@@ -1,9 +1,0 @@
-#pragma once
-#include "entity/ecs_common.hpp"
-namespace lum {
-	struct CAudioEmitter : Component {
-
-		audio::EmitterID emitterID{};
-
-	};
-}

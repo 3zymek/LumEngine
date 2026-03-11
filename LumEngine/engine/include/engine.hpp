@@ -28,7 +28,7 @@ namespace lum {
 	struct PlatformModule {
 
 		Window mWindow;
-		rhi::RDevice* mRenderDevice = nullptr;
+		rhi::RenderDevice* mRenderDevice = nullptr;
 
 		void Initialize( ev::EventBus& bus ) {
 

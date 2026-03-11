@@ -6,7 +6,7 @@
 #pragma once
 
 #include "core/core_common.hpp"
-#include "core/shaders_define.h"
+#include "render/shaders_define.h"
 
 /* @brief Contains compile-time constants that define hard upper limits
 *  for all engine subsystems. Adjust these to tune memory reservation.

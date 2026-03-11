@@ -139,7 +139,7 @@ namespace lum {
 		static inline Path sInternalRoot = detail::fs::current_path().parent_path() / "LumEngine" / "internal_assets";
 
 		/* @brief Path to the shared shader define header prepended to all shaders. */
-		static inline Path sShaderDefine = detail::fs::current_path().parent_path() / "LumEngine" / "engine" / "include" / "core" / "shaders_define.h";
+		static inline Path sShaderDefine = detail::fs::current_path().parent_path() / "LumEngine" / "engine" / "include" / "modules" / "render" / "shaders_define.h";
 
 		/* @brief Buffer storing the last asset load error message. */
 		static inline char sLastErrorMessage[limits::gMaxErrorAssetLoadLength]{};

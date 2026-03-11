@@ -7,13 +7,13 @@
 //=============================================================================//
 #pragma once
 
-#include "core/utils/handle_pool.hpp"
 #include "core/core_common.hpp"
+#include "core/utils/handle_pool.hpp"
 
 namespace lum {
 
 	namespace rhi {
-		class RDevice;
+		class RenderDevice;
 		struct RShaderHandle;
 	} // lum::rhi
 
@@ -33,7 +33,7 @@ namespace lum {
 		/* @brief Initializes the shader manager with a render device.
 		* @param device Pointer to the RHI render device used for shader creation.
 		*/
-		void Initialize( rhi::RDevice* device );
+		void Initialize( rhi::RenderDevice* device );
 
 		/* @brief Loads a shader program from vertex and fragment source files.
 		*
@@ -51,7 +51,7 @@ namespace lum {
 	private:
 
 		/* @brief Pointer to the RHI device used for shader creation. */
-		rhi::RDevice* mRenderDevice = nullptr;
+		rhi::RenderDevice* mRenderDevice = nullptr;
 
 		/* @brief Cache mapping shader path hashes to their corresponding shader handles. */
 		std::unordered_map<uint64, rhi::RShaderHandle> mShaders;

@@ -17,7 +17,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MShaderManager::Initialize( rhi::RDevice* device ) {
+	void MShaderManager::Initialize( rhi::RenderDevice* device ) {
 		mRenderDevice = device;
 	}
 
@@ -28,15 +28,15 @@ namespace lum {
 			return mShaders[hash];
 
 		std::optional<String> vertexData = AssetLoader::LoadShader(root, vertexPath);
-		if (!vertexData) {
-			LUM_LOG_FATAL("Failed to load shader %s: %s", vertexPath, AssetLoader::GetErrorMessage());
-			LUM_DEBUGBREAK();
+		if (!vertexData.has_value()) {
+			LUM_LOG_ERROR("Failed to load shader %s: %s", vertexPath, AssetLoader::GetErrorMessage());
+			return {};
 		}
 
 		std::optional<String> fragmentData = AssetLoader::LoadShader(root, fragmentPath);
-		if (!fragmentData) {
-			LUM_LOG_FATAL("Failed to load shader %s: %s", vertexPath, AssetLoader::GetErrorMessage());
-			LUM_DEBUGBREAK();
+		if (!fragmentData.has_value()) {
+			LUM_LOG_ERROR("Failed to load shader %s: %s", vertexPath, AssetLoader::GetErrorMessage());
+			return {};
 		}
 
 		rhi::FShaderDescriptor desc;

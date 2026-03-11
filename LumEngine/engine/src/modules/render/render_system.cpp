@@ -1,10 +1,9 @@
 #pragma once
 
 #include "render/render_system.hpp"
-
 #include "render/renderer.hpp"
-#include "entity/ecs_manager.hpp"
 
+#include "entity/entity_manager.hpp"
 #include "entity/components/transform.hpp"
 #include "entity/components/material.hpp"
 #include "entity/components/mesh.hpp"
@@ -15,7 +14,6 @@
 
 #include "platform/input_common.hpp"
 #include "platform/key_codes.hpp"
-
 #include "platform/window.hpp"
 
 #include "imgui.h"

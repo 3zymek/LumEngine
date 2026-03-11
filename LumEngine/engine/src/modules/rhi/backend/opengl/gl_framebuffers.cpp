@@ -5,7 +5,7 @@
 //
 //=============================================================================//
 
-#include "modules/rhi/backend/opengl/gl_device.hpp"
+#include "modules/rhi/backend/gl_device.hpp"
 
 namespace lum::rhi::gl {
 

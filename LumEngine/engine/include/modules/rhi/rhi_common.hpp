@@ -8,6 +8,8 @@
 #include "core/core_common.hpp"
 #include "core/utils/handle_pool.hpp"
 
+#include "rhi/rhi_pch.hpp"
+
 namespace lum {
 
 	/* @brief Interleaved vertex structure passed to the GPU per draw call.

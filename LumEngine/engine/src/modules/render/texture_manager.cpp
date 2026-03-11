@@ -14,7 +14,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MTextureManager::Initialize( rhi::RDevice* device ) {
+	void MTextureManager::Initialize( rhi::RenderDevice* device ) {
 
 		mRenderDevice = device;
 

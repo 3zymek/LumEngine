@@ -14,7 +14,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MMeshManager::Initialize( rhi::RDevice* device ) {
+	void MMeshManager::Initialize( rhi::RenderDevice* device ) {
 
 		mRenderDevice = device;
 		init();

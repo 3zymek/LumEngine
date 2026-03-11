@@ -12,7 +12,7 @@ namespace lum {
 	///Forward Declare///
 	struct FTextureData;
 	namespace rhi {
-		class RDevice;
+		class RenderDevice;
 		struct RTextureHandle;
 	} // lum::rhi
 	/////////////////////
@@ -59,7 +59,7 @@ namespace lum {
 		* Automatically creates default and missing fallback textures.
 		* @param device Valid pointer to an RDevice instance.
 		*/
-		void Initialize( rhi::RDevice* device );
+		void Initialize( rhi::RenderDevice* device );
 
 		/* @brief Retrieves a cached texture by path.
 		* Returns missing texture fallback if not found in cache.
@@ -99,7 +99,7 @@ namespace lum {
 	private:
 
 		/* @brief Rendering backend */
-		rhi::RDevice*		mRenderDevice = nullptr;
+		rhi::RenderDevice*		mRenderDevice = nullptr;
 
 		/* @brief Fallback texture displayed when a requested asset cannot be found. */
 		rhi::RTextureHandle mMissingTexture;

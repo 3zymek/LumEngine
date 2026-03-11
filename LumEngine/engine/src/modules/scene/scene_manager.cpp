@@ -5,7 +5,7 @@
 //=============================================================================//
 
 #include "scene/scene_manager.hpp"
-#include "entity/ecs_manager.hpp"
+#include "entity/entity_manager.hpp"
 #include "core/utils/asset_loader.hpp"
 #include "scene/format/scene_parser.hpp"
 #include "scene/format/tokenizer.hpp"

@@ -5,7 +5,6 @@
 //=============================================================================//
 #pragma once
 
-#include "core/setup.hpp"
 #include "rhi/rhi_common.hpp"
 
 namespace lum::rhi {

@@ -29,6 +29,7 @@ namespace lum::render {
 
 		mContext.mRenderDevice->BindShader(mCubemap.mShader);
 		mContext.mRenderDevice->BindTexture(mCubemap.mTexture, LUM_TEX_CUBEMAP);
+		mContext.mRenderDevice->BindSampler(mSampler, LUM_TEX_CUBEMAP);
 		mContext.mRenderDevice->DrawElements(mCubemap.mVao, mCubemap.mNumIndices);
 
 	}
@@ -88,6 +89,17 @@ namespace lum::render {
 			desc.mAttributes = attrs;
 			mCubemap.mVao = mContext.mRenderDevice->CreateVertexLayout(desc, mCubemap.mVbo);
 			mContext.mRenderDevice->AttachElementBufferToLayout(mCubemap.mEbo, mCubemap.mVao);
+		}
+		{ // Environment sampler
+
+			rhi::FSamplerDescriptor desc;
+			desc.mMinFilter = rhi::SamplerMinFilter::LinearMipmapLinear;
+			desc.mMagFilter = rhi::SamplerMagFilter::Linear;
+			desc.mWrapR = rhi::SamplerWrap::ClampEdge;
+			desc.mWrapS = rhi::SamplerWrap::ClampEdge;
+			desc.mWrapT = rhi::SamplerWrap::ClampEdge;
+			mSampler = mContext.mRenderDevice->CreateSampler(desc);
+			
 		}
 		{ // Environment Pipeline
 			rhi::FPipelineDescriptor desc;

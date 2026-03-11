@@ -6,10 +6,7 @@
 //
 //=============================================================================//
 
-#include "rhi/backend/opengl/gl_device.hpp"
-#include "rhi/core/rhi_device.hpp"
-#include "rhi/rhi_common.hpp"
-
+#include "rhi/backend/gl_device.hpp"
 #include "platform/window.hpp"
 
 #if LUM_ENABLE_IMGUI == 1

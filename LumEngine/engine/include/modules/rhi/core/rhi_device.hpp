@@ -7,13 +7,14 @@
 //=============================================================================//
 #pragma once
 
-#include "core/core_pch.hpp"
+#include "core/core_common.hpp"
 #include "core/core_defines.hpp"
 #include "core/utils/asset_loader.hpp"
 #include "core/utils/handle_pool.hpp"
-#include "core/shaders_define.h"
 #include "core/utils/flags.hpp"
 #include "core/setup.hpp"
+
+#include "render/shaders_define.h"
 
 #include "rhi/rhi_common.hpp"
 #include "rhi/core/rhi_buffer.hpp"
@@ -48,7 +49,7 @@ namespace lum::rhi {
 	*
 	* @note Use CreateDevice() to obtain an instance tied to a window.
 	*/
-	class RDevice {
+	class RenderDevice {
 	public:
 
 		/* @brief Initializes the rendering device and binds it to the given window.
@@ -235,7 +236,7 @@ namespace lum::rhi {
 		* @return Handle to the created sampler.
 		*/
 		LUM_NODISCARD
-		virtual RSamplerHandle CreateSampler( const RSamplerDescriptor& desc ) = 0;
+		virtual RSamplerHandle CreateSampler( const FSamplerDescriptor& desc ) = 0;
 
 		/* @brief Binds a sampler to a shader slot.
 		* @param sampler Handle of the sampler to bind.
@@ -786,6 +787,6 @@ namespace lum::rhi {
 	* @param backend Backend used.
 	* @return Pointer to the created device.
 	*/
-	RDevice* CreateDevice(Window* window, RenderBackend backend);
+	RenderDevice* CreateDevice(Window* window, RenderBackend backend);
 
 } // namespace lum::rhi

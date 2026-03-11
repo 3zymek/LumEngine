@@ -1,9 +1,18 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: Core of Render Hardware Interface.
+//          Provides a backend-agnostic GPU abstraction for resource
+//          creation, pipeline state management, and draw call submission.
+//
+//=============================================================================//
+
 #include "rhi/core/rhi_device.hpp"
 #include "platform/window.hpp"
-#include "rhi/backend/opengl/gl_device.hpp"
+#include "modules/rhi/backend/gl_device.hpp"
+
 namespace lum::rhi {
 
-	bool RDevice::validate_texture_descriptor(const FTextureDescriptor& desc) const noexcept {
+	bool RenderDevice::validate_texture_descriptor(const FTextureDescriptor& desc) const noexcept {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mTextures.DenseSize() <= skMaxTextures,
@@ -22,7 +31,7 @@ namespace lum::rhi {
 		return true;
 
 	}
-	bool RDevice::validate_buffer_descriptor( const FBufferDescriptor& desc ) const noexcept {
+	bool RenderDevice::validate_buffer_descriptor( const FBufferDescriptor& desc ) const noexcept {
 
 		if (desc.mBufferUsage == BufferUsage::Static) {
 			LUM_ASSERT(
@@ -59,7 +68,7 @@ namespace lum::rhi {
 
 	}
 
-	bool RDevice::is_depth_format( ImageLayout fmt ) const noexcept {
+	bool RenderDevice::is_depth_format( ImageLayout fmt ) const noexcept {
 
 		return fmt == ImageLayout::Depth16 ||
 			fmt == ImageLayout::Depth24 ||
@@ -69,22 +78,22 @@ namespace lum::rhi {
 			fmt == ImageLayout::Depth32FStencil8;
 
 	}
-	bool RDevice::is_stencil_format( ImageLayout fmt ) const noexcept {
+	bool RenderDevice::is_stencil_format( ImageLayout fmt ) const noexcept {
 
 		return fmt == ImageLayout::StencilIndex8 ||
 			fmt == ImageLayout::Depth24Stencil8 ||
 			fmt == ImageLayout::Depth32FStencil8;
 
 	}
-	bool RDevice::is_color_format( ImageLayout fmt ) const noexcept {
+	bool RenderDevice::is_color_format( ImageLayout fmt ) const noexcept {
 
 		return !is_depth_format(fmt) && !is_stencil_format(fmt);
 
 	}
 
-	RDevice* CreateDevice( Window* window, RenderBackend backend ) {
+	RenderDevice* CreateDevice( Window* window, RenderBackend backend ) {
 		
-		rhi::RDevice* device = nullptr;
+		rhi::RenderDevice* device = nullptr;
 
 		switch (backend) {
 		case RenderBackend::OpenGL: device = new gl::GLDevice();

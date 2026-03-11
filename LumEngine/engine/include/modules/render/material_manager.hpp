@@ -5,17 +5,18 @@
 //=============================================================================//
 #pragma once
 
-#include "core/utils/handle_pool.hpp"
 #include "core/core_common.hpp"
-#include "render/material.hpp"
 #include "core/limits.hpp"
+#include "core/utils/handle_pool.hpp"
+
+#include "render/material.hpp"
 
 namespace lum {
 
 	/////Forward Declare/////
 	class MTextureManager;
 	namespace rhi {
-		class RDevice;
+		class RenderDevice;
 	}
 	////////////////////////
 
@@ -45,7 +46,7 @@ namespace lum {
 		* @param device  Pointer to the active render device.
 		* @param texMgr  Pointer to the texture manager for fallback resolution.
 		*/
-		void Initialize( rhi::RDevice* device, MTextureManager* texMgr );
+		void Initialize( rhi::RenderDevice* device, MTextureManager* texMgr );
 
 		/* @brief Uploads a material base to the pool and returns its handle.
 		* @param base Material base data to upload.
@@ -85,7 +86,7 @@ namespace lum {
 	private:
 
 		/* @brief Render backend */
-		rhi::RDevice* mRenderDevice = nullptr;
+		rhi::RenderDevice* mRenderDevice = nullptr;
 
 		/* @brief Handle to the built-in default material, used as fallback for invalid handles. */
 		MaterialBaseHandle mDefaultMaterial;

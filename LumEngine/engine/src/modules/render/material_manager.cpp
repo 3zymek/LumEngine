@@ -15,7 +15,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MMaterialManager::Initialize(rhi::RDevice* device, MTextureManager* texMgr) {
+	void MMaterialManager::Initialize(rhi::RenderDevice* device, MTextureManager* texMgr) {
 
 		mRenderDevice = device;
 		mTextureMgr = texMgr;

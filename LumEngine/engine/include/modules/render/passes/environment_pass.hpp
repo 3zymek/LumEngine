@@ -42,6 +42,8 @@ namespace lum::render {
 		/* @brief Shader program used for geometry rendering. */
 		rhi::RShaderHandle mShader;
 
+		rhi::RSamplerHandle mSampler;
+
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
 		void init();
 

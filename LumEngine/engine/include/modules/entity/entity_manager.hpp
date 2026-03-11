@@ -10,7 +10,7 @@
 #include "core/limits.hpp"
 
 #include "entity/ecs_common.hpp"
-#include "entity/ecs_component_pool.hpp"
+#include "entity/component_pool.hpp"
 
 namespace lum {
 
@@ -194,4 +194,4 @@ namespace lum {
 	}
 
 }
-#include "entity/ecs_manager.ipp"
+#include "entity/entity_manager.ipp"

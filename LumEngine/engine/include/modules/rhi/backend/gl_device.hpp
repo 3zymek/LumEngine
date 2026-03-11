@@ -10,7 +10,7 @@
 
 namespace lum::rhi::gl {
 
-	class GLDevice : public RDevice {
+	class GLDevice : public RenderDevice {
 	public:
 
 		void Initialize( Window* window ) override;
@@ -95,7 +95,7 @@ namespace lum::rhi::gl {
 		// Samplers
 		//=================================================
 
-		RSamplerHandle CreateSampler( const RSamplerDescriptor& ) override;
+		RSamplerHandle CreateSampler( const FSamplerDescriptor& ) override;
 
 		void BindSampler( RSamplerHandle, uint16 )	override;
 

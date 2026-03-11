@@ -6,7 +6,7 @@
 //
 //=============================================================================//
 
-#include "entity/ecs_manager.hpp"
+#include "entity/entity_manager.hpp"
 
 namespace lum::ecs {
 

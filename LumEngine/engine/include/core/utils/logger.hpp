@@ -4,9 +4,11 @@
 // 
 //=============================================================================//
 #pragma once
+
 #include "core/core_pch.hpp"
 #include "core/core_common.hpp"
 #include "core/utils/flags.hpp"
+
 namespace lum {
 
 	using SeverityMask = bitfield;

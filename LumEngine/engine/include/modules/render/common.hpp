@@ -37,7 +37,7 @@ namespace lum::render {
 	struct FRendererContext {
 
 		/* @brief Pointer to the active RHI device. */
-		rhi::RDevice* mRenderDevice = nullptr;
+		rhi::RenderDevice* mRenderDevice = nullptr;
 
 		/* @brief Pointer to the active texture manager. */
 		MTextureManager* mTextureMgr = nullptr;

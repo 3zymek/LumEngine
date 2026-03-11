@@ -4,8 +4,9 @@
 //
 //=============================================================================//
 #pragma once
+
+#include "core/core_common.hpp"
 #include "key_codes.hpp"
-#include "core/core_pch.hpp"
 
 namespace lum {
 

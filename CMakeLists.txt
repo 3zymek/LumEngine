@@ -35,7 +35,7 @@ source_group(TREE ${CMAKE_SOURCE_DIR}/LumEngine FILES
 
 target_precompile_headers(LumEngine PRIVATE 
     "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/core/core_pch.hpp"
-    "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/modules/audio/audio_pch.hpp"
+    "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/modules/ahi/ahi_pch.hpp"
     "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/modules/rhi/rhi_pch.hpp"
 )
 

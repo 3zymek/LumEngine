@@ -6,7 +6,7 @@
 #pragma once
 
 #include "rhi/rhi_common.hpp"
-#include "core/shaders_define.h"
+#include "render/shaders_define.h"
 
 namespace lum::rhi {
 
@@ -34,7 +34,7 @@ namespace lum::rhi {
 		ClampBorder		// Sets color border outside bounds
 	};
 
-	struct RSamplerDescriptor {
+	struct FSamplerDescriptor {
 
 		// Filter that applies to texture, when texture is magnified ( scaled up )
 		SamplerMagFilter mMagFilter{};
