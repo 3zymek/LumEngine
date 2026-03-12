@@ -23,7 +23,7 @@ namespace lum {
 	public:
 		
 		friend class ecs::MEntityManager;
-		Entity( ) : mID( GenerateID<Entity, 0>::Get() ) {}
+		Entity( ) : mID( GenerateID<Entity>::Get() ) {}
 
 		const ecs::EntityID mID;
 

@@ -17,20 +17,20 @@ namespace lum {
 	* @tparam tType  Type to generate IDs for.
 	* @tparam tNullVal Sentinel null value; the counter starts one above this.
 	*/
-	template<typename tType, int32 tNullVal = 0>
+	template<typename tType, std::integral tIntegral = usize, tIntegral tNullVal = 0>
 	struct GenerateID {
 
 		/* @brief Returns the next available unique ID.
 		* @return Atomically incremented uint32 identifier.
 		*/
-		static uint32 Get( ) {
+		static tIntegral Get( ) {
 			return sID.fetch_add(1, std::memory_order_relaxed);
 		}
 
 	private:
 
 		/* @brief Shared atomic counter for this type instantiation. */
-		inline static std::atomic<uint32> sID = tNullVal + 1;
+		inline static std::atomic<tIntegral> sID = tNullVal + 1;
 
 	};
 

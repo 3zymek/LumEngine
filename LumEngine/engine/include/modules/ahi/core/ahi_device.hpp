@@ -15,24 +15,18 @@ namespace lum::ahi {
 		virtual SoundHandle LoadSound(StringView path) = 0;
 		virtual void UnloadSound(SoundHandle& sound) = 0;
 
-		virtual void Play(SoundHandle sound) = 0;
-		virtual void Play(FSoundInstance sound) = 0;
-		virtual void Stop(SoundHandle sound) = 0;
-		virtual void Pause(SoundHandle sound) = 0;
-		virtual void Resume(SoundHandle sound) = 0;
+		virtual ChannelGroupHandle CreateChannelGroup(StringView name) = 0;
 
-		virtual void SetVolume(SoundHandle sound, float32 value) = 0;
-		virtual void SetPitch(SoundHandle sound, float32 value) = 0;
-		virtual void SetLooping(SoundHandle sound, bool loop) = 0;
+		virtual void PlayOneShot(SoundHandle sound, const FPlaybackDescriptor& desc) = 0;
+		virtual void Play(const FSoundInstance& inst) = 0;
 
-		virtual void SetPosition(SoundHandle sound, glm::vec3 pos) = 0;
-		virtual void SetListenerPosition() = 0;
-
-		virtual void Update() = 0;
+		virtual void Update(std::vector<FSoundInstance>& instances) = 0;
 		
 	protected:
 
 		cstd::HandlePool<SoundHandle, vptr> mSounds{ limits::gMaxAudioSounds };
+		cstd::HandlePool<ChannelGroupHandle, vptr> mChannelGroups{ limits::gMaxChannelsGroup };
+		std::unordered_map<InstID, vptr> mChannels;
 
 
 	};

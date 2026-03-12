@@ -8,17 +8,29 @@ namespace lum::ahi {
 
 	enum class AudioBackend { Fmod };
 	
-	struct ChannelHandle : cstd::BaseHandle<> {};
+	struct ChannelGroupHandle : cstd::BaseHandle<> {};
 	struct SoundHandle : cstd::BaseHandle<> {};
 
-	struct FSoundInstance {
+	struct FPlaybackDescriptor {
 
-		SoundHandle mSound;
 		float32 mVolume = 1.0f;
 		float32 mPitch = 1.0f;
-		bool bLoop = false;
-		glm::vec3 mPosition;
 
 	};
+
+	enum class AHIError : byte {
+		Ok,
+		InvalidHandle,
+		DeviceNotFound
+	};
+
+	inline ccharptr ErrorToString(AHIError err) {
+		switch (err) {
+		case AHIError::Ok: return "Ok";
+		case AHIError::InvalidHandle: return "Invalid handle";
+		case AHIError::DeviceNotFound: return "Device not found";
+		}
+
+	}
 
 }

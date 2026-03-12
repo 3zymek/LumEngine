@@ -32,6 +32,8 @@ namespace lum::limits {
 	/* @brief Maximum number of concurrent audio channels. */
 	inline constexpr usize gMaxAudioChannels = 256;
 
+	inline constexpr usize gMaxChannelsGroup = 8;
+
 	//============================= Events ==================================
 
 	/* @brief Maximum number of distinct event types registered in the engine. */

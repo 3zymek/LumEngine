@@ -192,6 +192,13 @@ namespace lum {
 			bool a : 1 = true; /* @brief Enable writes to the alpha channel. */
 		};
 
+		enum class RHIResult : byte {
+			InvalidHandle,
+
+
+
+		};
+
 		/* @brief Internal implementation details for the RHI.
 		*  Not intended for direct use outside of the RHI subsystem.
 		*/

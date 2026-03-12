@@ -33,11 +33,7 @@ namespace lum::rhi::gl {
 			initFlags
 		);
 
-		RBufferHandle createdBuffer = mBuffers.Append(std::move(buffer));
-
-		LUM_LOG_INFO("Created buffer %d", createdBuffer.mID);
-
-		return createdBuffer;
+		return mBuffers.Append(std::move(buffer));
 
 	}
 
@@ -80,7 +76,6 @@ namespace lum::rhi::gl {
 		
 		mBuffers.Remove(buff);
 
-		LUM_LOG_INFO("Deleted buffer %d", buff.mID);
 	}
 
 	vptr GLDevice::MapBuffer(RBufferHandle buff, Flags<MapFlag> flags, usize offset, usize size) {
@@ -128,8 +123,6 @@ namespace lum::rhi::gl {
 		glVertexArrayElementBuffer(mLayouts[vao].mHandle, mBuffers[ebo].mHandle);
 		mLayouts[vao].mElementBuff = ebo;
 
-		LUM_LOG_DEBUG("Attached EBO %d to VAO %d", ebo.mID, vao.mID);
-
 	}
 
 	void GLDevice::SetUniformBufferBinding( RBufferHandle ubo, int32 binding ) {
@@ -137,8 +130,6 @@ namespace lum::rhi::gl {
 		LUM_ASSERT(IsValid(ubo), "Invalid buffer");
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, mBuffers[ubo].mHandle);
-
-		LUM_LOG_DEBUG("Attached UBO %d to binding %d", ubo.mID, binding);
 
 	}
 
