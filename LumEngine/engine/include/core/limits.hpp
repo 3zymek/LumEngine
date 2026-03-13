@@ -34,6 +34,8 @@ namespace lum::limits {
 
 	inline constexpr usize gMaxChannelsGroup = 8;
 
+	inline constexpr usize gMaxAudioEffects = 10;
+
 	//============================= Events ==================================
 
 	/* @brief Maximum number of distinct event types registered in the engine. */

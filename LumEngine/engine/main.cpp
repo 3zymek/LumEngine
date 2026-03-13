@@ -13,7 +13,7 @@ int main() {
 
     dev->Initialize();
 
-    auto test = AssetLoader::LoadAudio(RootID::External, "audio/test.wav");
+    auto test = AssetLoader::LoadAudio(RootID::External, "audio/castle.wav");
     if (!test) {
         LUM_LOG_ERROR("Failed to load sound: %s", AssetLoader::GetErrorMessage());
         return 0;
@@ -30,6 +30,7 @@ int main() {
     dev->PlayOneShot(sound, { .mVolume = 0.2f, .mPitch = 0.9f });
 
     while (true) {
+
         /*
         if (GetAsyncKeyState(VK_UP)) {
             float32 vol = inst.GetVolume();

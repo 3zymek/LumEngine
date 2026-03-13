@@ -19,8 +19,8 @@ namespace lum::cstd {
 	template<std::unsigned_integral tType = uint32>
 	struct alignas(8) BaseHandle {
 
-		BaseHandle( tType id, tType gen = 0 )	: mID( id ), mGeneration( gen ) {}
-		BaseHandle( )							: mID( MaxVal<tType>() ), mGeneration( 0 ) {}
+		constexpr BaseHandle( tType id, tType gen = 0 )	: mID( id ), mGeneration( gen ) {}
+		constexpr BaseHandle( )							: mID( MaxVal<tType>() ), mGeneration( 0 ) {}
 
 		tType mID; // Slot index. MaxVal means invalid/null.
 		tType mGeneration; // Incremented on Remove to invalidate old handles.

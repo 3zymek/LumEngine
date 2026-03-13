@@ -21,7 +21,7 @@ namespace lum::ahi::fmod {
 		FMOD::Sound* sound = nullptr;
 		mSystem->createSound(path.data(), FMOD_DEFAULT, nullptr, &sound);
 
-		return mSounds.Append(sound);
+		return mSounds.Append(std::move(sound));
 
 	}
 	void FMODDevice::UnloadSound(SoundHandle& sound) {
@@ -32,40 +32,63 @@ namespace lum::ahi::fmod {
 
 	}
 
+	AudioEffectHandle FMODDevice::CreateEffect(const FAudioEffectDescriptor& desc) {
+		
+		FAudioEffect effect;
+		if (desc.mReverb.bEnabled)
+			create_reverb_effect(desc.mReverb);
+
+			//case EffectType::LowPass:		{ mSystem->createDSPByType(FMOD_DSP_TYPE_LOWPASS, &dsp);		break; }
+			//case EffectType::HighPass:		{ mSystem->createDSPByType(FMOD_DSP_TYPE_HIGHPASS, &dsp);	break; }
+			//case EffectType::Echo:			{ mSystem->createDSPByType(FMOD_DSP_TYPE_ECHO, &dsp);		break; }
+			//case EffectType::Distortion:	{ mSystem->createDSPByType(FMOD_DSP_TYPE_DISTORTION, &dsp);	break; }
+			//case EffectType::Chorus:		{ mSystem->createDSPByType(FMOD_DSP_TYPE_CHORUS, &dsp);		break; }
+			//case EffectType::Flanger:		{ mSystem->createDSPByType(FMOD_DSP_TYPE_FLANGE, &dsp);		break; }
+			//case EffectType::Compressor:	{ mSystem->createDSPByType(FMOD_DSP_TYPE_COMPRESSOR, &dsp);	break; }
+
+		return mEffects.Append(std::move(effect));
+		
+	}
+
+	
+
 	ChannelGroupHandle FMODDevice::CreateChannelGroup(StringView name) {
 
 		FMOD::ChannelGroup* group;
 		mSystem->createChannelGroup(name.data(), &group);
 
-		ChannelGroupHandle handle = mChannelGroups.Append(group);
+		return mChannelGroups.Append(std::move(group));
 
-		return handle;
 	}
 
 	void FMODDevice::PlayOneShot(SoundHandle sound, const FPlaybackDescriptor& desc) {
-
-		FMOD::DSP* reverb;
-		mSystem->createDSPByType(FMOD_DSP_TYPE_SFXREVERB, &reverb);
 
 		FMOD::Sound* fmodSound = static_cast<FMOD::Sound*>(mSounds[sound]);
 		FMOD::Channel* channel = nullptr;
 		mSystem->playSound(fmodSound, nullptr, false, &channel);
 		channel->setVolume(desc.mVolume);
 		channel->setPitch(desc.mPitch);
-		channel->addDSP(0, reverb);
-
 
 	}
-	void FMODDevice::Play(const FSoundInstance& inst) {
+	void FMODDevice::Play(const FSoundInstance& inst, ChannelGroupHandle group) {
+
+		LUM_ASSERT(mSounds.Contains(inst.GetSound()), "Invalid sound");
 
 		FMOD::Sound* fmodSound = static_cast<FMOD::Sound*>(mSounds[inst.GetSound().mID]);
 		FMOD::Channel* channel = nullptr;
+
 		mSystem->playSound(fmodSound, nullptr, inst.IsLooped(), &channel);
-
 		channel->setVolume(inst.GetVolume());
-		channel->setPitch(inst.GetVolume());
+		channel->setPitch(inst.GetPitch());
 
-		mChannels.insert({ inst.GetID(), channel});
+		if (group != gDefaultGroup) {
+
+			LUM_ASSERT(mChannelGroups.Contains(group), "Invalid group");
+			channel->setChannelGroup(static_cast<FMOD::ChannelGroup*>(mChannelGroups[group]));
+		
+		}
+
+		mChannels.insert({ inst.GetID(), channel });
 
 	}
 
@@ -91,6 +114,32 @@ namespace lum::ahi::fmod {
 
 		mSystem->update();
 
+	}
+
+	vptr FMODDevice::create_reverb_effect(const FAudioEffectDescriptor::FReverb& desc) {
+		FMOD::DSP* dsp;
+		mSystem->createDSPByType(FMOD_DSP_TYPE_SFXREVERB, &dsp);
+
+		if (desc.mPreset != ReverbPreset::Off) {
+			FMOD_REVERB_PROPERTIES props = skReverbPresets[static_cast<byte>(desc.mPreset)];
+			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_DECAYTIME, props.DecayTime);
+			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_EARLYDELAY, props.EarlyDelay);
+			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_LATEDELAY, props.LateDelay);
+			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_HFREFERENCE, props.HFReference);
+			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_DIFFUSION, props.Diffusion);
+			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_WETLEVEL, props.WetLevel);
+			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_DRYLEVEL, props.);
+			return dsp;
+		}
+
+		dsp->setParameterFloat(FMOD_DSP_SFXREVERB_DECAYTIME, desc.mDecayTime);
+		dsp->setParameterFloat(FMOD_DSP_SFXREVERB_EARLYDELAY, desc.mEarlyDelay);
+		dsp->setParameterFloat(FMOD_DSP_SFXREVERB_LATEDELAY, desc.mLateDelay);
+		dsp->setParameterFloat(FMOD_DSP_SFXREVERB_HFREFERENCE, desc.mReferenceFreq);
+		dsp->setParameterFloat(FMOD_DSP_SFXREVERB_DIFFUSION, desc.mDiffusion);
+		dsp->setParameterFloat(FMOD_DSP_SFXREVERB_WETLEVEL, desc.mWetLevel);
+		dsp->setParameterFloat(FMOD_DSP_SFXREVERB_DRYLEVEL, desc.mDryLevel);
+		return dsp;
 	}
 
 } // namespace lum::ahi
