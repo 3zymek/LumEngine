@@ -4,6 +4,13 @@
 
 namespace lum::ahi {
 
+	namespace detail {
+		enum class FrequnecyType : byte {
+			Low,
+			High
+		};
+	}
+
 	enum class EffectType : byte {
 
 		Reverb,
@@ -72,10 +79,63 @@ namespace lum::ahi {
 			float32 mLateDelay = 0.1f;
 			float32 mReferenceFreq = 1.0f;
 			float32 mDiffusion = 0.f;
-			float32 mWetLevel = 1.0f;
+			float32 mWetLevel = 0.5f;
 			float32 mDryLevel = 1.0f;
+			float32 mDensity = 1.0f;
 
 		} mReverb;
+
+		struct FEcho {
+			
+			bool bEnabled = false;
+
+			float32 mDelay = 500.0f;
+			float32 mFeedback = 50.0f;
+			float32 mWetLevel = 0.5f;
+			float32 mDryLevel = 1.0f;
+
+			
+		} mEcho;
+
+		struct FDistortion {
+
+			bool bEnabled = false;
+
+			float32 mLevel = 0.0f;
+
+		} mDistortion;
+
+		struct FChorus {
+
+			bool bEnabled = false;
+
+			float32 mRate = 0.5f;
+			float32 mDepth = 3.0f;
+			float32 mMix = 50.0f;
+
+		} mChorus;
+
+		struct FFlange {
+
+			bool bEnabled = false;
+
+			float32 mRate = 0.5f;
+			float32 mDepth = 3.0f;
+			float32 mMix = 50.0f;
+
+		} mFlange;
+
+		struct FCompressor {
+
+			bool bEnabled = false;
+
+			float32 mThreshold = -20.0f;
+			float32 mRatio = 4.0f;
+			float32 mAttack = 10.0f;
+			float32 mRelease = 100.0f;
+			float32 mGainMakeup = 0.0f;
+
+		} mCompressor;
 		
 	};
 

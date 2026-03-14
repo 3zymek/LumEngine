@@ -36,14 +36,15 @@ namespace lum::ahi {
 		}
 
 		void SetDirty(bool dirty) { bDirty = dirty; }
+		void SetActive(bool active) { bActive = active; bDirty = true; }
 		
 		void Stop() {
-			bPlaying = false;
+			bActive = false;
 			bDirty = true;
 		}
 
 		bool IsPaused		() const noexcept { return bPaused; }
-		bool IsPlaying		() const noexcept { return bPlaying; }
+		bool IsActive		() const noexcept { return bActive; }
 		bool IsLooped		() const noexcept { return bLooped; }
 		bool IsDirty		() const noexcept { return bDirty; }
 		float32 GetVolume	() const noexcept { return mVolume; }
@@ -61,7 +62,7 @@ namespace lum::ahi {
 		glm::vec3 mPosition = { 0.0f, 0.0f, 0.0f };
 
 		bool bPaused = false;
-		bool bPlaying = false;
+		bool bActive = false;
 		bool bLooped = false;
 		bool bDirty = true;
 

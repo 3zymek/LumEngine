@@ -11,15 +11,22 @@ namespace lum::ahi::fmod {
 		void Initialize() override;
 		void Finalize() override;
 
-		SoundHandle LoadSound(StringView) override;
+		SoundHandle LoadSound(StringView, Flags<SoundFlag>) override;
 		void UnloadSound(SoundHandle&) override;
 
 		AudioEffectHandle CreateEffect(const FAudioEffectDescriptor&) override;
 
 		ChannelGroupHandle CreateChannelGroup(StringView) override;
+		void AddEffectToGroup(ChannelGroupHandle, AudioEffectHandle) override;
 
 		void PlayOneShot(SoundHandle, const FPlaybackDescriptor&) override;
-		void Play(const FSoundInstance&, ChannelGroupHandle) override;
+		void Play(FSoundInstance&, ChannelGroupHandle) override;
+
+		void StopAll() override;
+
+		void SetMasterVolume(float32) override;
+		void AddEffectToSound(SoundHandle, AudioEffectHandle) override;
+		void Set3DListenerPosition(glm::vec3, glm::vec3 forward, glm::vec3 up) override;
 
 		void Update(std::vector<FSoundInstance>& instances) override;
 
@@ -54,7 +61,15 @@ namespace lum::ahi::fmod {
 
 		FMOD::System* mSystem = nullptr;
 
-		vptr create_reverb_effect(const FAudioEffectDescriptor::FReverb&);
+		static FMOD_MODE translate_sound_flags(Flags<SoundFlag>);
+
+		FMOD::DSP* create_reverb_effect(const FAudioEffectDescriptor::FReverb&);
+		FMOD::DSP* create_frequency_effect(const FAudioEffectDescriptor::FFrequencyPass::FPass&, detail::FrequnecyType type);
+		FMOD::DSP* create_echo_effect(const FAudioEffectDescriptor::FEcho&);
+		FMOD::DSP* create_distortion_effect(const FAudioEffectDescriptor::FDistortion&);
+		FMOD::DSP* create_chorus_effect(const FAudioEffectDescriptor::FChorus&);
+		FMOD::DSP* create_flange_effect(const FAudioEffectDescriptor::FFlange&);
+		FMOD::DSP* create_compressor_effect(const FAudioEffectDescriptor::FCompressor&);
 	
 
 	};

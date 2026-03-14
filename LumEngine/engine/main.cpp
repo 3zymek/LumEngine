@@ -13,39 +13,38 @@ int main() {
 
     dev->Initialize();
 
-    auto test = AssetLoader::LoadAudio(RootID::External, "audio/castle.wav");
+    auto test = AssetLoader::LoadAudio(RootID::External, "audio/wirst.wav");
     if (!test) {
         LUM_LOG_ERROR("Failed to load sound: %s", AssetLoader::GetErrorMessage());
         return 0;
     }
 
-    auto sound = dev->LoadSound(test.value());
+    auto sound = dev->LoadSound(test.value(), ahi::SoundFlag::CreateSample | ahi::SoundFlag::Spatial3D);
+
+    auto group = dev->CreateChannelGroup("test");
+    ahi::FAudioEffectDescriptor desc;
+
+    desc.mReverb.bEnabled = true;
+
+    auto effect = dev->CreateEffect(desc);
+
+    dev->AddEffectToGroup(group, effect);
 
     std::vector<ahi::FSoundInstance> instances;
     instances.emplace_back(sound);
     auto& inst = instances.back();
+    inst.SetPitch(0.9f);
+    inst.SetVolume(0.2f);
+    inst.SetLoop(true);
 
-    //dev->Play(inst);
-
-    dev->PlayOneShot(sound, { .mVolume = 0.2f, .mPitch = 0.9f });
+    dev->Play(inst, group);
 
     while (true) {
 
-        /*
-        if (GetAsyncKeyState(VK_UP)) {
-            float32 vol = inst.GetVolume();
-            inst.SetVolume(vol += 0.01f);
-            LUM_LOG_INFO("Volume up: %f", vol);
-        }
-        if (GetAsyncKeyState(VK_DOWN)) {
-            float32 vol = inst.GetVolume();
-            inst.SetVolume(vol -= 0.01f);
-            LUM_LOG_INFO("Volume down: %f", vol);
-        }
         if (GetAsyncKeyState(VK_SPACE)) {
-            dev->Stop(inst);
+            inst.SetPause(!inst.IsPaused());
         }
-       */
+       
 
         dev->Update(instances);
 
