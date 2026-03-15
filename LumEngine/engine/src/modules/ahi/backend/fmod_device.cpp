@@ -1,22 +1,33 @@
+//========= Copyright (C) 2026 3zymek, MIT License ============//
+//
+// Purpose: FMOD implementation of Audio Hardware Interface.
+//
+//=============================================================================//
+
 #include "ahi/backend/fmod_device.hpp"
 
 namespace lum::ahi::fmod {
 
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
 
-	void FMODDevice::Initialize() {
+	void FMODDevice::Initialize( int32 maxChannels, Flags<InitFlag> flags ) {
 
 		FMOD::System_Create(&mSystem);
-		FMOD_RESULT result = mSystem->init(512, FMOD_INIT_NORMAL, nullptr);
+		FMOD_INITFLAGS initFlags = translate_init_flags(flags);
+		FMOD_RESULT result = mSystem->init(maxChannels, initFlags, nullptr);
 		LUM_ASSERT(result == FMOD_OK, "FMOD init failed");
 
 	}
-	void FMODDevice::Finalize() {
+
+	void FMODDevice::Finalize( ) {
 
 		mSystem->release();
 
 	}
 
-	SoundHandle FMODDevice::LoadSound(StringView path, Flags<SoundFlag> flags) {
+	SoundHandle FMODDevice::LoadSound( StringView path, Flags<SoundFlag> flags ) {
 		
 		FMOD::Sound* sound = nullptr;
 
@@ -27,57 +38,105 @@ namespace lum::ahi::fmod {
 		return mSounds.Append(std::move(sound));
 
 	}
-	void FMODDevice::UnloadSound(SoundHandle& sound) {
 
-		FMOD::Sound* fmodSound = static_cast<FMOD::Sound*>(mSounds[sound]);
+	void FMODDevice::UnloadSound( SoundHandle& sound ) {
+
+		FMOD::Sound* fmodSound = to_fmod_sound(mSounds[sound]);
 		fmodSound->release();
 		mSounds.Remove(sound);
 
 	}
 
-	AudioEffectHandle FMODDevice::CreateEffect(const FAudioEffectDescriptor& desc) {
+	AudioEffectHandle FMODDevice::CreateEffect( const FAudioEffectDescriptor& desc ) {
 		
 		FAudioEffect effect;
 
 		if (desc.mReverb.bEnabled)
 			effect.mDSPs.push_back(create_reverb_effect(desc.mReverb));
+
 		if (desc.mFreqPass.mLow.bEnabled)
 			effect.mDSPs.push_back(create_frequency_effect(desc.mFreqPass.mLow, detail::FrequnecyType::Low));
+
 		if (desc.mFreqPass.mHigh.bEnabled)
 			effect.mDSPs.push_back(create_frequency_effect(desc.mFreqPass.mHigh, detail::FrequnecyType::High));
+
 		if (desc.mEcho.bEnabled)
 			effect.mDSPs.push_back(create_echo_effect(desc.mEcho));
+
 		if (desc.mDistortion.bEnabled)
 			effect.mDSPs.push_back(create_distortion_effect(desc.mDistortion));
+
 		if (desc.mChorus.bEnabled)
 			effect.mDSPs.push_back(create_chorus_effect(desc.mChorus));
+
 		if (desc.mFlange.bEnabled)
 			effect.mDSPs.push_back(create_flange_effect(desc.mFlange));
+
 		if (desc.mCompressor.bEnabled)
 			effect.mDSPs.push_back(create_compressor_effect(desc.mCompressor));
+
 
 		return mEffects.Append(std::move(effect));
 		
 	}
 
-	void FMODDevice::AddEffectToGroup( ChannelGroupHandle group, AudioEffectHandle effect ) {
+	AudioEffectHandle FMODDevice::CreateEffect(ahi::EffectPreset preset) {
 
+		FAudioEffectDescriptor desc = detail::gkEffectPresetLookup[ToUnderlyingEnum(preset)];
+
+		return CreateEffect(desc);
+
+	}
+
+	void FMODDevice::DeleteEffect( AudioEffectHandle& effect ) {
+
+		LUM_RETURN_IF(!IsValid(effect), LUM_SEV_WARN, "Invalid effect handle");
+
+		FAudioEffect& sfx = mEffects[effect];
+
+		for (auto [slot, value] : mChannelGroups.Each()) {
+			
+			FMOD::ChannelGroup* group = to_fmod_chgroup(*value);
+			for (auto* dsp : sfx.mDSPs) {
+				group->removeDSP(to_fmod_dsp(dsp));
+			}
+			
+		}
+
+		for (auto* dsp : sfx.mDSPs)
+			to_fmod_dsp(dsp)->release();
+
+		mEffects.Remove(effect);
+	}
+
+	void FMODDevice::AddGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) {
 		
+		LUM_RETURN_IF(!IsValid(effect), LUM_SEV_WARN, "Invalid effect handle");
+		LUM_RETURN_IF(!IsValid(group), LUM_SEV_WARN, "Invalid group handle");
 
-		FMOD::ChannelGroup* fmodGroup = static_cast<FMOD::ChannelGroup*>(mChannelGroups[group]);
+		FMOD::ChannelGroup* fmodGroup = to_fmod_chgroup(mChannelGroups[group]);
 		FAudioEffect sfx = mEffects[effect];
 
 		for (int32 i = 0; i < sfx.mDSPs.size(); i++) {
+			fmodGroup->addDSP(i, to_fmod_dsp(sfx.mDSPs[i]));
+		}
 
-			fmodGroup->addDSP(i, static_cast<FMOD::DSP*>(sfx.mDSPs[i]));
+	}
+	void FMODDevice::RemoveGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) {
 
+		LUM_RETURN_IF(!IsValid(effect), LUM_SEV_WARN, "Invalid effect handle");
+		LUM_RETURN_IF(!IsValid(group), LUM_SEV_WARN, "Invalid group handle");
+
+		FMOD::ChannelGroup* fmodGroup = to_fmod_chgroup(mChannelGroups[group]);
+		FAudioEffect sfx = mEffects[effect];
+
+		for (int32 i = 0; i < sfx.mDSPs.size(); i++) {
+			fmodGroup->removeDSP(to_fmod_dsp(sfx.mDSPs[i]));
 		}
 
 	}
 
-	
-
-	ChannelGroupHandle FMODDevice::CreateChannelGroup(StringView name) {
+	ChannelGroupHandle FMODDevice::CreateChannelGroup( StringView name ) {
 
 		FMOD::ChannelGroup* group;
 		mSystem->createChannelGroup(name.data(), &group);
@@ -85,17 +144,21 @@ namespace lum::ahi::fmod {
 		return mChannelGroups.Append(std::move(group));
 
 	}
-
-	void FMODDevice::PlayOneShot(SoundHandle sound, const FPlaybackDescriptor& desc) {
+	
+	void FMODDevice::PlayOneShot( SoundHandle sound, const FPlaybackDescriptor& desc ) {
 
 		FMOD::Sound* fmodSound = static_cast<FMOD::Sound*>(mSounds[sound]);
 		FMOD::Channel* channel = nullptr;
-		mSystem->playSound(fmodSound, nullptr, false, &channel);
+		if (desc.mGroup == gDefaultGroup)
+			mSystem->playSound(fmodSound, nullptr, false, &channel);
+		else
+			mSystem->playSound(fmodSound, to_fmod_chgroup(mChannelGroups[desc.mGroup]), false, &channel);
 		channel->setVolume(desc.mVolume);
 		channel->setPitch(desc.mPitch);
 
 	}
-	void FMODDevice::Play(FSoundInstance& inst, ChannelGroupHandle group) {
+
+	void FMODDevice::Play( FSoundInstance& inst, ChannelGroupHandle group ) {
 
 		LUM_ASSERT(mSounds.Contains(inst.GetSound()), "Invalid sound");
 
@@ -109,7 +172,7 @@ namespace lum::ahi::fmod {
 		if (group != gDefaultGroup) {
 
 			LUM_ASSERT(mChannelGroups.Contains(group), "Invalid group");
-			channel->setChannelGroup(static_cast<FMOD::ChannelGroup*>(mChannelGroups[group]));
+			channel->setChannelGroup(to_fmod_chgroup(mChannelGroups[group]));
 		
 		}
 
@@ -118,28 +181,49 @@ namespace lum::ahi::fmod {
 
 	}
 
-	void FMODDevice::StopAll() {
+	void FMODDevice::StopAll( ) {
+
+		for (auto& [key, value] : mChannels) {
+			
+			to_fmod_channel(value)->stop();
+
+		}
 
 	}
 
-	void FMODDevice::SetMasterVolume(float32) {
-
-	}
-	void FMODDevice::AddEffectToSound(SoundHandle, AudioEffectHandle) {
-
-	}
-	void FMODDevice::Set3DListenerPosition(glm::vec3, glm::vec3 forward, glm::vec3 up) {
-
+	void FMODDevice::SetMasterVolume( float32 volume ) {
+		
+		FMOD::ChannelGroup* master;
+		mSystem->getMasterChannelGroup(&master);
+		master->setVolume(volume);
+		
 	}
 
-	void FMODDevice::Update(std::vector<FSoundInstance>& instances) {
+	void FMODDevice::Set3DListenerAttributes( glm::vec3 pos, glm::vec3 vel, glm::vec3 forward, glm::vec3 up ) {
+
+		FMOD_VECTOR fmodPos = { pos.x, pos.y, pos.z };
+		FMOD_VECTOR fmodVel = { vel.x, vel.y, vel.z };
+		FMOD_VECTOR fmodForward = { forward.x, forward.y, forward.z };
+		FMOD_VECTOR fmodUp = { up.x, up.y, up.z };
+
+		mSystem->set3DListenerAttributes(0, &fmodPos, &fmodVel, &fmodForward, &fmodUp);
+
+	}
+
+	void FMODDevice::Set3DSettings( float32 dopplerScale, float32 distanceFactor, float32 rolloffScale ) {
+		
+		mSystem->set3DSettings(dopplerScale, distanceFactor, rolloffScale);
+
+	}
+
+	void FMODDevice::Update( std::vector<FSoundInstance>& instances ) {
 
 		for (auto& instance : instances) {
 
 			auto it = mChannels.find(instance.GetID());
 			if (it == mChannels.end()) continue;
 
-			FMOD::Channel* channel = static_cast<FMOD::Channel*>(it->second);
+			FMOD::Channel* channel = to_fmod_channel(it->second);
 			bool playing;
 			channel->isPlaying(&playing);
 
@@ -153,10 +237,15 @@ namespace lum::ahi::fmod {
 
 			channel->setPaused(instance.IsPaused());
 
-			if (!instance.IsDirty()) continue;
+			if (!instance.IsDirty() || instance.IsPaused()) continue;
+
+			glm::vec3 instPos = instance.GetPosition();
+			FMOD_VECTOR pos = { instPos.x, instPos.y, instPos.z };
 
 			channel->setVolume(instance.GetVolume());
 			channel->setPitch(instance.GetPitch());
+			channel->set3DAttributes(&pos, nullptr);
+			channel->set3DMinMaxDistance(instance.GetMinDistance(), instance.GetMaxDistance());
 
 			if (instance.IsLooped())
 				channel->setMode(FMOD_LOOP_NORMAL);
@@ -172,7 +261,14 @@ namespace lum::ahi::fmod {
 
 	}
 
-	FMOD_MODE FMODDevice::translate_sound_flags(Flags<SoundFlag> flags) {
+
+
+
+	//---------------------------------------------------------
+	// Private
+	//---------------------------------------------------------
+
+	FMOD_MODE FMODDevice::translate_sound_flags( Flags<SoundFlag> flags ) {
 
 		FMOD_MODE mode = 0;
 
@@ -192,23 +288,21 @@ namespace lum::ahi::fmod {
 
 	}
 
-	FMOD::DSP* FMODDevice::create_reverb_effect(const FAudioEffectDescriptor::FReverb& desc) {
+	FMOD_INITFLAGS FMODDevice::translate_init_flags( Flags<InitFlag> flags ) {
+		FMOD_INITFLAGS result = 0;
+		if (flags.Has(InitFlag::Normal))             result |= FMOD_INIT_NORMAL;
+		if (flags.Has(InitFlag::RightHanded3D))      result |= FMOD_INIT_3D_RIGHTHANDED;
+		if (flags.Has(InitFlag::DistanceLowpass))    result |= FMOD_INIT_CHANNEL_LOWPASS;
+		if (flags.Has(InitFlag::DistanceFilter))     result |= FMOD_INIT_CHANNEL_DISTANCEFILTER;
+		if (flags.Has(InitFlag::ProfilerEnable))     result |= FMOD_INIT_PROFILE_ENABLE;
+		if (flags.Has(InitFlag::Vol0BecomesVirtual)) result |= FMOD_INIT_VOL0_BECOMES_VIRTUAL;
+		return result;
+	}
+
+	FMOD::DSP* FMODDevice::create_reverb_effect( const FAudioEffectDescriptor::FReverb& desc ) {
 
 		FMOD::DSP* dsp = nullptr;
 		mSystem->createDSPByType(FMOD_DSP_TYPE_SFXREVERB, &dsp);
-
-		if (desc.mPreset != ReverbPreset::Off) {
-			FMOD_REVERB_PROPERTIES props = skReverbPresets[static_cast<byte>(desc.mPreset)];
-			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_DECAYTIME, props.DecayTime);
-			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_EARLYDELAY, props.EarlyDelay);
-			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_LATEDELAY, props.LateDelay);
-			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_HFREFERENCE, props.HFReference);
-			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_DIFFUSION, props.Diffusion);
-			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_WETLEVEL, props.WetLevel);
-			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_DRYLEVEL, desc.mDryLevel);
-			dsp->setParameterFloat(FMOD_DSP_SFXREVERB_DENSITY, props.Density);
-			return dsp;
-		}
 
 		dsp->setParameterFloat(FMOD_DSP_SFXREVERB_DECAYTIME, desc.mDecayTime);
 		dsp->setParameterFloat(FMOD_DSP_SFXREVERB_EARLYDELAY, desc.mEarlyDelay);
@@ -222,7 +316,7 @@ namespace lum::ahi::fmod {
 		return dsp;
 	}
 
-	FMOD::DSP* FMODDevice::create_frequency_effect(const FAudioEffectDescriptor::FFrequencyPass::FPass& desc, detail::FrequnecyType type) {
+	FMOD::DSP* FMODDevice::create_frequency_effect( const FAudioEffectDescriptor::FFrequencyPass::FPass& desc, detail::FrequnecyType type ) {
 
 		FMOD::DSP* dsp = nullptr;
 		
@@ -247,7 +341,7 @@ namespace lum::ahi::fmod {
 
 	}
 
-	FMOD::DSP* FMODDevice::create_echo_effect(const FAudioEffectDescriptor::FEcho& desc) {
+	FMOD::DSP* FMODDevice::create_echo_effect( const FAudioEffectDescriptor::FEcho& desc ) {
 
 		FMOD::DSP* dsp = nullptr;
 
@@ -261,7 +355,7 @@ namespace lum::ahi::fmod {
 		return dsp;
 	}
 
-	FMOD::DSP* FMODDevice::create_distortion_effect(const FAudioEffectDescriptor::FDistortion& desc) {
+	FMOD::DSP* FMODDevice::create_distortion_effect( const FAudioEffectDescriptor::FDistortion& desc ) {
 
 		FMOD::DSP* dsp = nullptr;
 
@@ -273,7 +367,7 @@ namespace lum::ahi::fmod {
 
 	}
 
-	FMOD::DSP* FMODDevice::create_chorus_effect(const FAudioEffectDescriptor::FChorus& desc) {
+	FMOD::DSP* FMODDevice::create_chorus_effect( const FAudioEffectDescriptor::FChorus& desc ) {
 		
 		FMOD::DSP* dsp = nullptr;
 
@@ -287,7 +381,7 @@ namespace lum::ahi::fmod {
 
 	}
 
-	FMOD::DSP* FMODDevice::create_flange_effect(const FAudioEffectDescriptor::FFlange& desc) {
+	FMOD::DSP* FMODDevice::create_flange_effect( const FAudioEffectDescriptor::FFlange& desc ) {
 
 		FMOD::DSP* dsp = nullptr;
 
@@ -301,7 +395,7 @@ namespace lum::ahi::fmod {
 
 	}
 
-	FMOD::DSP* FMODDevice::create_compressor_effect(const FAudioEffectDescriptor::FCompressor& desc) {
+	FMOD::DSP* FMODDevice::create_compressor_effect( const FAudioEffectDescriptor::FCompressor& desc ) {
 
 		FMOD::DSP* dsp = nullptr;
 

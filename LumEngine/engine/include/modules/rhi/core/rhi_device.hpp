@@ -59,6 +59,11 @@ namespace lum::rhi {
 		*/
 		virtual void Initialize( Window* window ) = 0;
 
+		/* @brief Destroys all active RHI resources and shuts down the rendering device.
+		* Must be called before the window is destroyed.
+		*/
+		void Finalize( );
+
 		///////////////////////////////////////////////////
 		/// Buffers
 		///////////////////////////////////////////////////
@@ -783,10 +788,9 @@ namespace lum::rhi {
 
 	/* @brief Creates a render device tied to the given window.
 	* Initializes the underlying graphics backend.
-	* @param window Pointer to the target window.
 	* @param backend Backend used.
 	* @return Pointer to the created device.
 	*/
-	RenderDevice* CreateDevice(Window* window, RenderBackend backend);
+	RenderDevice* CreateDevice( RenderBackend backend );
 
 } // namespace lum::rhi

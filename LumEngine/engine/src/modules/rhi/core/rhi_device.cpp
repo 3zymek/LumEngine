@@ -12,6 +12,22 @@
 
 namespace lum::rhi {
 
+	void RenderDevice::Finalize( ) {
+
+		for (auto [handle, p] : mPipelines.Each())    DeletePipeline(handle);
+		for (auto [handle, f] : mFramebuffers.Each()) DeleteFramebuffer(handle);
+		for (auto [handle, l] : mLayouts.Each())      DeleteVertexLayout(handle);
+		for (auto [handle, b] : mBuffers.Each())      DeleteBuffer(handle);
+		for (auto [handle, t] : mTextures.Each())     DeleteTexture(handle);
+		for (auto [handle, s] : mShaders.Each())      DeleteShader(handle);
+		for (auto [handle, l] : mSamplers.Each())     DeleteSampler(handle);
+	
+	}
+
+	//---------------------------------------------------------
+	// Private
+	//---------------------------------------------------------
+
 	bool RenderDevice::validate_texture_descriptor(const FTextureDescriptor& desc) const noexcept {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
@@ -91,15 +107,13 @@ namespace lum::rhi {
 
 	}
 
-	RenderDevice* CreateDevice( Window* window, RenderBackend backend ) {
+	RenderDevice* CreateDevice( RenderBackend backend ) {
 		
 		rhi::RenderDevice* device = nullptr;
 
 		switch (backend) {
 		case RenderBackend::OpenGL: device = new gl::GLDevice();
 		}
-
-		device->Initialize(window);
 	
 		return device;
 	}

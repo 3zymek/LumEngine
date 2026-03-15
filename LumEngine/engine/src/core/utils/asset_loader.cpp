@@ -156,33 +156,33 @@ namespace lum {
 	}
 
 
-	std::optional<String> AssetLoader::LoadAudio( RootID root, StringView filepath ) {
+	String AssetLoader::ResolvePath( RootID root, StringView filepath ) {
 
 		String path = get_full_path(root, filepath);
 
 		if (!detail::fs::exists(path)) {
 			set_error_msg("File doesn't exist");
-			return std::nullopt;
+			return "";
 		}
 
 		return path;
 	}
 
 
-	std::optional<String> AssetLoader::LoadShader( RootID root, StringView filepath ) {
+	String AssetLoader::LoadShader( RootID root, StringView filepath ) {
 
 		String path = get_full_path(root, filepath);
 
 		std::ifstream loadedFile(path);
 		if (!loadedFile.is_open()) {
 			set_error_msg(strerror(errno));
-			return std::nullopt;
+			return "";
 		}
 
 		std::ifstream defines(sShaderDefine);
 		if (!defines.is_open()) {
 			set_error_msg(strerror(errno));
-			return std::nullopt;
+			return "";
 		}
 
 		String version;
@@ -210,14 +210,14 @@ namespace lum {
 
 		return true;
 	}
-	std::optional<String> AssetLoader::ReadFile(RootID root, StringView filepath) {
+	String AssetLoader::ReadFile(RootID root, StringView filepath) {
 		
 		String path = get_full_path(root, filepath);
 
 		std::ifstream file(path);
 		if (!file.is_open()) {
 			set_error_msg(strerror(errno));
-			return std::nullopt;
+			return "";
 		}
 		
 		std::ostringstream ss;

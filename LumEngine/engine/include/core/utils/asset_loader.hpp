@@ -93,13 +93,13 @@ namespace lum {
 		LUM_NODISCARD
 		static std::optional<FMeshData> LoadMesh( RootID root, StringView filepath );
 
-		/* @brief Loads an audio file from disk.
-		* @param root Root directory identifier.
+		/* @brief Resolves an absolute path from a root directory and a relative filepath.
+		* @param root     Root directory identifier.
 		* @param filepath Path relative to the selected root.
-		* @return File contents as String or empty on failure.
+		* @return Resolved absolute path, or empty if the file does not exist.
 		*/
 		LUM_NODISCARD
-		static std::optional<String> LoadAudio( RootID root, StringView filepath );
+		static String ResolvePath( RootID root, StringView filepath );
 
 		/* @brief Loads a shader source file from disk.
 		* Prepends the engine shader define header automatically.
@@ -108,7 +108,7 @@ namespace lum {
 		* @return Shader source as String or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<String> LoadShader( RootID root, StringView filepath );
+		static String LoadShader( RootID root, StringView filepath );
 
 		/* @brief Writes text content to a file at the given path.
 		* Creates the file if it does not exist, overwrites if it does.
@@ -122,10 +122,10 @@ namespace lum {
 		/* @brief Reads raw text content from a file.
 		* @param root Root directory identifier.
 		* @param filepath Path relative to the selected root.
-		* @return File contents as String or empty on failure.
+		* @return File contents as String or empty String on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<String> ReadFile( RootID root, StringView filepath );
+		static String ReadFile( RootID root, StringView filepath );
 
 		/* @brief Returns the last error message set by a failed load operation. */
 		static ccharptr GetErrorMessage( ) { return sLastErrorMessage; }

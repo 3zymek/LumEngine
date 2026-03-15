@@ -75,13 +75,18 @@ namespace lum::cstd {
 		struct KeyValIterator {
 			tDense* mDense;          // Pointer to dense value array.
 			SparseT* mDenseToSparse;  // Pointer to slot index array parallel to dense.
+			GenerationT* mGenerations;
 			SparseT  mIndex;          // Current position in dense array.
 
 			/* @brief Returns the current slot-value pair.
 			* @return Pair of (slot index, pointer to dense value).
 			*/
-			std::pair<SparseT, tDense*> operator*() {
-				return { mDenseToSparse[mIndex], &mDense[mIndex] };
+			std::pair<tHandle, tDense*> operator*() {
+				SparseT slot = mDenseToSparse[mIndex];
+				tHandle handle;
+				handle.mID = slot;
+				handle.mGeneration = mGenerations[slot];
+				return { handle, &mDense[mIndex] };
 			}
 			KeyValIterator& operator++() { mIndex++; return *this; }
 			bool operator!=(KeyValIterator other) { return mIndex != other.mIndex; }
@@ -100,8 +105,8 @@ namespace lum::cstd {
 		*/
 		KeyValRange Each() {
 			return {
-				{ mDense.data(), mDenseToSparse.data(), 0 },
-				{ mDense.data(), mDenseToSparse.data(), static_cast<SparseT>(mDense.size()) }
+				{ mDense.data(), mDenseToSparse.data(), mGenerations.data(), 0 },
+				{ mDense.data(), mDenseToSparse.data(), mGenerations.data(), static_cast<SparseT>(mDense.size()) }
 			};
 		}
 

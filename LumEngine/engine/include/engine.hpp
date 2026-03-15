@@ -1,10 +1,13 @@
 #pragma once
-#include "platform/input_common.hpp"
-#include "core/utils/logger.hpp"
+
 #include "platform/window.hpp"
-#include "rhi/core/rhi_device.hpp"
+#include "platform/input_common.hpp"
+
+#include "core/utils/logger.hpp"
 #include "core/utils/asset_loader.hpp"
-#include "rhi/rhi_common.hpp"
+
+#include "rhi/core/rhi_device.hpp"
+
 #include "render/texture_manager.hpp"
 #include "render/mesh_manager.hpp"
 #include "render/shader_manager.hpp"
@@ -12,7 +15,13 @@
 #include "render/renderer.hpp"
 #include "render/render_system.hpp"
 #include "render/common.hpp"
+
+#include "ahi/core/ahi_device.hpp"
+
+#include "audio/audio_manager.hpp"
+
 #include "imgui.h"
+
 #include "event/event_bus.hpp"
 
 #include "scene/scene_manager.hpp"
@@ -21,7 +30,8 @@ namespace lum {
 
 	struct AudioModule {
 
-		
+		ahi::AudioDevice* mAudioDevice = nullptr;
+		audio::AudioManager mAudioMgr;
 
 	};
 
@@ -38,11 +48,13 @@ namespace lum {
 			mWindow.Initialize(desc);
 			input::SetActiveWindow(static_cast<GLFWwindow*>(mWindow.GetNativeWindow()));
 
-			mRenderDevice = rhi::CreateDevice(&mWindow, rhi::RenderBackend::OpenGL);
+			mRenderDevice = rhi::CreateDevice(rhi::RenderBackend::OpenGL);
+			mRenderDevice->Initialize(&mWindow);
 
 		}
 
 		void Finalize( ) {
+			mRenderDevice->Finalize();
 			delete mRenderDevice;
 		}
 
@@ -112,7 +124,7 @@ namespace lum {
 
 		Engine( ) = default;
 
-		void Initialize( String projectDir ) {
+		void Initialize( StringView projectDir ) {
 			
 			AssetLoader::SetProjectRoot(projectDir);
 
