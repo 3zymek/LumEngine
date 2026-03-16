@@ -160,14 +160,14 @@ namespace lum::ahi::fmod {
 
 	void FMODDevice::Play( FSoundInstance& inst, ChannelGroupHandle group ) {
 
-		LUM_ASSERT(mSounds.Contains(inst.GetSound()), "Invalid sound");
+		LUM_ASSERT(mSounds.Contains(inst.mSound), "Invalid sound");
 
-		FMOD::Sound* fmodSound = static_cast<FMOD::Sound*>(mSounds[inst.GetSound().mID]);
+		FMOD::Sound* fmodSound = static_cast<FMOD::Sound*>(mSounds[inst.mSound.mID]);
 		FMOD::Channel* channel = nullptr;
 
-		mSystem->playSound(fmodSound, nullptr, inst.IsPaused(), &channel);
-		channel->setVolume(inst.GetVolume());
-		channel->setPitch(inst.GetPitch());
+		mSystem->playSound(fmodSound, nullptr, inst.bPaused, &channel);
+		channel->setVolume(inst.mVolume);
+		channel->setPitch(inst.mPitch);
 
 		if (group != gDefaultGroup) {
 
@@ -176,8 +176,8 @@ namespace lum::ahi::fmod {
 		
 		}
 
-		inst.SetActive(true);
-		mChannels.insert({ inst.GetID(), channel });
+		inst.bPlaying = true;
+		mChannels.insert({ inst.mInstanceID, channel });
 
 	}
 
@@ -216,46 +216,39 @@ namespace lum::ahi::fmod {
 
 	}
 
-	void FMODDevice::Update( std::vector<FSoundInstance>& instances ) {
+	void FMODDevice::Update( FSoundInstance& instance ) {
 
-		for (auto& instance : instances) {
+		auto it = mChannels.find(instance.mInstanceID);
+		LUM_RETURN_IF(it == mChannels.end(), LUM_SEV_WARN, "Instance's not playing");
+		if (it == mChannels.end()) return;
+		FMOD::Channel* channel = to_fmod_channel(it->second);
 
-			auto it = mChannels.find(instance.GetID());
-			if (it == mChannels.end()) continue;
+		bool playing;
+		channel->isPlaying(&playing);
 
-			FMOD::Channel* channel = to_fmod_channel(it->second);
-			bool playing;
-			channel->isPlaying(&playing);
-
-			if (!playing) { mChannels.erase(instance.GetID()); continue; }
-
-			if (!instance.IsActive()) {
-				channel->stop();
-				mChannels.erase(instance.GetID());
-				continue;
-			}
-
-			channel->setPaused(instance.IsPaused());
-
-			if (!instance.IsDirty() || instance.IsPaused()) continue;
-
-			glm::vec3 instPos = instance.GetPosition();
-			FMOD_VECTOR pos = { instPos.x, instPos.y, instPos.z };
-
-			channel->setVolume(instance.GetVolume());
-			channel->setPitch(instance.GetPitch());
-			channel->set3DAttributes(&pos, nullptr);
-			channel->set3DMinMaxDistance(instance.GetMinDistance(), instance.GetMaxDistance());
-
-			if (instance.IsLooped())
-				channel->setMode(FMOD_LOOP_NORMAL);
-			else
-				channel->setMode(FMOD_LOOP_OFF);
-
-			instance.SetDirty(false);
-
+		// End streaming
+		if (!playing) { mChannels.erase(instance.mInstanceID); return; }
+		if (!instance.bPlaying) {
+			channel->stop();
+			mChannels.erase(instance.mInstanceID);
+			return;
 		}
 
+		channel->setPaused(instance.bPaused);
+		if (instance.bPaused) return;
+
+		glm::vec3 instPos = instance.mPosition;
+		FMOD_VECTOR pos = { instPos.x, instPos.y, instPos.z };
+
+		channel->setVolume(instance.mVolume);
+		channel->setPitch(instance.mPitch);
+		channel->set3DAttributes(&pos, nullptr);
+		channel->set3DMinMaxDistance(instance.mMinDistance, instance.mMaxDistance);
+
+		if (instance.bLooped)
+			channel->setMode(FMOD_LOOP_NORMAL);
+		else
+			channel->setMode(FMOD_LOOP_OFF);
 
 		mSystem->update();
 

@@ -122,9 +122,9 @@ namespace lum::ahi {
 
 		/* @brief Synchronises all active sound instances with the audio backend.
 		* Must be called once per frame. Applies dirty state (volume, pitch, position, loop, pause, stop).
-		* @param instances All currently active sound instances managed by the engine.
+		* @param instances All currently marked sound instances to update.
 		*/
-		virtual void Update( std::vector<FSoundInstance>& instances ) = 0;
+		virtual void Update( FSoundInstance& instance ) = 0;
 
 	protected:
 

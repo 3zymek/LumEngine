@@ -29,6 +29,8 @@ namespace lum::limits {
 	/* @brief Maximum number of audio sound assets that can be loaded at once. */
 	inline constexpr usize gMaxAudioSounds = 256;
 
+	inline constexpr usize gMaxAudioInstances = 64;
+
 	/* @brief Maximum number of concurrent audio channels. */
 	inline constexpr usize gMaxAudioChannels = 256;
 

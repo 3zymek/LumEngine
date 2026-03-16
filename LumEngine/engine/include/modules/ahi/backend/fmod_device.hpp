@@ -35,7 +35,7 @@ namespace lum::ahi::fmod {
 		void Set3DListenerAttributes( glm::vec3, glm::vec3, glm::vec3, glm::vec3 ) override;
 		void Set3DSettings( float32, float32, float32 ) override;
 
-		void Update( std::vector<FSoundInstance>& ) override;
+		void Update( FSoundInstance& ) override;
 
 
 	private:

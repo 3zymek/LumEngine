@@ -12,7 +12,7 @@ int main() {
 
     dev->Initialize();
 
-    auto test = AssetLoader::ResolvePath(RootID::External, "audio/test2.wav");
+    auto test = AssetLoader::ResolvePath(RootID::External, "audio/here_with_me.mp3");
     if (test.empty()) {
         LUM_LOG_ERROR("Failed to load sound: %s", AssetLoader::GetErrorMessage());
         return 0;
@@ -20,23 +20,26 @@ int main() {
 
     auto sound = dev->LoadSound(test, ahi::SoundFlag::CreateSample | ahi::SoundFlag::Spatial3D);
     auto group = dev->CreateChannelGroup("test");
-    auto effect = dev->CreateEffect(ahi::EffectPreset::ConcertHall);
+    ahi::FAudioEffectDescriptor desc;
+    desc.mFreqPass.mLow.bEnabled = true;
+    desc.mFreqPass.mLow.mCutoff = 120.f;
+    desc.mFreqPass.mLow.mResonance = 1.f;
+    auto effect = dev->CreateEffect(ahi::EffectPreset::Arena);
 
     dev->AddGroupEffect(group, effect);
 
-    std::vector<ahi::FSoundInstance> instances;
-    instances.emplace_back(sound);
+    std::vector<ahi::FSoundInstance> instances(1);
     auto& inst = instances.back();
-    inst.SetPitch(0.9f);
-    inst.SetVolume(0.2f);
-    inst.SetLoop(true);
-    inst.SetPosition({ 0.f, 0.f, -2.f });
+    inst.mSound = sound;
+    inst.mPitch = 1.0f;
+    inst.mVolume = 0.3f;
+    inst.bLooped = true;
 
     dev->Play(inst, group);
 
     while (true) {
 
-        dev->Update(instances);
+        dev->Update(inst);
 
         Sleep(16);
 

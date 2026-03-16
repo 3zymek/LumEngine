@@ -21,8 +21,6 @@ namespace lum {
 		/* @brief Euler rotation in degrees. */
 		glm::vec3 mRotation = { 0.f, 0.f, 0.f };
 
-		/* @brief Marks the transform as modified, triggering matrix recalculation. */
-		bool bDirty = false;
-
 	};
+
 } // namespace lum
