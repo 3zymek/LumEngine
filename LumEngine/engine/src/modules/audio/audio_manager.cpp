@@ -2,16 +2,18 @@
 #include "ahi/core/ahi_device.hpp"
 #include "core/utils/asset_loader.hpp"
 #include "entity/entity_manager.hpp"
+#include "entity/components/transform.hpp"
+#include "entity/components/audio_emitter.hpp"
 
 namespace lum::audio {
 
-	void AudioManager::Initialize( ahi::AudioDevice* device ) {
+	void MAudioManager::Initialize( ahi::AudioDevice* device ) {
 
 		mDevice = device;
 
 	}
 
-	void AudioManager::LoadSound( StringView relativePath, StringView alias, SoundCategory cat ) {
+	void MAudioManager::LoadSound( StringView relativePath, StringView alias, SoundCategory cat ) {
 
 		LUM_RETURN_IF(mSounds.contains(HashStr(alias)), LUM_SEV_WARN, "Audio aliased %s already exist", String(alias).c_str());
 
@@ -23,7 +25,7 @@ namespace lum::audio {
 		mSounds.insert({ HashStr(alias), handle });
 		
 	}
-	void AudioManager::UnloadSound( StringView alias ) {
+	void MAudioManager::UnloadSound( StringView alias ) {
 
 		LUM_RETURN_IF(!mSounds.contains(HashStr(alias)), LUM_SEV_WARN, "Loaded audio %s doesn't exist", String(alias).c_str());
 
@@ -31,21 +33,21 @@ namespace lum::audio {
 
 	}
 
-	ahi::InstID AudioManager::CreateInstance( StringView alias ) {
+	ahi::SoundHandle MAudioManager::GetSound( StringView alias ) {
 
 		uint64 hash = HashStr(alias);
 
-		LUM_RETURN_IF(!mSounds.contains(hash), LUM_SEV_WARN, "Audio %s doesn't exist", String(alias).c_str());
+		if (mSounds.contains(hash)) {
 
-		ahi::FSoundInstance inst;
-		inst.mSound = mSounds[hash];
-		mInstances.insert({ inst.mInstanceID, inst });
+			return mSounds[hash];
+
+		}
 		
-		return inst.mInstanceID;
+		return {};
 
 	}
 
-	void AudioManager::Stop(ahi::InstID instanceID) {
+	void MAudioManager::Stop(ahi::InstID instanceID) {
 		
 		LUM_RETURN_IF(!mInstances.contains(instanceID), LUM_SEV_WARN, "Invalid instance id");
 
@@ -55,7 +57,7 @@ namespace lum::audio {
 		//inst.bDirty = true;
 		
 	}
-	void AudioManager::SetPause(ahi::InstID instanceID, bool paused) {
+	void MAudioManager::SetPause(ahi::InstID instanceID, bool paused) {
 
 		LUM_RETURN_IF(!mInstances.contains(instanceID), LUM_SEV_WARN, "Invalid instance id");
 
@@ -65,7 +67,7 @@ namespace lum::audio {
 		//inst.bDirty = true;
 
 	}
-	void AudioManager::SetVolume(ahi::InstID instanceID, float32 volume) {
+	void MAudioManager::SetVolume(ahi::InstID instanceID, float32 volume) {
 
 		LUM_RETURN_IF(!mInstances.contains(instanceID), LUM_SEV_WARN, "Invalid instance id");
 
@@ -75,7 +77,7 @@ namespace lum::audio {
 		//inst.bDirty = true;
 
 	}
-	void AudioManager::SetPitch(ahi::InstID instanceID, float32 pitch) {
+	void MAudioManager::SetPitch(ahi::InstID instanceID, float32 pitch) {
 
 		LUM_RETURN_IF(!mInstances.contains(instanceID), LUM_SEV_WARN, "Invalid instance id");
 		
@@ -85,7 +87,7 @@ namespace lum::audio {
 		//inst.bDirty = true;
 
 	}
-	void AudioManager::SetPosition(ahi::InstID instanceID, glm::vec3 pos) {
+	void MAudioManager::SetPosition(ahi::InstID instanceID, glm::vec3 pos) {
 
 		LUM_RETURN_IF(!mInstances.contains(instanceID), LUM_SEV_WARN, "Invalid instance id");
 
@@ -96,13 +98,33 @@ namespace lum::audio {
 
 	}
 
-	void AudioManager::Update( ecs::EntityManager* mgr ) {
+	void MAudioManager::Update( ecs::MEntityManager* mgr ) {
+
 		
-		for (auto& [id, instance] : mInstances) {
-			
-			
-			
-		}
+		mgr->EachWithID<CTransform, CAudioEmitter>([&]( ecs::EntityID id, CTransform& transf, CAudioEmitter& emitter ) {
+
+			if (emitter.bMarked) {
+
+				auto& inst = mInstances[id];
+
+				inst.mVolume = emitter.mVolume;
+				inst.mPitch = emitter.mPitch;
+				inst.mMinDistance = emitter.mMinDistance;
+				inst.mMaxDistance = emitter.mMaxDistance;
+				inst.bPaused = emitter.bPaused;
+				inst.bPlaying = emitter.bPlaying;
+				inst.bLooped = emitter.bLooped;
+				inst.mSound = emitter.mSound;
+
+				inst.mPosition = transf.mPosition;
+
+				mDevice->Update(inst);
+
+			}
+
+			emitter.bMarked = false;
+
+		});
 		
 
 		

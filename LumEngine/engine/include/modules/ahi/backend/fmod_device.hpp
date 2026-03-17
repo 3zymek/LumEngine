@@ -83,6 +83,7 @@ namespace lum::ahi::fmod {
 		FMOD::DSP* create_chorus_effect( const FAudioEffectDescriptor::FChorus& );
 		FMOD::DSP* create_flange_effect( const FAudioEffectDescriptor::FFlange& );
 		FMOD::DSP* create_compressor_effect( const FAudioEffectDescriptor::FCompressor& );
+		FMOD::DSP* create_parameq( const FAudioEffectDescriptor::FParamEQ& );
 	
 
 	};

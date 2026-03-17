@@ -75,6 +75,9 @@ namespace lum::ahi::fmod {
 		if (desc.mCompressor.bEnabled)
 			effect.mDSPs.push_back(create_compressor_effect(desc.mCompressor));
 
+		if (desc.mParamEQ.bEnabled)
+			effect.mDSPs.push_back(create_parameq(desc.mParamEQ));
+
 
 		return mEffects.Append(std::move(effect));
 		
@@ -82,7 +85,7 @@ namespace lum::ahi::fmod {
 
 	AudioEffectHandle FMODDevice::CreateEffect(ahi::EffectPreset preset) {
 
-		FAudioEffectDescriptor desc = detail::gkEffectPresetLookup[ToUnderlyingEnum(preset)];
+		FAudioEffectDescriptor desc = GetPreset(preset);
 
 		return CreateEffect(desc);
 
@@ -399,6 +402,20 @@ namespace lum::ahi::fmod {
 		dsp->setParameterFloat(FMOD_DSP_COMPRESSOR_ATTACK, desc.mAttack);
 		dsp->setParameterFloat(FMOD_DSP_COMPRESSOR_RELEASE, desc.mRelease);
 		dsp->setParameterFloat(FMOD_DSP_COMPRESSOR_GAINMAKEUP, desc.mGainMakeup);
+
+		return dsp;
+
+	}
+
+	FMOD::DSP* FMODDevice::create_parameq( const FAudioEffectDescriptor::FParamEQ& desc ) {
+
+		FMOD::DSP* dsp = nullptr;
+
+		mSystem->createDSPByType(FMOD_DSP_TYPE_PARAMEQ, &dsp);
+
+		dsp->setParameterFloat(FMOD_DSP_PARAMEQ_CENTER, desc.mCenter);
+		dsp->setParameterFloat(FMOD_DSP_PARAMEQ_BANDWIDTH, desc.mBandwidth);
+		dsp->setParameterFloat(FMOD_DSP_PARAMEQ_GAIN, desc.mGain);
 
 		return dsp;
 

@@ -108,6 +108,17 @@ namespace lum::ahi {
 
 		} mCompressor;
 
+		/* @brief Parametric equalizer — boosts or cuts a specific frequency band. */
+		struct FParamEQ {
+
+			bool bEnabled = false;
+
+			float32 mCenter		= 1000.0f;	// Center frequency of the band in Hz
+			float32 mBandwidth	= 1.0f;		// Bandwidth in octaves around the center frequency
+			float32 mGain		= 0.0f;		// Gain in dB — positive = boost, negative = cut
+
+		} mParamEQ;
+
 	};
 
 	/* @brief Backend-side effect handle storing DSP node pointers.

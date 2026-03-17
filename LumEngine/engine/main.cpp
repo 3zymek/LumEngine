@@ -21,17 +21,22 @@ int main() {
     auto sound = dev->LoadSound(test, ahi::SoundFlag::CreateSample | ahi::SoundFlag::Spatial3D);
     auto group = dev->CreateChannelGroup("test");
     ahi::FAudioEffectDescriptor desc;
-    desc.mFreqPass.mLow.bEnabled = true;
-    desc.mFreqPass.mLow.mCutoff = 120.f;
+    //desc.mFreqPass.mLow.bEnabled = true;
+    desc.mFreqPass.mLow.mCutoff = 200.f;
     desc.mFreqPass.mLow.mResonance = 1.f;
-    auto effect = dev->CreateEffect(ahi::EffectPreset::Arena);
+    desc = ahi::GetPreset(ahi::EffectPreset::ConcertHall);
+    desc.mParamEQ.bEnabled = true;
+    desc.mParamEQ.mCenter = 80.0f;
+    desc.mParamEQ.mGain = 6.0f;
+    desc.mParamEQ.mBandwidth = 1.0f;
+    auto effect = dev->CreateEffect(desc);
 
     dev->AddGroupEffect(group, effect);
 
     std::vector<ahi::FSoundInstance> instances(1);
     auto& inst = instances.back();
     inst.mSound = sound;
-    inst.mPitch = 1.0f;
+    inst.mPitch = 0.9f;
     inst.mVolume = 0.3f;
     inst.bLooped = true;
 

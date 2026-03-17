@@ -26,9 +26,6 @@ namespace lum::cstd {
 		/* @brief Returns a pointer to the value without marking. */
 		const tType* operator->( ) const { return &mValue; }
 
-		/* @brief Returns a const reference to the contained value without marking. */
-		const tType& Get( ) const { return mValue; }
-
 		/* @brief Returns true if the value has been modified since the last Unmark(). */
 		bool IsMarked( ) const { return bMarked; }
 

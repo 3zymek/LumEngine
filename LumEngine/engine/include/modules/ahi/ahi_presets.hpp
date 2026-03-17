@@ -94,6 +94,12 @@ namespace lum::ahi {
 					.mRelease = 200.0f,
 					.mGainMakeup = 2.0f,
 				},
+				.mParamEQ = {
+					.bEnabled = true,
+					.mCenter = 60.0f,    // Deep sub-bass depth
+					.mBandwidth = 1.2f,
+					.mGain = 5.0f,
+				},
 			},
 
 			// -------------------------------------------------------
@@ -123,6 +129,12 @@ namespace lum::ahi {
 					.mRelease = 300.0f,
 					.mGainMakeup = 4.0f,
 				},
+				.mParamEQ = {
+					.bEnabled = true,
+					.mCenter = 70.0f,    // Heavy low-end rumble
+					.mBandwidth = 1.0f,
+					.mGain = 7.0f,
+				},
 			},
 
 			// -------------------------------------------------------
@@ -139,6 +151,12 @@ namespace lum::ahi {
 					.mWetLevel = -6.0f,
 					.mDryLevel = 0.0f,
 					.mDensity = 1.0f,
+				},
+				.mParamEQ = {
+					.bEnabled = true,
+					.mCenter = 100.0f,   // Booming low end
+					.mBandwidth = 1.0f,
+					.mGain = 5.0f,
 				},
 			},
 
@@ -267,6 +285,12 @@ namespace lum::ahi {
 					.mDryLevel = 0.0f,
 					.mDensity = 0.8f,
 				},
+				.mParamEQ = {
+					.bEnabled = true,
+					.mCenter = 150.0f,   // Pipe resonance
+					.mBandwidth = 0.8f,
+					.mGain = 4.0f,
+				},
 			},
 
 			// -------------------------------------------------------
@@ -335,6 +359,12 @@ namespace lum::ahi {
 					.mDryLevel = 0.0f,
 					.mDensity = 1.0f,
 				},
+				.mParamEQ = {
+					.bEnabled = true,
+					.mCenter = 120.0f,   // Stone resonance
+					.mBandwidth = 0.8f,
+					.mGain = 3.0f,
+				},
 			},
 
 			// -------------------------------------------------------
@@ -351,6 +381,12 @@ namespace lum::ahi {
 					.mWetLevel = -6.0f,
 					.mDryLevel = 0.0f,
 					.mDensity = 1.0f,
+				},
+				.mParamEQ = {
+					.bEnabled = true,
+					.mCenter = 120.0f,   // Stone resonance
+					.mBandwidth = 0.8f,
+					.mGain = 3.0f,
 				},
 			},
 
@@ -403,6 +439,12 @@ namespace lum::ahi {
 					.mDryLevel = 0.0f,
 					.mDensity = 1.0f,
 				},
+				.mParamEQ = {
+					.bEnabled = true,
+					.mCenter = 80.0f,    // Crowd low-end weight
+					.mBandwidth = 1.0f,
+					.mGain = 3.0f,
+				},
 			},
 
 			// -------------------------------------------------------
@@ -419,6 +461,12 @@ namespace lum::ahi {
 					.mWetLevel = -3.0f,
 					.mDryLevel = 0.0f,
 					.mDensity = 1.0f,
+				},
+				.mParamEQ = {
+					.bEnabled = true,
+					.mCenter = 90.0f,    // Metal structure resonance
+					.mBandwidth = 1.2f,
+					.mGain = 4.0f,
 				},
 			},
 
@@ -518,10 +566,16 @@ namespace lum::ahi {
 					.mRelease = 100.0f,
 					.mGainMakeup = 1.0f,
 				},
+				.mParamEQ = {
+					.bEnabled = true,
+					.mCenter = 200.0f,   // Helmet resonance / muffled thump
+					.mBandwidth = 0.8f,
+					.mGain = 4.0f,
+				},
 			},
 
 			// -------------------------------------------------------
-			// Explosion
+			// Explosion  (post-explosion ear ringing)
 			// -------------------------------------------------------
 			{
 				.mFreqPass = {
@@ -546,6 +600,12 @@ namespace lum::ahi {
 					.mAttack = 0.5f,
 					.mRelease = 500.0f,
 					.mGainMakeup = 0.0f,
+				},
+				.mParamEQ = {
+					.bEnabled = true,
+					.mCenter = 80.0f,    // Concussive low-end thump
+					.mBandwidth = 1.5f,
+					.mGain = 8.0f,
 				},
 			},
 
@@ -575,6 +635,12 @@ namespace lum::ahi {
 					.mAttack = 30.0f,
 					.mRelease = 400.0f,
 					.mGainMakeup = 1.0f,
+				},
+				.mParamEQ = {
+					.bEnabled = true,
+					.mCenter = 60.0f,    // Oppressive sub-bass dread
+					.mBandwidth = 1.5f,
+					.mGain = 6.0f,
 				},
 			},
 
@@ -611,8 +677,12 @@ namespace lum::ahi {
 				},
 			},
 
-		}; // gkAudioPresetLookup
+		}; // gkEffectPresetLookup
 
 	} // namespace detail
+
+	inline ahi::FAudioEffectDescriptor GetPreset(EffectPreset preset) {
+		return detail::gkEffectPresetLookup[ToUnderlyingEnum(preset)];
+	}
 
 } // namespace lum::ahi

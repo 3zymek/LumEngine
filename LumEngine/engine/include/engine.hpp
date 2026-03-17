@@ -31,7 +31,7 @@ namespace lum {
 	struct AudioModule {
 
 		ahi::AudioDevice* mAudioDevice = nullptr;
-		audio::AudioManager mAudioMgr;
+		audio::MAudioManager mAudioMgr;
 
 	};
 
