@@ -24,6 +24,7 @@ namespace lum::ahi {
 
 		InstID		mInstanceID = 0;
 		SoundHandle	mSound;
+		ChannelGroupHandle mGroup;
 
 		float32		mVolume = 1.0f;
 		float32		mPitch = 1.0f;
@@ -33,6 +34,8 @@ namespace lum::ahi {
 
 		bool bPaused = false;
 		bool bPlaying = false; // Defines if instance is in playing state (true even if paused)
+		bool bStop = false;
+		bool bPlay = false;
 		bool bLooped = false;
 
 	};

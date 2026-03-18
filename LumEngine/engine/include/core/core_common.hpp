@@ -176,7 +176,7 @@ namespace lum {
 	*/
 	template<usize tL>
 	inline constexpr uint64 HashStr( const char(&str)[tL] ) noexcept {
-		return cstd::StringHasher::Hash(str);
+		return cstd::StringHasher::Hash( str );
 	}
 
 	/* @brief Hashes a StringView to a 64-bit unsigned integer at runtime.
@@ -184,16 +184,26 @@ namespace lum {
 	* @return 64-bit hash of the input string.
 	*/
 	inline uint64 HashStr( StringView str ) noexcept {
-		return cstd::StringHasher::Hash(str);
+		return cstd::StringHasher::Hash( str );
 	}
 
 	/* @brief Converts a String to its lowercase equivalent.
 	* @param str Input string to convert.
 	* @return New string with all characters lowercased.
 	*/
-	inline String ToLower( const String& str ) {
-		String result = str;
-		std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+	inline String ToLower( StringView str ) {
+		String result = str.data( );
+		std::transform( result.begin( ), result.end( ), result.begin( ), ::tolower );
+		return result;
+	}
+
+	/* @brief Converts a String to its uppercase equivalent.
+	* @param str Input string to convert.
+	* @return New string with all characters upeercased.
+	*/
+	inline String ToLower( StringView str ) {
+		String result = str.data( );
+		std::transform( result.begin( ), result.end( ), result.begin( ), ::toupper );
 		return result;
 	}
 

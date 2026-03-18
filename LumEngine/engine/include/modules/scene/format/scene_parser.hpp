@@ -45,7 +45,7 @@ namespace lum::fmt {
 		* @param tokenizer Tokenizer containing the pre-tokenized scene file.
 		* @param ctx       Resource manager context for asset resolution.
 		*/
-		SceneParser( Tokenizer& tokenizer, FSceneManagerContext& ctx ) : mTokenizer( tokenizer ), mContext( ctx ) {}
+		SceneParser( Tokenizer& tokenizer, FSceneManagerContext& ctx ) : mTokenizer( tokenizer ), mContext( ctx ) { }
 
 		/* @brief Parses the token stream and populates the given scene.
 		* @param scene Scene to populate with entities and components.
@@ -58,8 +58,9 @@ namespace lum::fmt {
 		* @param tokens Token stream to check.
 		* @param i      Current token index.
 		*/
-		static inline bool in_block(std::vector<FToken>& tokens, int32 i) 
-			{ return i < tokens.size() && tokens[i].mType != TokenType::RBracket; }
+		static inline bool in_block( std::vector<FToken>& tokens, int32 i ) {
+			return i < tokens.size( ) && tokens[ i ].mType != TokenType::RBracket;
+		}
 
 		/* @brief Parses the world block and applies global scene settings. */
 		static void parse_world( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
@@ -89,9 +90,10 @@ namespace lum::fmt {
 		static void parse_point_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 
 		/* @brief Parses a spot light component and attaches it to the current entity. */
-		static void parse_spot_light(std::vector<FToken>& tokens, int32& i, FParseContext& ctx);
+		static void parse_spot_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 
-
+		/* @brief Parses a audio emitter component and attaches it to the current entity. */
+		static void parse_audio_emitter( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 
 
 		/* @brief Reference to the tokenizer holding the pre-tokenized scene file. */
@@ -107,22 +109,23 @@ namespace lum::fmt {
 		* Used to dispatch top-level scene constructs such as entity and world blocks.
 		*/
 		static inline std::unordered_map<uint64, ParseFn> sIdentifiersParseFunctions = {
-			{ HashStr("entity"), parse_entity },
-			{ HashStr("world"),  parse_world  }
+			{ HashStr( "entity" ), parse_entity },
+			{ HashStr( "world" ),  parse_world  }
 		};
 
 		/* @brief Lookup table mapping hashed component keywords to their parse functions.
 		* Used to dispatch component blocks within an entity definition.
 		*/
 		static inline std::unordered_map<uint64, ParseFn> sComponentsParseFunctions = {
-			{ HashStr("transform"),         parse_transform         },
-			{ HashStr("static_mesh"),       parse_smesh             },
-			{ HashStr("camera"),            parse_camera            },
-			{ HashStr("render"),            parse_render            },
-			{ HashStr("material"),          parse_material          },
-			{ HashStr("name"),              parse_name              },
-			{ HashStr("point_light"),       parse_point_light       },
-			{ HashStr("spot_light"),		parse_spot_light		},
+			{ HashStr( "transform" ),			parse_transform         },
+			{ HashStr( "static_mesh" ),			parse_smesh             },
+			{ HashStr( "camera" ),				parse_camera            },
+			{ HashStr( "render" ),				parse_render            },
+			{ HashStr( "material" ),			parse_material          },
+			{ HashStr( "name" ),				parse_name              },
+			{ HashStr( "point_light" ),			parse_point_light       },
+			{ HashStr( "spot_light" ),			parse_spot_light		},
+			{ HashStr( "audio_emitter" ),		parse_audio_emitter		},
 		};
 
 	};

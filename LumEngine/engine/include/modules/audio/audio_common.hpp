@@ -3,7 +3,7 @@
 #include "core/core_common.hpp"
 #include "ahi/ahi_common.hpp"
 
-namespace lum::audio {
+namespace lum {
 
     enum class SoundCategory : byte {
         SFX,

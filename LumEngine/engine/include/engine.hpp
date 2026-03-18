@@ -28,14 +28,28 @@
 
 namespace lum {
 
-	struct AudioModule {
+	struct MAudioModule {
 
 		ahi::AudioDevice* mAudioDevice = nullptr;
-		audio::MAudioManager mAudioMgr;
+		MAudioManager mAudioMgr;
+
+		void Initialize( ev::EventBus& bus ) {
+
+			mAudioDevice = ahi::CreateDevice( ahi::AudioBackend::Fmod );
+			mAudioDevice->Initialize( );
+			mAudioMgr.Initialize( mAudioDevice );
+
+		}
+
+		void Finalize( ) {
+
+			mAudioDevice->Finalize( );
+
+		}
 
 	};
 
-	struct PlatformModule {
+	struct MPlatformModule {
 
 		Window mWindow;
 		rhi::RenderDevice* mRenderDevice = nullptr;
@@ -45,45 +59,45 @@ namespace lum {
 			WindowDescriptor desc;
 			desc.mEventBus = &bus;
 
-			mWindow.Initialize(desc);
-			input::SetActiveWindow(static_cast<GLFWwindow*>(mWindow.GetNativeWindow()));
+			mWindow.Initialize( desc );
+			input::SetActiveWindow( static_cast< GLFWwindow* >(mWindow.GetNativeWindow( )) );
 
-			mRenderDevice = rhi::CreateDevice(rhi::RenderBackend::OpenGL);
-			mRenderDevice->Initialize(&mWindow);
+			mRenderDevice = rhi::CreateDevice( rhi::RenderBackend::OpenGL );
+			mRenderDevice->Initialize( &mWindow );
 
 		}
 
 		void Finalize( ) {
-			mRenderDevice->Finalize();
+			mRenderDevice->Finalize( );
 			delete mRenderDevice;
 		}
 
 	};
 
-	struct ResourceModule {
-		
+	struct MResourceModule {
+
 		MTextureManager		mTextureMgr;
 		MMaterialManager	mMaterialMgr;
 		MMeshManager		mMeshMgr;
 		MShaderManager		mShaderMgr;
 
-		void Initialize( PlatformModule& platform ) {
-			
-			mTextureMgr.	Initialize(platform.mRenderDevice);
-			mMeshMgr.		Initialize(platform.mRenderDevice);
-			mShaderMgr.		Initialize(platform.mRenderDevice);
-			mMaterialMgr.	Initialize(platform.mRenderDevice, &mTextureMgr);
+		void Initialize( MPlatformModule& platform ) {
+
+			mTextureMgr.Initialize( platform.mRenderDevice );
+			mMeshMgr.Initialize( platform.mRenderDevice );
+			mShaderMgr.Initialize( platform.mRenderDevice );
+			mMaterialMgr.Initialize( platform.mRenderDevice, &mTextureMgr );
 
 		}
 
 	};
 
-	struct RenderModule {
+	struct MRenderModule {
 
 		render::Renderer mRenderer;
 		render::RenderSystem mRenderSys;
 
-		void Initialize( PlatformModule& platform, ResourceModule& res, ev::EventBus& bus) {
+		void Initialize( MPlatformModule& platform, MResourceModule& res, ev::EventBus& bus ) {
 
 			render::FRendererContext ctx;
 			ctx.mMaterialMgr = &res.mMaterialMgr;
@@ -92,28 +106,29 @@ namespace lum {
 			ctx.mRenderDevice = platform.mRenderDevice;
 			ctx.mShaderMgr = &res.mShaderMgr;
 			ctx.mEventBus = &bus;
-			mRenderer.Initialize(ctx);
+			mRenderer.Initialize( ctx );
 
-			mRenderSys.Initialize(&mRenderer);
+			mRenderSys.Initialize( &mRenderer );
 		}
 
 	};
 
-	struct SceneModule {
+	struct MSceneModule {
 
 		MSceneManager mSceneMgr;
 		ecs::MEntityManager mEntityMgr;
 
-		void Initialize( ResourceModule& res, RenderModule& render ) {
+		void Initialize( MResourceModule& res, MRenderModule& render, MAudioModule& audio ) {
 
 			FSceneManagerContext ctx;
+			ctx.mAudioMgr = &audio.mAudioMgr;
 			ctx.mMaterialMgr = &res.mMaterialMgr;
 			ctx.mMeshMgr = &res.mMeshMgr;
 			ctx.mTextureMgr = &res.mTextureMgr;
 			ctx.mShaderMgr = &res.mShaderMgr;
 			ctx.mRenderer = &render.mRenderer;
 
-			mSceneMgr.Initialize(ctx);
+			mSceneMgr.Initialize( ctx );
 
 		}
 
@@ -125,78 +140,80 @@ namespace lum {
 		Engine( ) = default;
 
 		void Initialize( StringView projectDir ) {
-			
-			AssetLoader::SetProjectRoot(projectDir);
 
-			init();
+			AssetLoader::SetProjectRoot( projectDir );
+
+			init( );
 
 		}
 		void SetScene( StringView path ) {
 
-			mScene.mSceneMgr.SetScene(path);
-		
+			mScene.mSceneMgr.SetScene( path );
+
 		}
 		void Run( ) {
-			
-			while (mPlatform.mWindow.IsOpen()) {
 
-				mEvBus.PollEvents();
+			while (mPlatform.mWindow.IsOpen( )) {
 
-				mPlatform.mWindow.Update();
-				mRender.mRenderer.BeginFrame();
+				mEvBus.PollEvents( );
 
-				ImGui::Begin("Scene");
+				mPlatform.mWindow.Update( );
+				mRender.mRenderer.BeginFrame( );
 
-				ImGui::Text("Directional Light");
+				ImGui::Begin( "Scene" );
 
-				render::FDirectionalLight light = mRender.mRenderer.GetDirectionalLight();
+				ImGui::Text( "Directional Light" );
+
+				render::FDirectionalLight light = mRender.mRenderer.GetDirectionalLight( );
 
 				bool changed = false;
-				changed |= ImGui::DragFloat3("Direction", &light.mDirection.x, 0.01f, -1.0f, 1.0f);
-				changed |= ImGui::ColorEdit3("Color", &light.mColor.x);
-				changed |= ImGui::DragFloat("Intensity", &light.mIntensity, 0.01f, 0.0f, 10.0f);
+				changed |= ImGui::DragFloat3( "Direction", &light.mDirection.x, 0.01f, -1.0f, 1.0f );
+				changed |= ImGui::ColorEdit3( "Color", &light.mColor.x );
+				changed |= ImGui::DragFloat( "Intensity", &light.mIntensity, 0.01f, 0.0f, 10.0f );
 
 				if (changed) {
-					light.mDirection = glm::normalize(light.mDirection);
-					mRender.mRenderer.SetDirectionalLight(light);
+					light.mDirection = glm::normalize( light.mDirection );
+					mRender.mRenderer.SetDirectionalLight( light );
 				}
 
-				ImGui::End();
+				ImGui::End( );
 
-				mRender.mRenderSys.Update(&mScene.mSceneMgr.GetCurrentScene()->mEntityMgr, &mPlatform.mWindow);
-				mRender.mRenderer.EndFrame();
+				mRender.mRenderSys.Update( &mScene.mSceneMgr.GetCurrentScene( )->mEntityMgr, &mPlatform.mWindow );
+				mRender.mRenderer.EndFrame( );
 			}
 
 		}
 		void Finalize( ) {
 
-			finalize();
+			finalize( );
 
 		}
 
 	private:
 
-		void init() {
+		void init( ) {
 
-			mPlatform.	Initialize(mEvBus);
-			mRes.		Initialize(mPlatform);
-			mRender.	Initialize(mPlatform, mRes, mEvBus);
-			mScene.		Initialize(mRes, mRender);
+			mAudio.Initialize( mEvBus );
+			mPlatform.Initialize( mEvBus );
+			mRes.Initialize( mPlatform );
+			mRender.Initialize( mPlatform, mRes, mEvBus );
+			mScene.Initialize( mRes, mRender, mAudio );
 
 		}
 
-		void finalize() {
+		void finalize( ) {
 
-			mPlatform.Finalize();
+			mPlatform.Finalize( );
 
 		}
 
 		ev::EventBus	mEvBus;
-		PlatformModule	mPlatform;
-		ResourceModule	mRes;
-		RenderModule	mRender;
-		SceneModule		mScene;
-		
+		MAudioModule	mAudio;
+		MPlatformModule	mPlatform;
+		MResourceModule	mRes;
+		MRenderModule	mRender;
+		MSceneModule	mScene;
+
 	};
 
 } // namespace lum

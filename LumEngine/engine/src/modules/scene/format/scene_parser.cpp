@@ -3,9 +3,9 @@
 #include "scene/format/scene_parser.hpp"
 #include "scene/format/tokenizer.hpp"
 #include "scene/format/material_parser.hpp"
-
 #include "scene/scene_manager.hpp"
-#include "scene/scene_loader.hpp"
+
+#include "audio/audio_manager.hpp"
 
 #include "entity/components/transform.hpp"
 #include "entity/components/mesh.hpp"
@@ -14,6 +14,7 @@
 #include "entity/components/material.hpp"
 #include "entity/components/name.hpp"
 #include "entity/components/light.hpp"
+#include "entity/components/audio_emitter.hpp"
 
 #include "render/texture_manager.hpp"
 #include "render/shader_manager.hpp"
@@ -27,18 +28,18 @@ namespace lum::fmt {
 	// Public
 	//---------------------------------------------------------
 
-	void SceneParser::Parse(FScene& scene) {
+	void SceneParser::Parse( FScene& scene ) {
 
 		FParseContext ctx{ scene };
 		ctx.mContext = mContext;
 
-		auto tokens = mTokenizer.GetTokens();
+		auto tokens = mTokenizer.GetTokens( );
 
-		for (int32 i = 0; i < tokens.size(); i++) {
-			if (tokens[i].mType == TokenType::Identifier) {
-				auto it = sIdentifiersParseFunctions.find(HashStr(ToLower(tokens[i].mValue)));
-				if (it != sIdentifiersParseFunctions.end()) {
-					it->second(tokens, i, ctx);
+		for (int32 i = 0; i < tokens.size( ); i++) {
+			if (tokens[ i ].mType == TokenType::Identifier) {
+				auto it = sIdentifiersParseFunctions.find( HashStr( ToLower( tokens[ i ].mValue ) ) );
+				if (it != sIdentifiersParseFunctions.end( )) {
+					it->second( tokens, i, ctx );
 				}
 			}
 		}
@@ -52,24 +53,24 @@ namespace lum::fmt {
 	// Private
 	//---------------------------------------------------------
 
-	void SceneParser::parse_world(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
+	void SceneParser::parse_world( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
-		detail::ExpectOpeningBracket(tokens, i);
+		detail::ExpectOpeningBracket( tokens, i );
 
-		while (in_block(tokens, i)) {
+		while (in_block( tokens, i )) {
 
-			if (tokens[i].mType == TokenType::Component) {
+			if (tokens[ i ].mType == TokenType::Component) {
 
-				detail::ExpectOpeningBracket(tokens, i);
+				detail::ExpectOpeningBracket( tokens, i );
 
-				while (in_block(tokens, i)) {
+				while (in_block( tokens, i )) {
 
-					if (tokens[i].mType == TokenType::Parameter) {
+					if (tokens[ i ].mType == TokenType::Parameter) {
 
-						if (ToLower(tokens[i].mValue) == "path") {
-							detail::ExpectColon(tokens, i);
+						if (detail::IsString( tokens, i, "path" )) {
+							detail::ExpectColon( tokens, i );
 							ctx.mContext.mRenderer->SetEnvironmentTexture(
-								ctx.mContext.mTextureMgr->LoadEquirectangularCubemap(tokens[i].mValue.c_str(), 1024));
+							ctx.mContext.mTextureMgr->LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ), 1024 ) );
 						}
 
 					}
@@ -86,20 +87,20 @@ namespace lum::fmt {
 
 
 
-	void SceneParser::parse_entity(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
+	void SceneParser::parse_entity( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		Entity e;
-		ctx.mScene.mEntities.push_back(e.mID);
+		ctx.mScene.mEntities.push_back( e.mID );
 		ctx.mEntity = e.mID;
 
-		detail::ExpectOpeningBracket(tokens, i);
+		detail::ExpectOpeningBracket( tokens, i );
 
-		while (in_block(tokens, i)) {
+		while (in_block( tokens, i )) {
 
-			if (tokens[i].mType == TokenType::Component) {
-				auto it = sComponentsParseFunctions.find(HashStr(ToLower(tokens[i].mValue)));
-				if (it != sComponentsParseFunctions.end()) {
-					it->second(tokens, i, ctx);
+			if (tokens[ i ].mType == TokenType::Component) {
+				auto it = sComponentsParseFunctions.find( HashStr( ToLower( tokens[ i ].mValue ) ) );
+				if (it != sComponentsParseFunctions.end( )) {
+					it->second( tokens, i, ctx );
 				}
 
 			}
@@ -109,99 +110,99 @@ namespace lum::fmt {
 		}
 
 	}
-	void SceneParser::parse_transform(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
+	void SceneParser::parse_transform( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
-		detail::ExpectOpeningBracket(tokens, i);
+		detail::ExpectOpeningBracket( tokens, i );
 
 		CTransform transform;
 
-		while (in_block(tokens, i)) {
+		while (in_block( tokens, i )) {
 
-			if (tokens[i].mType == TokenType::Parameter) {
-				if (ToLower(tokens[i].mValue) == "position") {
+			if (tokens[ i ].mType == TokenType::Parameter) {
+				if (detail::IsString( tokens, i, "position" )) {
 
-					transform.mPosition = detail::ReadVec3Parameter(tokens, i);
-
-				}
-				else if (ToLower(tokens[i].mValue) == "rotation") {
-
-					transform.mRotation = detail::ReadVec3Parameter(tokens, i);
+					transform.mPosition = detail::ReadVec3Parameter( tokens, i );
 
 				}
-				else if (ToLower(tokens[i].mValue) == "scale") {
+				else if (detail::IsString( tokens, i, "rotation" )) {
 
-					transform.mScale = detail::ReadVec3Parameter(tokens, i);
+					transform.mRotation = detail::ReadVec3Parameter( tokens, i );
 
 				}
-				else LUM_LOG_ERROR("Invalid parameter");
+				else if (detail::IsString( tokens, i, "scale" )) {
+
+					transform.mScale = detail::ReadVec3Parameter( tokens, i );
+
+				}
+				else LUM_LOG_ERROR( "Invalid parameter" );
 			}
 			i++;
 		}
 
-		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, transform);
+		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, transform );
 
 	}
-	void SceneParser::parse_smesh(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
+	void SceneParser::parse_smesh( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
-		detail::ExpectOpeningBracket(tokens, i);
+		detail::ExpectOpeningBracket( tokens, i );
 
 		CStaticMesh mesh;
 
-		while (in_block(tokens, i)) {
+		while (in_block( tokens, i )) {
 
-			if (tokens[i].mType == TokenType::Parameter) {
+			if (tokens[ i ].mType == TokenType::Parameter) {
 
-				if (ToLower(tokens[i].mValue) == "path") {
+				if (detail::IsString( tokens, i, "path" )) {
 
-					detail::ExpectColon(tokens, i);
-					mesh.mMesh = ctx.mContext.mMeshMgr->CreateStatic(tokens[i].mValue.c_str());
+					detail::ExpectColon( tokens, i );
+					mesh.mMesh = ctx.mContext.mMeshMgr->CreateStatic( tokens[ i ].mValue.c_str( ) );
 
 				}
-				else LUM_LOG_ERROR("Invalid parameter");
+				else LUM_LOG_ERROR( "Invalid parameter" );
 
 			}
 			i++;
 		}
 
-		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, mesh);
+		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, mesh );
 
 	}
-	void SceneParser::parse_camera(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
+	void SceneParser::parse_camera( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
-		detail::ExpectOpeningBracket(tokens, i);
+		detail::ExpectOpeningBracket( tokens, i );
 
 		CCamera camera;
 
-		while (in_block(tokens, i)) {
+		while (in_block( tokens, i )) {
 
-			if (tokens[i].mType == TokenType::Parameter) {
+			if (tokens[ i ].mType == TokenType::Parameter) {
 
-				if (ToLower(tokens[i].mValue) == "fov") {
+				if (detail::IsString( tokens, i, "fov" )) {
 
-					camera.mFov = detail::ReadFloatParameter(tokens, i);
-
-				}
-				else if (ToLower(tokens[i].mValue) == "near") {
-
-					camera.mNear = detail::ReadFloatParameter(tokens, i);
+					camera.mFov = detail::ReadFloatParameter( tokens, i );
 
 				}
-				else if (ToLower(tokens[i].mValue) == "far") {
+				else if (detail::IsString( tokens, i, "near" )) {
 
-					camera.mFar = detail::ReadFloatParameter(tokens, i);
-
-				}
-				else if (ToLower(tokens[i].mValue) == "target") {
-
-					camera.mTarget = detail::ReadVec3Parameter(tokens, i);
+					camera.mNear = detail::ReadFloatParameter( tokens, i );
 
 				}
-				else if (ToLower(tokens[i].mValue) == "up") {
+				else if (detail::IsString( tokens, i, "far" )) {
 
-					camera.mUp = detail::ReadVec3Parameter(tokens, i);
+					camera.mFar = detail::ReadFloatParameter( tokens, i );
 
 				}
-				else LUM_LOG_ERROR("Invalid parameter");
+				else if (detail::IsString( tokens, i, "target" )) {
+
+					camera.mTarget = detail::ReadVec3Parameter( tokens, i );
+
+				}
+				else if (detail::IsString( tokens, i, "up" )) {
+
+					camera.mUp = detail::ReadVec3Parameter( tokens, i );
+
+				}
+				else LUM_LOG_ERROR( "Invalid parameter" );
 
 			}
 
@@ -209,25 +210,25 @@ namespace lum::fmt {
 
 		}
 
-		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, camera);
+		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, camera );
 
 	}
-	void SceneParser::parse_render(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
+	void SceneParser::parse_render( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
-		detail::ExpectOpeningBracket(tokens, i);
+		detail::ExpectOpeningBracket( tokens, i );
 
 		CRender render;
 
-		while (in_block(tokens, i)) {
+		while (in_block( tokens, i )) {
 
-			if (tokens[i].mType == TokenType::Parameter) {
+			if (tokens[ i ].mType == TokenType::Parameter) {
 
-				if (ToLower(tokens[i].mValue) == "visible") {
+				if (detail::IsString( tokens, i, "visible" )) {
 
-					render.bVisible = detail::ReadBoolParameter(tokens, i);
+					render.bVisible = detail::ReadBoolParameter( tokens, i );
 
 				}
-				else LUM_LOG_ERROR("Invalid parameter");
+				else LUM_LOG_ERROR( "Invalid parameter" );
 
 			}
 
@@ -235,69 +236,69 @@ namespace lum::fmt {
 
 		}
 
-		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, render);
+		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, render );
 
 	}
-	void SceneParser::parse_material(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
+	void SceneParser::parse_material( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
-		detail::ExpectOpeningBracket(tokens, i);
+		detail::ExpectOpeningBracket( tokens, i );
 		CMaterial material;
 
-		while (in_block(tokens, i)) {
+		while (in_block( tokens, i )) {
 
-			if (tokens[i].mType == TokenType::Parameter) {
+			if (tokens[ i ].mType == TokenType::Parameter) {
 
-				if (ToLower(tokens[i].mValue) == "path") {
+				if (detail::IsString( tokens, i, "path" )) {
 
-					std::optional<String> content = AssetLoader::ReadFile(RootID::External, detail::ReadStringParameter(tokens, i));
+					std::optional<String> content = AssetLoader::ReadFile( RootID::External, detail::ReadStringParameter( tokens, i ) );
 
 					if (!content) {
-						LUM_LOG_ERROR("Failed to load material %s: %s", tokens[i].mValue.c_str(), AssetLoader::GetErrorMessage());
-						material.mMat = ctx.mContext.mMaterialMgr->GetDefaultInstance();
-						ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, material);
+						LUM_LOG_ERROR( "Failed to load material %s: %s", tokens[ i ].mValue.c_str( ), AssetLoader::GetErrorMessage( ) );
+						material.mMat = ctx.mContext.mMaterialMgr->GetDefaultInstance( );
+						ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, material );
 						i++;
 						continue;
 					}
 
 					Tokenizer tokenizer;
-					tokenizer.Tokenize(content.value());
-					MaterialParser parser(tokenizer);
+					tokenizer.Tokenize( content.value( ) );
+					MaterialParser parser( tokenizer );
 
 					FMaterialDescriptor data;
-					parser.Parse(data);
+					parser.Parse( data );
 
 					auto& instance = material.mMat;
 
-					MaterialBaseHandle handle = ctx.mContext.mMaterialMgr->UploadBase(data);
+					MaterialBaseHandle handle = ctx.mContext.mMaterialMgr->UploadBase( data );
 
-					material.mMat = ctx.mContext.mMaterialMgr->CreateInstance(handle);
+					material.mMat = ctx.mContext.mMaterialMgr->CreateInstance( handle );
 
 				}
-				else LUM_LOG_ERROR("Invalid parameter");
+				else LUM_LOG_ERROR( "Invalid parameter" );
 
 			}
 			i++;
 		}
 
-		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, material);
+		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, material );
 
 
 	}
-	void SceneParser::parse_name(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
+	void SceneParser::parse_name( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
-		detail::ExpectOpeningBracket(tokens, i);
+		detail::ExpectOpeningBracket( tokens, i );
 		CName name;
 
-		while (in_block(tokens, i)) {
+		while (in_block( tokens, i )) {
 
-			if (tokens[i].mType == TokenType::Parameter) {
+			if (tokens[ i ].mType == TokenType::Parameter) {
 
-				if (ToLower(tokens[i].mValue) == "name") {
+				if (detail::IsString( tokens, i, "name" )) {
 
-					name.mName = detail::ReadStringParameter(tokens, i).c_str();
+					name.mName = detail::ReadStringParameter( tokens, i ).c_str( );
 
 				}
-				else LUM_LOG_ERROR("Invalid parameter");
+				else LUM_LOG_ERROR( "Invalid parameter" );
 
 			}
 
@@ -305,31 +306,31 @@ namespace lum::fmt {
 
 		}
 
-		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, name);
+		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, name );
 
 	}
-	void SceneParser::parse_point_light(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
+	void SceneParser::parse_point_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
-		detail::ExpectOpeningBracket(tokens, i);
+		detail::ExpectOpeningBracket( tokens, i );
 		CPointLight light;
 
-		while (in_block(tokens, i)) {
+		while (in_block( tokens, i )) {
 
-			if (tokens[i].mType == TokenType::Parameter) {
+			if (tokens[ i ].mType == TokenType::Parameter) {
 
-				if (tokens[i].mValue == "intensity") {
+				if (detail::IsString( tokens, i, "intensity" )) {
 
-					light.mIntensity = detail::ReadFloatParameter(tokens, i);
-
-				}
-				else if (tokens[i].mValue == "radius") {
-
-					light.mRadius = detail::ReadFloatParameter(tokens, i);
+					light.mIntensity = detail::ReadFloatParameter( tokens, i );
 
 				}
-				else if (tokens[i].mValue == "color") {
+				else if (detail::IsString( tokens, i, "radius" )) {
 
-					light.mColor = detail::ReadVec3Parameter(tokens, i);
+					light.mRadius = detail::ReadFloatParameter( tokens, i );
+
+				}
+				else if (detail::IsString( tokens, i, "color" )) {
+
+					light.mColor = detail::ReadVec3Parameter( tokens, i );
 
 				}
 
@@ -340,47 +341,47 @@ namespace lum::fmt {
 
 		}
 
-		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, light);
+		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, light );
 
 	}
 
-	void SceneParser::parse_spot_light(std::vector<FToken>& tokens, int32& i, FParseContext& ctx) {
+	void SceneParser::parse_spot_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
-		detail::ExpectOpeningBracket(tokens, i);
+		detail::ExpectOpeningBracket( tokens, i );
 		CSpotLight light;
 
-		while (in_block(tokens, i)) {
+		while (in_block( tokens, i )) {
 
-			if (tokens[i].mType == TokenType::Parameter) {
+			if (tokens[ i ].mType == TokenType::Parameter) {
 
-				if (tokens[i].mValue == "intensity") {
+				if (detail::IsString( tokens, i, "intensity" )) {
 
-					light.mIntensity = detail::ReadFloatParameter(tokens, i);
-
-				}
-				else if (tokens[i].mValue == "radius") {
-
-					light.mRadius = detail::ReadFloatParameter(tokens, i);
+					light.mIntensity = detail::ReadFloatParameter( tokens, i );
 
 				}
-				else if (tokens[i].mValue == "color") {
+				else if (detail::IsString( tokens, i, "radius" )) {
 
-					light.mColor = detail::ReadVec3Parameter(tokens, i);
-
-				}
-				else if (tokens[i].mValue == "direction") {
-
-					light.mDirection = detail::ReadVec3Parameter(tokens, i);
+					light.mRadius = detail::ReadFloatParameter( tokens, i );
 
 				}
-				else if (tokens[i].mValue == "inner_cone") {
-				
-					light.mInnerConeAngle = detail::ReadFloatParameter(tokens, i);
+				else if (detail::IsString( tokens, i, "color" )) {
+
+					light.mColor = detail::ReadVec3Parameter( tokens, i );
 
 				}
-				else if (tokens[i].mValue == "outer_cone") {
+				else if (detail::IsString( tokens, i, "direction" )) {
 
-					light.mOuterConeAngle = detail::ReadFloatParameter(tokens, i);
+					light.mDirection = detail::ReadVec3Parameter( tokens, i );
+
+				}
+				else if (detail::IsString( tokens, i, "inner_cone" )) {
+
+					light.mInnerConeAngle = detail::ReadFloatParameter( tokens, i );
+
+				}
+				else if (detail::IsString( tokens, i, "outer_cone" )) {
+
+					light.mOuterConeAngle = detail::ReadFloatParameter( tokens, i );
 
 				}
 
@@ -390,7 +391,62 @@ namespace lum::fmt {
 
 		}
 
-		ctx.mScene.mEntityMgr.AddComponent(ctx.mEntity, light);
+		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, light );
+
+	}
+
+	void SceneParser::parse_audio_emitter( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+
+		detail::ExpectOpeningBracket( tokens, i );
+		CAudioEmitter emitter;
+
+		while (in_block( tokens, i )) {
+
+			if (tokens[ i ].mType == TokenType::Parameter) {
+
+				if (detail::IsString( tokens, i, "volume" )) {
+
+					emitter.mVolume = detail::ReadFloatParameter( tokens, i );
+					
+				}
+				else if (detail::IsString( tokens, i, "pitch" )) {
+
+					emitter.mPitch = detail::ReadFloatParameter( tokens, i );
+
+				}
+				else if (detail::IsString( tokens, i, "min_distance" )) {
+
+					emitter.mMinDistance = detail::ReadFloatParameter( tokens, i );
+					
+				}
+				else if (detail::IsString( tokens, i, "max_distance" )) {
+
+					emitter.mMaxDistance = detail::ReadFloatParameter( tokens, i );
+
+				}
+				else if (detail::IsString( tokens, i, "paused" )) {
+
+					emitter.bPaused = detail::ReadBoolParameter( tokens, i );
+
+				}
+				else if (detail::IsString( tokens, i, "looped" )) {
+
+					emitter.bLooped = detail::ReadBoolParameter( tokens, i );
+
+				}
+				else if (detail::IsString( tokens, i, "sound" )) {
+
+					emitter.mSound = ctx.mContext.mAudioMgr->GetSound( tokens[ i ].mValue );
+
+				}
+
+			}
+
+			i++;
+
+		}
+
+		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, emitter );
 
 	}
 

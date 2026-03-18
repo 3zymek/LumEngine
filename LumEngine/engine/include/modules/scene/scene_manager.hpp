@@ -15,6 +15,7 @@ namespace lum {
     class MMaterialManager;
     class MMeshManager;
     class MShaderManager;
+    class MAudioManager;
     namespace render { class Renderer; }
     ////////////////////////
 
@@ -48,6 +49,9 @@ namespace lum {
 
         /* @brief Pointer to the active shader manager. */
         MShaderManager* mShaderMgr = nullptr;
+
+        /* @brief Pointer to the active audio manager. */
+        MAudioManager* mAudioMgr = nullptr;
 
         /* @brief Pointer to the active renderer. */
         render::Renderer* mRenderer = nullptr;

@@ -7,12 +7,12 @@ using namespace lum::rhi;
 int main() {
 
     AssetLoader::SetProjectRoot("C:/Users/szymek/Desktop/lumen_assets");
-    
+    /*
     ahi::AudioDevice* dev = ahi::CreateDevice(ahi::AudioBackend::Fmod);
 
     dev->Initialize();
 
-    auto test = AssetLoader::ResolvePath(RootID::External, "audio/here_with_me.mp3");
+    auto test = AssetLoader::ResolvePath(RootID::External, "audio/castle.wav");
     if (test.empty()) {
         LUM_LOG_ERROR("Failed to load sound: %s", AssetLoader::GetErrorMessage());
         return 0;
@@ -24,7 +24,7 @@ int main() {
     //desc.mFreqPass.mLow.bEnabled = true;
     desc.mFreqPass.mLow.mCutoff = 200.f;
     desc.mFreqPass.mLow.mResonance = 1.f;
-    desc = ahi::GetPreset(ahi::EffectPreset::ConcertHall);
+    desc = ahi::GetPreset(ahi::EffectPreset::Cave);
     desc.mParamEQ.bEnabled = true;
     desc.mParamEQ.mCenter = 80.0f;
     desc.mParamEQ.mGain = 6.0f;
@@ -36,7 +36,7 @@ int main() {
     std::vector<ahi::FSoundInstance> instances(1);
     auto& inst = instances.back();
     inst.mSound = sound;
-    inst.mPitch = 0.9f;
+    inst.mPitch = 1.f;
     inst.mVolume = 0.3f;
     inst.bLooped = true;
 
@@ -51,7 +51,7 @@ int main() {
     }
 
     return 0;
-
+    */
     Engine e;
 
     e.Initialize("C:/Users/szymek/Desktop/lumen_assets");

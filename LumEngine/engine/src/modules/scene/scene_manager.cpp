@@ -4,12 +4,13 @@
 //
 //=============================================================================//
 
-#include "scene/scene_manager.hpp"
-#include "entity/entity_manager.hpp"
 #include "core/utils/asset_loader.hpp"
+
+#include "scene/scene_manager.hpp"
 #include "scene/format/scene_parser.hpp"
 #include "scene/format/tokenizer.hpp"
-#include "scene/scene_loader.hpp"
+
+#include "entity/entity_manager.hpp"
 #include "entity/components/transform.hpp"
 
 namespace lum {

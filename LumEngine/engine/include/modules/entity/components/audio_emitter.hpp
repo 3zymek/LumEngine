@@ -17,6 +17,8 @@ namespace lum {
 		/* @brief Handle to loaded sound */
 		ahi::SoundHandle mSound;
 
+		ahi::ChannelGroupHandle mGroup;
+
 		/* @brief Playback volume. Range [0, 1]. */
 		float32 mVolume = 1.0f;
 
@@ -34,6 +36,8 @@ namespace lum {
 
 		/* @brief Whether the emitter is in an active playing state (true even if paused). */
 		bool bPlaying = false;
+		bool bStop = false;
+		bool bPlay = false;
 
 		/* @brief Whether playback should loop. */
 		bool bLooped = false;
