@@ -70,7 +70,7 @@ namespace lum::fmt {
 						if (detail::IsString( tokens, i, "path" )) {
 							detail::ExpectColon( tokens, i );
 							ctx.mContext.mRenderer->SetEnvironmentTexture(
-							ctx.mContext.mTextureMgr->LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ), 1024 ) );
+								ctx.mContext.mTextureMgr->LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ), 1024 ) );
 						}
 
 					}
@@ -399,6 +399,8 @@ namespace lum::fmt {
 
 		detail::ExpectOpeningBracket( tokens, i );
 		CAudioEmitter emitter;
+		String path;
+		String category;
 
 		while (in_block( tokens, i )) {
 
@@ -407,7 +409,7 @@ namespace lum::fmt {
 				if (detail::IsString( tokens, i, "volume" )) {
 
 					emitter.mVolume = detail::ReadFloatParameter( tokens, i );
-					
+
 				}
 				else if (detail::IsString( tokens, i, "pitch" )) {
 
@@ -417,7 +419,7 @@ namespace lum::fmt {
 				else if (detail::IsString( tokens, i, "min_distance" )) {
 
 					emitter.mMinDistance = detail::ReadFloatParameter( tokens, i );
-					
+
 				}
 				else if (detail::IsString( tokens, i, "max_distance" )) {
 
@@ -429,14 +431,19 @@ namespace lum::fmt {
 					emitter.bPaused = detail::ReadBoolParameter( tokens, i );
 
 				}
-				else if (detail::IsString( tokens, i, "looped" )) {
+				else if (detail::IsString( tokens, i, "looped" ) || detail::IsString( tokens, i, "loop" )) {
 
 					emitter.bLooped = detail::ReadBoolParameter( tokens, i );
 
 				}
 				else if (detail::IsString( tokens, i, "sound" )) {
 
-					emitter.mSound = ctx.mContext.mAudioMgr->GetSound( tokens[ i ].mValue );
+					path = detail::ReadStringParameter( tokens, i );
+
+				}
+				else if (detail::IsString( tokens, i, "category" )) {
+
+					category = detail::ReadStringParameter( tokens, i );
 
 				}
 
@@ -446,6 +453,8 @@ namespace lum::fmt {
 
 		}
 
+		emitter.mSound = ctx.mContext.mAudioMgr->GetSound( path, category );
+		ctx.mContext.mAudioMgr->PlayOneShot( path, {} );
 		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, emitter );
 
 	}

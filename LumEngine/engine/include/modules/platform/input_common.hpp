@@ -35,7 +35,7 @@ namespace lum {
 		*  Must be called before any input functions are used.
 		*  @param window Pointer to the GLFW window to poll input from.
 		*/
-		inline void SetActiveWindow(GLFWwindow* window) {
+		inline void SetActiveWindow( GLFWwindow* window ) {
 			detail::gActiveWindow = window;
 		}
 
@@ -43,9 +43,9 @@ namespace lum {
 		*  @param key Engine key to map.
 		*  @return GLFW key code.
 		*/
-		inline uint32 GetGLFWKey(Key key) {
-			LUM_ASSERT(detail::gActiveWindow != nullptr, "Active window isn't set");
-			return detail::gKeyMap[static_cast<uint32>(key)];
+		inline uint32 GetGLFWKey( Key key ) {
+			LUM_ASSERT( detail::gActiveWindow != nullptr, "Active window isn't set" );
+			return detail::gKeyMap[ static_cast< uint32 >(key) ];
 		}
 
 		/* @brief Returns true only on the first frame the key is held down.
@@ -53,20 +53,20 @@ namespace lum {
 		*  @param key Key to check.
 		*  @return True if key was just pressed this frame.
 		*/
-		inline bool KeyPressedOnce(Key key) {
+		inline bool KeyPressedOnce( Key key ) {
 
-			LUM_ASSERT(detail::gActiveWindow != nullptr, "Active window isn't set");
+			LUM_ASSERT( detail::gActiveWindow != nullptr, "Active window isn't set" );
 
-			bool keyPressed = glfwGetKey(detail::gActiveWindow, GetGLFWKey(key)) == GLFW_PRESS;
-			int32 keyCode = static_cast<int32>(key);
+			bool keyPressed = glfwGetKey( detail::gActiveWindow, GetGLFWKey( key ) ) == GLFW_PRESS;
+			int32 keyCode = static_cast< int32 >(key);
 
-			if (keyPressed && !detail::gKeyIsPressed[keyCode]) {
-				detail::gKeyIsPressed[keyCode] = true;
+			if (keyPressed && !detail::gKeyIsPressed[ keyCode ]) {
+				detail::gKeyIsPressed[ keyCode ] = true;
 				return true;
 			}
 
 			if (!keyPressed)
-				detail::gKeyIsPressed[keyCode] = false;
+				detail::gKeyIsPressed[ keyCode ] = false;
 
 			return false;
 		}
@@ -75,19 +75,19 @@ namespace lum {
 		*  @param key Key to check.
 		*  @return True if key is currently pressed.
 		*/
-		inline bool KeyPressed(Key key) {
-			LUM_ASSERT(detail::gActiveWindow != nullptr, "Active window isn't set");
-			return glfwGetKey(detail::gActiveWindow, GetGLFWKey(key)) == GLFW_PRESS;
+		inline bool KeyPressed( Key key ) {
+			LUM_ASSERT( detail::gActiveWindow != nullptr, "Active window isn't set" );
+			return glfwGetKey( detail::gActiveWindow, GetGLFWKey( key ) ) == GLFW_PRESS;
 		}
 
 		/* @brief Returns the current mouse cursor position in screen coordinates.
 		*  @return Mouse position as a 2D vector (x, y).
 		*/
-		inline glm::vec2 GetMousePos() {
-			LUM_ASSERT(detail::gActiveWindow != nullptr, "Active window isn't set");
+		inline glm::vec2 GetMousePos( ) {
+			LUM_ASSERT( detail::gActiveWindow != nullptr, "Active window isn't set" );
 			float64 xpos, ypos;
-			glfwGetCursorPos(detail::gActiveWindow, &xpos, &ypos);
-			return glm::vec2(xpos, ypos);
+			glfwGetCursorPos( detail::gActiveWindow, &xpos, &ypos );
+			return glm::vec2( xpos, ypos );
 		}
 	} // namespace lum::input
 } // namespace lum

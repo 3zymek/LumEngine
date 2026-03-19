@@ -32,41 +32,16 @@ namespace lum::ahi::fmod {
 		void StopAll( ) override;
 
 		void SetMasterVolume( float32 ) override;
-		void Set3DListenerAttributes( glm::vec3, glm::vec3, glm::vec3, glm::vec3 ) override;
+		void Set3DListenerAttributes( const ahi::FListenerAttributes& ) override;
 		void Set3DSettings( float32, float32, float32 ) override;
 
-		void Update( FSoundInstance& ) override;
+		void UpdateInstance( FSoundInstance& ) override;
+		void EndFrame( ) override;
 
 
 	private:
 
 		FMOD::System* mSystem = nullptr;
-
-		static constexpr FMOD_REVERB_PROPERTIES skReverbPresets[] =
-		{
-			FMOD_PRESET_OFF,
-			FMOD_PRESET_GENERIC,
-			FMOD_PRESET_PADDEDCELL,
-			FMOD_PRESET_ROOM,
-			FMOD_PRESET_BATHROOM,
-			FMOD_PRESET_LIVINGROOM,
-			FMOD_PRESET_STONEROOM,
-			FMOD_PRESET_AUDITORIUM,
-			FMOD_PRESET_CONCERTHALL,
-			FMOD_PRESET_CAVE,
-			FMOD_PRESET_ARENA,
-			FMOD_PRESET_HANGAR,
-			FMOD_PRESET_STONECORRIDOR,
-			FMOD_PRESET_ALLEY,
-			FMOD_PRESET_FOREST,
-			FMOD_PRESET_CITY,
-			FMOD_PRESET_MOUNTAINS,
-			FMOD_PRESET_QUARRY,
-			FMOD_PRESET_PLAIN,
-			FMOD_PRESET_PARKINGLOT,
-			FMOD_PRESET_SEWERPIPE,
-			FMOD_PRESET_UNDERWATER
-		};
 
 		FMOD::Sound*		to_fmod_sound( vptr ptr ) const noexcept { return static_cast<FMOD::Sound*>(ptr); }
 		FMOD::Channel*		to_fmod_channel( vptr ptr ) const noexcept { return static_cast<FMOD::Channel*>(ptr); }

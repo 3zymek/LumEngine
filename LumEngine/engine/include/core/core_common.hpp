@@ -201,7 +201,7 @@ namespace lum {
 	* @param str Input string to convert.
 	* @return New string with all characters upeercased.
 	*/
-	inline String ToLower( StringView str ) {
+	inline String ToUpper( StringView str ) {
 		String result = str.data( );
 		std::transform( result.begin( ), result.end( ), result.begin( ), ::toupper );
 		return result;

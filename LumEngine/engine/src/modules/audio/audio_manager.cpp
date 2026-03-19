@@ -4,6 +4,7 @@
 #include "entity/entity_manager.hpp"
 #include "entity/components/transform.hpp"
 #include "entity/components/audio_emitter.hpp"
+#include "entity/components/camera.hpp"
 
 namespace lum {
 
@@ -19,13 +20,21 @@ namespace lum {
 		if (mSounds.contains( hash )) return mSounds[ hash ];
 
 		String fullPath = AssetLoader::ResolvePath( RootID::External, relativePath );
-		LUM_RETURN_IF( fullPath.empty( ), LUM_SEV_ERROR, "Couldn't load audio file: %s", AssetLoader::GetErrorMessage( ) );
+		if (fullPath.empty( )) {
+			LUM_LOG_ERROR( "Couldn't load audio file: %s", AssetLoader::GetErrorMessage( ) );
+			return {};
+		}
 
 		ahi::SoundHandle handle = mDevice->LoadSound( fullPath, GetSoundFlags( cat ) );
-
 		mSounds.insert( { hash, handle } );
 
+		LUM_LOG_INFO( "Loaded sound %s", relativePath.data( ) );
 		return handle;
+
+	}
+	ahi::SoundHandle MAudioManager::GetSound( StringView relativePath, StringView cat ) {
+
+		return GetSound( relativePath, detail::ParseSoundCategory( cat ) );
 
 	}
 	void MAudioManager::UnloadSound( StringView alias ) {
@@ -34,7 +43,6 @@ namespace lum {
 
 		if (mSounds.contains( hash ))
 			mSounds.erase( HashStr( alias ) );
-
 
 	}
 
@@ -46,8 +54,25 @@ namespace lum {
 
 	}
 
+	void MAudioManager::Set3DListenerAttributes( const ahi::FListenerAttributes& attrs ) {
+
+		mDevice->Set3DListenerAttributes( attrs );
+
+	}
+
 	void MAudioManager::Update( ecs::MEntityManager* mgr ) {
 
+		mgr->Each<CCamera, CTransform>(
+			[&]( CCamera& camera, CTransform& transform ) {
+				ahi::FListenerAttributes attrs;
+
+				attrs.mPosition = transform.mPosition;
+				attrs.mUp = camera.mUp;
+				attrs.mForward = glm::normalize( camera.mTarget - transform.mPosition );
+				
+				Set3DListenerAttributes( attrs );
+
+		} );
 
 		mgr->EachWithID<CTransform, CAudioEmitter>( [&]( ecs::EntityID id, CTransform& transf, CAudioEmitter& emitter ) {
 
@@ -66,7 +91,7 @@ namespace lum {
 
 				inst.mPosition = transf.mPosition;
 
-				mDevice->Update( inst );
+				mDevice->UpdateInstance( inst );
 
 			}
 
@@ -74,8 +99,6 @@ namespace lum {
 
 		} 
 		);
-
-
 
 	}
 

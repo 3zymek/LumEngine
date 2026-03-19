@@ -18,7 +18,7 @@
     static_assert(expr)
 
 #define LUM_RETURN_IF(expr, sev, msg, ...) \
-    do { if((expr)) { LUM_LOG(msg, sev, ##__VA_ARGS__); } } while(0)
+    do { if((expr)) { LUM_LOG(msg, sev, ##__VA_ARGS__); return; } } while(0)
 
 #if LUM_ENABLE_HOTPATH_VALIDATION == 1
 #   define LUM_HOTCHK(expr, sev, msg, ...) \

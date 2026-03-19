@@ -186,11 +186,9 @@ namespace lum::ahi::fmod {
 
 	void FMODDevice::StopAll( ) {
 
-		for (auto& [key, value] : mChannels) {
-
-			to_fmod_channel( value )->stop( );
-
-		}
+		FMOD::ChannelGroup* master;
+		mSystem->getMasterChannelGroup( &master );
+		master->stop( );
 
 	}
 
@@ -202,12 +200,12 @@ namespace lum::ahi::fmod {
 
 	}
 
-	void FMODDevice::Set3DListenerAttributes( glm::vec3 pos, glm::vec3 vel, glm::vec3 forward, glm::vec3 up ) {
+	void FMODDevice::Set3DListenerAttributes( const ahi::FListenerAttributes& attrs ) {
 
-		FMOD_VECTOR fmodPos = { pos.x, pos.y, pos.z };
-		FMOD_VECTOR fmodVel = { vel.x, vel.y, vel.z };
-		FMOD_VECTOR fmodForward = { forward.x, forward.y, forward.z };
-		FMOD_VECTOR fmodUp = { up.x, up.y, up.z };
+		FMOD_VECTOR fmodPos = { attrs.mPosition.x, attrs.mPosition.y, attrs.mPosition.z };
+		FMOD_VECTOR fmodVel = { attrs.mVelocity.x, attrs.mVelocity.y, attrs.mVelocity.z };
+		FMOD_VECTOR fmodForward = { attrs.mForward.x, attrs.mForward.y, attrs.mForward.z };
+		FMOD_VECTOR fmodUp = { attrs.mUp.x, attrs.mUp.y, attrs.mUp.z };
 
 		mSystem->set3DListenerAttributes( 0, &fmodPos, &fmodVel, &fmodForward, &fmodUp );
 
@@ -219,7 +217,7 @@ namespace lum::ahi::fmod {
 
 	}
 
-	void FMODDevice::Update( FSoundInstance& instance ) {
+	void FMODDevice::UpdateInstance( FSoundInstance& instance ) {
 
 		if (instance.bPlay) {
 
@@ -228,7 +226,7 @@ namespace lum::ahi::fmod {
 
 		}
 
-		LUM_RETURN_IF( mChannels.contains( instance.mInstanceID ), LUM_SEV_WARN, "Instance's not playing" );
+		LUM_RETURN_IF( !mChannels.contains( instance.mInstanceID ), LUM_SEV_WARN, "Instance's not playing" );
 
 		FMOD::Channel* channel = to_fmod_channel( mChannels[ instance.mInstanceID ] );
 
@@ -259,11 +257,13 @@ namespace lum::ahi::fmod {
 		else
 			channel->setMode( FMOD_LOOP_OFF );
 
+	}
+
+	void FMODDevice::EndFrame( ) {
+
 		mSystem->update( );
 
 	}
-
-
 
 
 	//---------------------------------------------------------

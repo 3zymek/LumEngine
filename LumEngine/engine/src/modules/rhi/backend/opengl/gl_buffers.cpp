@@ -57,7 +57,7 @@ namespace lum::rhi::gl {
 				GL_MAP_WRITE_BIT
 			);
 
-		LUM_HOTCHK_RETURN_VOID(ptr != nullptr, LUM_SEV_WARN, "Failed during buffer mapping");
+		LUM_RETURN_IF(ptr == nullptr, LUM_SEV_WARN, "Failed during buffer mapping");
 
 		std::memcpy(ptr, data, size);
 
@@ -67,10 +67,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::DeleteBuffer(RBufferHandle& buff) {
 
-		LUM_HOTCHK_RETURN_VOID(IsValid(buff), LUM_SEV_DEBUG, "Invalid buffer");
+		LUM_RETURN_IF(!IsValid(buff), LUM_SEV_DEBUG, "Invalid buffer");
 
 		FBuffer& buffer = mBuffers[buff];
-		LUM_HOTCHK_RETURN_VOID(buffer.bMapped, LUM_SEV_WARN, "Cannot delete buffer that still mapped");
+		UnmapBuffer( buff );
 
 		glDeleteBuffers(1, &buffer.mHandle);
 		
@@ -99,7 +99,7 @@ namespace lum::rhi::gl {
 		LUM_ASSERT(IsValid(buff), "Invalid buffer");
 
 		FBuffer& buffer = mBuffers[buff];
-		LUM_HOTCHK_RETURN_VOID(buffer.bMapped, LUM_SEV_WARN, "Buffer is already unmapped");
+		if (buffer.bMapped) return;
 
 		glUnmapNamedBuffer(buffer.mHandle);
 

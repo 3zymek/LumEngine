@@ -26,9 +26,12 @@ namespace lum {
 		void Initialize( ahi::AudioDevice* device );
 
 		ahi::SoundHandle GetSound( StringView relativePath, SoundCategory cat = SoundCategory::Music );
+		ahi::SoundHandle GetSound( StringView relativePath, StringView cat );
 		void UnloadSound( StringView relativePath );
 
 		void PlayOneShot( StringView relativePath, const ahi::FPlaybackDescriptor& desc );
+
+		void Set3DListenerAttributes( const ahi::FListenerAttributes& );
 
 		void Update( ecs::MEntityManager* mgr );
 

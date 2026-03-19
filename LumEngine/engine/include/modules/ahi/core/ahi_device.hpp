@@ -107,7 +107,7 @@ namespace lum::ahi {
 		* @param forward Forward direction vector.
 		* @param up      Up direction vector.
 		*/
-		virtual void Set3DListenerAttributes( glm::vec3 pos, glm::vec3 vel, glm::vec3 forward, glm::vec3 up ) = 0;
+		virtual void Set3DListenerAttributes( const ahi::FListenerAttributes& ) = 0;
 
 		/* @brief Configures global 3D audio behaviour.
 		* @param dopplerScale    Doppler effect intensity. 0 = off, 1 = realistic.
@@ -124,7 +124,9 @@ namespace lum::ahi {
 		* Must be called once per frame. Applies dirty state (volume, pitch, position, loop, pause, stop).
 		* @param instances All currently marked sound instances to update.
 		*/
-		virtual void Update( FSoundInstance& instance ) = 0;
+		virtual void UpdateInstance( FSoundInstance& instance ) = 0;
+
+		virtual void EndFrame( ) = 0;
 
 	protected:
 

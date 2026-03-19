@@ -40,7 +40,7 @@ namespace lum {
 
 		/* @brief Returns the singleton Logger instance. */
 		inline static Logger& Get( ) {
-		static Logger log;
+			static Logger log;
 			return log;
 		}
 
@@ -79,7 +79,6 @@ namespace lum {
 		{
 
 			if (!mSeverity.Has(sev)) return;
-			if (mLastLog == HashStr(msg)) return;
 			
 			// Cleanup
 			std::memset(mDescBuffer, 0, sizeof(mDescBuffer));

@@ -36,7 +36,7 @@ namespace lum {
 		void Initialize( ev::EventBus& bus ) {
 
 			mAudioDevice = ahi::CreateDevice( ahi::AudioBackend::Fmod );
-			mAudioDevice->Initialize( );
+			mAudioDevice->Initialize( 512, ahi::InitFlag::RightHanded3D | ahi::InitFlag::DistanceFilter );
 			mAudioMgr.Initialize( mAudioDevice );
 
 		}
@@ -153,6 +153,14 @@ namespace lum {
 		}
 		void Run( ) {
 
+			mEvBus.SubscribePermanently<EKeyPressed>( [&]( const EKeyPressed& ev ) {
+			
+				if (ev.mKey == input::Key::SPACE)
+					SetScene( "scene2.lsc" );
+
+													  
+			} );
+
 			while (mPlatform.mWindow.IsOpen( )) {
 
 				mEvBus.PollEvents( );
@@ -179,6 +187,10 @@ namespace lum {
 				ImGui::End( );
 
 				mRender.mRenderSys.Update( &mScene.mSceneMgr.GetCurrentScene( )->mEntityMgr, &mPlatform.mWindow );
+
+				mAudio.mAudioMgr.Update( &mScene.mSceneMgr.GetCurrentScene( )->mEntityMgr );
+				mAudio.mAudioDevice->EndFrame( );
+
 				mRender.mRenderer.EndFrame( );
 			}
 
