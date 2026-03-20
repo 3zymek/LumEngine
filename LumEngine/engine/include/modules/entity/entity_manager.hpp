@@ -17,6 +17,8 @@ namespace lum {
 	class Entity;
 	class ManagedEntity;
 
+	namespace ev { class EventBus; }
+
 	namespace ecs {
 
 
@@ -29,17 +31,19 @@ namespace lum {
 		class MEntityManager {
 		public:
 
-			MEntityManager( ) { init(); }
+			MEntityManager( ) { init( ); }
 			MEntityManager( MEntityManager&& other ) noexcept {
 				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
-					mComponentPools[i] = other.mComponentPools[i];
-					other.mComponentPools[i] = nullptr;
+					mComponentPools[ i ] = other.mComponentPools[ i ];
+					other.mComponentPools[ i ] = nullptr;
 				}
 			}
-			~MEntityManager( ) { destroy(); }
+			~MEntityManager( ) { destroy( ); }
 
 
-			
+			void Initialize( ev::EventBus* bus );
+
+
 			/* @brief Creates a new entity and returns a managed handle to it.
 			*  @return ManagedEntity wrapping the newly created entity ID.
 			*/
@@ -173,20 +177,19 @@ namespace lum {
 			template<detail::Component tType>
 			detail::ComponentPool<tType>& GetPool( );
 
-			
+
 		private:
+
+			/* @brief Array of component pools indexed by component type ID. */
+			detail::BasePool* mComponentPools[ limits::gMaxComponentTypes ];
+
+			ev::EventBus* mEventBus = nullptr;
 
 			/* @brief Initializes all pool slots to nullptr. */
 			void init( );
 
 			/* @brief Deletes all allocated component pools. */
 			void destroy( );
-
-			/* @brief Array of component pools indexed by component type ID. */
-			detail::BasePool* mComponentPools[limits::gMaxComponentTypes];
-
-			/* @brief Reserved slots for unique (singleton) components. Not yet implemented. */
-			//vptr mUniqueComponents[limits::gMaxComponentTypes]{};
 
 		};
 

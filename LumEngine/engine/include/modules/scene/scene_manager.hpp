@@ -26,7 +26,7 @@ namespace lum {
     struct FScene {
 
         /* @brief List of all entity IDs belonging to this scene. */
-        std::vector<ecs::EntityID> mEntities;
+        std::vector<EntityID> mEntities;
 
         /* @brief ECS manager owning and managing components for this scene. */
         ecs::MEntityManager mEntityMgr;
@@ -52,6 +52,8 @@ namespace lum {
 
         /* @brief Pointer to the active audio manager. */
         MAudioManager* mAudioMgr = nullptr;
+
+        ev::EventBus* mEventBus = nullptr;
 
         /* @brief Pointer to the active renderer. */
         render::Renderer* mRenderer = nullptr;

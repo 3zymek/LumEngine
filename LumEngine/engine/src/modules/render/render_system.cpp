@@ -167,7 +167,7 @@ namespace lum {
 			ImGui::SeparatorText( "Entities" );
 
 			entityMgr->EachWithID<CName>(
-				[&]( ecs::EntityID id, CName& name ) {
+				[&]( EntityID id, CName& name ) {
 					bool selected = (sSelectedEntity == ( int32 ) id);
 					if (ImGui::Selectable( name.mName.Data( ), selected ))
 						sSelectedEntity = ( int32 ) id;
@@ -182,7 +182,7 @@ namespace lum {
 				ImGui::SeparatorText( "Inspector" );
 
 				entityMgr->EachWithID<CName, CTransform>(
-					[&]( ecs::EntityID id, CName& name, CTransform& transform ) {
+					[&]( EntityID id, CName& name, CTransform& transform ) {
 						if (( int32 ) id != sSelectedEntity) return;
 
 						ImGui::SeparatorText( "Transform" );
@@ -193,7 +193,7 @@ namespace lum {
 				);
 
 				entityMgr->EachWithID<CName, CMaterial>(
-					[&]( ecs::EntityID id, CName& name, CMaterial& material ) {
+					[&]( EntityID id, CName& name, CMaterial& material ) {
 						if (( int32 ) id != sSelectedEntity) return;
 
 						ImGui::SeparatorText( "Material" );
@@ -204,7 +204,7 @@ namespace lum {
 				);
 
 				entityMgr->EachWithID<CName, CPointLight>(
-					[&]( ecs::EntityID id, CName& name, CPointLight& light ) {
+					[&]( EntityID id, CName& name, CPointLight& light ) {
 						if (( int32 ) id != sSelectedEntity) return;
 
 						ImGui::SeparatorText( "Point Light" );
@@ -215,7 +215,7 @@ namespace lum {
 				);
 
 				entityMgr->EachWithID<CName, CSpotLight>(
-					[&]( ecs::EntityID id, CName& name, CSpotLight& light ) {
+					[&]( EntityID id, CName& name, CSpotLight& light ) {
 						if (( int32 ) id != sSelectedEntity) return;
 						ImGui::SeparatorText( "Spot Light" );
 						ImGui::ColorEdit3( "Color", glm::value_ptr( light.mColor ) );

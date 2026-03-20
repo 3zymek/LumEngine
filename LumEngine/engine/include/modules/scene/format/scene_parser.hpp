@@ -28,7 +28,7 @@ namespace lum::fmt {
 		FScene& mScene;
 
 		/* @brief Entity currently being parsed and populated with components. */
-		ecs::EntityID mEntity;
+		EntityID mEntity;
 
 		/* @brief Resource manager context used to load and resolve assets. */
 		FSceneManagerContext mContext;

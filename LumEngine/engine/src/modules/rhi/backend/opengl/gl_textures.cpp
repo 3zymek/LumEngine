@@ -142,8 +142,6 @@ namespace lum::rhi::gl {
 
 		auto textureHandle = mTextures.Append( std::move( texture ) );
 
-		LUM_LOG_INFO( "Created texture 2D %d", textureHandle.mID );
-
 		return textureHandle;
 
 	}

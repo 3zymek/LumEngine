@@ -16,7 +16,7 @@ namespace lum {
 
 	ahi::SoundHandle MAudioManager::GetSound( StringView relativePath, SoundCategory cat ) {
 
-		uint64 hash = HashStr( relativePath );
+		HashedStr hash = HashStr( relativePath );
 		if (mSounds.contains( hash )) return mSounds[ hash ];
 
 		String fullPath = AssetLoader::ResolvePath( RootID::External, relativePath );
@@ -39,7 +39,7 @@ namespace lum {
 	}
 	void MAudioManager::UnloadSound( StringView alias ) {
 
-		uint64 hash = HashStr( alias );
+		HashedStr hash = HashStr( alias );
 
 		if (mSounds.contains( hash ))
 			mSounds.erase( HashStr( alias ) );
@@ -60,6 +60,55 @@ namespace lum {
 
 	}
 
+	void MAudioManager::StopAll( ) {
+
+		mDevice->StopAll( );
+
+	}
+
+	ahi::AudioEffectHandle MAudioManager::CreateEffect( StringView name, ahi::EffectPreset preset ) {
+
+		return CreateEffect( name, ahi::detail::gkEffectPresetLookup[ ToUnderlyingEnum( preset ) ] );
+
+	}
+	ahi::AudioEffectHandle MAudioManager::CreateEffect( StringView name, const ahi::FAudioEffectDescriptor& desc ) {
+
+		HashedStr hash = HashStr( name );
+
+		if (!mEffects.contains( hash )) {
+			mEffects[ hash ] = mDevice->CreateEffect( desc );
+		}
+
+		return mEffects[ hash ];
+
+	}
+
+	ahi::AudioEffectHandle MAudioManager::GetEffect( StringView name ) {
+
+		HashedStr hash = HashStr( name );
+		
+		if (!mEffects.contains( hash )) {
+			LUM_LOG_WARN( "Effect named %s doesn't exist", name.data( ) );
+			return {};
+		}
+
+		return mEffects[ hash ];
+
+	}
+
+	ahi::ChannelGroupHandle MAudioManager::GetGroup( StringView name ) {
+
+		HashedStr hash = HashStr( name );
+
+		if (!mGroups.contains( hash )) {
+			mGroups[ hash ] = mDevice->CreateChannelGroup( name );
+		}
+
+		return mGroups[ hash ];
+
+	}
+
+
 	void MAudioManager::Update( ecs::MEntityManager* mgr ) {
 
 		mgr->Each<CCamera, CTransform>(
@@ -69,12 +118,12 @@ namespace lum {
 				attrs.mPosition = transform.mPosition;
 				attrs.mUp = camera.mUp;
 				attrs.mForward = glm::normalize( camera.mTarget - transform.mPosition );
-				
+
 				Set3DListenerAttributes( attrs );
 
 		} );
 
-		mgr->EachWithID<CTransform, CAudioEmitter>( [&]( ecs::EntityID id, CTransform& transf, CAudioEmitter& emitter ) {
+		mgr->EachWithID<CTransform, CAudioEmitter>( [&]( EntityID id, CTransform& transf, CAudioEmitter& emitter ) {
 
 			if (emitter.bMarked) {
 
@@ -97,7 +146,7 @@ namespace lum {
 
 			emitter.bMarked = false;
 
-		} 
+		}
 		);
 
 	}

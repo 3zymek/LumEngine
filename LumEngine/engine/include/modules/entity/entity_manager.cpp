@@ -7,12 +7,19 @@
 //=============================================================================//
 
 #include "entity/entity_manager.hpp"
+#include "event/event_bus.hpp"
 
 namespace lum::ecs {
 
 	//---------------------------------------------------------
 	// Public
 	//---------------------------------------------------------
+
+	void MEntityManager::Initialize( ev::EventBus* bus ) {
+
+		mEventBus = bus;
+
+	}
 
 	ManagedEntity MEntityManager::CreateEntity() {
 		return ManagedEntity{ this };

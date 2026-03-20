@@ -226,7 +226,7 @@ namespace lum::ahi::fmod {
 
 		}
 
-		LUM_RETURN_IF( !mChannels.contains( instance.mInstanceID ), LUM_SEV_WARN, "Instance's not playing" );
+		if (!mChannels.contains( instance.mInstanceID )) return;
 
 		FMOD::Channel* channel = to_fmod_channel( mChannels[ instance.mInstanceID ] );
 
@@ -264,6 +264,7 @@ namespace lum::ahi::fmod {
 		mSystem->update( );
 
 	}
+
 
 
 	//---------------------------------------------------------

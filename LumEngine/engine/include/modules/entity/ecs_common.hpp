@@ -17,15 +17,14 @@ namespace lum {
 		bool bMarked = true;
 	};
 
+	/* @brief Unique identifier for an entity. */
+	using EntityID = uint64;
+
 	/* @brief Entity Component System namespace.
 	*  Provides core ECS primitives including entity management,
 	*  component storage and system iteration.
 	*/
 	namespace ecs {
-
-		/* @brief Unique identifier for an entity. */
-		using EntityID = uint64;
-
 
 		/* @brief Internal implementation details for the ECS.
 		*  Not intended for direct use outside of the ECS subsystem.

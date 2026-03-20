@@ -11,57 +11,53 @@ namespace lum::rhi::gl {
 
 	RSamplerHandle GLDevice::CreateSampler( const FSamplerDescriptor& desc ) {
 
-		LUM_ASSERT(mSamplers.DenseSize() <= skMaxSamplers, "Max samplers reached");
+		LUM_ASSERT( mSamplers.DenseSize( ) <= skMaxSamplers, "Max samplers reached" );
 
 		FSampler sampler;
 
-		glCreateSamplers(1, &sampler.mHandle);
-		glSamplerParameteri(sampler.mHandle, GL_TEXTURE_MAG_FILTER, (desc.mMagFilter == SamplerMagFilter::Nearest) ? GL_NEAREST : GL_LINEAR);
-		glSamplerParameteri(sampler.mHandle, GL_TEXTURE_MIN_FILTER, skTextureMinFilterLookup[LookupCast(desc.mMinFilter)]);
+		glCreateSamplers( 1, &sampler.mHandle );
+		glSamplerParameteri( sampler.mHandle, GL_TEXTURE_MAG_FILTER, (desc.mMagFilter == SamplerMagFilter::Nearest) ? GL_NEAREST : GL_LINEAR );
+		glSamplerParameteri( sampler.mHandle, GL_TEXTURE_MIN_FILTER, skTextureMinFilterLookup[ LookupCast( desc.mMinFilter ) ] );
 
-		glSamplerParameteri(sampler.mHandle, GL_TEXTURE_WRAP_S, skSamplerWrapLookup[LookupCast(desc.mWrapS)]);
-		glSamplerParameteri(sampler.mHandle, GL_TEXTURE_WRAP_T, skSamplerWrapLookup[LookupCast(desc.mWrapT)]);
+		glSamplerParameteri( sampler.mHandle, GL_TEXTURE_WRAP_S, skSamplerWrapLookup[ LookupCast( desc.mWrapS ) ] );
+		glSamplerParameteri( sampler.mHandle, GL_TEXTURE_WRAP_T, skSamplerWrapLookup[ LookupCast( desc.mWrapT ) ] );
 
 
 		GLfloat maxAnisotropy = 1.0f;
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAnisotropy);
+		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAnisotropy );
 
-		GLfloat finalAnisotropy = std::clamp((float32)desc.mAnisotropy, 1.0f, (float32)maxAnisotropy);
-		glSamplerParameterf ( sampler.mHandle, GL_TEXTURE_MAX_ANISOTROPY, finalAnisotropy );
+		GLfloat finalAnisotropy = std::clamp( ( float32 ) desc.mAnisotropy, 1.0f, ( float32 ) maxAnisotropy );
+		glSamplerParameterf( sampler.mHandle, GL_TEXTURE_MAX_ANISOTROPY, finalAnisotropy );
 
-		RSamplerHandle samplerHandle = mSamplers.Append(std::move(sampler));
-
-		LUM_LOG_INFO("Created sampler %d", samplerHandle.mID);
+		RSamplerHandle samplerHandle = mSamplers.Append( std::move( sampler ) );
 
 		return samplerHandle;
 	}
 
 	void GLDevice::BindSampler( RSamplerHandle sampler, uint16 binding ) {
-		
-		LUM_ASSERT(binding < skMaxSamplerUnits, "Sampler binding out of range");
-		LUM_HOTCHK_RETURN_VOID(IsValid(sampler), LUM_SEV_WARN, "Invalid sampler");
 
-		if (mCurrentSamplers[binding] == sampler) {
-			LUM_PROFILER_CACHE_HIT();
+		LUM_ASSERT( binding < skMaxSamplerUnits, "Sampler binding out of range" );
+		if (!IsValid( sampler )) return;
+
+		if (mCurrentSamplers[ binding ] == sampler) {
+			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
-		mCurrentSamplers[binding] = sampler;
+		mCurrentSamplers[ binding ] = sampler;
 
-		glBindSampler(binding, mSamplers[sampler].mHandle);
+		glBindSampler( binding, mSamplers[ sampler ].mHandle );
 
-		LUM_PROFILER_CACHE_MISS();
+		LUM_PROFILER_CACHE_MISS( );
 
 	}
 
 	void GLDevice::DeleteSampler( RSamplerHandle sampler ) {
 
-		LUM_HOTCHK_RETURN_VOID(IsValid(sampler), LUM_SEV_WARN, "Invalid sampler");
+		LUM_RETURN_IF( !IsValid( sampler ), LUM_SEV_WARN, "Invalid sampler" );
 
-		glDeleteSamplers ( 1, &mSamplers[sampler].mHandle );
-		mSamplers.Remove(sampler);
-
-		LUM_LOG_INFO("Deleted sampler %d", sampler.mID);
+		glDeleteSamplers( 1, &mSamplers[ sampler ].mHandle );
+		mSamplers.Remove( sampler );
 
 	}
 

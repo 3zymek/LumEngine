@@ -43,7 +43,7 @@ namespace lum {
 		desc.mVertexContent = vertexData.value();
 		desc.mFragmentContent = fragmentData.value();
 
-		LUM_LOG_INFO("Creating shader... %s %s", vertexPath, fragmentPath);
+		LUM_LOG_INFO("Compiling shader %s : %s", vertexPath, fragmentPath);
 		rhi::RShaderHandle shader = mRenderDevice->CreateShader(desc);
 
 		mShaders[hash] = shader;

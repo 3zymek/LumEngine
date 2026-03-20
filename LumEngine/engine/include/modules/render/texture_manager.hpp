@@ -6,15 +6,13 @@
 #pragma once
 
 #include "core/core_common.hpp"
+#include "rhi/core/rhi_device.hpp"
 
 namespace lum {
 
 	///Forward Declare///
 	struct FTextureData;
-	namespace rhi {
-		class RenderDevice;
-		struct RTextureHandle;
-	} // lum::rhi
+
 	/////////////////////
 
 

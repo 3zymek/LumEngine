@@ -11,7 +11,7 @@ namespace lum::rhi::gl {
 
 	RBufferHandle GLDevice::CreateBuffer( const FBufferDescriptor& desc ) {
 
-		LUM_ASSERT(validate_buffer_descriptor(desc), "Invalid buffer descriptor");
+		LUM_ASSERT( validate_buffer_descriptor( desc ), "Invalid buffer descriptor" );
 
 		FBuffer buffer;
 
@@ -22,9 +22,9 @@ namespace lum::rhi::gl {
 
 		GLbitfield initFlags =
 			((buffer.mUsage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
-			| translate_mapping_flags(buffer.mFlags);
+			| translate_mapping_flags( buffer.mFlags );
 
-		glCreateBuffers(1, &buffer.mHandle);
+		glCreateBuffers( 1, &buffer.mHandle );
 
 		glNamedBufferStorage(
 			buffer.mHandle,
@@ -33,21 +33,21 @@ namespace lum::rhi::gl {
 			initFlags
 		);
 
-		return mBuffers.Append(std::move(buffer));
+		return mBuffers.Append( std::move( buffer ) );
 
 	}
 
-	void GLDevice::UpdateBuffer( RBufferHandle buff, cvptr data, usize offset, usize size) {
+	void GLDevice::UpdateBuffer( RBufferHandle buff, cvptr data, usize offset, usize size ) {
 
-		LUM_ASSERT(IsValid(buff), "Invalid buffer");
+		LUM_ASSERT( IsValid( buff ), "Invalid buffer" );
 
-		FBuffer& buffer = mBuffers[buff];
+		FBuffer& buffer = mBuffers[ buff ];
 
 		if (size == 0) size = buffer.mSize;
 
-		LUM_ASSERT(offset + size <= buffer.mSize, "Invalid offset or size");
-		LUM_ASSERT(buffer.mUsage != BufferUsage::Static, "Buffer %d is static, cannot be updated");
-		LUM_ASSERT(buffer.mFlags.Has(MapFlag::Write), "Buffer %d has no write flags enabled");
+		LUM_ASSERT( offset + size <= buffer.mSize, "Invalid offset or size" );
+		LUM_ASSERT( buffer.mUsage != BufferUsage::Static, "Buffer %d is static, cannot be updated" );
+		LUM_ASSERT( buffer.mFlags.Has( MapFlag::Write ), "Buffer %d has no write flags enabled" );
 
 		vptr ptr =
 			glMapNamedBufferRange(
@@ -57,93 +57,93 @@ namespace lum::rhi::gl {
 				GL_MAP_WRITE_BIT
 			);
 
-		LUM_RETURN_IF(ptr == nullptr, LUM_SEV_WARN, "Failed during buffer mapping");
+		LUM_RETURN_IF( ptr == nullptr, LUM_SEV_WARN, "Failed during buffer mapping" );
 
-		std::memcpy(ptr, data, size);
+		std::memcpy( ptr, data, size );
 
-		glUnmapNamedBuffer(buffer.mHandle);
+		glUnmapNamedBuffer( buffer.mHandle );
 
 	}
 
-	void GLDevice::DeleteBuffer(RBufferHandle& buff) {
+	void GLDevice::DeleteBuffer( RBufferHandle& buff ) {
 
-		LUM_RETURN_IF(!IsValid(buff), LUM_SEV_DEBUG, "Invalid buffer");
+		LUM_RETURN_IF( !IsValid( buff ), LUM_SEV_DEBUG, "Invalid buffer" );
 
-		FBuffer& buffer = mBuffers[buff];
+		FBuffer& buffer = mBuffers[ buff ];
 		UnmapBuffer( buff );
 
-		glDeleteBuffers(1, &buffer.mHandle);
-		
-		mBuffers.Remove(buff);
+		glDeleteBuffers( 1, &buffer.mHandle );
+
+		mBuffers.Remove( buff );
 
 	}
 
-	vptr GLDevice::MapBuffer(RBufferHandle buff, Flags<MapFlag> flags, usize offset, usize size) {
+	vptr GLDevice::MapBuffer( RBufferHandle buff, Flags<MapFlag> flags, usize offset, usize size ) {
 
-		LUM_ASSERT(IsValid(buff), "Invalid buffer");
+		LUM_RETURN_DEF_IF( !IsValid( buff ), LUM_SEV_WARN, "Invalid buffer" );
 
-		FBuffer& buffer = mBuffers[buff];
+		FBuffer& buffer = mBuffers[ buff ];
 
-		LUM_ASSERT(offset + size < buffer.mSize || size < buffer.mSize, "Invalid offset or size");
+		LUM_ASSERT( offset + size < buffer.mSize || size < buffer.mSize, "Invalid offset or size" );
 		if (size <= 0) size = buffer.mSize;
 
-		vptr ptr = glMapNamedBufferRange(buffer.mHandle, offset, size, translate_mapping_flags(flags));
+		vptr ptr = glMapNamedBufferRange( buffer.mHandle, offset, size, translate_mapping_flags( flags ) );
 
-		LUM_ASSERT(ptr, "Failed to map buffer");
+		LUM_ASSERT( ptr, "Failed to map buffer" );
 
 		return ptr;
 	}
 
-	void GLDevice::UnmapBuffer(RBufferHandle buff) {
+	void GLDevice::UnmapBuffer( RBufferHandle buff ) {
 
-		LUM_ASSERT(IsValid(buff), "Invalid buffer");
+		LUM_RETURN_IF( !IsValid( buff ), LUM_SEV_WARN, "Invalid buffer" );
 
-		FBuffer& buffer = mBuffers[buff];
+		FBuffer& buffer = mBuffers[ buff ];
 		if (buffer.bMapped) return;
 
-		glUnmapNamedBuffer(buffer.mHandle);
+		glUnmapNamedBuffer( buffer.mHandle );
 
 	}
 
-	void GLDevice::SetShaderStorageBinding(RBufferHandle ssbo, uint32 binding) {
+	void GLDevice::SetShaderStorageBinding( RBufferHandle ssbo, uint32 binding ) {
 
-		LUM_ASSERT(IsValid(ssbo), "Invalid buffer");
+		LUM_ASSERT( IsValid( ssbo ), "Invalid buffer" );
 
-		const auto& buffer = mBuffers[ssbo];
+		const auto& buffer = mBuffers[ ssbo ];
 
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, buffer.mHandle);
+		glBindBufferBase( GL_SHADER_STORAGE_BUFFER, binding, buffer.mHandle );
 
 	}
 
 	void GLDevice::AttachElementBufferToLayout( RBufferHandle ebo, RVertexLayoutHandle vao ) {
 
-		LUM_ASSERT(mLayouts.Contains(vao), "Invalid layout");
-		LUM_ASSERT(mBuffers.Contains(ebo), "Invalid buffer");
+		LUM_ASSERT( mLayouts.Contains( vao ), "Invalid layout" );
+		LUM_ASSERT( mBuffers.Contains( ebo ), "Invalid buffer" );
 
-		glVertexArrayElementBuffer(mLayouts[vao].mHandle, mBuffers[ebo].mHandle);
-		mLayouts[vao].mElementBuff = ebo;
+		glVertexArrayElementBuffer( mLayouts[ vao ].mHandle, mBuffers[ ebo ].mHandle );
+		mLayouts[ vao ].mElementBuff = ebo;
 
 	}
 
 	void GLDevice::SetUniformBufferBinding( RBufferHandle ubo, int32 binding ) {
 
-		LUM_ASSERT(IsValid(ubo), "Invalid buffer");
+		LUM_ASSERT( IsValid( ubo ), "Invalid buffer" );
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, binding, mBuffers[ubo].mHandle);
+		glBindBufferBase( GL_UNIFORM_BUFFER, binding, mBuffers[ ubo ].mHandle );
 
 	}
 
-	GLbitfield GLDevice::translate_mapping_flags(Flags<MapFlag> flags) noexcept {
+	GLbitfield GLDevice::translate_mapping_flags( Flags<MapFlag> flags ) noexcept {
 		GLbitfield flag = 0;
 
-		if (flags.Has(MapFlag::None))						return 0;
-		if (flags.Has(MapFlag::Persistent))					flag |= GL_MAP_PERSISTENT_BIT;
-		if (flags.Has(MapFlag::Write))						flag |= GL_MAP_WRITE_BIT;
-		if (flags.Has(MapFlag::Read))						flag |= GL_MAP_READ_BIT;
-		if (flags.Has(MapFlag::Coherent))					flag |= GL_MAP_COHERENT_BIT;
-		if (flags.Has(MapFlag::Invalidate_Buffer))			flag |= GL_MAP_INVALIDATE_BUFFER_BIT;
-		if (flags.Has(MapFlag::Invalidate_Range))			flag |= GL_MAP_INVALIDATE_RANGE_BIT;
-		if (flags.Has(MapFlag::Unsynchronized))				flag |= GL_MAP_UNSYNCHRONIZED_BIT;
+		if (flags.Has( MapFlag::None ))						return 0;
+		if (flags.Has( MapFlag::Persistent ))					flag |= GL_MAP_PERSISTENT_BIT;
+		if (flags.Has( MapFlag::Write ))						flag |= GL_MAP_WRITE_BIT;
+		if (flags.Has( MapFlag::Read ))						flag |= GL_MAP_READ_BIT;
+		if (flags.Has( MapFlag::Coherent ))					flag |= GL_MAP_COHERENT_BIT;
+		if (flags.Has( MapFlag::Invalidate_Buffer ))			flag |= GL_MAP_INVALIDATE_BUFFER_BIT;
+		if (flags.Has( MapFlag::Invalidate_Range ))			flag |= GL_MAP_INVALIDATE_RANGE_BIT;
+		if (flags.Has( MapFlag::Unsynchronized ))				flag |= GL_MAP_UNSYNCHRONIZED_BIT;
 
 		return flag;
 	}
