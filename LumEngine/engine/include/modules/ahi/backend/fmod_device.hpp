@@ -23,7 +23,9 @@ namespace lum::ahi::fmod {
 		void DeleteEffect( AudioEffectHandle& ) override;
 
 		ChannelGroupHandle CreateChannelGroup( StringView ) override;
-		void AddGroupEffect( ChannelGroupHandle, AudioEffectHandle ) override;
+		void SetGroupEffect( ChannelGroupHandle, AudioEffectHandle ) override;
+		void SetGroupVolume( ChannelGroupHandle group, float32 volume ) override;
+		void SetGroupPitch( ChannelGroupHandle group, float32 pitch ) override;
 		void RemoveGroupEffect( ChannelGroupHandle, AudioEffectHandle ) override;
 
 		void PlayOneShot( SoundHandle, const FPlaybackDescriptor& ) override;

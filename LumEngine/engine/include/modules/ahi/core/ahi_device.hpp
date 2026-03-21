@@ -7,8 +7,9 @@
 //=============================================================================//
 #pragma once
 
-#include "ahi/ahi_common.hpp"
 #include "core/limits.hpp"
+
+#include "ahi/ahi_common.hpp"
 #include "ahi/core/ahi_sound.hpp"
 #include "ahi/core/ahi_effect.hpp"
 #include "ahi/ahi_presets.hpp"
@@ -73,8 +74,12 @@ namespace lum::ahi {
 		* @param group  Target channel group.
 		* @param effect Effect to attach.
 		*/
-		virtual void AddGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) = 0;
+		virtual void SetGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) = 0;
 
+
+		virtual void SetGroupVolume( ChannelGroupHandle group, float32 volume ) = 0;
+		virtual void SetGroupPitch( ChannelGroupHandle group, float32 pitch ) = 0;
+	
 		/* @brief Detaches an effect chain from a channel group.
 		* @param group  Target channel group.
 		* @param effect Effect to detach.
@@ -114,11 +119,11 @@ namespace lum::ahi {
 		* @param distanceFactor  How many engine units equal one metre. Default 1.0.
 		* @param rolloffScale    How fast sounds attenuate with distance. Default 1.0.
 		*/
-		virtual void Set3DSettings(float32 dopplerScale, float32 distanceFactor, float32 rolloffScale) = 0;
+		virtual void Set3DSettings( float32 dopplerScale, float32 distanceFactor, float32 rolloffScale ) = 0;
 
-		bool IsValid( SoundHandle sound )			const noexcept { return mSounds.Contains(sound); }
-		bool IsValid( ChannelGroupHandle group )	const noexcept { return mChannelGroups.Contains(group); }
-		bool IsValid( AudioEffectHandle effect )	const noexcept { return mEffects.Contains(effect); }
+		bool IsValid( SoundHandle sound )			const noexcept { return mSounds.Contains( sound ); }
+		bool IsValid( ChannelGroupHandle group )	const noexcept { return mChannelGroups.Contains( group ); }
+		bool IsValid( AudioEffectHandle effect )	const noexcept { return mEffects.Contains( effect ); }
 
 		/* @brief Synchronises all active sound instances with the audio backend.
 		* Must be called once per frame. Applies dirty state (volume, pitch, position, loop, pause, stop).

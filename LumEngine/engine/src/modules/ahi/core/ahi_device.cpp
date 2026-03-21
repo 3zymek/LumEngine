@@ -7,6 +7,7 @@ namespace lum::ahi {
 		switch (backend) {
 			case AudioBackend::Fmod: return new fmod::FMODDevice();
 		}
+		return new fmod::FMODDevice( );
 	}
 
 }

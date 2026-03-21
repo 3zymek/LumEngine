@@ -18,20 +18,9 @@ namespace lum {
 		ahi::AudioDevice* mAudioDevice = nullptr;
 		MAudioManager mAudioMgr;
 
-		void Initialize( ev::EventBus& bus ) {
+		void Initialize( ev::EventBus& bus );
 
-			mAudioDevice = ahi::CreateDevice( ahi::AudioBackend::Fmod );
-			mAudioDevice->Initialize( 512, ahi::InitFlag::RightHanded3D | ahi::InitFlag::DistanceFilter );
-			mAudioMgr.Initialize( mAudioDevice );
-
-		}
-
-		void Finalize( ) {
-
-			mAudioDevice->Finalize( );
-			delete mAudioDevice;
-
-		}
+		void Finalize( );
 
 	};
 

@@ -13,6 +13,20 @@ namespace lum::ahi {
 
 	using InstID = uint32;
 
+	enum class InstanceFlag : bitfield {
+
+		// State
+		Paused,
+		Playing,
+		Looped,
+
+		// Actions
+		Stop,
+		Play,
+		Kill
+
+	};
+
 	/* @brief Runtime state for a single tracked sound instance.
 	*
 	* Owns playback parameters (volume, pitch, position, loop) and a dirty flag
@@ -32,11 +46,7 @@ namespace lum::ahi {
 		float32		mMinDistance = 10.0f;
 		float32		mMaxDistance = 50.0f;
 
-		bool bPaused = false;
-		bool bPlaying = false; // Defines if instance is in playing state (true even if paused)
-		bool bStop = false;
-		bool bPlay = false;
-		bool bLooped = false;
+		Flags<InstanceFlag> mFlags;
 
 	};
 

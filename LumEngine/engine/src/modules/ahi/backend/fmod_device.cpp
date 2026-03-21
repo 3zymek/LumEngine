@@ -112,7 +112,7 @@ namespace lum::ahi::fmod {
 		mEffects.Remove( effect );
 	}
 
-	void FMODDevice::AddGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) {
+	void FMODDevice::SetGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) {
 
 		LUM_RETURN_IF( !IsValid( effect ), LUM_SEV_WARN, "Invalid effect handle" );
 		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group handle" );
@@ -123,6 +123,20 @@ namespace lum::ahi::fmod {
 		for (int32 i = 0; i < sfx.mDSPs.size( ); i++) {
 			fmodGroup->addDSP( i, to_fmod_dsp( sfx.mDSPs[ i ] ) );
 		}
+
+	}
+	void FMODDevice::SetGroupVolume( ChannelGroupHandle group, float32 volume ) {
+
+		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group" );
+
+		to_fmod_chgroup( mChannelGroups[ group ] )->setVolume( std::clamp( volume, 0.0f, 1.0f ) );
+
+	}
+	void FMODDevice::SetGroupPitch( ChannelGroupHandle group, float32 pitch ) {
+
+		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group" );
+
+		to_fmod_chgroup( mChannelGroups[ group ] )->setPitch( std::clamp( pitch, 0.0f, 1.0f ) );
 
 	}
 	void FMODDevice::RemoveGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) {
@@ -168,9 +182,9 @@ namespace lum::ahi::fmod {
 		FMOD::Sound* fmodSound = static_cast< FMOD::Sound* >(mSounds[ inst.mSound.mID ]);
 		FMOD::Channel* channel = nullptr;
 
-		mSystem->playSound( fmodSound, nullptr, inst.bPaused, &channel );
-		channel->setVolume( inst.mVolume );
-		channel->setPitch( inst.mPitch );
+		mSystem->playSound( fmodSound, nullptr, inst.mFlags.Has( InstanceFlag::Paused ), &channel );
+		channel->setVolume( std::clamp( inst.mVolume, 0.0f, 1.0f ) );
+		channel->setPitch( std::clamp( inst.mPitch, 0.0f, 1.0f ) );
 
 		if (group != gDefaultGroup) {
 
@@ -179,7 +193,7 @@ namespace lum::ahi::fmod {
 
 		}
 
-		inst.bPlaying = true;
+		inst.mFlags.Enable( InstanceFlag::Playing );
 		mChannels.insert( { inst.mInstanceID, channel } );
 
 	}
@@ -196,7 +210,7 @@ namespace lum::ahi::fmod {
 
 		FMOD::ChannelGroup* master;
 		mSystem->getMasterChannelGroup( &master );
-		master->setVolume( volume );
+		master->setVolume( std::clamp( volume, 0.0f, 1.0f ) );
 
 	}
 
@@ -219,10 +233,10 @@ namespace lum::ahi::fmod {
 
 	void FMODDevice::UpdateInstance( FSoundInstance& instance ) {
 
-		if (instance.bPlay) {
+		if (instance.mFlags.Has( InstanceFlag::Play )) {
 
 			Play( instance, instance.mGroup );
-			instance.bPlay = false;
+			instance.mFlags.Disable( InstanceFlag::Play );
 
 		}
 
@@ -235,24 +249,28 @@ namespace lum::ahi::fmod {
 
 		// End streaming
 		if (!playing) { mChannels.erase( instance.mInstanceID ); return; }
-		if (instance.bStop) {
+		if (instance.mFlags.Has( InstanceFlag::Stop )) {
 			channel->stop( );
 			mChannels.erase( instance.mInstanceID );
 			return;
 		}
 
-		channel->setPaused( instance.bPaused );
-		if (instance.bPaused) return;
+		if (instance.mFlags.Has( InstanceFlag::Kill )) {
+
+		}
+
+		channel->setPaused( instance.mFlags.Has( InstanceFlag::Paused ) );
+		if (instance.mFlags.Has( InstanceFlag::Paused )) return;
 
 		glm::vec3 instPos = instance.mPosition;
 		FMOD_VECTOR pos = { instPos.x, instPos.y, instPos.z };
 
-		channel->setVolume( instance.mVolume );
-		channel->setPitch( instance.mPitch );
+		channel->setVolume( std::clamp( instance.mVolume, 0.0f, 1.0f ) );
+		channel->setPitch( std::clamp( instance.mPitch, 0.0f, 1.0f ) );
 		channel->set3DAttributes( &pos, nullptr );
 		channel->set3DMinMaxDistance( instance.mMinDistance, instance.mMaxDistance );
 
-		if (instance.bLooped)
+		if (instance.mFlags.Has( InstanceFlag::Looped ))
 			channel->setMode( FMOD_LOOP_NORMAL );
 		else
 			channel->setMode( FMOD_LOOP_OFF );

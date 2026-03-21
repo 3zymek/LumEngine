@@ -6,33 +6,23 @@
 
 #pragma once
 
-#include "ahi/core/ahi_device.hpp"
-#include "audio/audio_manager.hpp"
+#include "audio_module.hpp"
 
 namespace lum {
 
-	// Owns the AHI audio device and the high-level audio manager.
-	// Must be initialized before any scene or gameplay systems that use audio.
-	struct MAudioModule {
+	void MAudioModule::Initialize( ev::EventBus& bus ) {
 
-		ahi::AudioDevice* mAudioDevice = nullptr;
-		MAudioManager mAudioMgr;
+		mAudioDevice = ahi::CreateDevice( ahi::AudioBackend::Fmod );
+		mAudioDevice->Initialize( 512, ahi::InitFlag::RightHanded3D | ahi::InitFlag::DistanceFilter );
+		mAudioMgr.Initialize( mAudioDevice, &bus );
 
-		void Initialize( ev::EventBus& bus ) {
+	}
 
-			mAudioDevice = ahi::CreateDevice( ahi::AudioBackend::Fmod );
-			mAudioDevice->Initialize( 512, ahi::InitFlag::RightHanded3D | ahi::InitFlag::DistanceFilter );
-			mAudioMgr.Initialize( mAudioDevice );
+	void MAudioModule::Finalize( ) {
 
-		}
+		mAudioDevice->Finalize( );
+		delete mAudioDevice;
 
-		void Finalize( ) {
-
-			mAudioDevice->Finalize( );
-			delete mAudioDevice;
-
-		}
-
-	};
+	}
 
 } // namespace lum

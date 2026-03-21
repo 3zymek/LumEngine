@@ -446,6 +446,11 @@ namespace lum::fmt {
 					category = detail::ReadStringParameter( tokens, i );
 
 				}
+				else if (detail::IsString( tokens, i, "group" )) {
+
+					emitter.mGroup = ctx.mContext.mAudioMgr->GetGroup( detail::ReadStringParameter( tokens, i ) );
+
+				}
 
 			}
 

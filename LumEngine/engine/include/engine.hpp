@@ -26,9 +26,15 @@ namespace lum {
 		Engine( ) = default;
 
 		void Initialize( StringView projectDir );
-		void SetScene( StringView path );
-		void Run( );
+		void SetScene( StringView path ) { mScene.mSceneMgr.SetScene( path ); }
+		void BeginFrame( );
+		void EndFrame( );
+		void Tick( );
 		void Finalize( );
+
+		ev::EventBus GetEventBus( ) { return mEvBus; }
+
+		bool IsRunning( ) { return mPlatform.mWindow.IsOpen( ); }
 
 	private:
 

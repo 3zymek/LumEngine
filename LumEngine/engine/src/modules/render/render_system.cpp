@@ -57,26 +57,6 @@ namespace lum {
 					if (input::KeyPressedOnce( input::Key::LEFT_CONTROL ))
 						sCameraLocked = !sCameraLocked;
 
-
-					ImGuiIO& io = ImGui::GetIO( );
-
-					ImGui::SetNextWindowPos( ImVec2( 10, 10 ), ImGuiCond_Always );
-					ImGui::Begin( "##overlay", nullptr,
-								  ImGuiWindowFlags_NoDecoration |
-								  ImGuiWindowFlags_NoBackground |
-								  ImGuiWindowFlags_NoInputs |
-								  ImGuiWindowFlags_AlwaysAutoResize |
-								  ImGuiWindowFlags_NoMove
-					);
-
-					ImGui::Text( "FPS: %.1f", io.Framerate );
-					ImGui::Separator( );
-					ImGui::Text( "Position: %.2f  %.2f  %.2f", transform.mPosition.x, transform.mPosition.y, transform.mPosition.z );
-					ImGui::Text( "Yaw:   %.1f", camera.mYaw );
-					ImGui::Text( "Pitch: %.1f", camera.mPitch );
-
-					ImGui::End( );
-
 					if (!sCameraLocked) {
 						float32 speed = 5.0f * 0.1f;
 						
@@ -156,84 +136,6 @@ namespace lum {
 
 				}
 			);
-
-
-			static int sSelectedEntity = -1;
-
-			ImGui::SetNextWindowPos( ImVec2( 10, 200 ), ImGuiCond_Always );
-			ImGui::Begin( "Scene" );
-
-			ImGui::BeginChild( "EntityList", ImVec2( 180, 0 ), true );
-			ImGui::SeparatorText( "Entities" );
-
-			entityMgr->EachWithID<CName>(
-				[&]( EntityID id, CName& name ) {
-					bool selected = (sSelectedEntity == ( int32 ) id);
-					if (ImGui::Selectable( name.mName.Data( ), selected ))
-						sSelectedEntity = ( int32 ) id;
-				}
-			);
-
-			ImGui::EndChild( );
-			ImGui::SameLine( );
-			ImGui::BeginChild( "Inspector", ImVec2( 0, 0 ), true );
-
-			if (sSelectedEntity >= 0) {
-				ImGui::SeparatorText( "Inspector" );
-
-				entityMgr->EachWithID<CName, CTransform>(
-					[&]( EntityID id, CName& name, CTransform& transform ) {
-						if (( int32 ) id != sSelectedEntity) return;
-
-						ImGui::SeparatorText( "Transform" );
-						ImGui::DragFloat3( "Position", glm::value_ptr( transform.mPosition ), 0.1f );
-						ImGui::DragFloat3( "Rotation", glm::value_ptr( transform.mRotation ), 0.1f );
-						ImGui::DragFloat3( "Scale", glm::value_ptr( transform.mScale ), 0.01f );
-					}
-				);
-
-				entityMgr->EachWithID<CName, CMaterial>(
-					[&]( EntityID id, CName& name, CMaterial& material ) {
-						if (( int32 ) id != sSelectedEntity) return;
-
-						ImGui::SeparatorText( "Material" );
-						ImGui::DragFloat( "Roughness", &material.mMat.mRoughnessValue, 0.01f, 0.0f, 1.0f );
-						ImGui::DragFloat( "Metallic", &material.mMat.mMetallicValue, 0.01f, 0.0f, 1.0f );
-						ImGui::ColorEdit3( "Base Color", glm::value_ptr( material.mMat.mBaseColor ) );
-					}
-				);
-
-				entityMgr->EachWithID<CName, CPointLight>(
-					[&]( EntityID id, CName& name, CPointLight& light ) {
-						if (( int32 ) id != sSelectedEntity) return;
-
-						ImGui::SeparatorText( "Point Light" );
-						ImGui::ColorEdit3( "Color", glm::value_ptr( light.mColor ) );
-						ImGui::DragFloat( "Intensity", &light.mIntensity, 0.01f, 0.0f, 100.0f );
-						ImGui::DragFloat( "Radius", &light.mRadius, 0.1f, 0.0f, 1000.0f );
-					}
-				);
-
-				entityMgr->EachWithID<CName, CSpotLight>(
-					[&]( EntityID id, CName& name, CSpotLight& light ) {
-						if (( int32 ) id != sSelectedEntity) return;
-						ImGui::SeparatorText( "Spot Light" );
-						ImGui::ColorEdit3( "Color", glm::value_ptr( light.mColor ) );
-						ImGui::DragFloat( "Intensity", &light.mIntensity, 0.01f, 0.0f, 100.0f );
-						ImGui::DragFloat( "Radius", &light.mRadius, 0.1f, 0.0f, 1000.0f );
-						ImGui::DragFloat3( "Direction", glm::value_ptr( light.mDirection ), 0.01f, -1.0f, 1.0f );
-						ImGui::DragFloat( "Inner Cone", &light.mInnerConeAngle, 0.5f, 0.0f, light.mOuterConeAngle );
-						ImGui::DragFloat( "Outer Cone", &light.mOuterConeAngle, 0.5f, light.mInnerConeAngle, 90.0f );
-					}
-				);
-
-			}
-			else {
-				ImGui::TextDisabled( "Select an entity..." );
-			}
-
-			ImGui::EndChild( );
-			ImGui::End( );
 		}
 
 	} // namespace lum::render
