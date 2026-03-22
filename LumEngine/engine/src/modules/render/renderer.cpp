@@ -14,6 +14,8 @@
 
 #include "event/event_bus.hpp"
 
+#include "platform/window.hpp"
+
 namespace lum::render {
 
 	//---------------------------------------------------------
@@ -24,32 +26,39 @@ namespace lum::render {
 
 		mContext = ctx;
 
-		mGeometryPass.		Initialize(mContext);
-		mLightPass.			Initialize(mContext);
-		mEnvironmentPass.	Initialize(mContext);
-		mShadowPass.		Initialize(mContext);
-		mGBuffer.			Initialize(mContext, 500, 500);
+		mGeometryPass.Initialize( mContext );
+		mLightPass.Initialize( mContext );
+		mEnvironmentPass.Initialize( mContext );
+		mShadowPass.Initialize( mContext );
+		mGBuffer.Initialize( mContext, mContext.mWindow->GetWidth( ), mContext.mWindow->GetHeight( ) );
 
-		init();
+		init( );
+
+		mContext.mEventBus->SubscribePermanently<EWindowResized>(
+			[&]( const EWindowResized& ev ) {
+
+				create_screenquad_texture( ev.mWidth, ev.mHeight );
+				create_screenquad_fbo( );
+
+			}
+		);
 
 	}
 
 	void Renderer::UpdateCamera( const FRenderCamera& camera ) {
 
-		mCameraStruct.mPosition = glm::vec4(camera.mPosition, 0.0);
+		mCameraStruct.mPosition = glm::vec4( camera.mPosition, 0.0 );
 		mCameraStruct.mProjection = camera.mProjection;
 		mCameraStruct.mView = camera.mView;
-		mCameraStruct.mInvViewProj = glm::inverse(camera.mProjection * camera.mView);
+		mCameraStruct.mInvViewProj = glm::inverse( camera.mProjection * camera.mView );
 
-		upload_camera_uniform();
+		upload_camera_uniform( );
 
 	}
 
 	void Renderer::BeginFrame( ) {
 
-		mContext.mRenderDevice->NewFrame();
-
-		mLightPass.ClearLights();
+		mLightPass.ClearLights( );
 		mContext.mRenderDevice->Clear(
 			rhi::BufferBit::Color |
 			rhi::BufferBit::Depth |
@@ -60,15 +69,13 @@ namespace lum::render {
 
 	void Renderer::EndFrame( ) {
 
-		mShadowPass.Execute(mGeometryPass, mLightPass);
+		mShadowPass.Execute( mGeometryPass, mLightPass );
 
-		mGeometryPass.Execute(mGBuffer);
+		mGeometryPass.Execute( mGBuffer );
 
-		mLightPass.Execute(mShadowPass, mGBuffer, mScreenQuad);
+		mLightPass.Execute( mShadowPass, mGBuffer, mScreenQuad );
 
-		mEnvironmentPass.Execute(mGBuffer);
-
-		mContext.mRenderDevice->SwapBuffers();
+		mEnvironmentPass.Execute( mGBuffer, mScreenQuad );
 
 	}
 
@@ -82,18 +89,14 @@ namespace lum::render {
 
 	void Renderer::init( ) {
 
-		mContext.mEventBus->SubscribePermanently<EWindowResized>([this](const EWindowResized& e) {
-			this->mContext.mRenderDevice->SetViewport(0, 0, e.mWidth, e.mHeight);
-		});
-
 		{ // Camera Uniform
 			rhi::FBufferDescriptor desc;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
-			desc.mSize = sizeof(detail::FCameraUniformBuffer);
+			desc.mSize = sizeof( detail::FCameraUniformBuffer );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mCameraBuffer = mContext.mRenderDevice->CreateBuffer(desc);
-			mContext.mRenderDevice->SetUniformBufferBinding(mCameraBuffer, LUM_UBO_CAMERA_BINDING);
+			mCameraBuffer = mContext.mRenderDevice->CreateBuffer( desc );
+			mContext.mRenderDevice->SetUniformBufferBinding( mCameraBuffer, LUM_UBO_CAMERA_BINDING );
 		}
 		{ // Screen quad VBO
 
@@ -106,10 +109,10 @@ namespace lum::render {
 
 			rhi::FBufferDescriptor desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
-			desc.mSize = ByteSize(vertices);
+			desc.mSize = ByteSize( vertices );
 			desc.mBufferType = rhi::BufferType::Vertex;
-			desc.mData = vertices.data();
-			mScreenQuad.mVbo = mContext.mRenderDevice->CreateBuffer(desc);
+			desc.mData = vertices.data( );
+			mScreenQuad.mVbo = mContext.mRenderDevice->CreateBuffer( desc );
 		}
 		{ // Screen quad EBO
 
@@ -121,36 +124,64 @@ namespace lum::render {
 
 			rhi::FBufferDescriptor desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
-			desc.mSize = ByteSize(indices);
+			desc.mSize = ByteSize( indices );
 			desc.mBufferType = rhi::BufferType::Element;
-			desc.mData = indices.data();
-			mScreenQuad.mEbo = mContext.mRenderDevice->CreateBuffer(desc);
+			desc.mData = indices.data( );
+			mScreenQuad.mEbo = mContext.mRenderDevice->CreateBuffer( desc );
 		}
 		{ // Screen quad VAO
 
-			std::vector<rhi::FVertexAttribute> attrs(2);
-			attrs[0].mFormat = rhi::DataFormat::Vec3;
-			attrs[0].mRelativeOffset = offsetof(FVertex, mPosition);
-			attrs[0].mShaderLocation = LUM_LAYOUT_POSITION;
+			std::vector<rhi::FVertexAttribute> attrs( 2 );
+			attrs[ 0 ].mFormat = rhi::DataFormat::Vec3;
+			attrs[ 0 ].mRelativeOffset = offsetof( FVertex, mPosition );
+			attrs[ 0 ].mShaderLocation = LUM_LAYOUT_POSITION;
 
-			attrs[1].mFormat = rhi::DataFormat::Vec2;
-			attrs[1].mRelativeOffset = offsetof(FVertex, mUv);
-			attrs[1].mShaderLocation = LUM_LAYOUT_UV;
+			attrs[ 1 ].mFormat = rhi::DataFormat::Vec2;
+			attrs[ 1 ].mRelativeOffset = offsetof( FVertex, mUv );
+			attrs[ 1 ].mShaderLocation = LUM_LAYOUT_UV;
 
 			rhi::FVertexLayoutDescriptor desc;
 			desc.mAttributes = attrs;
-			desc.mStride = sizeof(FVertex);
-			mScreenQuad.mVao = mContext.mRenderDevice->CreateVertexLayout(desc, mScreenQuad.mVbo);
+			desc.mStride = sizeof( FVertex );
+			mScreenQuad.mVao = mContext.mRenderDevice->CreateVertexLayout( desc, mScreenQuad.mVbo );
 
-			mContext.mRenderDevice->AttachElementBufferToLayout(mScreenQuad.mEbo, mScreenQuad.mVao);
+			mContext.mRenderDevice->AttachElementBufferToLayout( mScreenQuad.mEbo, mScreenQuad.mVao );
 
 		}
+
+		create_screenquad_texture( mContext.mWindow->GetWidth( ), mContext.mWindow->GetHeight( ) );
+		create_screenquad_fbo( );
+
 	}
 
 	void Renderer::upload_camera_uniform( ) {
+		mContext.mRenderDevice->UpdateBuffer( mCameraBuffer, &mCameraStruct, 0, 0 );
+	}
 
-		mContext.mRenderDevice->UpdateBuffer(mCameraBuffer, &mCameraStruct, 0, 0);
-
+	void Renderer::create_screenquad_texture( uint32 w, uint32 h) {
+		
+		if (mContext.mRenderDevice->IsValid( mScreenQuad.mTexture ))
+			mContext.mRenderDevice->DeleteTexture( mScreenQuad.mTexture );
+		
+		rhi::FTextureDescriptor desc;
+		desc.mImageFormat = rhi::ImageFormat::RGBA;
+		desc.mImageLayout = rhi::ImageLayout::RGBA16F;
+		desc.mWidth = w;
+		desc.mHeight = h;
+		desc.mTextureType = rhi::TextureType::Texture2D;
+		mScreenQuad.mTexture = mContext.mRenderDevice->CreateTexture( desc );
+		
+	}
+	void Renderer::create_screenquad_fbo( ) {
+		
+		if (mContext.mRenderDevice->IsValid( mScreenQuad.mFbo ))
+			mContext.mRenderDevice->DeleteFramebuffer( mScreenQuad.mFbo );
+		
+		rhi::FFramebufferDescriptor desc;
+		desc.mColorTex.push_back( { LUM_TEX_OUTPUT, mScreenQuad.mTexture } );
+		desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
+		mScreenQuad.mFbo = mContext.mRenderDevice->CreateFramebuffer( desc );
+		
 	}
 
 }

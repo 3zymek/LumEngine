@@ -11,10 +11,16 @@ namespace lum::render::detail {
 
 		mContext = ctx;
 
-		create_textures(w, h);
-		create_framebuffer();
+		ctx.mEventBus->SubscribePermanently<EWindowResized>(
+			[&]( const EWindowResized& ev ) {
+				create_textures( ev.mWidth, ev.mHeight );
+				create_framebuffer( );
+			}
+		);
 
-		init();
+		create_textures( w, h );
+		create_framebuffer( );
+
 
 	}
 
@@ -38,7 +44,6 @@ namespace lum::render::detail {
 		return mAlbedo;
 
 	}
-
 
 	//---------------------------------------------------------
 	// Private
@@ -91,19 +96,5 @@ namespace lum::render::detail {
 		}
 
 	}
-
-	void GBuffer::init( ) {
-
-		mContext.mEventBus->SubscribePermanently<EWindowResized>([this](const EWindowResized& ev) {
-			
-			if (ev.mWidth == 0 || ev.mHeight == 0) return;
-			
-			create_textures(ev.mWidth, ev.mHeight);
-			create_framebuffer();
-		
-		});
-
-	}
-
 
 } // namespace lum::render

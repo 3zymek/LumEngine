@@ -32,7 +32,14 @@ namespace lum {
 		void Tick( );
 		void Finalize( );
 
-		ev::EventBus GetEventBus( ) { return mEvBus; }
+		float64 GetDeltaTime( ) const noexcept { return mPlatform.mWindow.GetDeltaTime( ); }
+
+		ev::EventBus& GetEventBus( ) { return mEvBus; }
+		MAudioModule& GetAudio( ) { return mAudio; }
+		MPlatformModule& GetPlatform( ) { return mPlatform; }
+		MRenderModule& GetRender( ) { return mRender; }
+		MSceneManager& GetScene( ) { return mScene.mSceneMgr; }
+
 
 		bool IsRunning( ) { return mPlatform.mWindow.IsOpen( ); }
 

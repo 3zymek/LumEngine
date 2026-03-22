@@ -9,49 +9,37 @@
 #include "rhi/backend/gl_device.hpp"
 #include "platform/window.hpp"
 
-#if LUM_ENABLE_IMGUI == 1
-	#include <imgui.h>
-	#include <imgui_impl_glfw.h>
-	#include <imgui_impl_opengl3.h>
-#endif
-
 namespace lum::rhi::gl {
 
 	void GLDevice::Initialize( Window* window ) {
 
-		GLFWwindow* w = static_cast<GLFWwindow*>(window->GetNativeWindow());
+		GLFWwindow* w = static_cast< GLFWwindow* >(window->GetNativeWindow( ));
 
-		glfwMakeContextCurrent(w);
+		glfwMakeContextCurrent( w );
 
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-			glfwTerminate();
+		if (!gladLoadGLLoader( ( GLADloadproc ) glfwGetProcAddress )) {
+			glfwTerminate( );
 			return;
 		}
 
-#		if LUM_ENABLE_IMGUI == 1
-			IMGUI_CHECKVERSION();
-			ImGui::CreateContext();
-			ImGui_ImplGlfw_InitForOpenGL(w, true);
-			ImGui_ImplOpenGL3_Init("#version 450");
-#		endif
 #		if LUM_ENABLE_DEBUG_RENDER == 1
-			glEnable(GL_DEBUG_OUTPUT);
-			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-			glDebugMessageCallback(rhi::detail::GLDebugCallback, nullptr);
+			glEnable( GL_DEBUG_OUTPUT );
+			glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+			glDebugMessageCallback( rhi::detail::GLDebugCallback, nullptr );
 #		endif
 
 		mWindow = window;
 
 	}
 
-	void GLDevice::Draw( RVertexLayoutHandle layout, uint32 numVertices) {
+	void GLDevice::Draw( RVertexLayoutHandle layout, uint32 numVertices ) {
 
-		LUM_ASSERT(mLayouts.Contains(layout), "Cannot draw, invalid vertex layout");
+		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
 
-		glBindVertexArray(mLayouts[layout].mHandle);
-		glDrawArrays(GL_TRIANGLES, 0, numVertices);
+		glBindVertexArray( mLayouts[ layout ].mHandle );
+		glDrawArrays( GL_TRIANGLES, 0, numVertices );
 
-		LUM_PROFILER_DRAW_CALL();
+		LUM_PROFILER_DRAW_CALL( );
 
 	}
 
@@ -64,14 +52,14 @@ namespace lum::rhi::gl {
 
 	void GLDevice::DrawElements( RVertexLayoutHandle layout, uint32 numIndices ) {
 
-		LUM_ASSERT(mLayouts.Contains(layout), "Cannot draw, invalid vertex layout");
+		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
 
-		LUM_ASSERT(mBuffers.Contains(mLayouts[layout].mElementBuff), "Layout doesn't have attached any element buffers");
+		LUM_ASSERT( mBuffers.Contains( mLayouts[ layout ].mElementBuff ), "Layout doesn't have attached any element buffers" );
 
-		glBindVertexArray(mLayouts[layout].mHandle);
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(numIndices), GL_UNSIGNED_INT, nullptr);
+		glBindVertexArray( mLayouts[ layout ].mHandle );
+		glDrawElements( GL_TRIANGLES, static_cast< GLsizei >(numIndices), GL_UNSIGNED_INT, nullptr );
 
-		LUM_PROFILER_DRAW_CALL();
+		LUM_PROFILER_DRAW_CALL( );
 
 	}
 
@@ -82,25 +70,10 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::NewFrame( ) {
-
-#		if LUM_ENABLE_IMGUI == 1
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-#		endif
-
-	}
-
 	void GLDevice::SwapBuffers( ) {
 
-#		if LUM_ENABLE_IMGUI == 1
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-#		endif
+		glfwSwapBuffers( static_cast< GLFWwindow* >(mWindow->GetNativeWindow( )) );
 
-		glfwSwapBuffers(static_cast<GLFWwindow*>(mWindow->GetNativeWindow()));
-		
 	}
 
 }

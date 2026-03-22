@@ -40,7 +40,7 @@ namespace lum {
 		void SetHeight( uint32 );
 
 		/* @brief Returns the current window width in pixels. */
-		uint32 GetWidth () const noexcept;
+		uint32 GetWidth( ) const noexcept;
 
 		/* @brief Returns the current window height in pixels. */
 		uint32 GetHeight( ) const noexcept;
@@ -55,6 +55,8 @@ namespace lum {
 
 		/* @brief Returns true if the window is still open. */
 		bool IsOpen( ) const noexcept;
+
+		float64 GetDeltaTime( ) const noexcept { return glfwGetTime( ); }
 
 	protected:
 

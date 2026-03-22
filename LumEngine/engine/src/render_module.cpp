@@ -20,6 +20,7 @@ namespace lum {
 		ctx.mRenderDevice = platform.mRenderDevice;
 		ctx.mShaderMgr = &res.mShaderMgr;
 		ctx.mEventBus = &bus;
+		ctx.mWindow = &platform.mWindow;
 		mRenderer.Initialize( ctx );
 
 		mRenderSys.Initialize( &mRenderer );

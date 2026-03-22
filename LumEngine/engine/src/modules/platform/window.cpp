@@ -107,6 +107,8 @@ namespace lum {
 			return;
 		}
 
+		glfwSwapInterval( 1 );
+
 	}
 
 }

@@ -13,24 +13,24 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void EnvironmentPass::Initialize(const FRendererContext& ctx) {
+	void EnvironmentPass::Initialize( const FRendererContext& ctx ) {
 
 		mContext = ctx;
 
-		init();
+		init( );
 
 	}
 
-	void EnvironmentPass::Execute( detail::GBuffer& gbuffer ) {
+	void EnvironmentPass::Execute( detail::GBuffer& gbuffer, const detail::FScreenQuad& quad ) {
 
-		mContext.mRenderDevice->BindFramebuffer(rhi::gDefaultFramebuffer);
+		mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer );
 
-		mContext.mRenderDevice->BindPipeline(mCubemap.mPipeline);
+		mContext.mRenderDevice->BindPipeline( mCubemap.mPipeline );
 
-		mContext.mRenderDevice->BindShader(mCubemap.mShader);
-		mContext.mRenderDevice->BindTexture(mCubemap.mTexture, LUM_TEX_CUBEMAP);
-		mContext.mRenderDevice->BindSampler(mSampler, LUM_TEX_CUBEMAP);
-		mContext.mRenderDevice->DrawElements(mCubemap.mVao, mCubemap.mNumIndices);
+		mContext.mRenderDevice->BindShader( mCubemap.mShader );
+		mContext.mRenderDevice->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
+		mContext.mRenderDevice->BindSampler( mSampler, LUM_TEX_CUBEMAP );
+		mContext.mRenderDevice->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
 
 	}
 
@@ -42,13 +42,13 @@ namespace lum::render {
 	// Private
 	//---------------------------------------------------------
 
-	void EnvironmentPass::init() {
+	void EnvironmentPass::init( ) {
 
-		float32 vertices[] = {
+		float32 vertices[ ] = {
 			-1, -1, -1,  1, -1, -1,  1,  1, -1, -1,  1, -1,
 			-1, -1,  1,  1, -1,  1,  1,  1,  1, -1,  1,  1,
 		};
-		uint32 indices[] = {
+		uint32 indices[ ] = {
 			0,1,2, 2,3,0, // front
 			5,4,7, 7,6,5, // back
 			4,0,3, 3,7,4, // left
@@ -56,28 +56,28 @@ namespace lum::render {
 			3,2,6, 6,7,3, // top
 			4,5,1, 1,0,4  // bottom
 		};
-		mCubemap.mNumIndices = ArraySize(indices);
+		mCubemap.mNumIndices = ArraySize( indices );
 
 		{ // Environment VBO
 			rhi::FBufferDescriptor desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
 			desc.mMapFlags = rhi::MapFlag::None;
-			desc.mSize = ByteSize(vertices);
+			desc.mSize = ByteSize( vertices );
 			desc.mData = vertices;
 			desc.mBufferType = rhi::BufferType::Vertex;
-			mCubemap.mVbo = mContext.mRenderDevice->CreateBuffer(desc);
+			mCubemap.mVbo = mContext.mRenderDevice->CreateBuffer( desc );
 		}
 		{ // Environment EBO
 			rhi::FBufferDescriptor desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
 			desc.mMapFlags = rhi::MapFlag::None;
-			desc.mSize = ByteSize(indices);
+			desc.mSize = ByteSize( indices );
 			desc.mData = indices;
 			desc.mBufferType = rhi::BufferType::Element;
-			mCubemap.mEbo = mContext.mRenderDevice->CreateBuffer(desc);
+			mCubemap.mEbo = mContext.mRenderDevice->CreateBuffer( desc );
 		}
 		{ // Environment VAO
-			rhi::FVertexAttribute attrs[]{
+			rhi::FVertexAttribute attrs[ ]{
 				{
 					.mFormat = rhi::DataFormat::Vec3,
 					.mRelativeOffset = 0,
@@ -85,10 +85,10 @@ namespace lum::render {
 				}
 			};
 			rhi::FVertexLayoutDescriptor desc;
-			desc.mStride = 3 * sizeof(float32);
+			desc.mStride = 3 * sizeof( float32 );
 			desc.mAttributes = attrs;
-			mCubemap.mVao = mContext.mRenderDevice->CreateVertexLayout(desc, mCubemap.mVbo);
-			mContext.mRenderDevice->AttachElementBufferToLayout(mCubemap.mEbo, mCubemap.mVao);
+			mCubemap.mVao = mContext.mRenderDevice->CreateVertexLayout( desc, mCubemap.mVbo );
+			mContext.mRenderDevice->AttachElementBufferToLayout( mCubemap.mEbo, mCubemap.mVao );
 		}
 		{ // Environment sampler
 
@@ -98,8 +98,8 @@ namespace lum::render {
 			desc.mWrapR = rhi::SamplerWrap::ClampEdge;
 			desc.mWrapS = rhi::SamplerWrap::ClampEdge;
 			desc.mWrapT = rhi::SamplerWrap::ClampEdge;
-			mSampler = mContext.mRenderDevice->CreateSampler(desc);
-			
+			mSampler = mContext.mRenderDevice->CreateSampler( desc );
+
 		}
 		{ // Environment Pipeline
 			rhi::FPipelineDescriptor desc;
@@ -108,10 +108,10 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::LessEqual;
 			desc.mCull.bEnabled = false;
 			desc.mCull.mFace = rhi::Face::Back;
-			mCubemap.mPipeline = mContext.mRenderDevice->CreatePipeline(desc);
+			mCubemap.mPipeline = mContext.mRenderDevice->CreatePipeline( desc );
 		}
 
-		mCubemap.mShader = mContext.mShaderMgr->LoadShader("shaders/skybox_pass.vert", "shaders/skybox_pass.frag", RootID::Internal);
+		mCubemap.mShader = mContext.mShaderMgr->LoadShader( "shaders/skybox_pass.vert", "shaders/skybox_pass.frag", RootID::Internal );
 
 
 	}

@@ -1,4 +1,5 @@
 //========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2026 3zymek, MIT License ============//
 //
 // Purpose: Bridge between engine data and the RHI backend.
 //
@@ -63,6 +64,9 @@ namespace lum::render {
 		/* @brief Returns the currently active directional light. */
 		FDirectionalLight GetDirectionalLight( ) { return mLightPass.GetDirectionalLight(); }
 
+		/* @brief Returns screen quad texture used for viewport. */
+		rhi::RTextureHandle GetScreenTexture( ) const noexcept { return mScreenQuad.mTexture; }
+
 		/* @brief Submits a render instance for drawing in the current frame.
 		*  @param obj Render instance containing transform, mesh and material.
 		*/
@@ -120,6 +124,9 @@ namespace lum::render {
 
 		/* @brief Uploads the current camera uniform buffer to the GPU. */
 		void upload_camera_uniform( );
+
+		void create_screenquad_texture( uint32 w, uint32 h );
+		void create_screenquad_fbo( );
 
 	};
 } // namespace lum::render

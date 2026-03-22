@@ -27,6 +27,8 @@
 #define LUM_GBUFFER_NORMAL  1 // Normal GBuffer sampler binding.
 #define LUM_GBUFFER_DEPTH   2 // Depth GBuffer sampler binding.
 
+#define LUM_TEX_OUTPUT 2
+
 #define LUM_SHADOW_MAP 6
 
 // Uniform buffer bindings
