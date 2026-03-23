@@ -180,7 +180,11 @@ namespace lum::rhi::gl {
 
 		void SetBlendAlphaOp( BlendOp ) override;
 
+<<<<<<< HEAD
 		void SetBlendFactorsForTarget( uint8 target ) override;
+=======
+		void SetBlendFactorsForTarget(uint8 target) override;
+>>>>>>> f8ece7c (Editor in works)
 
 		void ToggleBlendForTarget( uint8, bool ) override;
 
@@ -269,6 +273,10 @@ namespace lum::rhi::gl {
 		void DrawElementsInstancedBase( RVertexLayoutHandle, uint32, uint32, uint32 ) override;
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8ece7c (Editor in works)
 		void SwapBuffers( ) override;
 
 
@@ -279,7 +287,11 @@ namespace lum::rhi::gl {
 		//=================================================
 
 		/* @brief Maps TopologyMode to GL polygon mode (GL_POINT, GL_LINE, GL_FILL). */
+<<<<<<< HEAD
 		inline constexpr static GLenum skTopologyModeLookup[ ] =
+=======
+		inline constexpr static GLenum skTopologyModeLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_POINT,
 			GL_LINE,
@@ -287,7 +299,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps Face enum to GL face target (GL_FRONT, GL_BACK, GL_FRONT_AND_BACK). */
+<<<<<<< HEAD
 		inline constexpr static GLenum skFacesLookup[ ] =
+=======
+		inline constexpr static GLenum skFacesLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_FRONT,
 			GL_BACK,
@@ -295,7 +311,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps texture minification filter modes to GL equivalents. */
+<<<<<<< HEAD
 		inline constexpr static GLenum skTextureMinFilterLookup[ ] =
+=======
+		inline constexpr static GLenum skTextureMinFilterLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_LINEAR,
 			GL_LINEAR_MIPMAP_NEAREST,
@@ -306,7 +326,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps sampler wrap modes to GL wrap targets. */
+<<<<<<< HEAD
 		inline constexpr static GLenum skSamplerWrapLookup[ ] =
+=======
+		inline constexpr static GLenum skSamplerWrapLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_REPEAT,
 			GL_MIRRORED_REPEAT,
@@ -315,7 +339,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps CompareFlag to GL comparison functions. */
+<<<<<<< HEAD
 		inline constexpr static GLenum skCompareFlagLookup[ ] =
+=======
+		inline constexpr static GLenum skCompareFlagLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_EQUAL,
 			GL_NOTEQUAL,
@@ -328,7 +356,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps BlendFactor to GL blend factor constants. */
+<<<<<<< HEAD
 		inline constexpr static GLenum skBlendFactorLookup[ ] =
+=======
+		inline constexpr static GLenum skBlendFactorLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_ZERO,
 			GL_ONE,
@@ -352,7 +384,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps BlendOp to GL blend equation modes. */
+<<<<<<< HEAD
 		inline constexpr static GLenum skBlendOpLookup[ ] =
+=======
+		inline constexpr static GLenum skBlendOpLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_FUNC_ADD,
 			GL_FUNC_SUBTRACT,
@@ -362,7 +398,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps StencilOp to GL stencil operation constants. */
+<<<<<<< HEAD
 		inline constexpr static GLenum skStencilOpLookup[ ] =
+=======
+		inline constexpr static GLenum skStencilOpLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_ZERO,
 			GL_ONE,
@@ -376,7 +416,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps ClearFlag bits to GL clear buffer bits. */
+<<<<<<< HEAD
 		inline constexpr static GLenum skClearOpLookup[ ] =
+=======
+		inline constexpr static GLenum skClearOpLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_COLOR_BUFFER_BIT,
 			GL_DEPTH_BUFFER_BIT,
@@ -384,7 +428,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps TextureType to GL texture targets. */
+<<<<<<< HEAD
 		inline constexpr static GLenum skTextureTypeLookup[ ] =
+=======
+		inline constexpr static GLenum skTextureTypeLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_NONE,
 			GL_TEXTURE_2D,
@@ -393,7 +441,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps ImageLayout to GL sized internal formats. */
+<<<<<<< HEAD
 		inline constexpr static GLenum skImageLayoutLookup[ ] =
+=======
+		inline constexpr static GLenum skImageLayoutLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_RGBA8,
 			GL_SRGB8_ALPHA8,
@@ -418,7 +470,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps image channel layout to GL base format (GL_RGBA, GL_DEPTH_COMPONENT, etc.). */
+<<<<<<< HEAD
 		inline constexpr static GLenum skImageFormatLookup[ ] =
+=======
+		inline constexpr static GLenum skImageFormatLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_RGBA,
 			GL_RGB,
@@ -430,7 +486,11 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps texture data types to GL data type constants. */
+<<<<<<< HEAD
 		inline constexpr static GLenum skTextureDataTypeLookup[ ] =
+=======
+		inline constexpr static GLenum skTextureDataTypeLookup[] =
+>>>>>>> f8ece7c (Editor in works)
 		{
 			GL_UNSIGNED_BYTE,
 			GL_BYTE,
@@ -453,6 +513,7 @@ namespace lum::rhi::gl {
 
 		/* @brief Checks and applies shader state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
+<<<<<<< HEAD
 			void bind_check_shader( const FPipeline& ) noexcept;
 
 		/* @brief Checks and applies rasterizer state from the pipeline if it differs from current state. */
@@ -478,6 +539,33 @@ namespace lum::rhi::gl {
 		/* @brief Checks and applies color mask from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
 			void bind_check_color_mask( const FPipeline& ) noexcept;
+=======
+		void bind_check_shader( const FPipeline& ) noexcept;
+
+		/* @brief Checks and applies rasterizer state from the pipeline if it differs from current state. */
+		LUM_FORCEINLINE
+		void bind_check_rasterizer( const FPipeline& ) noexcept;
+
+		/* @brief Checks and applies depth/stencil state from the pipeline if it differs from current state. */
+		LUM_FORCEINLINE
+		void bind_check_depth_stencil( const FPipeline& ) noexcept;
+
+		/* @brief Checks and applies scissor state from the pipeline if it differs from current state. */
+		LUM_FORCEINLINE
+		void bind_check_scissors( const FPipeline& ) noexcept;
+
+		/* @brief Checks and applies blend state from the pipeline if it differs from current state. */
+		LUM_FORCEINLINE
+		void bind_check_blend( const FPipeline& ) noexcept;
+
+		/* @brief Checks and applies cull state from the pipeline if it differs from current state. */
+		LUM_FORCEINLINE
+		void bind_check_cull( const FPipeline& ) noexcept;
+
+		/* @brief Checks and applies color mask from the pipeline if it differs from current state. */
+		LUM_FORCEINLINE
+		void bind_check_color_mask( const FPipeline& ) noexcept;
+>>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Compiles a GLSL shader object and logs any errors.
 		*  @param shader OpenGL shader handle to compile.
@@ -485,14 +573,22 @@ namespace lum::rhi::gl {
 		*  @return True if compilation succeeded.
 		*/
 		LUM_FORCEINLINE
+<<<<<<< HEAD
 			bool compile_shader( GLuint shader );
+=======
+		bool compile_shader( GLuint shader );
+>>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Links a GLSL program and logs any errors.
 		*  @param program OpenGL program handle to link.
 		*  @return True if linking succeeded.
 		*/
 		LUM_FORCEINLINE
+<<<<<<< HEAD
 			bool link_program( GLuint program );
+=======
+		bool link_program( GLuint program );
+>>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Creates a 2D texture from the given descriptor. */
 		RTextureHandle create_texture_2d( const FTextureDescriptor& );

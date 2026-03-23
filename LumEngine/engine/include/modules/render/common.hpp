@@ -54,9 +54,12 @@ namespace lum::render {
 		/* @brief Pointer to the active event bus. */
 		ev::EventBus* mEventBus = nullptr;
 
+<<<<<<< HEAD
 		/* @brief Pointer to the active window. */
 		Window* mWindow = nullptr;
 
+=======
+>>>>>>> f8ece7c (Editor in works)
 	};
 
 	/* @brief Directional light source — infinite distance, uniform direction.
@@ -65,7 +68,11 @@ namespace lum::render {
 	struct FDirectionalLight {
 
 		/* @brief Normalized direction vector the light is pointing towards. */
+<<<<<<< HEAD
 		glm::vec3 mDirection = glm::vec3( 0.f );
+=======
+		glm::vec3 mDirection = glm::vec3(0.f);
+>>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Intensity multiplier applied to the light color. */
 		float32 mIntensity = 0.f;
@@ -73,7 +80,11 @@ namespace lum::render {
 		/* @brief Linear RGB color of the light. */
 		glm::vec3 mColor = { 1.0f, 1.0f, 1.0f };
 
+<<<<<<< HEAD
 		glm::mat4 mLightSpaceMatrix = glm::mat4( 1.0f );
+=======
+		glm::mat4 mLightSpaceMatrix = glm::mat4(1.0f);
+>>>>>>> f8ece7c (Editor in works)
 
 	};
 
@@ -81,9 +92,15 @@ namespace lum::render {
 	/* @brief Point light source — emits light in all directions from a single position. */
 	struct FPointLight {
 
+<<<<<<< HEAD
 		glm::vec3 mPosition = glm::vec3( 0.0f );
 		float32 mIntensity = 1.f;
 		glm::vec3 mColor = glm::vec3( 1.0f );
+=======
+		glm::vec3 mPosition = glm::vec3(0.0f);
+		float32 mIntensity = 1.f;
+		glm::vec3 mColor = glm::vec3(1.0f);
+>>>>>>> f8ece7c (Editor in works)
 		float32 mRadius = 10.f;
 
 	};
@@ -101,7 +118,11 @@ namespace lum::render {
 
 		float32 mOuterCone;
 
+<<<<<<< HEAD
 		float32 _pad[ 3 ];
+=======
+		float32 _pad[3];
+>>>>>>> f8ece7c (Editor in works)
 
 	};
 
@@ -139,7 +160,10 @@ namespace lum::render {
 			rhi::RVertexLayoutHandle mVao;
 			rhi::RBufferHandle mVbo;
 			rhi::RBufferHandle mEbo;
+<<<<<<< HEAD
 
+=======
+>>>>>>> f8ece7c (Editor in works)
 			rhi::RFramebufferHandle mFbo;
 			rhi::RTextureHandle mTexture;
 
@@ -173,29 +197,48 @@ namespace lum::render {
 
 		LUM_UNIFORM_BUFFER_STRUCT FLightSpaceMatrices {
 
+<<<<<<< HEAD
 			glm::mat4 mDirectionalLightSpaceMatrix = glm::mat4( 1.0f );
+=======
+			glm::mat4 mDirectionalLightSpaceMatrix = glm::mat4(1.0f);
+>>>>>>> f8ece7c (Editor in works)
 
 		};
 
 
 		/* @brief GPU-side camera uniform buffer layout. Aligned to std140. */
 		LUM_UNIFORM_BUFFER_STRUCT FCameraUniformBuffer {
+<<<<<<< HEAD
 			glm::mat4 mView = glm::mat4( 1.0f );
 			glm::mat4 mProjection = glm::mat4( 1.0f );
 			glm::mat4 mInvViewProj = glm::mat4( 1.0f );
 			glm::vec4 mPosition = glm::vec4( 1.0f );
+=======
+			glm::mat4 mView = glm::mat4(1.0f);
+			glm::mat4 mProjection = glm::mat4(1.0f);
+			glm::mat4 mInvViewProj = glm::mat4(1.0f);
+			glm::vec4 mPosition = glm::vec4(1.0f);
+>>>>>>> f8ece7c (Editor in works)
 		};
 
 
 		/* @brief GPU-side model uniform buffer layout. Aligned to std140. */
 		LUM_UNIFORM_BUFFER_STRUCT FModelUniformBuffer {
+<<<<<<< HEAD
 			glm::mat4 mModel = glm::mat4( 1.0f );
+=======
+			glm::mat4 mModel = glm::mat4(1.0f);
+>>>>>>> f8ece7c (Editor in works)
 		};
 
 
 		/* @brief GPU-side material uniform buffer layout. Aligned to std140. */
 		LUM_UNIFORM_BUFFER_STRUCT FMaterialUniformBuffer {
+<<<<<<< HEAD
 			glm::vec4 mBaseColor = glm::vec4( 1.0f );
+=======
+			glm::vec4 mBaseColor = glm::vec4(1.0f);
+>>>>>>> f8ece7c (Editor in works)
 			float32 mRoughness = 0.5f;
 			float32 mMetallic = 0.0f;
 
@@ -204,8 +247,13 @@ namespace lum::render {
 		};
 
 		LUM_UNIFORM_BUFFER_STRUCT FDirectionalLightUniformBuffer {
+<<<<<<< HEAD
 			glm::vec4 mDirection = glm::vec4( 0.0f, -1.0f, 0.0f, 0.0f );
 			glm::vec4 mColor = glm::vec4( 1.0f );
+=======
+			glm::vec4 mDirection = glm::vec4(1.0f);
+			glm::vec4 mColor = glm::vec4(1.0f);
+>>>>>>> f8ece7c (Editor in works)
 			float32 mIntensity = 1.0f;
 
 			float32 _pad0 = 0.f;

@@ -12,6 +12,7 @@ namespace lum {
 			bus.SubscribePermanently< EWindowResized>(
 				[&]( const EWindowResized& ev ) {
 
+<<<<<<< HEAD
 					mAspectRatio = ( float32 ) ev.mWidth / ( float32 ) ev.mHeight;
 
 				} );
@@ -69,12 +70,24 @@ namespace lum {
 			data.mView = glm::lookAt( mPosition, mTarget, mUp );
 
 			return data;
+=======
+					mAspectRatio = ( float64 ) ev.mWidth / ( float64 ) ev.mHeight;
+
+				} );
+
+		}
+
+		void Update( ) {
+
+
+>>>>>>> f8ece7c (Editor in works)
 
 		}
 
 
 	private:
 
+<<<<<<< HEAD
 		bool bLocked = false;
 
 		float32 mMovementSpeed = 0.01f;
@@ -84,6 +97,16 @@ namespace lum {
 		float32 mPitch = 0.0f;
 
 		float32 mAspectRatio = 16.0f / 9.0f;
+=======
+		float32 mMovementSpeed = 0.5f;
+
+		float32 mYaw = 0.0f;
+		float32 mPitch = 0.0f;
+		float32 mLastX = 0.0f;
+		float32 mLastY = 0.0f;
+
+		float64 mAspectRatio = 90.0f;
+>>>>>>> f8ece7c (Editor in works)
 
 		float32 mFov = 90.0f;
 		float32 mNearPlane = 0.1f;

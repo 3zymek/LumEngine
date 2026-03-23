@@ -107,8 +107,11 @@ namespace lum {
 			return;
 		}
 
+<<<<<<< HEAD
 		glfwSwapInterval( 1 );
 
+=======
+>>>>>>> f8ece7c (Editor in works)
 	}
 
 }

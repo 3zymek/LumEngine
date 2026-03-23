@@ -1,13 +1,17 @@
 #include "editor.hpp"
+<<<<<<< HEAD
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+=======
+>>>>>>> f8ece7c (Editor in works)
 
 namespace lum {
 
 	void Editor::Run( ) {
 
+<<<<<<< HEAD
 		ImGui::GetIO( ).ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 		while (mEngine.IsRunning( )) {
@@ -26,6 +30,15 @@ namespace lum {
 			mEngine.EndFrame( );
 			end_imgui( );
 			mEngine.GetPlatform( ).mRenderDevice->SwapBuffers( );
+=======
+		while (mEngine.IsRunning( )) {
+
+			mEngine.BeginFrame( );
+
+			mEngine.Tick( );
+
+			mEngine.EndFrame( );
+>>>>>>> f8ece7c (Editor in works)
 
 		}
 
@@ -38,6 +51,7 @@ namespace lum {
 	}
 	void Editor::DrawViewport( ) {
 
+<<<<<<< HEAD
 		ImGuiID dockID = ImGui::DockSpaceOverViewport( );
 
 		ImGui::Begin( "Inspector" );
@@ -97,6 +111,8 @@ namespace lum {
 		ImGui::Render( );
 		ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData( ) );
 
+=======
+>>>>>>> f8ece7c (Editor in works)
 	}
 
 }

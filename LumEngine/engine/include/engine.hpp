@@ -32,6 +32,7 @@ namespace lum {
 		void Tick( );
 		void Finalize( );
 
+<<<<<<< HEAD
 		float64 GetDeltaTime( ) const noexcept { return mPlatform.mWindow.GetDeltaTime( ); }
 
 		ev::EventBus& GetEventBus( ) { return mEvBus; }
@@ -40,6 +41,9 @@ namespace lum {
 		MRenderModule& GetRender( ) { return mRender; }
 		MSceneManager& GetScene( ) { return mScene.mSceneMgr; }
 
+=======
+		ev::EventBus GetEventBus( ) { return mEvBus; }
+>>>>>>> f8ece7c (Editor in works)
 
 		bool IsRunning( ) { return mPlatform.mWindow.IsOpen( ); }
 

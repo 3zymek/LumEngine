@@ -5,12 +5,15 @@
 //=============================================================================//
 #pragma once
 
+<<<<<<< HEAD
 // Defines if ImGui library is enabled and can be used.
 #define LUM_ENABLE_IMGUI 1
 #ifndef LUM_ENABLE_IMGUI
 #	error "LUM_ENABLE_IMGUI should be defined"
 #endif
 
+=======
+>>>>>>> f8ece7c (Editor in works)
 // Defines if logs can be dispached.
 #define LUM_ENABLE_LOGGER 1
 #ifndef LUM_ENABLE_LOGGER

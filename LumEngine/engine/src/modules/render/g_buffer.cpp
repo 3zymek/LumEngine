@@ -11,6 +11,7 @@ namespace lum::render::detail {
 
 		mContext = ctx;
 
+<<<<<<< HEAD
 		ctx.mEventBus->SubscribePermanently<EWindowResized>(
 			[&]( const EWindowResized& ev ) {
 				create_textures( ev.mWidth, ev.mHeight );
@@ -21,6 +22,12 @@ namespace lum::render::detail {
 		create_textures( w, h );
 		create_framebuffer( );
 
+=======
+		create_textures(w, h);
+		create_framebuffer();
+
+		init();
+>>>>>>> f8ece7c (Editor in works)
 
 	}
 
@@ -45,6 +52,10 @@ namespace lum::render::detail {
 
 	}
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8ece7c (Editor in works)
 	//---------------------------------------------------------
 	// Private
 	//---------------------------------------------------------
@@ -97,4 +108,21 @@ namespace lum::render::detail {
 
 	}
 
+<<<<<<< HEAD
+=======
+	void GBuffer::init( ) {
+
+		mContext.mEventBus->SubscribePermanently<EWindowResized>([this](const EWindowResized& ev) {
+			
+			if (ev.mWidth == 0 || ev.mHeight == 0) return;
+			
+			create_textures(ev.mWidth, ev.mHeight);
+			create_framebuffer();
+		
+		});
+
+	}
+
+
+>>>>>>> f8ece7c (Editor in works)
 } // namespace lum::render

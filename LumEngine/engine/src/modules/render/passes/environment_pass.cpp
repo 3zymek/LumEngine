@@ -21,7 +21,11 @@ namespace lum::render {
 
 	}
 
+<<<<<<< HEAD
 	void EnvironmentPass::Execute( detail::GBuffer& gbuffer, const detail::FScreenQuad& quad ) {
+=======
+	void EnvironmentPass::Execute( detail::GBuffer& gbuffer ) {
+>>>>>>> f8ece7c (Editor in works)
 
 		mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer );
 

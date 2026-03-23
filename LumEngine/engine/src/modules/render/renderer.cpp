@@ -14,8 +14,11 @@
 
 #include "event/event_bus.hpp"
 
+<<<<<<< HEAD
 #include "platform/window.hpp"
 
+=======
+>>>>>>> f8ece7c (Editor in works)
 namespace lum::render {
 
 	//---------------------------------------------------------
@@ -30,6 +33,7 @@ namespace lum::render {
 		mLightPass.Initialize( mContext );
 		mEnvironmentPass.Initialize( mContext );
 		mShadowPass.Initialize( mContext );
+<<<<<<< HEAD
 		mGBuffer.Initialize( mContext, mContext.mWindow->GetWidth( ), mContext.mWindow->GetHeight( ) );
 
 		init( );
@@ -43,6 +47,12 @@ namespace lum::render {
 			}
 		);
 
+=======
+		mGBuffer.Initialize( mContext, 500, 500 );
+
+		init( );
+
+>>>>>>> f8ece7c (Editor in works)
 	}
 
 	void Renderer::UpdateCamera( const FRenderCamera& camera ) {
@@ -75,7 +85,13 @@ namespace lum::render {
 
 		mLightPass.Execute( mShadowPass, mGBuffer, mScreenQuad );
 
+<<<<<<< HEAD
 		mEnvironmentPass.Execute( mGBuffer, mScreenQuad );
+=======
+		mEnvironmentPass.Execute( mGBuffer );
+
+		mContext.mRenderDevice->SwapBuffers( );
+>>>>>>> f8ece7c (Editor in works)
 
 	}
 
@@ -89,6 +105,17 @@ namespace lum::render {
 
 	void Renderer::init( ) {
 
+<<<<<<< HEAD
+=======
+		mContext.mEventBus->SubscribePermanently<EWindowResized>(
+			[&]( const EWindowResized& e ) {
+				mContext.mRenderDevice->SetViewport( 0, 0, e.mWidth, e.mHeight );
+				create_screenquad_texture( e.mWidth, e.mHeight );
+				create_screenquad_fbo( );
+			}
+		);
+
+>>>>>>> f8ece7c (Editor in works)
 		{ // Camera Uniform
 			rhi::FBufferDescriptor desc;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
@@ -148,13 +175,43 @@ namespace lum::render {
 			mContext.mRenderDevice->AttachElementBufferToLayout( mScreenQuad.mEbo, mScreenQuad.mVao );
 
 		}
+<<<<<<< HEAD
 
 		create_screenquad_texture( mContext.mWindow->GetWidth( ), mContext.mWindow->GetHeight( ) );
 		create_screenquad_fbo( );
+=======
+	}
+
+	void Renderer::create_screenquad_fbo( ) {
+
+		if (mContext.mRenderDevice->IsValid( mScreenQuad.mFbo ))
+			mContext.mRenderDevice->DeleteFramebuffer( mScreenQuad.mFbo );
+
+		rhi::FFramebufferDescriptor desc;
+		desc.mColorTex.push_back( { 0, mScreenQuad.mTexture } );
+		desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
+		mScreenQuad.mFbo = mContext.mRenderDevice->CreateFramebuffer( desc );
+
+	}
+	void Renderer::create_screenquad_texture( uint32 w, uint32 h ) {
+
+		if (mContext.mRenderDevice->IsValid( mScreenQuad.mTexture ))
+			mContext.mRenderDevice->DeleteTexture( mScreenQuad.mTexture );
+
+		rhi::FTextureDescriptor desc;
+		desc.mImageFormat = rhi::ImageFormat::RGBA;
+		desc.mImageLayout = rhi::ImageLayout::RGBA16F;
+		desc.mTextureType = rhi::TextureType::Texture2D;
+		desc.mWidth = w;
+		desc.mHeight = h;
+
+		mScreenQuad.mTexture = mContext.mRenderDevice->CreateTexture( desc );
+>>>>>>> f8ece7c (Editor in works)
 
 	}
 
 	void Renderer::upload_camera_uniform( ) {
+<<<<<<< HEAD
 		mContext.mRenderDevice->UpdateBuffer( mCameraBuffer, &mCameraStruct, 0, 0 );
 	}
 
@@ -182,6 +239,11 @@ namespace lum::render {
 		desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
 		mScreenQuad.mFbo = mContext.mRenderDevice->CreateFramebuffer( desc );
 		
+=======
+
+		mContext.mRenderDevice->UpdateBuffer( mCameraBuffer, &mCameraStruct, 0, 0 );
+
+>>>>>>> f8ece7c (Editor in works)
 	}
 
 }
