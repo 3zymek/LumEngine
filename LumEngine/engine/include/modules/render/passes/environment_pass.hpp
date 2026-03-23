@@ -27,11 +27,7 @@ namespace lum::render {
 
 		void SetCubemapTexture( rhi::RTextureHandle tex ) { mCubemap.mTexture = tex; }
 
-<<<<<<< HEAD
-		void Execute( detail::GBuffer& gbuffer, const detail::FScreenQuad& quad );
-=======
 		void Execute( detail::GBuffer& gbuffer );
->>>>>>> f8ece7c (Editor in works)
 
 	private:
 

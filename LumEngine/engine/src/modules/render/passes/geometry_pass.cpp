@@ -26,31 +26,14 @@ namespace lum::render {
 
 		mContext = ctx;
 
-<<<<<<< HEAD
-		mInstances.reserve(limits::gMaxDrawCallsPf);
-		mTempInstances.reserve(mTempSize);
-
-		init();
-=======
 		mInstances.reserve( limits::gMaxDrawCallsPf );
 		mTempInstances.reserve( mTempSize );
 
 		init( );
->>>>>>> f8ece7c (Editor in works)
 
 	}
 
 	void GeometryPass::Submit( const FRenderInstance& instance ) {
-<<<<<<< HEAD
-	
-		LUM_HOTCHK_RETURN_VOID(
-			(mInstances.size() < limits::gMaxDrawCallsPf), 
-			LUM_SEV_WARN, 
-			"Draw calls per frame limit reached"
-		);
-
-		mInstances.push_back(instance);
-=======
 
 		LUM_HOTCHK_RETURN_VOID(
 			(mInstances.size( ) < limits::gMaxDrawCallsPf),
@@ -59,35 +42,18 @@ namespace lum::render {
 		);
 
 		mInstances.push_back( instance );
->>>>>>> f8ece7c (Editor in works)
 
 	}
 
 	void GeometryPass::Execute( const detail::GBuffer& gbuffer ) {
-<<<<<<< HEAD
-		
-		gbuffer.BindBuffer();
-=======
 
 		gbuffer.BindBuffer( );
->>>>>>> f8ece7c (Editor in works)
 		mContext.mRenderDevice->Clear(
 			rhi::BufferBit::Color |
 			rhi::BufferBit::Depth |
 			rhi::BufferBit::Stencil
 		);
 
-<<<<<<< HEAD
-		mContext.mRenderDevice->BindShader(mShader);
-
-		mContext.mRenderDevice->BindPipeline(mPipeline);
-		for (auto& instance : mInstances)
-			draw_instance(instance);
-
-		mInstances.clear();
-
-		gbuffer.UnbindBuffer();
-=======
 		mContext.mRenderDevice->BindShader( mShader );
 
 		mContext.mRenderDevice->BindPipeline( mPipeline );
@@ -97,18 +63,13 @@ namespace lum::render {
 		mInstances.clear( );
 
 		gbuffer.UnbindBuffer( );
->>>>>>> f8ece7c (Editor in works)
 
 	}
 
 	void GeometryPass::DrawScene( ) {
 
 		for (auto& instance : mInstances)
-<<<<<<< HEAD
-			draw_instance(instance);
-=======
 			draw_instance( instance );
->>>>>>> f8ece7c (Editor in works)
 
 	}
 
@@ -126,18 +87,6 @@ namespace lum::render {
 		desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 		desc.mMapFlags = rhi::MapFlag::Write;
 		{ // Model Uniform
-<<<<<<< HEAD
-			desc.mSize = sizeof(detail::FModelUniformBuffer);
-			desc.mBufferType = rhi::BufferType::Uniform;
-			mModelUniform = mContext.mRenderDevice->CreateBuffer(desc);
-			mContext.mRenderDevice->SetUniformBufferBinding(mModelUniform, LUM_UBO_MODEL_BINDING);
-		}
-		{ // Material Uniform
-			desc.mSize = sizeof(detail::FMaterialUniformBuffer);
-			desc.mBufferType = rhi::BufferType::Uniform;
-			mMaterialUniform = mContext.mRenderDevice->CreateBuffer(desc);
-			mContext.mRenderDevice->SetUniformBufferBinding(mMaterialUniform, LUM_UBO_MATERIAL_BINDING);
-=======
 			desc.mSize = sizeof( detail::FModelUniformBuffer );
 			desc.mBufferType = rhi::BufferType::Uniform;
 			mModelUniform = mContext.mRenderDevice->CreateBuffer( desc );
@@ -148,7 +97,6 @@ namespace lum::render {
 			desc.mBufferType = rhi::BufferType::Uniform;
 			mMaterialUniform = mContext.mRenderDevice->CreateBuffer( desc );
 			mContext.mRenderDevice->SetUniformBufferBinding( mMaterialUniform, LUM_UBO_MATERIAL_BINDING );
->>>>>>> f8ece7c (Editor in works)
 		}
 		{ // Geometry pipeline
 			rhi::FPipelineDescriptor desc;
@@ -157,26 +105,6 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::Less;
 			desc.mCull.bEnabled = true;
 			desc.mCull.mFace = rhi::Face::Back;
-<<<<<<< HEAD
-			mPipeline = mContext.mRenderDevice->CreatePipeline(desc);
-			mShader = mContext.mShaderMgr->LoadShader("shaders/geometry_pass.vert", "shaders/geometry_pass.frag", RootID::Internal);
-		}
-		
-	}
-
-	void GeometryPass::draw_instance( const FRenderInstance& instance ) {
-		
-		const auto& mat = instance.mMaterial->mMat;
-
-		upload_material(mat);
-
-		mContext.mRenderDevice->BindTexture(mat.mAlbedoTex, LUM_TEX_ALBEDO);
-		mContext.mRenderDevice->BindTexture(mat.mNormalTex, LUM_TEX_NORMAL);
-		mContext.mRenderDevice->BindTexture(mat.mRoughnessTex, LUM_TEX_ROUGHNESS);
-		mContext.mRenderDevice->BindTexture(mat.mMetallicTex, LUM_TEX_METALNESS);
-		
-		draw_mesh(instance);
-=======
 			mPipeline = mContext.mRenderDevice->CreatePipeline( desc );
 			mShader = mContext.mShaderMgr->LoadShader( "shaders/geometry_pass.vert", "shaders/geometry_pass.frag", RootID::Internal );
 		}
@@ -195,40 +123,20 @@ namespace lum::render {
 		mContext.mRenderDevice->BindTexture( mat.mMetallicTex, LUM_TEX_METALNESS );
 
 		draw_mesh( instance );
->>>>>>> f8ece7c (Editor in works)
 
 	}
 
 	void GeometryPass::draw_mesh( const FRenderInstance& instance ) {
 
-<<<<<<< HEAD
-		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic(instance.mStaticMesh->mMesh);
-
-		upload_model_matrix(instance);
-		mContext.mRenderDevice->DrawElements(res.mVao, res.mNumIndices);
-=======
 		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic( instance.mStaticMesh->mMesh );
 
 		upload_model_matrix( instance );
 		mContext.mRenderDevice->DrawElements( res.mVao, res.mNumIndices );
->>>>>>> f8ece7c (Editor in works)
 
 	}
 
 	void GeometryPass::upload_model_matrix( const FRenderInstance& instance ) {
 
-<<<<<<< HEAD
-		glm::quat rot = glm::quat(glm::radians(instance.mTransform->mRotation));
-		glm::mat4 rotation = glm::mat4_cast(rot);
-		glm::mat4 model = glm::mat4(1.f);
-
-		model = glm::mat4(1.f);
-		model = glm::translate(model, instance.mTransform->mPosition);
-		model = model * rotation;
-		model = glm::scale(model, instance.mTransform->mScale);
-
-		mContext.mRenderDevice->UpdateBuffer(mModelUniform, glm::value_ptr(model), 0, 0);
-=======
 		glm::quat rot = glm::quat( glm::radians( instance.mTransform->mRotation ) );
 		glm::mat4 rotation = glm::mat4_cast( rot );
 		glm::mat4 model = glm::mat4( 1.f );
@@ -239,24 +147,15 @@ namespace lum::render {
 		model = glm::scale( model, instance.mTransform->mScale );
 
 		mContext.mRenderDevice->UpdateBuffer( mModelUniform, glm::value_ptr( model ), 0, 0 );
->>>>>>> f8ece7c (Editor in works)
 
 	}
 	void GeometryPass::upload_material( const FMaterialInstance& mat ) {
 
-<<<<<<< HEAD
-		mMaterialUBO.mBaseColor = glm::vec4(mat.mBaseColor, 1.0);
-		mMaterialUBO.mRoughness = mat.mRoughnessValue;
-		mMaterialUBO.mMetallic = mat.mMetallicValue;
-
-		mContext.mRenderDevice->UpdateBuffer(mMaterialUniform, &mMaterialUBO);
-=======
 		mMaterialUBO.mBaseColor = glm::vec4( mat.mBaseColor, 1.0 );
 		mMaterialUBO.mRoughness = mat.mRoughnessValue;
 		mMaterialUBO.mMetallic = mat.mMetallicValue;
 
 		mContext.mRenderDevice->UpdateBuffer( mMaterialUniform, &mMaterialUBO );
->>>>>>> f8ece7c (Editor in works)
 
 	}
 

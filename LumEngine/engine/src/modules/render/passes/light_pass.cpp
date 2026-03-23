@@ -66,11 +66,7 @@ namespace lum::render {
 
 	void LightPass::Execute( const ShadowPass& shadowPass, const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad ) {
 
-<<<<<<< HEAD
-		mContext.mRenderDevice->BindFramebuffer( quad.mFbo );
-=======
 		mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer );
->>>>>>> f8ece7c (Editor in works)
 		mContext.mRenderDevice->BindPipeline( mPipeline );
 
 		upload_directional_light( );

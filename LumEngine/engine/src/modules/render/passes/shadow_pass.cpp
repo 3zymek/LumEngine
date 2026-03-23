@@ -19,38 +19,12 @@ namespace lum::render {
 
 		mContext = ctx;
 
-<<<<<<< HEAD
-		init();
-=======
 		init( );
->>>>>>> f8ece7c (Editor in works)
 
 	}
 
 	void ShadowPass::Execute( GeometryPass& geometryPass, const LightPass& lightPass ) {
 
-<<<<<<< HEAD
-		rhi::FViewportState viewport = mContext.mRenderDevice->GetViewport();
-
-		rhi::FCullState cull = mContext.mRenderDevice->GetCullState();
-		mContext.mRenderDevice->ToggleCull(true);
-		mContext.mRenderDevice->SetCullFace(rhi::Face::Front);
-
-		calculate_lightspace_matrix(lightPass.GetDirectionalLight().mDirection);
-		mContext.mRenderDevice->BindFramebuffer(mFramebuffer);
-		mContext.mRenderDevice->SetViewport(0, 0, mShadowMapTexSize.x, mShadowMapTexSize.y);
-		mContext.mRenderDevice->ClearDepth();
-
-		mContext.mRenderDevice->BindShader(mShader);
-
-		geometryPass.DrawScene();
-
-		mContext.mRenderDevice->BindFramebuffer(rhi::gDefaultFramebuffer);
-		mContext.mRenderDevice->SetViewport(0, 0, viewport.mWidth, viewport.mHeight);
-
-		mContext.mRenderDevice->ToggleCull(cull.bEnabled);
-		mContext.mRenderDevice->SetCullFace(cull.mFace);
-=======
 		rhi::FViewportState viewport = mContext.mRenderDevice->GetViewport( );
 
 		rhi::FCullState cull = mContext.mRenderDevice->GetCullState( );
@@ -71,7 +45,6 @@ namespace lum::render {
 
 		mContext.mRenderDevice->ToggleCull( cull.bEnabled );
 		mContext.mRenderDevice->SetCullFace( cull.mFace );
->>>>>>> f8ece7c (Editor in works)
 
 	}
 
@@ -83,29 +56,17 @@ namespace lum::render {
 
 	void ShadowPass::calculate_lightspace_matrix( const glm::vec3& direction ) {
 
-<<<<<<< HEAD
-		glm::vec3 lightDir = glm::normalize(direction);
-		glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);
-
-		if (glm::abs(glm::dot(lightDir, up)) > 0.99f)
-			up = glm::vec3(0.f, 0.f, 1.f);
-=======
 		glm::vec3 lightDir = glm::normalize( direction );
 		glm::vec3 up = glm::vec3( 0.f, 1.f, 0.f );
 
 		if (glm::abs( glm::dot( lightDir, up ) ) > 0.99f)
 			up = glm::vec3( 0.f, 0.f, 1.f );
->>>>>>> f8ece7c (Editor in works)
 
 		glm::vec3 lightPos = -lightDir * mShadowMapDistance;
 
 		glm::mat4 lightViewMatrix = glm::lookAt(
 			lightPos,
-<<<<<<< HEAD
-			glm::vec3(0.f),
-=======
 			glm::vec3( 0.f ),
->>>>>>> f8ece7c (Editor in works)
 			up
 		);
 
@@ -115,11 +76,7 @@ namespace lum::render {
 			mShadowMapNear, mShadowMapFar
 		);
 
-<<<<<<< HEAD
-		upload_lightspace_matrix(lightProjectionMatrix * lightViewMatrix);
-=======
 		upload_lightspace_matrix( lightProjectionMatrix * lightViewMatrix );
->>>>>>> f8ece7c (Editor in works)
 
 	}
 
@@ -127,11 +84,7 @@ namespace lum::render {
 
 		mContext.mRenderDevice->UpdateBuffer(
 			mLightSpaceUBO,
-<<<<<<< HEAD
-			glm::value_ptr(mat)
-=======
 			glm::value_ptr( mat )
->>>>>>> f8ece7c (Editor in works)
 		);
 
 	}
@@ -145,41 +98,24 @@ namespace lum::render {
 			desc.mImageFormat = rhi::ImageFormat::DepthComponent;
 			desc.mImageLayout = rhi::ImageLayout::Depth32F;
 			desc.mTextureType = rhi::TextureType::Texture2D;
-<<<<<<< HEAD
-			mShadowMap = mContext.mRenderDevice->CreateTexture(desc);
-=======
 			mShadowMap = mContext.mRenderDevice->CreateTexture( desc );
->>>>>>> f8ece7c (Editor in works)
 		}
 		{
 			rhi::FFramebufferDescriptor desc;
 			desc.mDepthTex = mShadowMap;
-<<<<<<< HEAD
-			mFramebuffer = mContext.mRenderDevice->CreateFramebuffer(desc);
-=======
 			mFramebuffer = mContext.mRenderDevice->CreateFramebuffer( desc );
->>>>>>> f8ece7c (Editor in works)
 		}
 		{
 			rhi::FBufferDescriptor desc;
 			desc.mBufferType = rhi::BufferType::Uniform;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
-<<<<<<< HEAD
-			desc.mSize = sizeof(glm::mat4);
-			mLightSpaceUBO = mContext.mRenderDevice->CreateBuffer(desc);
-			mContext.mRenderDevice->SetUniformBufferBinding(mLightSpaceUBO, LUM_UBO_LIGHTSPACE_MATRIX);
-		}
-		{
-			mShader = mContext.mShaderMgr->LoadShader("shaders/shadow_pass.vert", "shaders/shadow_pass.frag", RootID::Internal);
-=======
 			desc.mSize = sizeof( glm::mat4 );
 			mLightSpaceUBO = mContext.mRenderDevice->CreateBuffer( desc );
 			mContext.mRenderDevice->SetUniformBufferBinding( mLightSpaceUBO, LUM_UBO_LIGHTSPACE_MATRIX );
 		}
 		{
 			mShader = mContext.mShaderMgr->LoadShader( "shaders/shadow_pass.vert", "shaders/shadow_pass.frag", RootID::Internal );
->>>>>>> f8ece7c (Editor in works)
 		}
 
 	}

@@ -30,8 +30,6 @@ namespace lum {
 
 		void RenderSystem::Update( ecs::MEntityManager* entityMgr, Window* window ) {
 
-<<<<<<< HEAD
-=======
 			float32 width = ( float32 ) window->GetWidth( );
 			float32 height = ( float32 ) window->GetHeight( );
 
@@ -91,7 +89,6 @@ namespace lum {
 				}
 			);
 
->>>>>>> f8ece7c (Editor in works)
 			entityMgr->Each<CRender, CTransform, CMaterial, CStaticMesh>(
 				[&]( CRender& render, CTransform& transform, CMaterial& material, CStaticMesh& mesh ) {
 

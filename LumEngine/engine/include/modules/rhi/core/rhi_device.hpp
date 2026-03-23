@@ -73,11 +73,7 @@ namespace lum::rhi {
 		* @return Handle to the created buffer.
 		*/
 		LUM_NODISCARD
-<<<<<<< HEAD
-			virtual RBufferHandle CreateBuffer( const FBufferDescriptor& desc ) = 0;
-=======
 		virtual RBufferHandle CreateBuffer( const FBufferDescriptor& desc ) = 0;
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Uploads data from CPU memory into a GPU buffer.
 		* @param buff   Handle of the buffer to update.
@@ -101,11 +97,7 @@ namespace lum::rhi {
 		* @note Must be followed by UnmapBuffer() when done.
 		*/
 		LUM_NODISCARD
-<<<<<<< HEAD
-			virtual vptr MapBuffer( RBufferHandle buff, Flags<MapFlag> flags, usize offset = 0, usize size = 0 ) = 0;
-=======
 		virtual vptr MapBuffer( RBufferHandle buff, Flags<MapFlag> flags, usize offset = 0, usize size = 0 ) = 0;
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Unmaps a previously mapped buffer and synchronizes with the GPU.
 		* @param buff Handle of the buffer to unmap.
@@ -140,11 +132,7 @@ namespace lum::rhi {
 		* @return Handle to the created framebuffer.
 		*/
 		LUM_NODISCARD
-<<<<<<< HEAD
-			virtual RFramebufferHandle CreateFramebuffer( const FFramebufferDescriptor& desc ) = 0;
-=======
 		virtual RFramebufferHandle CreateFramebuffer( const FFramebufferDescriptor& desc ) = 0;
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Clears color and depth buffers of the given framebuffer.
 		* @param fbo   Handle of the framebuffer to clear.
@@ -156,11 +144,7 @@ namespace lum::rhi {
 		/* @brief Copies a region of one framebuffer to another.
 		*  @param desc Descriptor specifying source, destination, regions, buffer mask and filter.
 		*/
-<<<<<<< HEAD
-		virtual void BlitFramebuffer( const FFramebufferBlitDescriptor& desc ) = 0;
-=======
 		virtual void BlitFramebuffer(const FFramebufferBlitDescriptor& desc) = 0;
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Destroys the framebuffer and releases its GPU resources.
 		* @param fbo Handle to delete. Becomes invalid after this call.
@@ -183,11 +167,7 @@ namespace lum::rhi {
 		* @return Handle to the created vertex layout.
 		*/
 		LUM_NODISCARD
-<<<<<<< HEAD
-			virtual RVertexLayoutHandle CreateVertexLayout( const FVertexLayoutDescriptor& desc, RBufferHandle vbo ) = 0;
-=======
 		virtual RVertexLayoutHandle CreateVertexLayout( const FVertexLayoutDescriptor& desc, RBufferHandle vbo ) = 0;
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Destroys a vertex layout and releases its GPU resources.
 		* @param layout Handle to delete. Becomes invalid after this call.
@@ -204,11 +184,7 @@ namespace lum::rhi {
 		* @return Handle to the created shader.
 		*/
 		LUM_NODISCARD
-<<<<<<< HEAD
-			virtual RShaderHandle CreateShader( const FShaderDescriptor& desc ) = 0;
-=======
 		virtual RShaderHandle CreateShader( const FShaderDescriptor& desc ) = 0;
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Binds a shader for use in subsequent draw or dispatch calls.
 		* @param shader Handle of the shader to bind.
@@ -230,11 +206,7 @@ namespace lum::rhi {
 		* @return Handle to the created texture.
 		*/
 		LUM_NODISCARD
-<<<<<<< HEAD
-			virtual RTextureHandle CreateTexture( const FTextureDescriptor& desc ) = 0;
-=======
 		virtual RTextureHandle CreateTexture( const FTextureDescriptor& desc ) = 0;
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Unbinds any texture of the given type from the pipeline.
 		* @param type Texture type to unbind (e.g. Texture2D, Cubemap).
@@ -269,11 +241,7 @@ namespace lum::rhi {
 		* @return Handle to the created sampler.
 		*/
 		LUM_NODISCARD
-<<<<<<< HEAD
-			virtual RSamplerHandle CreateSampler( const FSamplerDescriptor& desc ) = 0;
-=======
 		virtual RSamplerHandle CreateSampler( const FSamplerDescriptor& desc ) = 0;
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Binds a sampler to a shader slot.
 		* @param sampler Handle of the sampler to bind.
@@ -345,11 +313,7 @@ namespace lum::rhi {
 		virtual void ToggleScissors( bool toggle ) = 0;
 
 		/* @brief Returns whether the scissor test is currently enabled. */
-<<<<<<< HEAD
-		bool IsScissorEnabled( ) const noexcept { return mEnabledStates.Has( State::Scissor ); }
-=======
 		bool IsScissorEnabled( ) const noexcept { return mEnabledStates.Has(State::Scissor); }
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Sets the full scissor rectangle.
 		* @param x      Left coordinate in pixels.
@@ -384,11 +348,7 @@ namespace lum::rhi {
 		virtual void ToggleCull( bool toggle ) = 0;
 
 		/* @brief Returns whether face culling is currently enabled. */
-<<<<<<< HEAD
-		bool IsCullEnabled( ) const noexcept { return mEnabledStates.Has( State::Cull ); }
-=======
 		bool IsCullEnabled( ) const noexcept { return mEnabledStates.Has(State::Cull); }
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Selects which polygon faces are culled.
 		* @param face Cull face selection (Front, Back, or FrontBack).
@@ -412,11 +372,7 @@ namespace lum::rhi {
 		virtual void ToggleBlend( bool toggle ) = 0;
 
 		/* @brief Returns whether color blending is currently enabled. */
-<<<<<<< HEAD
-		bool IsBlendEnabled( ) const noexcept { return mEnabledStates.Has( State::Blend ); }
-=======
 		bool IsBlendEnabled( ) const noexcept { return mEnabledStates.Has(State::Blend); }
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Sets the constant RGBA color used in constant-factor blend modes. */
 		virtual void SetBlendConstantColor( ChannelRGBA rgba ) = 0;
@@ -483,11 +439,7 @@ namespace lum::rhi {
 		virtual void ToggleDepthWrite( bool toggle ) = 0;
 
 		/* @brief Returns whether depth buffer writes are currently enabled. */
-<<<<<<< HEAD
-		bool IsDepthWriteEnabled( ) const noexcept { return mEnabledStates.Has( State::DepthWrite ); }
-=======
 		bool IsDepthWriteEnabled( ) const noexcept { return mEnabledStates.Has(State::DepthWrite); }
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Enables or disables depth testing.
 		* Failing fragments are discarded before blending.
@@ -496,11 +448,7 @@ namespace lum::rhi {
 		virtual void ToggleDepthTest( bool enable ) = 0;
 
 		/* @brief Returns whether depth testing is currently enabled. */
-<<<<<<< HEAD
-		bool IsDepthTestEnabled( ) const noexcept { return mEnabledStates.Has( State::DepthTest ); }
-=======
 		bool IsDepthTestEnabled( ) const noexcept { return mEnabledStates.Has(State::DepthTest); }
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Sets the depth comparison function.
 		* @param func Comparison function (e.g. Less, LessOrEqual, Always).
@@ -519,11 +467,7 @@ namespace lum::rhi {
 		virtual void ToggleStencilTest( bool toggle ) = 0;
 
 		/* @brief Returns whether stencil testing is currently enabled. */
-<<<<<<< HEAD
-		bool IsStencilTestEnabled( ) const noexcept { return mEnabledStates.Has( State::StencilTest ); }
-=======
 		bool IsStencilTestEnabled( ) const noexcept { return mEnabledStates.Has(State::StencilTest); }
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Sets the reference value used in stencil comparisons.
 		* @param ref  Reference value (typically 0-255).
@@ -550,11 +494,7 @@ namespace lum::rhi {
 		* @param face Polygon faces this applies to.
 		*/
 		virtual void SetStencilOpOnDepthFail( StencilOp op, Face face = Face::FrontBack ) = 0;
-<<<<<<< HEAD
-
-=======
 		
->>>>>>> f8ece7c (Editor in works)
 		/* @brief Sets the stencil operation applied when both tests pass.
 		* @param op   Operation to apply.
 		* @param face Polygon faces this applies to.
@@ -573,11 +513,7 @@ namespace lum::rhi {
 		virtual void ToggleDepthBias( bool toggle ) = 0;
 
 		/* @brief Returns whether depth bias is currently enabled. */
-<<<<<<< HEAD
-		bool IsDepthBiasEnabled( ) const noexcept { return mEnabledStates.Has( State::DepthBias ); }
-=======
 		bool IsDepthBiasEnabled( ) const noexcept { return mEnabledStates.Has(State::DepthBias); }
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Sets depth bias scale factors. Offset = slope * dZ + constant.
 		* @param slope    Scale factor applied to the polygon's depth slope.
@@ -653,27 +589,6 @@ namespace lum::rhi {
 		///////////////////////////////////////////////////
 
 		/* @brief Returns true if the buffer handle refers to a live resource. */
-<<<<<<< HEAD
-		bool IsValid( RBufferHandle handle ) const noexcept { return mBuffers.Contains( handle ); }
-
-		/* @brief Returns true if the texture handle refers to a live resource. */
-		bool IsValid( RTextureHandle handle ) const noexcept { return mTextures.Contains( handle ); }
-
-		/* @brief Returns true if the shader handle refers to a live resource. */
-		bool IsValid( RShaderHandle handle ) const noexcept { return mShaders.Contains( handle ); }
-
-		/* @brief Returns true if the framebuffer handle refers to a live resource. */
-		bool IsValid( RFramebufferHandle handle ) const noexcept { return mFramebuffers.Contains( handle ); }
-
-		/* @brief Returns true if the vertex layout handle refers to a live resource. */
-		bool IsValid( RVertexLayoutHandle handle ) const noexcept { return mLayouts.Contains( handle ); }
-
-		/* @brief Returns true if the pipeline handle refers to a live resource. */
-		bool IsValid( RPipelineHandle handle ) const noexcept { return mPipelines.Contains( handle ); }
-
-		/* @brief Returns true if the sampler handle refers to a live resource. */
-		bool IsValid( RSamplerHandle handle ) const noexcept { return mSamplers.Contains( handle ); }
-=======
 		bool IsValid( RBufferHandle handle ) const noexcept { return mBuffers.Contains(handle); }
 
 		/* @brief Returns true if the texture handle refers to a live resource. */
@@ -694,7 +609,6 @@ namespace lum::rhi {
 		/* @brief Returns true if the sampler handle refers to a live resource. */
 		bool IsValid( RSamplerHandle handle ) const noexcept { return mSamplers.Contains(handle); }
 
->>>>>>> f8ece7c (Editor in works)
 
 		uint32 GetNativeHandle( RBufferHandle handle ) noexcept {
 			if (mBuffers.Contains( handle ))
@@ -771,11 +685,7 @@ namespace lum::rhi {
 		* @param layout         Vertex layout to draw.
 		* @param numVertices Number of vertices.
 		*/
-<<<<<<< HEAD
-		virtual void Draw( RVertexLayoutHandle layout, uint32 numVertices ) = 0;
-=======
 		virtual void Draw( RVertexLayoutHandle layout, uint32 numVertices) = 0;
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Draws non-indexed geometry with instancing.
 		* @param layout           Vertex layout to draw.
@@ -803,11 +713,7 @@ namespace lum::rhi {
 		* @param numIndices    Number of indices per instance.
 		* @param numInstances  Number of instances.
 		*/
-<<<<<<< HEAD
-		virtual void DrawElementsInstanced( RVertexLayoutHandle layout, uint32 numIndices, uint32 numInstances ) = 0;
-=======
 		virtual void DrawElementsInstanced( RVertexLayoutHandle layout, uint32 numIndices, uint32 numInstances) = 0;
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Draws indexed geometry with instancing and a base instance offset.
 		* @param layout        Vertex layout with attached EBO.
@@ -822,15 +728,9 @@ namespace lum::rhi {
 
 
 #		if LUM_ENABLE_RENDER_PROFILER == 1
-<<<<<<< HEAD
-		inline void GetProfilerInfo( ) {
-			LUM_LOG_INFO( "Cache hit rate: %f", mProfiler.GetCacheHitRate( ) );
-		}
-=======
 			inline void GetProfilerInfo( ) {
 				LUM_LOG_INFO("Cache hit rate: %f", mProfiler.GetCacheHitRate());
 			}
->>>>>>> f8ece7c (Editor in works)
 #		endif
 
 	protected:
@@ -873,15 +773,6 @@ namespace lum::rhi {
 
 #		endif
 
-<<<<<<< HEAD
-		inline constexpr static uint32 skMaxShaders = 8;
-		inline constexpr static uint32 skMaxSamplers = 500;
-		inline constexpr static uint32 skMaxBuffers = 10000;
-		inline constexpr static uint32 skMaxLayouts = 10000;
-		inline constexpr static uint32 skMaxTextures = 1000;
-		inline constexpr static uint32 skMaxFramebuffers = 100;
-		inline constexpr static uint32 skMaxPipelines = 100;
-=======
 		inline constexpr static uint32 skMaxShaders			= 8;
 		inline constexpr static uint32 skMaxSamplers		= 500;
 		inline constexpr static uint32 skMaxBuffers			= 10000;
@@ -889,7 +780,6 @@ namespace lum::rhi {
 		inline constexpr static uint32 skMaxTextures		= 1000;
 		inline constexpr static uint32 skMaxFramebuffers	= 100;
 		inline constexpr static uint32 skMaxPipelines		= 100;
->>>>>>> f8ece7c (Editor in works)
 
 		cstd::HandlePool<RSamplerHandle, FSampler, RSamplerID>				mSamplers{ skMaxSamplers };
 		cstd::HandlePool<RShaderHandle, FShader, RShaderID>					mShaders{ skMaxShaders };
@@ -900,11 +790,7 @@ namespace lum::rhi {
 		cstd::HandlePool<RPipelineHandle, FPipeline, RPipelineID>			mPipelines{ skMaxPipelines };
 
 
-<<<<<<< HEAD
-		bool validate_framebuffer_handle( RFramebufferHandle buff ) const noexcept { return IsValid( buff ) || (buff == gDefaultFramebuffer); }
-=======
 		bool validate_framebuffer_handle( RFramebufferHandle buff ) const noexcept { return IsValid(buff) || (buff == gDefaultFramebuffer); }
->>>>>>> f8ece7c (Editor in works)
 
 		/* @brief Validates a texture descriptor before resource creation.
 		*  @param desc Texture descriptor to validate.

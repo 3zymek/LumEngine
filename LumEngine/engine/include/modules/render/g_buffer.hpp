@@ -44,19 +44,12 @@ namespace lum::render::detail {
 		/* @brief Binds the G-Buffer framebuffer as the active render target.
 		*  Call before the geometry pass draw calls.
 		*/
-<<<<<<< HEAD
-		void BindBuffer( ) const noexcept { mContext.mRenderDevice->BindFramebuffer( mFramebuffer ); }
-
-		/* @brief Unbinds the G-Buffer framebuffer, restoring the default render target. */
-		void UnbindBuffer( ) const noexcept { mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer ); }
-=======
 		LUM_FORCEINLINE
 		void BindBuffer( ) const { mContext.mRenderDevice->BindFramebuffer( mFramebuffer ); }
 
 		/* @brief Unbinds the G-Buffer framebuffer, restoring the default render target. */
 		LUM_FORCEINLINE
 		void UnbindBuffer( ) const { mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer ); }
->>>>>>> f8ece7c (Editor in works)
 
 		rhi::RTextureHandle GetTexture( GBufferTexture tex );
 
@@ -75,12 +68,9 @@ namespace lum::render::detail {
 		/* @brief Creates or recreates the framebuffer with current texture handles. */
 		void create_framebuffer( );
 
-<<<<<<< HEAD
-=======
 		/* @brief Subscribes to window resize events to recreate textures and framebuffer. */
 		void init( );
 
->>>>>>> f8ece7c (Editor in works)
 	};
 
 } // namespace lum::render::detail
