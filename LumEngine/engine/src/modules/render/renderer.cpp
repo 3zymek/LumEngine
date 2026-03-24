@@ -7,10 +7,7 @@
 #include "core/core_common.hpp"
 
 #include "render/renderer.hpp"
-#include "render/texture_manager.hpp"
 #include "render/shader_manager.hpp"
-
-#include "entity/components/transform.hpp"
 
 #include "event/event_bus.hpp"
 
@@ -48,6 +45,7 @@ namespace lum::render {
 	void Renderer::BeginFrame( ) {
 
 		mLightPass.ClearLights( );
+		mContext.mRenderDevice->BindFramebuffer(rhi::gDefaultFramebuffer);
 		mContext.mRenderDevice->Clear(
 			rhi::BufferBit::Color |
 			rhi::BufferBit::Depth |
@@ -58,6 +56,13 @@ namespace lum::render {
 
 	void Renderer::EndFrame( ) {
 
+		mContext.mRenderDevice->BindFramebuffer(mScreenQuad.mFbo);
+		mContext.mRenderDevice->Clear(
+			rhi::BufferBit::Color |
+			rhi::BufferBit::Depth |
+			rhi::BufferBit::Stencil
+		);
+
 		mShadowPass.Execute( mGeometryPass, mLightPass );
 
 		mGeometryPass.Execute( mGBuffer );
@@ -65,6 +70,10 @@ namespace lum::render {
 		mLightPass.Execute( mShadowPass, mGBuffer, mScreenQuad );
 
 		mEnvironmentPass.Execute( mGBuffer );
+
+		mContext.mRenderDevice->BindFramebuffer(rhi::gDefaultFramebuffer);
+		mContext.mRenderDevice->BindShader(mPostprocessShader);
+		mContext.mRenderDevice->DrawElements(mScreenQuad.mVao, 6);
 
 		mContext.mRenderDevice->SwapBuffers( );
 
@@ -147,6 +156,12 @@ namespace lum::render {
 			mContext.mRenderDevice->AttachElementBufferToLayout( mScreenQuad.mEbo, mScreenQuad.mVao );
 
 		}
+		{
+			mPostprocessShader = mContext.mShaderMgr->LoadShader("shaders/postprocess_pass.vert", "shaders/postprocess_pass.frag", RootID::Internal);
+		}
+
+		create_screenquad_texture(500, 500);
+		create_screenquad_fbo();
 	}
 
 	void Renderer::create_screenquad_fbo( ) {
@@ -155,7 +170,7 @@ namespace lum::render {
 			mContext.mRenderDevice->DeleteFramebuffer( mScreenQuad.mFbo );
 
 		rhi::FFramebufferDescriptor desc;
-		desc.mColorTex.push_back( { 0, mScreenQuad.mTexture } );
+		desc.mColorTex.push_back({ 0, mGBuffer.GetTexture(detail::GBufferTexture::Albedo) });
 		desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
 		mScreenQuad.mFbo = mContext.mRenderDevice->CreateFramebuffer( desc );
 

@@ -101,6 +101,7 @@ namespace lum::render {
 		/* @brief Shadow map generation pass for lights. */
 		ShadowPass mShadowPass;
 
+		rhi::RShaderHandle mPostprocessShader;
 
 
 		//---------------------------------------------------------
