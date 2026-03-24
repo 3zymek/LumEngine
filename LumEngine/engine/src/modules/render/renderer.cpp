@@ -73,6 +73,7 @@ namespace lum::render {
 
 		mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer );
 		mContext.mRenderDevice->BindShader( mPostprocessShader );
+		mContext.mRenderDevice->BindTexture( mScreenQuad.mTexture, 0 );
 		mContext.mRenderDevice->DrawElements( mScreenQuad.mVao, 6 );
 
 		mContext.mRenderDevice->SwapBuffers( );
@@ -170,7 +171,7 @@ namespace lum::render {
 			mContext.mRenderDevice->DeleteFramebuffer( mScreenQuad.mFbo );
 
 		rhi::FFramebufferDescriptor desc;
-		desc.mColorTex.push_back( { 0, mGBuffer.GetTexture( detail::GBufferTexture::Albedo ) } );
+		desc.mColorTex.push_back( { 0, mScreenQuad.mTexture } );
 		desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
 		mScreenQuad.mFbo = mContext.mRenderDevice->CreateFramebuffer( desc );
 

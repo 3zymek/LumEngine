@@ -12,9 +12,11 @@ in vec2 fUV;
 out vec4 oColor;
 
 void main( ) {
+    
     vec3 color = texture(uScreen, fUV).rgb;
     color *= 0.3;
     color = TonemapACES(color);
     color = GammaCorrection22(color);
     oColor = vec4(color, 1.0);
+
 }
