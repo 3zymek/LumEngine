@@ -39,6 +39,11 @@ namespace lum {
 		/* @brief Raw pixel data. */
 		std::vector<uint8> mPixels;
 
+		/* @brief Raw float pixels used in HDRI. */
+		std::vector<float32> mFloatPixels;
+
+		bool bIsHDR = false;
+
 	};
 
 	/* @brief Raw mesh data loaded from disk. */

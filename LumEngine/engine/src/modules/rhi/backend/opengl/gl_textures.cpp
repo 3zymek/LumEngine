@@ -11,12 +11,7 @@ namespace lum::rhi::gl {
 
 	RTextureHandle GLDevice::CreateTexture( const FTextureDescriptor& desc ) {
 
-		LUM_HOTCHK_RETURN_CUSTOM(
-			desc.mTextureType != TextureType::None,
-			LUM_SEV_WARN,
-			{},
-			"No texture type given"
-		);
+		LUM_ASSERT( desc.mTextureType != TextureType::None, "No texture type given" );
 
 		if (desc.mTextureType == TextureType::Texture2D)
 			return create_texture_2d( desc );
@@ -104,7 +99,13 @@ namespace lum::rhi::gl {
 		uint32 mipmapLevels = desc.bGenerateMipmaps ?
 			(desc.mMipmapLevels == 0 ? MipmapLvls( width, height ) : desc.mMipmapLevels) : 1;
 
-		cvptr data = (desc.mData.mPixels.empty( )) ? nullptr : desc.mData.mPixels.data( );
+		cvptr data;
+		if (desc.mData.bIsHDR) {
+			data = (desc.mData.mFloatPixels.empty( )) ? nullptr : desc.mData.mFloatPixels.data( );
+		}
+		else {
+			data = (desc.mData.mPixels.empty( )) ? nullptr : desc.mData.mPixels.data( );
+		}
 
 		glCreateTextures( GL_TEXTURE_2D, 1, &texture.mHandle );
 
@@ -165,9 +166,13 @@ namespace lum::rhi::gl {
 
 		for (usize i = 0; i < 6; i++) {
 
-			auto texture = desc.mCubemap.mFaces[ i ];
+			FTextureData texture = desc.mCubemap.mFaces[ i ];
 
-			LUM_ASSERT( !texture.mPixels.empty( ), "Texture pixel data is null" );
+			if (!texture.bIsHDR)
+				LUM_ASSERT( !texture.mPixels.empty( ), "Texture pixel data is null" );
+			else
+				LUM_ASSERT( !texture.mFloatPixels.empty( ), "Texture pixel data is null" );
+
 			LUM_ASSERT( texture.mWidth > 0 && texture.mHeight > 0, "Invalid texture dimensions" );
 
 			if (texture.mWidth != width || texture.mHeight != height) {
@@ -177,16 +182,14 @@ namespace lum::rhi::gl {
 
 			glTextureSubImage3D(
 				tex.mHandle,
-				0,
-				0,
-				0,
+				0, 0, 0,
 				i,
 				texture.mWidth,
 				texture.mHeight,
 				1,
 				skImageFormatLookup[ LookupCast( desc.mImageFormat ) ],
-				GL_UNSIGNED_BYTE,
-				texture.mPixels.data( )
+				texture.bIsHDR ? GL_FLOAT : GL_UNSIGNED_BYTE,
+				texture.bIsHDR ? ( cvptr ) texture.mFloatPixels.data( ) : ( cvptr ) texture.mPixels.data( )
 			);
 
 		}

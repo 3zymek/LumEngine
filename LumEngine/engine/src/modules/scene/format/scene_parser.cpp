@@ -70,7 +70,8 @@ namespace lum::fmt {
 						if (detail::IsString( tokens, i, "path" )) {
 							detail::ExpectColon( tokens, i );
 							ctx.mContext.mRenderer->SetEnvironmentTexture(
-								ctx.mContext.mTextureMgr->LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ), 1024 ) );
+								ctx.mContext.mTextureMgr->LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ), 4096 ) 
+							);
 						}
 
 					}

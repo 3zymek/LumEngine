@@ -24,50 +24,61 @@ namespace lum {
 
 	void AssetLoader::SetProjectRoot( AssetLoader::Path path ) {
 		sProjectRoot = path;
-		LUM_LOG_INFO("Project root path has been set to %s", path.string().c_str());
+		LUM_LOG_INFO( "Project root path has been set to %s", path.string( ).c_str( ) );
 	}
 
 	String AssetLoader::GetProjectRoot( ) {
-		return sProjectRoot.string();
+		return sProjectRoot.string( );
 	}
 
-	std::optional<FTextureData> AssetLoader::LoadTexture( RootID root, StringView filepath, uint8 expectedFormat) {
+	std::optional<FTextureData> AssetLoader::LoadTexture( RootID root, StringView filepath, uint8 expectedFormat ) {
 
-		String path = get_full_path(root, filepath);
+		String path = get_full_path( root, filepath );
 
-		if (!detail::fs::exists(path)) {
-			set_error_msg("File doesn't exist");
+		if (!detail::fs::exists( path )) {
+			set_error_msg( "File doesn't exist" );
 			return std::nullopt;
 		}
 
 		FTextureData texture;
+		texture.bIsHDR = path.ends_with( ".hdr" );
+
 		int32 format{};
 
-		ucharptr data = stbi_load(path.c_str(), &texture.mWidth, &texture.mHeight, &format, expectedFormat);
+		if (texture.bIsHDR) {
 
-		if (!data) {
-			set_error_msg(stbi_failure_reason());
-			return std::nullopt;
+			float32* data = stbi_loadf( path.c_str( ), &texture.mWidth, &texture.mHeight, &format, expectedFormat );
+			if (!data) {
+				set_error_msg( stbi_failure_reason( ) );
+				return std::nullopt;
+			}
+			texture.mChannels = (expectedFormat != 0) ? expectedFormat : format;
+			texture.mFloatPixels.assign( data, data + texture.mWidth * texture.mHeight * texture.mChannels );
+			stbi_image_free( data );
+
 		}
+		else {
 
-		texture.mChannels = format;
-		usize size = (usize)texture.mWidth * (usize)texture.mHeight * (usize)texture.mChannels;
-		texture.mPixels.resize(size);
-		LUM_ASSERT(size > 0 && data != nullptr, "Texture source data is null");
+			ucharptr data = stbi_load( path.c_str( ), &texture.mWidth, &texture.mHeight, &format, expectedFormat );
+			if (!data) {
+				set_error_msg( stbi_failure_reason( ) );
+				return std::nullopt;
+			}
+			texture.mChannels = (expectedFormat != 0) ? expectedFormat : format;
+			texture.mPixels.assign( data, data + texture.mWidth * texture.mHeight * texture.mChannels );
+			stbi_image_free( data );
 
-		std::memcpy(texture.mPixels.data(), data, size);
-
-		stbi_image_free(data);
+		}
 
 		return texture;
 	}
 
 	std::optional<FMeshData> AssetLoader::LoadMesh( RootID root, StringView filepath ) {
 
-		String path = get_full_path(root, filepath);
+		String path = get_full_path( root, filepath );
 
-		if (!detail::fs::exists(path)) {
-			set_error_msg("File doesn't exist");
+		if (!detail::fs::exists( path )) {
+			set_error_msg( "File doesn't exist" );
 			return std::nullopt;
 		}
 
@@ -76,10 +87,10 @@ namespace lum {
 		flags |= aiProcess_FlipUVs;
 		flags |= aiProcess_Triangulate;
 		flags |= aiProcess_CalcTangentSpace;
-		const aiScene* scene = importer.ReadFile(path.c_str(), flags);
+		const aiScene* scene = importer.ReadFile( path.c_str( ), flags );
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-			set_error_msg(importer.GetErrorString());
+			set_error_msg( importer.GetErrorString( ) );
 			return std::nullopt;
 		}
 
@@ -89,36 +100,36 @@ namespace lum {
 
 		for (uint32 meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 
-			aiMesh* mesh = scene->mMeshes[meshIndex];
+			aiMesh* mesh = scene->mMeshes[ meshIndex ];
 
 			for (uint32 vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
 				FVertex vert;
 
 				vert.mPosition = {
-					mesh->mVertices[vertexIndex].x,
-					mesh->mVertices[vertexIndex].y,
-					mesh->mVertices[vertexIndex].z
+					mesh->mVertices[ vertexIndex ].x,
+					mesh->mVertices[ vertexIndex ].y,
+					mesh->mVertices[ vertexIndex ].z
 				};
 
-				if (mesh->HasNormals()) {
+				if (mesh->HasNormals( )) {
 					vert.mNormal = {
-						mesh->mNormals[vertexIndex].x,
-						mesh->mNormals[vertexIndex].y,
-						mesh->mNormals[vertexIndex].z
+						mesh->mNormals[ vertexIndex ].x,
+						mesh->mNormals[ vertexIndex ].y,
+						mesh->mNormals[ vertexIndex ].z
 					};
 				}
 				else vert.mNormal = { 0.0f, 0.0f, 0.0f };
 
-				if (mesh->HasTangentsAndBitangents()) {
+				if (mesh->HasTangentsAndBitangents( )) {
 					vert.mTangent = {
-						mesh->mTangents[vertexIndex].x,
-						mesh->mTangents[vertexIndex].y,
-						mesh->mTangents[vertexIndex].z
+						mesh->mTangents[ vertexIndex ].x,
+						mesh->mTangents[ vertexIndex ].y,
+						mesh->mTangents[ vertexIndex ].z
 					};
 					vert.mBitangent = {
-						mesh->mBitangents[vertexIndex].x,
-						mesh->mBitangents[vertexIndex].y,
-						mesh->mBitangents[vertexIndex].z
+						mesh->mBitangents[ vertexIndex ].x,
+						mesh->mBitangents[ vertexIndex ].y,
+						mesh->mBitangents[ vertexIndex ].z
 					};
 				}
 				else {
@@ -126,24 +137,24 @@ namespace lum {
 					vert.mBitangent = { 0.0f, 0.0f, 0.0f };
 				}
 
-				if (mesh->mTextureCoords[0]) {
+				if (mesh->mTextureCoords[ 0 ]) {
 					vert.mUv = {
-						mesh->mTextureCoords[0][vertexIndex].x,
-						mesh->mTextureCoords[0][vertexIndex].y
+						mesh->mTextureCoords[ 0 ][ vertexIndex ].x,
+						mesh->mTextureCoords[ 0 ][ vertexIndex ].y
 					};
 
 				}
 				else vert.mUv = { 0.0f, 0.0f };
 
-				finalData.mVertices.push_back(vert);
+				finalData.mVertices.push_back( vert );
 
 			}
 
 			for (uint32 faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
-				aiFace face = mesh->mFaces[faceIndex];
+				aiFace face = mesh->mFaces[ faceIndex ];
 
 				for (uint32 elementIndex = 0; elementIndex < face.mNumIndices; ++elementIndex) {
-					finalData.mIndices.push_back(face.mIndices[elementIndex] + elementOffset);
+					finalData.mIndices.push_back( face.mIndices[ elementIndex ] + elementOffset );
 				}
 
 
@@ -158,10 +169,10 @@ namespace lum {
 
 	String AssetLoader::ResolvePath( RootID root, StringView filepath ) {
 
-		String path = get_full_path(root, filepath);
+		String path = get_full_path( root, filepath );
 
-		if (!detail::fs::exists(path)) {
-			set_error_msg("File doesn't exist");
+		if (!detail::fs::exists( path )) {
+			set_error_msg( "File doesn't exist" );
 			return "";
 		}
 
@@ -171,61 +182,61 @@ namespace lum {
 
 	String AssetLoader::LoadShader( RootID root, StringView filepath ) {
 
-		String path = get_full_path(root, filepath);
+		String path = get_full_path( root, filepath );
 
-		std::ifstream loadedFile(path);
-		if (!loadedFile.is_open()) {
-			set_error_msg(strerror(errno));
+		std::ifstream loadedFile( path );
+		if (!loadedFile.is_open( )) {
+			set_error_msg( strerror( errno ) );
 			return "";
 		}
 
-		std::ifstream defines(sShaderDefine);
-		if (!defines.is_open()) {
-			set_error_msg(strerror(errno));
+		std::ifstream defines( sShaderDefine );
+		if (!defines.is_open( )) {
+			set_error_msg( strerror( errno ) );
 			return "";
 		}
 
 		String version;
-		std::getline(loadedFile, version);
+		std::getline( loadedFile, version );
 
 		std::stringstream ss;
 		ss << version << '\n';
-		ss << defines.rdbuf() << '\n';
-		ss << loadedFile.rdbuf();
+		ss << defines.rdbuf( ) << '\n';
+		ss << loadedFile.rdbuf( );
 
-		return ss.str();
+		return ss.str( );
 	}
 
 	bool AssetLoader::WriteFile( RootID root, StringView filepath, const String& content ) {
 
-		String path = get_full_path(root, filepath);
+		String path = get_full_path( root, filepath );
 
-		std::ofstream file(path);
-		if (!file.is_open()) {
-			set_error_msg(strerror(errno));
+		std::ofstream file( path );
+		if (!file.is_open( )) {
+			set_error_msg( strerror( errno ) );
 			return false;
 		}
 		file << content;
-		file.close();
+		file.close( );
 
 		return true;
 	}
-	String AssetLoader::ReadFile(RootID root, StringView filepath) {
-		
-		String path = get_full_path(root, filepath);
+	String AssetLoader::ReadFile( RootID root, StringView filepath ) {
 
-		std::ifstream file(path);
-		if (!file.is_open()) {
-			set_error_msg(strerror(errno));
+		String path = get_full_path( root, filepath );
+
+		std::ifstream file( path );
+		if (!file.is_open( )) {
+			set_error_msg( strerror( errno ) );
 			return "";
 		}
-		
-		std::ostringstream ss;
-		ss << file.rdbuf();
 
-		String content = ss.str();
-		
-		file.close();
+		std::ostringstream ss;
+		ss << file.rdbuf( );
+
+		String content = ss.str( );
+
+		file.close( );
 
 		return content;
 	}

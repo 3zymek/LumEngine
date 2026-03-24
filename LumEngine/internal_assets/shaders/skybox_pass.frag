@@ -8,10 +8,6 @@ layout(std140, binding = LUM_UBO_CAMERA_BINDING) uniform CameraUniforms {
     vec3 uCameraPos;
 };
 
-vec3 ACESTonemapping( in vec3 c) {
-    return clamp((c * ( 2.51*c+0.03))/(c*(2.43*c+0.59)+0.14), 0.0, 1.0);
-}
-
 in vec3 fPos;
 out vec4 oFinalColor;
 
@@ -22,6 +18,6 @@ void main() {
     float depth = texture(gDepth, screenUV).r;
     if (depth < 0.9999) discard;
 
-    oFinalColor = vec4(ACESTonemapping(texture(uCubemap, fPos).rgb), 1.0);
+    oFinalColor = texture(uCubemap, fPos);
 
 }

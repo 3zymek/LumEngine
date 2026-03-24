@@ -120,12 +120,6 @@ vec3 CookTorrance( vec3 N, vec3 V, vec3 L, float roughness, vec3 F0 ) {
 	return numerator / denominator;
 
 }
-vec3 TonemapACES(vec3 color){
-	return clamp((color*(2.51 * color + 0.03)) / (color * (2.43 * color + 0.59) + 0.14), 0.0, 1.0);
-}
-vec3 GammaCorrection22(vec3 color){
-	return pow(color, vec3(1.0/2.2));
-}
 
 
 //======================================
@@ -273,8 +267,6 @@ void main( ) {
 
 	vec3 ambient = vec3(0.03) * albedo;
     Lo = Lo + ambient;
-    Lo = TonemapACES(Lo);
-    Lo = GammaCorrection22(Lo);
 
 	oFinalColor = vec4(Lo, 1.0);
 

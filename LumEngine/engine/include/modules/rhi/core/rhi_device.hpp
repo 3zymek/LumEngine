@@ -205,7 +205,6 @@ namespace lum::rhi {
 		* @param desc Texture descriptor specifying format, size, and filtering.
 		* @return Handle to the created texture.
 		*/
-		LUM_NODISCARD
 		virtual RTextureHandle CreateTexture( const FTextureDescriptor& desc ) = 0;
 
 		/* @brief Unbinds any texture of the given type from the pipeline.

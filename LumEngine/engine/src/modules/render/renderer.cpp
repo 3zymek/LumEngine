@@ -45,7 +45,7 @@ namespace lum::render {
 	void Renderer::BeginFrame( ) {
 
 		mLightPass.ClearLights( );
-		mContext.mRenderDevice->BindFramebuffer(rhi::gDefaultFramebuffer);
+		mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer );
 		mContext.mRenderDevice->Clear(
 			rhi::BufferBit::Color |
 			rhi::BufferBit::Depth |
@@ -56,7 +56,7 @@ namespace lum::render {
 
 	void Renderer::EndFrame( ) {
 
-		mContext.mRenderDevice->BindFramebuffer(mScreenQuad.mFbo);
+		mContext.mRenderDevice->BindFramebuffer( mScreenQuad.mFbo );
 		mContext.mRenderDevice->Clear(
 			rhi::BufferBit::Color |
 			rhi::BufferBit::Depth |
@@ -71,9 +71,9 @@ namespace lum::render {
 
 		mEnvironmentPass.Execute( mGBuffer, mScreenQuad );
 
-		mContext.mRenderDevice->BindFramebuffer(rhi::gDefaultFramebuffer);
-		mContext.mRenderDevice->BindShader(mPostprocessShader);
-		mContext.mRenderDevice->DrawElements(mScreenQuad.mVao, 6);
+		mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer );
+		mContext.mRenderDevice->BindShader( mPostprocessShader );
+		mContext.mRenderDevice->DrawElements( mScreenQuad.mVao, 6 );
 
 		mContext.mRenderDevice->SwapBuffers( );
 
@@ -157,11 +157,11 @@ namespace lum::render {
 
 		}
 		{
-			mPostprocessShader = mContext.mShaderMgr->LoadShader("shaders/postprocess_pass.vert", "shaders/postprocess_pass.frag", RootID::Internal);
+			mPostprocessShader = mContext.mShaderMgr->LoadShader( "shaders/postprocess_pass.vert", "shaders/postprocess_pass.frag", RootID::Internal );
 		}
 
-		create_screenquad_texture(500, 500);
-		create_screenquad_fbo();
+		create_screenquad_texture( 500, 500 );
+		create_screenquad_fbo( );
 	}
 
 	void Renderer::create_screenquad_fbo( ) {
@@ -170,7 +170,7 @@ namespace lum::render {
 			mContext.mRenderDevice->DeleteFramebuffer( mScreenQuad.mFbo );
 
 		rhi::FFramebufferDescriptor desc;
-		desc.mColorTex.push_back({ 0, mGBuffer.GetTexture(detail::GBufferTexture::Albedo) });
+		desc.mColorTex.push_back( { 0, mGBuffer.GetTexture( detail::GBufferTexture::Albedo ) } );
 		desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
 		mScreenQuad.mFbo = mContext.mRenderDevice->CreateFramebuffer( desc );
 

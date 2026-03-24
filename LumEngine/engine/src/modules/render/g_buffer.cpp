@@ -53,7 +53,7 @@ namespace lum::render::detail {
 		rhi::FTextureDescriptor desc;
 		{ // Albedo
 			desc.mImageFormat = rhi::ImageFormat::RGBA;
-			desc.mImageLayout = rhi::ImageLayout::SRGB8_Alpha8;
+			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
 			desc.mWidth = width;
 			desc.mHeight = height;
 			desc.mTextureType = rhi::TextureType::Texture2D;
