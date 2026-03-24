@@ -69,7 +69,7 @@ namespace lum::render {
 
 		mLightPass.Execute( mShadowPass, mGBuffer, mScreenQuad );
 
-		mEnvironmentPass.Execute( mGBuffer );
+		mEnvironmentPass.Execute( mGBuffer, mScreenQuad );
 
 		mContext.mRenderDevice->BindFramebuffer(rhi::gDefaultFramebuffer);
 		mContext.mRenderDevice->BindShader(mPostprocessShader);

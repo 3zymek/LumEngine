@@ -6,7 +6,6 @@
 #pragma once
 
 #include "core/utils/logger.hpp"
-#include "core/utils/asset_loader.hpp"
 
 #include "event/event_bus.hpp"
 
@@ -15,8 +14,6 @@
 #include "render_module.hpp"
 #include "res_module.hpp"
 #include "scene_module.hpp"
-
-#include "imgui.h"
 
 namespace lum {
 
