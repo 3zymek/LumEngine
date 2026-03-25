@@ -25,7 +25,10 @@ namespace lum::render {
 		*/
 		void Initialize( const FRendererContext& ctx );
 
-		void SetCubemapTexture( rhi::RTextureHandle tex ) { mCubemap.mTexture = tex; }
+		void SetCubemapTexture( rhi::RTextureHandle tex ) {
+			mCubemap.mTexture = tex;
+			generate_irradiance_map( );
+		}
 
 		void Execute( detail::GBuffer& gbuffer, const detail::FScreenQuad quad );
 
@@ -43,6 +46,12 @@ namespace lum::render {
 		rhi::RShaderHandle mShader;
 
 		rhi::RSamplerHandle mSampler;
+
+		rhi::RTextureHandle mIrradianceMap;
+		rhi::RShaderHandle mIrradianceShader;
+		rhi::RBufferHandle mIrradianceUBO;
+
+		void generate_irradiance_map( );
 
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
 		void init();

@@ -35,6 +35,7 @@
 #define LUM_UBO_MATERIAL_BINDING   2 // Material parameters.
 #define LUM_UBO_DIRECTIONAL_LIGHT  3 // Directional light data.
 #define LUM_UBO_LIGHTSPACE_MATRIX  10
+#define LUM_UBO_IRRADIANCE 11
 
 // Shader storage buffer bindings
 #define LUM_SSBO_LIGHTS_BINDING 0 // Point light array.

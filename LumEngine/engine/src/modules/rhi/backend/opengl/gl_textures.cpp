@@ -168,12 +168,12 @@ namespace lum::rhi::gl {
 
 			FTextureData texture = desc.mCubemap.mFaces[ i ];
 
-			if (!texture.bIsHDR)
-				LUM_ASSERT( !texture.mPixels.empty( ), "Texture pixel data is null" );
-			else
-				LUM_ASSERT( !texture.mFloatPixels.empty( ), "Texture pixel data is null" );
+			cvptr data;
 
-			LUM_ASSERT( texture.mWidth > 0 && texture.mHeight > 0, "Invalid texture dimensions" );
+			if (!texture.bIsHDR)
+				data = (texture.mPixels.empty( )) ? nullptr : texture.mPixels.data( );
+			else
+				data = (texture.mFloatPixels.empty( )) ? nullptr : texture.mFloatPixels.data( );
 
 			if (texture.mWidth != width || texture.mHeight != height) {
 				LUM_LOG_ERROR( "Invalid cubemap height or width" );
@@ -189,7 +189,7 @@ namespace lum::rhi::gl {
 				1,
 				skImageFormatLookup[ LookupCast( desc.mImageFormat ) ],
 				texture.bIsHDR ? GL_FLOAT : GL_UNSIGNED_BYTE,
-				texture.bIsHDR ? ( cvptr ) texture.mFloatPixels.data( ) : ( cvptr ) texture.mPixels.data( )
+				data
 			);
 
 		}

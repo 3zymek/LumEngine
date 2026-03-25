@@ -28,7 +28,8 @@ namespace lum::render {
 		mContext.mRenderDevice->BindPipeline( mCubemap.mPipeline );
 
 		mContext.mRenderDevice->BindShader( mCubemap.mShader );
-		mContext.mRenderDevice->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
+		//mContext.mRenderDevice->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
+		mContext.mRenderDevice->BindTexture( mIrradianceMap, LUM_TEX_CUBEMAP );
 		mContext.mRenderDevice->BindSampler( mSampler, LUM_TEX_CUBEMAP );
 		mContext.mRenderDevice->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
 
@@ -41,6 +42,73 @@ namespace lum::render {
 	//---------------------------------------------------------
 	// Private
 	//---------------------------------------------------------
+
+	void EnvironmentPass::generate_irradiance_map( ) {
+
+		{
+			rhi::FTextureDescriptor desc;
+			desc.mTextureType = rhi::TextureType::Cubemap;
+			desc.mImageLayout = rhi::ImageLayout::RGB16F;
+			desc.mImageFormat = rhi::ImageFormat::RGB;
+			desc.mDataType = rhi::TextureDataType::Float;
+			desc.mWidth = 32;
+			desc.mHeight = 32;
+			mIrradianceMap = mContext.mRenderDevice->CreateTexture( desc );
+
+		}
+
+		{
+			rhi::FBufferDescriptor desc;
+			desc.mBufferType = rhi::BufferType::Uniform;
+			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
+			desc.mMapFlags = rhi::MapFlag::Write;
+			desc.mSize = sizeof( glm::mat4 ) * 2;
+			mIrradianceUBO = mContext.mRenderDevice->CreateBuffer( desc );
+			mContext.mRenderDevice->SetUniformBufferBinding( mIrradianceUBO, LUM_UBO_IRRADIANCE );
+		}
+
+		mIrradianceShader = mContext.mShaderMgr->LoadShader( "shaders/irradiance.vert", "shaders/irradiance.frag", RootID::Internal );
+		
+		rhi::RFramebufferHandle captureFBO;
+		{
+
+			captureFBO = mContext.mRenderDevice->CreateFramebuffer( {} );
+
+		}
+
+		glm::mat4 captureProjection = glm::perspective( glm::radians( 90.0f ), 1.0f, 0.1f, 10.0f );
+		glm::mat4 captureViews[ ] = {
+			glm::lookAt( glm::vec3( 0 ), glm::vec3( 1, 0, 0 ), glm::vec3( 0,-1, 0 ) ),
+			glm::lookAt( glm::vec3( 0 ), glm::vec3( -1, 0, 0 ), glm::vec3( 0,-1, 0 ) ),
+			glm::lookAt( glm::vec3( 0 ), glm::vec3( 0, 1, 0 ), glm::vec3( 0, 0, 1 ) ),
+			glm::lookAt( glm::vec3( 0 ), glm::vec3( 0,-1, 0 ), glm::vec3( 0, 0,-1 ) ),
+			glm::lookAt( glm::vec3( 0 ), glm::vec3( 0, 0, 1 ), glm::vec3( 0,-1, 0 ) ),
+			glm::lookAt( glm::vec3( 0 ), glm::vec3( 0, 0,-1 ), glm::vec3( 0,-1, 0 ) ),
+		};
+
+		rhi::FViewportState viewport = mContext.mRenderDevice->GetViewport( );
+
+		mContext.mRenderDevice->SetViewport( 0, 0, 32, 32 );
+		mContext.mRenderDevice->BindFramebuffer( captureFBO );
+		mContext.mRenderDevice->BindShader( mIrradianceShader );
+		mContext.mRenderDevice->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
+		mContext.mRenderDevice->BindSampler( mSampler, LUM_TEX_CUBEMAP );
+		mContext.mRenderDevice->BindPipeline( mCubemap.mPipeline );
+
+		for (int32 i = 0; i < 6; i++) {
+
+			glm::mat4 matrices[ ] = { captureProjection, captureViews[ i ] };
+			mContext.mRenderDevice->UpdateBuffer( mIrradianceUBO, matrices );
+			mContext.mRenderDevice->AttachCubemapFace( captureFBO, mIrradianceMap, i );
+			mContext.mRenderDevice->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
+
+		}
+
+		mContext.mRenderDevice->DeleteFramebuffer( captureFBO );
+
+		mContext.mRenderDevice->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
+
+	}
 
 	void EnvironmentPass::init( ) {
 
@@ -112,7 +180,6 @@ namespace lum::render {
 		}
 
 		mCubemap.mShader = mContext.mShaderMgr->LoadShader( "shaders/skybox_pass.vert", "shaders/skybox_pass.frag", RootID::Internal );
-
 
 	}
 

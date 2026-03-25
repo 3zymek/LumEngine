@@ -8,7 +8,7 @@ namespace lum {
 	public:
 		
 		void Initialize( ) { 
-			mEngine.Initialize( "C:/Users/Asso3/Desktop/lumen_assets" );
+			mEngine.Initialize( "C:/Users/szymek/Desktop/lumen_assets" );
 			mEngine.SetScene( "scene.lsc" ); 
 		}
 		void Finalize( ) { mEngine.Finalize( ); }

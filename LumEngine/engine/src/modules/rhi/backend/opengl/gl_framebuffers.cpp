@@ -47,12 +47,23 @@ namespace lum::rhi::gl {
 
 		}
 
-		LUM_ASSERT(
-			glCheckNamedFramebufferStatus( fbo.mHandle, GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE,
-			"Framebuffer is not complete"
-		);
+		if (!desc.mColorTex.empty( ) || IsValid( desc.mDepthTex ) || IsValid( desc.mStencilTex )) {
+			LUM_ASSERT(
+				glCheckNamedFramebufferStatus( fbo.mHandle, GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE,
+				"Framebuffer is not complete"
+			);
+		}
 
 		return mFramebuffers.Append( std::move( fbo ) );
+
+	}
+
+	void GLDevice::AttachCubemapFace( RFramebufferHandle fbo, RTextureHandle tex, int32 face ) {
+
+		LUM_ASSERT( IsValid( fbo ), "Invalid framebuffer" );
+		LUM_ASSERT( IsValid( tex ), "Invalid texture" );
+
+		glNamedFramebufferTextureLayer( mFramebuffers[ fbo ].mHandle, GL_COLOR_ATTACHMENT0, mTextures[ tex ].mHandle, 0, face );
 
 	}
 
