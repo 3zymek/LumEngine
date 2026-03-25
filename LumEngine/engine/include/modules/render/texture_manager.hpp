@@ -86,7 +86,7 @@ namespace lum {
 		* @param faceSize Resolution of each cubemap face in pixels.
 		* @param root Root directory identifier.
 		*/
-		rhi::RTextureHandle LoadEquirectangularCubemap( StringView path, int32 faceSize, RootID root = RootID::External );
+		rhi::RTextureHandle LoadEquirectangularCubemap( StringView path, RootID root = RootID::External );
 
 		/* @brief Returns a built-in fallback texture.
 		* @param fallback Fallback type (Missing = checkered, Default = white 1x1).

@@ -71,7 +71,7 @@ namespace lum {
 		return rhi::ImageFormat::RGBA;
 	}
 
-	rhi::RTextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, int32 faceSize, RootID root ) {
+	rhi::RTextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, RootID root ) {
 
 		uint64 hash = HashStr( path );
 
@@ -83,6 +83,8 @@ namespace lum {
 			LUM_LOG_ERROR( "Failed to load texture %s", path.data( ) );
 			return mMissingTexture;
 		}
+
+		uint32 faceSize = std::min(data.value().mWidth / 4, data.value().mHeight / 2);
 
 		std::array<FTextureData, 6> convertedData = convert_equirectangular_to_cubemap( data.value( ), faceSize );
 
