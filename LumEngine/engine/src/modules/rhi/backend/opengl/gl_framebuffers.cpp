@@ -28,7 +28,14 @@ namespace lum::rhi::gl {
 
 		}
 
-		glNamedFramebufferDrawBuffers( fbo.mHandle, drawBuffers.size( ), drawBuffers.data( ) );
+		if (drawBuffers.empty( )) {
+			GLenum drawBuffer = GL_COLOR_ATTACHMENT0;
+			glNamedFramebufferDrawBuffers( fbo.mHandle, 1, &drawBuffer );
+		}
+		else {
+			glNamedFramebufferDrawBuffers( fbo.mHandle, drawBuffers.size( ), drawBuffers.data( ) );
+		}
+
 
 		if (IsValid( desc.mDepthTex )) {
 
@@ -63,7 +70,14 @@ namespace lum::rhi::gl {
 		LUM_ASSERT( IsValid( fbo ), "Invalid framebuffer" );
 		LUM_ASSERT( IsValid( tex ), "Invalid texture" );
 
-		glNamedFramebufferTextureLayer( mFramebuffers[ fbo ].mHandle, GL_COLOR_ATTACHMENT0, mTextures[ tex ].mHandle, 0, face );
+
+		glNamedFramebufferTextureLayer( 
+			mFramebuffers[fbo ].mHandle, 
+			GL_COLOR_ATTACHMENT0, 
+			mTextures[tex ].mHandle, 
+			0, 
+			face 
+		);
 
 	}
 

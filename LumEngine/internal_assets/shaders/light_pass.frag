@@ -3,6 +3,7 @@ layout( binding = LUM_GBUFFER_ALBEDO    ) uniform sampler2D gAlbedo;
 layout( binding = LUM_GBUFFER_NORMAL    ) uniform sampler2D gNormal;
 layout( binding = LUM_GBUFFER_DEPTH     ) uniform sampler2D gDepth;
 layout( binding = LUM_SHADOW_MAP		) uniform sampler2D tShadowMap;
+layout( binding = LUM_TEX_IRRADIANCE 	) uniform samplerCube tIrradianceMap;
 
 struct FPointLight {
 
@@ -169,7 +170,10 @@ void CalculatePointLights( inout vec3 Lo, in FLightningContext ctx ) {
 		vec3 kD = (1.0 - kS) * (1.0 - ctx.metallic);
 
 		vec3 specular = CookTorrance(ctx.N, ctx.V, L, ctx.roughness, ctx.F0);
+
+		vec3 irradiance = texture(tIrradianceMap, ctx.N).rgb;
 		vec3 diffuse = (ctx.albedo / LUM_PI) * kD;
+		diffuse *= irradiance;
 
 		float dist = length(light.mPosition - ctx.fPos);
     	float attenuation = clamp(1.0 - (dist * dist) / (light.mRadius * light.mRadius), 0.0, 1.0);
@@ -202,8 +206,10 @@ void CalculateSpotLights(inout vec3 Lo, in FLightningContext ctx){
 		vec3 kS = F;
 		vec3 kD = (1.0 - kS) * (1.0 - ctx.metallic);
 
+		vec3 irradiance = texture(tIrradianceMap, ctx.N).rgb;
 		vec3 specular = CookTorrance(ctx.N, ctx.V, L, ctx.roughness, ctx.F0);
 		vec3 diffuse = (ctx.albedo / LUM_PI) * kD;
+		diffuse *= irradiance;
 
 		Lo += (diffuse + specular) * NdotL * light.mColor * light.mIntensity * attenuation * coneAtten;
 
@@ -221,7 +227,10 @@ void CalculateDirectionalLight( inout vec3 Lo, in FLightningContext ctx ){
 	vec3 kS = F;
 	vec3 kD = (1.0 - kS) * (1.0 - ctx.metallic);
 	vec3 specular = CookTorrance(ctx.N, ctx.V, L, ctx.roughness, ctx.F0);
+
+	vec3 irradiance = texture(tIrradianceMap, ctx.N).rgb;
 	vec3 diffuse = (ctx.albedo / LUM_PI) * kD;
+	diffuse *= irradiance;
 	Lo += (1.0 - shadow) * (diffuse + specular) * NdotL * mDirColor.rgb * mDirIntensity;
 
 }

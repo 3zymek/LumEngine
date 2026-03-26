@@ -94,6 +94,7 @@ namespace lum::render {
 
 		/* @brief Light pass — evaluates lighting using G-Buffer data. */
 		LightPass mLightPass;
+		FLightPassDescriptor mLightPassExecutables;
 
 		/* @brief Environment pass — renders the skybox cubemap. */
 		EnvironmentPass mEnvironmentPass;

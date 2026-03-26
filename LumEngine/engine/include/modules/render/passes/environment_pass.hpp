@@ -11,6 +11,13 @@
 namespace lum::render {
 
 	namespace detail { class GBuffer; }
+	namespace detail {
+
+		enum class IBLTexture : byte {
+			IrradianceMap
+		};
+
+	}
 
 	/* @brief Handles the main geometry render pass — uploads per-draw uniforms
 	*  and issues draw calls for all submitted render instances.
@@ -31,6 +38,8 @@ namespace lum::render {
 		}
 
 		void Execute( detail::GBuffer& gbuffer, const detail::FScreenQuad quad );
+
+		rhi::RTextureHandle GetTexture( detail::IBLTexture tex );
 
 	private:
 

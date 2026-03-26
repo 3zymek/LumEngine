@@ -28,14 +28,19 @@ namespace lum::render {
 		mContext.mRenderDevice->BindPipeline( mCubemap.mPipeline );
 
 		mContext.mRenderDevice->BindShader( mCubemap.mShader );
-		//mContext.mRenderDevice->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
-		mContext.mRenderDevice->BindTexture( mIrradianceMap, LUM_TEX_CUBEMAP );
+		mContext.mRenderDevice->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
 		mContext.mRenderDevice->BindSampler( mSampler, LUM_TEX_CUBEMAP );
 		mContext.mRenderDevice->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
 
 	}
 
-
+	rhi::RTextureHandle EnvironmentPass::GetTexture( detail::IBLTexture tex ) {
+		switch (tex) {
+		case detail::IBLTexture::IrradianceMap: return mIrradianceMap;
+		default: return { };
+		}
+		return {};
+	}
 
 
 
@@ -161,7 +166,7 @@ namespace lum::render {
 		{ // Environment sampler
 
 			rhi::FSamplerDescriptor desc;
-			desc.mMinFilter = rhi::SamplerMinFilter::LinearMipmapLinear;
+			desc.mMinFilter = rhi::SamplerMinFilter::Linear;
 			desc.mMagFilter = rhi::SamplerMagFilter::Linear;
 			desc.mWrapR = rhi::SamplerWrap::ClampEdge;
 			desc.mWrapS = rhi::SamplerWrap::ClampEdge;
@@ -171,7 +176,7 @@ namespace lum::render {
 		}
 		{ // Environment Pipeline
 			rhi::FPipelineDescriptor desc;
-			desc.mDepthStencil.mDepth.bEnabled = true;
+			desc.mDepthStencil.mDepth.bEnabled = false;
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = false;
 			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::LessEqual;
 			desc.mCull.bEnabled = false;

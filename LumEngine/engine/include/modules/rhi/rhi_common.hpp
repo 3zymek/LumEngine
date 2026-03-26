@@ -217,11 +217,11 @@ namespace lum {
 				{
 					if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
 						LUM_LOG_DEBUG(msg);
-					if (severity == GL_DEBUG_SEVERITY_LOW);
+					else if (severity == GL_DEBUG_SEVERITY_LOW)
 						LUM_LOG_INFO(msg);
-					if (severity == GL_DEBUG_SEVERITY_MEDIUM);
+					else if (severity == GL_DEBUG_SEVERITY_MEDIUM)
 						LUM_LOG_WARN(msg);
-					if (severity == GL_DEBUG_SEVERITY_HIGH);
+					else if (severity == GL_DEBUG_SEVERITY_HIGH)
 						LUM_LOG_ERROR(msg);
 
 				}

@@ -11,8 +11,13 @@
 namespace lum::render {
 
 	namespace detail { class GBuffer; }
-	class ShadowPass;
-	class GeometryPass;
+
+	struct FLightPassDescriptor {
+
+		rhi::RTextureHandle mIrradianceMap;
+		rhi::RTextureHandle mShadowMap;
+
+	};
 
 	/* @brief Manages light data submission and GPU uploads for the deferred lighting pass.
 	*  Collects point lights and directional light each frame, uploads them to GPU
@@ -56,14 +61,14 @@ namespace lum::render {
 		*  @param gbuffer GBuffer containing geometry data from the geometry pass.
 		*  @param quad Fullscreen quad VAO to draw the lighting onto.
 		*/
-		void Execute( const ShadowPass& shadowPass, const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad );
+		void Execute( const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassDescriptor& desc );
 
 	private:
 
 		static constexpr usize skOffsetPointLights = 0;
-		static constexpr usize skOffsetSpotLights = sizeof(FPointLight) * LUM_MAX_LIGHTS;
-		static constexpr usize skOffsetActivePoint = skOffsetSpotLights + sizeof(FSpotLight) * LUM_MAX_LIGHTS;
-		static constexpr usize skOffsetActiveSpot = skOffsetActivePoint + sizeof(int32);
+		static constexpr usize skOffsetSpotLights = sizeof( FPointLight ) * LUM_MAX_LIGHTS;
+		static constexpr usize skOffsetActivePoint = skOffsetSpotLights + sizeof( FSpotLight ) * LUM_MAX_LIGHTS;
+		static constexpr usize skOffsetActiveSpot = skOffsetActivePoint + sizeof( int32 );
 
 		/* @brief Cached context holding all subsystem manager references. */
 		FRendererContext mContext;
@@ -102,7 +107,7 @@ namespace lum::render {
 		void upload_point_lights( );
 
 		/* @brief Uploads all active spot lights to the GPU shader storage buffer. */
-		void upload_spot_lights();
+		void upload_spot_lights( );
 
 		/* @brief Uploads the active directional light to its GPU uniform buffer. */
 		void upload_directional_light( );

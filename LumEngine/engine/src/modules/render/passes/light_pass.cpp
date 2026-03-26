@@ -5,7 +5,6 @@
 //
 //=============================================================================//
 
-#include "render/passes/light_pass.hpp"
 #include "rhi/core/rhi_device.hpp"
 #include "render/renderer.hpp"
 #include "render/shader_manager.hpp"
@@ -64,7 +63,7 @@ namespace lum::render {
 		};
 	}
 
-	void LightPass::Execute( const ShadowPass& shadowPass, const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad ) {
+	void LightPass::Execute( const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassDescriptor& desc ) {
 
 		mContext.mRenderDevice->BindFramebuffer( quad.mFbo );
 		mContext.mRenderDevice->BindPipeline( mPipeline );
@@ -74,7 +73,8 @@ namespace lum::render {
 		upload_spot_lights( );
 
 		mContext.mRenderDevice->BindShader( mShader );
-		mContext.mRenderDevice->BindTexture( shadowPass.GetShadowMap( ), LUM_SHADOW_MAP );
+		mContext.mRenderDevice->BindTexture( desc.mShadowMap, LUM_SHADOW_MAP );
+		mContext.mRenderDevice->BindTexture( desc.mIrradianceMap, LUM_TEX_IRRADIANCE );
 		gbuffer.BindTextures( );
 
 		mContext.mRenderDevice->DrawElements( quad.mVao, 6 );

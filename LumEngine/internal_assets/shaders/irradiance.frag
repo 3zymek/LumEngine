@@ -28,6 +28,6 @@ void main( ) {
     }
     
     irradiance = LUM_PI * irradiance / sampleCount;
-    oFinalColor = vec4(1.0, 0.0, 0.0, 1.0);
+    oFinalColor = vec4(irradiance, 1.0);
 
 }

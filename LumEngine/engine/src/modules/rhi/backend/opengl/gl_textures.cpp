@@ -159,38 +159,44 @@ namespace lum::rhi::gl {
 
 		glCreateTextures( GL_TEXTURE_CUBE_MAP, 1, &tex.mHandle );
 
-		int32 width = desc.mCubemap.mFaces[ 0 ].mWidth;
-		int32 height = desc.mCubemap.mFaces[ 0 ].mHeight;
+		bool bEmpty = desc.mCubemap.mFaces[ 0 ].mWidth == 0;
+
+		int32 width = bEmpty ? desc.mWidth : desc.mCubemap.mFaces[ 0 ].mWidth;
+		int32 height = bEmpty ? desc.mHeight : desc.mCubemap.mFaces[ 0 ].mHeight;
 
 		glTextureStorage2D( tex.mHandle, 1, skImageLayoutLookup[ LookupCast( desc.mImageLayout ) ], width, height );
 
-		for (usize i = 0; i < 6; i++) {
+		if (!bEmpty) {
 
-			FTextureData texture = desc.mCubemap.mFaces[ i ];
+			for (usize i = 0; i < 6; i++) {
 
-			cvptr data;
+				FTextureData texture = desc.mCubemap.mFaces[ i ];
 
-			if (!texture.bIsHDR)
-				data = (texture.mPixels.empty( )) ? nullptr : texture.mPixels.data( );
-			else
-				data = (texture.mFloatPixels.empty( )) ? nullptr : texture.mFloatPixels.data( );
+				cvptr data;
 
-			if (texture.mWidth != width || texture.mHeight != height) {
-				LUM_LOG_ERROR( "Invalid cubemap height or width" );
-				continue;
+				if (!texture.bIsHDR)
+					data = (texture.mPixels.empty( )) ? nullptr : texture.mPixels.data( );
+				else
+					data = (texture.mFloatPixels.empty( )) ? nullptr : texture.mFloatPixels.data( );
+
+				if (texture.mWidth != width || texture.mHeight != height) {
+					LUM_LOG_ERROR( "Invalid cubemap height or width" );
+					continue;
+				}
+
+				glTextureSubImage3D(
+					tex.mHandle,
+					0, 0, 0,
+					i,
+					texture.mWidth,
+					texture.mHeight,
+					1,
+					skImageFormatLookup[ LookupCast( desc.mImageFormat ) ],
+					texture.bIsHDR ? GL_FLOAT : GL_UNSIGNED_BYTE,
+					data
+				);
+
 			}
-
-			glTextureSubImage3D(
-				tex.mHandle,
-				0, 0, 0,
-				i,
-				texture.mWidth,
-				texture.mHeight,
-				1,
-				skImageFormatLookup[ LookupCast( desc.mImageFormat ) ],
-				texture.bIsHDR ? GL_FLOAT : GL_UNSIGNED_BYTE,
-				data
-			);
 
 		}
 

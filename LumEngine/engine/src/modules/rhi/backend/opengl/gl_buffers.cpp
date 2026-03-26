@@ -49,19 +49,7 @@ namespace lum::rhi::gl {
 		LUM_ASSERT( buffer.mUsage != BufferUsage::Static, "Buffer %d is static, cannot be updated" );
 		LUM_ASSERT( buffer.mFlags.Has( MapFlag::Write ), "Buffer %d has no write flags enabled" );
 
-		vptr ptr =
-			glMapNamedBufferRange(
-				buffer.mHandle,
-				offset,
-				size,
-				GL_MAP_WRITE_BIT
-			);
-
-		LUM_RETURN_IF( ptr == nullptr, LUM_SEV_WARN, "Failed during buffer mapping" );
-
-		std::memcpy( ptr, data, size );
-
-		glUnmapNamedBuffer( buffer.mHandle );
+		glNamedBufferSubData( buffer.mHandle, offset, size, data );
 
 	}
 

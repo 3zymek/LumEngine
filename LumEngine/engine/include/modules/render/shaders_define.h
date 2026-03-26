@@ -21,6 +21,7 @@
 #define LUM_TEX_ROUGHNESS 2 // Roughness map binding.
 #define LUM_TEX_METALNESS 3 // Metalness map binding.
 #define LUM_TEX_CUBEMAP   4 // Cubemap texture binding.
+#define LUM_TEX_IRRADIANCE 5
 
 // GBuffer sampler bindings - light pass
 #define LUM_GBUFFER_ALBEDO  0 // Albedo GBuffer sampler binding.
