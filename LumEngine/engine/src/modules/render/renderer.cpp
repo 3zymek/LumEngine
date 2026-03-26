@@ -188,6 +188,7 @@ namespace lum::render {
 		desc.mImageFormat = rhi::ImageFormat::RGBA;
 		desc.mImageLayout = rhi::ImageLayout::RGBA16F;
 		desc.mTextureType = rhi::TextureType::Texture2D;
+		//desc.mSamples = 8;
 		desc.mWidth = w;
 		desc.mHeight = h;
 

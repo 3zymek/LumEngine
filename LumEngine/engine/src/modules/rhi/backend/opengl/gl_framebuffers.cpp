@@ -19,14 +19,27 @@ namespace lum::rhi::gl {
 
 		std::vector<GLenum> drawBuffers;
 
+		uint32 samples = 0;
+
 		for (auto& [slot, texHandle] : desc.mColorTex) {
 
 			const FTexture* tex = mTextures.Get( texHandle );
 
-			glNamedFramebufferTexture( fbo.mHandle, GL_COLOR_ATTACHMENT0 + slot, tex->mHandle, 0 );
+			if (samples == 0)
+				samples = tex->mSamples;
+			else
+				LUM_ASSERT( tex->mSamples == samples, "Sample count mismatch" );
+
+			glNamedFramebufferTexture(
+				fbo.mHandle,
+				GL_COLOR_ATTACHMENT0 + slot,
+				tex->mHandle,
+				0
+			);
 			drawBuffers.push_back( GL_COLOR_ATTACHMENT0 + slot );
 
 		}
+
 
 		if (drawBuffers.empty( )) {
 			GLenum drawBuffer = GL_COLOR_ATTACHMENT0;
@@ -42,6 +55,7 @@ namespace lum::rhi::gl {
 			const FTexture* tex = mTextures.Get( desc.mDepthTex );
 
 			LUM_ASSERT( is_depth_format( tex->mInternalFormat ), "Invalid framebuffer depth texture format" );
+			LUM_ASSERT( tex->mSamples == samples, "Depth sample mismatch" );
 			glNamedFramebufferTexture( fbo.mHandle, GL_DEPTH_ATTACHMENT, mTextures.Get( desc.mDepthTex )->mHandle, 0 );
 		}
 

@@ -38,6 +38,7 @@ namespace lum::rhi {
 	enum class TextureType : byte {
 		None,
 		Texture2D,
+		Texture2DMS,
 		Texture3D,
 		Cubemap
 	};
@@ -213,6 +214,9 @@ namespace lum::rhi {
 
 		/* @brief Number of mip levels generated for this texture. */
 		uint32 mMipmapLevels = 0;
+
+		/* @brief Number of samples for multisampled textures. 0 = not multisampled. */
+		uint32 mSamples = 0;
 
 		/* @brief Underlying GPU texture handle (OpenGL object ID). */
 		RTextureID mHandle = 0;

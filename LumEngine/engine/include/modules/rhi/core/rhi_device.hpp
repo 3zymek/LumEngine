@@ -207,6 +207,7 @@ namespace lum::rhi {
 		* @param desc Texture descriptor specifying format, size, and filtering.
 		* @return Handle to the created texture.
 		*/
+		LUM_NODISCARD
 		virtual RTextureHandle CreateTexture( const FTextureDescriptor& desc ) = 0;
 
 		/* @brief Unbinds any texture of the given type from the pipeline.
@@ -264,6 +265,7 @@ namespace lum::rhi {
 		* @param desc Descriptor specifying shaders, blend, depth, and rasterizer state.
 		* @return Handle to the created pipeline.
 		*/
+		LUM_NODISCARD
 		virtual RPipelineHandle CreatePipeline( const FPipelineDescriptor& desc ) = 0;
 
 		/* @brief Destroys a pipeline and releases its GPU resources.
