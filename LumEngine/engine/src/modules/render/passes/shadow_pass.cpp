@@ -27,12 +27,10 @@ namespace lum::render {
 
 		rhi::FViewportState viewport = mContext.mRenderDevice->GetViewport( );
 
-		rhi::FCullState cull = mContext.mRenderDevice->GetCullState( );
-		mContext.mRenderDevice->ToggleCull( true );
-		mContext.mRenderDevice->SetCullFace( rhi::Face::Front );
+		mContext.mRenderDevice->BindPipeline( mShadowPipeline );
 
 		calculate_lightspace_matrix( lightPass.GetDirectionalLight( ).mDirection );
-		mContext.mRenderDevice->BindFramebuffer( mFramebuffer );
+		mContext.mRenderDevice->BindFramebuffer( mShadowFramebuffer );
 		mContext.mRenderDevice->SetViewport( 0, 0, mShadowMapTexSize.x, mShadowMapTexSize.y );
 		mContext.mRenderDevice->ClearDepth( );
 
@@ -42,9 +40,6 @@ namespace lum::render {
 
 		mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer );
 		mContext.mRenderDevice->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
-
-		mContext.mRenderDevice->ToggleCull( cull.bEnabled );
-		mContext.mRenderDevice->SetCullFace( cull.mFace );
 
 	}
 
@@ -91,7 +86,7 @@ namespace lum::render {
 
 	void ShadowPass::init( ) {
 
-		{
+		{ // Shadow map texture
 			rhi::FTextureDescriptor desc;
 			desc.mWidth = mShadowMapTexSize.x;
 			desc.mHeight = mShadowMapTexSize.y;
@@ -100,12 +95,12 @@ namespace lum::render {
 			desc.mTextureType = rhi::TextureType::Texture2D;
 			mShadowMap = mContext.mRenderDevice->CreateTexture( desc );
 		}
-		{
+		{ // Shadow FBO
 			rhi::FFramebufferDescriptor desc;
 			desc.mDepthTex = mShadowMap;
-			mFramebuffer = mContext.mRenderDevice->CreateFramebuffer( desc );
+			mShadowFramebuffer = mContext.mRenderDevice->CreateFramebuffer( desc );
 		}
-		{
+		{ // Light space matrices UBO
 			rhi::FBufferDescriptor desc;
 			desc.mBufferType = rhi::BufferType::Uniform;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
@@ -114,7 +109,16 @@ namespace lum::render {
 			mLightSpaceUBO = mContext.mRenderDevice->CreateBuffer( desc );
 			mContext.mRenderDevice->SetUniformBufferBinding( mLightSpaceUBO, LUM_UBO_LIGHTSPACE_MATRIX );
 		}
-		{
+		{ // Shadow pipeline
+
+			rhi::FPipelineDescriptor desc;
+			desc.mDepthStencil.mDepth.bEnabled = true;
+			desc.mCull.bEnabled = true;
+			desc.mCull.mFace = rhi::Face::Back;
+			mShadowPipeline = mContext.mRenderDevice->CreatePipeline( desc );
+
+		}
+		{ // Shaders
 			mShader = mContext.mShaderMgr->LoadShader( "shaders/shadow_pass.vert", "shaders/shadow_pass.frag", RootID::Internal );
 		}
 

@@ -4,6 +4,7 @@ layout( binding = LUM_GBUFFER_NORMAL    ) uniform sampler2D gNormal;
 layout( binding = LUM_GBUFFER_DEPTH     ) uniform sampler2D gDepth;
 layout( binding = LUM_SHADOW_MAP		) uniform sampler2D tShadowMap;
 layout( binding = LUM_TEX_IRRADIANCE 	) uniform samplerCube tIrradianceMap;
+layout( binding = LUM_TEX_PREFILTERED	) uniform samplerCube tPrefilteredMap;
 
 struct FPointLight {
 
@@ -137,7 +138,7 @@ float CalculateShadow( FLightningContext ctx ) {
 
 	if(lightSpaceFrag.z > 1.0) return 0.0;
 
-	float bias = max(0.005 * (1.0 - dot(ctx.N, L)), 0.005);
+	float bias = max(0.005 * (1.0 - dot(ctx.N, L)), 0.0005);
 	float shadow = 0.0;
 	vec2 texelSize = 1.0 / textureSize(tShadowMap, 0);
 
@@ -170,10 +171,7 @@ void CalculatePointLights( inout vec3 Lo, in FLightningContext ctx ) {
 		vec3 kD = (1.0 - kS) * (1.0 - ctx.metallic);
 
 		vec3 specular = CookTorrance(ctx.N, ctx.V, L, ctx.roughness, ctx.F0);
-
-		vec3 irradiance = texture(tIrradianceMap, ctx.N).rgb;
 		vec3 diffuse = (ctx.albedo / LUM_PI) * kD;
-		diffuse *= irradiance;
 
 		float dist = length(light.mPosition - ctx.fPos);
     	float attenuation = clamp(1.0 - (dist * dist) / (light.mRadius * light.mRadius), 0.0, 1.0);
@@ -206,10 +204,8 @@ void CalculateSpotLights(inout vec3 Lo, in FLightningContext ctx){
 		vec3 kS = F;
 		vec3 kD = (1.0 - kS) * (1.0 - ctx.metallic);
 
-		vec3 irradiance = texture(tIrradianceMap, ctx.N).rgb;
 		vec3 specular = CookTorrance(ctx.N, ctx.V, L, ctx.roughness, ctx.F0);
 		vec3 diffuse = (ctx.albedo / LUM_PI) * kD;
-		diffuse *= irradiance;
 
 		Lo += (diffuse + specular) * NdotL * light.mColor * light.mIntensity * attenuation * coneAtten;
 
@@ -228,9 +224,7 @@ void CalculateDirectionalLight( inout vec3 Lo, in FLightningContext ctx ){
 	vec3 kD = (1.0 - kS) * (1.0 - ctx.metallic);
 	vec3 specular = CookTorrance(ctx.N, ctx.V, L, ctx.roughness, ctx.F0);
 
-	vec3 irradiance = texture(tIrradianceMap, ctx.N).rgb;
 	vec3 diffuse = (ctx.albedo / LUM_PI) * kD;
-	diffuse *= irradiance;
 	Lo += (1.0 - shadow) * (diffuse + specular) * NdotL * mDirColor.rgb * mDirIntensity;
 
 }
@@ -274,8 +268,16 @@ void main( ) {
 	CalculateSpotLights( Lo, context );
 	CalculateDirectionalLight( Lo, context );
 
-	vec3 ambient = vec3(0.03) * albedo;
-    Lo = Lo + ambient;
+	vec3 R = reflect(-context.V, context.N);
+	vec3 prefilteredColor = textureLod(tPrefilteredMap, R, context.roughness * 4.0).rgb;
+	vec3 F = FresnelSchlick(max(dot(context.N, context.V), 0.0), context.F0);
+	vec3 specularIBL = prefilteredColor * F;
+
+	vec3 kS = F;
+	vec3 kD = (1.0 - kS) * (1.0 - context.metallic);
+	vec3 diffuseIBL = texture(tIrradianceMap, context.N).rgb * context.albedo * kD;
+
+	Lo += diffuseIBL + specularIBL;
 
 	oFinalColor = vec4(Lo, 1.0);
 

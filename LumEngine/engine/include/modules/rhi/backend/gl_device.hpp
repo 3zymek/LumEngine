@@ -43,7 +43,7 @@ namespace lum::rhi::gl {
 
 		RFramebufferHandle CreateFramebuffer( const FFramebufferDescriptor& ) override;
 
-		void AttachCubemapFace( RFramebufferHandle fbo, RTextureHandle tex, int32 face ) override;
+		void AttachCubemapFace( RFramebufferHandle fbo, RTextureHandle tex, int32 face, uint32 mip ) override;
 
 		void BlitFramebuffer( const FFramebufferBlitDescriptor& ) override;
 

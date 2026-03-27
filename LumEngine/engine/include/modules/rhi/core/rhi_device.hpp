@@ -134,7 +134,7 @@ namespace lum::rhi {
 		LUM_NODISCARD
 		virtual RFramebufferHandle CreateFramebuffer( const FFramebufferDescriptor& desc ) = 0;
 
-		virtual void AttachCubemapFace( RFramebufferHandle fbo, RTextureHandle tex, int32 face ) = 0;
+		virtual void AttachCubemapFace( RFramebufferHandle fbo, RTextureHandle tex, int32 face, uint32 mip ) = 0;
 
 		/* @brief Clears color and depth buffers of the given framebuffer.
 		* @param fbo   Handle of the framebuffer to clear.

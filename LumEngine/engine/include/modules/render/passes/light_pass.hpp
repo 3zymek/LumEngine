@@ -15,6 +15,7 @@ namespace lum::render {
 	struct FLightPassDescriptor {
 
 		rhi::RTextureHandle mIrradianceMap;
+		rhi::RTextureHandle mPrefilteredEnvMap;
 		rhi::RTextureHandle mShadowMap;
 
 	};

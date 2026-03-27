@@ -59,13 +59,16 @@ namespace lum::render {
 		rhi::RTextureHandle mShadowMap;
 
 		/* @brief Framebuffer with the shadow map as its depth attachment. */
-		rhi::RFramebufferHandle mFramebuffer;
+		rhi::RFramebufferHandle mShadowFramebuffer;
 
 		/* @brief Shader program used during the shadow pass. */
 		rhi::RShaderHandle mShader;
 
 		/* @brief Uniform buffer holding the light space transformation matrix. */
 		rhi::RBufferHandle mLightSpaceUBO;
+
+		/* @brief Pipeline ensuring that everyting is prepared to generate shadow map. */
+		rhi::RPipelineHandle mShadowPipeline;
 
 		/* @brief Computes and uploads the light space matrix from the given light direction.
 		*  @param direction Normalized direction vector of the directional light.

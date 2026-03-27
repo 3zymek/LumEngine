@@ -75,6 +75,7 @@ namespace lum::render {
 		mContext.mRenderDevice->BindShader( mShader );
 		mContext.mRenderDevice->BindTexture( desc.mShadowMap, LUM_SHADOW_MAP );
 		mContext.mRenderDevice->BindTexture( desc.mIrradianceMap, LUM_TEX_IRRADIANCE );
+		mContext.mRenderDevice->BindTexture( desc.mPrefilteredEnvMap, LUM_TEX_PREFILTERED );
 		gbuffer.BindTextures( );
 
 		mContext.mRenderDevice->DrawElements( quad.mVao, 6 );

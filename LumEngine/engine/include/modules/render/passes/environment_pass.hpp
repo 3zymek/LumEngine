@@ -14,7 +14,8 @@ namespace lum::render {
 	namespace detail {
 
 		enum class IBLTexture : byte {
-			IrradianceMap
+			IrradianceMap,
+			PrefilteredMap
 		};
 
 	}
@@ -25,7 +26,7 @@ namespace lum::render {
 	class EnvironmentPass {
 	public:
 
-		EnvironmentPass() = default;
+		EnvironmentPass( ) = default;
 
 		/* @brief Initializes the pass, allocates GPU buffers and compiles shaders.
 		*  @param ctx Context struct containing valid pointers to all subsystem managers.
@@ -35,6 +36,7 @@ namespace lum::render {
 		void SetCubemapTexture( rhi::RTextureHandle tex ) {
 			mCubemap.mTexture = tex;
 			generate_irradiance_map( );
+			generate_prefiltered_map( );
 		}
 
 		void Execute( detail::GBuffer& gbuffer, const detail::FScreenQuad quad );
@@ -58,12 +60,16 @@ namespace lum::render {
 
 		rhi::RTextureHandle mIrradianceMap;
 		rhi::RShaderHandle mIrradianceShader;
-		rhi::RBufferHandle mIrradianceUBO;
+
+		rhi::RTextureHandle mPrefilteredMap;
+		rhi::RShaderHandle mPrefilteredShader;
+		static constexpr uint8 skPrefilteredMipmaps = 10;
 
 		void generate_irradiance_map( );
+		void generate_prefiltered_map( );
 
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
-		void init();
+		void init( );
 
 	};
 

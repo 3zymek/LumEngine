@@ -16,12 +16,13 @@
 #define LUM_LAYOUT_BITANGENT 4 // Vertex bitangent attribute location.
 
 // Texture binding slots - geometry pass
-#define LUM_TEX_ALBEDO    0 // Albedo texture binding.
-#define LUM_TEX_NORMAL    1 // Normal map binding.
-#define LUM_TEX_ROUGHNESS 2 // Roughness map binding.
-#define LUM_TEX_METALNESS 3 // Metalness map binding.
-#define LUM_TEX_CUBEMAP   4 // Cubemap texture binding.
-#define LUM_TEX_IRRADIANCE 5
+#define LUM_TEX_ALBEDO		0 // Albedo texture binding.
+#define LUM_TEX_NORMAL		1 // Normal map binding.
+#define LUM_TEX_ROUGHNESS	2 // Roughness map binding.
+#define LUM_TEX_METALNESS	3 // Metalness map binding.
+#define LUM_TEX_CUBEMAP		4 // Cubemap texture binding.
+#define LUM_TEX_IRRADIANCE	5 // Irradiance map (IBL)
+#define LUM_TEX_PREFILTERED 7 // Prefiltered environment map (IBL)
 
 // GBuffer sampler bindings - light pass
 #define LUM_GBUFFER_ALBEDO  0 // Albedo GBuffer sampler binding.
@@ -31,12 +32,13 @@
 #define LUM_SHADOW_MAP 6
 
 // Uniform buffer bindings
-#define LUM_UBO_CAMERA_BINDING     0 // Camera matrices and position.
-#define LUM_UBO_MODEL_BINDING      1 // Model matrix.
-#define LUM_UBO_MATERIAL_BINDING   2 // Material parameters.
-#define LUM_UBO_DIRECTIONAL_LIGHT  3 // Directional light data.
-#define LUM_UBO_LIGHTSPACE_MATRIX  10
-#define LUM_UBO_IRRADIANCE 11
+#define LUM_UBO_CAMERA_BINDING		0 // Camera matrices and position.
+#define LUM_UBO_MODEL_BINDING		1 // Model matrix.
+#define LUM_UBO_MATERIAL_BINDING	2 // Material parameters.
+#define LUM_UBO_DIRECTIONAL_LIGHT	3 // Directional light data.
+#define LUM_UBO_LIGHTSPACE_MATRIX	10
+#define LUM_UBO_IRRADIANCE			11
+#define LUM_UBO_PREFILTERED_MAP		12
 
 // Shader storage buffer bindings
 #define LUM_SSBO_LIGHTS_BINDING 0 // Point light array.

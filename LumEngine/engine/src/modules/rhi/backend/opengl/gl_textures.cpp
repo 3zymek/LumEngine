@@ -183,8 +183,15 @@ namespace lum::rhi::gl {
 
 		int32 width = bEmpty ? desc.mWidth : desc.mCubemap.mFaces[ 0 ].mWidth;
 		int32 height = bEmpty ? desc.mHeight : desc.mCubemap.mFaces[ 0 ].mHeight;
+		uint32 mipmapLevels = (desc.mMipmapLevels > 0) ? desc.mMipmapLevels : 1;
 
-		glTextureStorage2D( tex.mHandle, 1, skImageLayoutLookup[ LookupCast( desc.mImageLayout ) ], width, height );
+		glTextureStorage2D(
+			tex.mHandle,
+			mipmapLevels,
+			skImageLayoutLookup[ LookupCast( desc.mImageLayout ) ],
+			width,
+			height
+		);
 
 		if (!bEmpty) {
 

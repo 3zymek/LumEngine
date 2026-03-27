@@ -79,7 +79,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::AttachCubemapFace( RFramebufferHandle fbo, RTextureHandle tex, int32 face ) {
+	void GLDevice::AttachCubemapFace( RFramebufferHandle fbo, RTextureHandle tex, int32 face, uint32 mip ) {
 
 		LUM_ASSERT( IsValid( fbo ), "Invalid framebuffer" );
 		LUM_ASSERT( IsValid( tex ), "Invalid texture" );
@@ -89,7 +89,7 @@ namespace lum::rhi::gl {
 			mFramebuffers[fbo ].mHandle, 
 			GL_COLOR_ATTACHMENT0, 
 			mTextures[tex ].mHandle, 
-			0, 
+			mip, 
 			face 
 		);
 

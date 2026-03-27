@@ -68,6 +68,7 @@ namespace lum::render {
 		mGeometryPass.Execute( mGBuffer );
 
 		mLightPassExecutables.mIrradianceMap = mEnvironmentPass.GetTexture( detail::IBLTexture::IrradianceMap );
+		mLightPassExecutables.mPrefilteredEnvMap = mEnvironmentPass.GetTexture( detail::IBLTexture::PrefilteredMap );
 		mLightPassExecutables.mShadowMap = mShadowPass.GetShadowMap( );
 
 		mLightPass.Execute( mGBuffer, mScreenQuad, mLightPassExecutables );
