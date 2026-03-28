@@ -5,7 +5,7 @@
 //=============================================================================//
 #pragma once
 
-#include "render/common.hpp"
+#include "render/render_common.hpp"
 
 namespace lum::render {
 

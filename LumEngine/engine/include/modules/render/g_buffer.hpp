@@ -6,8 +6,7 @@
 //=============================================================================//
 #pragma once
 
-#include "render/common.hpp"
-#include "event/events/window_events.hpp"
+#include "render/render_common.hpp"
 
 namespace lum::render::detail {
 

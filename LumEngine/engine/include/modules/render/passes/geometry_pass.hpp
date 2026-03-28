@@ -6,7 +6,7 @@
 //=============================================================================//
 #pragma once
 
-#include "render/common.hpp"
+#include "render/render_common.hpp"
 
 namespace lum::render {
 	
@@ -52,7 +52,7 @@ namespace lum::render {
 		FRendererContext mContext;
 
 		/* @brief CPU-side material uniform buffer, uploaded per draw call. */
-		detail::FMaterialUniformBuffer mMaterialUBO{};
+		detail::FMaterialUBOData mMaterialUBO{};
 
 		/* @brief GPU buffer holding the per-draw model matrix uniform. */
 		rhi::RBufferHandle mModelUniform;

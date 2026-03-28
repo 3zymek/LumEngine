@@ -8,14 +8,9 @@
 
 #include "rhi/rhi_common.hpp"
 
-#include "core/core_common.hpp"
-
-#include "render/material.hpp"
-
 #include "entity/components/transform.hpp"
 #include "entity/components/mesh.hpp"
 #include "entity/components/material.hpp"
-#include "entity/components/light.hpp"
 
 namespace lum {
 
@@ -143,7 +138,7 @@ namespace lum::render {
 		};
 
 		/* @brief Internal state for the environment (skybox) render pass. */
-		struct FCubemapData {
+		struct FCubemap {
 
 			/* @brief Shader program used for skybox rendering. */
 			rhi::RShaderHandle mShader;
@@ -168,7 +163,7 @@ namespace lum::render {
 
 		};
 
-		LUM_UNIFORM_BUFFER_STRUCT FLightSpaceMatrices{
+		LUM_UNIFORM_BUFFER_STRUCT FLightSpaceMatricesUBOData {
 
 			glm::mat4 mDirectionalLightSpaceMatrix = glm::mat4( 1.0f );
 
@@ -176,7 +171,7 @@ namespace lum::render {
 
 
 		/* @brief GPU-side camera uniform buffer layout. Aligned to std140. */
-		LUM_UNIFORM_BUFFER_STRUCT FCameraUniformBuffer{
+		LUM_UNIFORM_BUFFER_STRUCT FCameraUBOData {
 			glm::mat4 mView = glm::mat4( 1.0f );
 			glm::mat4 mProjection = glm::mat4( 1.0f );
 			glm::mat4 mInvViewProj = glm::mat4( 1.0f );
@@ -185,13 +180,13 @@ namespace lum::render {
 
 
 		/* @brief GPU-side model uniform buffer layout. Aligned to std140. */
-		LUM_UNIFORM_BUFFER_STRUCT FModelUniformBuffer{
+		LUM_UNIFORM_BUFFER_STRUCT FModelUBOData {
 			glm::mat4 mModel = glm::mat4( 1.0f );
 		};
 
 
 		/* @brief GPU-side material uniform buffer layout. Aligned to std140. */
-		LUM_UNIFORM_BUFFER_STRUCT FMaterialUniformBuffer{
+		LUM_UNIFORM_BUFFER_STRUCT FMaterialUBOData {
 			glm::vec4 mBaseColor = glm::vec4( 1.0f );
 			float32 mRoughness = 0.5f;
 			float32 mMetallic = 0.0f;
@@ -200,7 +195,8 @@ namespace lum::render {
 			float32 _pad1 = 0.f;
 		};
 
-		LUM_UNIFORM_BUFFER_STRUCT FDirectionalLightUniformBuffer{
+		LUM_UNIFORM_BUFFER_STRUCT FDirectionalLightUBOData {
+
 			glm::vec4 mDirection = glm::vec4( 0.0f, -1.0f, 0.0f, 0.0f );
 			glm::vec4 mColor = glm::vec4( 1.00, 0.97, 0.90, 0.0f );
 			float32 mIntensity = 5.0f;
@@ -208,11 +204,10 @@ namespace lum::render {
 			float32 _pad0 = 0.f;
 			float32 _pad1 = 0.f;
 			float32 _pad2 = 0.f;
+
 		};
 
 
 	} // namespace lum::render::detail
 
 } // namespace lum::render
-
-#undef LUM_UNIFORM_BUFFER_STRUCT

@@ -19,15 +19,6 @@ This is my personal project where I'm learning game engine architecture by build
 
 **Status: Early Development** - Many features are incomplete or experimental.
 
-## Currently Implemented
-
-- OpenGL RHI with state caching
-- Basic rendering pipeline
-- Entity Component System
-- Event system
-- .lmt and .lsc formats passer
-- Logging and profiling utilities
-
 ## Contributing
 I'm looking for contributors! If you're interested in game engine development and want to learn together, feel free to reach out.
 
@@ -46,20 +37,25 @@ LumEngine/
 │   ├── utils/          # Utility functions/helpers
 │   modules/
 │   ├── rhi/            # Rendering Hardware Interface
-│   │   └── backend/    # OpenGL implementation
-│   ├── ecs/            # Entity Component System
+│   │   └── backend/    # OpenGL/Vulkan implementation
+│   ├── ahi/            # Audio Hardware Interface
+│   │   └── backend/    # FMOD implementation
+│   ├── render/         # Render resources managers, renderer
+│   ├── audio/          # Audio resources manager
+│   ├── entity/         # ECS (Entity Component System)
 │   ├── audio/          # Audio system
-│   ├── events/         # Event system
+│   ├── event/          # EBS (Event Bus System)
+│   ├── platform/       # Window and input
 │   └── scene/          # Scene management
 ````
 
 ### Prefixes
 ````bash
 M (Manager)     - Class that manages data flow and object lifetime
-C (Component)   - Component in ECS
+C (Component)   - Component in ECS (Entity Component System)
+E (Event)       - Event in EBS (Event Bus System)
 R (Render)      - Render Hardware Interface handles
 F (Plain Data)  - Stores only data
-E (Event)       - Event derived class
 
 m (member)  - Variable is a member of a class
 s (static)  - Variable is static

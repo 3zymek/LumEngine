@@ -63,7 +63,7 @@ namespace lum::render {
 		};
 	}
 
-	void LightPass::Execute( const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassDescriptor& desc ) {
+	void LightPass::Execute( const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassExecute& desc ) {
 
 		mContext.mRenderDevice->BindFramebuffer( quad.mFbo );
 		mContext.mRenderDevice->BindPipeline( mPipeline );
@@ -95,26 +95,40 @@ namespace lum::render {
 		desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 		desc.mMapFlags = rhi::MapFlag::Write;
 
-		{ // Point Lights SSBO
+		// Point Lights SSBO
+		if (!mContext.mRenderDevice->IsValid( mLightsUBO )) {
+
 			desc.mSize = (sizeof( FPointLight ) * LUM_MAX_LIGHTS + sizeof( int32 )) + (sizeof( FSpotLight ) * LUM_MAX_LIGHTS + sizeof( int32 ));
 			desc.mBufferType = rhi::BufferType::ShaderStorage;
 			mLightsUBO = mContext.mRenderDevice->CreateBuffer( desc );
 			mContext.mRenderDevice->SetShaderStorageBinding( mLightsUBO, LUM_SSBO_LIGHTS_BINDING );
+
 		}
-		{ // Directional Light UBO
+		// Directional Light UBO
+		if (!mContext.mRenderDevice->IsValid( mDirectionalLightUBO )) {
+
 			desc.mSize = sizeof( mDirectionalLightData );
 			desc.mBufferType = rhi::BufferType::Uniform;
 			mDirectionalLightUBO = mContext.mRenderDevice->CreateBuffer( desc );
 			mContext.mRenderDevice->SetUniformBufferBinding( mDirectionalLightUBO, LUM_UBO_DIRECTIONAL_LIGHT );
+
 		}
-		{
+
+		if (!mContext.mRenderDevice->IsValid( mPipeline )) {
+		
 			rhi::FPipelineDescriptor desc;
 			desc.mDepthStencil.mDepth.bEnabled = false;
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = false;
 			mPipeline = mContext.mRenderDevice->CreatePipeline( desc );
+		
 		}
 
-		mShader = mContext.mShaderMgr->LoadShader( "shaders/light_pass.vert", "shaders/light_pass.frag", RootID::Internal );
+		{ // Shaders
+
+			mShader = mContext.mShaderMgr->LoadShader( "shaders/light_pass.vert", "shaders/light_pass.frag", RootID::Internal );
+		
+		}
+
 
 	}
 

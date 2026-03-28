@@ -5,19 +5,13 @@
 //=============================================================================//
 #pragma once
 
-#include "rhi/core/rhi_device.hpp"
+#include "render/render_common.hpp"
 
-#include "core/core_common.hpp"
-
-#include "entity/components/transform.hpp"
-
-#include "render/material_manager.hpp"
-#include "render/mesh_manager.hpp"
-#include "render/common.hpp"
 #include "render/passes/geometry_pass.hpp"
 #include "render/passes/light_pass.hpp"
 #include "render/passes/environment_pass.hpp"
 #include "render/passes/shadow_pass.hpp"
+
 #include "render/g_buffer.hpp"
 
 namespace lum::render {
@@ -35,44 +29,74 @@ namespace lum::render {
 		*/
 		void Initialize( const FRendererContext& ctx );
 
-		/* @brief Sets the environment cubemap texture used for skybox rendering.
-		*  @param tex Handle to the environment texture.
+
+		//---------------------------------------------------------
+		// Environment
+		//---------------------------------------------------------
+
+		/* @brief Sets the environment cubemap texture used for skybox rendering and IBL precomputation.
+		*  @param tex Handle to a valid HDR cubemap texture.
 		*/
-		void SetEnvironmentTexture( rhi::RTextureHandle tex ) { mEnvironmentPass.SetCubemapTexture(tex); }
+		void SetEnvironmentTexture( rhi::RTextureHandle tex ) { mEnvironmentPass.SetCubemapTexture( tex ); }
+
+
+
+		//---------------------------------------------------------
+		// Camera
+		//---------------------------------------------------------
 
 		/* @brief Updates the active camera used for rendering this frame.
 		*  @param camera Camera data containing view, projection and position.
 		*/
 		void UpdateCamera( const FRenderCamera& camera );
 
+
+
+		//---------------------------------------------------------
+		// Lights
+		//---------------------------------------------------------
+
 		/* @brief Submits a point light to be included in the current frame's lighting.
 		*  @param light Point light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
-		void AddPointLight( const FPointLight& light ) { mLightPass.AddPointLight(light); }
+		void AddPointLight( const FPointLight& light ) { mLightPass.AddPointLight( light ); }
 
 		/* @brief Submits a spot light to be included in the current frame's lighting.
 		*  @param light Spot light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
-		void AddSpotLight( const FSpotLight& light ) { mLightPass.AddSpotLight(light); }
+		void AddSpotLight( const FSpotLight& light ) { mLightPass.AddSpotLight( light ); }
 
 		/* @brief Sets the active directional light for the current frame.
 		*  @param light Directional light to set.
 		*/
-		void SetDirectionalLight( const FDirectionalLight& light ) { mLightPass.SetDirectionalLight(light); }
+		void SetDirectionalLight( const FDirectionalLight& light ) { mLightPass.SetDirectionalLight( light ); }
 
 		/* @brief Returns the currently active directional light. */
-		FDirectionalLight GetDirectionalLight( ) { return mLightPass.GetDirectionalLight(); }
+		FDirectionalLight GetDirectionalLight( ) { return mLightPass.GetDirectionalLight( ); }
+
+
+
+		//---------------------------------------------------------
+		// Draw submission
+		//---------------------------------------------------------
 
 		/* @brief Submits a render instance for drawing in the current frame.
-		*  @param obj Render instance containing transform, mesh and material.
+		*  @param instance Render instance containing transform, mesh and material.
 		*/
-		void Submit( const FRenderInstance& instance ) { mGeometryPass.Submit(instance); }
+		void Submit( const FRenderInstance& instance ) { mGeometryPass.Submit( instance ); }
 
-		/* @brief Begins a new frame — clears per-frame state and prepares passes. */
+
+
+		//---------------------------------------------------------
+		// Frame
+		//---------------------------------------------------------
+
+		/* @brief Begins a new frame — clears per-frame light and draw state. */
 		void BeginFrame( );
 
-		/* @brief Ends the current frame — flushes all submitted draw calls. */
+		/* @brief Ends the current frame — flushes all submitted draw calls through all passes. */
 		void EndFrame( );
+
 
 	private:
 
@@ -85,6 +109,8 @@ namespace lum::render {
 		/* @brief Fullscreen quad used for deferred lighting and post-process passes. */
 		detail::FScreenQuad mScreenQuad;
 
+
+
 		//---------------------------------------------------------
 		// Passes
 		//---------------------------------------------------------
@@ -92,17 +118,21 @@ namespace lum::render {
 		/* @brief Geometry pass — renders all submitted instances into the G-Buffer. */
 		GeometryPass mGeometryPass;
 
-		/* @brief Light pass — evaluates lighting using G-Buffer data. */
+		/* @brief Light pass — evaluates PBR lighting using G-Buffer and IBL data. */
 		LightPass mLightPass;
-		FLightPassDescriptor mLightPassExecutables;
 
-		/* @brief Environment pass — renders the skybox cubemap. */
+		/* @brief Descriptor passed to the light pass each frame with IBL and shadow map handles. */
+		FLightPassExecute mLightPassExecutables;
+
+		/* @brief Environment pass — renders the HDR skybox and precomputes IBL maps. */
 		EnvironmentPass mEnvironmentPass;
 
-		/* @brief Shadow map generation pass for lights. */
+		/* @brief Shadow pass — generates the directional light shadow map. */
 		ShadowPass mShadowPass;
 
+		/* @brief Shader used for the final post-process blit to the default framebuffer. */
 		rhi::RShaderHandle mPostprocessShader;
+
 
 
 		//---------------------------------------------------------
@@ -110,21 +140,32 @@ namespace lum::render {
 		//---------------------------------------------------------
 
 		/* @brief Uniform buffer holding per-frame camera matrices and position. */
-		rhi::RBufferHandle mCameraBuffer;
+		rhi::RBufferHandle mCameraUBO;
 
-		/* @brief CPU-side camera uniform buffer, uploaded once per frame. */
-		detail::FCameraUniformBuffer mCameraStruct{};
+		/* @brief CPU-side camera data uploaded to mCameraUBO once per frame. */
+		detail::FCameraUBOData mCameraUBOData{};
 
 
+
+		//---------------------------------------------------------
+		// Internal
+		//---------------------------------------------------------
 
 		/* @brief Allocates GPU buffers and initializes all render passes. */
 		void init( );
 
+		/* @brief Allocates the screen quad FBO used for deferred and post-process passes. */
 		void create_screenquad_fbo( );
+
+		/* @brief Allocates the screen quad color texture at the given resolution.
+		*  @param w Width in pixels.
+		*  @param h Height in pixels.
+		*/
 		void create_screenquad_texture( uint32 w, uint32 h );
 
-		/* @brief Uploads the current camera uniform buffer to the GPU. */
+		/* @brief Uploads the current camera data to the GPU uniform buffer. */
 		void upload_camera_uniform( );
 
 	};
+
 } // namespace lum::render

@@ -10,6 +10,7 @@
 #include "render/shader_manager.hpp"
 
 #include "event/event_bus.hpp"
+#include "event/events/window_events.hpp"
 
 namespace lum::render {
 
@@ -33,10 +34,10 @@ namespace lum::render {
 
 	void Renderer::UpdateCamera( const FRenderCamera& camera ) {
 
-		mCameraStruct.mPosition = glm::vec4( camera.mPosition, 0.0 );
-		mCameraStruct.mProjection = camera.mProjection;
-		mCameraStruct.mView = camera.mView;
-		mCameraStruct.mInvViewProj = glm::inverse( camera.mProjection * camera.mView );
+		mCameraUBOData.mPosition = glm::vec4( camera.mPosition, 0.0 );
+		mCameraUBOData.mProjection = camera.mProjection;
+		mCameraUBOData.mView = camera.mView;
+		mCameraUBOData.mInvViewProj = glm::inverse( camera.mProjection * camera.mView );
 
 		upload_camera_uniform( );
 
@@ -102,16 +103,19 @@ namespace lum::render {
 			}
 		);
 
-		{ // Camera Uniform
+		// Camera Uniform
+		if (!mContext.mRenderDevice->IsValid( mCameraUBO )) {
 			rhi::FBufferDescriptor desc;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
-			desc.mSize = sizeof( detail::FCameraUniformBuffer );
+			desc.mSize = sizeof( detail::FCameraUBOData );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mCameraBuffer = mContext.mRenderDevice->CreateBuffer( desc );
-			mContext.mRenderDevice->SetUniformBufferBinding( mCameraBuffer, LUM_UBO_CAMERA_BINDING );
+			mCameraUBO = mContext.mRenderDevice->CreateBuffer( desc );
+			mContext.mRenderDevice->SetUniformBufferBinding( mCameraUBO, LUM_UBO_CAMERA_BINDING );
 		}
-		{ // Screen quad VBO
+
+		// Screen quad VBO
+		if (!mContext.mRenderDevice->IsValid( mScreenQuad.mVbo )) {
 
 			std::vector<FVertex> vertices = {
 				{ {-1.f, -1.f, 0.f}, {}, {0.f, 0.f}, {}, {} },
@@ -127,8 +131,9 @@ namespace lum::render {
 			desc.mData = vertices.data( );
 			mScreenQuad.mVbo = mContext.mRenderDevice->CreateBuffer( desc );
 		}
-		{ // Screen quad EBO
 
+		// Screen quad EBO
+		if (!mContext.mRenderDevice->IsValid( mScreenQuad.mEbo )) {
 
 			std::vector<uint32> indices = {
 				0, 1, 2,
@@ -141,8 +146,11 @@ namespace lum::render {
 			desc.mBufferType = rhi::BufferType::Element;
 			desc.mData = indices.data( );
 			mScreenQuad.mEbo = mContext.mRenderDevice->CreateBuffer( desc );
+
 		}
-		{ // Screen quad VAO
+
+		// Screen quad VAO
+		if (!mContext.mRenderDevice->IsValid( mScreenQuad.mVao )) {
 
 			std::vector<rhi::FVertexAttribute> attrs( 2 );
 			attrs[ 0 ].mFormat = rhi::DataFormat::Vec3;
@@ -199,7 +207,7 @@ namespace lum::render {
 
 	void Renderer::upload_camera_uniform( ) {
 
-		mContext.mRenderDevice->UpdateBuffer( mCameraBuffer, &mCameraStruct, 0, 0 );
+		mContext.mRenderDevice->UpdateBuffer( mCameraUBO, &mCameraUBOData );
 
 	}
 

@@ -6,17 +6,20 @@
 //=============================================================================//
 #pragma once
 
-#include "render/common.hpp"
+#include "render/render_common.hpp"
 
 namespace lum::render {
 
 	namespace detail { class GBuffer; }
 
-	struct FLightPassDescriptor {
+	/* @brief Descriptor passed to Execute() containing IBL and shadow map handles
+	*  required for the deferred lighting calculation.
+	*/
+	struct FLightPassExecute {
 
-		rhi::RTextureHandle mIrradianceMap;
-		rhi::RTextureHandle mPrefilteredEnvMap;
-		rhi::RTextureHandle mShadowMap;
+		rhi::RTextureHandle mIrradianceMap;     /* @brief Precomputed irradiance cubemap for diffuse IBL. */
+		rhi::RTextureHandle mPrefilteredEnvMap; /* @brief Prefiltered environment cubemap for specular IBL. */
+		rhi::RTextureHandle mShadowMap;         /* @brief Depth map from the shadow pass. */
 
 	};
 
@@ -40,7 +43,7 @@ namespace lum::render {
 		void AddPointLight( const FPointLight& light );
 
 		/* @brief Submits a spot light to be included in the current frame's lighting.
-		* @param light Spot light to add.Ignored if LUM_MAX_LIGHTS is reached.
+		*  @param light Spot light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
 		void AddSpotLight( const FSpotLight& light );
 
@@ -53,19 +56,22 @@ namespace lum::render {
 		FDirectionalLight GetDirectionalLight( );
 		FDirectionalLight GetDirectionalLight( ) const;
 
-		/* @brief Clears all point lights from the previous frame. */
+		/* @brief Clears all point and spot lights submitted in the previous frame.
+		*  Should be called at the start of each frame before submitting new lights.
+		*/
 		LUM_FORCEINLINE
 		void ClearLights( ) { mActivePointLights = 0; mActiveSpotLights = 0; }
 
 		/* @brief Binds GBuffer textures, shadow map and light uniforms, then issues the fullscreen quad draw call.
-		*  @param shadowPass Shadow pass to retrieve the shadow map from.
 		*  @param gbuffer GBuffer containing geometry data from the geometry pass.
-		*  @param quad Fullscreen quad VAO to draw the lighting onto.
+		*  @param quad    Fullscreen quad VAO to draw the lighting onto.
+		*  @param desc    IBL and shadow map handles required for lighting.
 		*/
-		void Execute( const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassDescriptor& desc );
+		void Execute( const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassExecute& desc );
 
 	private:
 
+		/* @brief Byte offsets into the light SSBO for each data section. */
 		static constexpr usize skOffsetPointLights = 0;
 		static constexpr usize skOffsetSpotLights = sizeof( FPointLight ) * LUM_MAX_LIGHTS;
 		static constexpr usize skOffsetActivePoint = skOffsetSpotLights + sizeof( FSpotLight ) * LUM_MAX_LIGHTS;
@@ -87,9 +93,9 @@ namespace lum::render {
 		uint32 mActiveSpotLights = 0;
 
 		/* @brief GPU-ready uniform buffer representation of the active directional light. */
-		detail::FDirectionalLightUniformBuffer mDirectionalLightData{};
+		detail::FDirectionalLightUBOData mDirectionalLightData{};
 
-		/* @brief Shader storage buffer holding all active point lights. */
+		/* @brief Shader storage buffer holding all active point and spot lights. */
 		rhi::RBufferHandle mLightsUBO;
 
 		/* @brief Uniform buffer holding the active directional light data. */

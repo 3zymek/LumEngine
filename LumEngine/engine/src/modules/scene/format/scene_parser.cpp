@@ -17,7 +17,6 @@
 #include "entity/components/audio_emitter.hpp"
 
 #include "render/texture_manager.hpp"
-#include "render/shader_manager.hpp"
 #include "render/material_manager.hpp"
 #include "render/mesh_manager.hpp"
 #include "render/renderer.hpp"

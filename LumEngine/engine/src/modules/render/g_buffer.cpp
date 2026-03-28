@@ -1,5 +1,6 @@
 #include "render/g_buffer.hpp"
 #include "event/event_bus.hpp"
+#include "event/events/window_events.hpp"
 
 namespace lum::render::detail {
 

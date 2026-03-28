@@ -6,7 +6,7 @@
 //=============================================================================//
 
 #include "render/passes/geometry_pass.hpp"
-#include "render/common.hpp"
+#include "render/render_common.hpp"
 
 #include "rhi/core/rhi_device.hpp"
 
@@ -86,13 +86,13 @@ namespace lum::render {
 		desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 		desc.mMapFlags = rhi::MapFlag::Write;
 		{ // Model Uniform
-			desc.mSize = sizeof( detail::FModelUniformBuffer );
+			desc.mSize = sizeof( detail::FModelUBOData );
 			desc.mBufferType = rhi::BufferType::Uniform;
 			mModelUniform = mContext.mRenderDevice->CreateBuffer( desc );
 			mContext.mRenderDevice->SetUniformBufferBinding( mModelUniform, LUM_UBO_MODEL_BINDING );
 		}
 		{ // Material Uniform
-			desc.mSize = sizeof( detail::FMaterialUniformBuffer );
+			desc.mSize = sizeof( detail::FMaterialUBOData );
 			desc.mBufferType = rhi::BufferType::Uniform;
 			mMaterialUniform = mContext.mRenderDevice->CreateBuffer( desc );
 			mContext.mRenderDevice->SetUniformBufferBinding( mMaterialUniform, LUM_UBO_MATERIAL_BINDING );

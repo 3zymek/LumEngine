@@ -14,8 +14,6 @@
 #include "core/utils/flags.hpp"
 #include "core/setup.hpp"
 
-#include "render/shaders_define.h"
-
 #include "rhi/rhi_common.hpp"
 #include "rhi/core/rhi_buffer.hpp"
 #include "rhi/core/rhi_vertex_layout.hpp"
