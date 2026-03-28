@@ -18,6 +18,8 @@ namespace lum::render {
 
 	void LightPass::Initialize( const FRendererContext& ctx ) {
 
+		ValidateRendererContext( ctx );
+
 		mContext = ctx;
 
 		init( );
@@ -65,7 +67,7 @@ namespace lum::render {
 
 	void LightPass::Execute( const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassExecute& desc ) {
 
-		mContext.mRenderDevice->BindFramebuffer( quad.mFbo );
+		mContext.mRenderDevice->BindFramebuffer( quad.mSceneFbo );
 		mContext.mRenderDevice->BindPipeline( mPipeline );
 
 		upload_directional_light( );

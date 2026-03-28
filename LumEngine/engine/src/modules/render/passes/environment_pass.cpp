@@ -22,6 +22,8 @@ namespace lum::render {
 
 	void EnvironmentPass::Initialize( const FRendererContext& ctx ) {
 
+		ValidateRendererContext( ctx );
+
 		mContext = ctx;
 
 		init( );
@@ -30,7 +32,7 @@ namespace lum::render {
 
 	void EnvironmentPass::Execute( detail::GBuffer& gbuffer, const detail::FScreenQuad& quad ) {
 
-		mContext.mRenderDevice->BindFramebuffer( quad.mFbo ); // Render skybox to screenquad
+		mContext.mRenderDevice->BindFramebuffer( quad.mSceneFbo ); // Render skybox to screenquad
 		mContext.mRenderDevice->BindPipeline( mCubemap.mPipeline );
 		mContext.mRenderDevice->BindShader( mCubemap.mShader );
 		mContext.mRenderDevice->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );

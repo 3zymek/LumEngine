@@ -11,6 +11,7 @@
 #include "render/passes/light_pass.hpp"
 #include "render/passes/environment_pass.hpp"
 #include "render/passes/shadow_pass.hpp"
+#include "render/passes/postprocess_pass.hpp"
 
 #include "render/g_buffer.hpp"
 
@@ -28,6 +29,8 @@ namespace lum::render {
 		*  @param ctx Context struct containing valid pointers to all subsystem managers.
 		*/
 		void Initialize( const FRendererContext& ctx );
+
+		rhi::RTextureHandle GetFrameTexture( ) { return mScreenQuad.mPostprocessTexture; }
 
 
 		//---------------------------------------------------------
@@ -130,8 +133,7 @@ namespace lum::render {
 		/* @brief Shadow pass — generates the directional light shadow map. */
 		ShadowPass mShadowPass;
 
-		/* @brief Shader used for the final post-process blit to the default framebuffer. */
-		rhi::RShaderHandle mPostprocessShader;
+		PostprocessPass mPostprocessPass;
 
 
 

@@ -7,7 +7,6 @@
 #include "core/core_common.hpp"
 
 #include "render/renderer.hpp"
-#include "render/shader_manager.hpp"
 
 #include "event/event_bus.hpp"
 #include "event/events/window_events.hpp"
@@ -20,12 +19,15 @@ namespace lum::render {
 
 	void Renderer::Initialize( const FRendererContext& ctx ) {
 
+		ValidateRendererContext( ctx );
+
 		mContext = ctx;
 
 		mGeometryPass.Initialize( mContext );
 		mLightPass.Initialize( mContext );
 		mEnvironmentPass.Initialize( mContext );
 		mShadowPass.Initialize( mContext );
+		mPostprocessPass.Initialize( mContext );
 		mGBuffer.Initialize( mContext, 500, 500 );
 
 		init( );
@@ -57,7 +59,7 @@ namespace lum::render {
 
 	void Renderer::EndFrame( ) {
 
-		mContext.mRenderDevice->BindFramebuffer( mScreenQuad.mFbo );
+		mContext.mRenderDevice->BindFramebuffer( mScreenQuad.mSceneFbo );
 		mContext.mRenderDevice->Clear(
 			rhi::BufferBit::Color |
 			rhi::BufferBit::Depth |
@@ -76,12 +78,7 @@ namespace lum::render {
 
 		mEnvironmentPass.Execute( mGBuffer, mScreenQuad );
 
-		mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer );
-		mContext.mRenderDevice->BindShader( mPostprocessShader );
-		mContext.mRenderDevice->BindTexture( mScreenQuad.mTexture, 0 );
-		mContext.mRenderDevice->DrawElements( mScreenQuad.mVao, 6 );
-
-		mContext.mRenderDevice->SwapBuffers( );
+		mPostprocessPass.Execute( mScreenQuad );
 
 	}
 
@@ -105,6 +102,7 @@ namespace lum::render {
 
 		// Camera Uniform
 		if (!mContext.mRenderDevice->IsValid( mCameraUBO )) {
+
 			rhi::FBufferDescriptor desc;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
@@ -112,6 +110,7 @@ namespace lum::render {
 			desc.mBufferType = rhi::BufferType::Uniform;
 			mCameraUBO = mContext.mRenderDevice->CreateBuffer( desc );
 			mContext.mRenderDevice->SetUniformBufferBinding( mCameraUBO, LUM_UBO_CAMERA_BINDING );
+
 		}
 
 		// Screen quad VBO
@@ -169,9 +168,6 @@ namespace lum::render {
 			mContext.mRenderDevice->AttachElementBufferToLayout( mScreenQuad.mEbo, mScreenQuad.mVao );
 
 		}
-		{
-			mPostprocessShader = mContext.mShaderMgr->LoadShader( "shaders/postprocess_pass.vert", "shaders/postprocess_pass.frag", RootID::Internal );
-		}
 
 		create_screenquad_texture( 500, 500 );
 		create_screenquad_fbo( );
@@ -179,29 +175,52 @@ namespace lum::render {
 
 	void Renderer::create_screenquad_fbo( ) {
 
-		if (mContext.mRenderDevice->IsValid( mScreenQuad.mFbo ))
-			mContext.mRenderDevice->DeleteFramebuffer( mScreenQuad.mFbo );
+		if (mContext.mRenderDevice->IsValid( mScreenQuad.mSceneFbo ))
+			mContext.mRenderDevice->DeleteFramebuffer( mScreenQuad.mSceneFbo );
 
-		rhi::FFramebufferDescriptor desc;
-		desc.mColorTex.push_back( { 0, mScreenQuad.mTexture } );
-		desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
-		mScreenQuad.mFbo = mContext.mRenderDevice->CreateFramebuffer( desc );
+		if (mContext.mRenderDevice->IsValid( mScreenQuad.mPostprocessFbo ))
+			mContext.mRenderDevice->DeleteFramebuffer( mScreenQuad.mPostprocessFbo );
+
+		{
+			rhi::FFramebufferDescriptor desc;
+			desc.mColorTex.push_back( { 0, mScreenQuad.mSceneTexture } );
+			desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
+			mScreenQuad.mSceneFbo = mContext.mRenderDevice->CreateFramebuffer( desc );
+		}
+		{
+			rhi::FFramebufferDescriptor desc;
+			desc.mColorTex.push_back( { 0, mScreenQuad.mPostprocessTexture } );
+			desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
+			mScreenQuad.mPostprocessFbo = mContext.mRenderDevice->CreateFramebuffer( desc );
+		}
 
 	}
 	void Renderer::create_screenquad_texture( uint32 w, uint32 h ) {
 
-		if (mContext.mRenderDevice->IsValid( mScreenQuad.mTexture ))
-			mContext.mRenderDevice->DeleteTexture( mScreenQuad.mTexture );
+		if (mContext.mRenderDevice->IsValid( mScreenQuad.mSceneTexture ))
+			mContext.mRenderDevice->DeleteTexture( mScreenQuad.mSceneTexture );
 
-		rhi::FTextureDescriptor desc;
-		desc.mImageFormat = rhi::ImageFormat::RGBA;
-		desc.mImageLayout = rhi::ImageLayout::RGBA16F;
-		desc.mTextureType = rhi::TextureType::Texture2D;
-		//desc.mSamples = 8;
-		desc.mWidth = w;
-		desc.mHeight = h;
+		if (mContext.mRenderDevice->IsValid( mScreenQuad.mPostprocessTexture ))
+			mContext.mRenderDevice->DeleteTexture( mScreenQuad.mPostprocessTexture );
 
-		mScreenQuad.mTexture = mContext.mRenderDevice->CreateTexture( desc );
+		{
+			rhi::FTextureDescriptor desc;
+			desc.mImageFormat = rhi::ImageFormat::RGBA;
+			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
+			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mWidth = w;
+			desc.mHeight = h;
+			mScreenQuad.mSceneTexture = mContext.mRenderDevice->CreateTexture( desc );
+		}
+		{
+			rhi::FTextureDescriptor desc;
+			desc.mImageFormat = rhi::ImageFormat::RGBA;
+			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
+			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mWidth = w;
+			desc.mHeight = h;
+			mScreenQuad.mPostprocessTexture = mContext.mRenderDevice->CreateTexture( desc );
+		}
 
 	}
 

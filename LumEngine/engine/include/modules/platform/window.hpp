@@ -48,6 +48,8 @@ namespace lum {
 		/* @brief Returns the underlying native GLFW window pointer. */
 		vptr GetNativeWindow( ) const noexcept;
 
+		float64 GetTime( ) const noexcept { return glfwGetTime( ); }
+
 		/* @brief Polls window events and emits EWindowResized if size changed.
 		*  Call once per frame from the main loop.
 		*/

@@ -23,6 +23,8 @@ namespace lum::render {
 
 	void GeometryPass::Initialize( const FRendererContext& ctx ) {
 
+		ValidateRendererContext( ctx );
+
 		mContext = ctx;
 
 		mInstances.reserve( limits::gMaxDrawCallsPf );

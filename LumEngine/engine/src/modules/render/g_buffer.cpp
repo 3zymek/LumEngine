@@ -10,6 +10,8 @@ namespace lum::render::detail {
 
 	void GBuffer::Initialize( const FRendererContext& ctx, uint32 w, uint32 h ) {
 
+		ValidateRendererContext( ctx );
+
 		mContext = ctx;
 
 		create_textures( w, h );

@@ -17,6 +17,8 @@ namespace lum::render {
 
 	void ShadowPass::Initialize( const FRendererContext& ctx ) {
 
+		ValidateRendererContext( ctx );
+
 		mContext = ctx;
 
 		init( );

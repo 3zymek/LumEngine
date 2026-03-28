@@ -128,7 +128,7 @@ namespace lum {
 				for (usize i = 0; i < limits::gMaxEventTypes; i++) {
 					mPools[ i ] = nullptr;
 				}
-			}
+			} 
 
 			void destruct( ) {
 				for (usize i = 0; i < limits::gMaxEventTypes; i++) {

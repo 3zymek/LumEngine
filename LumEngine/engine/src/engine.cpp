@@ -24,10 +24,11 @@ namespace lum {
 
 	}
 	void Engine::BeginFrame( ) {
-		
-		mEvBus.PollEvents( );
 
 		mPlatform.mWindow.Update( );
+
+		mEvBus.PollEvents( );
+
 		mRender.mRenderer.BeginFrame( );
 		
 	}

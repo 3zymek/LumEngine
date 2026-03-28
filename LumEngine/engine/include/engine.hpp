@@ -29,7 +29,22 @@ namespace lum {
 		void Tick( );
 		void Finalize( );
 
-		ev::EventBus GetEventBus( ) { return mEvBus; }
+		ev::EventBus&		GetEventBus( ) { return mEvBus; }
+		MAudioModule&		GetAudio( ) { return mAudio; }
+		MPlatformModule&	GetPlatform( ) { return mPlatform; }
+		MResourceModule&	GetResource( ) { return mRes; }
+		MRenderModule&		GetRender( ) { return mRender; }
+		MSceneModule&		GetScene( ) { return mScene; }
+
+		float64 GetDeltaTime( ) { 
+			
+			static float64 sLastTime = 0;
+			float64 currentTime = mPlatform.mWindow.GetTime( );
+			float64 delta = currentTime - sLastTime;
+			sLastTime = mPlatform.mWindow.GetTime( );
+			return delta;
+
+		}
 
 		bool IsRunning( ) { return mPlatform.mWindow.IsOpen( ); }
 

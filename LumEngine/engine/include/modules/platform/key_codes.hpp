@@ -77,5 +77,8 @@ namespace lum {
 				GLFW_KEY_MENU
 			};
 		}
+
+		static_assert(ArraySize( input::detail::gKeyMap ) == static_cast< int32 >(input::Key::MAX_COUNT), "gKeyMap size mismatch!");
+
 	}
 }

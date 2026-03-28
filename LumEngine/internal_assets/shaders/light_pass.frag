@@ -149,7 +149,7 @@ float CalculateShadow( FLightningContext ctx ) {
 		}
 	}
 	shadow /= 25.0;
-	shadow = mix(0.0, 0.9, shadow);
+	shadow = mix(0.0, 0.999, shadow);
 
 	return shadow;
 

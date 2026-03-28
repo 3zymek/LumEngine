@@ -15,18 +15,21 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MMaterialManager::Initialize(rhi::RenderDevice* device, MTextureManager* texMgr) {
+	void MMaterialManager::Initialize( rhi::RenderDevice* device, MTextureManager* texMgr ) {
+
+		LUM_ASSERT( device != nullptr, "RenderDevice is null" );
+		LUM_ASSERT( texMgr != nullptr, "TextureManager is null" );
 
 		mRenderDevice = device;
 		mTextureMgr = texMgr;
 
-		init();
+		init( );
 
 	}
 
 	MaterialBaseHandle MMaterialManager::UploadBase( const FMaterialBase& base ) {
 
-		return mBaseMaterials.Append(base);
+		return mBaseMaterials.Append( base );
 
 	}
 
@@ -35,64 +38,64 @@ namespace lum {
 		FMaterialBase base;
 
 		if (desc.mAlbedoTex) {
-			base.mAlbedoTex = mTextureMgr->Load(desc.mAlbedoTex.value(), TexturePreset::Albedo);
+			base.mAlbedoTex = mTextureMgr->Load( desc.mAlbedoTex.value( ), TexturePreset::Albedo );
 		}
-		else base.mAlbedoTex = mTextureMgr->GetFallbackTexture(FallbackTexture::DefaultAlbedo);
+		else base.mAlbedoTex = mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultAlbedo );
 
 		if (desc.mNormalTex) {
-			base.mNormalTex = mTextureMgr->Load(desc.mNormalTex.value(), TexturePreset::Normal);
+			base.mNormalTex = mTextureMgr->Load( desc.mNormalTex.value( ), TexturePreset::Normal );
 		}
-		else base.mNormalTex = mTextureMgr->GetFallbackTexture(FallbackTexture::DefaultNormal);
+		else base.mNormalTex = mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultNormal );
 
 		if (desc.mRoughnessTex) {
-			base.mRoughnessTex = mTextureMgr->Load(desc.mRoughnessTex.value(), TexturePreset::Roughness);
+			base.mRoughnessTex = mTextureMgr->Load( desc.mRoughnessTex.value( ), TexturePreset::Roughness );
 		}
-		else base.mRoughnessTex = mTextureMgr->GetFallbackTexture(FallbackTexture::DefaultRoughness);
+		else base.mRoughnessTex = mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultRoughness );
 
 		if (desc.mMetallicTex) {
-			base.mMetallicTex = mTextureMgr->Load(desc.mMetallicTex.value(), TexturePreset::Metallic);
+			base.mMetallicTex = mTextureMgr->Load( desc.mMetallicTex.value( ), TexturePreset::Metallic );
 		}
-		else base.mMetallicTex = mTextureMgr->GetFallbackTexture(FallbackTexture::DefaultMetallic);
+		else base.mMetallicTex = mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultMetallic );
 
 		if (desc.mBaseColor) {
-			base.mBaseColor = desc.mBaseColor.value();
+			base.mBaseColor = desc.mBaseColor.value( );
 		}
 		if (desc.mRoughnessValue) {
-			base.mRoughnessValue = desc.mRoughnessValue.value();
+			base.mRoughnessValue = desc.mRoughnessValue.value( );
 		}
 		if (desc.mMetallicValue) {
-			base.mMetallicValue = desc.mMetallicValue.value();
+			base.mMetallicValue = desc.mMetallicValue.value( );
 		}
 
-		return mBaseMaterials.Append(base);
+		return mBaseMaterials.Append( base );
 
 	}
 
 
 	FMaterialInstance MMaterialManager::CreateInstance( MaterialBaseHandle base ) {
 
-		if (!mBaseMaterials.Contains(base))
+		if (!mBaseMaterials.Contains( base ))
 			base = mDefaultMaterial;
 
 		FMaterialInstance instance;
-		FMaterialBase& matBase = mBaseMaterials[base];
+		FMaterialBase& matBase = mBaseMaterials[ base ];
 
-		instance = static_cast<FMaterialInstance>(matBase);
+		instance = static_cast< FMaterialInstance >(matBase);
 
 		return instance;
 
 	}
 
 	FMaterialInstance MMaterialManager::GetDefaultInstance( ) {
-		return CreateInstance(mDefaultMaterial);
+		return CreateInstance( mDefaultMaterial );
 	}
 
 	void MMaterialManager::SetBaseMap( MaterialBaseHandle material, EMaterialMember mem, rhi::RTextureHandle tex ) {
 		switch (mem) {
-		case EMaterialMember::Albedo: mBaseMaterials[material].mAlbedoTex = tex; break;
-		case EMaterialMember::Normal: mBaseMaterials[material].mNormalTex = tex; break;
-		case EMaterialMember::Metallic: mBaseMaterials[material].mMetallicTex = tex; break;
-		case EMaterialMember::Roughness: mBaseMaterials[material].mRoughnessTex = tex; break;
+		case EMaterialMember::Albedo: mBaseMaterials[ material ].mAlbedoTex = tex; break;
+		case EMaterialMember::Normal: mBaseMaterials[ material ].mNormalTex = tex; break;
+		case EMaterialMember::Metallic: mBaseMaterials[ material ].mMetallicTex = tex; break;
+		case EMaterialMember::Roughness: mBaseMaterials[ material ].mRoughnessTex = tex; break;
 		}
 	}
 
@@ -103,32 +106,32 @@ namespace lum {
 	// Private
 	//---------------------------------------------------------
 
-	void MMaterialManager::init() {
-		create_defaults();
+	void MMaterialManager::init( ) {
+		create_defaults( );
 	}
 
-	rhi::RTextureHandle MMaterialManager::validate_texture(rhi::RTextureHandle tex) {
+	rhi::RTextureHandle MMaterialManager::validate_texture( rhi::RTextureHandle tex ) {
 
-		if (!mRenderDevice->IsValid(tex)) {
-			LUM_LOG_DEBUG("No texture given, setting default fallback");
-			return mTextureMgr->GetFallbackTexture(FallbackTexture::DefaultAlbedo);
+		if (!mRenderDevice->IsValid( tex )) {
+			LUM_LOG_DEBUG( "No texture given, setting default fallback" );
+			return mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultAlbedo );
 		}
 		else
 			return tex;
 
 	}
 
-	void MMaterialManager::create_defaults() {
+	void MMaterialManager::create_defaults( ) {
 
 		{ // Base material
 			FMaterialBase base;
-			base.mAlbedoTex = mTextureMgr->GetFallbackTexture(FallbackTexture::DefaultAlbedo);
-			base.mNormalTex = mTextureMgr->GetFallbackTexture(FallbackTexture::DefaultNormal);
-			base.mMetallicTex = mTextureMgr->GetFallbackTexture(FallbackTexture::DefaultMetallic);
-			base.mRoughnessTex = mTextureMgr->GetFallbackTexture(FallbackTexture::DefaultRoughness);
-			base.mAmbientTex = mTextureMgr->GetFallbackTexture(FallbackTexture::DefaultAlbedo);
+			base.mAlbedoTex = mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultAlbedo );
+			base.mNormalTex = mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultNormal );
+			base.mMetallicTex = mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultMetallic );
+			base.mRoughnessTex = mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultRoughness );
+			base.mAmbientTex = mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultAlbedo );
 
-			mDefaultMaterial = UploadBase(base);
+			mDefaultMaterial = UploadBase( base );
 
 		}
 

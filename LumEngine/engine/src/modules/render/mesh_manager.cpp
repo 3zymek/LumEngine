@@ -16,6 +16,8 @@ namespace lum {
 
 	void MMeshManager::Initialize( rhi::RenderDevice* device ) {
 
+		LUM_ASSERT( device != nullptr, "RenderDevice is null" );
+
 		mRenderDevice = device;
 		init();
 

@@ -78,7 +78,6 @@ namespace lum {
 			if (!keyPressed && input::detail::gKeyIsPressed[ i ]) mEventBus->Emit( EKeyReleased{ .mKey = ( input::Key ) i } );
 
 			input::detail::gKeyIsPressed[ i ] = keyPressed;
-
 		}
 
 		glfwPollEvents( );

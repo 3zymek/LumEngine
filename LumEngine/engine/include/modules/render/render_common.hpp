@@ -51,6 +51,17 @@ namespace lum::render {
 
 	};
 
+	constexpr void ValidateRendererContext( const FRendererContext& ctx ) {
+
+		LUM_ASSERT( ctx.mRenderDevice != nullptr, "RenderDevice is null" );
+		LUM_ASSERT( ctx.mTextureMgr != nullptr, "TextureManager is null" );
+		LUM_ASSERT( ctx.mMaterialMgr != nullptr, "MaterialManager is null" );
+		LUM_ASSERT( ctx.mMeshMgr != nullptr, "MeshManager is null" );
+		LUM_ASSERT( ctx.mShaderMgr != nullptr, "ShaderManager is null" );
+		LUM_ASSERT( ctx.mEventBus != nullptr, "EventBus is null" );
+
+	}
+
 	/* @brief Directional light source — infinite distance, uniform direction.
 	*  Aligned to 16 bytes for std140 uniform buffer compatibility.
 	*/
@@ -132,8 +143,10 @@ namespace lum::render {
 			rhi::RVertexLayoutHandle mVao;
 			rhi::RBufferHandle mVbo;
 			rhi::RBufferHandle mEbo;
-			rhi::RFramebufferHandle mFbo;
-			rhi::RTextureHandle mTexture;
+			rhi::RFramebufferHandle mSceneFbo;
+			rhi::RFramebufferHandle mPostprocessFbo;
+			rhi::RTextureHandle mSceneTexture;
+			rhi::RTextureHandle mPostprocessTexture;
 
 		};
 
