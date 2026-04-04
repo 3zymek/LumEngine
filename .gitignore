@@ -21,6 +21,7 @@
 *.pdb
 *.dll
 *.lib
+*.generated.hpp
 bin/
 Debug/
 Release/

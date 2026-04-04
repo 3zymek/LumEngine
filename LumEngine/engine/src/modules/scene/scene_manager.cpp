@@ -7,7 +7,7 @@
 #include "core/utils/asset_loader.hpp"
 
 #include "scene/scene_manager.hpp"
-#include "scene/format/scene_parser.hpp"
+#include "scene/format/scene_dependency_manager.hpp"
 #include "scene/format/tokenizer.hpp"
 
 #include "entity/entity_manager.hpp"
@@ -45,7 +45,7 @@ namespace lum {
 			fmt::Tokenizer tokenizer;
 			tokenizer.Tokenize( content.value( ) );
 
-			fmt::SceneParser parser( tokenizer, mContext );
+			fmt::SceneDependencyManager parser( tokenizer, mContext );
 			FScene scene;
 			scene.mEntityMgr.Initialize( mContext.mEventBus );
 			parser.Parse( scene );
@@ -76,7 +76,7 @@ namespace lum {
 		fmt::Tokenizer tokenizer;
 		tokenizer.Tokenize( content.value( ) );
 
-		fmt::SceneParser parser( tokenizer, mContext );
+		fmt::SceneDependencyManager parser( tokenizer, mContext );
 		FScene scene;
 		parser.Parse( scene );
 

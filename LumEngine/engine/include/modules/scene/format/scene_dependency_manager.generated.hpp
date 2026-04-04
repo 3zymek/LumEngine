@@ -8,10 +8,11 @@
 //
 //=============================================================================//
 #pragma once
-#include "modules/scene/format/scene_parser.hpp"
-#include "C:/Users/szymek/Desktop/LumEngine/LumEngine/engine/include/modules/entity/components/transform.hpp"
+#include "scene_dependency_manager.generated.hpp"
+#include "C:/Users/szymek/Desktop/LumEngine/LumEngine/engine/include/modules/scene/format/scene_dependency_manager.hpp"
+#include "C:/Users/szymek/Desktop/LumEngine/LumEngine/engine/include/modules/entity/components/transform.generated.hpp"
 
-namespace lum::fmt::detail {
+namespace lum::fmt::detail{
 
 	inline void RegisterComponents( std::unordered_map<uint64, ParseFn>& map ) {
 		map[ HashStr("transform") ] = ParseCTransform;

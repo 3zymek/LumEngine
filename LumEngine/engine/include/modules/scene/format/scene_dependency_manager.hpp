@@ -35,17 +35,20 @@ namespace lum::fmt {
 
 	};
 
+	/* @brief Function pointer type for parse dispatch functions. */
+	using ParseFn = void(*)(std::vector<FToken>&, int32&, FParseContext&);
+
 	/* @brief Parses a tokenized .lsc scene file and populates a FScene.
 	* Dispatches identifiers and component blocks to their respective parse functions
 	* via hash-keyed lookup tables for efficient routing.
 	*/
-	class SceneParser {
+	class SceneDependencyManager {
 	public:
 		/* @brief Constructs the parser with a tokenizer and resource manager context.
 		* @param tokenizer Tokenizer containing the pre-tokenized scene file.
 		* @param ctx       Resource manager context for asset resolution.
 		*/
-		SceneParser( Tokenizer& tokenizer, FSceneManagerContext& ctx ) : mTokenizer( tokenizer ), mContext( ctx ) { }
+		SceneDependencyManager( Tokenizer& tokenizer, FSceneManagerContext& ctx ) : mTokenizer( tokenizer ), mContext( ctx ) { }
 
 		/* @brief Parses the token stream and populates the given scene.
 		* @param scene Scene to populate with entities and components.
@@ -53,14 +56,6 @@ namespace lum::fmt {
 		void Parse( FScene& scene );
 
 	private:
-
-		/* @brief Returns true while the token stream is inside a block (before RBracket).
-		* @param tokens Token stream to check.
-		* @param i      Current token index.
-		*/
-		static inline bool in_block( std::vector<FToken>& tokens, int32 i ) {
-			return i < tokens.size( ) && tokens[ i ].mType != TokenType::RBracket;
-		}
 
 		/* @brief Parses the world block and applies global scene settings. */
 		static void parse_world( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
@@ -101,9 +96,6 @@ namespace lum::fmt {
 
 		/* @brief Resource manager context used during parsing for asset resolution. */
 		FSceneManagerContext mContext;
-
-		/* @brief Function pointer type for parse dispatch functions. */
-		using ParseFn = void(*)(std::vector<FToken>&, int32&, FParseContext&);
 
 		/* @brief Lookup table mapping hashed identifier keywords to their parse functions.
 		* Used to dispatch top-level scene constructs such as entity and world blocks.

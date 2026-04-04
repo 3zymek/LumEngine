@@ -8,23 +8,24 @@
 //
 //=============================================================================//
 #pragma once
-#include "modules/scene/format/scene_parser.hpp"
+#include "transform.hpp"
+#include "C:/Users/szymek/Desktop/LumEngine/LumEngine/engine/include/modules/scene/format/scene_dependency_manager.hpp"
 
 namespace lum::fmt::detail {
 
-	void ParseCTransform( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ){
+	void ParseCTransform( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 
-		CTransform component; 
+		CTransform component;
 
-		while( in_block( tokens, i ) ) {
-			if( tokens[i].mType == TokenType::Parameter ) {
-				if( detail::IsString( tokens, i, "mPosition" ) )
+		while (InBlock( tokens, i )) {
+			if (tokens[ i ].mType == TokenType::Parameter) {
+				if (detail::IsString( tokens, i, "mPosition" ))
 					component.mPosition = detail::ReadVec3Parameter( tokens, i );
-				else if( detail::IsString( tokens, i, "mScale" ) )
+				else if (detail::IsString( tokens, i, "mScale" ))
 					component.mScale = detail::ReadVec3Parameter( tokens, i );
-				else if( detail::IsString( tokens, i, "mRotation" ) )
+				else if (detail::IsString( tokens, i, "mRotation" ))
 					component.mRotation = detail::ReadVec3Parameter( tokens, i );
 			}
 			i++;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene/format/scene_parser.hpp"
+#include "scene/format/scene_dependency_manager.hpp"
 #include "scene/format/tokenizer.hpp"
 #include "scene/format/material_parser.hpp"
 #include "scene/scene_manager.hpp"
@@ -27,7 +27,7 @@ namespace lum::fmt {
 	// Public
 	//---------------------------------------------------------
 
-	void SceneParser::Parse( FScene& scene ) {
+	void SceneDependencyManager::Parse( FScene& scene ) {
 
 		FParseContext ctx{ scene };
 		ctx.mContext = mContext;
@@ -52,17 +52,17 @@ namespace lum::fmt {
 	// Private
 	//---------------------------------------------------------
 
-	void SceneParser::parse_world( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_world( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 
-		while (in_block( tokens, i )) {
+		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Component) {
 
 				detail::ExpectOpeningBracket( tokens, i );
 
-				while (in_block( tokens, i )) {
+				while (detail::InBlock( tokens, i )) {
 
 					if (tokens[ i ].mType == TokenType::Parameter) {
 
@@ -87,7 +87,7 @@ namespace lum::fmt {
 
 
 
-	void SceneParser::parse_entity( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_entity( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		Entity e;
 		ctx.mScene.mEntities.push_back( e.mID );
@@ -95,7 +95,7 @@ namespace lum::fmt {
 
 		detail::ExpectOpeningBracket( tokens, i );
 
-		while (in_block( tokens, i )) {
+		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Component) {
 				auto it = sComponentsParseFunctions.find( HashStr( ToLower( tokens[ i ].mValue ) ) );
@@ -110,13 +110,13 @@ namespace lum::fmt {
 		}
 
 	}
-	void SceneParser::parse_transform( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_transform( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 
 		CTransform transform;
 
-		while (in_block( tokens, i )) {
+		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Parameter) {
 				if (detail::IsString( tokens, i, "position" )) {
@@ -142,13 +142,13 @@ namespace lum::fmt {
 		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, transform );
 
 	}
-	void SceneParser::parse_smesh( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_smesh( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 
 		CStaticMesh mesh;
 
-		while (in_block( tokens, i )) {
+		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Parameter) {
 
@@ -167,13 +167,13 @@ namespace lum::fmt {
 		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, mesh );
 
 	}
-	void SceneParser::parse_camera( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_camera( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 
 		CCamera camera;
 
-		while (in_block( tokens, i )) {
+		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Parameter) {
 
@@ -213,13 +213,13 @@ namespace lum::fmt {
 		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, camera );
 
 	}
-	void SceneParser::parse_render( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_render( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 
 		CRender render;
 
-		while (in_block( tokens, i )) {
+		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Parameter) {
 
@@ -239,12 +239,12 @@ namespace lum::fmt {
 		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, render );
 
 	}
-	void SceneParser::parse_material( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_material( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 		CMaterial material;
 
-		while (in_block( tokens, i )) {
+		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Parameter) {
 
@@ -284,12 +284,12 @@ namespace lum::fmt {
 
 
 	}
-	void SceneParser::parse_name( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_name( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 		CName name;
 
-		while (in_block( tokens, i )) {
+		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Parameter) {
 
@@ -309,12 +309,12 @@ namespace lum::fmt {
 		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, name );
 
 	}
-	void SceneParser::parse_point_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_point_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 		CPointLight light;
 
-		while (in_block( tokens, i )) {
+		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Parameter) {
 
@@ -345,12 +345,12 @@ namespace lum::fmt {
 
 	}
 
-	void SceneParser::parse_spot_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_spot_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 		CSpotLight light;
 
-		while (in_block( tokens, i )) {
+		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Parameter) {
 
@@ -395,14 +395,14 @@ namespace lum::fmt {
 
 	}
 
-	void SceneParser::parse_audio_emitter( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_audio_emitter( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 		CAudioEmitter emitter;
 		String path;
 		String category;
 
-		while (in_block( tokens, i )) {
+		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Parameter) {
 

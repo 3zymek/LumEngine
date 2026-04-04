@@ -65,6 +65,10 @@ namespace lum {
 		/* @brief Internal parsing helpers — not intended for direct use. */
 		namespace detail {
 
+			inline bool InBlock( std::vector<FToken>& tokens, int32 i ) {
+				return i < tokens.size( ) && tokens[ i ].mType != TokenType::RBracket;
+			}
+
 			inline bool IsString( std::vector<FToken>& tokens, int32& i, StringView str ) {
 				return tokens[ i ].mValue == ToLower( str );
 			}

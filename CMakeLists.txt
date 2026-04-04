@@ -4,7 +4,7 @@ project(LumEngine)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL")
-set(LHC_EXE "${CMAKE_SOURCE_DIR}/tools/LHC.exe")
+set(LHC_EXE "${CMAKE_SOURCE_DIR}/tools/LumenHeaderCompiler.exe")
 set(LHC_INPUT_DIR "${CMAKE_SOURCE_DIR}/LumEngine/engine")
 set(LHC_SCENE_PARSER "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/modules/scene/format/scene_dependency_manager.hpp")
 set(LHC_OUTPUT "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/modules/scene/format/scene_dependency_manager.generated.hpp")
@@ -13,7 +13,8 @@ find_program(DOTNET_EXECUTABLE dotnet REQUIRED)
 
 add_custom_command(
     OUTPUT "${LHC_OUTPUT}"
-    COMMAND ${DOTNET_EXECUTABLE} "${CMAKE_SOURCE_DIR}/tools/LumenHeaderCompiler.dll" "${LHC_INPUT_DIR}" "${LHC_SCENE_PARSER}"
+    COMMAND "${LHC_EXE}" "${LHC_INPUT_DIR}" "${LHC_SCENE_PARSER}"
+    DEPENDS "${LHC_SCENE_PARSER}"
     COMMENT "Running LHC..."
     VERBATIM
 )

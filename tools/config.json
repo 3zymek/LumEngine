@@ -1,7 +1,7 @@
 {
   "paths": {
     "preamble_include": "modules/scene/format/scene_parser.hpp",
-    "preamble_namespace": "lum::fmt::detail"
+    "code_namespace": "lum::fmt::detail"
   },
 
   "templates": {
@@ -10,7 +10,9 @@
     "parse_fn_comp_name": "component",
     "parse_fn_field": "{0}.{1} = {2}( tokens, i );",
     "parse_fn_add": "ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, {0} );",
-    "parse_fn_registry": "RegisterComponents( std::unordered_map<uint64, ParseFn>& map )"
+    "parse_fn_registry": "RegisterComponents( std::unordered_map<uint64, ParseFn>& map )",
+    "parse_fn_while_expr": "InBlock( tokens, i )",
+    "parse_fn_token_check": "tokens[i].mType == TokenType::Parameter"
   },
 
   "types": {
