@@ -1,0 +1,110 @@
+{
+  "paths": {
+    "preamble_include": "modules/scene/format/scene_parser.hpp",
+    "preamble_namespace": "lum::fmt::detail"
+  },
+
+  "templates": {
+    "parse_fn_signature": "Parse{0}( std::vector<FToken>& tokens, int32& i, FParseContext& ctx )",
+    "parse_fn_body_open": "detail::ExpectOpeningBracket( tokens, i );",
+    "parse_fn_comp_name": "component",
+    "parse_fn_field": "{0}.{1} = {2}( tokens, i );",
+    "parse_fn_add": "ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, {0} );",
+    "parse_fn_registry": "RegisterComponents( std::unordered_map<uint64, ParseFn>& map )"
+  },
+
+  "types": {
+
+    "float": {
+      "reader": "detail::ReadFloatParameter",
+      "imgui": "ImGui::DragFloat"
+    },
+    "float32": {
+      "reader": "detail::ReadFloatParameter",
+      "imgui": "ImGui::DragFloat"
+    },
+    "double": {
+      "reader": "detail::ReadFloatParameter",
+      "imgui": "ImGui::DragFloat"
+    },
+    "float64": {
+      "reader": "detail::ReadFloatParameter",
+      "imgui": "ImGui::DragFloat"
+    },
+
+    "glm::vec3": {
+      "reader": "detail::ReadVec3Parameter",
+      "imgui": "ImGui::DragFloat3"
+    },
+    "glm::vec2": {
+      "reader": "detail::ReadVec2Parameter",
+      "imgui": "ImGui::DragFloat2"
+    },
+    "glm::vec4": {
+      "reader": "detail::ReadVec4Parameter",
+      "imgui": "ImGui::DragFloat4"
+    },
+
+    "bool": {
+      "reader": "detail::ReadBoolParameter",
+      "imgui": "ImGui::Checkbox"
+    },
+
+    "int": {
+      "reader": "detail::ReadIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+    "int8": {
+      "reader": "detail::ReadIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+    "int16": {
+      "reader": "detail::ReadIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+    "int32": {
+      "reader": "detail::ReadIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+    "int64": {
+      "reader": "detail::ReadIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+
+    "unsigned int": {
+      "reader": "detail::ReadUIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+    "uint8": {
+      "reader": "detail::ReadUIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+    "uint16": {
+      "reader": "detail::ReadUIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+    "uint32": {
+      "reader": "detail::ReadUIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+    "uint64": {
+      "reader": "detail::ReadUIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+
+    "usize": {
+      "reader": "detail::ReadUIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+    "isize": {
+      "reader": "detail::ReadIntParameter",
+      "imgui": "ImGui::DragInt"
+    },
+
+    "String": {
+      "reader": "detail::ReadStringParameter",
+      "imgui": "ImGui::InputText"
+    }
+
+  }
+}

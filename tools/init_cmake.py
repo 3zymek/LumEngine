@@ -17,3 +17,4 @@ def setup_cmake():
     print("Building project...")
 
     subprocess.check_call(["cmake", rootDir])
+    subprocess.check_call(["cmake", "--build", str(buildDir), "--target", "RunLHC", "--config", "Release"])
