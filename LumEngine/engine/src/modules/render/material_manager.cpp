@@ -10,7 +10,6 @@
 #include "render/texture_manager.hpp"
 #include "event/event_bus.hpp"
 #include "event/events/entity_events.hpp"
-#include "scene/scene_manager.hpp"
 #include "scene/format/material_parser.hpp"
 #include "scene/format/tokenizer.hpp"
 
@@ -111,8 +110,6 @@ namespace lum {
 
 		mContext->mEvBus->SubscribePermanently<EComponentAdded<CMaterial>>(
 			[&]( const EComponentAdded<CMaterial>& mat ) {
-
-				LUM_LOG_INFO( "PARSUJE MATERIAŁ" );
 
 				std::optional<String> content = AssetLoader::ReadFile( RootID::External, mat.mComponent->mPath );
 				if (!content) {

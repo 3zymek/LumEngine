@@ -23,7 +23,7 @@ def setup_glfw():
     with zipfile.ZipFile(glfwZip, 'r') as zipRef:
         zipRef.extractall(glfwDir)
 
-    print("Moving FMOD...")
+    print("Moving GLFW...")
     debugDir.mkdir(parents=True, exist_ok=True)
     releaseDir.mkdir(parents=True, exist_ok=True)
 

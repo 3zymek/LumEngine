@@ -42,7 +42,7 @@ namespace lum {
 			ImGuiDockNodeFlags_NoResize;
 
 		ImGuiID dockID = ImGui::DockSpaceOverViewport( dockFlags );
-
+		
 		if (!bLayoutInitialized) {
 			bLayoutInitialized = true;
 

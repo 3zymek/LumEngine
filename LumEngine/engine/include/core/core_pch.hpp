@@ -29,9 +29,9 @@
 #include <sstream>
 #include <cmath>
 
-#include "math/backend/glm.hpp"
-#include "math/backend/gtc/matrix_transform.hpp"
-#include "math/backend/gtc/type_ptr.hpp"
+#include "glm.hpp"
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
 
 #include "core/core_defines.hpp"
 #include "core/utils/logger.hpp"

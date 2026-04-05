@@ -26,9 +26,7 @@ bin/
 Debug/
 Release/
 build/
-lumengine/external/glfw
-lumengine/external/fmod
-lumengine/assets/audio
+lumengine/external
 
 
 =======
