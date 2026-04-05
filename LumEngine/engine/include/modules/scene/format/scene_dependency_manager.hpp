@@ -44,13 +44,8 @@ namespace lum::fmt {
 	*/
 	class SceneDependencyManager {
 	public:
-		/* @brief Constructs the parser with a tokenizer and resource manager context.
-		* @param tokenizer Tokenizer containing the pre-tokenized scene file.
-		* @param ctx       Resource manager context for asset resolution.
-		*/
-		SceneDependencyManager( Tokenizer& tokenizer, FSceneManagerContext& ctx ) : mTokenizer( tokenizer ), mContext( ctx ) { }
 
-		void Initialize( );
+		void Initialize( Tokenizer& tokenizer, FSceneManagerContext& ctx );
 
 		/* @brief Parses the token stream and populates the given scene.
 		* @param scene Scene to populate with entities and components.
@@ -70,10 +65,10 @@ namespace lum::fmt {
 
 
 		/* @brief Reference to the tokenizer holding the pre-tokenized scene file. */
-		Tokenizer& mTokenizer;
+		Tokenizer* mTokenizer = nullptr;
 
 		/* @brief Resource manager context used during parsing for asset resolution. */
-		FSceneManagerContext mContext;
+		FSceneManagerContext* mContext = nullptr;
 
 		/* @brief Lookup table mapping hashed identifier keywords to their parse functions.
 		* Used to dispatch top-level scene constructs such as entity and world blocks.

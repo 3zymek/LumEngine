@@ -9,9 +9,9 @@ namespace lum {
 	struct EEntityDestroyed : public Event { EntityID mID; };
 
 	template<ecs::detail::Component tType>
-	struct EComponentAdded : public Event { EntityID mID; };
+	struct EComponentAdded : public Event { EntityID mID; tType* mComponent; };
 
 	template<ecs::detail::Component tType>
-	struct EComponentRemoved : public Event { EntityID mID; };
+	struct EComponentRemoved : public Event { EntityID mID; tType* mComponent; };
 
 }

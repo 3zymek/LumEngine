@@ -11,7 +11,6 @@
 #include "scene/format/tokenizer.hpp"
 
 #include "entity/entity_manager.hpp"
-#include "entity/components/transform.hpp"
 
 namespace lum {
 
@@ -31,26 +30,7 @@ namespace lum {
 
 		if (!mScenes.contains( hash )) {
 
-			std::optional<String> content = AssetLoader::ReadFile( RootID::External, scenePath );
-
-			if (!content) {
-				LUM_LOG_ERROR( "Failed to load scene %s: %s", scenePath, AssetLoader::GetErrorMessage( ) );
-				return;
-			}
-			if (!fmt::IsValidFormat( scenePath, fmt::Format::Scene )) {
-				LUM_LOG_ERROR( "Invalid scene format: %s", scenePath );
-				return;
-			}
-
-			fmt::Tokenizer tokenizer;
-			tokenizer.Tokenize( content.value( ) );
-
-			fmt::SceneDependencyManager parser( tokenizer, mContext );
-			FScene scene;
-			scene.mEntityMgr.Initialize( mContext.mEventBus );
-			parser.Parse( scene );
-
-			mScenes.emplace( hash, std::move( scene ) );
+			LoadScene( scenePath );
 
 		}
 
@@ -76,10 +56,11 @@ namespace lum {
 		fmt::Tokenizer tokenizer;
 		tokenizer.Tokenize( content.value( ) );
 
-		fmt::SceneDependencyManager parser( tokenizer, mContext );
+		fmt::SceneDependencyManager parser;
+		parser.Initialize( tokenizer, mContext );
 		FScene scene;
+		scene.mEntityMgr.Initialize( mContext.mEventBus );
 		parser.Parse( scene );
-
 		mScenes.emplace( hash, std::move( scene ) );
 
 	}

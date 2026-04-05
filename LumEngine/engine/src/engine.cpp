@@ -13,13 +13,13 @@ namespace lum {
 	//---------------------------------------------------------
 
 	void Engine::Initialize( StringView projectDir ) {
-
+	    
 		AssetLoader::SetProjectRoot( projectDir );
 
 		mAudio.Initialize( mEvBus );
 		mPlatform.Initialize( mEvBus );
-		mRes.Initialize( mPlatform );
-		mRender.Initialize( mPlatform, mRes, mEvBus );
+		mRes.Initialize( mPlatform, mEvBus );
+		mRender.Initialize( mPlatform,  mRes, mEvBus );
 		mScene.Initialize( mRes, mRender, mAudio, mEvBus );
 
 	}

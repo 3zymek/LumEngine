@@ -18,9 +18,12 @@ namespace lum::fmt {
 	// Public
 	//---------------------------------------------------------
 
-	void SceneDependencyManager::Initialize( ) {
+	void SceneDependencyManager::Initialize( Tokenizer& tokenizer, FSceneManagerContext& ctx ) {
 
-		detail::RegisterComponents( sIdentifiersParseFunctions );
+		mTokenizer = &tokenizer;
+		mContext = &ctx;
+
+		detail::RegisterComponents( sComponentsParseFunctions );
 
 	}
 
@@ -28,12 +31,13 @@ namespace lum::fmt {
 	void SceneDependencyManager::Parse( FScene& scene ) {
 
 		FParseContext ctx{ scene };
-		ctx.mContext = mContext;
+		ctx.mContext = *mContext;
 
-		auto tokens = mTokenizer.GetTokens( );
+		auto tokens = mTokenizer->GetTokens( );
 
 		for (int32 i = 0; i < tokens.size( ); i++) {
 			if (tokens[ i ].mType == TokenType::Identifier) {
+				LUM_LOG_INFO( "Parsing component: %s", tokens[i ].mValue.c_str() );
 				auto it = sIdentifiersParseFunctions.find( HashStr( ToLower( tokens[ i ].mValue ) ) );
 				if (it != sIdentifiersParseFunctions.end( )) {
 					it->second( tokens, i, ctx );

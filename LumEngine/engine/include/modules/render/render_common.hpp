@@ -6,10 +6,9 @@
 //=============================================================================//
 #pragma once
 
-#include "rhi/rhi_common.hpp"
-
+#include "rhi/core/rhi_device.hpp"
+#include "core/utils/handle_pool.hpp"
 #include "entity/components/transform.hpp"
-#include "entity/components/mesh.hpp"
 #include "entity/components/material.hpp"
 
 namespace lum {
@@ -21,7 +20,13 @@ namespace lum {
 	class MMaterialManager;
 	class MShaderManager;
 	class MMeshManager;
+	class MSceneManager;
+	struct CStaticMesh;
 	///////////////////////
+
+	struct StaticMeshHandle : cstd::BaseHandle<uint32> { };
+	struct DynamicMeshHandle : cstd::BaseHandle<uint32> { };
+
 }
 
 namespace lum::render {
@@ -31,34 +36,22 @@ namespace lum::render {
 	/* @brief Aggregates all external subsystem pointers required to initialize the renderer. */
 	struct FRendererContext {
 
-		/* @brief Pointer to the active RHI device. */
-		rhi::RenderDevice* mRenderDevice = nullptr;
-
-		/* @brief Pointer to the active texture manager. */
-		MTextureManager* mTextureMgr = nullptr;
-
-		/* @brief Pointer to the active material manager. */
-		MMaterialManager* mMaterialMgr = nullptr;
-
-		/* @brief Pointer to the active mesh manager. */
-		MMeshManager* mMeshMgr = nullptr;
-
-		/* @brief Pointer to the active shader manager. */
-		MShaderManager* mShaderMgr = nullptr;
-
-		/* @brief Pointer to the active event bus. */
-		ev::EventBus* mEventBus = nullptr;
-
+		rhi::RenderDevice*	mRenderDev = nullptr;
+		MTextureManager*	mTextureMgr = nullptr;
+		MMaterialManager*	mMaterialMgr = nullptr;
+		MMeshManager*		mMeshMgr = nullptr;
+		MShaderManager*		mShaderMgr = nullptr;
+		ev::EventBus*		mEvBus = nullptr;
 	};
 
 	constexpr void ValidateRendererContext( const FRendererContext& ctx ) {
 
-		LUM_ASSERT( ctx.mRenderDevice != nullptr, "RenderDevice is null" );
+		LUM_ASSERT( ctx.mRenderDev != nullptr, "RenderDevice is null" );
 		LUM_ASSERT( ctx.mTextureMgr != nullptr, "TextureManager is null" );
 		LUM_ASSERT( ctx.mMaterialMgr != nullptr, "MaterialManager is null" );
 		LUM_ASSERT( ctx.mMeshMgr != nullptr, "MeshManager is null" );
 		LUM_ASSERT( ctx.mShaderMgr != nullptr, "ShaderManager is null" );
-		LUM_ASSERT( ctx.mEventBus != nullptr, "EventBus is null" );
+		LUM_ASSERT( ctx.mEvBus != nullptr, "EventBus is null" );
 
 	}
 

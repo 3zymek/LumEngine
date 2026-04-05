@@ -67,20 +67,20 @@ namespace lum::render {
 
 	void LightPass::Execute( const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassExecute& desc ) {
 
-		mContext.mRenderDevice->BindFramebuffer( quad.mSceneFbo );
-		mContext.mRenderDevice->BindPipeline( mPipeline );
+		mContext.mRenderDev->BindFramebuffer( quad.mSceneFbo );
+		mContext.mRenderDev->BindPipeline( mPipeline );
 
 		upload_directional_light( );
 		upload_point_lights( );
 		upload_spot_lights( );
 
-		mContext.mRenderDevice->BindShader( mShader );
-		mContext.mRenderDevice->BindTexture( desc.mShadowMap, LUM_SHADOW_MAP );
-		mContext.mRenderDevice->BindTexture( desc.mIrradianceMap, LUM_TEX_IRRADIANCE );
-		mContext.mRenderDevice->BindTexture( desc.mPrefilteredEnvMap, LUM_TEX_PREFILTERED );
+		mContext.mRenderDev->BindShader( mShader );
+		mContext.mRenderDev->BindTexture( desc.mShadowMap, LUM_SHADOW_MAP );
+		mContext.mRenderDev->BindTexture( desc.mIrradianceMap, LUM_TEX_IRRADIANCE );
+		mContext.mRenderDev->BindTexture( desc.mPrefilteredEnvMap, LUM_TEX_PREFILTERED );
 		gbuffer.BindTextures( );
 
-		mContext.mRenderDevice->DrawElements( quad.mVao, 6 );
+		mContext.mRenderDev->DrawElements( quad.mVao, 6 );
 
 	}
 
@@ -98,30 +98,30 @@ namespace lum::render {
 		desc.mMapFlags = rhi::MapFlag::Write;
 
 		// Point Lights SSBO
-		if (!mContext.mRenderDevice->IsValid( mLightsUBO )) {
+		if (!mContext.mRenderDev->IsValid( mLightsUBO )) {
 
 			desc.mSize = (sizeof( FPointLight ) * LUM_MAX_LIGHTS + sizeof( int32 )) + (sizeof( FSpotLight ) * LUM_MAX_LIGHTS + sizeof( int32 ));
 			desc.mBufferType = rhi::BufferType::ShaderStorage;
-			mLightsUBO = mContext.mRenderDevice->CreateBuffer( desc );
-			mContext.mRenderDevice->SetShaderStorageBinding( mLightsUBO, LUM_SSBO_LIGHTS_BINDING );
+			mLightsUBO = mContext.mRenderDev->CreateBuffer( desc );
+			mContext.mRenderDev->SetShaderStorageBinding( mLightsUBO, LUM_SSBO_LIGHTS_BINDING );
 
 		}
 		// Directional Light UBO
-		if (!mContext.mRenderDevice->IsValid( mDirectionalLightUBO )) {
+		if (!mContext.mRenderDev->IsValid( mDirectionalLightUBO )) {
 
 			desc.mSize = sizeof( mDirectionalLightData );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mDirectionalLightUBO = mContext.mRenderDevice->CreateBuffer( desc );
-			mContext.mRenderDevice->SetUniformBufferBinding( mDirectionalLightUBO, LUM_UBO_DIRECTIONAL_LIGHT );
+			mDirectionalLightUBO = mContext.mRenderDev->CreateBuffer( desc );
+			mContext.mRenderDev->SetUniformBufferBinding( mDirectionalLightUBO, LUM_UBO_DIRECTIONAL_LIGHT );
 
 		}
 
-		if (!mContext.mRenderDevice->IsValid( mPipeline )) {
+		if (!mContext.mRenderDev->IsValid( mPipeline )) {
 		
 			rhi::FPipelineDescriptor desc;
 			desc.mDepthStencil.mDepth.bEnabled = false;
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = false;
-			mPipeline = mContext.mRenderDevice->CreatePipeline( desc );
+			mPipeline = mContext.mRenderDev->CreatePipeline( desc );
 		
 		}
 
@@ -136,12 +136,12 @@ namespace lum::render {
 
 	void LightPass::upload_point_lights( ) {
 
-		mContext.mRenderDevice->UpdateBuffer(
+		mContext.mRenderDev->UpdateBuffer(
 			mLightsUBO, &mActivePointLights,
 			skOffsetActivePoint, sizeof( int32 )
 		);
 
-		mContext.mRenderDevice->UpdateBuffer(
+		mContext.mRenderDev->UpdateBuffer(
 			mLightsUBO, mPointLights.data( ),
 			skOffsetPointLights, sizeof( FPointLight ) * LUM_MAX_LIGHTS
 		);
@@ -149,12 +149,12 @@ namespace lum::render {
 	}
 	void LightPass::upload_spot_lights( ) {
 
-		mContext.mRenderDevice->UpdateBuffer(
+		mContext.mRenderDev->UpdateBuffer(
 			mLightsUBO, &mActiveSpotLights,
 			skOffsetActiveSpot, sizeof( int32 )
 		);
 
-		mContext.mRenderDevice->UpdateBuffer(
+		mContext.mRenderDev->UpdateBuffer(
 			mLightsUBO, mSpotLights.data( ),
 			skOffsetSpotLights, sizeof( FSpotLight ) * LUM_MAX_LIGHTS
 		);
@@ -162,7 +162,7 @@ namespace lum::render {
 	}
 	void LightPass::upload_directional_light( ) {
 
-		mContext.mRenderDevice->UpdateBuffer(
+		mContext.mRenderDev->UpdateBuffer(
 			mDirectionalLightUBO,
 			&mDirectionalLightData
 		);

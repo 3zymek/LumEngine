@@ -105,7 +105,6 @@ namespace lum {
 	rhi::RTextureHandle MTextureManager::GetFallbackTexture( FallbackTexture fallback ) {
 		switch (fallback) {
 		case FallbackTexture::Missing: return mMissingTexture;
-		case FallbackTexture::DefaultAlbedo: return mDefaultAlbedoTexture;
 		case FallbackTexture::DefaultNormal: return mDefaultNormalTexture;
 		case FallbackTexture::DefaultRoughness: return mDefaultRoughnessTexture;
 		case FallbackTexture::DefaultMetallic: return mDefaultMetallicTexture;

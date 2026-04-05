@@ -9,12 +9,21 @@
 
 namespace lum {
 
-	void MResourceModule::Initialize( MPlatformModule& platform ) {
+	void MResourceModule::Initialize( MPlatformModule& platform, ev::EventBus& bus ) {
+
+		mCtx.mEvBus = &bus;
+		mCtx.mMaterialMgr = &mMaterialMgr;
+		mCtx.mMeshMgr = &mMeshMgr;
+		mCtx.mRenderDev = platform.mRenderDevice;
+		mCtx.mShaderMgr = &mShaderMgr;
+		mCtx.mTextureMgr = &mTextureMgr;
+		
+		render::ValidateRendererContext( mCtx );
 
 		mTextureMgr.Initialize( platform.mRenderDevice );
-		mMeshMgr.Initialize( platform.mRenderDevice );
+		mMeshMgr.Initialize( &mCtx );
 		mShaderMgr.Initialize( platform.mRenderDevice );
-		mMaterialMgr.Initialize( platform.mRenderDevice, &mTextureMgr );
+		mMaterialMgr.Initialize( &mCtx );
 
 	}
 

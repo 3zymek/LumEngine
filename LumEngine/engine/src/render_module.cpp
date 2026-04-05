@@ -17,9 +17,9 @@ namespace lum {
 		ctx.mMaterialMgr = &res.mMaterialMgr;
 		ctx.mMeshMgr = &res.mMeshMgr;
 		ctx.mTextureMgr = &res.mTextureMgr;
-		ctx.mRenderDevice = platform.mRenderDevice;
+		ctx.mRenderDev = platform.mRenderDevice;
 		ctx.mShaderMgr = &res.mShaderMgr;
-		ctx.mEventBus = &bus;
+		ctx.mEvBus = &bus;
 		mRenderer.Initialize( ctx );
 
 		mRenderSys.Initialize( &mRenderer );

@@ -27,21 +27,21 @@ namespace lum::render {
 
 	void ShadowPass::Execute( GeometryPass& geometryPass, const LightPass& lightPass ) {
 
-		rhi::FViewportState viewport = mContext.mRenderDevice->GetViewport( );
+		rhi::FViewportState viewport = mContext.mRenderDev->GetViewport( );
 
-		mContext.mRenderDevice->BindPipeline( mShadowPipeline );
+		mContext.mRenderDev->BindPipeline( mShadowPipeline );
 
 		calculate_lightspace_matrix( lightPass.GetDirectionalLight( ).mDirection );
-		mContext.mRenderDevice->BindFramebuffer( mShadowFramebuffer );
-		mContext.mRenderDevice->SetViewport( 0, 0, mShadowMapTexSize.x, mShadowMapTexSize.y );
-		mContext.mRenderDevice->ClearDepth( );
+		mContext.mRenderDev->BindFramebuffer( mShadowFramebuffer );
+		mContext.mRenderDev->SetViewport( 0, 0, mShadowMapTexSize.x, mShadowMapTexSize.y );
+		mContext.mRenderDev->ClearDepth( );
 
-		mContext.mRenderDevice->BindShader( mShader );
+		mContext.mRenderDev->BindShader( mShader );
 
 		geometryPass.DrawScene( );
 
-		mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer );
-		mContext.mRenderDevice->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
+		mContext.mRenderDev->BindFramebuffer( rhi::gDefaultFramebuffer );
+		mContext.mRenderDev->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
 
 	}
 
@@ -79,7 +79,7 @@ namespace lum::render {
 
 	void ShadowPass::upload_lightspace_matrix( const glm::mat4& mat ) {
 
-		mContext.mRenderDevice->UpdateBuffer(
+		mContext.mRenderDev->UpdateBuffer(
 			mLightSpaceUBO,
 			glm::value_ptr( mat )
 		);
@@ -95,12 +95,12 @@ namespace lum::render {
 			desc.mImageFormat = rhi::ImageFormat::DepthComponent;
 			desc.mImageLayout = rhi::ImageLayout::Depth32F;
 			desc.mTextureType = rhi::TextureType::Texture2D;
-			mShadowMap = mContext.mRenderDevice->CreateTexture( desc );
+			mShadowMap = mContext.mRenderDev->CreateTexture( desc );
 		}
 		{ // Shadow FBO
 			rhi::FFramebufferDescriptor desc;
 			desc.mDepthTex = mShadowMap;
-			mShadowFramebuffer = mContext.mRenderDevice->CreateFramebuffer( desc );
+			mShadowFramebuffer = mContext.mRenderDev->CreateFramebuffer( desc );
 		}
 		{ // Light space matrices UBO
 			rhi::FBufferDescriptor desc;
@@ -108,8 +108,8 @@ namespace lum::render {
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
 			desc.mSize = sizeof( glm::mat4 );
-			mLightSpaceUBO = mContext.mRenderDevice->CreateBuffer( desc );
-			mContext.mRenderDevice->SetUniformBufferBinding( mLightSpaceUBO, LUM_UBO_LIGHTSPACE_MATRIX );
+			mLightSpaceUBO = mContext.mRenderDev->CreateBuffer( desc );
+			mContext.mRenderDev->SetUniformBufferBinding( mLightSpaceUBO, LUM_UBO_LIGHTSPACE_MATRIX );
 		}
 		{ // Shadow pipeline
 
@@ -117,7 +117,7 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.bEnabled = true;
 			desc.mCull.bEnabled = true;
 			desc.mCull.mFace = rhi::Face::Back;
-			mShadowPipeline = mContext.mRenderDevice->CreatePipeline( desc );
+			mShadowPipeline = mContext.mRenderDev->CreatePipeline( desc );
 
 		}
 		{ // Shaders

@@ -15,13 +15,13 @@ namespace lum::render {
 
 	void PostprocessPass::Execute( const detail::FScreenQuad& quad ) {
 
-		mContext.mRenderDevice->BindFramebuffer( quad.mPostprocessFbo );
-		mContext.mRenderDevice->BindShader( mShader );
-		mContext.mRenderDevice->BindTexture( quad.mSceneTexture, 0 );
+		mContext.mRenderDev->BindFramebuffer( quad.mPostprocessFbo );
+		mContext.mRenderDev->BindShader( mShader );
+		mContext.mRenderDev->BindTexture( quad.mSceneTexture, 0 );
 
-		mContext.mRenderDevice->DrawElements( quad.mVao, 6 );
+		mContext.mRenderDev->DrawElements( quad.mVao, 6 );
 
-		mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer );
+		mContext.mRenderDev->BindFramebuffer( rhi::gDefaultFramebuffer );
 
 
 	}

@@ -5,8 +5,8 @@
 //=============================================================================//
 #pragma once
 
-#include "render/mesh_manager.hpp"
 #include "entity/ecs_common.hpp"
+#include "render/render_common.hpp"
 
 namespace lum {
 
@@ -14,13 +14,13 @@ namespace lum {
 	*  Does not own the mesh data — lifetime is managed by MMeshManager.
 	*  Use StaticMeshHandle to reference geometry uploaded to the GPU.
 	*/
-	LCLASS(id="static_mesh" ) struct CStaticMesh : public Component {
+	LCLASS( id = "static_mesh" ) struct CStaticMesh : public Component {
 
 		LPROPERTY( )
 		String mPath;
 
 		/* @brief Handle to the static mesh asset registered in MMeshManager. */
-		StaticMeshHandle mMesh;
+		StaticMeshHandle mHandle;
 
 	};
 

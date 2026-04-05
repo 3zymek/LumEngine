@@ -24,7 +24,11 @@ namespace lum {
 		MMeshManager		mMeshMgr;
 		MShaderManager		mShaderMgr;
 
-		void Initialize( MPlatformModule& platform );
+		void Initialize( MPlatformModule& platform,  ev::EventBus& bus );
+
+	private:
+
+		render::FRendererContext mCtx;
 
 	};
 

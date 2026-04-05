@@ -23,9 +23,9 @@ namespace lum::render::detail {
 
 	void GBuffer::BindTextures( ) const {
 
-		mContext.mRenderDevice->BindTexture( mAlbedo, LUM_GBUFFER_ALBEDO );
-		mContext.mRenderDevice->BindTexture( mNormal, LUM_GBUFFER_NORMAL );
-		mContext.mRenderDevice->BindTexture( mDepth, LUM_GBUFFER_DEPTH );
+		mContext.mRenderDev->BindTexture( mAlbedo, LUM_GBUFFER_ALBEDO );
+		mContext.mRenderDev->BindTexture( mNormal, LUM_GBUFFER_NORMAL );
+		mContext.mRenderDev->BindTexture( mDepth, LUM_GBUFFER_DEPTH );
 
 	}
 
@@ -49,9 +49,9 @@ namespace lum::render::detail {
 
 	void GBuffer::create_textures( uint32 width, uint32 height ) {
 
-		mContext.mRenderDevice->DeleteTexture( mAlbedo );
-		mContext.mRenderDevice->DeleteTexture( mNormal );
-		mContext.mRenderDevice->DeleteTexture( mDepth );
+		mContext.mRenderDev->DeleteTexture( mAlbedo );
+		mContext.mRenderDev->DeleteTexture( mNormal );
+		mContext.mRenderDev->DeleteTexture( mDepth );
 
 		rhi::FTextureDescriptor desc;
 		{ // Albedo
@@ -60,7 +60,7 @@ namespace lum::render::detail {
 			desc.mWidth = width;
 			desc.mHeight = height;
 			desc.mTextureType = rhi::TextureType::Texture2D;
-			mAlbedo = mContext.mRenderDevice->CreateTexture( desc );
+			mAlbedo = mContext.mRenderDev->CreateTexture( desc );
 		}
 		{ // Normal
 			desc.mImageFormat = rhi::ImageFormat::RGBA;
@@ -68,7 +68,7 @@ namespace lum::render::detail {
 			desc.mWidth = width;
 			desc.mHeight = height;
 			desc.mTextureType = rhi::TextureType::Texture2D;
-			mNormal = mContext.mRenderDevice->CreateTexture( desc );
+			mNormal = mContext.mRenderDev->CreateTexture( desc );
 		}
 		{ // Depth
 			desc.mImageFormat = rhi::ImageFormat::DepthComponent;
@@ -76,28 +76,28 @@ namespace lum::render::detail {
 			desc.mWidth = width;
 			desc.mHeight = height;
 			desc.mTextureType = rhi::TextureType::Texture2D;
-			mDepth = mContext.mRenderDevice->CreateTexture( desc );
+			mDepth = mContext.mRenderDev->CreateTexture( desc );
 		}
 
 	}
 
 	void GBuffer::create_framebuffer( ) {
 
-		if (mContext.mRenderDevice->IsValid( mFramebuffer )) mContext.mRenderDevice->DeleteFramebuffer( mFramebuffer );
+		if (mContext.mRenderDev->IsValid( mFramebuffer )) mContext.mRenderDev->DeleteFramebuffer( mFramebuffer );
 
 		{
 			rhi::FFramebufferDescriptor desc;
 			desc.mColorTex.push_back( { LUM_GBUFFER_ALBEDO, mAlbedo } );
 			desc.mColorTex.push_back( { LUM_GBUFFER_NORMAL, mNormal } );
 			desc.mDepthTex = mDepth;
-			mFramebuffer = mContext.mRenderDevice->CreateFramebuffer( desc );
+			mFramebuffer = mContext.mRenderDev->CreateFramebuffer( desc );
 		}
 
 	}
 
 	void GBuffer::init( ) {
 
-		mContext.mEventBus->SubscribePermanently<EWindowResized>(
+		mContext.mEvBus->SubscribePermanently<EWindowResized>(
 			[&]( const EWindowResized& ev ) {
 
 				if (ev.mWidth == 0 || ev.mHeight == 0) return;

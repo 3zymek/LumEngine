@@ -13,6 +13,8 @@
 #include "render/shader_manager.hpp"
 #include "render/mesh_manager.hpp"
 
+#include "entity/components/mesh.hpp"
+
 #include "render/g_buffer.hpp"
 
 namespace lum::render {
@@ -49,15 +51,15 @@ namespace lum::render {
 	void GeometryPass::Execute( const detail::GBuffer& gbuffer ) {
 
 		gbuffer.BindBuffer( );
-		mContext.mRenderDevice->Clear(
+		mContext.mRenderDev->Clear(
 			rhi::BufferBit::Color |
 			rhi::BufferBit::Depth |
 			rhi::BufferBit::Stencil
 		);
 
-		mContext.mRenderDevice->BindShader( mShader );
+		mContext.mRenderDev->BindShader( mShader );
 
-		mContext.mRenderDevice->BindPipeline( mPipeline );
+		mContext.mRenderDev->BindPipeline( mPipeline );
 		for (auto& instance : mInstances)
 			draw_instance( instance );
 
@@ -90,14 +92,14 @@ namespace lum::render {
 		{ // Model Uniform
 			desc.mSize = sizeof( detail::FModelUBOData );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mModelUniform = mContext.mRenderDevice->CreateBuffer( desc );
-			mContext.mRenderDevice->SetUniformBufferBinding( mModelUniform, LUM_UBO_MODEL_BINDING );
+			mModelUniform = mContext.mRenderDev->CreateBuffer( desc );
+			mContext.mRenderDev->SetUniformBufferBinding( mModelUniform, LUM_UBO_MODEL_BINDING );
 		}
 		{ // Material Uniform
 			desc.mSize = sizeof( detail::FMaterialUBOData );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mMaterialUniform = mContext.mRenderDevice->CreateBuffer( desc );
-			mContext.mRenderDevice->SetUniformBufferBinding( mMaterialUniform, LUM_UBO_MATERIAL_BINDING );
+			mMaterialUniform = mContext.mRenderDev->CreateBuffer( desc );
+			mContext.mRenderDev->SetUniformBufferBinding( mMaterialUniform, LUM_UBO_MATERIAL_BINDING );
 		}
 		{ // Geometry pipeline
 			rhi::FPipelineDescriptor desc;
@@ -106,7 +108,7 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::Less;
 			desc.mCull.bEnabled = true;
 			desc.mCull.mFace = rhi::Face::Back;
-			mPipeline = mContext.mRenderDevice->CreatePipeline( desc );
+			mPipeline = mContext.mRenderDev->CreatePipeline( desc );
 			mShader = mContext.mShaderMgr->LoadShader( "shaders/geometry_pass.vert", "shaders/geometry_pass.frag", RootID::Internal );
 		}
 
@@ -114,14 +116,14 @@ namespace lum::render {
 
 	void GeometryPass::draw_instance( const FRenderInstance& instance ) {
 
-		const auto& mat = instance.mMaterial->mMat;
+		const auto& mat = instance.mMaterial->mInst;
 
 		upload_material( mat );
 
-		mContext.mRenderDevice->BindTexture( mat.mAlbedoTex, LUM_TEX_ALBEDO );
-		mContext.mRenderDevice->BindTexture( mat.mNormalTex, LUM_TEX_NORMAL );
-		mContext.mRenderDevice->BindTexture( mat.mRoughnessTex, LUM_TEX_ROUGHNESS );
-		mContext.mRenderDevice->BindTexture( mat.mMetallicTex, LUM_TEX_METALNESS );
+		mContext.mRenderDev->BindTexture( mat.mAlbedoTex, LUM_TEX_ALBEDO );
+		mContext.mRenderDev->BindTexture( mat.mNormalTex, LUM_TEX_NORMAL );
+		mContext.mRenderDev->BindTexture( mat.mRoughnessTex, LUM_TEX_ROUGHNESS );
+		mContext.mRenderDev->BindTexture( mat.mMetallicTex, LUM_TEX_METALNESS );
 
 		draw_mesh( instance );
 
@@ -129,10 +131,10 @@ namespace lum::render {
 
 	void GeometryPass::draw_mesh( const FRenderInstance& instance ) {
 
-		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic( instance.mStaticMesh->mMesh );
+		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic( instance.mStaticMesh->mHandle );
 
 		upload_model_matrix( instance );
-		mContext.mRenderDevice->DrawElements( res.mVao, res.mNumIndices );
+		mContext.mRenderDev->DrawElements( res.mVao, res.mNumIndices );
 
 	}
 
@@ -147,7 +149,7 @@ namespace lum::render {
 		model = model * rotation;
 		model = glm::scale( model, instance.mTransform->mScale );
 
-		mContext.mRenderDevice->UpdateBuffer( mModelUniform, glm::value_ptr( model ), 0, 0 );
+		mContext.mRenderDev->UpdateBuffer( mModelUniform, glm::value_ptr( model ), 0, 0 );
 
 	}
 	void GeometryPass::upload_material( const FMaterialInstance& mat ) {
@@ -156,7 +158,7 @@ namespace lum::render {
 		mMaterialUBO.mRoughness = mat.mRoughnessValue;
 		mMaterialUBO.mMetallic = mat.mMetallicValue;
 
-		mContext.mRenderDevice->UpdateBuffer( mMaterialUniform, &mMaterialUBO );
+		mContext.mRenderDev->UpdateBuffer( mMaterialUniform, &mMaterialUBO );
 
 	}
 

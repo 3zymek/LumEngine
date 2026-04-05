@@ -8,17 +8,10 @@
 #include "core/core_common.hpp"
 #include "core/limits.hpp"
 #include "core/utils/handle_pool.hpp"
-
+#include "render/render_common.hpp"
 #include "render/material.hpp"
 
 namespace lum {
-
-	/////Forward Declare/////
-	class MTextureManager;
-	namespace rhi {
-		class RenderDevice;
-	}
-	////////////////////////
 
 	/* @brief Strongly typed handle referencing a base material in the pool. */
 	struct MaterialBaseHandle : cstd::BaseHandle<uint32> {};
@@ -46,7 +39,7 @@ namespace lum {
 		* @param device  Pointer to the active render device.
 		* @param texMgr  Pointer to the texture manager for fallback resolution.
 		*/
-		void Initialize( rhi::RenderDevice* device, MTextureManager* texMgr );
+		void Initialize( render::FRendererContext* ctx );
 
 		/* @brief Uploads a material base to the pool and returns its handle.
 		* @param base Material base data to upload.
@@ -85,13 +78,10 @@ namespace lum {
 
 	private:
 
-		/* @brief Render backend */
-		rhi::RenderDevice* mRenderDevice = nullptr;
+		render::FRendererContext* mContext = nullptr;
 
 		/* @brief Handle to the built-in default material, used as fallback for invalid handles. */
 		MaterialBaseHandle mDefaultMaterial;
-		MTextureManager* mTextureMgr = nullptr;
-
 
 		/* @brief Pool storing all uploaded base materials, indexed by MaterialBaseHandle. */
 		cstd::HandlePool<MaterialBaseHandle, FMaterialBase> mBaseMaterials{ limits::gMaxMaterials };

@@ -22,14 +22,14 @@ namespace lum::ecs {
 	template<detail::Component tType>
 	tType& MEntityManager::AddComponent( EntityID entityID, tType component ) {
 		tType& retVal = GetPool<tType>( ).Add( entityID, component );
-		mEventBus->Emit( EComponentAdded<tType>{.mID = entityID } );
+		mEventBus->Emit( EComponentAdded<tType>{.mID = entityID, .mComponent = &retVal } );
 		return retVal;
 	}
 
 	template<detail::Component tType>
 	tType& MEntityManager::AddComponent( Entity entity, tType component ) {
 		tType& retVal = GetPool<tType>( ).Add( entity.mID, component );
-		mEventBus->Emit( EComponentAdded<tType>{.mID = entity.mID } );
+		mEventBus->Emit( EComponentAdded<tType>{.mID = entity.mID, .mComponent = &retVal } );
 		return retVal;
 	}
 

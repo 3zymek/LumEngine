@@ -6,7 +6,7 @@
 #pragma once
 
 #include "core/core_common.hpp"
-#include "core/utils/handle_pool.hpp"
+#include "render/render_common.hpp"
 
 #include "render/mesh.hpp"
 
@@ -28,9 +28,6 @@ namespace lum {
 
 	} // namespace lum::detail
 
-	struct StaticMeshHandle : cstd::BaseHandle<uint32> {};
-	struct DynamicMeshHandle : cstd::BaseHandle<uint32> {};
-
 	/* @brief Loads and manages static mesh resources on the GPU.
 	*
 	* Handles mesh loading via Assimp, GPU upload, and handle-based access.
@@ -42,10 +39,7 @@ namespace lum {
 
 		MMeshManager() {}
 
-		/* @brief Initializes the manager with the given RHI device.
-		* @param device Pointer to the active render device.
-		*/
-		void Initialize( rhi::RenderDevice* device );
+		void Initialize( render::FRendererContext* ctx );
 
 		/* @brief Returns the static mesh resource for the given handle.
 		* @param handle Handle to the static mesh.
@@ -59,18 +53,18 @@ namespace lum {
 		* @param root Root directory identifier.
 		* @return Handle to the uploaded static mesh.
 		*/
-		StaticMeshHandle CreateStatic( ccharptr path, RootID root = RootID::External );
+		StaticMeshHandle CreateStatic( StringView path, RootID root = RootID::External );
 
 		/* @brief Loads a dynamic mesh instance from disk.
 		* @param path Path to the mesh file.
 		* @param root Root directory identifier.
 		* @return Dynamic mesh instance.
 		*/
-		FDynamicMeshInstance CreateDynamic( ccharptr path, RootID root = RootID::External );
+		FDynamicMeshInstance CreateDynamic( StringView path, RootID root = RootID::External );
 
 	private:
 
-		rhi::RenderDevice* mRenderDevice = nullptr;
+		render::FRendererContext* mContext = nullptr;
 
 		StaticMeshHandle mDefaultMesh; // Fallback mesh used when no mesh is assigned.
 		StaticMeshHandle mErrorMesh;   // Fallback mesh used when loading fails.

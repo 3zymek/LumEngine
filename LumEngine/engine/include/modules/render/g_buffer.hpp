@@ -44,11 +44,11 @@ namespace lum::render::detail {
 		*  Call before the geometry pass draw calls.
 		*/
 		LUM_FORCEINLINE
-		void BindBuffer( ) const { mContext.mRenderDevice->BindFramebuffer( mFramebuffer ); }
+		void BindBuffer( ) const { mContext.mRenderDev->BindFramebuffer( mFramebuffer ); }
 
 		/* @brief Unbinds the G-Buffer framebuffer, restoring the default render target. */
 		LUM_FORCEINLINE
-		void UnbindBuffer( ) const { mContext.mRenderDevice->BindFramebuffer( rhi::gDefaultFramebuffer ); }
+		void UnbindBuffer( ) const { mContext.mRenderDev->BindFramebuffer( rhi::gDefaultFramebuffer ); }
 
 		rhi::RTextureHandle GetTexture( GBufferTexture tex );
 

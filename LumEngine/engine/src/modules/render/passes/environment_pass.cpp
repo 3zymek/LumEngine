@@ -32,13 +32,13 @@ namespace lum::render {
 
 	void EnvironmentPass::Execute( detail::GBuffer& gbuffer, const detail::FScreenQuad& quad ) {
 
-		mContext.mRenderDevice->BindFramebuffer( quad.mSceneFbo ); // Render skybox to screenquad
-		mContext.mRenderDevice->BindPipeline( mCubemap.mPipeline );
-		mContext.mRenderDevice->BindShader( mCubemap.mShader );
-		mContext.mRenderDevice->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
-		mContext.mRenderDevice->BindSampler( mSampler, LUM_TEX_CUBEMAP );
+		mContext.mRenderDev->BindFramebuffer( quad.mSceneFbo ); // Render skybox to screenquad
+		mContext.mRenderDev->BindPipeline( mCubemap.mPipeline );
+		mContext.mRenderDev->BindShader( mCubemap.mShader );
+		mContext.mRenderDev->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
+		mContext.mRenderDev->BindSampler( mSampler, LUM_TEX_CUBEMAP );
 
-		mContext.mRenderDevice->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
+		mContext.mRenderDev->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
 
 	}
 
@@ -69,36 +69,36 @@ namespace lum::render {
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
 			desc.mSize = sizeof( glm::mat4 ) * 2;
-			captureUBO = mContext.mRenderDevice->CreateBuffer( desc );
-			mContext.mRenderDevice->SetUniformBufferBinding( captureUBO, LUM_UBO_IRRADIANCE );
+			captureUBO = mContext.mRenderDev->CreateBuffer( desc );
+			mContext.mRenderDev->SetUniformBufferBinding( captureUBO, LUM_UBO_IRRADIANCE );
 
 		}
 
-		rhi::RFramebufferHandle		captureFBO = mContext.mRenderDevice->CreateFramebuffer( { } );
+		rhi::RFramebufferHandle		captureFBO = mContext.mRenderDev->CreateFramebuffer( { } );
 		glm::mat4					captureProjection = FIBL::GetCaptureProjection( );
 		std::array<glm::mat4, 6>	captureViews = FIBL::GetCaptureViews( );
-		rhi::FViewportState			viewport = mContext.mRenderDevice->GetViewport( );
+		rhi::FViewportState			viewport = mContext.mRenderDev->GetViewport( );
 
-		mContext.mRenderDevice->SetViewport( 0, 0, 32, 32 );
-		mContext.mRenderDevice->BindFramebuffer( captureFBO );
-		mContext.mRenderDevice->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
-		mContext.mRenderDevice->BindSampler( mSampler, LUM_TEX_CUBEMAP );
-		mContext.mRenderDevice->BindPipeline( mCubemap.mPipeline );
-		mContext.mRenderDevice->BindShader( mIBL.mIrradiance.mShader );
+		mContext.mRenderDev->SetViewport( 0, 0, 32, 32 );
+		mContext.mRenderDev->BindFramebuffer( captureFBO );
+		mContext.mRenderDev->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
+		mContext.mRenderDev->BindSampler( mSampler, LUM_TEX_CUBEMAP );
+		mContext.mRenderDev->BindPipeline( mCubemap.mPipeline );
+		mContext.mRenderDev->BindShader( mIBL.mIrradiance.mShader );
 
 		for (int32 i = 0; i < 6; i++) {
 
 			glm::mat4 matrices[ ] = { captureProjection, captureViews[ i ] };
-			mContext.mRenderDevice->UpdateBuffer( captureUBO, matrices );
-			mContext.mRenderDevice->AttachCubemapFace( captureFBO, mIBL.mIrradiance.mTexture, i, 0 );
-			mContext.mRenderDevice->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
+			mContext.mRenderDev->UpdateBuffer( captureUBO, matrices );
+			mContext.mRenderDev->AttachCubemapFace( captureFBO, mIBL.mIrradiance.mTexture, i, 0 );
+			mContext.mRenderDev->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
 
 		}
 
-		mContext.mRenderDevice->DeleteFramebuffer( captureFBO );
-		mContext.mRenderDevice->DeleteBuffer( captureUBO );
+		mContext.mRenderDev->DeleteFramebuffer( captureFBO );
+		mContext.mRenderDev->DeleteBuffer( captureUBO );
 
-		mContext.mRenderDevice->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
+		mContext.mRenderDev->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
 
 	}
 
@@ -114,21 +114,21 @@ namespace lum::render {
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
 			desc.mSize = sizeof( glm::mat4 ) * 2 + sizeof( float32 );
-			captureUBO = mContext.mRenderDevice->CreateBuffer( desc );
-			mContext.mRenderDevice->SetUniformBufferBinding( captureUBO, LUM_UBO_PREFILTERED_MAP );
+			captureUBO = mContext.mRenderDev->CreateBuffer( desc );
+			mContext.mRenderDev->SetUniformBufferBinding( captureUBO, LUM_UBO_PREFILTERED_MAP );
 
 		}
 
-		rhi::RFramebufferHandle		captureFBO = mContext.mRenderDevice->CreateFramebuffer( { } );
+		rhi::RFramebufferHandle		captureFBO = mContext.mRenderDev->CreateFramebuffer( { } );
 		glm::mat4					captureProjection = FIBL::GetCaptureProjection( );
 		std::array<glm::mat4, 6>	captureViews = FIBL::GetCaptureViews( );
-		rhi::FViewportState			viewport = mContext.mRenderDevice->GetViewport( );
+		rhi::FViewportState			viewport = mContext.mRenderDev->GetViewport( );
 
-		mContext.mRenderDevice->BindFramebuffer( captureFBO );
-		mContext.mRenderDevice->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
-		mContext.mRenderDevice->BindSampler( mSampler, LUM_TEX_CUBEMAP );
-		mContext.mRenderDevice->BindPipeline( mCubemap.mPipeline );
-		mContext.mRenderDevice->BindShader( mIBL.mPrefiltered.mShader );
+		mContext.mRenderDev->BindFramebuffer( captureFBO );
+		mContext.mRenderDev->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
+		mContext.mRenderDev->BindSampler( mSampler, LUM_TEX_CUBEMAP );
+		mContext.mRenderDev->BindPipeline( mCubemap.mPipeline );
+		mContext.mRenderDev->BindShader( mIBL.mPrefiltered.mShader );
 
 		LUM_UNIFORM_BUFFER_STRUCT UniformData{
 			glm::mat4 mProjection;
@@ -142,7 +142,7 @@ namespace lum::render {
 			float32 roughness = ( float32 ) mip / ( float32 ) (mIBL.mPrefiltered.skMipmapLevels - 1);
 
 			uint32 mipSize = 128 >> mip;
-			mContext.mRenderDevice->SetViewport( 0, 0, mipSize, mipSize );
+			mContext.mRenderDev->SetViewport( 0, 0, mipSize, mipSize );
 
 			for (int32 i = 0; i < 6; i++) {
 
@@ -151,18 +151,18 @@ namespace lum::render {
 				data.mView = captureViews[ i ];
 				data.mRoughness = roughness;
 
-				mContext.mRenderDevice->UpdateBuffer( captureUBO, &data );
-				mContext.mRenderDevice->AttachCubemapFace( captureFBO, mIBL.mPrefiltered.mTexture, i, mip );
-				mContext.mRenderDevice->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
+				mContext.mRenderDev->UpdateBuffer( captureUBO, &data );
+				mContext.mRenderDev->AttachCubemapFace( captureFBO, mIBL.mPrefiltered.mTexture, i, mip );
+				mContext.mRenderDev->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
 
 			}
 
 		}
 
-		mContext.mRenderDevice->DeleteFramebuffer( captureFBO );
-		mContext.mRenderDevice->DeleteBuffer( captureUBO );
+		mContext.mRenderDev->DeleteFramebuffer( captureFBO );
+		mContext.mRenderDev->DeleteBuffer( captureUBO );
 
-		mContext.mRenderDevice->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
+		mContext.mRenderDev->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
 
 	}
 
@@ -188,7 +188,7 @@ namespace lum::render {
 
 
 		// Cubemap VBO
-		if (!mContext.mRenderDevice->IsValid( mCubemap.mVbo )) {
+		if (!mContext.mRenderDev->IsValid( mCubemap.mVbo )) {
 
 			rhi::FBufferDescriptor desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
@@ -196,12 +196,12 @@ namespace lum::render {
 			desc.mSize = ByteSize( cubemapVertices );
 			desc.mData = cubemapVertices;
 			desc.mBufferType = rhi::BufferType::Vertex;
-			mCubemap.mVbo = mContext.mRenderDevice->CreateBuffer( desc );
+			mCubemap.mVbo = mContext.mRenderDev->CreateBuffer( desc );
 
 		}
 
 		// Cubemap EBO
-		if (!mContext.mRenderDevice->IsValid( mCubemap.mEbo )) {
+		if (!mContext.mRenderDev->IsValid( mCubemap.mEbo )) {
 
 			rhi::FBufferDescriptor desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
@@ -209,12 +209,12 @@ namespace lum::render {
 			desc.mSize = ByteSize( cubemapIndices );
 			desc.mData = cubemapIndices;
 			desc.mBufferType = rhi::BufferType::Element;
-			mCubemap.mEbo = mContext.mRenderDevice->CreateBuffer( desc );
+			mCubemap.mEbo = mContext.mRenderDev->CreateBuffer( desc );
 
 		}
 
 		// Cubemap VAO
-		if (!mContext.mRenderDevice->IsValid( mCubemap.mVao )) {
+		if (!mContext.mRenderDev->IsValid( mCubemap.mVao )) {
 
 			rhi::FVertexAttribute attrs[ ]{
 				{
@@ -226,13 +226,13 @@ namespace lum::render {
 			rhi::FVertexLayoutDescriptor desc;
 			desc.mStride = 3 * sizeof( float32 );
 			desc.mAttributes = attrs;
-			mCubemap.mVao = mContext.mRenderDevice->CreateVertexLayout( desc, mCubemap.mVbo );
-			mContext.mRenderDevice->AttachElementBufferToLayout( mCubemap.mEbo, mCubemap.mVao );
+			mCubemap.mVao = mContext.mRenderDev->CreateVertexLayout( desc, mCubemap.mVbo );
+			mContext.mRenderDev->AttachElementBufferToLayout( mCubemap.mEbo, mCubemap.mVao );
 
 		}
 
 		// Cubemap sampler
-		if (!mContext.mRenderDevice->IsValid( mSampler )) {
+		if (!mContext.mRenderDev->IsValid( mSampler )) {
 
 			rhi::FSamplerDescriptor desc;
 			desc.mMinFilter = rhi::SamplerMinFilter::LinearMipmapLinear;
@@ -240,12 +240,12 @@ namespace lum::render {
 			desc.mWrapR = rhi::SamplerWrap::ClampEdge;
 			desc.mWrapS = rhi::SamplerWrap::ClampEdge;
 			desc.mWrapT = rhi::SamplerWrap::ClampEdge;
-			mSampler = mContext.mRenderDevice->CreateSampler( desc );
+			mSampler = mContext.mRenderDev->CreateSampler( desc );
 
 		}
 
 		// Cubemap Pipeline
-		if (!mContext.mRenderDevice->IsValid( mCubemap.mPipeline )) {
+		if (!mContext.mRenderDev->IsValid( mCubemap.mPipeline )) {
 
 			rhi::FPipelineDescriptor desc;
 			desc.mDepthStencil.mDepth.bEnabled = true;
@@ -253,12 +253,12 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::LessEqual;
 			desc.mCull.bEnabled = false;
 			desc.mCull.mFace = rhi::Face::Back;
-			mCubemap.mPipeline = mContext.mRenderDevice->CreatePipeline( desc );
+			mCubemap.mPipeline = mContext.mRenderDev->CreatePipeline( desc );
 
 		}
 
 		// Irradiance map (IBL)
-		if (!mContext.mRenderDevice->IsValid( mIBL.mIrradiance.mTexture )) {
+		if (!mContext.mRenderDev->IsValid( mIBL.mIrradiance.mTexture )) {
 
 			rhi::FTextureDescriptor desc;
 			desc.mTextureType = rhi::TextureType::Cubemap;
@@ -267,12 +267,12 @@ namespace lum::render {
 			desc.mDataType = rhi::TextureDataType::Float;
 			desc.mWidth = 32;
 			desc.mHeight = 32;
-			mIBL.mIrradiance.mTexture = mContext.mRenderDevice->CreateTexture( desc );
+			mIBL.mIrradiance.mTexture = mContext.mRenderDev->CreateTexture( desc );
 
 		}
 
 		// Prefiltered environment map (IBL)
-		if (!mContext.mRenderDevice->IsValid( mIBL.mPrefiltered.mTexture )) {
+		if (!mContext.mRenderDev->IsValid( mIBL.mPrefiltered.mTexture )) {
 
 			rhi::FTextureDescriptor desc;
 			desc.mTextureType = rhi::TextureType::Cubemap;
@@ -281,7 +281,7 @@ namespace lum::render {
 			desc.mWidth = 128;
 			desc.mHeight = 128;
 			desc.mMipmapLevels = 5;
-			mIBL.mPrefiltered.mTexture = mContext.mRenderDevice->CreateTexture( desc );
+			mIBL.mPrefiltered.mTexture = mContext.mRenderDev->CreateTexture( desc );
 
 		}
 		{ // Shaders
