@@ -36,10 +36,7 @@ namespace lum {
 			* be trivially copyable and trivially destructible.
 			*/
 			template<typename tType>
-			concept Component =
-				std::is_base_of_v<lum::Component, tType>&&
-				std::is_trivially_copyable_v<tType>&&
-				std::is_trivially_destructible_v<tType>;
+			concept Component = std::is_base_of_v<lum::Component, tType>;
 
 		} // namespace lum::ecs::detail
 

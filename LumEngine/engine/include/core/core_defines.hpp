@@ -5,8 +5,8 @@
 //=============================================================================//
 #pragma once
 
-#define LPROPERTY()
-#define LCLASS()
+#define LPROPERTY(...)
+#define LCLASS(...)
 
 #if defined(_MSC_VER)
 #define LUM_FORCEINLINE __forceinline

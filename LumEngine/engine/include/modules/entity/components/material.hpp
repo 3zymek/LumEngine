@@ -11,8 +11,9 @@
 namespace lum {
 
 	/* @brief ECS component holding a PBR material instance for an entity. */
-	struct CMaterial : public Component {
+	LCLASS() struct CMaterial : public Component {
 
+		LPROPERTY( ) String mPath;
 		FMaterialInstance mMat;
 
 	};

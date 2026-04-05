@@ -10,8 +10,7 @@
 namespace lum {
 
 	/* @brief ECS component storing the 3D transform of an entity. */
-	LCLASS( )
-	struct CTransform : public Component {
+	LCLASS( ) struct CTransform : public Component {
 
 		/* @brief World position. */
 		LPROPERTY( )

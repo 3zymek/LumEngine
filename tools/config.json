@@ -106,6 +106,14 @@
     "String": {
       "reader": "detail::ReadStringParameter",
       "imgui": "ImGui::InputText"
+    },
+    "string": {
+      "reader": "detail::ReadStringParameter",
+      "imgui": "ImGui::InputText"
+    },
+    "FixedString": {
+      "reader": "detail::ReadStringParameter",
+      "imgui": "ImGui::InputText"
     }
 
   }

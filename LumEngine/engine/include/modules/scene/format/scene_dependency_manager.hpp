@@ -50,6 +50,8 @@ namespace lum::fmt {
 		*/
 		SceneDependencyManager( Tokenizer& tokenizer, FSceneManagerContext& ctx ) : mTokenizer( tokenizer ), mContext( ctx ) { }
 
+		void Initialize( );
+
 		/* @brief Parses the token stream and populates the given scene.
 		* @param scene Scene to populate with entities and components.
 		*/
@@ -62,30 +64,6 @@ namespace lum::fmt {
 
 		/* @brief Parses an entity block and creates a new entity in the scene. */
 		static void parse_entity( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
-		/* @brief Parses a transform component and attaches it to the current entity. */
-		static void parse_transform( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
-		/* @brief Parses a static mesh component and attaches it to the current entity. */
-		static void parse_smesh( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
-		/* @brief Parses a camera component and attaches it to the current entity. */
-		static void parse_camera( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
-		/* @brief Parses a render component and attaches it to the current entity. */
-		static void parse_render( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
-		/* @brief Parses a material component and attaches it to the current entity. */
-		static void parse_material( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
-		/* @brief Parses a name component and attaches it to the current entity. */
-		static void parse_name( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
-		/* @brief Parses a point light component and attaches it to the current entity. */
-		static void parse_point_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
-		/* @brief Parses a spot light component and attaches it to the current entity. */
-		static void parse_spot_light( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
 
 		/* @brief Parses a audio emitter component and attaches it to the current entity. */
 		static void parse_audio_emitter( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
@@ -108,17 +86,7 @@ namespace lum::fmt {
 		/* @brief Lookup table mapping hashed component keywords to their parse functions.
 		* Used to dispatch component blocks within an entity definition.
 		*/
-		static inline std::unordered_map<uint64, ParseFn> sComponentsParseFunctions = {
-			{ HashStr( "transform" ),			parse_transform         },
-			{ HashStr( "static_mesh" ),			parse_smesh             },
-			{ HashStr( "camera" ),				parse_camera            },
-			{ HashStr( "render" ),				parse_render            },
-			{ HashStr( "material" ),			parse_material          },
-			{ HashStr( "name" ),				parse_name              },
-			{ HashStr( "point_light" ),			parse_point_light       },
-			{ HashStr( "spot_light" ),			parse_spot_light		},
-			{ HashStr( "audio_emitter" ),		parse_audio_emitter		},
-		};
+		static inline std::unordered_map<uint64, ParseFn> sComponentsParseFunctions;
 
 	};
 

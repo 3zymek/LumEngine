@@ -13,10 +13,10 @@ namespace lum {
 	*  Entities without this component or with bVisible set to false
 	*  are skipped during the render pass.
 	*/
-	struct CRender : public Component {
+	LCLASS( ) struct CRender : public Component {
 
 		/* @brief Whether the entity should be submitted to the renderer this frame. */
-		bool bVisible = true;
+		LPROPERTY( ) bool bVisible = true;
 
 	};
 

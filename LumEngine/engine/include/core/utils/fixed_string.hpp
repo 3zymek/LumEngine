@@ -27,40 +27,35 @@ namespace lum {
 			std::memcpy(mBuffer, src, tNewL);
 		}
 
-		/* @brief Constructs an empty FixedString. */
 		explicit FixedString( ) noexcept {
 			mBuffer[0] = '\0';
 		}
 
-		/* @brief Assigns a string literal — truncates with a warning if it exceeds the maximum length.
-		*  @tparam tNewL Length of the source literal including null terminator.
-		*  @param src Source string literal.
-		*/
 		template<usize tNewL>
 		FixedString& operator=( const char(&src)[tNewL] ) noexcept {
 			usize len = tNewL;
-			if (len > tL) {
-				LUM_LOG_WARN("String too big, truncating: %s", src);
-				len = tL;
-			}
+			if (len > tL) len = tL;
 			mSize = len;
 			std::memcpy(mBuffer, src, len);
 			mBuffer[len] = '\0';
 			return *this;
 		}
 
-		/* @brief Assigns a raw C string — truncates with a warning if it exceeds the maximum length.
-		*  @param src Null-terminated source string.
-		*/
 		FixedString& operator=( const char* src ) noexcept {
 			usize len = std::strlen(src);
-			if (len > tL) {
-				LUM_LOG_WARN("String too big, truncating: %s", src);
-				len = tL;
-			}
+			if (len > tL) len = tL;
 			mSize = len;
 			std::memcpy(mBuffer, src, std::min(len, tL));
 			mBuffer[len] = '\0';
+			return *this;
+		}
+
+		FixedString& operator=( const String& src ) noexcept {
+			usize len = src.length( );
+			if (len > tL) len = tL;
+			mSize = len;
+			std::memcpy( mBuffer, src.data( ), std::min( len, tL ) );
+			mBuffer[ len ] = '\0';
 			return *this;
 		}
 
