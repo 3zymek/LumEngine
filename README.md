@@ -17,6 +17,10 @@ Learning indie game engine project from scratch in C++.
 
 This is my personal project where I'm learning game engine architecture by building one from the ground up. The goal is to understand how modern engines work by implementing core systems myself.
 
+<img width="2549" height="1393" alt="lumengine_shadows" src="https://github.com/user-attachments/assets/17341395-facc-4afe-a0ca-736b556e33eb" />
+
+*Shadow mapping showcase — Mar 8, 2026*
+
 **Status: Early Development** - Many features are incomplete or experimental.
 
 ## Contributing
@@ -25,6 +29,8 @@ I'm looking for contributors! If you're interested in game engine development an
 **Discord:** `br.eeze` <br>
 **Email:** `szymonpyrtek@gmail.com`
 
+For more info see [CONTRIBUTING](CONTRIBUTING.md) file.
+
 Any help is welcome — bug fixes, new features, or just feedback on the code.
 
 ## Project Structure
@@ -32,7 +38,6 @@ Any help is welcome — bug fixes, new features, or just feedback on the code.
 LumEngine/
 ├──engine
 │   ├── core/           # Core engine functionality
-│   ├── math/           # Math library and backend
 │   ├── scene/          # Scene management (not implemented yet)
 │   ├── utils/          # Utility functions/helpers
 │   modules/
@@ -89,7 +94,7 @@ This is a learning project, so expect:
 
 ## Quality
 
-The code quality varies as I learn. Older parts might not follow current best practices. I'm refactoring as I go and learning better approaches along the way.
+The code quality varies as I learn. Older parts might not follow current best practices, but i try my best to refactor low-quality code.
 
 Feel free to look around, but keep in mind this is an in-progress learning project!
 
