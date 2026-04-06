@@ -93,7 +93,9 @@ namespace lum {
 		LUM_FORCEINLINE constexpr usize MaxSize( ) noexcept { return tL; }
 
 		/* @brief Returns a pointer to the underlying null-terminated character buffer. */
-		LUM_FORCEINLINE constexpr const char* Data( ) noexcept { return mBuffer; }
+		LUM_FORCEINLINE constexpr const char* Data( ) const { return mBuffer; }
+
+		LUM_FORCEINLINE constexpr char* Data( ) { return mBuffer; }
 
 	private:
 

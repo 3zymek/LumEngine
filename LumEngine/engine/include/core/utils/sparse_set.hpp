@@ -97,7 +97,7 @@ namespace lum::cstd {
 		*/
 		constexpr tDense* Get( SparseT idx ) {
 
-			if ((idx > kMaxSize) && (mSparse[idx] == skNullSparse)) return nullptr;
+			if ((idx > kMaxSize) || (mSparse[idx] == skNullSparse)) return nullptr;
 
 			return &mDense[mSparse[idx]];
 		}

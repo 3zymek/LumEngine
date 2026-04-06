@@ -5,19 +5,13 @@
 
 namespace lum {
 
+	namespace detail { using EditorFn = void(*)(ecs::MEntityManager&, EntityID); }
+
 	class Editor {
 	public:
 
-		void Initialize( ) {
-
-			mEngine.Initialize( "C:/Users/szymek/Desktop/lumen_assets" ); mEngine.SetScene( "scene.lsc" );
-
-			mCamera.Initialize( mEngine.GetEventBus( ) );
-
-			init_imgui( &mEngine.GetPlatform( ).mWindow );
-
-		}
-		void Finalize( ) { mEngine.Finalize( ); }
+		void Initialize( );
+		void Finalize( );
 		void Run( ) ;
 		void DrawSceneHierarchy( );
 		void DrawInspector( );
@@ -30,6 +24,9 @@ namespace lum {
 		glm::vec2 mViewportSize = glm::vec2( 0, 0 );
 		bool bLayoutInitialized = false;
 
+		EntityID mSelectedEntity;
+
+		static std::unordered_map<uint64, detail::EditorFn> skDrawFunctions;
 
 		void init_imgui( Window* window );
 		void begin_imgui( );

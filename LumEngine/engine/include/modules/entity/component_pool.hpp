@@ -20,8 +20,10 @@ namespace lum::ecs::detail {
 	* in a single array and call Remove without knowing the component type.
 	*/
 	struct BasePool {
-		virtual void Remove( EntityID enttiyID ) = 0;
-		virtual ~BasePool( ) {}
+		virtual bool Contains( EntityID entityID ) = 0;
+		virtual void Remove( EntityID& entityID ) = 0;
+		virtual StringView GetName( ) = 0;
+		virtual ~BasePool( ) { }
 	};
 
 	/* @brief Typed component pool backed by a SparseSet.
@@ -45,11 +47,9 @@ namespace lum::ecs::detail {
 		* @return Reference to the stored component.
 		*/
 		tType& Add( EntityID entityID, tType component ) {
-
-			if (!Has(entityID))
-				mComponents.Append(component, entityID);
-			return mComponents[entityID];
-
+			if (!Has( entityID ))
+				mComponents.Append( component, entityID );
+			return mComponents[ entityID ];
 		}
 
 		/* @brief Returns a pointer to the component on the given entity.
@@ -57,14 +57,19 @@ namespace lum::ecs::detail {
 		* @return Pointer to component, or nullptr if not present.
 		*/
 		tType* Get( EntityID entityID ) {
-			return mComponents.Get(entityID);
+			return mComponents.Get( entityID );
 		}
 
 		/* @brief Removes the component from the given entity.
 		* @param entityID Target entity ID.
 		*/
-		void Remove( EntityID entityID ) override {
+		void Remove( EntityID& entityID ) override {
 			mComponents.Remove( entityID );
+			entityID = skNullEntity;
+		}
+
+		bool Contains( EntityID entityID ) override {
+			return Has( entityID );
 		}
 
 		/* @brief Checks whether the given entity has this component.
@@ -75,10 +80,14 @@ namespace lum::ecs::detail {
 			return mComponents.Contains( entityID );
 		}
 
+		StringView GetName( ) override {
+			return GetComponentName<tType>( );
+		}
+
 
 	protected:
 
-		cstd::SparseSet<EntityID, tType> mComponents { limits::gMaxEntity };
+		cstd::SparseSet<EntityID, tType> mComponents{ limits::gMaxEntity };
 
 	};
 

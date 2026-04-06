@@ -33,8 +33,8 @@ namespace lum {
 		MAudioModule&		GetAudio( ) { return mAudio; }
 		MPlatformModule&	GetPlatform( ) { return mPlatform; }
 		MResourceModule&	GetResource( ) { return mRes; }
-		MRenderModule&		GetRender( ) { return mRender; }
-		MSceneModule&		GetScene( ) { return mScene; }
+		MRenderModule&		GetModuleRender( ) { return mRender; }
+		MSceneModule&		GeModuleScene( ) { return mScene; }
 
 		float64 GetDeltaTime( ) { 
 			

@@ -26,6 +26,9 @@ namespace lum {
 	*/
 	namespace ecs {
 
+		/* @brief Means that entity doesn't exists. */
+		inline constexpr EntityID skNullEntity = MaxVal<EntityID>( );
+
 		/* @brief Internal implementation details for the ECS.
 		*  Not intended for direct use outside of the ECS subsystem.
 		*/
@@ -37,6 +40,9 @@ namespace lum {
 			*/
 			template<typename tType>
 			concept Component = std::is_base_of_v<lum::Component, tType>;
+
+			template<Component tType>
+			StringView GetComponentName( );
 
 		} // namespace lum::ecs::detail
 

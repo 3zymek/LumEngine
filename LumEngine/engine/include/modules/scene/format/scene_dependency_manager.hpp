@@ -8,6 +8,7 @@
 #include "scene/format/common.hpp"
 #include "entity/entity_manager.hpp"
 #include "scene/scene_manager.hpp"
+#include <imgui.h>
 
 namespace lum {
 

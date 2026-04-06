@@ -1,10 +1,7 @@
 {
-  "paths": {
-    "preamble_include": "modules/scene/format/scene_parser.hpp",
-    "code_namespace": "lum::fmt::detail"
-  },
 
   "templates": {
+    "parse_fn_namespace": "lum::fmt::detail",
     "parse_fn_signature": "Parse{0}( std::vector<FToken>& tokens, int32& i, FParseContext& ctx )",
     "parse_fn_body_open": "detail::ExpectOpeningBracket( tokens, i );",
     "parse_fn_comp_name": "component",
@@ -14,110 +11,118 @@
     "parse_fn_while_expr": "InBlock( tokens, i )",
     "parse_fn_token_check": "tokens[i].mType == TokenType::Parameter",
 
-    "editor_fn_signature": "DrawEditor{0}( MSceneModule& scene, EntityHandle entity )",
-    "editor_fn_comp_get": "auto& {1} = scene.GetComponent<{0}>( entity );",
-    "editor_fn_registry": "RegisterEditorComponents( std::unordered_map<uint64, EditorFn>& map )"
+    "editor_fn_namespace": "lum::fmt::detail",
+    "editor_fn_signature": "DrawInspector{0}( ecs::MEntityManager& mgr, EntityID entity )",
+    "editor_fn_comp_name": "component",
+    "editor_fn_comp_getter": "auto* {0} = mgr.GetComponent<{1}>( entity );",
+    "editor_fn_getter_check": "if(!{0}) return;",
+    "editor_fn_registry": "RegisterEditorComponents( std::unordered_map<uint64, lum::detail::EditorFn>& map )",
+
+    "component_get_name_namespace": "lum::ecs::detail",
+    "component_get_name_signature": "GetComponentName<{0}>()",
+    "component_get_name_return": "StringView"
+
   },
 
   "types": {
 
     "float": {
       "reader": "detail::ReadFloatParameter",
-      "imgui": "ImGui::DragFloat( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragFloat( \"{1}\", &{0}->{1} )"
     },
     "float32": {
       "reader": "detail::ReadFloatParameter",
-      "imgui": "ImGui::DragFloat( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragFloat( \"{1}\", &{0}->{1} )"
     },
     "double": {
       "reader": "detail::ReadFloatParameter",
-      "imgui": "ImGui::DragFloat( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragFloat( \"{1}\", &{0}->{1} )"
     },
     "float64": {
       "reader": "detail::ReadFloatParameter",
-      "imgui": "ImGui::DragFloat( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragFloat( \"{1}\", &{0}->{1} )"
     },
 
     "glm::vec2": {
       "reader": "detail::ReadVec2Parameter",
-      "imgui": "ImGui::DragFloat2( \"{1}\", glm::value_ptr({0}.{1}) )"
+      "inspector": "ImGui::DragFloat2( \"{1}\", glm::value_ptr({0}->{1}) )"
     },
     "glm::vec3": {
       "reader": "detail::ReadVec3Parameter",
-      "imgui": "ImGui::DragFloat3( \"{1}\", glm::value_ptr({0}.{1}) )"
+      "inspector": "ImGui::DragFloat3( \"{1}\", glm::value_ptr({0}->{1}) )"
     },
     "glm::vec4": {
       "reader": "detail::ReadVec4Parameter",
-      "imgui": "ImGui::DragFloat4( \"{1}\", glm::value_ptr({0}.{1}) )"
+      "inspector": "ImGui::DragFloat4( \"{1}\", glm::value_ptr({0}->{1}) )"
     },
 
     "bool": {
       "reader": "detail::ReadBoolParameter",
-      "imgui": "ImGui::Checkbox( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::Checkbox( \"{1}\", &{0}->{1} )"
     },
 
     "int": {
       "reader": "detail::ReadIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
     "int8": {
       "reader": "detail::ReadIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
     "int16": {
       "reader": "detail::ReadIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
     "int32": {
       "reader": "detail::ReadIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
     "int64": {
       "reader": "detail::ReadIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
 
     "unsigned int": {
       "reader": "detail::ReadUIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
     "uint8": {
       "reader": "detail::ReadUIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
     "uint16": {
       "reader": "detail::ReadUIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
     "uint32": {
       "reader": "detail::ReadUIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
     "uint64": {
       "reader": "detail::ReadUIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
 
     "usize": {
       "reader": "detail::ReadUIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
     "isize": {
       "reader": "detail::ReadIntParameter",
-      "imgui": "ImGui::DragInt( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
     },
 
     "String": {
       "reader": "detail::ReadStringParameter",
-      "imgui": "ImGui::InputText( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::InputText( \"{1}\", {0}->{1}.data(), {0}->{1}.size() )"
     },
     "string": {
       "reader": "detail::ReadStringParameter",
-      "imgui": "ImGui::InputText( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::InputText( \"{1}\", {0}->{1}.data(), {0}->{1}.size() )"
     },
     "FixedString": {
       "reader": "detail::ReadStringParameter",
-      "imgui": "ImGui::InputText( \"{1}\", &{0}.{1} )"
+      "inspector": "ImGui::InputText( \"{1}\", {0}->{1}.Data(), {0}->{1}.Length() )"
     }
 
   }

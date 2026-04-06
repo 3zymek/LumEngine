@@ -3,8 +3,23 @@
 #include <imgui_internal.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include "entity/components/name.hpp"
 
 namespace lum {
+
+	void Editor::Initialize( ) {
+
+		mEngine.Initialize( "C:/Users/szymek/Desktop/lumen_assets" ); mEngine.SetScene( "scene.lsc" );
+
+		mCamera.Initialize( mEngine.GetEventBus( ) );
+
+		init_imgui( &mEngine.GetPlatform( ).mWindow );
+
+	}
+
+	void Editor::Finalize( ) {
+		mEngine.Finalize( );
+	}
 
 	void Editor::Run( ) {
 
@@ -42,7 +57,7 @@ namespace lum {
 			ImGuiDockNodeFlags_NoResize;
 
 		ImGuiID dockID = ImGui::DockSpaceOverViewport( dockFlags );
-		
+
 		if (!bLayoutInitialized) {
 			bLayoutInitialized = true;
 
@@ -50,53 +65,72 @@ namespace lum {
 			ImGui::DockBuilderAddNode( dockID, ImGuiDockNodeFlags_DockSpace );
 			ImGui::DockBuilderSetNodeSize( dockID, ImGui::GetMainViewport( )->Size );
 
-			ImGuiID left, right;
-			ImGui::DockBuilderSplitNode( dockID, ImGuiDir_Left, 0.25f, &left, &right );
+			ImGuiID left, halfRight;
+			ImGui::DockBuilderSplitNode( dockID, ImGuiDir_Left, 0.25f, &left, &halfRight );
 
-			ImGuiID middle, middleRight;
-			ImGui::DockBuilderSplitNode( right, ImGuiDir_Left, 0.75f, &middle, &middleRight );
+			ImGuiID middle, right;
+			ImGui::DockBuilderSplitNode( halfRight, ImGuiDir_Left, 0.75f, &middle, &right );
 
 			ImGuiID console, viewport;
 			ImGui::DockBuilderSplitNode( middle, ImGuiDir_Down, 0.25f, &console, &viewport );
 
+			ImGuiID sceneInspector, entityInspector;
+			ImGui::DockBuilderSplitNode( right, ImGuiDir_Up, 1.0f, &sceneInspector, &entityInspector );
+
 			ImGui::DockBuilderDockWindow( "Console", console );
 			ImGui::DockBuilderDockWindow( "Viewport", viewport );
-			ImGui::DockBuilderDockWindow( "ECS Inspector", middleRight );
+			ImGui::DockBuilderDockWindow( "Scene Inspector", sceneInspector );
+			ImGui::DockBuilderDockWindow( "Entity Inspector", entityInspector );
 			ImGui::DockBuilderDockWindow( "File Explorer", left );
 
 			ImGui::DockBuilderFinish( dockID );
 		}
 
 		ImGui::Begin( "File Explorer" );
-
 		ImGui::Text( "Here will be file explorer" );
+		ImGui::End( ); // File Explorer
 
-		ImGui::End( ); // File Ex plorer
 
 		ImGui::Begin( "Viewport" );
-
 		ImVec2 available = ImGui::GetContentRegionAvail( );
-
 		mCamera.SetAspectRatio( ( float32 ) available.x / ( float32 ) available.y );
-		mEngine.GetRender( ).mRenderer.UpdateCamera( mCamera.Update( delta ) );
-
+		mEngine.GetModuleRender( ).mRenderer.UpdateCamera( mCamera.Update( delta ) );
 		uint32 texID = mEngine.GetPlatform( ).mRenderDevice->GetNativeHandle(
-			mEngine.GetRender( ).mRenderer.GetFrameTexture( )
+			mEngine.GetModuleRender( ).mRenderer.GetFrameTexture( )
 		);
-
 		ImGui::Image( ( ImTextureID ) texID, available, ImVec2( 0, 1 ), ImVec2( 1, 0 ) );
-
-
-
 		ImGui::End( ); // Viewport
 
-		ImGui::Begin( "ECS Inspector" );
-		ImGui::End( ); // ECS Inspector
+
+		ImGui::Begin( "Scene Inspector" );
+		auto* scene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene();
+		auto& entities = scene->mEntities;
+		for (EntityID id : entities) {
+			bool bSelected = (mSelectedEntity == id);
+			auto* name = scene->mEntityMgr.GetComponent<CName>( id );
+			String label;
+			if (name) label = name->mName.Data();
+			else label = "Entity " + std::to_string( id );
+			if (ImGui::Selectable( label.c_str( ), bSelected )) {
+				mSelectedEntity = id;
+			}
+		}
+		ImGui::End( ); // Scene Inspector
+
+		ImGui::Begin( "Entity Inspector" );
+
+		if (mSelectedEntity != ecs::skNullEntity) {
+			auto& entityMgr = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( )->mEntityMgr;
+			entityMgr.ForEachComponent( mSelectedEntity, []( ecs::detail::BasePool* pool ) {
+				ImGui::CollapsingHeader( pool->GetName( ).data( ) );
+			} );
+		}
+
+		ImGui::End( );
+
 
 		ImGui::Begin( "Console" );
-
 		ImGui::Text( "Here will be console" );
-
 		ImGui::End( ); // Console
 	}
 

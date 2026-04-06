@@ -49,6 +49,9 @@ namespace lum {
 			*/
 			ManagedEntity CreateEntity( );
 
+			void RegisterEntity( EntityID entityID );
+			void RegisterEntity( Entity entity );
+
 
 
 			/* @brief Adds a component of type tType to the given entity.
@@ -141,13 +144,13 @@ namespace lum {
 			* Iterates over all registered pools and removes the entity from each.
 			* @param entityID Target entity ID.
 			*/
-			void DestroyEntity( EntityID entityID );
+			void DestroyEntity( EntityID& entityID );
 
 			/* @brief Destroys all components belonging to the given entity.
 			* Iterates over all registered pools and removes the entity from each.
 			* @param entity Target entity.
 			*/
-			void DestroyEntity( Entity entity );
+			void DestroyEntity( Entity& entity );
 
 
 
@@ -167,8 +170,14 @@ namespace lum {
 			template<detail::Component tFirst, detail::Component... tRest, typename tCallback>
 			void EachWithID( tCallback&& callback );
 
-
-
+			template<typename tCallback>
+			void ForEachComponent( EntityID id, tCallback&& callback ) {
+				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
+					if (mComponentPools[ i ] && mComponentPools[ i ]->Contains( id )) {
+						callback( mComponentPools[ i ] );
+					}
+				}
+			}
 
 
 			/* @brief Returns the component pool for type tType, creating it if it doesn't exist.

@@ -8,6 +8,7 @@
 
 #include "core/core_pch.hpp"
 #include "core/core_defines.hpp"
+#include "rhi/rhi_pch.hpp"
 #include "core/types.hpp"
 #include "core/utils/string_hasher.hpp"
 

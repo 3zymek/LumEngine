@@ -91,8 +91,9 @@ namespace lum::fmt {
 	void SceneDependencyManager::parse_entity( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
 		Entity e;
-		ctx.mScene.mEntities.push_back( e.mID );
-		ctx.mEntity = e.mID;
+		EntityID id = e.GetID( );
+		ctx.mScene.mEntities.push_back( id );
+		ctx.mEntity = id;
 
 		detail::ExpectOpeningBracket( tokens, i );
 
