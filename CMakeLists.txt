@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL")
 
 # ── LHC ──────────────────────────────────────────────────────────────────────
-set(LHC_INPUT_DIR   "${CMAKE_SOURCE_DIR}/LumEngine/engine")
+set(LHC_INPUT_DIR    "${CMAKE_SOURCE_DIR}/LumEngine/engine")
 set(LHC_SCENE_PARSER "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/modules/scene/format/scene_dependency_manager.hpp")
 find_program(DOTNET_EXECUTABLE dotnet REQUIRED)
 add_custom_target(RunLHC
