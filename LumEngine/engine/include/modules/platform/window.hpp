@@ -6,6 +6,7 @@
 #pragma once
 
 #include "core/core_common.hpp"
+#include "rhi/rhi_pch.hpp"
 
 namespace lum {
 	namespace ev { class EventBus; }

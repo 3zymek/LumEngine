@@ -170,6 +170,10 @@ namespace lum {
 			template<detail::Component tFirst, detail::Component... tRest, typename tCallback>
 			void EachWithID( tCallback&& callback );
 
+			/* @brief Iterates over all components that have entity has.
+			* Callback receives base pool and makes it available for usage.
+			* @param callback Callable with signature [ ]( ecs::detail::ComponentPool* pool ) { ... }.
+			*/
 			template<typename tCallback>
 			void ForEachComponent( EntityID id, tCallback&& callback ) {
 				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {

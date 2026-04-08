@@ -1,9 +1,10 @@
 {
 
   "paths": {
-    "scene_dep_manager": "engine/include/modules/scene/format/scene_dep_manager.hpp",
-    "editor_dep_manager": "editor/include/editor_dep_manager.hpp"
-
+    "scene_dep_manager_path": "engine/include/modules/scene/format/scene_dep_manager.hpp",
+    "scene_dep_manager_include": "modules/scene/format/scene_dep_manager.hpp",
+    "editor_dep_manager_path": "editor/include/editor_dep_manager.hpp",
+    "editor_dep_manager_include": "editor_dep_manager.hpp"
   },
 
   "templates": {
@@ -18,7 +19,7 @@
     "parse_fn_while_statement": "tokens[i].mValue == \"{0}\"",
     "parse_fn_token_check": "tokens[i].mType == TokenType::Parameter",
 
-    "editor_fn_namespace": "lum::fmt::detail",
+    "editor_fn_namespace": "lum",
     "editor_fn_signature": "DrawInspector{0}( ecs::MEntityManager& mgr, EntityID entity )",
     "editor_fn_comp_name": "component",
     "editor_fn_comp_getter": "auto* {0} = mgr.GetComponent<{1}>( entity );",
@@ -28,108 +29,107 @@
     "component_get_name_namespace": "lum::ecs::detail",
     "component_get_name_signature": "GetComponentName<{0}>()",
     "component_get_name_return": "StringView"
-
   },
 
   "types": {
 
     "float": {
       "reader": "detail::ReadFloatParameter",
-      "inspector": "ImGui::DragFloat( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragFloat( \"##lhc_{1}\", &{0}->{1} )"
     },
     "float32": {
       "reader": "detail::ReadFloatParameter",
-      "inspector": "ImGui::DragFloat( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragFloat( \"##lhc_{1}\", &{0}->{1} )"
     },
     "double": {
       "reader": "detail::ReadFloatParameter",
-      "inspector": "ImGui::DragFloat( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragFloat( \"##lhc_{1}\", &{0}->{1} )"
     },
     "float64": {
       "reader": "detail::ReadFloatParameter",
-      "inspector": "ImGui::DragFloat( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragFloat( \"##lhc_{1}\", &{0}->{1} )"
     },
 
     "glm::vec2": {
       "reader": "detail::ReadVec2Parameter",
-      "inspector": "ImGui::DragFloat2( \"{1}\", glm::value_ptr({0}->{1}) )"
+      "inspector": "ImGui::DragFloat2( \"##lhc_{1}\", glm::value_ptr({0}->{1}) )"
     },
     "glm::vec3": {
       "reader": "detail::ReadVec3Parameter",
-      "inspector": "ImGui::DragFloat3( \"{1}\", glm::value_ptr({0}->{1}) )"
+      "inspector": "ImGui::DragFloat3( \"##lhc_{1}\", glm::value_ptr({0}->{1}) )"
     },
     "glm::vec4": {
       "reader": "detail::ReadVec4Parameter",
-      "inspector": "ImGui::DragFloat4( \"{1}\", glm::value_ptr({0}->{1}) )"
+      "inspector": "ImGui::DragFloat4( \"##lhc_{1}\", glm::value_ptr({0}->{1}) )"
     },
 
     "bool": {
       "reader": "detail::ReadBoolParameter",
-      "inspector": "ImGui::Checkbox( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::Checkbox( \"##lhc_{1}\", &{0}->{1} )"
     },
 
     "int": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
     "int8": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
     "int16": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
     "int32": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
     "int64": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
 
     "unsigned int": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
     "uint8": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
     "uint16": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
     "uint32": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
     "uint64": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
 
     "usize": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
     "isize": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"##lhc_{1}\", &{0}->{1} )"
     },
 
     "String": {
       "reader": "detail::ReadStringParameter",
-      "inspector": "ImGui::InputText( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::InputText( \"##lhc_{1}\", {0}->{1}.data(), {0}->{1}.length() + 1 )"
     },
     "string": {
       "reader": "detail::ReadStringParameter",
-      "inspector": "ImGui::InputText( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::InputText( \"##lhc_{1}\", {0}->{1}.data(), {0}->{1}.length() + 1 )"
     },
     "FixedString": {
       "reader": "detail::ReadStringParameter",
-      "inspector": "ImGui::InputText( \"{1}\", &{0}->{1} )"
+      "inspector": "ImGui::InputText( \"##lhc_{1}\", {0}->{1}.Data(), {0}->{1}.MaxSize() )"
     }
 
   }

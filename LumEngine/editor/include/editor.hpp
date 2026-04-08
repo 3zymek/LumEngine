@@ -26,7 +26,7 @@ namespace lum {
 
 		EntityID mSelectedEntity;
 
-		static std::unordered_map<uint64, detail::EditorFn> skDrawFunctions;
+		inline static std::unordered_map<uint64, detail::EditorFn> skDrawFunctions;
 
 		void init_imgui( Window* window );
 		void begin_imgui( );

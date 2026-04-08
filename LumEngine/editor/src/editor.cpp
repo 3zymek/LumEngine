@@ -4,6 +4,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include "entity/components/name.hpp"
+#include "editor_dep_manager.generated.hpp"
 
 namespace lum {
 
@@ -14,6 +15,8 @@ namespace lum {
 		mCamera.Initialize( mEngine.GetEventBus( ) );
 
 		init_imgui( &mEngine.GetPlatform( ).mWindow );
+
+		RegisterEditorComponents( skDrawFunctions );
 
 	}
 
@@ -51,6 +54,9 @@ namespace lum {
 
 	}
 	void Editor::DrawViewport( float64 delta ) {
+
+		auto* scene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( );
+		auto& entities = scene->mEntities;
 
 		ImGuiDockNodeFlags dockFlags =
 			ImGuiDockNodeFlags_NoUndocking |
@@ -103,29 +109,28 @@ namespace lum {
 
 
 		ImGui::Begin( "Scene Inspector" );
-		auto* scene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene();
-		auto& entities = scene->mEntities;
-		for (EntityID id : entities) {
-			bool bSelected = (mSelectedEntity == id);
-			auto* name = scene->mEntityMgr.GetComponent<CName>( id );
+		for (auto& entity : entities) {
+			bool selected = entity == mSelectedEntity;
+			CName* name = scene->mEntityMgr.GetComponent<CName>( entity );
 			String label;
-			if (name) label = name->mName.Data();
-			else label = "Entity " + std::to_string( id );
-			if (ImGui::Selectable( label.c_str( ), bSelected )) {
-				mSelectedEntity = id;
+			if (!name) label = "Entity " + ToString( entity );
+			else label = name->mName.Data( );
+			if (ImGui::Selectable( label.data( ), selected )) {
+				mSelectedEntity = entity;
 			}
 		}
 		ImGui::End( ); // Scene Inspector
 
 		ImGui::Begin( "Entity Inspector" );
-
 		if (mSelectedEntity != ecs::skNullEntity) {
-			auto& entityMgr = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( )->mEntityMgr;
-			entityMgr.ForEachComponent( mSelectedEntity, []( ecs::detail::BasePool* pool ) {
-				ImGui::CollapsingHeader( pool->GetName( ).data( ) );
-			} );
+			scene->mEntityMgr.ForEachComponent(
+				mSelectedEntity,
+				[&]( ecs::detail::BasePool* pool ) {
+					if (ImGui::CollapsingHeader( pool->GetName( ).data( ) )) {
+						skDrawFunctions[ HashStr( pool->GetName( ) ) ]( scene->mEntityMgr, mSelectedEntity );
+					}
+				} );
 		}
-
 		ImGui::End( );
 
 
