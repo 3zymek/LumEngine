@@ -1,7 +1,7 @@
 #pragma once
 
-#include "scene/format/scene_dependency_manager.hpp"
-#include "scene/format/scene_dependency_manager.generated.hpp"
+#include "scene/format/scene_dep_manager.hpp"
+#include "scene/format/scene_dep_manager.generated.hpp"
 #include "scene/format/tokenizer.hpp"
 #include "scene/scene_manager.hpp"
 

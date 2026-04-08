@@ -7,9 +7,10 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL")
 # ── LHC ──────────────────────────────────────────────────────────────────────
 set(LHC_INPUT_DIR    "${CMAKE_SOURCE_DIR}/LumEngine/engine")
 set(LHC_SCENE_PARSER "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/modules/scene/format/scene_dependency_manager.hpp")
+set(LHC_ROOT_DIR "${CMAKE_SOURCE_DIR}/LumEngine")
 find_program(DOTNET_EXECUTABLE dotnet REQUIRED)
-add_custom_target(RunLHC
-    COMMAND ${DOTNET_EXECUTABLE} "${CMAKE_SOURCE_DIR}/tools/LumenHeaderCompiler.dll" "${LHC_INPUT_DIR}" "${LHC_SCENE_PARSER}"
+add_custom_target(RunLHC ALL
+    COMMAND ${DOTNET_EXECUTABLE} "${CMAKE_SOURCE_DIR}/tools/LumenHeaderCompiler.dll" "${LHC_ROOT_DIR}"
     COMMENT "Running LHC..."
     VERBATIM
 )
@@ -21,7 +22,11 @@ endif()
 # ── ENGINE (static lib) ───────────────────────────────────────────────────────
 file(GLOB_RECURSE ENGINE_CPP     "${CMAKE_SOURCE_DIR}/LumEngine/engine/src/*.cpp")
 file(GLOB_RECURSE ENGINE_HEADERS "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/*.hpp"
-                                 "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/*.h")
+                                 "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/*.h"
+                                 "${CMAKE_SOURCE_DIR}/LumEngine/engine/include/*.ipp")
+file(GLOB_RECURSE EXTERNAL_SRC   "${CMAKE_SOURCE_DIR}/LumEngine/external/imgui/src/*.cpp")
+file(GLOB_RECURSE EXTERNAL_C     "${CMAKE_SOURCE_DIR}/LumEngine/external/*.c")
+file(GLOB_RECURSE EXTERNAL_CPP_IMPL "${CMAKE_SOURCE_DIR}/LumEngine/external/stb/src/*.cpp")
 file(GLOB_RECURSE ENGINE_C       "${CMAKE_SOURCE_DIR}/LumEngine/engine/src/*.c")
 file(GLOB_RECURSE ENGINE_IPP     "${CMAKE_SOURCE_DIR}/LumEngine/engine/src/*.ipp")
 file(GLOB_RECURSE ENGINE_SHADERS "${CMAKE_SOURCE_DIR}/LumEngine/engine/*.vert"
@@ -35,9 +40,13 @@ add_library(LumEngine STATIC
     ${ENGINE_IPP}
     ${ENGINE_SHADERS}
     ${EXTERNAL_SRC}
+    ${EXTERNAL_C}
+    ${EXTERNAL_CPP_IMPL}
 )
 add_dependencies(LumEngine RunLHC)
-set_source_files_properties(${ENGINE_C} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+set_source_files_properties(${ENGINE_C}    PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+set_source_files_properties(${EXTERNAL_C}  PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+set_source_files_properties(${EXTERNAL_CPP_IMPL} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
 source_group(TREE "${CMAKE_SOURCE_DIR}/LumEngine/engine" FILES
     ${ENGINE_CPP} ${ENGINE_C} ${ENGINE_HEADERS} ${ENGINE_SHADERS} ${ENGINE_IPP}
@@ -95,4 +104,11 @@ target_include_directories(LumEngineEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine/external/stb/inc"
 )
 
-target_link_libraries(LumEngineEditor PRIVATE LumEngine)
+target_link_libraries(LumEngineEditor PRIVATE 
+    LumEngine
+    "${CMAKE_SOURCE_DIR}/LumEngine/external/glfw/lib/glfw3.lib"
+    "${CMAKE_SOURCE_DIR}/LumEngine/external/glfw/lib/glfw3_mt.lib"
+    "${CMAKE_SOURCE_DIR}/LumEngine/external/glfw/lib/glfw3dll.lib"
+    "${CMAKE_SOURCE_DIR}/LumEngine/external/assimp/lib/assimp-vc143-mt.lib"
+    opengl32.lib
+)
