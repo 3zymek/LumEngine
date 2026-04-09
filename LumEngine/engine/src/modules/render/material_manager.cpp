@@ -72,30 +72,37 @@ namespace lum {
 	}
 
 
-	FMaterialInstance MMaterialManager::CreateInstance( MaterialBaseHandle base ) {
+	CMaterialInstance MMaterialManager::CreateInstance( MaterialBaseHandle base ) {
 
 		if (!mBaseMaterials.Contains( base ))
 			base = mDefaultMaterial;
 
-		FMaterialInstance instance;
+		CMaterialInstance instance;
 		FMaterialBase& matBase = mBaseMaterials[ base ];
 
-		instance = static_cast< FMaterialInstance >(matBase);
+		instance.mAlbedoTex = matBase.mAlbedoTex;
+		instance.mAmbientTex = matBase.mAmbientTex;
+		instance.mBaseColor = matBase.mBaseColor;
+		instance.mMetallicTex = matBase.mMetallicTex;
+		instance.mMetallicValue = matBase.mMetallicValue;
+		instance.mNormalTex = matBase.mNormalTex;
+		instance.mRoughnessTex = matBase.mRoughnessTex;
+		instance.mRoughnessValue = matBase.mRoughnessValue;
 
 		return instance;
 
 	}
 
-	FMaterialInstance MMaterialManager::GetDefaultInstance( ) {
+	CMaterialInstance MMaterialManager::GetDefaultInstance( ) {
 		return CreateInstance( mDefaultMaterial );
 	}
 
-	void MMaterialManager::SetBaseMap( MaterialBaseHandle material, EMaterialMember mem, rhi::RTextureHandle tex ) {
+	void MMaterialManager::SetBaseMap( MaterialBaseHandle material, MaterialMember mem, rhi::RTextureHandle tex ) {
 		switch (mem) {
-		case EMaterialMember::Albedo: mBaseMaterials[ material ].mAlbedoTex = tex; break;
-		case EMaterialMember::Normal: mBaseMaterials[ material ].mNormalTex = tex; break;
-		case EMaterialMember::Metallic: mBaseMaterials[ material ].mMetallicTex = tex; break;
-		case EMaterialMember::Roughness: mBaseMaterials[ material ].mRoughnessTex = tex; break;
+		case MaterialMember::Albedo: mBaseMaterials[ material ].mAlbedoTex = tex; break;
+		case MaterialMember::Normal: mBaseMaterials[ material ].mNormalTex = tex; break;
+		case MaterialMember::Metallic: mBaseMaterials[ material ].mMetallicTex = tex; break;
+		case MaterialMember::Roughness: mBaseMaterials[ material ].mRoughnessTex = tex; break;
 		}
 	}
 
@@ -108,13 +115,14 @@ namespace lum {
 
 	void MMaterialManager::init( ) {
 
-		mContext->mEvBus->SubscribePermanently<EComponentAdded<CMaterial>>(
-			[&]( const EComponentAdded<CMaterial>& mat ) {
-
-				std::optional<String> content = AssetLoader::ReadFile( RootID::External, mat.mComponent->mPath );
+		mContext->mEvBus->SubscribePermanently<EComponentAdded<CMaterialInstance>>(
+			[&]( const EComponentAdded<CMaterialInstance>& mat ) {
+				LUM_LOG_DEBUG( "MaterialInstance added, path: %s", mat.mComponent->mBasePath.data( ) );
+				std::optional<String> content = AssetLoader::ReadFile( RootID::External, mat.mComponent->mBasePath );
 				if (!content) {
-					LUM_LOG_ERROR( "Failed to load material %s: %s", mat.mComponent->mPath, AssetLoader::GetErrorMessage( ) );
-					mat.mComponent->mInst = GetDefaultInstance();
+					LUM_LOG_ERROR( "Failed to load material %s: %s", mat.mComponent->mBasePath.data(), AssetLoader::GetErrorMessage( ) );
+					*mat.mComponent = GetDefaultInstance();
+					return;
 				}
 
 				fmt::Tokenizer tokenizer;
@@ -123,7 +131,7 @@ namespace lum {
 				FMaterialDescriptor data;
 				parser.Parse( data );
 				MaterialBaseHandle baseHandle = UploadBase( data );
-				mat.mComponent->mInst = CreateInstance( baseHandle );
+				*mat.mComponent = CreateInstance( baseHandle );
 
 			}
 		);

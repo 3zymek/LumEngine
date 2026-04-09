@@ -13,17 +13,6 @@
 
 namespace lum {
 
-	/* @brief Strongly typed handle referencing a base material in the pool. */
-	struct MaterialBaseHandle : cstd::BaseHandle<uint32> {};
-
-	/* @brief Identifies which texture map to set on a material base. */
-	enum class EMaterialMember {
-		Albedo,
-		Normal,
-		Metallic,
-		Roughness,
-	};
-
 	/* @brief Manages material base assets and per-entity material instances.
 	*
 	* Base materials (FMaterialBase) are shared and stored by handle.
@@ -63,18 +52,18 @@ namespace lum {
 		* @return Fully resolved material instance ready for rendering.
 		*/
 		LUM_NODISCARD
-		FMaterialInstance CreateInstance( MaterialBaseHandle base );
+		CMaterialInstance CreateInstance( MaterialBaseHandle base );
 
 		/* @brief Returns a material instance created from the built-in default material. */
 		LUM_NODISCARD
-		FMaterialInstance GetDefaultInstance( );
+		CMaterialInstance GetDefaultInstance( );
 
 		/* @brief Sets a specific texture map on a base material.
 		* @param material Handle to the base material to modify.
 		* @param mem      Which map to set (Albedo, Normal, Metallic, Roughness).
 		* @param tex      Texture handle to assign.
 		*/
-		void SetBaseMap( MaterialBaseHandle material, EMaterialMember mem, rhi::RTextureHandle tex );
+		void SetBaseMap( MaterialBaseHandle material, MaterialMember mem, rhi::RTextureHandle tex );
 
 	private:
 

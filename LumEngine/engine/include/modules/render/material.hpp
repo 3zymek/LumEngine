@@ -68,7 +68,15 @@ namespace lum {
 	
 	};
 
-	/* @brief Per-object instance of FMaterialBase with no additional overrides. */
-	struct FMaterialInstance : FMaterialBase {};
+	/* @brief Strongly typed handle referencing a base material in the pool. */
+	struct MaterialBaseHandle : cstd::BaseHandle<uint32> { };
+
+	/* @brief Identifies which texture map to set on a material base. */
+	enum class MaterialMember {
+		Albedo,
+		Normal,
+		Metallic,
+		Roughness,
+	};
 
 }

@@ -31,8 +31,8 @@ namespace lum {
 
 		void RenderSystem::Update( ecs::MEntityManager* entityMgr, Window* window ) {
 
-			entityMgr->Each<CRender, CTransform, CMaterial, CStaticMesh>(
-				[&]( CRender& render, CTransform& transform, CMaterial& material, CStaticMesh& mesh ) {
+			entityMgr->Each<CRender, CTransform, CMaterialInstance, CStaticMesh>(
+				[&]( CRender& render, CTransform& transform, CMaterialInstance& material, CStaticMesh& mesh ) {
 
 					if (!render.bVisible) return;
 

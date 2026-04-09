@@ -116,14 +116,14 @@ namespace lum::render {
 
 	void GeometryPass::draw_instance( const FRenderInstance& instance ) {
 
-		const auto& mat = instance.mMaterial->mInst;
+		const auto* mat = instance.mMaterial;
 
-		upload_material( mat );
+		upload_material( *mat );
 
-		mContext.mRenderDev->BindTexture( mat.mAlbedoTex, LUM_TEX_ALBEDO );
-		mContext.mRenderDev->BindTexture( mat.mNormalTex, LUM_TEX_NORMAL );
-		mContext.mRenderDev->BindTexture( mat.mRoughnessTex, LUM_TEX_ROUGHNESS );
-		mContext.mRenderDev->BindTexture( mat.mMetallicTex, LUM_TEX_METALNESS );
+		mContext.mRenderDev->BindTexture( mat->mAlbedoTex, LUM_TEX_ALBEDO );
+		mContext.mRenderDev->BindTexture( mat->mNormalTex, LUM_TEX_NORMAL );
+		mContext.mRenderDev->BindTexture( mat->mRoughnessTex, LUM_TEX_ROUGHNESS );
+		mContext.mRenderDev->BindTexture( mat->mMetallicTex, LUM_TEX_METALNESS );
 
 		draw_mesh( instance );
 
@@ -152,7 +152,7 @@ namespace lum::render {
 		mContext.mRenderDev->UpdateBuffer( mModelUniform, glm::value_ptr( model ), 0, 0 );
 
 	}
-	void GeometryPass::upload_material( const FMaterialInstance& mat ) {
+	void GeometryPass::upload_material( const CMaterialInstance& mat ) {
 
 		mMaterialUBO.mBaseColor = glm::vec4( mat.mBaseColor, 1.0 );
 		mMaterialUBO.mRoughness = mat.mRoughnessValue;

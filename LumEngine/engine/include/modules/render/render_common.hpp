@@ -110,7 +110,7 @@ namespace lum::render {
 
 		CStaticMesh* mStaticMesh = nullptr;
 
-		CMaterial* mMaterial = nullptr;
+		CMaterialInstance* mMaterial = nullptr;
 
 	};
 

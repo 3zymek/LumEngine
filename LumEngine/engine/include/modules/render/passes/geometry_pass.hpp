@@ -83,7 +83,7 @@ namespace lum::render {
 		/* @brief Uploads material parameters for the given material instance.
 		*  @param mat Material instance to upload.
 		*/
-		void upload_material( const FMaterialInstance& mat );
+		void upload_material( const CMaterialInstance& mat );
 
 	};
 } // namespace lum::render
