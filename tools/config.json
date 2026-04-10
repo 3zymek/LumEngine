@@ -1,136 +1,128 @@
 {
-
   "paths": {
     "scene_dep_manager_path": "engine/include/modules/scene/format/scene_dep_manager.hpp",
     "scene_dep_manager_include": "modules/scene/format/scene_dep_manager.hpp",
     "editor_dep_manager_path": "editor/include/editor_dep_manager.hpp",
     "editor_dep_manager_include": "editor_dep_manager.hpp"
   },
-
   "templates": {
     "parse_fn_namespace": "lum::fmt::detail",
-    "parse_fn_signature": "Parse{0}( std::vector<FToken>& tokens, int32& i, FParseContext& ctx )",
+    "parse_fn_signature": "Parse{ClassName}( std::vector<FToken>& tokens, int32& i, FParseContext& ctx )",
     "parse_fn_body_open": "detail::ExpectOpeningBracket( tokens, i );",
     "parse_fn_var_name": "component",
-    "parse_fn_field": "{0}.{1} = {2}( tokens, i );",
-    "parse_fn_add": "ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, {0} );",
-    "parse_fn_registry": "RegisterComponents( std::unordered_map<uint64, ParseFn>& {0} )",
+    "parse_fn_field": "{Var}.{FieldName} = {Reader}( tokens, i );",
+    "parse_fn_add": "ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, {Var} );",
+    "parse_fn_registry": "RegisterComponents( std::unordered_map<uint64, ParseFn>& {Param} )",
     "parse_fn_while_expr": "InBlock( tokens, i )",
-    "parse_fn_while_statement": "tokens[i].mValue == \"{0}\"",
+    "parse_fn_while_statement": "tokens[i].mValue == \"{Value}\"",
     "parse_fn_token_check": "tokens[i].mType == TokenType::Parameter",
-
     "editor_fn_namespace": "lum",
-    "editor_fn_signature": "DrawInspector{0}( ecs::MEntityManager& mgr, EntityID entity )",
+    "editor_fn_signature": "DrawInspector{ClassName}( ecs::MEntityManager& mgr, EntityID entity )",
     "editor_fn_comp_name": "component",
-    "editor_fn_comp_getter": "auto* {0} = mgr.GetComponent<{1}>( entity );",
-    "editor_fn_getter_check": "if(!{0}) return;",
-    "editor_fn_registry": "RegisterEditorComponents( std::unordered_map<uint64, detail::EditorFn>& {0} )",
-
+    "editor_fn_comp_getter": "auto* {Var} = mgr.GetComponent<{ClassName}>( entity );",
+    "editor_fn_getter_check": "if(!{Var}) return;",
+    "editor_fn_registry": "RegisterEditorComponents( std::unordered_map<uint64, detail::EditorFn>& {Param} )",
     "component_get_name_namespace": "lum::ecs::detail",
-    "component_get_name_signature": "GetComponentName<{0}>()",
+    "component_get_name_signature": "GetComponentName<{ClassName}>()",
     "component_get_name_return": "StringView"
   },
-
+  "defaults": {
+    "drag_speed": "0.5f",
+    "min_val": "0.0f",
+    "max_val": "0.0f"
+  },
   "types": {
-
     "float": {
       "reader": "detail::ReadFloatParameter",
-      "inspector": "ImGui::DragFloat( \"{2}##lhc_{1}\", &{0}->{1}, 0.001f )"
+      "inspector": "ImGui::DragFloat( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, {Speed}, {MinVal}, {MaxVal} )"
     },
     "float32": {
       "reader": "detail::ReadFloatParameter",
-      "inspector": "ImGui::DragFloat( \"{2}##lhc_{1}\", &{0}->{1}, 0.001f )"
+      "inspector": "ImGui::DragFloat( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, {Speed}, {MinVal}, {MaxVal} )"
     },
     "double": {
       "reader": "detail::ReadFloatParameter",
-      "inspector": "ImGui::DragFloat( \"{2}##lhc_{1}\", &{0}->{1}, 0.001f )"
+      "inspector": "ImGui::DragFloat( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, {Speed}, {MinVal}, {MaxVal} )"
     },
     "float64": {
       "reader": "detail::ReadFloatParameter",
-      "inspector": "ImGui::DragFloat( \"{2}##lhc_{1}\", &{0}->{1}, 0.001f )"
+      "inspector": "ImGui::DragFloat( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, {Speed}, {MinVal}, {MaxVal} )"
     },
-
     "glm::vec2": {
       "reader": "detail::ReadVec2Parameter",
-      "inspector": "ImGui::DragFloat2( \"{2}##lhc_{1}\", glm::value_ptr({0}->{1}), 0.001f )"
+      "inspector": "ImGui::DragFloat2( \"{DisplayName}##lhc_{FieldName}\", glm::value_ptr({Var}->{FieldName}), {Speed}, {MinVal}, {MaxVal} )"
     },
     "glm::vec3": {
       "reader": "detail::ReadVec3Parameter",
-      "inspector": "ImGui::DragFloat3( \"{2}##lhc_{1}\", glm::value_ptr({0}->{1}), 0.001f )"
+      "inspector": "ImGui::DragFloat3( \"{DisplayName}##lhc_{FieldName}\", glm::value_ptr({Var}->{FieldName}), {Speed}, {MinVal}, {MaxVal} )"
     },
     "glm::vec4": {
       "reader": "detail::ReadVec4Parameter",
-      "inspector": "ImGui::DragFloat4( \"{2}##lhc_{1}\", glm::value_ptr({0}->{1}), 0.001f )"
+      "inspector": "ImGui::DragFloat4( \"{DisplayName}##lhc_{FieldName}\", glm::value_ptr({Var}->{FieldName}), {Speed}, {MinVal}, {MaxVal} )"
     },
-
     "bool": {
       "reader": "detail::ReadBoolParameter",
-      "inspector": "ImGui::Checkbox( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::Checkbox( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName} )"
     },
-
     "int": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
     "int8": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
     "int16": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
     "int32": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
     "int64": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
-
     "unsigned int": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
     "uint8": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
     "uint16": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
     "uint32": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
     "uint64": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
-
     "usize": {
       "reader": "detail::ReadUIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
     "isize": {
       "reader": "detail::ReadIntParameter",
-      "inspector": "ImGui::DragInt( \"{2}##lhc_{1}\", &{0}->{1} )"
+      "inspector": "ImGui::DragInt( \"{DisplayName}##lhc_{FieldName}\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} )"
     },
-
     "String": {
       "reader": "detail::ReadStringParameter",
-      "inspector": "ImGui::InputText( \"{2}##lhc_{1}\", {0}->{1}.data(), {0}->{1}.length() + 1 )"
+      "inspector": "ImGui::InputText( \"{DisplayName}##lhc_{FieldName}\", {Var}->{FieldName}.data(), {Var}->{FieldName}.length() + 1 )"
     },
     "string": {
       "reader": "detail::ReadStringParameter",
-      "inspector": "ImGui::InputText( \"{2}##lhc_{1}\", {0}->{1}.data(), {0}->{1}.length() + 1 )"
+      "inspector": "ImGui::InputText( \"{DisplayName}##lhc_{FieldName}\", {Var}->{FieldName}.data(), {Var}->{FieldName}.length() + 1 )"
     },
     "FixedString": {
       "reader": "detail::ReadStringParameter",
-      "inspector": "ImGui::InputText( \"{2}##lhc_{1}\", {0}->{1}.Data(), {0}->{1}.MaxSize() )"
+      "inspector": "ImGui::InputText( \"{DisplayName}##lhc_{FieldName}\", {Var}->{FieldName}.Data(), {Var}->{FieldName}.MaxSize() )"
     }
-
   }
 }

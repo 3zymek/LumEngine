@@ -14,7 +14,7 @@ namespace lum {
 	*  Does not own the mesh data — lifetime is managed by MMeshManager.
 	*  Use StaticMeshHandle to reference geometry uploaded to the GPU.
 	*/
-	LCLASS( id = "static_mesh" ) struct CStaticMesh : public Component {
+	LCLASS( DisplayName = "static_mesh" ) struct CStaticMesh : public Component {
 
 		LPROPERTY( )
 		String mPath;

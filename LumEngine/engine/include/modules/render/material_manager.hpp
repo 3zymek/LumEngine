@@ -13,7 +13,7 @@
 
 namespace lum {
 
-	/* @brief Manages material base assets and per-entity material instances.
+	/* @brief Manages material base assets and per-entity material instances. 
 	*
 	* Base materials (FMaterialBase) are shared and stored by handle.
 	* Instances (FMaterialInstance) are created from a base and resolve
