@@ -8,7 +8,7 @@ namespace lum {
 			using UnsubscribeInvoke = void (*)(SubscribtionID, EventBus&);
 
 			struct EmitterSlot {
-				SubscribtionID		mID = MaxVal<SubscribtionID>();
+				SubscribtionID		mID = MaxValue<SubscribtionID>();
 				UnsubscribeInvoke	mUnsub;
 			};
 

@@ -27,7 +27,7 @@ namespace lum {
 	namespace ecs {
 
 		/* @brief Means that entity doesn't exists. */
-		inline constexpr EntityID skNullEntity = MaxVal<EntityID>( );
+		inline constexpr EntityID skNullEntity = MaxValue<EntityID>( );
 
 		/* @brief Internal implementation details for the ECS.
 		*  Not intended for direct use outside of the ECS subsystem.

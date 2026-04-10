@@ -35,7 +35,7 @@ namespace lum {
 						}
 					}
 					LUM_LOG_WARN("No free permanent callback slots");
-					return MaxVal<SubscribtionID>();
+					return MaxValue<SubscribtionID>();
 
 				}
 

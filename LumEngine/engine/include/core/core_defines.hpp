@@ -7,8 +7,6 @@
 
 #define LPROPERTY(...)
 #define LCLASS(...)
-#define DisplayName
-#define DragSpeed
 
 #if defined(_MSC_VER)
 #define LUM_FORCEINLINE __forceinline

@@ -27,15 +27,19 @@ namespace lum {
 
 		LPROPERTY( ) float32 mIntensity = 100.f;
 
-		LPROPERTY( ) float32 mRadius = 10.f; // Maximum range of the light
+		LPROPERTY( DragSpeed = 0.2f, MinVal = 0.1f ) 
+		float32 mRadius = 10.f; // Maximum range of the light
 
-		LPROPERTY( ) float32 mInnerConeAngle = 15.f;
+		LPROPERTY( DragSpeed = 0.2f, MinVal = 0.1f ) 
+		float32 mInnerConeAngle = 15.f;
 
-		LPROPERTY( ) float32 mOuterConeAngle = 30.f;
+		LPROPERTY( DragSpeed = 0.2f, MinVal = 0.1f ) 
+		float32 mOuterConeAngle = 30.f;
 
 		LPROPERTY( ) glm::vec3 mDirection = glm::vec3( 0.f, -1.f, 0.f );
 
-		LPROPERTY( ) glm::vec3 mColor = { 1.f, 1.f, 1.f }; // Light color in linear RGB
+		LPROPERTY( DragSpeed = 0.2f, MaxVal = 1.0f ) 
+		glm::vec3 mColor = { 1.f, 1.f, 1.f }; // Light color in linear RGB
 
 	};
 

@@ -28,6 +28,7 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <deque>
 
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"

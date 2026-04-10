@@ -69,7 +69,7 @@ namespace lum {
 		template<typename T>
 			requires std::is_arithmetic_v<T>
 		inline constexpr T NullID() {
-			return MaxVal<T>();
+			return MaxValue<T>();
 		}
 
 		using RBufferID = uint32; /* @brief Numeric identifier for a GPU buffer object. */
@@ -102,7 +102,7 @@ namespace lum {
 		/* @brief Typed handle wrapping a vertex layout (VAO) ID. */
 		struct RVertexLayoutHandle : public cstd::BaseHandle<RLayoutID> {};
 
-		inline RFramebufferHandle gDefaultFramebuffer{ 0, MaxVal<RFramebufferID>() };
+		inline RFramebufferHandle gDefaultFramebuffer{ 0, MaxValue<RFramebufferID>() };
 
 
 		/* @brief Bitmask storage type used for RHI flag enums. */

@@ -121,7 +121,7 @@ namespace lum {
 	* @return std::numeric_limits<T>::max().
 	*/
 	template<cArithmetic tType>
-	inline constexpr tType MaxVal( ) { return std::numeric_limits<tType>::max( ); }
+	inline constexpr tType MaxValue( ) { return std::numeric_limits<tType>::max( ); }
 
 	/* @brief Returns the total byte size of a std::vector's contents.
 	* @param vector Vector to calculate byte size for.

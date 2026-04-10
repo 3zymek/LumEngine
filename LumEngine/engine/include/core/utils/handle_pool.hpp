@@ -20,7 +20,7 @@ namespace lum::cstd {
 	struct alignas(8) BaseHandle {
 
 		constexpr BaseHandle( tType id, tType gen = 0 )	: mID( id ), mGeneration( gen ) {}
-		constexpr BaseHandle( )							: mID( MaxVal<tType>() ), mGeneration( 0 ) {}
+		constexpr BaseHandle( )							: mID( MaxValue<tType>() ), mGeneration( 0 ) {}
 
 		tType mID; // Slot index. MaxVal means invalid/null.
 		tType mGeneration; // Incremented on Remove to invalidate old handles.
@@ -237,7 +237,7 @@ namespace lum::cstd {
 
 	private:
 
-		static constexpr SparseT skNullHandle = MaxVal<SparseT>(); // Sentinel value for empty slots.
+		static constexpr SparseT skNullHandle = MaxValue<SparseT>(); // Sentinel value for empty slots.
 		const SparseT kMaxSize = 0; // Maximum capacity set at construction.
 		
 		SparseT mNextSlot = 0; // Next slot to allocate when free list is empty.

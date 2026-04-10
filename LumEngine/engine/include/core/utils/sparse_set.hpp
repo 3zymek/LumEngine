@@ -171,7 +171,7 @@ namespace lum::cstd {
 
 	private:
 
-		static constexpr SparseT skNullSparse = MaxVal<SparseT>(); // Sentinel value for empty slots.
+		static constexpr SparseT skNullSparse = MaxValue<SparseT>(); // Sentinel value for empty slots.
 		const SparseT kMaxSize = 0;
 
 		std::vector<tDense>		mDense;         // Contiguous value storage.

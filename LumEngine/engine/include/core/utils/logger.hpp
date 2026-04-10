@@ -23,7 +23,31 @@ namespace lum {
 		Debug = 0b0001'0000,
 		All = Fatal | Error | Warn | Info | Debug
 	};
-	LUM_ENUM_OPERATIONS(lum::LogSeverity);
+	LUM_ENUM_OPERATIONS( lum::LogSeverity );
+
+	struct FLogEntry {
+		uint64 mTime = 0;
+		String mMessage = "";
+		LogSeverity mSeverity;
+	};
+
+	struct LogBuffer {
+
+		LogBuffer( uint32 maxLogs ) : mMaxLogs( maxLogs ) { }
+
+		const std::deque<FLogEntry>& GetLogs( ) const { return mLogs; }
+		void Push( FLogEntry& entry ) {
+			if (mLogs.size( ) >= mMaxLogs)
+				mLogs.pop_front( );
+			mLogs.push_back( entry );
+		}
+
+	private:
+
+		uint32 mMaxLogs = 0;
+		std::deque<FLogEntry> mLogs;
+
+	};
 
 
 
@@ -44,19 +68,29 @@ namespace lum {
 			return log;
 		}
 
+		inline const std::deque<FLogEntry>& GetLogs( ) const { return mLogs.GetLogs(); }
+
 		/* @brief Enables logging for the given severity flags.
 		* @param sev Severity levels to enable.
 		*/
 		inline constexpr void EnableLog( Flags<LogSeverity> sev ) {
-			mSeverity.Enable(sev);
+			mSeverity.Enable( sev );
 		}
 
 		/* @brief Disables logging for the given severity flags.
 		* @param sev Severity levels to disable.
 		*/
 		inline constexpr void DisableLog( Flags<LogSeverity> sev ) {
-			mSeverity.Disable(sev);
+			mSeverity.Disable( sev );
 		}
+
+		/* @brief Converts a LogSeverity value to its string representation.
+		* @param out Output buffer.
+		* @param sev Severity to convert.
+		*/
+		static StringView SeverityToString( LogSeverity sev );
+
+		static void FormatTime( uint64 timestamp, charptr out );
 
 		/* @brief Formats and outputs a log message to stdout.
 		* Skips output if the severity is disabled or the message was already logged.
@@ -70,72 +104,43 @@ namespace lum {
 		template<usize tFileL, usize tFuncL, typename... tArgs>
 		void LogCmd(
 			LogSeverity sev,
-			const char(&file)[tFileL],
-			const char(&func)[tFuncL],
+			const char( &file )[ tFileL ],
+			const char( &func )[ tFuncL ],
 			int32 line,
-			ccharptr msg,
+			StringView msg,
 			tArgs&&... args
-		)
-		{
+		) {
 
-			if (!mSeverity.Has(sev)) return;
-			
-			// Cleanup
-			std::memset(mDescBuffer, 0, sizeof(mDescBuffer));
-			std::memset(mDescTempBuffer, 0, sizeof(mDescTempBuffer));
-			std::memset(mCentertedSeverity, 0, sizeof(mCentertedSeverity));
-			std::memset(mSevColorBuffer, 0, sizeof(mSevColorBuffer));
-			std::memset(mSeverityTempBuffer, 0, sizeof(mSeverityTempBuffer));
-			
-			output_time();
-			to_string(mSeverityTempBuffer, sev);
-			center_custom(mCentertedSeverity, 8, mSeverityTempBuffer, 1, 6);
-			to_color(mSevColorBuffer, sev);
-			
-			const char* filename = extract_filename(file);
+			if (!mSeverity.Has( sev )) return;
 
-			int32 descLen =
-				std::snprintf(
-					mDescTempBuffer,
-					sizeof(mDescTempBuffer),
-					"%s:%s%d%s %s",
-					filename,
-					cmdcolor::Cyan,
-					line,
-					cmdcolor::Reset,
-					func
-				);
-			
-			center_custom(mDescBuffer, sizeof(mDescBuffer), mDescTempBuffer, 2, 64);
-			
-			std::printf("[%s%s%s][%s] ", mSevColorBuffer, mCentertedSeverity, cmdcolor::Reset, mDescBuffer);
-			std::printf(msg, std::forward<tArgs>(args)...);
-			std::printf("%c", '\n');
+			char formatMsg[ sMaxDescriptionLength ]{};
+			std::snprintf(
+				formatMsg,
+				sizeof( formatMsg ),
+				msg.data( ),
+				std::forward<tArgs>( args )...
+			);
 
-			mLastLog = HashStr(msg);
+			FLogEntry entry;
+			entry.mMessage = formatMsg;
+			entry.mSeverity = sev;
+			entry.mTime = get_time( );
+			mLogs.Push( entry );
 
 		}
 
 	private:
 
-		inline constexpr
-		static uint32 sMaxColorLength = 6;   /* Max ANSI color code length (with \0). */
+		LogBuffer mLogs{ 32 };
 
-		inline constexpr
-		static uint32 sMaxSeverityLength = 6;   /* Max severity string length (with \0). */
-
-		inline constexpr
-		static uint32 sMaxDescriptionLength = 128; /* Max formatted description buffer length. */
+		inline constexpr static uint32 sMaxSeverityLength = 6;   /* Max severity string length (with \0). */
+		inline constexpr static uint32 sMaxDescriptionLength = 128; /* Max formatted description buffer length. */
 
 		/* @brief Buffers used for formatting log output. */
-		char mDescBuffer[sMaxDescriptionLength]{};
-		char mDescTempBuffer[sMaxDescriptionLength]{};
-		char mSeverityTempBuffer[sMaxSeverityLength]{};
-		char mCentertedSeverity[16]{};
-		char mSevColorBuffer[sMaxColorLength]{};
-
-		/* @brief Hashes of recently logged messages used for duplicate suppression. */
-		uint64 mLastLog{};
+		char mDescBuffer[ sMaxDescriptionLength ]{};
+		char mDescTempBuffer[ sMaxDescriptionLength ]{};
+		char mSeverityTempBuffer[ sMaxSeverityLength ]{};
+		char mCentertedSeverity[ 16 ]{};
 
 		/* @brief Active severity filter mask. Defaults to all levels enabled. */
 		Flags<LogSeverity> mSeverity{ LogSeverity::All };
@@ -148,15 +153,14 @@ namespace lum {
 		* @param rightWidth Total field width.
 		*/
 		template<usize tL>
-		void center_custom( charptr out, usize outSize, const char(&s)[tL], usize leftWidth, usize rightWidth ) {
+		void center_custom( charptr out, usize outSize, const char( &s )[ tL ], usize leftWidth, usize rightWidth ) {
 			if (tL <= 1) return;
-			usize len = strlen(s);
-			usize rightPad = rightWidth - len;
-			usize copyLen = std::min<usize>(len, outSize - leftWidth);
-			usize padRight = std::min<usize>(rightPad, outSize - leftWidth - copyLen);
-			std::memset(out, ' ', leftWidth);
-			std::memcpy(out + leftWidth, s, copyLen);
-			std::memset(out + leftWidth + copyLen, ' ', padRight);
+			usize rightPad = rightWidth - tL;
+			usize copyLen = std::min<usize>( tL, outSize - leftWidth );
+			usize padRight = std::min<usize>( rightPad, outSize - leftWidth - copyLen );
+			std::memset( out, ' ', leftWidth );
+			std::memcpy( out + leftWidth, s, copyLen );
+			std::memset( out + leftWidth + copyLen, ' ', padRight );
 		}
 
 		/* @brief Extracts the filename from a full file path at compile time.
@@ -164,30 +168,17 @@ namespace lum {
 		* @return Pointer to the filename portion of the path.
 		*/
 		template<usize tL>
-		ccharptr extract_filename( const char(&path)[tL] ) {
+		ccharptr extract_filename( const char( &path )[ tL ] ) {
 			ccharptr lastSlash = nullptr;
-			for (size_t i = 0; i < tL - 1; ++i) {
-				if (path[i] == '/' || path[i] == '\\') {
-					lastSlash = &path[i];
+			for (usize i = 0; i < tL - 1; ++i) {
+				if (path[ i ] == '/' || path[ i ] == '\\') {
+					lastSlash = &path[ i ];
 				}
 			}
 			return lastSlash ? lastSlash + 1 : path;
 		}
 
-		/* @brief Writes the current time to stdout.*/
-		void output_time( );
-
-		/* @brief Converts a LogSeverity value to its string representation.
-		* @param out Output buffer.
-		* @param sev Severity to convert.
-		*/
-		void to_string( charptr out, LogSeverity sev );
-
-		/* @brief Writes the ANSI color code for the given severity into out.
-		* @param out Output buffer.
-		* @param sev Severity to convert.
-		*/
-		void to_color( charptr out, LogSeverity sev );
+		static uint64 get_time(  );
 
 		Logger( ) = default;
 	};
