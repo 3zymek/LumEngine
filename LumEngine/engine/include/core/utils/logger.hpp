@@ -11,6 +11,7 @@
 namespace lum {
 
 	using SeverityMask = bitfield;
+#	define LUM_MAX_LOGS 32
 
 	/* @brief Bitmask enum defining log severity levels.
 	* Can be combined to enable or disable multiple levels at once.
@@ -28,7 +29,10 @@ namespace lum {
 	struct FLogEntry {
 		uint64 mTime = 0;
 		String mMessage = "";
-		LogSeverity mSeverity;
+		ccharptr mFunction = "";
+		ccharptr mFile = "";
+		uint32 mLine = 0;
+		LogSeverity mSeverity{};
 	};
 
 	struct LogBuffer {
@@ -68,7 +72,7 @@ namespace lum {
 			return log;
 		}
 
-		inline const std::deque<FLogEntry>& GetLogs( ) const { return mLogs.GetLogs(); }
+		inline const std::deque<FLogEntry>& GetLogs( ) const { return mLogs.GetLogs( ); }
 
 		/* @brief Enables logging for the given severity flags.
 		* @param sev Severity levels to enable.
@@ -131,37 +135,12 @@ namespace lum {
 
 	private:
 
-		LogBuffer mLogs{ 32 };
+		LogBuffer mLogs{ LUM_MAX_LOGS };
 
-		inline constexpr static uint32 sMaxSeverityLength = 6;   /* Max severity string length (with \0). */
 		inline constexpr static uint32 sMaxDescriptionLength = 128; /* Max formatted description buffer length. */
-
-		/* @brief Buffers used for formatting log output. */
-		char mDescBuffer[ sMaxDescriptionLength ]{};
-		char mDescTempBuffer[ sMaxDescriptionLength ]{};
-		char mSeverityTempBuffer[ sMaxSeverityLength ]{};
-		char mCentertedSeverity[ 16 ]{};
 
 		/* @brief Active severity filter mask. Defaults to all levels enabled. */
 		Flags<LogSeverity> mSeverity{ LogSeverity::All };
-
-		/* @brief Centers string s within a field, padding with spaces.
-		* @param out       Output buffer.
-		* @param outSize   Size of the output buffer.
-		* @param s         String to center.
-		* @param leftWidth Left padding width.
-		* @param rightWidth Total field width.
-		*/
-		template<usize tL>
-		void center_custom( charptr out, usize outSize, const char( &s )[ tL ], usize leftWidth, usize rightWidth ) {
-			if (tL <= 1) return;
-			usize rightPad = rightWidth - tL;
-			usize copyLen = std::min<usize>( tL, outSize - leftWidth );
-			usize padRight = std::min<usize>( rightPad, outSize - leftWidth - copyLen );
-			std::memset( out, ' ', leftWidth );
-			std::memcpy( out + leftWidth, s, copyLen );
-			std::memset( out + leftWidth + copyLen, ' ', padRight );
-		}
 
 		/* @brief Extracts the filename from a full file path at compile time.
 		* @param path Full source file path.
@@ -178,7 +157,7 @@ namespace lum {
 			return lastSlash ? lastSlash + 1 : path;
 		}
 
-		static uint64 get_time(  );
+		static uint64 get_time( );
 
 		Logger( ) = default;
 	};

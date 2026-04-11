@@ -6,6 +6,7 @@
     "editor_dep_manager_include": "editor_dep_manager.hpp"
   },
   "templates": {
+    
     "parse_fn_namespace": "lum::fmt::detail",
     "parse_fn_signature": "Parse{ClassName}( std::vector<FToken>& tokens, int32& i, FParseContext& ctx )",
     "parse_fn_body_open": "detail::ExpectOpeningBracket( tokens, i );",
@@ -16,12 +17,14 @@
     "parse_fn_while_expr": "InBlock( tokens, i )",
     "parse_fn_while_statement": "tokens[i].mValue == \"{Value}\"",
     "parse_fn_token_check": "tokens[i].mType == TokenType::Parameter",
-    "editor_fn_namespace": "lum",
+    
+    "editor_fn_namespace": "lum::editor",
     "editor_fn_signature": "DrawInspector{ClassName}( ecs::MEntityManager& mgr, EntityID entity )",
     "editor_fn_comp_name": "component",
     "editor_fn_comp_getter": "auto* {Var} = mgr.GetComponent<{ClassName}>( entity );",
     "editor_fn_getter_check": "if(!{Var}) return;",
     "editor_fn_registry": "RegisterEditorComponents( std::unordered_map<uint64, detail::EditorFn>& {Param} )",
+    
     "component_get_name_namespace": "lum::ecs::detail",
     "component_get_name_signature": "GetComponentName<{ClassName}>()",
     "component_get_name_return": "StringView"

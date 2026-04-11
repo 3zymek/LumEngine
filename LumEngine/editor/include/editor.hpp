@@ -1,9 +1,10 @@
 #pragma once
 
 #include "engine.hpp"
-#include "editor_camera.hpp"
+#include "core/editor_camera.hpp"
+#include "core/editor_console.hpp"
 
-namespace lum {
+namespace lum::editor {
 
 	namespace detail { using EditorFn = void(*)(ecs::MEntityManager&, EntityID); }
 
@@ -20,6 +21,7 @@ namespace lum {
 	private:
 
 		Engine mEngine;
+		Console mConsole;
 		EditorCamera mCamera;
 		glm::vec2 mViewportSize = glm::vec2( 0, 0 );
 		bool bLayoutInitialized = false;

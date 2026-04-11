@@ -1,12 +1,10 @@
 #include "editor.hpp"
-#include <imgui.h>
-#include <imgui_internal.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include "core/editor_common.hpp"
 #include "entity/components/name.hpp"
 #include "editor_dep_manager.generated.hpp"
+#include "core/utils/fonts.hpp"
 
-namespace lum {
+namespace lum::editor {
 
 	void Editor::Initialize( ) {
 
@@ -137,30 +135,8 @@ namespace lum {
 		}
 		ImGui::End( );
 
-
-		ImGui::Begin( "Console" );
-		ImGui::BeginChild( "ConsoleScrollRegion", ImVec2( 0, 0 ) );
-		ImGui::SetWindowFontScale( 1.5f );
-		auto& logs = Logger::Get( ).GetLogs( );
-		for (auto& log : logs) {
-			char time[ 16 ]{};
-			Logger::Get( ).FormatTime( log.mTime, time );
-			ImGui::TextUnformatted( "[ " ); ImGui::SameLine( );
-			ImGui::TextDisabled( time ); ImGui::SameLine( );
-			ImGui::TextUnformatted( " ]" ); ImGui::SameLine( );
-			if (log.mSeverity == LogSeverity::Info)
-				ImGui::Text( log.mMessage.c_str( ) );
-			else if (log.mSeverity == LogSeverity::Warn)
-				ImGui::TextColored( ImVec4( 1.0f, 0.85f, 0.0f, 1.0f ), log.mMessage.c_str( ) );
-			else if (log.mSeverity == LogSeverity::Error)
-				ImGui::TextColored( ImVec4( 1.0f, 0.1f, 0.1f, 1.0f ), log.mMessage.c_str( ) );
-			else if (log.mSeverity == LogSeverity::Fatal)
-				ImGui::TextColored( ImVec4( 1.0f, 0.0f, 0.4f, 1.0f ), log.mMessage.c_str( ) );
-			else if (log.mSeverity == LogSeverity::Debug)
-				ImGui::TextColored( ImVec4( 0.50f, 0.0f, 0.80f, 1.0f ), log.mMessage.c_str( ) );
-		}
-		ImGui::EndChild( );
-		ImGui::End( ); // Console
+		mConsole.Draw( );
+	
 	}
 
 
@@ -171,49 +147,41 @@ namespace lum {
 		ImGui_ImplGlfw_InitForOpenGL( static_cast< GLFWwindow* >(window->GetNativeWindow( )), true );
 		ImGui_ImplOpenGL3_Init( "#version 450" );
 
-		LUM_LOG_ERROR( "ERROR" );
-		LUM_LOG_INFO( "INFO" );
-		LUM_LOG_DEBUG( "DEBUG" );
-		LUM_LOG_WARN( "WARN" );
-		LUM_LOG_FATAL( "FATAL" );
+		LUM_LOG_ERROR( "ERROR0" );
+		LUM_LOG_INFO( "INFO0" );
+		LUM_LOG_DEBUG( "DEBUG0" );
+		LUM_LOG_WARN( "WARN0" );
+		LUM_LOG_FATAL( "FATAL0" );
 		ImGuiStyle& style = ImGui::GetStyle( );
 		ImVec4* colors = style.Colors;
 
-		// Tło główne
 		colors[ ImGuiCol_WindowBg ] = ImVec4( 0.09f, 0.09f, 0.09f, 1.00f );
 		colors[ ImGuiCol_ChildBg ] = ImVec4( 0.11f, 0.11f, 0.11f, 1.00f );
 		colors[ ImGuiCol_PopupBg ] = ImVec4( 0.13f, 0.13f, 0.13f, 1.00f );
 
-		// Nagłówki / paski tytułu
 		colors[ ImGuiCol_TitleBg ] = ImVec4( 0.07f, 0.07f, 0.07f, 1.00f );
 		colors[ ImGuiCol_TitleBgActive ] = ImVec4( 0.14f, 0.14f, 0.14f, 1.00f );
 		colors[ ImGuiCol_TitleBgCollapsed ] = ImVec4( 0.07f, 0.07f, 0.07f, 1.00f );
 
-		// Ramki / bordery
 		colors[ ImGuiCol_Border ] = ImVec4( 0.20f, 0.20f, 0.20f, 1.00f );
 		colors[ ImGuiCol_BorderShadow ] = ImVec4( 0.00f, 0.00f, 0.00f, 0.00f );
 
-		// Pola tekstowe / pola input
 		colors[ ImGuiCol_FrameBg ] = ImVec4( 0.14f, 0.14f, 0.14f, 1.00f );
 		colors[ ImGuiCol_FrameBgHovered ] = ImVec4( 0.19f, 0.19f, 0.19f, 1.00f );
 		colors[ ImGuiCol_FrameBgActive ] = ImVec4( 0.24f, 0.24f, 0.24f, 1.00f );
 
-		// Akcent (niebieski jak w Blenderze)
 		colors[ ImGuiCol_CheckMark ] = ImVec4( 0.33f, 0.55f, 0.86f, 1.00f );
 		colors[ ImGuiCol_SliderGrab ] = ImVec4( 0.33f, 0.55f, 0.86f, 1.00f );
 		colors[ ImGuiCol_SliderGrabActive ] = ImVec4( 0.44f, 0.65f, 0.95f, 1.00f );
 
-		// Przyciski
 		colors[ ImGuiCol_Button ] = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
 		colors[ ImGuiCol_ButtonHovered ] = ImVec4( 0.33f, 0.55f, 0.86f, 1.00f );
 		colors[ ImGuiCol_ButtonActive ] = ImVec4( 0.25f, 0.45f, 0.75f, 1.00f );
 
-		// Nagłówki (TreeNode, CollapsingHeader)
 		colors[ ImGuiCol_Header ] = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
 		colors[ ImGuiCol_HeaderHovered ] = ImVec4( 0.26f, 0.26f, 0.26f, 1.00f );
 		colors[ ImGuiCol_HeaderActive ] = ImVec4( 0.33f, 0.55f, 0.86f, 1.00f );
 
-		// Separator
 		colors[ ImGuiCol_Separator ] = ImVec4( 0.20f, 0.20f, 0.20f, 1.00f );
 		colors[ ImGuiCol_SeparatorHovered ] = ImVec4( 0.33f, 0.55f, 0.86f, 1.00f );
 		colors[ ImGuiCol_SeparatorActive ] = ImVec4( 0.44f, 0.65f, 0.95f, 1.00f );
@@ -235,11 +203,9 @@ namespace lum {
 		colors[ ImGuiCol_ScrollbarGrabHovered ] = ImVec4( 0.33f, 0.33f, 0.33f, 1.00f );
 		colors[ ImGuiCol_ScrollbarGrabActive ] = ImVec4( 0.44f, 0.44f, 0.44f, 1.00f );
 
-		// Tekst
 		colors[ ImGuiCol_Text ] = ImVec4( 0.86f, 0.86f, 0.86f, 1.00f );
 		colors[ ImGuiCol_TextDisabled ] = ImVec4( 0.40f, 0.40f, 0.40f, 1.00f );
 
-		// Styl zaokrągleń i odstępów (jak Blender)
 		style.WindowRounding = 4.0f;
 		style.FrameRounding = 3.0f;
 		style.PopupRounding = 4.0f;
@@ -259,6 +225,8 @@ namespace lum {
 
 		ImGui::GetIO( ).Fonts->AddFontFromFileTTF( "C:/Windows/Fonts/segoeui.ttf", 15.0f );
 		ImGui::GetIO( ).FontGlobalScale = 1.3f;
+
+		Fonts::Initialize( );
 
 	}
 	void Editor::begin_imgui( ) {

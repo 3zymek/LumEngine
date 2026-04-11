@@ -114,6 +114,10 @@ target_include_directories(LumEngineEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine/external/stb/inc"
 )
 
+target_precompile_headers(LumEngineEditor PRIVATE
+    "${CMAKE_SOURCE_DIR}/LumEngine/editor/include/core/editor_pch.hpp"
+)
+
 target_link_libraries(LumEngineEditor PRIVATE 
     LumEngine
     "${CMAKE_SOURCE_DIR}/LumEngine/external/glfw/lib/glfw3.lib"

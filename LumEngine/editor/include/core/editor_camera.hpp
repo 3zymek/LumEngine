@@ -2,7 +2,7 @@
 
 #include "event/events/window_events.hpp"
 
-namespace lum {
+namespace lum::editor {
 
 	class EditorCamera {
 	public:
@@ -63,9 +63,7 @@ namespace lum {
 
 		}
 
-		void SetAspectRatio( float32 ratio ) {
-			mAspectRatio = ratio;
-		}
+		inline void SetAspectRatio( float32 ratio ) noexcept { mAspectRatio = ratio; }
 
 
 	private:

@@ -2,7 +2,7 @@
 
 int main( ) {
 
-	lum::Editor editor;
+	lum::editor::Editor editor;
 	editor.Initialize( );
 	editor.Run( );
 	editor.Finalize( );
