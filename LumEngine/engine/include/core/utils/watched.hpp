@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Watched<T> — a wrapper that tracks modifications to a contained value.
 //          Marks itself when accessed via operator->(), allowing systems to detect
@@ -6,8 +6,6 @@
 //
 //=============================================================================//
 #pragma once
-
-#include "core/core_common.hpp"
 
 namespace lum::cstd {
 
@@ -27,7 +25,7 @@ namespace lum::cstd {
 		const tType* operator->( ) const { return &mValue; }
 
 		/* @brief Returns true if the value has been modified since the last Unmark(). */
-		bool IsMarked( ) const { return bMarked; }
+		bool IsMarked( ) const noexcept { return bMarked; }
 
 		/* @brief Clears the modified mark. Call after processing the change. */
 		void Unmark( ) { bMarked = false; }

@@ -90,11 +90,15 @@ namespace lum::editor {
 
 			ImGui::DockBuilderFinish( dockID );
 		}
-
-		if (ImGui::BeginMainMenuBar( )) {
-			if (ImGui::BeginMenu( "Scena" )) {
-				ImGui::MenuItem( "Nowa" );
-				ImGui::MenuItem( "Otwórz" );
+		
+		if (ImGui::BeginMainMenuBar()) {
+			if (ImGui::BeginMenu( "Scene" )) {
+				ImGui::MenuItem( "New Scene", "Ctrl + N" );
+				ImGui::MenuItem( "Open scene", "Ctrl + O" );
+				ImGui::Separator( );
+				if (ImGui::MenuItem( "Quit", "Ctrl + Q" )) {
+					mEngine.GetPlatform( ).mWindow.Close( );
+				}
 				ImGui::EndMenu( );
 			}
 			if (ImGui::BeginMenu( "Projekt" )) {
@@ -103,13 +107,7 @@ namespace lum::editor {
 			ImGui::EndMainMenuBar( );
 		}
 
-		ImGui::Begin( "File Explorer" );
-		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator( AssetLoader::GetProjectRoot( ) )) {
-			if (entry.is_regular_file( )) {
-				ImGui::CollapsingHeader( entry.path( ).filename( ).string( ).data( ) );
-			}
-		}
-		ImGui::End( ); // File Explorer
+		mExplorer.Update( AssetLoader::GetProjectRoot( ) );
 
 
 		ImGui::Begin( "Viewport" );
@@ -153,19 +151,6 @@ namespace lum::editor {
 		ImGui::End( );
 
 		mConsole.Draw( );
-
-		GLFWwindow* window = static_cast< GLFWwindow* >(mEngine.GetPlatform( ).mWindow.GetNativeWindow( ));
-
-		int32 winWidth{}, winHeight{};
-		glfwGetWindowSize( window, &winWidth, &winHeight );
-
-		int32 monWidth{}, monHeight{};
-		const GLFWvidmode* mode = glfwGetVideoMode( glfwGetPrimaryMonitor( ) );
-		monWidth = mode->width;
-		monHeight = mode->height;
-
-		ImGui::SetNextWindowPos( ImVec2( 0, 0 ) );
-		ImGui::SetNextWindowSize( ImVec2( winWidth, 30 ) );
 
 	}
 

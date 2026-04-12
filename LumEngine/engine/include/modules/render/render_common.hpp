@@ -1,11 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Shared render data types — lights, instances, camera
 //          and internal pass/uniform structures.
 //
 //=============================================================================//
 #pragma once
-
 #include "rhi/core/rhi_device.hpp"
 #include "core/utils/handle_pool.hpp"
 #include "entity/components/transform.hpp"

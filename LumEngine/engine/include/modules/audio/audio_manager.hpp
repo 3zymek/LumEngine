@@ -1,12 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: High-level audio manager — sound loading, playback,
 //          channel groups, effects and 3D listener management.
 //
 //=============================================================================//
-
 #pragma once
-
 #include "audio_common.hpp"
 #include "ahi/core/ahi_device.hpp"
 #include "entity/entity_manager.hpp"

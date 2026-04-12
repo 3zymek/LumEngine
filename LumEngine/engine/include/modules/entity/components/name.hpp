@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Name component for the ECS.
 //
 //=============================================================================//
 #pragma once
-
 #include "core/utils/fixed_string.hpp"
 #include "entity/ecs_common.hpp"
 

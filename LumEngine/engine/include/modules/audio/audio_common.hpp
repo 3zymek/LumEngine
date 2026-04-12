@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Sound category definitions and flag mappings for AHI.
 //
 //=============================================================================//
 #pragma once
-
 #include "core/core_common.hpp"
 #include "ahi/ahi_common.hpp"
 

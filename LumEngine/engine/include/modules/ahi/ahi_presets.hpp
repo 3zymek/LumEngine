@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Full-chain audio effect presets for AHI.
 //          Each FAudioPreset configures the entire effect chain at once —
@@ -15,10 +15,10 @@ namespace lum::ahi {
 	/* @brief Named presets for full-chain audio effect configuration. */
 	enum class EffectPreset : byte {
 
-		// --- Off ---
+		// Off
 		Off,
 
-		// --- Environmental ---
+		// Environmental
 		Underwater,
 		Underground,
 		Cave,
@@ -30,7 +30,7 @@ namespace lum::ahi {
 		ParkingLot,
 		SewerPipe,
 
-		// --- Indoor rooms ---
+		// Indoor rooms
 		SmallRoom,
 		Bathroom,
 		Livingroom,
@@ -41,7 +41,7 @@ namespace lum::ahi {
 		Arena,
 		Hangar,
 
-		// --- Gameplay ---
+		// Gameplay
 		Radio,             // Walkie-talkie / military comms
 		Phone,             // Telephone call
 		MegaphoneMuffled,  // Distant PA / bullhorn
@@ -54,7 +54,7 @@ namespace lum::ahi {
 
 	namespace detail {
 
-		inline constexpr FAudioEffectDescriptor gkEffectPresetLookup[] = {
+		inline constexpr FAudioEffectDescriptor gkEffectPresetLookup[ ] = {
 
 			// -------------------------------------------------------
 			// Off
@@ -681,8 +681,8 @@ namespace lum::ahi {
 
 	} // namespace detail
 
-	inline ahi::FAudioEffectDescriptor GetPreset(EffectPreset preset) {
-		return detail::gkEffectPresetLookup[ToUnderlyingEnum(preset)];
+	inline ahi::FAudioEffectDescriptor GetPreset( EffectPreset preset ) {
+		return detail::gkEffectPresetLookup[ ToUnderlyingEnum( preset ) ];
 	}
 
 } // namespace lum::ahi

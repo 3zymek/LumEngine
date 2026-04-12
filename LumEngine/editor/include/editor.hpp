@@ -3,6 +3,7 @@
 #include "engine.hpp"
 #include "core/editor_camera.hpp"
 #include "core/editor_console.hpp"
+#include "core/file_explorer.hpp"
 
 namespace lum::editor {
 
@@ -23,6 +24,7 @@ namespace lum::editor {
 		Engine mEngine;
 		Console mConsole;
 		EditorCamera mCamera;
+		FileExplorer mExplorer;
 		glm::vec2 mViewportSize = glm::vec2( 0, 0 );
 		bool bLayoutInitialized = false;
 

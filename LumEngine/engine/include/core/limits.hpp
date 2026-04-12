@@ -1,11 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Sets engine hard limits
 //
 //=============================================================================//
 #pragma once
-
-#include "core/core_common.hpp"
+#include "core/types.hpp"
 #include "render/shaders_define.h"
 
 /* @brief Contains compile-time constants that define hard upper limits
@@ -66,6 +65,7 @@ namespace lum::limits {
 	/* @brief Maximum number of textures that can be loaded simultaneously. */
 	inline constexpr usize gMaxTextures = 256;
 
+	/* @brief Maximum number of draw calls per frame. */
 	inline constexpr usize gMaxDrawCallsPf = 256;
 
 

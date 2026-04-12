@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Entity and component primitives for the ECS.
 //
 //=============================================================================//
 #pragma once
-
 #include "core/core_common.hpp"
 
 namespace lum {

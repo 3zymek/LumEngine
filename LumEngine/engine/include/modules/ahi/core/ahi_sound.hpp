@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Sound instance and sound asset descriptors for AHI.
 //          FSoundInstance carries runtime playback state for a single
@@ -6,7 +6,6 @@
 //
 //=============================================================================//
 #pragma once
-
 #include "ahi/ahi_common.hpp"
 
 namespace lum::ahi {

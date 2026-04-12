@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Material data structures for PBR rendering.
 //
 //=============================================================================//
 #pragma once
-
 #include "rhi/rhi_common.hpp"
 #include "rhi/core/rhi_sampler.hpp"
 

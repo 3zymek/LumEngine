@@ -1,11 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Light render pass — handles point and directional light
 //          submission, uniform uploads and lighting pipeline management.
 //
 //=============================================================================//
 #pragma once
-
 #include "render/render_common.hpp"
 
 namespace lum::render {

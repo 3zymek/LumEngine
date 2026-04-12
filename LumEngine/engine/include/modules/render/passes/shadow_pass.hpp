@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Shadow map generation pass for the directional light.
 //
 //=============================================================================//
 #pragma once
-
 #include "render/render_common.hpp"
 
 namespace lum::render {

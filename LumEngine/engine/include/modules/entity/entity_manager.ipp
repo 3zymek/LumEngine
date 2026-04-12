@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Manages entity component pools and their lifecycle.
 //          Handles component add/remove/query per entity,
@@ -6,7 +6,6 @@
 //
 //=============================================================================//
 #pragma once
-
 #include "entity/entity.hpp"
 #include "entity/entity_manager.hpp"
 

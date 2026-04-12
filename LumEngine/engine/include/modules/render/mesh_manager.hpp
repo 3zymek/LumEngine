@@ -1,13 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Loads and manages static mesh resources using RHI.
 //
 //=============================================================================//
 #pragma once
-
-#include "core/core_common.hpp"
 #include "render/render_common.hpp"
-
 #include "render/mesh.hpp"
 
 namespace lum {

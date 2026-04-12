@@ -1,18 +1,15 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Bridge between engine data and the RHI backend.
 //
 //=============================================================================//
 #pragma once
-
 #include "render/render_common.hpp"
-
 #include "render/passes/geometry_pass.hpp"
 #include "render/passes/light_pass.hpp"
 #include "render/passes/environment_pass.hpp"
 #include "render/passes/shadow_pass.hpp"
 #include "render/passes/postprocess_pass.hpp"
-
 #include "render/g_buffer.hpp"
 
 namespace lum::render {

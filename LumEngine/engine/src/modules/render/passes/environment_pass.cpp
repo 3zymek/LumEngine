@@ -30,6 +30,12 @@ namespace lum::render {
 
 	}
 
+	void EnvironmentPass::SetCubemapTexture( rhi::RTextureHandle tex ) {
+		mCubemap.mTexture = tex;
+		generate_irradiance_map( );
+		generate_prefiltered_map( );
+	}
+
 	void EnvironmentPass::Execute( detail::GBuffer& gbuffer, const detail::FScreenQuad& quad ) {
 
 		mContext.mRenderDev->BindFramebuffer( quad.mSceneFbo ); // Render skybox to screenquad
@@ -75,8 +81,8 @@ namespace lum::render {
 		}
 
 		rhi::RFramebufferHandle		captureFBO = mContext.mRenderDev->CreateFramebuffer( { } );
-		glm::mat4					captureProjection = FIBL::GetCaptureProjection( );
-		std::array<glm::mat4, 6>	captureViews = FIBL::GetCaptureViews( );
+		glm::mat4					captureProjection = IBL::GetCaptureProjection( );
+		std::array<glm::mat4, 6>	captureViews = IBL::GetCaptureViews( );
 		rhi::FViewportState			viewport = mContext.mRenderDev->GetViewport( );
 
 		mContext.mRenderDev->SetViewport( 0, 0, 32, 32 );
@@ -120,8 +126,8 @@ namespace lum::render {
 		}
 
 		rhi::RFramebufferHandle		captureFBO = mContext.mRenderDev->CreateFramebuffer( { } );
-		glm::mat4					captureProjection = FIBL::GetCaptureProjection( );
-		std::array<glm::mat4, 6>	captureViews = FIBL::GetCaptureViews( );
+		glm::mat4					captureProjection = IBL::GetCaptureProjection( );
+		std::array<glm::mat4, 6>	captureViews = IBL::GetCaptureViews( );
 		rhi::FViewportState			viewport = mContext.mRenderDev->GetViewport( );
 
 		mContext.mRenderDev->BindFramebuffer( captureFBO );

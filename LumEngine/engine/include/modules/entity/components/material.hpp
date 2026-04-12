@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Material component for the ECS.
 //
 //=============================================================================//
 #pragma once
-
 #include "entity/ecs_common.hpp"
 #include "render/material.hpp"
 

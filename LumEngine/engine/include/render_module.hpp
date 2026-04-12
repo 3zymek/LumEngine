@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Render module — renderer and render system lifecycle.
 //

@@ -1,11 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Dense buffer + sparse index map. O(1) insert/erase without holes.
 //          Perfect for ECS component storage (fast random access by entity ID).
 //
 //=============================================================================//
 #pragma once
-
 #include "core/core_common.hpp"
 
 namespace lum::cstd {
@@ -20,8 +19,7 @@ namespace lum::cstd {
 	* @tparam tSparseVal Arithmetic type used as the key (e.g. entity ID).
 	* @tparam tDenseVal  Type of the stored values (e.g. components).
 	*/
-	template<typename tSparse, typename tDense>
-		requires std::is_arithmetic_v<tSparse>
+	template<cArithmetic tSparse, typename tDense>
 	class SparseSet {
 
 		using SparseT = tSparse;

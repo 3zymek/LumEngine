@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Custom data structure to storage objects by handles
 // 
 //=============================================================================//
 #pragma once
-
 #include "core/core_common.hpp"
 
 namespace lum::cstd {

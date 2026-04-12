@@ -1,11 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: ECS system handling camera and mesh rendering each frame.
 //
 //=============================================================================//
 #pragma once
-
-#include "core/core_common.hpp"
 
 namespace lum {
 

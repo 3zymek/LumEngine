@@ -1,14 +1,12 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Parser for .lsc scene format files.
 //
 //=============================================================================//
 #pragma once
-
 #include "scene/format/common.hpp"
 #include "entity/entity_manager.hpp"
 #include "scene/scene_manager.hpp"
-#include <imgui.h>
 
 namespace lum {
 

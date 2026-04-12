@@ -1,11 +1,11 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Platform window abstraction for the Lum Engine.
 //
 //=============================================================================//
 #pragma once
-
-#include "core/core_common.hpp"
+#include "core/types.hpp"
+#include "core/utils/flags.hpp"
 #include "rhi/rhi_pch.hpp"
 
 namespace lum {
@@ -14,13 +14,13 @@ namespace lum {
 
 	// Flags controlling window initialization behavior.
 	enum class WindowInitFlags : bitfield {
-		NoDecoration,  // Removes the native OS title bar and border.
-		NoResize,      // Prevents the user from resizing the window.
-		Invisible,     // Window is hidden on creation, show manually later.
-		Maximized,     // Window starts maximized to fill the work area.
-		Floating,      // Window stays always on top of other windows.
-		Focused,       // Window receives input focus immediately on creation.
-		CenterCursor,  // Cursor is centered in the window on creation.
+		NoDecoration	= 1 << 0, // Removes the native OS title bar and border.
+		NoResize		= 1 << 1, // Prevents the user from resizing the window.
+		Invisible		= 1 << 2, // Window is hidden on creation, show manually later.
+		Maximized		= 1 << 3, // Window starts maximized to fill the work area.
+		Floating		= 1 << 4, // Window stays always on top of other windows.
+		Focused			= 1 << 5, // Window receives input focus immediately on creation.
+		CenterCursor	= 1 << 6, // Cursor is centered in the window on creation.
 	};
 	LUM_ENUM_OPERATIONS( lum::WindowInitFlags );
 
@@ -79,6 +79,7 @@ namespace lum {
 		bool IsOpen( ) const noexcept { return !glfwWindowShouldClose( mWindow ); }
 
 		void Close( ) const { glfwSetWindowShouldClose( mWindow, true ); }
+		void Minimalize( ) const { glfwIconifyWindow( mWindow ); }
 
 	protected:
 

@@ -1,11 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Common types, tokens and parsing utilities shared between
 //          the .lsc (scene) and .lmt (material) format parsers.
 //
 //=============================================================================//
 #pragma once
-
 #include "core/core_common.hpp"
 
 namespace lum {

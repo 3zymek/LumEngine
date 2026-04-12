@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Manages entity component pools and their lifecycle.
 //          Handles component add/remove/query per entity,
@@ -6,7 +6,6 @@
 //
 //=============================================================================//
 #pragma once
-
 #include "core/limits.hpp"
 
 #include "entity/ecs_common.hpp"
@@ -20,7 +19,6 @@ namespace lum {
 	namespace ev { class EventBus; }
 
 	namespace ecs {
-
 
 		/* @brief Manages entity component pools and their lifecycle.
 		*
@@ -48,11 +46,6 @@ namespace lum {
 			*  @return ManagedEntity wrapping the newly created entity ID.
 			*/
 			ManagedEntity CreateEntity( );
-
-			void RegisterEntity( EntityID entityID );
-			void RegisterEntity( Entity entity );
-
-
 
 			/* @brief Adds a component of type tType to the given entity.
 			* @param entityID Target entity ID.

@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Fixed-size stack-allocated string with no heap allocation.
 //
@@ -34,27 +34,27 @@ namespace lum {
 		template<usize tNewL>
 		FixedString& operator=( const char(&src)[tNewL] ) noexcept {
 			usize len = tNewL;
-			if (len > tL) len = tL;
+			if (len > tL) len = tL - 1;
 			mSize = len;
-			std::memcpy(mBuffer, src, len);
-			mBuffer[len] = '\0';
+			std::memcpy( mBuffer, src.data( ), len );
+			mBuffer[ len ] = '\0';
 			return *this;
 		}
 
 		FixedString& operator=( const char* src ) noexcept {
-			usize len = std::strlen(src);
-			if (len > tL) len = tL;
+			usize len = strlen(src);
+			if (len > tL) len = tL - 1;
 			mSize = len;
-			std::memcpy(mBuffer, src, std::min(len, tL));
-			mBuffer[len] = '\0';
+			std::memcpy( mBuffer, src.data( ), len );
+			mBuffer[ len ] = '\0';
 			return *this;
 		}
 
 		FixedString& operator=( const String& src ) noexcept {
 			usize len = src.length( );
-			if (len > tL) len = tL;
+			if (len > tL) len = tL - 1;
 			mSize = len;
-			std::memcpy( mBuffer, src.data( ), std::min( len, tL ) );
+			std::memcpy( mBuffer, src.data( ), len );
 			mBuffer[ len ] = '\0';
 			return *this;
 		}

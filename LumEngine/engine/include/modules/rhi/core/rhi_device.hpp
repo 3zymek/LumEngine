@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Core of Render Hardware Interface.
 //          Provides a backend-agnostic GPU abstraction for resource
@@ -23,15 +23,12 @@
 #include "rhi/core/rhi_framebuffer.hpp"
 #include "rhi/core/rhi_pipeline.hpp"
 
-
 #if LUM_ENABLE_RENDER_PROFILER == 1
 #	include "rhi/rhi_profiler.hpp"
 #endif
 
 namespace lum { class Window; }
 namespace lum::rhi {
-
-
 
 	/* @brief Backend-agnostic GPU interface for resource creation and rendering.
 	*

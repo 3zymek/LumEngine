@@ -136,7 +136,6 @@ namespace lum {
 			bVisible = false;
 		}
 
-		glfwWindowHint( GLFW_DECORATED, GLFW_FALSE );
 		mWindow = glfwCreateWindow( desc.mWidth, desc.mHeight, desc.mTitle.c_str( ), nullptr, nullptr );
 
 		mWidth = desc.mWidth;

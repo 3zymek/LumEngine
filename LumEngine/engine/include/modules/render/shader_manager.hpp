@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Shader resource management.
 //          Provides loading and caching of vertex and fragment shaders
@@ -6,9 +6,7 @@
 //
 //=============================================================================//
 #pragma once
-
-#include "core/core_common.hpp"
-#include "core/utils/handle_pool.hpp"
+#include "core/types.hpp"
 
 namespace lum {
 

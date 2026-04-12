@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Core event dispatch system for the Lum Engine.
 //
 //=============================================================================//
 #pragma once
-
 #include "event/event_common.hpp"
 #include "event/event_pool.hpp"
 
@@ -14,13 +13,7 @@ namespace lum {
 		/*! @class EventBus
 		*  @brief Core event dispatch system for the engine.
 		*
-		*  EventBus manages all event types in the engine:
-		*  - supports both one-time and permanent callbacks,
-		*  - zero heap allocations in hot paths,
-		*  - modular template-based pools per event type (EventPool<EventType>),
-		*  - allows emit, subscribe, and unsubscribe operations in a safe and fast way.
-		*
-		*  @note Thread-safety: all operations must be called from the main thread
+		*  @thread_safety All operations must be called from the main thread
 		*        or the thread that owns the EventBus.
 		*/
 		class EventBus {
@@ -128,7 +121,7 @@ namespace lum {
 				for (usize i = 0; i < limits::gMaxEventTypes; i++) {
 					mPools[ i ] = nullptr;
 				}
-			} 
+			}
 
 			void destruct( ) {
 				for (usize i = 0; i < limits::gMaxEventTypes; i++) {

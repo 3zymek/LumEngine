@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Logging system and assertion macros
 //
 //=============================================================================//
 #pragma once
-
 #include "core/setup.hpp"
 
 #if !defined(NDEBUG)
@@ -41,13 +40,9 @@
 
 #else
 #   define LUM_HOTCHK(expr, sev, msg, ...) ((void)0)
-
 #   define LUM_HOTCHK_RETURN_VOID(expr, sev, msg, ...) ((void)0)
-
 #   define LUM_HOTCHK_RETURN_NPTR(expr, sev, msg, ...) ((void)0)
-
 #   define LUM_HOTCHK_RETURN_0(expr, sev, msg, ...) ((void)0)
-
 #   define LUM_HOTCHK_RETURN_CUSTOM(expr, sev, retival, msg, ...) ((void)0)
 #endif
 
@@ -77,11 +72,7 @@
 
 #   define LUM_LOG(msg, sev, ...) \
         do { lum::Logger::Get().LogCmd(sev, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while(0)
-
-
-
 #else
-
 #   define LUM_SEV_DEBUG ((void)0)
 #   define LUM_SEV_INFO  ((void)0)
 #   define LUM_SEV_WARN  ((void)0)
@@ -89,15 +80,10 @@
 #   define LUM_SEV_FATAL ((void)0)
 
 #   define LUM_LOG_FATAL(msg, ...) ((void)0)
-
 #   define LUM_LOG_ERROR(msg, ...) ((void)0)
-
 #   define LUM_LOG_WARN(msg, ...) ((void)0)
-
 #   define LUM_LOG_INFO(msg, ...) ((void)0)
-
 #   define LUM_LOG_DEBUG(msg, ...) ((void)0)
-
 #   define LUM_LOG(msg, sev, ...) ((void)0)
 
 #endif // ENABLE_LOGGER

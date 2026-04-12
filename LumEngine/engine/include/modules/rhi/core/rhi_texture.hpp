@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Texture configuration structures (descriptors, formats, types)
 //
 //=============================================================================//
 #pragma once
-
 #include "rhi/rhi_common.hpp"
 
 namespace lum::rhi {

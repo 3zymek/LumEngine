@@ -1,12 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Loads assets (textures, sounds, shaders, models)
 // 
 //=============================================================================//
 #pragma once
-
 #include "core/core_common.hpp"
-#include "core/core_defines.hpp"
 #include "core/limits.hpp"
 
 namespace lum {

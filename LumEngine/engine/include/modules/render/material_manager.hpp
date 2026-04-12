@@ -1,11 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Manages shared material bases and per-entity instances.
 //
 //=============================================================================//
 #pragma once
-
-#include "core/core_common.hpp"
 #include "core/limits.hpp"
 #include "core/utils/handle_pool.hpp"
 #include "render/render_common.hpp"
@@ -68,14 +66,11 @@ namespace lum {
 	private:
 
 		render::FRendererContext* mContext = nullptr;
-
-		/* @brief Handle to the built-in default material, used as fallback for invalid handles. */
 		MaterialBaseHandle mDefaultMaterial;
 
 		/* @brief Pool storing all uploaded base materials, indexed by MaterialBaseHandle. */
 		cstd::HandlePool<MaterialBaseHandle, FMaterialBase> mBaseMaterials{ limits::gMaxMaterials };
 
-		/* @brief Internal initialization — sets up device and texture manager references, then creates the default material. */
 		void init();
 
 		/* @brief Returns the texture if valid, otherwise returns the default fallback. */

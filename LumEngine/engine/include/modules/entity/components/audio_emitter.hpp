@@ -1,11 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Defines audio emitter properties for an entity.
 //          Consumed by AudioManager to sync state with AHI.
 //
 //=============================================================================//
 #pragma once
-
 #include "entity/ecs_common.hpp"
 #include "ahi/ahi_common.hpp"
 

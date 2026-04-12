@@ -1,21 +1,19 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
-// Purpose: Logs messages form all over the engine for debugging and testing.
-// 
+// Purpose: Logs messages from all over the engine for debugging and testing.
+//
 //=============================================================================//
 #pragma once
-
 #include "core/types.hpp"
 #include "core/utils/flags.hpp"
 
 namespace lum {
 
 	using SeverityMask = bitfield;
+
 #	define LUM_MAX_LOGS 32
 
-	/* @brief Bitmask enum defining log severity levels.
-	* Can be combined to enable or disable multiple levels at once.
-	*/
+	// Combinable bitmask severity levels.
 	enum class LogSeverity : SeverityMask {
 		Fatal = 0b0000'0001,
 		Error = 0b0000'0010,
@@ -26,20 +24,24 @@ namespace lum {
 	};
 	LUM_ENUM_OPERATIONS( lum::LogSeverity );
 
+	// Data for a single log entry.
 	struct FLogEntry {
-		uint64 mTime = 0;
-		String mMessage = "";
-		ccharptr mFunction = "";
-		ccharptr mFile = "";
-		uint32 mLine = 0;
+		uint64      mTime = 0;
+		String      mMessage = "";
+		ccharptr    mFunction = "";
+		ccharptr    mFile = "";
+		uint32      mLine = 0;
 		LogSeverity mSeverity{};
 	};
 
+	// Fixed-size ring buffer for log entries.
 	struct LogBuffer {
 
 		LogBuffer( uint32 maxLogs ) : mMaxLogs( maxLogs ) { }
 
 		const std::deque<FLogEntry>& GetLogs( ) const { return mLogs; }
+
+		// Pushes entry, drops oldest if full.
 		void Push( FLogEntry& entry ) {
 			if (mLogs.size( ) >= mMaxLogs)
 				mLogs.pop_front( );
@@ -47,64 +49,33 @@ namespace lum {
 		}
 
 	private:
-
 		uint32 mMaxLogs = 0;
 		std::deque<FLogEntry> mLogs;
-
 	};
 
-
-
-	/* @brief Singleton logger with severity filtering and colored console output.
-	*
-	* Outputs formatted log messages to stdout with timestamp, severity,
-	* source file, line number and function name.
-	* Duplicate consecutive messages are suppressed via hash comparison.
-	*
-	* @note Access via Logger::Get(). Non-constructible externally.
-	*/
+	// Singleton logger with severity filtering and formatted output.
+	// Access via Logger::Get().
 	class Logger {
 	public:
 
-		/* @brief Returns the singleton Logger instance. */
-		inline static Logger& Get( ) {
+		static Logger& Get( ) {
 			static Logger log;
 			return log;
 		}
 
-		inline const std::deque<FLogEntry>& GetLogs( ) const { return mLogs.GetLogs( ); }
+		const std::deque<FLogEntry>& GetLogs( ) const { return mLogs.GetLogs( ); }
 
-		/* @brief Enables logging for the given severity flags.
-		* @param sev Severity levels to enable.
-		*/
-		inline constexpr void EnableLog( Flags<LogSeverity> sev ) {
-			mSeverity.Enable( sev );
-		}
+		// Enable/disable specific severity levels.
+		void EnableLog( Flags<LogSeverity> sev ) { mSeverity.Enable( sev ); }
+		void DisableLog( Flags<LogSeverity> sev ) { mSeverity.Disable( sev ); }
 
-		/* @brief Disables logging for the given severity flags.
-		* @param sev Severity levels to disable.
-		*/
-		inline constexpr void DisableLog( Flags<LogSeverity> sev ) {
-			mSeverity.Disable( sev );
-		}
-
-		/* @brief Converts a LogSeverity value to its string representation.
-		* @param out Output buffer.
-		* @param sev Severity to convert.
-		*/
+		// Converts severity to string label.
 		static StringView SeverityToString( LogSeverity sev );
 
+		// Formats unix timestamp into human-readable string.
 		static void FormatTime( uint64 timestamp, charptr out );
 
-		/* @brief Formats and outputs a log message to stdout.
-		* Skips output if the severity is disabled or the message was already logged.
-		* @param sev    Severity level of the message.
-		* @param file   Source file path (resolved to filename only).
-		* @param func   Calling function name.
-		* @param line   Source line number.
-		* @param msg    printf-style format string.
-		* @param args   Format arguments.
-		*/
+		// Formats and stores a log entry. Skips if severity is disabled.
 		template<usize tFileL, usize tFuncL, typename... tArgs>
 		void LogCmd(
 			LogSeverity sev,
@@ -114,52 +85,38 @@ namespace lum {
 			StringView msg,
 			tArgs&&... args
 		) {
-
 			if (!mSeverity.Has( sev )) return;
 
 			char formatMsg[ sMaxDescriptionLength ]{};
-			std::snprintf(
-				formatMsg,
-				sizeof( formatMsg ),
-				msg.data( ),
-				std::forward<tArgs>( args )...
-			);
+			std::snprintf( formatMsg, sizeof( formatMsg ), msg.data( ), std::forward<tArgs>( args )... );
 
 			FLogEntry entry;
 			entry.mMessage = formatMsg;
 			entry.mSeverity = sev;
 			entry.mTime = get_time( );
 			mLogs.Push( entry );
-
 		}
 
 	private:
 
-		LogBuffer mLogs{ LUM_MAX_LOGS };
+		Logger( ) = default;
 
-		inline constexpr static uint32 sMaxDescriptionLength = 128; /* Max formatted description buffer length. */
+		inline constexpr static uint32 sMaxDescriptionLength = 128;	// Max formatted message length.
+		Flags<LogSeverity> mSeverity { LogSeverity::All };          // Active severity filter.
+		LogBuffer mLogs { LUM_MAX_LOGS };                           // Stored log entries.
 
-		/* @brief Active severity filter mask. Defaults to all levels enabled. */
-		Flags<LogSeverity> mSeverity{ LogSeverity::All };
+		// Returns current unix timestamp in milliseconds.
+		static uint64 get_time( );
 
-		/* @brief Extracts the filename from a full file path at compile time.
-		* @param path Full source file path.
-		* @return Pointer to the filename portion of the path.
-		*/
+		// Extracts filename from full file path.
 		template<usize tL>
 		ccharptr extract_filename( const char( &path )[ tL ] ) {
 			ccharptr lastSlash = nullptr;
-			for (usize i = 0; i < tL - 1; ++i) {
-				if (path[ i ] == '/' || path[ i ] == '\\') {
+			for (usize i = 0; i < tL - 1; ++i)
+				if (path[ i ] == '/' || path[ i ] == '\\')
 					lastSlash = &path[ i ];
-				}
-			}
 			return lastSlash ? lastSlash + 1 : path;
 		}
-
-		static uint64 get_time( );
-
-		Logger( ) = default;
 	};
 
 } // namespace lum

@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: 
 //
@@ -11,6 +11,8 @@ namespace lum::render {
 
 	class PostprocessPass {
 	public:
+
+		PostprocessPass( ) = default;
 
 		void Initialize( const FRendererContext& ctx );
 

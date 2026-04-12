@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Audio effect descriptors and effect handle for AHI.
 //          FAudioEffectDescriptor defines parameters for all supported
@@ -6,7 +6,6 @@
 //
 //=============================================================================//
 #pragma once
-
 #include "ahi/ahi_common.hpp"
 
 namespace lum::ahi {

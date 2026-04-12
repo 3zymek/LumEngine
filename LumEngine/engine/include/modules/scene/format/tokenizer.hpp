@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Tokenizer for .lsc and .lmt format files.
 //
 //=============================================================================//
 #pragma once
-
 #include "scene/format/common.hpp"
 
 namespace lum::fmt {

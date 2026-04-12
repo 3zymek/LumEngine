@@ -1,11 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Parser for .lmt material format files.
 //
 //=============================================================================//
 #pragma once
-
-#include "core/core_common.hpp"
 #include "render/material.hpp"
 
 namespace lum::fmt {

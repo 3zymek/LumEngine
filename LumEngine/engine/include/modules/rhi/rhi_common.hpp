@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Render Hardware Interface helpers and types
 // 
 //=============================================================================//
 #pragma once
-
 #include "core/core_common.hpp"
 #include "core/utils/handle_pool.hpp"
 
@@ -190,13 +189,6 @@ namespace lum {
 			bool g : 1 = true; /* @brief Enable writes to the green channel. */
 			bool b : 1 = true; /* @brief Enable writes to the blue channel. */
 			bool a : 1 = true; /* @brief Enable writes to the alpha channel. */
-		};
-
-		enum class RHIResult : byte {
-			InvalidHandle,
-
-
-
 		};
 
 		/* @brief Internal implementation details for the RHI.

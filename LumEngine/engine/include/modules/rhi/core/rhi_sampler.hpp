@@ -1,12 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Texture sampling configuration for the Rendering Hardware Interface
 //
 //=============================================================================//
 #pragma once
-
 #include "rhi/rhi_common.hpp"
-#include "render/shaders_define.h"
 
 namespace lum::rhi {
 

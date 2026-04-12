@@ -6,7 +6,6 @@
 //
 //=============================================================================//
 #pragma once
-
 #include "render/render_common.hpp"
 
 namespace lum::render {
@@ -39,11 +38,7 @@ namespace lum::render {
 		*  Must be called before Execute() for IBL to work correctly.
 		*  @param tex Handle to a valid HDR cubemap texture.
 		*/
-		void SetCubemapTexture( rhi::RTextureHandle tex ) {
-			mCubemap.mTexture = tex;
-			generate_irradiance_map( );
-			generate_prefiltered_map( );
-		}
+		void SetCubemapTexture( rhi::RTextureHandle tex );
 
 		/* @brief Renders the skybox cubemap to the provided screen quad framebuffer.
 		*  @param gbuffer  GBuffer containing depth for correct skybox depth testing.
@@ -74,7 +69,7 @@ namespace lum::render {
 		rhi::RSamplerHandle mSampler;
 
 		/* @brief Contains all IBL precomputed textures and their generation shaders. */
-		struct FIBL {
+		struct IBL {
 
 			/* @brief Irradiance cubemap — encodes diffuse indirect lighting
 			*  by convolving the environment over the hemisphere. 32x32 is sufficient.

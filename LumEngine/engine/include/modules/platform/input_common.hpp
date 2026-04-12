@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Global input polling system for the Lum engine.
 //
 //=============================================================================//
 #pragma once
-
 #include "core/core_common.hpp"
 #include "key_codes.hpp"
 
@@ -48,7 +47,8 @@ namespace lum {
 			return detail::gKeyMap[ static_cast< uint32 >(key) ];
 		}
 
-		/* @brief Returns true only on the first frame the key is held down.
+		/* @brief (USE EBS INSTEAD) 
+		*  @brief Returns true only on the first frame the key is held down.
 		*  Subsequent frames while the key is held will return false.
 		*  @param key Key to check.
 		*  @return True if key was just pressed this frame.
@@ -89,5 +89,7 @@ namespace lum {
 			glfwGetCursorPos( detail::gActiveWindow, &xpos, &ypos );
 			return glm::vec2( xpos, ypos );
 		}
+
 	} // namespace lum::input
+
 } // namespace lum

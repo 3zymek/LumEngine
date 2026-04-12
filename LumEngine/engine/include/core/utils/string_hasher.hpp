@@ -1,11 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Hash strings based on FNV-1a algorithm.
 //
 //=============================================================================//
-
 #pragma once
-
 #include "core/types.hpp"
 
 namespace lum {

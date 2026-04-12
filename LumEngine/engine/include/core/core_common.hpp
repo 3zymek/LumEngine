@@ -1,11 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Core helpers and utilities for the Lum Engine.
 //          Includes type conversion, size helpers, hashing and terminal color codes.
 //
 //=============================================================================//
 #pragma once
-
 #include "core/core_pch.hpp"
 #include "core/core_defines.hpp"
 #include "core/types.hpp"

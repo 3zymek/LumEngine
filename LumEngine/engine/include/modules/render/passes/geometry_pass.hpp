@@ -1,11 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Geometry render pass — handles per-object draw calls,
 //          model matrix and material uniform uploads.
 //
 //=============================================================================//
 #pragma once
-
 #include "render/render_common.hpp"
 
 namespace lum::render {

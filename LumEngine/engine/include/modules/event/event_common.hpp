@@ -1,19 +1,19 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Core event system primitives — types, concepts and callback storage.
 //
 //=============================================================================//
 #pragma once
-
 #include "core/core_common.hpp"
 #include "core/limits.hpp"
+#include "core/types.hpp"
 
 namespace lum {
 
 	/* @brief Base tag struct for all engine events.
 	*  Inherit from this to mark a struct as a valid event type.
 	*/
-	struct Event {};
+	struct Event { };
 
 	/* @brief Internal implementation details for the event system.
 	*  Not intended for direct use outside of the event subsystem.

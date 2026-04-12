@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Abstract audio device interface (AHI).
 //          Defines the backend-agnostic API for sound loading,
@@ -6,7 +6,6 @@
 //
 //=============================================================================//
 #pragma once
-
 #include "core/limits.hpp"
 
 #include "ahi/ahi_common.hpp"
@@ -79,7 +78,7 @@ namespace lum::ahi {
 
 		virtual void SetGroupVolume( ChannelGroupHandle group, float32 volume ) = 0;
 		virtual void SetGroupPitch( ChannelGroupHandle group, float32 pitch ) = 0;
-	
+
 		/* @brief Detaches an effect chain from a channel group.
 		* @param group  Target channel group.
 		* @param effect Effect to detach.

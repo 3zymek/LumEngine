@@ -1,11 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: GPU texture loading, caching and lifecycle management.
 //
 //=============================================================================//
 #pragma once
-
-#include "core/core_common.hpp"
 #include "rhi/core/rhi_device.hpp"
 
 namespace lum {
@@ -96,8 +94,7 @@ namespace lum {
 
 	private:
 
-		/* @brief Rendering backend */
-		rhi::RenderDevice*		mRenderDevice = nullptr;
+		rhi::RenderDevice* mRenderDevice = nullptr;
 
 		/* @brief Fallback texture displayed when a requested asset cannot be found. */
 		rhi::RTextureHandle mMissingTexture;
@@ -107,7 +104,6 @@ namespace lum {
 
 		/* @brief Default 1x1 (128, 128, 255) texture representing a flat normal, used when no normal map is provided. */
 		rhi::RTextureHandle mDefaultNormalTexture;
-
 		rhi::RTextureHandle mDefaultRoughnessTexture;
 		rhi::RTextureHandle mDefaultMetallicTexture;
 
@@ -115,7 +111,6 @@ namespace lum {
 		std::unordered_map<uint64, rhi::RTextureHandle> mTextures;
 
 
-		/* @brief Internal initialization — sets up device reference and creates fallback textures. */
 		void init( );
 
 		/* @brief Creates built-in fallback textures on initialization.

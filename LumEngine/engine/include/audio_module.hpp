@@ -1,11 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Audio module — AHI device and audio manager lifecycle.
 //
 //=============================================================================//
-
 #pragma once
-
 #include "ahi/core/ahi_device.hpp"
 #include "audio/audio_manager.hpp"
 
@@ -19,7 +17,6 @@ namespace lum {
 		MAudioManager mAudioMgr;
 
 		void Initialize( ev::EventBus& bus );
-
 		void Finalize( );
 
 	};

@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Represents a unique entity in the scene.
 //          Entity stores only an ID. ManagedEntity extends it
@@ -6,7 +6,6 @@
 //
 //=============================================================================//
 #pragma once
-
 #include "entity/entity_manager.hpp"
 
 namespace lum {

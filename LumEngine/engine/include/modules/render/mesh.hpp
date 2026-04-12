@@ -1,10 +1,9 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: GPU mesh resource types for static and dynamic geometry.
 //
 //=============================================================================//
 #pragma once
-
 #include "rhi/core/rhi_device.hpp"
 
 namespace lum {
