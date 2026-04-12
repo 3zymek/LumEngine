@@ -9,14 +9,28 @@
 #include "rhi/rhi_pch.hpp"
 
 namespace lum {
+
 	namespace ev { class EventBus; }
+
+	// Flags controlling window initialization behavior.
+	enum class WindowInitFlags : bitfield {
+		NoDecoration,  // Removes the native OS title bar and border.
+		NoResize,      // Prevents the user from resizing the window.
+		Invisible,     // Window is hidden on creation, show manually later.
+		Maximized,     // Window starts maximized to fill the work area.
+		Floating,      // Window stays always on top of other windows.
+		Focused,       // Window receives input focus immediately on creation.
+		CenterCursor,  // Cursor is centered in the window on creation.
+	};
+	LUM_ENUM_OPERATIONS( lum::WindowInitFlags );
 
 	/* @brief Descriptor used to configure a window on creation. */
 	struct WindowDescriptor {
-		String mTitle = "LumEngine"; /* @brief Window title bar text. */
-		uint32 mHeight = 500;         /* @brief Initial window height in pixels. */
-		uint32 mWidth = 500;         /* @brief Initial window width in pixels. */
-		ev::EventBus* mEventBus = nullptr;     /* @brief Event bus to emit window events to. */
+		Flags<WindowInitFlags> mFlags = {};
+		String mTitle = "LumEngine";			/* @brief Window title bar text. */
+		uint32 mHeight = 500;					/* @brief Initial window height in pixels. */
+		uint32 mWidth = 500;					/* @brief Initial window width in pixels. */
+		ev::EventBus* mEventBus = nullptr;		/* @brief Event bus to emit window events to. */
 	};
 
 	/* @brief Platform window wrapping a GLFW window.
@@ -41,15 +55,20 @@ namespace lum {
 		void SetHeight( uint32 );
 
 		/* @brief Returns the current window width in pixels. */
-		uint32 GetWidth () const noexcept;
+		uint32 GetWidth( ) const noexcept;
 
 		/* @brief Returns the current window height in pixels. */
 		uint32 GetHeight( ) const noexcept;
 
 		/* @brief Returns the underlying native GLFW window pointer. */
-		vptr GetNativeWindow( ) const noexcept;
+		vptr GetNativeWindow( ) const noexcept { return mWindow; }
 
 		float64 GetTime( ) const noexcept { return glfwGetTime( ); }
+
+		void ToggleDecoration( bool value );
+		void ToggleResizable( bool value );
+		void ToggleFloating( bool value );
+		void ToggleVisibility( bool value );
 
 		/* @brief Polls window events and emits EWindowResized if size changed.
 		*  Call once per frame from the main loop.
@@ -57,12 +76,20 @@ namespace lum {
 		void Update( ) noexcept;
 
 		/* @brief Returns true if the window is still open. */
-		bool IsOpen( ) const noexcept;
+		bool IsOpen( ) const noexcept { return !glfwWindowShouldClose( mWindow ); }
+
+		void Close( ) const { glfwSetWindowShouldClose( mWindow, true ); }
 
 	protected:
 
 		GLFWwindow* mWindow = nullptr; /* @brief Underlying GLFW window handle. */
 		ev::EventBus* mEventBus = nullptr; /* @brief Event bus for window events. */
+
+		bool bVisible = true;
+		bool bResizable = true;
+		bool bDecorations = true;
+		bool bFloating = false;
+		bool bMaximized = false;
 
 		uint32 mWidth = 0;
 		uint32 mHeight = 0;

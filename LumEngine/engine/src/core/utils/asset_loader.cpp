@@ -22,15 +22,6 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void AssetLoader::SetProjectRoot( AssetLoader::Path path ) {
-		sProjectRoot = path;
-		LUM_LOG_INFO( "Project root path has been set to %s", path.string( ).c_str( ) );
-	}
-
-	String AssetLoader::GetProjectRoot( ) {
-		return sProjectRoot.string( );
-	}
-
 	std::optional<FTextureData> AssetLoader::LoadTexture( RootID root, StringView filepath, uint8 expectedFormat ) {
 
 		String path = get_full_path( root, filepath );

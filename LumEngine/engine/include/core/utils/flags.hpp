@@ -10,7 +10,7 @@
 namespace lum {
 
 	template<typename T>
-	concept Enum = std::is_enum_v<T>;
+	concept cEnum = std::is_enum_v<T>;
 
 	/*!
 	* @brief Type-safe bitflag wrapper for enum types.
@@ -21,7 +21,7 @@ namespace lum {
 	*
 	* @tparam T Enum type to wrap (must satisfy Enum concept)
 	*/
-	template<Enum T>
+	template<cEnum T>
 	struct Flags {
 
 		using U = std::underlying_type_t<T>;
@@ -109,7 +109,7 @@ namespace lum {
 
 	};
 
-	template<Enum T>
+	template<cEnum T>
 	struct EnableEnumFlags : std::false_type {};
 
 	/* @brief Enables bitwise flag operations for a given enum class.
@@ -129,7 +129,7 @@ namespace lum {
 		template<> \
 		struct EnableEnumFlags<T> : std::true_type {}
 
-	template<Enum T>
+	template<cEnum T>
 		requires EnableEnumFlags<T>::value
 	constexpr Flags<T> operator|( T a, T b ) {
 		Flags<T> f;
@@ -138,14 +138,14 @@ namespace lum {
 		return f;
 	}
 
-	template<Enum T>
+	template<cEnum T>
 		requires EnableEnumFlags<T>::value
 	constexpr Flags<T> operator|( Flags<T> a, T b ) {
 		a.Enable(b);
 		return a;
 	}
 
-	template<Enum T>
+	template<cEnum T>
 		requires EnableEnumFlags<T>::value
 	constexpr Flags<T>& operator|=( Flags<T>& a, T b ) {
 		a.Enable(b);
@@ -153,7 +153,7 @@ namespace lum {
 	}
 
 	
-	template<Enum T>
+	template<cEnum T>
 		requires EnableEnumFlags<T>::value
 	constexpr Flags<T> operator&( T a, T b ) {
 		Flags<T> result;

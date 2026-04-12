@@ -15,7 +15,6 @@ namespace lum {
 	void Window::Initialize( const WindowDescriptor& desc ) {
 
 		mEventBus = desc.mEventBus;
-
 		init( desc );
 
 	}
@@ -49,11 +48,32 @@ namespace lum {
 		return h;
 
 	}
-	vptr Window::GetNativeWindow( ) const noexcept {
 
-		return mWindow;
-
+	void Window::ToggleDecoration( bool value ) {
+		if (bDecorations != value) {
+			glfwSetWindowAttrib( mWindow, GLFW_DECORATED, value ? GLFW_TRUE : GLFW_FALSE );
+			bDecorations = value;
+		}
 	}
+	void Window::ToggleResizable( bool value ) { 
+		if (bResizable != value) {
+			glfwSetWindowAttrib( mWindow, GLFW_RESIZABLE, value ? GLFW_TRUE : GLFW_FALSE );
+			bResizable = value;
+		}
+	}
+	void Window::ToggleFloating( bool value ) { 
+		if (bFloating != value) {
+			glfwSetWindowAttrib( mWindow, GLFW_FLOATING, value ? GLFW_TRUE : GLFW_FALSE );
+			bFloating = value;
+		}
+	}
+	void Window::ToggleVisibility( bool value ) { 
+		if (bVisible != value) {
+			value ? glfwShowWindow( mWindow ) : glfwHideWindow( mWindow );
+			bVisible = value;
+		}
+	}
+
 	void Window::Update( ) noexcept {
 
 		int32 width, height;
@@ -83,11 +103,6 @@ namespace lum {
 		glfwPollEvents( );
 
 	}
-	bool Window::IsOpen( ) const noexcept {
-
-		return !glfwWindowShouldClose( mWindow );
-
-	}
 
 	void Window::init( const WindowDescriptor& desc ) {
 
@@ -96,6 +111,32 @@ namespace lum {
 			return;
 		}
 
+		if (desc.mFlags.Has( WindowInitFlags::NoResize )) {
+			glfwWindowHint( GLFW_RESIZABLE, GL_FALSE );
+			bResizable = false;
+		}
+		if (desc.mFlags.Has( WindowInitFlags::NoDecoration )) {
+			glfwWindowHint( GLFW_DECORATED, GLFW_FALSE );
+			bDecorations = false;
+		}
+		if (desc.mFlags.Has( WindowInitFlags::Floating )) {
+			glfwWindowHint( GLFW_FLOATING, GLFW_TRUE );
+			bFloating = true;
+		}
+		if (desc.mFlags.Has( WindowInitFlags::CenterCursor ))
+			glfwWindowHint( GLFW_CENTER_CURSOR, GLFW_TRUE );
+		if (desc.mFlags.Has( WindowInitFlags::Maximized )) {
+			glfwWindowHint( GLFW_MAXIMIZED, GLFW_TRUE );
+			bMaximized = true;
+		}
+		if (desc.mFlags.Has( WindowInitFlags::Focused ))
+			glfwWindowHint( GLFW_FOCUSED, GLFW_TRUE );
+		if (desc.mFlags.Has( WindowInitFlags::Invisible )) {
+			glfwWindowHint( GLFW_VISIBLE, GLFW_FALSE );
+			bVisible = false;
+		}
+
+		glfwWindowHint( GLFW_DECORATED, GLFW_FALSE );
 		mWindow = glfwCreateWindow( desc.mWidth, desc.mHeight, desc.mTitle.c_str( ), nullptr, nullptr );
 
 		mWidth = desc.mWidth;

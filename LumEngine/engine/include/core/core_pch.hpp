@@ -1,8 +1,3 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
-//
-// Purpose: Precompiled headers with initial libraries
-// 
-//=============================================================================//
 #pragma once
 
 #include <iostream>
@@ -35,5 +30,3 @@
 #include "gtc/type_ptr.hpp"
 
 #include "core/core_defines.hpp"
-#include "core/utils/logger.hpp"
-#include "core/utils/lum_assert.hpp"

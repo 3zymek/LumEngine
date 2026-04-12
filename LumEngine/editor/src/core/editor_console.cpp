@@ -15,12 +15,8 @@ namespace lum::editor {
 		auto& logs = Logger::Get( ).GetLogs( );
 		for (auto& log : logs) {
 
-			char time[ 10 ]{};
-			Logger::FormatTime( log.mTime, time );
-
-			ImGui::TextDisabled( "[ " ); ImGui::SameLine( );
-			ImGui::TextDisabled( time ); ImGui::SameLine( );
-			ImGui::TextDisabled( " ]" ); ImGui::SameLine( );
+			if (bDrawTime)
+				draw_timestamp( log );
 
 			ImVec4 color = sSeverityColors[ ToUnderlyingEnum( log.mSeverity ) ];
 			ImGui::TextColored( color, log.mMessage.data( ) );
@@ -29,6 +25,17 @@ namespace lum::editor {
 		ImGui::PopFont( );
 		ImGui::EndChild( );
 		ImGui::End( );
+
+	}
+
+	void Console::draw_timestamp( const FLogEntry& log ) {
+
+		char time[ 10 ]{};
+		Logger::FormatTime( log.mTime, time );
+
+		ImGui::TextDisabled( "[ " ); ImGui::SameLine( );
+		ImGui::TextDisabled( time ); ImGui::SameLine( );
+		ImGui::TextDisabled( " ]" ); ImGui::SameLine( );
 
 	}
 

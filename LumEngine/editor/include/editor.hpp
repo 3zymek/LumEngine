@@ -19,7 +19,7 @@ namespace lum::editor {
 		void DrawViewport( float64 delta ) ;
 
 	private:
-
+		
 		Engine mEngine;
 		Console mConsole;
 		EditorCamera mCamera;

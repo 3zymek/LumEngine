@@ -63,6 +63,7 @@ namespace lum::editor {
 		ImGuiID dockID = ImGui::DockSpaceOverViewport( dockFlags );
 
 		if (!bLayoutInitialized) {
+
 			bLayoutInitialized = true;
 
 			ImGui::DockBuilderRemoveNode( dockID );
@@ -90,16 +91,32 @@ namespace lum::editor {
 			ImGui::DockBuilderFinish( dockID );
 		}
 
+		if (ImGui::BeginMainMenuBar( )) {
+			if (ImGui::BeginMenu( "Scena" )) {
+				ImGui::MenuItem( "Nowa" );
+				ImGui::MenuItem( "Otwórz" );
+				ImGui::EndMenu( );
+			}
+			if (ImGui::BeginMenu( "Projekt" )) {
+				ImGui::EndMenu( );
+			}
+			ImGui::EndMainMenuBar( );
+		}
+
 		ImGui::Begin( "File Explorer" );
 		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator( AssetLoader::GetProjectRoot( ) )) {
 			if (entry.is_regular_file( )) {
-				ImGui::CollapsingHeader( entry.path( ).filename( ).string().data() );
+				ImGui::CollapsingHeader( entry.path( ).filename( ).string( ).data( ) );
 			}
 		}
 		ImGui::End( ); // File Explorer
 
 
 		ImGui::Begin( "Viewport" );
+		ImGuiDockNode* node = ImGui::GetWindowDockNode( );
+		if (node) {
+			node->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
+		}
 		ImVec2 available = ImGui::GetContentRegionAvail( );
 		mCamera.SetAspectRatio( ( float32 ) available.x / ( float32 ) available.y );
 		mEngine.GetModuleRender( ).mRenderer.UpdateCamera( mCamera.Update( delta ) );
@@ -136,7 +153,20 @@ namespace lum::editor {
 		ImGui::End( );
 
 		mConsole.Draw( );
-	
+
+		GLFWwindow* window = static_cast< GLFWwindow* >(mEngine.GetPlatform( ).mWindow.GetNativeWindow( ));
+
+		int32 winWidth{}, winHeight{};
+		glfwGetWindowSize( window, &winWidth, &winHeight );
+
+		int32 monWidth{}, monHeight{};
+		const GLFWvidmode* mode = glfwGetVideoMode( glfwGetPrimaryMonitor( ) );
+		monWidth = mode->width;
+		monHeight = mode->height;
+
+		ImGui::SetNextWindowPos( ImVec2( 0, 0 ) );
+		ImGui::SetNextWindowSize( ImVec2( winWidth, 30 ) );
+
 	}
 
 

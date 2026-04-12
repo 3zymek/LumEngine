@@ -10,6 +10,8 @@
 #include "core/core_defines.hpp"
 #include "core/types.hpp"
 #include "core/utils/string_hasher.hpp"
+#include "core/utils/logger.hpp"
+#include "core/utils/lum_assert.hpp"
 
 namespace lum {
 
