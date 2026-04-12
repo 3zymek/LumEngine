@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Resource module — GPU-side asset manager lifecycle.
 //
@@ -8,6 +8,10 @@
 #include "platform_module.hpp"
 
 namespace lum {
+
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
 
 	void MResourceModule::Initialize( MPlatformModule& platform, ev::EventBus& bus ) {
 

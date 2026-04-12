@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Core of Render Hardware Interface.
 //          Provides a backend-agnostic GPU abstraction for resource
@@ -7,7 +7,6 @@
 //=============================================================================//
 
 #include "rhi/core/rhi_device.hpp"
-#include "platform/window.hpp"
 #include "modules/rhi/backend/gl_device.hpp"
 
 namespace lum::rhi {

@@ -1,3 +1,10 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: G-Buffer management for deferred rendering.
+//          Handles creation, resizing and binding of geometry buffers.
+//
+//=============================================================================//
+
 #include "render/g_buffer.hpp"
 #include "event/event_bus.hpp"
 #include "event/events/window_events.hpp"

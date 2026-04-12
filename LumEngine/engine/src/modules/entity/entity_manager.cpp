@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Manages entity component pools and their lifecycle.
 //          Handles component add/remove/query per entity,
@@ -7,19 +7,12 @@
 //=============================================================================//
 
 #include "entity/entity_manager.hpp"
-#include "event/event_bus.hpp"
 
 namespace lum::ecs {
 
 	//---------------------------------------------------------
 	// Public
 	//---------------------------------------------------------
-
-	void MEntityManager::Initialize( ev::EventBus* bus ) {
-
-		mEventBus = bus;
-
-	}
 
 	ManagedEntity MEntityManager::CreateEntity( ) {
 		return ManagedEntity{ this };

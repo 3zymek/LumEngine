@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Loads and manages static mesh resources using RHI.
 //
@@ -10,7 +10,6 @@
 #include "event/event_bus.hpp"
 #include "event/events/entity_events.hpp"
 #include "entity/components/mesh.hpp"
-#include "scene/scene_manager.hpp"
 
 namespace lum {
 

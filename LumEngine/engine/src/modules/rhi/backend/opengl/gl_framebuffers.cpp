@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: OpenGL framebuffer operations (FBO)
 //          Creation, texture attachment, binding, and clearing
@@ -14,11 +14,9 @@ namespace lum::rhi::gl {
 		LUM_ASSERT( mFramebuffers.DenseSize( ) <= skMaxFramebuffers, "Max framebuffers reached" );
 
 		FFramebuffer fbo;
-
 		glCreateFramebuffers( 1, &fbo.mHandle );
 
 		std::vector<GLenum> drawBuffers;
-
 		uint32 samples = 0;
 
 		for (auto& [slot, texHandle] : desc.mColorTex) {

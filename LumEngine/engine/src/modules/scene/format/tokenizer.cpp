@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Tokenizer for .lsc and .lmt format files.
 //
@@ -8,19 +8,19 @@
 
 namespace lum::fmt {
 
-	void Tokenizer::Tokenize(StringView str) {
+	void Tokenizer::Tokenize( StringView str ) {
 
-		mTokens.clear();
+		mTokens.clear( );
 
 		usize pos = 0;
 
-		while (pos < str.size()) {
+		while (pos < str.size( )) {
 
-			const char& c = str[pos];
+			const char& c = str[ pos ];
 
 			// Comment
-			if (c == '/' && pos + 1 < str.size() && str[pos + 1] == '/') {
-				while (pos < str.size() && str[pos] != '\n') {
+			if (c == '/' && pos + 1 < str.size( ) && str[ pos + 1 ] == '/') {
+				while (pos < str.size( ) && str[ pos ] != '\n') {
 					pos++;
 				}
 			}
@@ -32,11 +32,11 @@ namespace lum::fmt {
 
 				String value;
 
-				while (pos < str.size() && str[pos] != '"') {
-					value += str[pos++];
+				while (pos < str.size( ) && str[ pos ] != '"') {
+					value += str[ pos++ ];
 				}
 
-				mTokens.push_back({ TokenType::String, value });
+				mTokens.push_back( { TokenType::String, value } );
 
 			}
 
@@ -47,26 +47,26 @@ namespace lum::fmt {
 
 				String value;
 
-				while (pos < str.size() && (isalpha(str[pos]) || str[pos] == '_')) {
-					value += str[pos++];
+				while (pos < str.size( ) && (isalpha( str[ pos ] ) || str[ pos ] == '_')) {
+					value += str[ pos++ ];
 				}
 
-				mTokens.push_back({ TokenType::Component, value });
+				mTokens.push_back( { TokenType::Component, value } );
 
 			}
 
 			// Identifier / Parameter
-			else if (isalpha(c)) {
+			else if (isalpha( c )) {
 
 				String value;
 
-				while (pos < str.size() && (isalpha(str[pos]) || str[pos] == '_'))
-					value += str[pos++];
+				while (pos < str.size( ) && (isalpha( str[ pos ] ) || str[ pos ] == '_'))
+					value += str[ pos++ ];
 
 				bool isParameter = false;
 				usize npos = pos;
-				while (npos < str.size() && str[npos] != '\n') {
-					if (str[npos] == ':') {
+				while (npos < str.size( ) && str[ npos ] != '\n') {
+					if (str[ npos ] == ':') {
 						isParameter = true;
 						pos = npos;
 						break;
@@ -75,27 +75,27 @@ namespace lum::fmt {
 				}
 
 				if (isParameter)
-					mTokens.push_back({ TokenType::Parameter, value });
+					mTokens.push_back( { TokenType::Parameter, value } );
 				else
-					mTokens.push_back({ TokenType::Identifier, value });
+					mTokens.push_back( { TokenType::Identifier, value } );
 
-				if (str[npos] == ':')
-					mTokens.push_back({ TokenType::Colon, ":" });
+				if (str[ npos ] == ':')
+					mTokens.push_back( { TokenType::Colon, ":" } );
 
 			}
 
 			// Number
-			else if (isdigit(c) || c == '-') {
+			else if (isdigit( c ) || c == '-') {
 
 				String value;
-				while (pos < str.size() && (isdigit(str[pos]) || (str[pos] == '.' || str[pos] == '-'))) {
-					value += str[pos++];
+				while (pos < str.size( ) && (isdigit( str[ pos ] ) || (str[ pos ] == '.' || str[ pos ] == '-'))) {
+					value += str[ pos++ ];
 				}
-				if (pos < str.size() && isalpha(str[pos])) {
-					LUM_LOG_ERROR("Invalid number token: %s", value.c_str());
+				if (pos < str.size( ) && isalpha( str[ pos ] )) {
+					LUM_LOG_ERROR( "Invalid number token: %s", value.c_str( ) );
 				}
 				else {
-					mTokens.push_back({ TokenType::Number, value });
+					mTokens.push_back( { TokenType::Number, value } );
 				}
 
 			}
@@ -105,7 +105,7 @@ namespace lum::fmt {
 
 				++pos;
 
-				mTokens.push_back({ TokenType::LBracket, "{" });
+				mTokens.push_back( { TokenType::LBracket, "{" } );
 
 			}
 
@@ -114,7 +114,7 @@ namespace lum::fmt {
 
 				++pos;
 
-				mTokens.push_back({ TokenType::RBracket, "}" });
+				mTokens.push_back( { TokenType::RBracket, "}" } );
 
 			}
 

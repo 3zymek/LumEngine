@@ -39,7 +39,7 @@ namespace lum {
 			~MEntityManager( ) { destroy( ); }
 
 
-			void Initialize( ev::EventBus* bus );
+			void Initialize( ev::EventBus* bus ) { mEventBus = bus; }
 
 
 			/* @brief Creates a new entity and returns a managed handle to it.

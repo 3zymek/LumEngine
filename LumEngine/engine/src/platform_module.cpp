@@ -1,43 +1,35 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Platform module — window and render device lifecycle.
 //
 //=============================================================================//
 
-#pragma once
-
-#include "platform/window.hpp"
+#include "platform_module.hpp"
 #include "platform/input_common.hpp"
-
 #include "rhi/core/rhi_device.hpp"
 
 namespace lum {
 
-	// Owns the OS window and the RHI render device.
-	// Must be initialized before any rendering or resource modules.
-	struct MPlatformModule {
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
 
-		Window mWindow;
-		rhi::RenderDevice* mRenderDevice = nullptr;
+	void MPlatformModule::Initialize( ev::EventBus& bus ) {
 
-		void Initialize( ev::EventBus& bus ) {
+		WindowDescriptor desc;
+		desc.mEventBus = &bus;
 
-			WindowDescriptor desc;
-			desc.mEventBus = &bus;
+		mWindow.Initialize( desc );
+		input::SetActiveWindow( static_cast< GLFWwindow* >(mWindow.GetNativeWindow( )) );
 
-			mWindow.Initialize( desc );
-			input::SetActiveWindow( static_cast< GLFWwindow* >(mWindow.GetNativeWindow( )) );
+		mRenderDevice = rhi::CreateDevice( rhi::RenderBackend::OpenGL );
+		mRenderDevice->Initialize( &mWindow );
 
-			mRenderDevice = rhi::CreateDevice( rhi::RenderBackend::OpenGL );
-			mRenderDevice->Initialize( &mWindow );
+	}
 
-		}
-
-		void Finalize( ) {
-			mRenderDevice->Finalize( );
-			delete mRenderDevice;
-		}
-
-	};
+	void MPlatformModule::Finalize( ) {
+		mRenderDevice->Finalize( );
+		delete mRenderDevice;
+	}
 
 } // namespace lum

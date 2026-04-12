@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: OpenGL buffer management (VBO, EBO, UBO, SSBO)
 //          Creation, mapping, updating, and binding operations

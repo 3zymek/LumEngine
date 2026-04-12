@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Manages shared material bases and per-entity instances.
 //
@@ -22,14 +22,7 @@ namespace lum {
 	void MMaterialManager::Initialize( render::FRendererContext* ctx ) {
 
 		mContext = ctx;
-
 		init( );
-
-	}
-
-	MaterialBaseHandle MMaterialManager::UploadBase( const FMaterialBase& base ) {
-
-		return mBaseMaterials.Append( base );
 
 	}
 

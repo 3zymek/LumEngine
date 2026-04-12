@@ -33,7 +33,7 @@ namespace lum {
 		* @return Handle to the uploaded base material.
 		*/
 		LUM_NODISCARD
-		MaterialBaseHandle UploadBase( const FMaterialBase& base );
+		MaterialBaseHandle UploadBase( const FMaterialBase& base ) { return mBaseMaterials.Append( base ); }
 
 		/* @brief Resolves a material descriptor and uploads it to the base material pool.
 		* Loads textures from provided paths and automatically applies fallbacks for unset fields.

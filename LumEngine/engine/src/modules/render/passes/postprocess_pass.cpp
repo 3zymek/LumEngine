@@ -3,6 +3,10 @@
 
 namespace lum::render {
 
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
+
 	void PostprocessPass::Initialize( const FRendererContext& ctx ) {
 
 		ValidateRendererContext( ctx );

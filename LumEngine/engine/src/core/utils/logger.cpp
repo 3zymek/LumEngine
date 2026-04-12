@@ -1,11 +1,10 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Logs messages form all over the engine for debugging and testing
 // 
 //=============================================================================//
 
 #include "core/utils/logger.hpp"
-#include "core/core_common.hpp"
 
 namespace lum {
 

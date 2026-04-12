@@ -8,11 +8,7 @@
 #include "entity/entity_manager.hpp"
 #include "scene/scene_manager.hpp"
 
-namespace lum {
-
-	struct FScene;
-
-}
+namespace lum { struct FScene; }
 namespace lum::fmt {
 
 	struct Tokenizer;

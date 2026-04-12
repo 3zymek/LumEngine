@@ -7,15 +7,13 @@
 
 #include "render/passes/geometry_pass.hpp"
 #include "render/render_common.hpp"
+#include "render/shader_manager.hpp"
+#include "render/mesh_manager.hpp"
+#include "render/g_buffer.hpp"
 
 #include "rhi/core/rhi_device.hpp"
 
-#include "render/shader_manager.hpp"
-#include "render/mesh_manager.hpp"
-
 #include "entity/components/mesh.hpp"
-
-#include "render/g_buffer.hpp"
 
 namespace lum::render {
 

@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Loads assets (textures, sounds, shaders, models)
 // 
@@ -6,7 +6,6 @@
 #pragma once
 
 #include "core/utils/asset_loader.hpp"
-#include "core/utils/lum_assert.hpp"
 #include "rhi/rhi_common.hpp"
 
 //====== Backend ======

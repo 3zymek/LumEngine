@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: ECS system handling camera and mesh rendering each frame.
 //
@@ -24,7 +24,6 @@ namespace lum {
 		void RenderSystem::Initialize( render::Renderer* renderer ) {
 
 			LUM_ASSERT( renderer != nullptr, "Renderer is null" );
-
 			mRenderer = renderer;
 
 		}

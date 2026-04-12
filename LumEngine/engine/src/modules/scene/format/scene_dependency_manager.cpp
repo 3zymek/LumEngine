@@ -1,3 +1,8 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Parser for .lsc scene format files.
+//
+//=============================================================================//
 #pragma once
 
 #include "scene/format/scene_dep_manager.hpp"

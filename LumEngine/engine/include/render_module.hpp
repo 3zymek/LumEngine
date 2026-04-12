@@ -3,7 +3,6 @@
 // Purpose: Render module — renderer and render system lifecycle.
 //
 //=============================================================================//
-
 #pragma once
 
 #include "render/renderer.hpp"
@@ -11,13 +10,14 @@
 
 namespace lum {
 
-	struct MPlatformModule;
-	struct MResourceModule;
+	class MPlatformModule;
+	class MResourceModule;
 	namespace ev { class EventBus; }
 
 	// Owns the renderer and render system.
 	// Must be initialized after MPlatformModule and MResourceModule.
-	struct MRenderModule {
+	class MRenderModule {
+	public:
 
 		render::Renderer	 mRenderer;
 		render::RenderSystem mRenderSys;

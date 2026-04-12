@@ -1,3 +1,11 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Abstract audio device interface (AHI).
+//          Defines the backend-agnostic API for sound loading,
+//          playback, effects, and 3D audio.
+//
+//=============================================================================//
+
 #include "ahi/core/ahi_device.hpp"
 #include "ahi/backend/fmod_device.hpp"
 

@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: OpenGL device state core management and rendering commands
 //          Viewport, color/depth/stencil clearing, draw calls,

@@ -1,3 +1,9 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: OpenGL vertex layout (VAO) creation and deletion.
+//
+//=============================================================================//
+
 #include "modules/rhi/backend/gl_device.hpp"
 
 namespace lum::rhi::gl {

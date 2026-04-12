@@ -3,7 +3,6 @@
 // Purpose: Resource module — GPU-side asset manager lifecycle.
 //
 //=============================================================================//
-
 #pragma once
 
 #include "render/texture_manager.hpp"
@@ -13,11 +12,12 @@
 
 namespace lum {
 
-	struct MPlatformModule;
+	class MPlatformModule;
 
 	// Owns all GPU-side resource managers (textures, meshes, shaders, materials).
 	// Must be initialized after MPlatformModule, before MRenderModule.
-	struct MResourceModule {
+	class MResourceModule {
+	public:
 
 		MTextureManager		mTextureMgr;
 		MMaterialManager	mMaterialMgr;

@@ -1,4 +1,4 @@
-//========= Copyright (C) 2026 3zymek, MIT License ============//
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Bridge between engine data and the RHI backend.
 //
@@ -94,6 +94,7 @@ namespace lum::render {
 
 		mContext.mEvBus->SubscribePermanently<EWindowResized>(
 			[&]( const EWindowResized& e ) {
+				if (e.mWidth <= 0 || e.mHeight <= 0) return;
 				mContext.mRenderDev->SetViewport( 0, 0, e.mWidth, e.mHeight );
 				create_screenquad_texture( e.mWidth, e.mHeight );
 				create_screenquad_fbo( );

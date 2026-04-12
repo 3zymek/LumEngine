@@ -10,7 +10,12 @@ namespace lum::editor {
 		if (node) {
 			node->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
 		}
-		ImGui::BeginChild( "##LumEngineConsole", ImVec2( 0, 0 ) );
+		ImGui::PushStyleVar( ImGuiStyleVar_ChildRounding, 6.0f );
+		ImGui::PushStyleVar( ImGuiStyleVar_ChildBorderSize, 0.1f );
+		ImGui::BeginChild( "##LumEngineConsole", ImVec2( 0, 0 ), true );
+		ImGui::PopStyleVar( 2 );
+		ImGui::Indent( 8.0f );
+		ImGui::SetCursorPosY( ImGui::GetCursorPosY( ) + 4.0f );
 		ImGui::PushFont( Fonts::sConsole );
 		auto& logs = Logger::Get( ).GetLogs( );
 		for (auto& log : logs) {
@@ -23,6 +28,7 @@ namespace lum::editor {
 
 		}
 		ImGui::PopFont( );
+		ImGui::Unindent( 8.0f );
 		ImGui::EndChild( );
 		ImGui::End( );
 
