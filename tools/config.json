@@ -5,6 +5,7 @@
     "editor_dep_manager_path": "editor/include/editor_dep_manager.hpp",
     "editor_dep_manager_include": "editor_dep_manager.hpp"
   },
+  "prefixes": ["m", "b"],
   "templates": {
     
     "parse_fn_namespace": "lum::fmt::detail",

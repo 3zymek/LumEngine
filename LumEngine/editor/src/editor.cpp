@@ -98,7 +98,7 @@ namespace lum::editor {
 				ImGui::Separator( );
 				if (ImGui::MenuItem( "Quit", "Ctrl + Q" )) {
 					mEngine.GetPlatform( ).mWindow.Close( );
-				}
+				} ImGui::SameLine( ); ImGui::TextUnformatted( ICON_FA_TIMES );
 				ImGui::EndMenu( );
 			}
 			if (ImGui::BeginMenu( "Projekt" )) {
@@ -238,10 +238,8 @@ namespace lum::editor {
 		style.FrameBorderSize = 0.0f;
 		style.PopupBorderSize = 1.0f;
 
-		ImGui::GetIO( ).Fonts->AddFontFromFileTTF( "C:/Windows/Fonts/segoeui.ttf", 15.0f );
-		ImGui::GetIO( ).FontGlobalScale = 1.3f;
-
 		Fonts::Initialize( );
+		ImGui::GetIO( ).FontDefault = Fonts::sDefault;
 
 	}
 	void Editor::begin_imgui( ) {

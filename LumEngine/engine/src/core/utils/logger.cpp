@@ -36,6 +36,7 @@ namespace lum {
 			break;
 		}
 		}
+		return "UNKNOWN";
 	}
 	void Logger::FormatTime( uint64 timestamp, charptr out ) {
 		std::time_t t = timestamp / 1000;

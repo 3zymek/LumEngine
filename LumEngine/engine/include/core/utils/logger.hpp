@@ -47,6 +47,7 @@ namespace lum {
 				mLogs.pop_front( );
 			mLogs.push_back( entry );
 		}
+		void Clear( ) { mLogs.clear( ); }
 
 	private:
 		uint32 mMaxLogs = 0;
@@ -64,10 +65,7 @@ namespace lum {
 		}
 
 		const std::deque<FLogEntry>& GetLogs( ) const { return mLogs.GetLogs( ); }
-
-		// Enable/disable specific severity levels.
-		void EnableLog( Flags<LogSeverity> sev ) { mSeverity.Enable( sev ); }
-		void DisableLog( Flags<LogSeverity> sev ) { mSeverity.Disable( sev ); }
+		void ClearLogs( ) { mLogs.Clear( ); }
 
 		// Converts severity to string label.
 		static StringView SeverityToString( LogSeverity sev );
@@ -85,7 +83,6 @@ namespace lum {
 			StringView msg,
 			tArgs&&... args
 		) {
-			if (!mSeverity.Has( sev )) return;
 
 			char formatMsg[ sMaxDescriptionLength ]{};
 			std::snprintf( formatMsg, sizeof( formatMsg ), msg.data( ), std::forward<tArgs>( args )... );
@@ -102,7 +99,6 @@ namespace lum {
 		Logger( ) = default;
 
 		inline constexpr static uint32 sMaxDescriptionLength = 128;	// Max formatted message length.
-		Flags<LogSeverity> mSeverity { LogSeverity::All };          // Active severity filter.
 		LogBuffer mLogs { LUM_MAX_LOGS };                           // Stored log entries.
 
 		// Returns current unix timestamp in milliseconds.

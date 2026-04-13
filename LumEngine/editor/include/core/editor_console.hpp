@@ -28,6 +28,12 @@ namespace lum::editor {
 	private:
 
 		bool bDrawTime = false;
+		uint32 mNumDebugLogs = 0;
+		uint32 mNumInfoLogs = 0;
+		uint32 mNumWarnLogs = 0;
+		uint32 mNumErrorLogs = 0;
+
+		Flags<LogSeverity> mSeverity{ LogSeverity::All };
 
 		inline static std::unordered_map<SeverityMask, ImVec4> sSeverityColors = {
 			{ ToUnderlyingEnum( LogSeverity::Debug ), ImVec4( 0.55f, 0.55f, 0.60f, 1.0f ) },
@@ -38,7 +44,13 @@ namespace lum::editor {
 		};
 
 		void draw_timestamp( const FLogEntry& log );
-
+		void draw_sidebar( );
+		void handle_easer( );
+		void handle_copy( );
+		void handle_debug_filter( );
+		void handle_info_filter( );
+		void handle_warn_filter( );
+		void handle_error_filter( );
 
 	};
 
