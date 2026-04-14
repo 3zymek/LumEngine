@@ -2,6 +2,8 @@
 
 #include "core/utils/logger.hpp"
 #include "core/core_common.hpp"
+#include "core/utils/timed_tooltip.hpp"
+#include "core/utils/fixed_string.hpp"
 
 namespace lum::editor {
 
@@ -19,19 +21,23 @@ namespace lum::editor {
 		template<typename ...tArgs>
 		void Error( StringView msg, tArgs&&... args ) const noexcept { LUM_LOG_ERROR( msg.data( ), std::forward<tArgs>( args )... ); }
 
-		template<typename ...tArgs>
-		void Fatal( StringView msg, tArgs&&... args ) const noexcept { LUM_LOG_FATAL( msg.data( ), std::forward<tArgs>( args )... ); }
-
-		void Draw( );
+		void Update( );
 
 
 	private:
 
+		static constexpr uint32 skSideBarWidth = 60;
+
+		bool bFilterEnabled = false;
 		bool bDrawTime = false;
+		bool bClearLogs = false;
+		FixedString<64> mFilter;
 		uint32 mNumDebugLogs = 0;
 		uint32 mNumInfoLogs = 0;
 		uint32 mNumWarnLogs = 0;
 		uint32 mNumErrorLogs = 0;
+
+		TimedTooltip mActionTooltip;
 
 		Flags<LogSeverity> mSeverity{ LogSeverity::All };
 
@@ -45,13 +51,12 @@ namespace lum::editor {
 
 		void draw_timestamp( const FLogEntry& log );
 		void draw_sidebar( );
-		void handle_easer( );
+		void handle_word_filtering( );
+		void handle_eraser( );
 		void handle_copy( );
-		void handle_debug_filter( );
-		void handle_info_filter( );
-		void handle_warn_filter( );
-		void handle_error_filter( );
+		void handle_search( );
 
+		void handle_filter( StringView icon, uint32 numLogs, LogSeverity sev );
 	};
 
 }

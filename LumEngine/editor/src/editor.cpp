@@ -1,5 +1,4 @@
 #include "editor.hpp"
-#include "core/editor_common.hpp"
 #include "entity/components/name.hpp"
 #include "editor_dep_manager.generated.hpp"
 #include "core/utils/fonts.hpp"
@@ -19,7 +18,7 @@ namespace lum::editor {
 	}
 
 	void Editor::Finalize( ) {
-		mEngine.Finalize( );
+		mEngine.Finalize( ); 
 	}
 
 	void Editor::Run( ) {
@@ -35,7 +34,7 @@ namespace lum::editor {
 
 			mEngine.Tick( );
 
-			DrawViewport( delta );
+			Update( delta );
 
 			mEngine.EndFrame( );
 			end_imgui( );
@@ -45,16 +44,105 @@ namespace lum::editor {
 		}
 
 	}
-	void Editor::DrawSceneHierarchy( ) {
+	void Editor::Update( float64 delta ) {
+
+		draw_layout( );
+		draw_menu_bar( );
+		draw_viewport( delta );
+		draw_scene_inspector( );
+		draw_entity_inspector( );
+
+		mExplorer.Update( AssetLoader::GetProjectRoot( ) );
+
+		mConsole.Update( );
 
 	}
-	void Editor::DrawInspector( ) {
+
+	void Editor::draw_viewport( float64 delta ) {
+
+		ImGui::Begin( "Viewport" );
+		
+		ImGuiDockNode* node = ImGui::GetWindowDockNode( );
+		if (node) {
+			node->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
+		}
+
+		ImVec2 available = ImGui::GetContentRegionAvail( );
+
+		mCamera.SetAspectRatio( ( float32 ) available.x / ( float32 ) available.y );
+		mEngine.GetModuleRender( ).mRenderer.UpdateCamera( mCamera.Update( delta ) );
+
+		uint32 texID = mEngine.GetPlatform( ).mRenderDevice->GetNativeHandle(
+			mEngine.GetModuleRender( ).mRenderer.GetFrameTexture( )
+		);
+
+		ImGui::Image( ( ImTextureID ) texID, available, ImVec2( 0, 1 ), ImVec2( 1, 0 ) );
+
+		ImGui::End( ); // Viewport
 
 	}
-	void Editor::DrawViewport( float64 delta ) {
+	void Editor::draw_menu_bar( ) {
+
+		if (ImGui::BeginMainMenuBar( )) {
+			if (ImGui::BeginMenu( "Scene" )) {
+				ImGui::MenuItem( "New Scene", "Ctrl + N" );
+				ImGui::MenuItem( "Open scene", "Ctrl + O" );
+				ImGui::Separator( );
+				if (ImGui::MenuItem( "Quit", "Ctrl + Q" )) {
+					mEngine.GetPlatform( ).mWindow.Close( );
+				} ImGui::SameLine( ); ImGui::TextUnformatted( ICON_FA_TIMES );
+				ImGui::EndMenu( );
+			}
+			if (ImGui::BeginMenu( "Project" )) {
+				ImGui::EndMenu( );
+			}
+			ImGui::EndMainMenuBar( );
+		}
+
+	}
+	void Editor::draw_scene_inspector( ) {
 
 		auto* scene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( );
 		auto& entities = scene->mEntities;
+
+		ImGui::Begin( "Scene Inspector" );
+		for (auto& entity : entities) {
+			bool selected = entity == mSelectedEntity;
+			CName* name = scene->mEntityMgr.GetComponent<CName>( entity );
+			String label;
+			if (!name) label = "Entity " + ToString( entity );
+			else label = name->mName.Data( );
+			if (ImGui::Selectable( label.data( ), selected )) {
+				mSelectedEntity = entity;
+			}
+		}
+		ImGui::End( ); // Scene Inspector
+
+	}
+	void Editor::draw_entity_inspector( ) {
+
+		auto* scene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( );
+
+		ImGui::Begin( "Entity Inspector" );
+		ImGuiDockNode* node2 = ImGui::GetWindowDockNode( );
+		if (node2) {
+			node2->LocalFlags |= ImGuiDockNodeFlags_NoWindowMenuButton;
+		}
+		if (mSelectedEntity != ecs::skNullEntity) {
+			scene->mEntityMgr.ForEachComponent(
+				mSelectedEntity,
+				[&]( ecs::detail::BasePool* pool ) {
+					if (ImGui::CollapsingHeader( pool->GetName( ).data( ) )) {
+						skDrawFunctions[ HashStr( pool->GetName( ) ) ]( scene->mEntityMgr, mSelectedEntity );
+					}
+				} );
+		}
+		ImGui::End( );
+
+	}
+	void Editor::draw_layout( ) {
+
+		static bool bLayoutInitialized = false;
 
 		ImGuiDockNodeFlags dockFlags =
 			ImGuiDockNodeFlags_NoUndocking |
@@ -90,83 +178,22 @@ namespace lum::editor {
 
 			ImGui::DockBuilderFinish( dockID );
 		}
-		
-		if (ImGui::BeginMainMenuBar()) {
-			if (ImGui::BeginMenu( "Scene" )) {
-				ImGui::MenuItem( "New Scene", "Ctrl + N" );
-				ImGui::MenuItem( "Open scene", "Ctrl + O" );
-				ImGui::Separator( );
-				if (ImGui::MenuItem( "Quit", "Ctrl + Q" )) {
-					mEngine.GetPlatform( ).mWindow.Close( );
-				} ImGui::SameLine( ); ImGui::TextUnformatted( ICON_FA_TIMES );
-				ImGui::EndMenu( );
-			}
-			if (ImGui::BeginMenu( "Projekt" )) {
-				ImGui::EndMenu( );
-			}
-			ImGui::EndMainMenuBar( );
-		}
-
-		mExplorer.Update( AssetLoader::GetProjectRoot( ) );
-
-
-		ImGui::Begin( "Viewport" );
-		ImGuiDockNode* node = ImGui::GetWindowDockNode( );
-		if (node) {
-			node->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
-		}
-		ImVec2 available = ImGui::GetContentRegionAvail( );
-		mCamera.SetAspectRatio( ( float32 ) available.x / ( float32 ) available.y );
-		mEngine.GetModuleRender( ).mRenderer.UpdateCamera( mCamera.Update( delta ) );
-		uint32 texID = mEngine.GetPlatform( ).mRenderDevice->GetNativeHandle(
-			mEngine.GetModuleRender( ).mRenderer.GetFrameTexture( )
-		);
-		ImGui::Image( ( ImTextureID ) texID, available, ImVec2( 0, 1 ), ImVec2( 1, 0 ) );
-		ImGui::End( ); // Viewport
-
-
-		ImGui::Begin( "Scene Inspector" );
-		for (auto& entity : entities) {
-			bool selected = entity == mSelectedEntity;
-			CName* name = scene->mEntityMgr.GetComponent<CName>( entity );
-			String label;
-			if (!name) label = "Entity " + ToString( entity );
-			else label = name->mName.Data( );
-			if (ImGui::Selectable( label.data( ), selected )) {
-				mSelectedEntity = entity;
-			}
-		}
-		ImGui::End( ); // Scene Inspector
-
-		ImGui::Begin( "Entity Inspector" );
-		if (mSelectedEntity != ecs::skNullEntity) {
-			scene->mEntityMgr.ForEachComponent(
-				mSelectedEntity,
-				[&]( ecs::detail::BasePool* pool ) {
-					if (ImGui::CollapsingHeader( pool->GetName( ).data( ) )) {
-						skDrawFunctions[ HashStr( pool->GetName( ) ) ]( scene->mEntityMgr, mSelectedEntity );
-					}
-				} );
-		}
-		ImGui::End( );
-
-		mConsole.Draw( );
 
 	}
-
-
-
 	void Editor::init_imgui( Window* window ) {
 
 		ImGui::CreateContext( );
 		ImGui_ImplGlfw_InitForOpenGL( static_cast< GLFWwindow* >(window->GetNativeWindow( )), true );
 		ImGui_ImplOpenGL3_Init( "#version 450" );
 
-		LUM_LOG_ERROR( "ERROR0" );
-		LUM_LOG_INFO( "INFO0" );
-		LUM_LOG_DEBUG( "DEBUG0" );
-		LUM_LOG_WARN( "WARN0" );
-		LUM_LOG_FATAL( "FATAL0" );
+		for (int32 i = 0; i < 10; i++) {
+			LUM_LOG_ERROR( "ERROR0" );
+			LUM_LOG_INFO( "INFO0" );
+			LUM_LOG_DEBUG( "DEBUG0" );
+			LUM_LOG_WARN( "WARN0" );
+			LUM_LOG_FATAL( "FATAL0" );
+		}
+
 		ImGuiStyle& style = ImGui::GetStyle( );
 		ImVec4* colors = style.Colors;
 

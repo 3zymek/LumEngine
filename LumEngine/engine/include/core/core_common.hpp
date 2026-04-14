@@ -61,6 +61,12 @@ namespace lum {
 	template<typename tType>
 	concept cArithmetic = std::is_arithmetic_v<tType>;
 
+	template<typename tType>
+	concept cStringable = std::same_as<tType, char> || requires(tType t) {
+		{ t.data( ) } -> std::convertible_to<const char*>;
+		{ t.size( ) } -> std::convertible_to<usize>;
+	};
+
 	/* @brief Converts any arithmetic type to float32 at compile-time.
 	* @param value The numeric value to cast.
 	* @return The value casted to float32.
@@ -193,10 +199,16 @@ namespace lum {
 	* @param str Input string to convert.
 	* @return New string with all characters lowercased.
 	*/
-	inline String ToLower( StringView str ) {
+	template<cStringable tType>
+	inline String ToLower( tType str ) {
 		String result = str.data( );
 		std::transform( result.begin( ), result.end( ), result.begin( ), ::tolower );
 		return result;
+	}
+
+	template<>
+	inline String ToLower( char c ) {
+		return String( 1, tolower( c ) );
 	}
 
 	/* @brief Converts a String to its uppercase equivalent.

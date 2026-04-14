@@ -15,9 +15,7 @@ namespace lum::editor {
 		void Initialize( );
 		void Finalize( );
 		void Run( ) ;
-		void DrawSceneHierarchy( );
-		void DrawInspector( );
-		void DrawViewport( float64 delta ) ;
+		void Update( float64 delta ) ;
 
 	private:
 		
@@ -25,12 +23,16 @@ namespace lum::editor {
 		Console mConsole;
 		EditorCamera mCamera;
 		FileExplorer mExplorer;
-		glm::vec2 mViewportSize = glm::vec2( 0, 0 );
-		bool bLayoutInitialized = false;
 
 		EntityID mSelectedEntity;
 
 		inline static std::unordered_map<uint64, detail::EditorFn> skDrawFunctions;
+
+		void draw_viewport( float64 delta );
+		void draw_menu_bar( );
+		void draw_scene_inspector( );
+		void draw_entity_inspector( );
+		void draw_layout( );
 
 		void init_imgui( Window* window );
 		void begin_imgui( );

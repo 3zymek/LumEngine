@@ -11,7 +11,7 @@ namespace lum {
 
 	using SeverityMask = bitfield;
 
-#	define LUM_MAX_LOGS 32
+#	define LUM_MAX_LOGS 128
 
 	// Combinable bitmask severity levels.
 	enum class LogSeverity : SeverityMask {
