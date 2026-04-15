@@ -11,15 +11,16 @@ namespace lum::editor {
 	class TimedTooltip {
 	public:
 
-		void Trigger( float32 duration = 1.5f ) {
+		void Trigger( StringView msg, float32 duration = 1.5f ) {
 			bActive = true;
 			mTimer = duration;
+			mText = msg;
 		}
-		void Draw( StringView msg ) {
+		void Draw( ) {
 			if (!bActive) return;
 			mTimer -= ImGui::GetIO( ).DeltaTime;
 			ImGui::PushStyleVar( ImGuiStyleVar_Alpha, mTimer );
-			ImGui::SetTooltip( msg.data( ) );
+			ImGui::SetTooltip( mText.data() );
 			ImGui::PopStyleVar( 1 );
 			if (mTimer <= 0.0f) bActive = false;
 		}
@@ -28,6 +29,7 @@ namespace lum::editor {
 
 		bool bActive = false;	// Whether the tooltip is currently active.
 		float32 mTimer = 0.0f;	// Remaining time before the tooltip disappears.
+		StringView mText;
 
 	};
 

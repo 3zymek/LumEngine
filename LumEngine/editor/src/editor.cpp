@@ -2,6 +2,7 @@
 #include "entity/components/name.hpp"
 #include "editor_dep_manager.generated.hpp"
 #include "core/utils/fonts.hpp"
+#include "core/utils/shortcuts.hpp"
 
 namespace lum::editor {
 
@@ -40,16 +41,17 @@ namespace lum::editor {
 			end_imgui( );
 			mEngine.GetPlatform( ).mRenderDevice->SwapBuffers( );
 
-
 		}
 
 	}
 	void Editor::Update( float64 delta ) {
 
+		FScene* scene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( );
+
 		draw_layout( );
 		draw_menu_bar( );
 		draw_viewport( delta );
-		draw_scene_inspector( );
+		mSceneInspector.Update( scene );
 		draw_entity_inspector( );
 
 		mExplorer.Update( AssetLoader::GetProjectRoot( ) );
@@ -98,42 +100,18 @@ namespace lum::editor {
 			}
 			ImGui::EndMainMenuBar( );
 		}
-
-	}
-	void Editor::draw_scene_inspector( ) {
-
-		auto* scene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( );
-		auto& entities = scene->mEntities;
-
-		ImGui::Begin( "Scene Inspector" );
-		for (auto& entity : entities) {
-			bool selected = entity == mSelectedEntity;
-			CName* name = scene->mEntityMgr.GetComponent<CName>( entity );
-			String label;
-			if (!name) label = "Entity " + ToString( entity );
-			else label = name->mName.Data( );
-			if (ImGui::Selectable( label.data( ), selected )) {
-				mSelectedEntity = entity;
-			}
-		}
-		ImGui::End( ); // Scene Inspector
-
 	}
 	void Editor::draw_entity_inspector( ) {
 
 		auto* scene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( );
 
 		ImGui::Begin( "Entity Inspector" );
-		ImGuiDockNode* node2 = ImGui::GetWindowDockNode( );
-		if (node2) {
-			node2->LocalFlags |= ImGuiDockNodeFlags_NoWindowMenuButton;
-		}
-		if (mSelectedEntity != ecs::skNullEntity) {
+		if (mSceneInspector.GetSelectedEntity() != ecs::skNullEntity) {
 			scene->mEntityMgr.ForEachComponent(
-				mSelectedEntity,
+				mSceneInspector.GetSelectedEntity( ),
 				[&]( ecs::detail::BasePool* pool ) {
 					if (ImGui::CollapsingHeader( pool->GetName( ).data( ) )) {
-						skDrawFunctions[ HashStr( pool->GetName( ) ) ]( scene->mEntityMgr, mSelectedEntity );
+						skDrawFunctions[ HashStr( pool->GetName( ) ) ]( scene->mEntityMgr, mSceneInspector.GetSelectedEntity( ) );
 					}
 				} );
 		}
@@ -177,6 +155,8 @@ namespace lum::editor {
 			ImGui::DockBuilderDockWindow( "File Explorer", left );
 
 			ImGui::DockBuilderFinish( dockID );
+
+			set_flags_recursive( ImGui::DockBuilderGetNode( dockID ), ImGuiDockNodeFlags_NoWindowMenuButton );
 		}
 
 	}
@@ -185,14 +165,6 @@ namespace lum::editor {
 		ImGui::CreateContext( );
 		ImGui_ImplGlfw_InitForOpenGL( static_cast< GLFWwindow* >(window->GetNativeWindow( )), true );
 		ImGui_ImplOpenGL3_Init( "#version 450" );
-
-		for (int32 i = 0; i < 10; i++) {
-			LUM_LOG_ERROR( "ERROR0" );
-			LUM_LOG_INFO( "INFO0" );
-			LUM_LOG_DEBUG( "DEBUG0" );
-			LUM_LOG_WARN( "WARN0" );
-			LUM_LOG_FATAL( "FATAL0" );
-		}
 
 		ImGuiStyle& style = ImGui::GetStyle( );
 		ImVec4* colors = style.Colors;
@@ -212,21 +184,22 @@ namespace lum::editor {
 		colors[ ImGuiCol_FrameBgHovered ] = ImVec4( 0.19f, 0.19f, 0.19f, 1.00f );
 		colors[ ImGuiCol_FrameBgActive ] = ImVec4( 0.24f, 0.24f, 0.24f, 1.00f );
 
-		colors[ ImGuiCol_CheckMark ] = ImVec4( 0.33f, 0.55f, 0.86f, 1.00f );
-		colors[ ImGuiCol_SliderGrab ] = ImVec4( 0.33f, 0.55f, 0.86f, 1.00f );
-		colors[ ImGuiCol_SliderGrabActive ] = ImVec4( 0.44f, 0.65f, 0.95f, 1.00f );
+		colors[ ImGuiCol_CheckMark ] = ImVec4( 0.85f, 0.75f, 0.40f, 1.00f );
+		colors[ ImGuiCol_SliderGrab ] = ImVec4( 0.85f, 0.75f, 0.40f, 1.00f );
+		colors[ ImGuiCol_SliderGrabActive ] = ImVec4( 0.95f, 0.85f, 0.50f, 1.00f );
 
 		colors[ ImGuiCol_Button ] = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
-		colors[ ImGuiCol_ButtonHovered ] = ImVec4( 0.33f, 0.55f, 0.86f, 1.00f );
-		colors[ ImGuiCol_ButtonActive ] = ImVec4( 0.25f, 0.45f, 0.75f, 1.00f );
+		colors[ ImGuiCol_ButtonHovered ] = ImVec4( 0.85f, 0.75f, 0.40f, 1.00f );
+		colors[ ImGuiCol_ButtonActive ] = ImVec4( 0.75f, 0.65f, 0.30f, 1.00f );
 
 		colors[ ImGuiCol_Header ] = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
-		colors[ ImGuiCol_HeaderHovered ] = ImVec4( 0.26f, 0.26f, 0.26f, 1.00f );
+
+		colors[ ImGuiCol_HeaderActive ] = ImVec4( 0.85f, 0.75f, 0.40f, 1.00f );
 		colors[ ImGuiCol_HeaderActive ] = ImVec4( 0.33f, 0.55f, 0.86f, 1.00f );
 
 		colors[ ImGuiCol_Separator ] = ImVec4( 0.20f, 0.20f, 0.20f, 1.00f );
-		colors[ ImGuiCol_SeparatorHovered ] = ImVec4( 0.33f, 0.55f, 0.86f, 1.00f );
-		colors[ ImGuiCol_SeparatorActive ] = ImVec4( 0.44f, 0.65f, 0.95f, 1.00f );
+		colors[ ImGuiCol_SeparatorHovered ] = ImVec4( 0.85f, 0.75f, 0.40f, 1.00f );
+		colors[ ImGuiCol_SeparatorActive ] = ImVec4( 0.95f, 0.85f, 0.50f, 1.00f );
 
 		// Tabs
 		colors[ ImGuiCol_Tab ] = ImVec4( 0.11f, 0.11f, 0.11f, 1.00f );
@@ -236,7 +209,7 @@ namespace lum::editor {
 		colors[ ImGuiCol_TabUnfocusedActive ] = ImVec4( 0.14f, 0.14f, 0.14f, 1.00f );
 
 		// Dockspace
-		colors[ ImGuiCol_DockingPreview ] = ImVec4( 0.33f, 0.55f, 0.86f, 0.70f );
+		colors[ ImGuiCol_DockingPreview ] = ImVec4( 0.85f, 0.75f, 0.40f, 0.70f );
 		colors[ ImGuiCol_DockingEmptyBg ] = ImVec4( 0.07f, 0.07f, 0.07f, 1.00f );
 
 		// Scrollbar
@@ -268,6 +241,12 @@ namespace lum::editor {
 		Fonts::Initialize( );
 		ImGui::GetIO( ).FontDefault = Fonts::sDefault;
 
+	}
+	void Editor::set_flags_recursive( ImGuiDockNode* node, ImGuiDockNodeFlags flags ) {
+		if (!node) return;
+		node->LocalFlags |= flags;
+		set_flags_recursive( node->ChildNodes[ 0 ], flags );
+		set_flags_recursive( node->ChildNodes[ 1 ], flags );
 	}
 	void Editor::begin_imgui( ) {
 

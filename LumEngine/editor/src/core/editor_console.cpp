@@ -1,7 +1,17 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Editor console for logging, filtering and log inspection.
+//
+//=============================================================================//
+
 #include "core/editor_console.hpp"
 #include "core/utils/fonts.hpp"
 
 namespace lum::editor {
+
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
 
 	void Console::Update( ) {
 
@@ -10,7 +20,7 @@ namespace lum::editor {
 		mNumWarnLogs = 0;
 		mNumErrorLogs = 0;
 
-		ImGui::Begin( "Console" );
+		ImGui::Begin( "Console", nullptr, ImGuiWindowFlags_NoScrollbar );
 
 		ImGuiDockNode* node = ImGui::GetWindowDockNode( );
 		if (node) {
@@ -67,13 +77,11 @@ namespace lum::editor {
 			ImGui::SetScrollHereY( 1.0f );
 
 		ImGui::EndChild( );
-
 		ImGui::SameLine( );
 
 		draw_sidebar( );
 
 		handle_word_filtering( );
-
 		ImGui::End( );
 
 		if (bClearLogs) {
@@ -81,7 +89,16 @@ namespace lum::editor {
 			bClearLogs = false;
 		}
 
+		mActionTooltip.Draw( );
+
 	}
+
+
+
+
+	//---------------------------------------------------------
+	// Private
+	//---------------------------------------------------------
 
 	void Console::draw_timestamp( const FLogEntry& log ) {
 
@@ -99,31 +116,21 @@ namespace lum::editor {
 
 		ImGui::BeginChild( "##ConsoleSidebar", ImVec2( skSideBarWidth, -inputHeight ), false, ImGuiWindowFlags_NoBackground );
 
-		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0, 0, 0, 0 ) );
-		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4( 0.2f, 0.2f, 0.2f, 1.0f ) );
-
-		ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0, 0 ) );
-		handle_eraser( );
-		ImGui::SameLine( );
-		handle_copy( );
-		ImGui::Separator( );
-		handle_search( );
-		ImGui::PopStyleVar( );
-
-		ImGui::PopStyleColor( 2 );
+		{
+			ScopedActionButtonStyle style;
+			handle_eraser( );
+			ImGui::SameLine( );
+			handle_copy( );
+			ImGui::Separator( );
+			handle_search( );
+		}
 
 		ImGui::Separator( );
 
 		handle_filter( ICON_FA_BUG, mNumDebugLogs, LogSeverity::Debug );
 		handle_filter( ICON_FA_INFO_CIRCLE, mNumInfoLogs, LogSeverity::Info );
-
-		ImGui::PushStyleColor( ImGuiCol_Text, sSeverityColors[ ToUnderlyingEnum( LogSeverity::Warn ) ] );
 		handle_filter( ICON_FA_EXCLAMATION_TRIANGLE, mNumWarnLogs, LogSeverity::Warn );
-		ImGui::PopStyleColor( 1 );
-
-		ImGui::PushStyleColor( ImGuiCol_Text, sSeverityColors[ ToUnderlyingEnum( LogSeverity::Error ) ] );
 		handle_filter( ICON_FA_EXCLAMATION_CIRCLE, mNumErrorLogs, LogSeverity::Error );
-		ImGui::PopStyleColor( 1 );
 
 		ImGui::EndChild( ); // ##ConsoleSidebar
 
@@ -139,9 +146,8 @@ namespace lum::editor {
 
 		if (ImGui::Button( ICON_FA_ERASER, ImVec2( skSideBarWidth / 2, 30 ) )) {
 			bClearLogs = true;
-			mActionTooltip.Trigger( 1.0f );
+			mActionTooltip.Trigger( "Cleared console" );
 		}
-		mActionTooltip.Draw( "Cleared console" );
 
 	}
 	void Console::handle_copy( ) {
@@ -152,20 +158,25 @@ namespace lum::editor {
 				all += log.mMessage + "\n";
 			}
 			ImGui::SetClipboardText( all.c_str( ) );
-			mActionTooltip.Trigger( 1.0f );
+			mActionTooltip.Trigger( "Copied to clipboard" );
 		}
-		mActionTooltip.Draw( "Copied to clipboard" );
 
 	}
 	void Console::handle_search( ) {
 
+		ImVec4 col;
+		col = bFilterEnabled ? ImVec4( 1.0f, 1.0f, 1.0f, 1.0f ) : ImVec4( 0.5f, 0.5f, 0.5f, 0.2f );
+			
+		ImGui::PushStyleColor( ImGuiCol_Text, col );
 		if (ImGui::Button( ICON_FA_SEARCH, ImVec2( skSideBarWidth / 2, 30 ) )) {
 
 			bFilterEnabled = !bFilterEnabled;
-			mActionTooltip.Trigger( );
+			mActionTooltip.Trigger( bFilterEnabled
+								 ? "Word filtering enabled"
+								 : "Word filtering disabled" );
 
 		}
-		//mActionTooltip.Draw( "Word filtering enabled" );
+		ImGui::PopStyleColor( );
 
 	}
 
@@ -181,6 +192,9 @@ namespace lum::editor {
 		ImGui::PushStyleColor( ImGuiCol_Button, color );
 		ImGui::PushStyleColor( ImGuiCol_Border, ImVec4( 1.0f, 1.0f, 1.0f, 0.1f ) );
 		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4( 0.2f, 0.2f, 0.2f, 1.0f ) );
+		ImVec4 base = sSeverityColors[ ToUnderlyingEnum( sev ) ];
+		ImVec4 finalCol = mSeverity.Has( sev ) ? base : ImVec4( base.x, base.y, base.z, 0.3f);
+		ImGui::PushStyleColor( ImGuiCol_Text, finalCol );
 
 		if (ImGui::Button( buff, ImVec2( skSideBarWidth, 30 ) )) {
 			if (mSeverity.Has( sev ))
@@ -188,7 +202,7 @@ namespace lum::editor {
 			else mSeverity.Enable( sev );
 		}
 
-		ImGui::PopStyleColor( 3 );
+		ImGui::PopStyleColor( 4 );
 		ImGui::PopStyleVar( 1 );
 
 	}
