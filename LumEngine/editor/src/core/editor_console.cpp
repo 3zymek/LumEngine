@@ -139,7 +139,7 @@ namespace lum::editor {
 
 		if (!bFilterEnabled) return;
 		ImGui::SetNextItemWidth( ImGui::GetContentRegionAvail( ).x - skSideBarWidth - ImGui::GetStyle( ).ItemSpacing.x );
-		ImGui::InputTextWithHint( "##Filter", "Filter logs...", mFilter.Data( ), mFilter.MaxSize( ) );
+		SearchField( "##Filter", "Filter logs...", mFilter.Data( ), mFilter.MaxSize( ) );
 
 	}
 	void Console::handle_eraser( ) {

@@ -1,6 +1,7 @@
 #pragma once
 #include "core/utils/asset_loader.hpp"
 #include "core/utils/icons_font_awesome.h"
+
 namespace lum::editor {
 	struct Fonts {
 		inline static ImFont* sDefault = nullptr;

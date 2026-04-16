@@ -2,6 +2,7 @@
 
 #include "core/editor_common.hpp"
 #include "entity/ecs_common.hpp"
+#include "core/utils/fixed_string.hpp"
 
 namespace lum { class FScene; }
 
@@ -14,8 +15,9 @@ namespace lum::editor {
 		EntityID GetSelectedEntity( ) const noexcept { return mSelectedEntity; }
 
 	private:
-
-		EntityID mSelectedEntity;
+		
+		FixedString<64> mEntitiesFilter;
+		EntityID mSelectedEntity = ecs::skNullEntity;
 
 	};
 
