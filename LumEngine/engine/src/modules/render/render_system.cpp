@@ -12,7 +12,7 @@
 #include "entity/components/transform.hpp"
 #include "entity/components/material.hpp"
 #include "entity/components/mesh.hpp"
-#include "entity/components/render.hpp"
+#include "entity/components/visible.hpp"
 #include "entity/components/light.hpp"
 
 #include "platform/window.hpp"
@@ -30,8 +30,8 @@ namespace lum {
 
 		void RenderSystem::Update( ecs::MEntityManager* entityMgr, Window* window ) {
 
-			entityMgr->Each<CRender, CTransform, CMaterialInstance, CStaticMesh>(
-				[&]( CRender& render, CTransform& transform, CMaterialInstance& material, CStaticMesh& mesh ) {
+			entityMgr->Each<CVisibility, CTransform, CMaterialInstance, CStaticMesh>(
+				[&]( CVisibility& render, CTransform& transform, CMaterialInstance& material, CStaticMesh& mesh ) {
 
 					if (!render.bVisible) return;
 

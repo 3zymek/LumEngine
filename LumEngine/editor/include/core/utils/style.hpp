@@ -4,33 +4,34 @@
 namespace lum::editor::style {
 
 	// ── Palette ─────────────────────────────────────────────────────────────
-	inline const ImVec4 skAccent = ImVec4( 0.42f, 0.39f, 1.00f, 1.00f );
-	inline const ImVec4 skAccentHovered = ImVec4( 0.54f, 0.51f, 1.00f, 1.00f );
-	inline const ImVec4 skAccentActive = ImVec4( 0.31f, 0.29f, 0.67f, 1.00f );
+	inline const ImVec4 skAccent = ImVec4( 0.70f, 0.45f, 1.00f, 1.0f );
+	inline const ImVec4 skAccentHovered = ImVec4( 0.78f, 0.58f, 1.00f, 1.0f );
+	inline const ImVec4 skAccentActive = ImVec4( 0.52f, 0.30f, 0.85f, 1.0f );
 
-	inline const ImVec4 skBg = ImVec4( 0.09f, 0.09f, 0.09f, 1.00f );
-	inline const ImVec4 skBgChild = ImVec4( 0.11f, 0.11f, 0.11f, 1.00f );
-	inline const ImVec4 skBgPopup = ImVec4( 0.13f, 0.13f, 0.13f, 1.00f );
+	inline const ImVec4 skBg = ImVec4( 0.12f, 0.12f, 0.12f, 1.00f );
+	inline const ImVec4 skBgChild = ImVec4( 0.15f, 0.15f, 0.15f, 1.00f );
+	inline const ImVec4 skBgPopup = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
 
-	inline const ImVec4 skTitleBg = ImVec4( 0.07f, 0.07f, 0.07f, 1.00f );
-	inline const ImVec4 skTitleBgActive = ImVec4( 0.14f, 0.14f, 0.14f, 1.00f );
+	inline const ImVec4 skTitleBg = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
+	inline const ImVec4 skTitleBgActive = ImVec4( 0.24f, 0.24f, 0.24f, 1.00f );
 
-	inline const ImVec4 skBorder = ImVec4( 0.20f, 0.20f, 0.20f, 1.00f );
+	inline const ImVec4 skBorder = ImVec4( 0.25f, 0.25f, 0.25f, 1.00f );
 
-	inline const ImVec4 skFrameBg = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
-	inline const ImVec4 skFrameBgHovered = ImVec4( 0.22f, 0.22f, 0.22f, 1.00f );
-	inline const ImVec4 skFrameBgActive = ImVec4( 0.27f, 0.27f, 0.27f, 1.00f );
+	inline const ImVec4 skFrameBg = ImVec4( 0.24f, 0.24f, 0.24f, 1.00f );
+	inline const ImVec4 skFrameBgHovered = ImVec4( 0.28f, 0.28f, 0.28f, 1.00f );
+	inline const ImVec4 skFrameBgActive = ImVec4( 0.31f, 0.31f, 0.31f, 1.00f );
 
-	inline const ImVec4 skHeader = ImVec4( 0.16f, 0.16f, 0.16f, 1.00f );
+	inline const ImVec4 skHeader = ImVec4( 0.16f, 0.18f, 0.18f, 1.00f );
 
-	inline const ImVec4 skTab = ImVec4( 0.11f, 0.11f, 0.11f, 1.00f );
-	inline const ImVec4 skTabHovered = ImVec4( 0.22f, 0.22f, 0.22f, 1.00f );
-	inline const ImVec4 skTabActive = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
-	inline const ImVec4 skTabUnfocused = ImVec4( 0.09f, 0.09f, 0.09f, 1.00f );
-	inline const ImVec4 skTabUnfocusedActive = ImVec4( 0.13f, 0.13f, 0.13f, 1.00f );
+	inline const ImVec4 skTab = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
+	inline const ImVec4 skTabHovered = ImVec4( 0.24f, 0.24f, 0.24f, 1.00f );
+	inline const ImVec4 skTabActive = ImVec4( 0.24f, 0.24f, 0.24f, 1.00f );
+	inline const ImVec4 skTabUnfocused = ImVec4( 0.14f, 0.14f, 0.15f, 1.00f );
+	inline const ImVec4 skTabUnfocusedActive = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
 
-	inline const ImVec4 skItemHovered = ImVec4( 0.12f, 0.11f, 0.18f, 1.00f );
-	inline const ImVec4 skItemSelected = ImVec4( 0.17f, 0.15f, 0.25f, 1.00f );
+	inline const ImVec4 skItemHovered = ImVec4( 0.25f, 0.14f, 0.35f, 1.00f );
+	inline const ImVec4 skItemSelected = ImVec4( 0.38f, 0.20f, 0.55f, 1.00f );
+
 	inline const ImVec4 skWindowBackground = skBg;
 
 	// ── Theme ────────────────────────────────────────────────────────────────

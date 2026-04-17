@@ -1,5 +1,4 @@
 #include "editor.hpp"
-#include "entity/components/name.hpp"
 #include "editor_dep_manager.generated.hpp"
 #include "core/utils/fonts.hpp"
 #include "core/utils/shortcuts.hpp"
@@ -20,7 +19,7 @@ namespace lum::editor {
 	}
 
 	void Editor::Finalize( ) {
-		mEngine.Finalize( ); 
+		mEngine.Finalize( );
 	}
 
 	void Editor::Run( ) {
@@ -64,7 +63,7 @@ namespace lum::editor {
 	void Editor::draw_viewport( float64 delta ) {
 
 		ImGui::Begin( "Viewport" );
-		
+
 		ImGuiDockNode* node = ImGui::GetWindowDockNode( );
 		if (node) {
 			node->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
@@ -86,6 +85,8 @@ namespace lum::editor {
 	}
 	void Editor::draw_menu_bar( ) {
 
+		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0.0f, 12.0f ) );
+		ImGui::PushStyleColor( ImGuiCol_MenuBarBg, style::skBg );
 		if (ImGui::BeginMainMenuBar( )) {
 			if (ImGui::BeginMenu( "Scene" )) {
 				ImGui::MenuItem( "New Scene", "Ctrl + N" );
@@ -101,19 +102,53 @@ namespace lum::editor {
 			}
 			ImGui::EndMainMenuBar( );
 		}
+		ImGui::PopStyleColor( );
+		ImGui::PopStyleVar( );
 	}
 	void Editor::draw_entity_inspector( ) {
 
 		auto* scene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( );
 
 		ImGui::Begin( "Entity Inspector" );
-		if (mSceneInspector.GetSelectedEntity() != ecs::skNullEntity) {
+		if (mSceneInspector.GetSelectedEntity( ) != ecs::skNullEntity) {
 			scene->mEntityMgr.ForEachComponent(
 				mSceneInspector.GetSelectedEntity( ),
 				[&]( ecs::detail::BasePool* pool ) {
-					if (ImGui::CollapsingHeader( pool->GetName( ).data( ) )) {
+
+					ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0.0f, 0.0f, 0.0f, 0.0f ) );
+					ImGui::PushStyleColor( ImGuiCol_HeaderHovered, ImVec4( 0, 0, 0, 0 ) );
+					ImGui::PushStyleColor( ImGuiCol_HeaderActive, ImVec4( 0, 0, 0, 0 ) );
+					ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 0, 0, 0, 0 ) );
+
+					ImGui::SetNextItemOpen( true, ImGuiCond_Once );
+					ImGui::PushID( HashStr( pool->GetName( ) ) );
+					bool open = ImGui::CollapsingHeader( "##hidden" );
+					ImGui::PopID( );
+
+					ImGui::PopStyleColor( 4 );
+
+					bool hovered = ImGui::IsItemHovered( );
+					ImVec2 min = ImGui::GetItemRectMin( );
+					ImVec2 textPos = ImVec2( min.x + 5.0f, min.y );
+
+					ccharptr chevron = open ? ICON_FA_ANGLE_DOWN : ICON_FA_ANGLE_RIGHT;
+
+					char label[ 32 ]{};
+					FormatString( label, "%s %s", chevron, pool->GetName( ).data( ) );
+
+					ImGui::PushFont( Fonts::sDefaultMedium );
+					ImGui::GetWindowDrawList( )->AddText(
+						textPos,
+						hovered ? IM_COL32( 255, 255, 255, 255 ) : IM_COL32( 200, 200, 200, 255 ),
+						label
+					);
+					ImGui::PopFont( );
+
+					if (open) {
 						skDrawFunctions[ HashStr( pool->GetName( ) ) ]( scene->mEntityMgr, mSceneInspector.GetSelectedEntity( ) );
 					}
+
+
 				} );
 		}
 		ImGui::End( );
@@ -171,7 +206,7 @@ namespace lum::editor {
 		style::ApplyTheme( );
 
 		Fonts::Initialize( );
-		ImGui::GetIO( ).FontDefault = Fonts::sDefault;
+		ImGui::GetIO( ).FontDefault = Fonts::sDefaultSmall;
 
 	}
 	void Editor::set_flags_recursive( ImGuiDockNode* node, ImGuiDockNodeFlags flags ) {

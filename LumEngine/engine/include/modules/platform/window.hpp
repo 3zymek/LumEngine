@@ -13,7 +13,7 @@ namespace lum {
 	namespace ev { class EventBus; }
 
 	// Flags controlling window initialization behavior.
-	enum class WindowInitFlags : bitfield {
+	enum class WindowFlags : bitfield {
 		NoDecoration	= 1 << 0, // Removes the native OS title bar and border.
 		NoResize		= 1 << 1, // Prevents the user from resizing the window.
 		Invisible		= 1 << 2, // Window is hidden on creation, show manually later.
@@ -21,12 +21,13 @@ namespace lum {
 		Floating		= 1 << 4, // Window stays always on top of other windows.
 		Focused			= 1 << 5, // Window receives input focus immediately on creation.
 		CenterCursor	= 1 << 6, // Cursor is centered in the window on creation.
+		NoCursor		= 1 << 7
 	};
-	LUM_ENUM_OPERATIONS( lum::WindowInitFlags );
+	LUM_ENUM_OPERATIONS( lum::WindowFlags );
 
 	/* @brief Descriptor used to configure a window on creation. */
 	struct WindowDescriptor {
-		Flags<WindowInitFlags> mFlags = {};
+		Flags<WindowFlags> mFlags = {};
 		String mTitle = "LumEngine";			/* @brief Window title bar text. */
 		uint32 mHeight = 500;					/* @brief Initial window height in pixels. */
 		uint32 mWidth = 500;					/* @brief Initial window width in pixels. */
@@ -69,6 +70,9 @@ namespace lum {
 		void ToggleResizable( bool value );
 		void ToggleFloating( bool value );
 		void ToggleVisibility( bool value );
+		void ToggleMaximized( bool value );
+		void ToggleFocused( );
+		void ToggleCursor( bool value );
 
 		/* @brief Polls window events and emits EWindowResized if size changed.
 		*  Call once per frame from the main loop.
@@ -86,11 +90,7 @@ namespace lum {
 		GLFWwindow* mWindow = nullptr; /* @brief Underlying GLFW window handle. */
 		ev::EventBus* mEventBus = nullptr; /* @brief Event bus for window events. */
 
-		bool bVisible = true;
-		bool bResizable = true;
-		bool bDecorations = true;
-		bool bFloating = false;
-		bool bMaximized = false;
+		Flags<WindowFlags> mState = {};
 
 		uint32 mWidth = 0;
 		uint32 mHeight = 0;

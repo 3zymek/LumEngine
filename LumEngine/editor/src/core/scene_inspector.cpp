@@ -14,12 +14,12 @@ namespace lum::editor {
 
 		if (ImGui::Button( ICON_FA_PLUS )) {
 
-		} 
+		}
 		ImGui::SameLine( );
-		
+
 		ImGui::PushItemWidth( -1 );
 		SearchField( "##Entities search", "Filter entities...", mEntitiesFilter.Data( ), mEntitiesFilter.MaxSize( ) );
-		ImGui::PopItemWidth();
+		ImGui::PopItemWidth( );
 
 		ImGui::Separator( );
 
@@ -30,8 +30,8 @@ namespace lum::editor {
 			bool selected = (mSelectedEntity == entity);
 			CName* name = scene->mEntityMgr.GetComponent<CName>( entity );
 			char label[ 64 ]{};
-			if (!name) snprintf( label, sizeof( label ), "%s %d", "Entity", entity );
-			else snprintf( label, sizeof( label ), "%s", name->mName.Data( ) );
+			if (!name) FormatString( label, "%s %llu", "Entity", entity );
+			else FormatString( label, "%s", name->mName.Data( ) );
 
 			float32 height = ImGui::GetTextLineHeightWithSpacing( );
 			ImVec2 pos = ImGui::GetCursorScreenPos( );
@@ -43,7 +43,7 @@ namespace lum::editor {
 			else if (hovered)
 				DrawRowBackground( style::skItemHovered );
 			else
-				DrawRowBackground( 
+				DrawRowBackground(
 					(i % 2 != 0)
 					? style::skBgPopup
 					: style::skBg

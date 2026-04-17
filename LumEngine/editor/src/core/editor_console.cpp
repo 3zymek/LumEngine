@@ -183,7 +183,7 @@ namespace lum::editor {
 	void Console::handle_filter( StringView icon, uint32 numLogs, LogSeverity sev ) {
 
 		static char buff[ 32 ]{};
-		snprintf( buff, sizeof( buff ), "%s  %d", icon.data( ), numLogs );
+		FormatString( buff, "%s  %d", icon.data( ), numLogs );
 
 		ImVec4 color = ImVec4( 1.0f, 1.0f, 1.0f, 0.05f );
 		if (!mSeverity.Has( sev )) color = ImVec4( 1.0f, 1.0f, 1.0f, 0.01f );

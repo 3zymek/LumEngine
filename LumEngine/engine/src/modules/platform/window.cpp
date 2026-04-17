@@ -50,27 +50,60 @@ namespace lum {
 	}
 
 	void Window::ToggleDecoration( bool value ) {
-		if (bDecorations != value) {
+		if (mState.Has( WindowFlags::NoDecoration ) != !value) {
 			glfwSetWindowAttrib( mWindow, GLFW_DECORATED, value ? GLFW_TRUE : GLFW_FALSE );
-			bDecorations = value;
+			value ? mState.Disable( WindowFlags::NoDecoration ) : mState.Enable( WindowFlags::NoDecoration );
 		}
 	}
-	void Window::ToggleResizable( bool value ) { 
-		if (bResizable != value) {
+
+	void Window::ToggleResizable( bool value ) {
+		if (mState.Has( WindowFlags::NoResize ) != !value) {
 			glfwSetWindowAttrib( mWindow, GLFW_RESIZABLE, value ? GLFW_TRUE : GLFW_FALSE );
-			bResizable = value;
+			value ? mState.Disable( WindowFlags::NoResize ) : mState.Enable( WindowFlags::NoResize );
 		}
 	}
-	void Window::ToggleFloating( bool value ) { 
-		if (bFloating != value) {
+
+	void Window::ToggleFloating( bool value ) {
+		if (mState.Has( WindowFlags::Floating ) != value) {
 			glfwSetWindowAttrib( mWindow, GLFW_FLOATING, value ? GLFW_TRUE : GLFW_FALSE );
-			bFloating = value;
+			value ? mState.Enable( WindowFlags::Floating ) : mState.Disable( WindowFlags::Floating );
 		}
 	}
 	void Window::ToggleVisibility( bool value ) { 
-		if (bVisible != value) {
-			value ? glfwShowWindow( mWindow ) : glfwHideWindow( mWindow );
-			bVisible = value;
+		if (mState.Has( WindowFlags::Invisible ) != value) {
+			if (value) {
+				glfwShowWindow( mWindow );
+				mState.Disable( WindowFlags::Invisible );
+			}
+			else {
+				glfwHideWindow( mWindow );
+				mState.Enable( WindowFlags::Invisible );
+			}
+		}
+	}
+	void Window::ToggleMaximized( bool value ) {
+		if (mState.Has( WindowFlags::Maximized ) != value) {
+			if (value) {
+				glfwMaximizeWindow( mWindow );
+				mState.Enable( WindowFlags::Maximized );
+			}
+			else {
+				glfwRestoreWindow( mWindow );
+				mState.Disable( WindowFlags::Maximized );
+			}
+		}
+	}
+	void Window::ToggleFocused( ) {
+		glfwFocusWindow( mWindow );
+	}
+	void Window::ToggleCursor( bool value ) {
+		if (value) {
+			glfwSetInputMode( mWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
+			mState.Disable( WindowFlags::NoCursor );
+		}
+		else {
+			glfwSetInputMode( mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+			mState.Enable( WindowFlags::NoCursor );
 		}
 	}
 
@@ -111,30 +144,26 @@ namespace lum {
 			return;
 		}
 
-		if (desc.mFlags.Has( WindowInitFlags::NoResize )) {
-			glfwWindowHint( GLFW_RESIZABLE, GL_FALSE );
-			bResizable = false;
-		}
-		if (desc.mFlags.Has( WindowInitFlags::NoDecoration )) {
+		if (desc.mFlags.Has( WindowFlags::NoResize ))
+			glfwWindowHint( GLFW_RESIZABLE, GLFW_FALSE );
+
+		if (desc.mFlags.Has( WindowFlags::NoDecoration ))
 			glfwWindowHint( GLFW_DECORATED, GLFW_FALSE );
-			bDecorations = false;
-		}
-		if (desc.mFlags.Has( WindowInitFlags::Floating )) {
+
+		if (desc.mFlags.Has( WindowFlags::Floating ))
 			glfwWindowHint( GLFW_FLOATING, GLFW_TRUE );
-			bFloating = true;
-		}
-		if (desc.mFlags.Has( WindowInitFlags::CenterCursor ))
+
+		if (desc.mFlags.Has( WindowFlags::CenterCursor ))
 			glfwWindowHint( GLFW_CENTER_CURSOR, GLFW_TRUE );
-		if (desc.mFlags.Has( WindowInitFlags::Maximized )) {
+
+		if (desc.mFlags.Has( WindowFlags::Maximized ))
 			glfwWindowHint( GLFW_MAXIMIZED, GLFW_TRUE );
-			bMaximized = true;
-		}
-		if (desc.mFlags.Has( WindowInitFlags::Focused ))
+
+		if (desc.mFlags.Has( WindowFlags::Focused ))
 			glfwWindowHint( GLFW_FOCUSED, GLFW_TRUE );
-		if (desc.mFlags.Has( WindowInitFlags::Invisible )) {
+
+		if (desc.mFlags.Has( WindowFlags::Invisible ))
 			glfwWindowHint( GLFW_VISIBLE, GLFW_FALSE );
-			bVisible = false;
-		}
 
 		mWindow = glfwCreateWindow( desc.mWidth, desc.mHeight, desc.mTitle.c_str( ), nullptr, nullptr );
 
