@@ -10,7 +10,7 @@ namespace lum::editor {
 		inline static ImFont* sConsole = nullptr;
 		inline static void Initialize( ) {
 
-			auto& io = ImGui::GetIO( );
+            auto& io = ImGui::GetIO( );
 
             static const ImWchar faRanges[ ] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 
@@ -19,34 +19,35 @@ namespace lum::editor {
             faConfig.PixelSnapH = true;
             faConfig.GlyphMinAdvanceX = 16.0f;
 
-            sDefaultSmall = io.Fonts->AddFontFromFileTTF( AssetLoader::ResolvePath( RootID::Internal, "fonts/Inter.ttf" ).data( ), 16.0f );
-            io.Fonts->AddFontFromFileTTF(
-                AssetLoader::ResolvePath( RootID::Internal, "fonts/FontAwesome.ttf" ).data( ),
-                16.0f,
-                &faConfig,
-                faRanges
-            );
+            auto path = []( StringView name ) {
+                return AssetLoader::ResolvePath( RootID::Internal, name );
+                };
 
-            sDefaultMedium = io.Fonts->AddFontFromFileTTF( AssetLoader::ResolvePath( RootID::Internal, "fonts/Inter.ttf" ).data( ), 20.0f );
-            io.Fonts->AddFontFromFileTTF(
-                AssetLoader::ResolvePath( RootID::Internal, "fonts/FontAwesome.ttf" ).data( ),
-                16.0f,
-                &faConfig,
-                faRanges
-            );
+            load_font( sDefaultSmall, path( "fonts/Inter.ttf" ), 16.0f, &faConfig, faRanges );
+            load_font( sDefaultMedium, path( "fonts/Inter.ttf" ), 20.0f, &faConfig, faRanges );
+            load_font( sDefaultBig, path( "fonts/Inter.ttf" ), 23.0f, &faConfig, faRanges );
 
-            sDefaultBig = io.Fonts->AddFontFromFileTTF( AssetLoader::ResolvePath( RootID::Internal, "fonts/Inter.ttf" ).data( ), 23.0f );
-            io.Fonts->AddFontFromFileTTF(
-                AssetLoader::ResolvePath( RootID::Internal, "fonts/FontAwesome.ttf" ).data( ),
-                16.0f,
-                &faConfig,
-                faRanges
-            );
+            sConsole = io.Fonts->AddFontFromFileTTF( path( "fonts/JetBrainsMono.ttf" ).data( ), 18.0f );
 
-			sConsole = io.Fonts->AddFontFromFileTTF( AssetLoader::ResolvePath( RootID::Internal, "fonts/JetBrainsMono.ttf" ).data( ), 18.0f );
-
-            ImGui::GetIO( ).Fonts->Build( );
+            io.Fonts->Build( );
 
 		}
+
+    private:
+
+        static void load_font( ImFont*& font, StringView path, usize size, const ImFontConfig* cfg, const ImWchar* ranges ) {
+
+            ImGuiIO& io = ImGui::GetIO( );
+
+            font = io.Fonts->AddFontFromFileTTF( path.data(), size );
+            io.Fonts->AddFontFromFileTTF(
+                AssetLoader::ResolvePath( RootID::Internal, "fonts/FontAwesome.ttf" ).data( ),
+                size,
+                cfg,
+                ranges
+            );
+
+        }
+
 	};
 }

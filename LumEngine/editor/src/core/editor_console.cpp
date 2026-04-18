@@ -148,6 +148,7 @@ namespace lum::editor {
 			bClearLogs = true;
 			mActionTooltip.Trigger( "Cleared console" );
 		}
+		TooltipOnHover( "Clear console" );
 
 	}
 	void Console::handle_copy( ) {
@@ -160,12 +161,13 @@ namespace lum::editor {
 			ImGui::SetClipboardText( all.c_str( ) );
 			mActionTooltip.Trigger( "Copied to clipboard" );
 		}
+		TooltipOnHover( "Copy to clipboard" );
 
 	}
 	void Console::handle_search( ) {
 
 		ImVec4 col;
-		col = bFilterEnabled ? ImVec4( 1.0f, 1.0f, 1.0f, 1.0f ) : ImVec4( 0.5f, 0.5f, 0.5f, 0.2f );
+		col = bFilterEnabled ? ImVec4( 1.0f, 1.0f, 1.0f, 1.0f ) : ImVec4( 0.6f, 0.6f, 0.6f, 1.0f );
 			
 		ImGui::PushStyleColor( ImGuiCol_Text, col );
 		if (ImGui::Button( ICON_FA_SEARCH, ImVec2( skSideBarWidth / 2, 30 ) )) {
@@ -177,6 +179,7 @@ namespace lum::editor {
 
 		}
 		ImGui::PopStyleColor( );
+		TooltipOnHover( "Enable filtering" );
 
 	}
 

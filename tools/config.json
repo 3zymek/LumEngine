@@ -115,11 +115,11 @@
     },
     "String": {
       "reader": "detail::ReadStringParameter",
-      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", {Var}->{FieldName}.data(), std::max( {Var}->{FieldName}.capacity(), (usize)2 ) )"
+      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} )"
     },
     "string": {
       "reader": "detail::ReadStringParameter",
-      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", {Var}->{FieldName}.data(), std::max( {Var}->{FieldName}.capacity(), (usize)2 ) )"
+      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} )"
     },
     "FixedString": {
       "reader": "detail::ReadStringParameter",

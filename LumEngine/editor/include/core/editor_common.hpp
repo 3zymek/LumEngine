@@ -43,4 +43,10 @@ namespace lum::editor {
         return changed;
     }
 
+    inline void TooltipOnHover( const char* text ) {
+        if (ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay )) {
+            ImGui::SetTooltip( text );
+        }
+    }
+
 }

@@ -16,8 +16,13 @@ namespace lum::editor {
 
 	private:
 		
+		bool bEntityCreatorOpened = false;
+
 		FixedString<64> mEntitiesFilter;
+		FixedString<32> mComponentsFilter;
 		EntityID mSelectedEntity = ecs::skNullEntity;
+
+		void handle_entity_creator( );
 
 	};
 

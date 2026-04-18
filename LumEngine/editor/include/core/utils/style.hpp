@@ -29,8 +29,10 @@ namespace lum::editor::style {
 	inline const ImVec4 skTabUnfocused = ImVec4( 0.14f, 0.14f, 0.15f, 1.00f );
 	inline const ImVec4 skTabUnfocusedActive = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
 
-	inline const ImVec4 skItemHovered = ImVec4( 0.25f, 0.14f, 0.35f, 1.00f );
-	inline const ImVec4 skItemSelected = ImVec4( 0.38f, 0.20f, 0.55f, 1.00f );
+	inline const ImVec4 skRowAlt = ImVec4( 0.14f, 0.14f, 0.14f, 1.00f );
+
+	inline const ImVec4 skItemHovered = ImVec4( 0.17f, 0.17f, 0.17f, 1.00f );
+	inline const ImVec4 skItemSelected = ImVec4( 0.23f, 0.23f, 0.23f, 1.00f );
 
 	inline const ImVec4 skWindowBackground = skBg;
 
