@@ -41,7 +41,13 @@ namespace lum {
 			concept Component = std::is_base_of_v<lum::Component, tType>;
 
 			template<Component tType>
-			StringView GetComponentName( );
+			StringView GetComponentParseName( );
+
+			template<Component tType>
+			StringView GetComponentDisplayName( );
+
+			template<Component tType>
+			StringView GetComponentCategoryName( );
 
 		} // namespace lum::ecs::detail
 

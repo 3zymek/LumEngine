@@ -9,7 +9,7 @@
 namespace lum {
 
 	/* @brief ECS component storing the 3D transform of an entity. */
-	LCLASS( ) struct CTransform : public Component {
+	LCLASS( Category = "Transform" ) struct CTransform : public Component {
 
 		/* @brief World position. */
 		LPROPERTY( ) glm::vec3 mPosition = { 0.f, 0.f, 0.f };

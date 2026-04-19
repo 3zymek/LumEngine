@@ -121,7 +121,7 @@ namespace lum::editor {
 					ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 0, 0, 0, 0 ) );
 
 					ImGui::SetNextItemOpen( true, ImGuiCond_Once );
-					ImGui::PushID( HashStr( pool->GetName( ) ) );
+					ImGui::PushID( HashStr( pool->GetParseName( ) ) );
 					bool open = ImGui::CollapsingHeader( "##hidden" );
 					ImGui::PopID( );
 
@@ -134,18 +134,20 @@ namespace lum::editor {
 					ccharptr chevron = open ? ICON_FA_ANGLE_DOWN : ICON_FA_ANGLE_RIGHT;
 
 					char label[ 32 ]{};
-					FormatString( label, "%s %s", chevron, pool->GetName( ).data( ) );
+					FormatString( label, "%s %s", chevron, pool->GetDisplayName( ).data( ) );
+
+					ImVec4 color = GetCategoryColor( pool->GetCategoryName( ) );
 
 					ImGui::PushFont( Fonts::sDefaultMedium );
 					ImGui::GetWindowDrawList( )->AddText(
 						textPos,
-						hovered ? IM_COL32( 255, 255, 255, 255 ) : IM_COL32( 200, 200, 200, 255 ),
+						hovered ? ImGui::GetColorU32( ImVec4( color.x, color.y, color.z, 1.0f ) ) : ImGui::GetColorU32( ImVec4( color.x, color.y, color.z, 0.5f ) ),
 						label
 					);
 					ImGui::PopFont( );
 
 					if (open) {
-						skDrawFunctions[ HashStr( pool->GetName( ) ) ]( scene->mEntityMgr, mSceneInspector.GetSelectedEntity( ) );
+						skDrawFunctions[ HashStr( pool->GetParseName( ) ) ].mEditorFn( scene->mEntityMgr, mSceneInspector.GetSelectedEntity( ) );
 					}
 
 

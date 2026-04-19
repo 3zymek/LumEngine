@@ -9,6 +9,11 @@
 namespace lum::editor {
 
 	namespace detail { using EditorFn = void(*)(ecs::MEntityManager&, EntityID); }
+	struct EditorComponentEntry {
+		detail::EditorFn mEditorFn = {};
+		StringView mDisplayName = {};
+		StringView mCategoryName = {};
+	};
 
 	class Editor {
 	public:
@@ -26,7 +31,7 @@ namespace lum::editor {
 		FileExplorer mExplorer;
 		SceneInspector mSceneInspector;
 
-		inline static std::unordered_map<uint64, detail::EditorFn> skDrawFunctions;
+		inline static std::unordered_map<uint64, EditorComponentEntry> skDrawFunctions;
 
 		void draw_viewport( float64 delta );
 		void draw_menu_bar( );

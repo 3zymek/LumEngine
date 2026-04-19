@@ -70,8 +70,8 @@ namespace lum {
 					spotL.mColor = light.mColor;
 					spotL.mRadius = light.mRadius;
 					spotL.mDirection = glm::normalize( light.mDirection );
-					spotL.mInnerCone = glm::cos( glm::radians( light.mInnerConeAngle ) );
-					spotL.mOuterCone = glm::cos( glm::radians( light.mOuterConeAngle ) );
+					spotL.mInnerCone = glm::cos( glm::radians( light.mInnerAngle ) );
+					spotL.mOuterCone = glm::cos( glm::radians( light.mOuterCone ) );
 
 					mRenderer->AddSpotLight( spotL );
 

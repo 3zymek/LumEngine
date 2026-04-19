@@ -21,7 +21,9 @@ namespace lum::ecs::detail {
 	struct BasePool {
 		virtual bool Contains( EntityID entityID ) = 0;
 		virtual void Remove( EntityID& entityID ) = 0;
-		virtual StringView GetName( ) = 0;
+		virtual StringView GetParseName( ) = 0;
+		virtual StringView GetDisplayName( ) = 0;
+		virtual StringView GetCategoryName( ) = 0;
 		virtual ~BasePool( ) { }
 	};
 
@@ -79,9 +81,9 @@ namespace lum::ecs::detail {
 			return mComponents.Contains( entityID );
 		}
 
-		StringView GetName( ) override {
-			return GetComponentName<tType>( );
-		}
+		StringView GetParseName( ) override { return GetComponentParseName<tType>( ); }
+		StringView GetDisplayName( ) override { return GetComponentDisplayName<tType>( ); }
+		StringView GetCategoryName( ) override { return GetComponentCategoryName<tType>( ); }
 
 
 	protected:
