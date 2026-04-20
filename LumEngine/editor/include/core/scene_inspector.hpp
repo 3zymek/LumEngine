@@ -4,8 +4,6 @@
 #include "entity/ecs_common.hpp"
 #include "core/utils/fixed_string.hpp"
 
-namespace lum { class FScene; }
-
 namespace lum::editor {
 
 	class SceneInspector {

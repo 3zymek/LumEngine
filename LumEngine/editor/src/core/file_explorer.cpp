@@ -4,13 +4,8 @@ namespace lum::editor {
 
 	void FileExplorer::Update( StringView root ) {
 
-		ImGui::Begin( "File Explorer" );
-		//ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0.0f, 0.0f, 0.0f, 0.0f ) );
-		//ImGui::PushStyleColor( ImGuiCol_HeaderHovered, ImVec4( 0.0f, 0.0f, 0.0f, 0.0f ) );
-		//ImGui::PushStyleColor( ImGuiCol_HeaderActive, ImVec4( 0.0f, 0.0f, 0.0f, 0.0f ) );
-
+		ImGui::Begin( "File System" );
 		DrawDirectory( root );
-		//ImGui::PopStyleColor( 3 );
 		ImGui::End( );
 
 	}

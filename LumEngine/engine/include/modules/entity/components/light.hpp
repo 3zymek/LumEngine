@@ -11,7 +11,7 @@ namespace lum {
 	/* @brief Point light component — emits light in all directions from a single position.
 	* Attenuates linearly based on distance and radius.
 	*/
-	LCLASS( Category = "Lightning" ) struct CPointLight : public Component {
+	LCLASS( Category = "LIGHTNING" ) struct CPointLight : public Component {
 
 		LPROPERTY( ) float32 mIntensity = 1.f; // Light intensity in linear space
 
@@ -22,7 +22,7 @@ namespace lum {
 	};
 
 	/* @brief Spot light component — emits light in a cone shape from a single position. */
-	LCLASS( Category = "Lightning" ) struct CSpotLight : public Component {
+	LCLASS( Category = "LIGHTNING" ) struct CSpotLight : public Component {
 
 		LPROPERTY( ) float32 mIntensity = 100.f;
 

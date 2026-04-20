@@ -14,7 +14,10 @@ namespace lum::editor {
 
 		init_imgui( &mEngine.GetPlatform( ).mWindow );
 
-		RegisterEditorComponents( skDrawFunctions );
+		RegisterEditorComponents( skComponentsEntries );
+		for (auto& [hash, entry] : skComponentsEntries) {
+			skComponentsByCategory[ entry.mCategoryName ].emplace_back( &entry );
+		}
 
 	}
 
@@ -23,8 +26,6 @@ namespace lum::editor {
 	}
 
 	void Editor::Run( ) {
-
-		ImGui::GetIO( ).ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 		while (mEngine.IsRunning( )) {
 
@@ -52,13 +53,17 @@ namespace lum::editor {
 		draw_menu_bar( );
 		draw_viewport( delta );
 		mSceneInspector.Update( scene );
-		draw_entity_inspector( );
+		mEntityInspector.Update( mSceneInspector.GetSelectedEntity( ), scene );
 
 		mExplorer.Update( AssetLoader::GetProjectRoot( ) );
 
 		mConsole.Update( );
 
 	}
+
+
+
+
 
 	void Editor::draw_viewport( float64 delta ) {
 
@@ -105,57 +110,6 @@ namespace lum::editor {
 		ImGui::PopStyleColor( );
 		ImGui::PopStyleVar( );
 	}
-	void Editor::draw_entity_inspector( ) {
-
-		auto* scene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( );
-
-		ImGui::Begin( "Entity Inspector" );
-		if (mSceneInspector.GetSelectedEntity( ) != ecs::skNullEntity) {
-			scene->mEntityMgr.ForEachComponent(
-				mSceneInspector.GetSelectedEntity( ),
-				[&]( ecs::detail::BasePool* pool ) {
-
-					ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0.0f, 0.0f, 0.0f, 0.0f ) );
-					ImGui::PushStyleColor( ImGuiCol_HeaderHovered, ImVec4( 0, 0, 0, 0 ) );
-					ImGui::PushStyleColor( ImGuiCol_HeaderActive, ImVec4( 0, 0, 0, 0 ) );
-					ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 0, 0, 0, 0 ) );
-
-					ImGui::SetNextItemOpen( true, ImGuiCond_Once );
-					ImGui::PushID( HashStr( pool->GetParseName( ) ) );
-					bool open = ImGui::CollapsingHeader( "##hidden" );
-					ImGui::PopID( );
-
-					ImGui::PopStyleColor( 4 );
-
-					bool hovered = ImGui::IsItemHovered( );
-					ImVec2 min = ImGui::GetItemRectMin( );
-					ImVec2 textPos = ImVec2( min.x + 5.0f, min.y );
-
-					ccharptr chevron = open ? ICON_FA_ANGLE_DOWN : ICON_FA_ANGLE_RIGHT;
-
-					char label[ 32 ]{};
-					FormatString( label, "%s %s", chevron, pool->GetDisplayName( ).data( ) );
-
-					ImVec4 color = GetCategoryColor( pool->GetCategoryName( ) );
-
-					ImGui::PushFont( Fonts::sDefaultMedium );
-					ImGui::GetWindowDrawList( )->AddText(
-						textPos,
-						hovered ? ImGui::GetColorU32( ImVec4( color.x, color.y, color.z, 1.0f ) ) : ImGui::GetColorU32( ImVec4( color.x, color.y, color.z, 0.5f ) ),
-						label
-					);
-					ImGui::PopFont( );
-
-					if (open) {
-						skDrawFunctions[ HashStr( pool->GetParseName( ) ) ].mEditorFn( scene->mEntityMgr, mSceneInspector.GetSelectedEntity( ) );
-					}
-
-
-				} );
-		}
-		ImGui::End( );
-
-	}
 	void Editor::draw_layout( ) {
 
 		static bool bLayoutInitialized = false;
@@ -167,6 +121,8 @@ namespace lum::editor {
 		ImGuiID dockID = ImGui::DockSpaceOverViewport( dockFlags );
 
 		if (!bLayoutInitialized) {
+
+			ImGui::GetIO( ).ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 			bLayoutInitialized = true;
 
@@ -188,9 +144,9 @@ namespace lum::editor {
 
 			ImGui::DockBuilderDockWindow( "Console", console );
 			ImGui::DockBuilderDockWindow( "Viewport", viewport );
-			ImGui::DockBuilderDockWindow( "Scene Inspector", sceneInspector );
-			ImGui::DockBuilderDockWindow( "Entity Inspector", right );
-			ImGui::DockBuilderDockWindow( "File Explorer", fileExplorer );
+			ImGui::DockBuilderDockWindow( "Scene", sceneInspector );
+			ImGui::DockBuilderDockWindow( "Entity", right );
+			ImGui::DockBuilderDockWindow( "File System", fileExplorer );
 
 			ImGui::DockBuilderFinish( dockID );
 

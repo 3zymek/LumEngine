@@ -6,12 +6,12 @@
     "editor_dep_manager_include": "editor_dep_manager.hpp"
   },
   "category_colors": {
-    "General":   "#C8C8C8",
-    "Transform": "#F0C27A",
-    "Rendering": "#7AB8F0",
-    "Lighting":  "#F0E97A",
-    "Physics":   "#A8F07A",
-    "Audio":     "#C47AF0"
+    "GENERAL":   "#C8C8C8",
+    "TRANSFORM": "#F0C27A",
+    "RENDERING": "#7AB8F0",
+    "LIGHTNING":  "#F0E97A",
+    "PHYSICS":   "#A8F07A",
+    "AUDIO":     "#C47AF0"
   },
   "prefixes": ["m", "b"],
   "templates": {
@@ -55,7 +55,7 @@
     "drag_speed": "0.01f",
     "min_val": "0.0f",
     "max_val": "0.0f",
-    "category": "General"
+    "category": "GENERAL"
   },
   "types": {
     "float": {
