@@ -4,7 +4,9 @@
 #include "core/utils/style.hpp"
 #include "core/utils/fonts.hpp"
 #include "editor.hpp"
+#include "core/editor_common.hpp"
 #include "editor_dep_manager.generated.hpp"
+#include "entity/ecs_common.hpp"
 namespace lum::editor {
 
 	void SceneInspector::Update( FScene* scene ) {
@@ -80,126 +82,168 @@ namespace lum::editor {
 		ImGui::End( ); // Scene Inspector
 
 		if (bEntityCreatorOpened)
-			handle_entity_creator( );
+			handle_entity_creator( scene );
+
+		mActionTooltip.Draw( );
 
 	}
 
-	void SceneInspector::handle_entity_creator( ) {
-		
+	void SceneInspector::handle_entity_creator( FScene* scene ) {
+
+		static std::vector<const EditorComponentEntry*> mAddedComponents;
+
 		ImVec2 center = ImGui::GetMainViewport( )->GetCenter( );
 		ImGui::SetNextWindowPos( center, ImGuiCond_Appearing, ImVec2( 0.5f, 0.5f ) );
-		ImGui::SetNextWindowSize( ImVec2( 750, 700 ), ImGuiCond_Appearing );
-		
+		ImGui::SetNextWindowSize( ImVec2( 900, 520 ), ImGuiCond_Appearing );
+
 		ImGuiWindowFlags flags =
 			ImGuiWindowFlags_NoCollapse |
-			ImGuiWindowFlags_NoResize |
 			ImGuiWindowFlags_NoTitleBar |
-			ImGuiWindowFlags_NoDocking;
-		
-		
-		ImGui::PushStyleVar( ImGuiStyleVar_WindowRounding, 2.0f );
-		ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding, ImVec2( 0.0f, 0.0f ) );
-		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0.0f, 0.0f ) );
+			ImGuiWindowFlags_NoDocking |
+			ImGuiWindowFlags_NoResize;
+
 		ImGui::Begin( "##EntityCreator", &bEntityCreatorOpened, flags );
-		ImGui::PopStyleVar( 3 );
-		
-		ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 16.0f, 16.0f ) );
-		
-		ImGui::SetCursorPos( ImVec2( 16.0f, 16.0f ) );
-		ImGui::PushFont( Fonts::sDefaultMedium );
-		ImGui::AlignTextToFramePadding( );
-		ImGui::Text( "LumEngine Entity Creator" );
-		ImGui::SameLine( ImGui::GetWindowWidth( ) - 45.0f );
-		
-		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0.0f, 0.0f, 0.0f, 0.0f ) );
-		if (ImGui::Button( ICON_FA_TIMES )) {
-			bEntityCreatorOpened = false;
-		}
-		ImGui::PopStyleColor( );
-		ImGui::PopFont( );
-		
-		ImVec2 cursorPos = ImGui::GetCursorScreenPos( );
-		float32 width = ImGui::GetWindowWidth( );
-		ImGui::GetWindowDrawList( )->AddLine(
-			cursorPos,
-			ImVec2( cursorPos.x + width, cursorPos.y ),
-			ImGui::ColorConvertFloat4ToU32( style::skBorder ),
-			1.0f
-		);
-		
-		ImGui::PushStyleVar( ImGuiStyleVar_ChildRounding, 2.0f );
-		ImGui::PushStyleColor( ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f) );
-		ImGui::SetCursorPosY( ImGui::GetCursorPosY( ) + 1.0f );
-		ImGui::BeginChild( "##EntityCreatorComponentsList", ImVec2( 300.0f, ImGui::GetContentRegionAvail( ).y ), true, ImGuiChildFlags_Borders );
-		ImGui::PopStyleColor( );
-		ImGui::PopStyleVar( );
 
-		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 10.0f, 10.0f ) );
-		ImGui::SetNextItemWidth( -1 );
-		ImGui::PushFont( Fonts::sDefaultMedium );
-		SearchField( "##EntityCreatorSearch", "Search components...", mComponentsFilter.Data( ), mComponentsFilter.MaxSize( ) );
-		ImGui::PopFont( );
+		// ── HEADER ───────────────────────────────────────────────────────────────
+		ImGui::Text( "Create entity" );
+		ImGui::Separator( );
 
-		ImVec2 cursorPos2 = ImGui::GetCursorScreenPos( );
-		ImVec2 windowPos = ImGui::GetCurrentWindow( )->ParentWindow->Pos;
-		ImGui::GetCurrentWindow()->ParentWindow->DrawList->AddLine(
-			ImVec2( windowPos.x, cursorPos2.y ),
-			ImVec2( windowPos.x + width, cursorPos2.y ),
-			ImGui::ColorConvertFloat4ToU32( style::skBorder ),
-			1.0f
-		);
-		ImGui::Dummy( ImVec2( 0.0f, 1.0f ));
+		const float32 footerHeight = 36.0f;
 
-		FCollapsingHeaderArgs args;
-		for (auto& [category, entries] : Editor::GetComponentsByCategory( )) {
-			
-			ImVec4 catColor = GetCategoryColor( category );
+		if (ImGui::BeginTable( "##EntityCreatorLayout", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV )) {
 
-			bool opened = false;
+			ImGui::TableSetupColumn( "Left", ImGuiTableColumnFlags_WidthStretch, 0.5f );
+			ImGui::TableSetupColumn( "Right", ImGuiTableColumnFlags_WidthStretch, 0.5f );
 
-			args.mLabel = category;
-			args.mID = HashStr( category );
-			args.mFont = Fonts::sDefaultBig;
-			ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 8.0f, 1.0f ) );
-			ImGui::Indent( 2.0f );
-			CollapsingHeaderCustom( args, opened );
-			ImGui::Unindent( 2.0f );
-			ImGui::PopStyleVar( );
+			// ================= LEFT =================
+			ImGui::TableNextColumn( );
+			ImGui::BeginChild( "##LeftPanel", ImVec2( 0, -footerHeight ), true );
 
-			if (opened) {
-				ImGui::PushFont( Fonts::sDefaultMedium );
-				for (auto& comp : entries) {
-					
-					ImGui::Indent( 6.0f );
-					ImGui::TextColored( catColor, ICON_FA_PLUS );
+			ImGui::TextDisabled( "Search components..." );
+			static char search[ 64 ]{};
+			ImGui::SetNextItemWidth( -1 );
+			SearchField( "##LumEngineEntiyCreatorList", "", search, sizeof( search ) );
+			ImGui::Separator( );
+
+			for (auto& [category, entries] : Editor::GetComponentsByCategory( )) {
+
+				ImVec4 categoryColor = GetCategoryColor( category );
+
+				ImGui::Spacing( );
+				ImGui::TextDisabled( "%s", category.data( ) );
+
+				ImGui::Indent( 5.0f );
+				for (auto* entry : entries) {
+
+					ImGui::TextColored( categoryColor, ICON_FA_CUBE );
 					ImGui::SameLine( );
-					ImGui::Selectable( comp->mDisplayName.data() ); 
-					ImGui::Unindent( 6.0f );
 
+					if (ImGui::Selectable( entry->mDisplayName.data( ) )) {
+						auto it = std::find( mAddedComponents.begin( ), mAddedComponents.end( ), entry );
+						if (it == mAddedComponents.end( ))
+							mAddedComponents.push_back( entry );
+						else mActionTooltip.Trigger( "Cannot add component that's already added" );
+
+					}
 				}
-				ImGui::PopFont( );
+				ImGui::Unindent( 5.0f );
 			}
 
+			ImGui::EndChild( );
+
+			// ── Right ─────────────────────────
+			ImGui::TableNextColumn( );
+
+			ImGui::BeginChild( "##RightPanel", ImVec2( 0, -footerHeight ), true );
+
+			// NAME
+			ImGui::TextDisabled( "Name" );
+			static char entityName[ 64 ]{};
+			ImGui::SetNextItemWidth( -1 );
+			ImGui::InputText( "##EntityName", entityName, sizeof( entityName ) );
+
+			ImGui::Separator( );
+
+			// ADDED COMPONENTS
+			ImGui::TextDisabled( "Added components" );
+
+			ImGui::BeginChild( "##AddedList", ImVec2( 0, 150 ), true );
+
+			ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0, 0, 0, 0 ) );
+			ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 2, 2 ) );
+
+			char buff[ 6 ]{};
+			for (int32 i = 0; i < mAddedComponents.size( ); ) {
+				FormatString( buff, "%c##%d", '-', i );
+
+				ImGui::SetNextItemWidth( 16.0f );
+				if (ImGui::Button( buff, ImVec2( 19, 19 ) )) {
+					mAddedComponents.erase( mAddedComponents.begin( ) + i );
+					continue;
+				}
+				ImGui::SameLine( );
+				const EditorComponentEntry* entry = mAddedComponents[ i ];
+				ImGui::TextColored( GetCategoryColor( entry->mCategoryName ), entry->mDisplayName.data( ) );
+				++i;
+			}
+
+			ImGui::PopStyleVar( );
+			ImGui::PopStyleColor( );
+
+			if (mAddedComponents.empty( )) {
+				ImGui::TextDisabled( "Click component on the left to add" );
+			}
+
+			ImGui::EndChild( );
+
+			ImGui::Separator( );
+
+			// PARENT
+			ImGui::TextDisabled( "Parent entity" );
+			static char parent[ 64 ]{};
+			ImGui::InputText( "##Parent", parent, sizeof( parent ), ImGuiInputTextFlags_ReadOnly );
+			ImGui::SameLine( );
+			ImGui::Button( "Pick" );
+
+			ImGui::TextDisabled( "Transform is NOT inherited (for now)" );
+
+			ImGui::EndChild( );
+
+			ImGui::EndTable( );
 		}
 
-		ImGui::PopStyleVar( );
-		ImGui::EndChild( );
+		// ── FOOTER ────────────────────────────────────────────────────────────────
+		float32 avail = ImGui::GetContentRegionAvail( ).x;
+		float32 btnW = 80.0f * 2 + ImGui::GetStyle( ).ItemSpacing.x;
+		ImGui::SetCursorPosX( (avail - btnW) * 0.5f );
 
+		ImGui::PushStyleVar( ImGuiStyleVar_FrameRounding, 8.0f );
+
+		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0.18f, 0.18f, 0.18f, 1.0f ) );
+		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4( 0.25f, 0.25f, 0.25f, 1.0f ) );
+		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4( 0.30f, 0.30f, 0.30f, 1.0f ) );
+		ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 0.7f, 0.7f, 0.7f, 1.0f ) );
+		if (ImGui::Button( "Cancel", ImVec2( 80, 32 ) ))
+			bEntityCreatorOpened = false;
+		ImGui::PopStyleColor( 4 );
+		
 		ImGui::SameLine( );
 
-		ImGui::PushStyleVar( ImGuiStyleVar_ChildRounding, 2.0f );
-		ImGui::PushStyleColor( ImGuiCol_ChildBg, style::skBg );
-		ImGui::SetCursorPosY( ImGui::GetCursorPosY( ) + 1.0f );
-		ImGui::BeginChild( "##EntityCreatorMenu" );
-		ImGui::PopStyleColor( );
+		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0.36f, 0.31f, 0.83f, 1.0f ) );
+		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4( 0.42f, 0.37f, 0.88f, 1.0f ) );
+		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4( 0.30f, 0.26f, 0.75f, 1.0f ) );
+		ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 0.92f, 0.90f, 1.00f, 1.0f ) );
+		if (ImGui::Button( "Create", ImVec2( 80, 32 ) )) {
+			Entity newEntity = scene->mEntityMgr.CreateEntity();
+			for (auto& comp : mAddedComponents) {
+				comp->mCreateFn( scene->mEntityMgr, newEntity.GetID() );
+			}
+		}
+		ImGui::PopStyleColor( 4 );
+
 		ImGui::PopStyleVar( );
 
-
-		ImGui::EndChild( );
-
-		ImGui::PopStyleVar( );
 		ImGui::End( );
-
 	}
 
 } // namespace lum::editor

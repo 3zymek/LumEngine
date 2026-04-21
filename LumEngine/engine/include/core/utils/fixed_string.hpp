@@ -28,7 +28,7 @@ namespace lum {
 			std::memcpy( mData, src, tNewL );
 		}
 
-		explicit FixedString( ) noexcept {
+		FixedString( ) noexcept {
 			mData[ 0 ] = '\0';
 		}
 

@@ -22,4 +22,14 @@ namespace lum {
 
 	};
 
+	LCLASS( ) struct CTest21 : public Component { };
+	LCLASS( ) struct CTest231 : public Component { };
+	LCLASS( ) struct CTest2231 : public Component { };
+	LCLASS( ) struct CTest211 : public Component { };
+	LCLASS( ) struct CTest2461 : public Component { };
+	LCLASS( ) struct CTest2A1 : public Component { };
+	LCLASS( ) struct CTest2S1 : public Component { };
+	LCLASS( ) struct CTest2G1 : public Component { };
+	LCLASS( ) struct CTest2D1 : public Component { };
+
 } // namespace lum

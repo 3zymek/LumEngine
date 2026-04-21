@@ -40,7 +40,7 @@ namespace lum::limits {
 	//============================= Events ==================================
 
 	/* @brief Maximum number of distinct event types registered in the engine. */
-	inline constexpr usize gMaxEventTypes = 32;
+	inline constexpr usize gMaxEventTypes = 128;
 
 	/* @brief Maximum number of callbacks invoked per frame for a single event type. */
 	inline constexpr usize gMaxCallbackPf = 8;

@@ -108,13 +108,20 @@ namespace lum {
 
 		private:
 
-			template< detail::tEvent tType >
+			template<detail::tEvent tType>
 			detail::EventPool<tType>& get_pool( ) {
+
 				auto typeID = GenerateTypeID::Get<tType>( );
-				if (!mPools[ typeID ]) {
-					mPools[ typeID ] = new detail::EventPool<tType>( );
+
+				LUM_ASSERT( typeID < limits::gMaxEventTypes, "Max event types reached" );
+
+				auto& ptr = mPools[ typeID ];
+
+				if (!ptr) {
+					ptr = new detail::EventPool<tType>( );
 				}
-				return *static_cast< detail::EventPool<tType>* >(mPools[ typeID ]);
+
+				return *static_cast< detail::EventPool<tType>* >( ptr );
 			}
 
 			void init( ) {
@@ -132,7 +139,7 @@ namespace lum {
 				}
 			}
 
-			detail::BasePool* mPools[ limits::gMaxEventTypes ];
+			detail::BasePool* mPools[ limits::gMaxEventTypes ]{};
 
 		};
 

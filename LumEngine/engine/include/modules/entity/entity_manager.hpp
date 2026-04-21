@@ -35,6 +35,8 @@ namespace lum {
 					mComponentPools[ i ] = other.mComponentPools[ i ];
 					other.mComponentPools[ i ] = nullptr;
 				}
+				mEventBus = other.mEventBus;
+				other.mEventBus = nullptr;
 			}
 			~MEntityManager( ) { destroy( ); }
 

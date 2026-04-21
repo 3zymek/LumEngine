@@ -122,8 +122,6 @@ namespace lum::editor {
 
 		if (!bLayoutInitialized) {
 
-			ImGui::GetIO( ).ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
 			bLayoutInitialized = true;
 
 			ImGui::DockBuilderRemoveNode( dockID );
@@ -165,6 +163,7 @@ namespace lum::editor {
 
 		Fonts::Initialize( );
 		ImGui::GetIO( ).FontDefault = Fonts::sDefaultSmall;
+		ImGui::GetIO( ).ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 	}
 	void Editor::set_flags_recursive( ImGuiDockNode* node, ImGuiDockNodeFlags flags ) {
