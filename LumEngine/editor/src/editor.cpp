@@ -53,7 +53,7 @@ namespace lum::editor {
 		draw_menu_bar( );
 		draw_viewport( delta );
 		mSceneInspector.Update( scene );
-		mEntityInspector.Update( mSceneInspector.GetSelectedEntity( ), scene );
+		mEntityInspector.Handle( mSceneInspector.GetSelectedEntity( ), scene );
 
 		mExplorer.Update( AssetLoader::GetProjectRoot( ) );
 
@@ -111,7 +111,7 @@ namespace lum::editor {
 		ImGui::PopStyleVar( );
 	}
 	void Editor::draw_layout( ) {
-
+		
 		static bool bLayoutInitialized = false;
 
 		ImGuiDockNodeFlags dockFlags =

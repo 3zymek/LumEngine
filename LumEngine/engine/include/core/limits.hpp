@@ -21,7 +21,7 @@ namespace lum::limits {
 	inline constexpr usize gMaxEntity = 1024;
 
 	/* @brief Maximum number of distinct component types registered in the engine. */
-	inline constexpr usize gMaxComponentTypes = 32;
+	inline constexpr usize gMaxComponentTypes = 128;
 
 	//============================= Audio ==================================
 

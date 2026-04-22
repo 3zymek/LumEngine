@@ -43,7 +43,7 @@ namespace lum {
 		std::optional<FMeshData> data = AssetLoader::LoadMesh( root, path );
 
 		if (!data) {
-			LUM_LOG_ERROR( "Failed to load model %s: %s", path, AssetLoader::GetErrorMessage( ) );
+			LUM_LOG_ERROR( "Failed to load model %s: %s", path.data(), AssetLoader::GetErrorMessage( ) );
 			return mErrorMesh;
 		}
 
@@ -97,12 +97,13 @@ namespace lum {
 		mContext->mEvBus->SubscribePermanently<EComponentAdded<CStaticMesh>>(
 			[&]( const EComponentAdded<CStaticMesh>& mesh ) {
 				
-				mesh.mComponent->mHandle = CreateStatic( mesh.mComponent->mPath );
+				if(!mesh.mComponent->mPath.empty())
+					mesh.mComponent->mHandle = CreateStatic( mesh.mComponent->mPath );
 
 			}
 		);
 
-			create_meshes( );
+		create_meshes( );
 
 	}
 

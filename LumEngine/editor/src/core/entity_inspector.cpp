@@ -4,11 +4,20 @@
 
 namespace lum::editor {
 
-	void EntityInspector::Update( EntityID selectedEntity, FScene* scene ) {
+	void EntityInspector::Handle( EntityID selectedEntity, FScene* scene ) {
 
-		FCollapsingHeaderArgs args;
 		ImGui::Begin( "Entity" );
+		if (ImGui::Button( ICON_FA_PENCIL )) {
+			mComponentsCreator.Toggle( true );
+		}
+		ImGui::SameLine( );
+		ImGui::SetNextItemWidth( -1 );
+		SearchField( "##ComponentsSearchField", "Filter fields...", mFieldsFilter.Data( ), mFieldsFilter.MaxSize( ) );
+
+		ImGui::Separator( );
+
 		if (selectedEntity != ecs::skNullEntity) {
+			FCollapsingHeaderArgs args;
 			scene->mEntityMgr.ForEachComponent(
 				selectedEntity,
 				[&]( ecs::detail::BasePool* pool ) {
@@ -16,7 +25,7 @@ namespace lum::editor {
 					bool opened = true;
 
 					args.mFont = Fonts::sDefaultMedium;
-					args.mID = HashStr( pool->GetParseName() );
+					args.mID = HashStr( pool->GetParseName( ) );
 					args.mLabel = pool->GetDisplayName( );
 					CollapsingHeaderCustom( args, opened );
 
@@ -30,6 +39,9 @@ namespace lum::editor {
 
 
 				} );
+
+			mComponentsCreator.Handle( scene, selectedEntity );
+
 		}
 		ImGui::End( );
 

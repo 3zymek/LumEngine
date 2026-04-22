@@ -23,9 +23,15 @@ namespace lum {
 		*  @param src Source string literal.
 		*/
 		template<usize tNewL>
-		explicit FixedString( const char( &src )[ tNewL ] ) noexcept {
+		FixedString( const char( &src )[ tNewL ] ) noexcept {
 			LUM_SASSERT( tNewL <= tL && "String is too big" );
 			std::memcpy( mData, src, tNewL );
+		}
+		FixedString( ccharptr src ) noexcept {
+			usize len = strlen( src );
+			if (len > tL - 1) len = tL - 1;
+			std::memcpy( mData, src, len );
+			mData[ len ] = '\0';
 		}
 
 		FixedString( ) noexcept {
@@ -41,20 +47,50 @@ namespace lum {
 			return *this;
 		}
 
-		FixedString& operator=( const char* src ) noexcept {
+		FixedString& operator=( ccharptr src ) noexcept {
 			usize len = strlen( src );
 			if (len > tL) len = tL - 1;
 			std::memcpy( mData, src, len );
 			mData[ len ] = '\0';
 			return *this;
 		}
-
 		FixedString& operator=( const String& src ) noexcept {
 			usize len = src.length( );
 			if (len > tL) len = tL - 1;
 			std::memcpy( mData, src.data( ), len );
 			mData[ len ] = '\0';
 			return *this;
+		}
+		template<usize tNewL>
+		bool operator!=( const char( &src )[ tNewL ] ) const noexcept {
+			return !(*this == src);
+		}
+		template<usize tNewL>
+		bool operator!=( const FixedString<tNewL>& oth ) const noexcept {
+			return !(*this == oth);
+		}
+		bool operator==( ccharptr src ) const noexcept {
+			return HashStr( src ) == HashStr( mData );
+		}
+		bool operator!=( ccharptr src ) const noexcept {
+			return !(*this == src);
+		}
+		bool operator==( StringView sv ) const noexcept {
+			return HashStr( sv.data( ) ) == HashStr( mData );
+		}
+		operator StringView( ) const noexcept { return StringView( mData, strlen( mData ) ); }
+
+		FixedString& operator+=( ccharptr src ) noexcept {
+			usize curLen = strlen( mData );
+			usize srcLen = strlen( src );
+			usize copyLen = std::min( srcLen, tL - curLen - 1 );
+			std::memcpy( mData + curLen, src, copyLen );
+			mData[ curLen + copyLen ] = '\0';
+			return *this;
+		}
+		template<usize tNewL>
+		FixedString& operator+=( const FixedString<tNewL>& oth ) noexcept {
+			return *this += oth.Data( );
 		}
 
 		char& operator[]( usize index ) {
@@ -81,12 +117,10 @@ namespace lum {
 		}
 
 		usize Find( StringView sv ) const {
-			
 			usize size = strlen( mData );
-
 			if (sv.size( ) > size) return skStrNpos;
-			for (usize i = 0; i <= size; i++) {
-				if (memcmp( &mData, sv.data( ), sv.size( ) )) return i;
+			for (usize i = 0; i <= size - sv.size( ); i++) {
+				if (memcmp( mData + i, sv.data( ), sv.size( ) ) == 0) return i;
 			}
 			return skStrNpos;
 		}
@@ -124,14 +158,14 @@ namespace lum {
 		LUM_FORCEINLINE constexpr usize MaxSize( ) noexcept { return tL; }
 
 		/* @brief Returns a pointer to the underlying null-terminated character buffer. */
-		LUM_FORCEINLINE constexpr const char* Data( ) const { return mData; }
+		LUM_FORCEINLINE constexpr ccharptr Data( ) const { return mData; }
 
-		LUM_FORCEINLINE constexpr char* Data( ) { return mData; }
+		LUM_FORCEINLINE constexpr charptr Data( ) { return mData; }
 
-		char* begin( ) { return mData; }
-		char* end( ) { return mData + strlen( mData ); }
-		const char* begin( ) const { return mData; }
-		const char* end( ) const { return mData + strlen( mData ); }
+		charptr begin( ) { return mData; }
+		charptr end( ) { return mData + strlen( mData ); }
+		ccharptr begin( ) const { return mData; }
+		ccharptr end( ) const { return mData + strlen( mData ); }
 
 	private:
 
