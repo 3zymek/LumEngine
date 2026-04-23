@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/editor_common.hpp"
-#include "core/component_creator.hpp"
+#include "core/entity_editor.hpp"
 #include "core/utils/fixed_string.hpp"
 
 namespace lum::editor {
@@ -13,7 +13,7 @@ namespace lum::editor {
 
 	private:
 
-		ComponentsCreator mComponentsCreator;
+		EntityEditor mEntityEditor;
 
 		FixedString<64> mFieldsFilter;
 

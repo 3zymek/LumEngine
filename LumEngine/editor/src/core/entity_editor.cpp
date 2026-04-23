@@ -1,12 +1,28 @@
-#include "core/entity_creator.hpp"
+#include "core/entity_editor.hpp"
 #include "editor.hpp"
 #include "editor_dep_manager.generated.hpp"
 namespace lum::editor {
 
-	void EntityCreator::Handle( FScene* scene ) {
+	void EntityEditor::Handle( FScene* scene, EntityID entityID ) {
 
 		mActionTooltip.Draw( );
 		if (!bOpened) return;
+
+		if (bFindComponents) {
+			scene->mEntityMgr.ForEachComponent(
+				entityID,
+				[&]( int32 typeID, ecs::BasePool* pool ) {
+					for (auto& [category, entries] : Editor::GetComponentsByCategory( )) {
+						for (auto& entry : entries) {
+							if (entry->mTypeID == typeID)
+								mEntityComponents.push_back( { entry, skOldComponent } );
+						}
+					}
+				} 
+			);
+
+			bFindComponents = false;
+		}
 
 		ImVec2 center = ImGui::GetMainViewport( )->GetCenter( );
 		ImGui::SetNextWindowPos( center, ImGuiCond_Appearing, ImVec2( 0.5f, 0.5f ) );
@@ -16,7 +32,7 @@ namespace lum::editor {
 			ImGuiWindowFlags_NoTitleBar |
 			ImGuiWindowFlags_NoDocking |
 			ImGuiWindowFlags_NoResize;
-
+		
 		ImGui::Begin( "##EntityCreator", &bOpened, flags );
 		ImGui::Text( "LumEngine Entity Creator" );
 		ImGui::Separator( );
@@ -27,15 +43,15 @@ namespace lum::editor {
 			ImGui::TableSetupColumn( "Right", ImGuiTableColumnFlags_WidthStretch, 0.5f );
 
 			ImGui::TableNextColumn( );
-			handle_left_panel( );
+			handle_left_panel( entityID );
 
 			ImGui::TableNextColumn( );
-			handle_right_panel( );
+			handle_right_panel( entityID );
 
 			ImGui::EndTable( );
 		}
 
-		handle_footer( scene );
+		handle_footer( scene, entityID );
 
 		ImGui::End( );
 
@@ -43,7 +59,7 @@ namespace lum::editor {
 
 
 
-	void EntityCreator::handle_left_panel( ) {
+	void EntityEditor::handle_left_panel( EntityID entityID ) {
 
 		ImGui::BeginChild( "##LeftPanel", ImVec2( 0, -mFooterHeight ), true );
 
@@ -62,22 +78,29 @@ namespace lum::editor {
 			ImGui::Indent( 5.0f );
 			for (auto* entry : entries) {
 
-				auto found = std::find( mAddedComponents.begin( ), mAddedComponents.end( ), entry );
-				if (found != mAddedComponents.end( )) continue;
+				{
+					auto it = std::find_if(
+						mEntityComponents.begin( ),
+						mEntityComponents.end( ),
+						[&]( const auto& pair ) { return pair.first == entry; }
+					);
+					if (it != mEntityComponents.end( )) continue;
+				}
 
-				auto it = std::search(
-					entry->mDisplayName.begin( ), entry->mDisplayName.end( ),
-					mComponentsFilter.begin( ), mComponentsFilter.end( ),
-					[]( char a, char b ) { return tolower( a ) == tolower( b ); }
-				);
-
-				if (it == entry->mDisplayName.end( )) continue;
+				{
+					auto it = std::search(
+						entry->mDisplayName.begin( ), entry->mDisplayName.end( ),
+						mComponentsFilter.begin( ), mComponentsFilter.end( ),
+						[]( char a, char b ) { return tolower( a ) == tolower( b ); }
+					);
+					if (it == entry->mDisplayName.end( )) continue;
+				}
 
 				ImGui::TextColored( categoryColor, ICON_FA_CUBE );
 				ImGui::SameLine( );
 
 				if (ImGui::Selectable( entry->mDisplayName.data( ) ))
-					mAddedComponents.push_back( entry );
+					mEntityComponents.push_back( { entry, skNewComponent } );
 
 			}
 			ImGui::Unindent( 5.0f );
@@ -86,73 +109,74 @@ namespace lum::editor {
 		ImGui::EndChild( );
 
 	}
-	void EntityCreator::handle_right_panel( ) {
+	void EntityEditor::handle_right_panel( EntityID entityID ) {
 
 		ImGui::BeginChild( "##RightPanel", ImVec2( 0, -mFooterHeight ), true );
-
-		ImGui::TextDisabled( "Name" );
-		ImGui::SetNextItemWidth( -1 );
-		ImGui::InputText( "##EntityName", mEntityName.Data( ), mEntityName.MaxSize( ) );
-
-		auto it = std::find( mAddedComponents.begin( ), mAddedComponents.end( ), mNameEntry );
-		if (mEntityName.Length( ) > 0) {
-			if(!mNameEntry)
-				mNameEntry = FindComponentEntry( "Name" );
-			if (it == mAddedComponents.end( )) {
-				mAddedComponents.push_back( mNameEntry );
-			}
-		}
-		else {
-			if(it != mAddedComponents.end())
-				mAddedComponents.erase( it );
-		}
-
-		ImGui::Separator( );
-
-		ImGui::TextDisabled( "Added components" );
+		ImGui::TextDisabled( "Entity components" );
 		ImGui::BeginChild( "##AddedList", ImVec2( 0, 150 ), true );
 		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0, 0, 0, 0 ) );
 		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 2, 2 ) );
 
 		char buff[ 6 ]{};
-		for (int32 i = 0; i < mAddedComponents.size( ); ) {
+		for (int32 i = 0; i < mEntityComponents.size( ); i++ ) {
 			FormatString( buff, "%c##%d", '-', i );
+
+			std::pair<const EditorComponentEntry*, bool>& pair = mEntityComponents[ i ];
+			
+			if (pair.second == skNewComponent) continue;
 
 			ImGui::SetNextItemWidth( 16.0f );
 			if (ImGui::Button( buff, ImVec2( 19, 19 ) )) {
-				mAddedComponents.erase( mAddedComponents.begin( ) + i );
+				mEntityComponents.erase( mEntityComponents.begin( ) + i );
 				continue;
 			}
 			ImGui::SameLine( );
-			const EditorComponentEntry* entry = mAddedComponents[ i ];
-			ImGui::TextColored( GetCategoryColor( entry->mCategoryName ), entry->mDisplayName.data( ) );
+			ImGui::TextColored( GetCategoryColor( pair.first->mCategoryName ), pair.first->mDisplayName.data( ) );
 
-			++i;
 		}
 
 		ImGui::PopStyleVar( );
 		ImGui::PopStyleColor( );
 
-		if (mAddedComponents.empty( )) {
-			ImGui::TextDisabled( "Click component on the left to add" );
+		ImGui::EndChild( );
+
+		ImGui::Separator( );
+
+		ImGui::TextDisabled( "Newly added components" );
+		ImGui::PushStyleColor( ImGuiCol_Border, ImVec4( 0.2f, 0.7f, 0.3f, 0.6f ) );
+		ImGui::BeginChild( "##AddingList", ImVec2( 0, 150 ), true );
+		ImGui::PopStyleColor( );
+		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0, 0, 0, 0 ) );
+		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 2, 2 ) );
+
+		for (int32 i = 0; i < mEntityComponents.size( ); i++) {
+			FormatString( buff, "%c##%d", '-', i );
+
+			std::pair<const EditorComponentEntry*, bool>& pair = mEntityComponents[ i ];
+
+			if (pair.second == skOldComponent) continue;
+			
+			ImGui::SetNextItemWidth( 16.0f );
+			if (ImGui::Button( buff, ImVec2( 19, 19 ) )) {
+				mEntityComponents.erase( mEntityComponents.begin( ) + i );
+				continue;
+			}
+			ImGui::SameLine( );
+			ImGui::TextColored( GetCategoryColor( pair.first->mCategoryName ), pair.first->mDisplayName.data( ) );
+
 		}
+
+		ImGui::PopStyleVar( );
+		ImGui::PopStyleColor( );
 
 		ImGui::EndChild( );
 
 		ImGui::Separator( );
 
-		ImGui::TextDisabled( "Parent entity" );
-		static char parent[ 64 ]{};
-		ImGui::InputText( "##Parent", parent, sizeof( parent ), ImGuiInputTextFlags_ReadOnly );
-		ImGui::SameLine( );
-		ImGui::Button( "Pick" );
-
-		ImGui::TextDisabled( "Transform is NOT inherited (for now)" );
-
 		ImGui::EndChild( );
 
 	}
-	void EntityCreator::handle_footer( FScene* scene ) {
+	void EntityEditor::handle_footer( FScene* scene, EntityID entityID ) {
 
 		float32 avail = ImGui::GetContentRegionAvail( ).x;
 		float32 btnW = 80.0f * 2 + ImGui::GetStyle( ).ItemSpacing.x;
@@ -176,37 +200,33 @@ namespace lum::editor {
 		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4( 0.42f, 0.37f, 0.88f, 1.0f ) );
 		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4( 0.30f, 0.26f, 0.75f, 1.0f ) );
 		ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 0.92f, 0.90f, 1.00f, 1.0f ) );
-		if (ImGui::Button( "Create", ImVec2( 80, 32 ) )) {
+		if (ImGui::Button( "Apply", ImVec2( 80, 32 ) )) {
 
-			handle_creation( scene );
+			handle_apply( scene, entityID );
 
 		}
 		ImGui::PopStyleColor( 4 );
 		ImGui::PopStyleVar( ); // Frame rounding
 
 	}
-	void EntityCreator::handle_creation( FScene* scene ) {
+	void EntityEditor::handle_apply( FScene* scene, EntityID entityID ) {
 
-		Entity newEntity;
-		const EditorComponentEntry* entry = FindComponentEntry( "Name" );
-		auto it = std::find( mAddedComponents.begin( ), mAddedComponents.end( ), entry );
-		if (it != mAddedComponents.end( )) {
-			scene->mEntityMgr.AddComponent( newEntity, CName{ .mName = mEntityName.Data( ) } );
-			mAddedComponents.erase( it );
+		for (auto& pair : mEntityComponents) {
+
+			if (pair.second == skOldComponent) continue;
+
+			pair.first->mCreateFn( scene->mEntityMgr, entityID );
+
 		}
-		for (auto& comp : mAddedComponents) {
-			comp->mCreateFn( scene->mEntityMgr, newEntity.GetID( ) );
-		}
-		scene->mEntities.push_back( newEntity.GetID( ) );
-		bOpened = false;
-		mAddedComponents.clear( );
+
+		handle_closing( );
 
 	}
-	void EntityCreator::handle_closing( ) {
+	void EntityEditor::handle_closing( ) {
 		bOpened = false;
-		mAddedComponents.clear( );
+		mEntityComponents.clear( );
 		mComponentsFilter.Clear( );
-		mEntityName.Clear( );
+		bFindComponents = true;
 	}
 
 }

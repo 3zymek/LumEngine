@@ -11,7 +11,7 @@
 
 namespace lum::ecs { class MEntityManager; }
 
-namespace lum::ecs::detail {
+namespace lum::ecs {
 
 	/* @brief Type-erased base for all component pools.
 	*
@@ -27,69 +27,73 @@ namespace lum::ecs::detail {
 		virtual ~BasePool( ) { }
 	};
 
-	/* @brief Typed component pool backed by a SparseSet.
-	*
-	* Stores components of type tType indexed by EntityID.
-	* Provides O(1) add, remove, lookup and cache-friendly iteration.
-	* Each component type has its own pool managed by MEntityManager.
-	*
-	* @tparam tType Component type. Must satisfy the Component concept.
-	*/
-	template<Component tType>
-	class ComponentPool : public BasePool {
-	public:
+	namespace detail {
 
-		friend class MEntityManager;
-
-		/* @brief Adds a component to the given entity.
-		* If the entity already has this component, returns the existing one.
-		* @param entityID Target entity ID.
-		* @param component Component value to store.
-		* @return Reference to the stored component.
+		/* @brief Typed component pool backed by a SparseSet.
+		*
+		* Stores components of type tType indexed by EntityID.
+		* Provides O(1) add, remove, lookup and cache-friendly iteration.
+		* Each component type has its own pool managed by MEntityManager.
+		*
+		* @tparam tType Component type. Must satisfy the Component concept.
 		*/
-		tType& Add( EntityID entityID, tType component ) {
-			if (!Has( entityID ))
-				mComponents.Append( component, entityID );
-			return mComponents[ entityID ];
-		}
+		template<Component tType>
+		class ComponentPool : public BasePool {
+		public:
 
-		/* @brief Returns a pointer to the component on the given entity.
-		* @param entityID Target entity ID.
-		* @return Pointer to component, or nullptr if not present.
-		*/
-		tType* Get( EntityID entityID ) {
-			return mComponents.Get( entityID );
-		}
+			friend class MEntityManager;
 
-		/* @brief Removes the component from the given entity.
-		* @param entityID Target entity ID.
-		*/
-		void Remove( EntityID& entityID ) override {
-			mComponents.Remove( entityID );
-			entityID = skNullEntity;
-		}
+			/* @brief Adds a component to the given entity.
+			* If the entity already has this component, returns the existing one.
+			* @param entityID Target entity ID.
+			* @param component Component value to store.
+			* @return Reference to the stored component.
+			*/
+			tType& Add( EntityID entityID, tType component ) {
+				if (!Has( entityID ))
+					mComponents.Append( component, entityID );
+				return mComponents[ entityID ];
+			}
 
-		bool Contains( EntityID entityID ) override {
-			return Has( entityID );
-		}
+			/* @brief Returns a pointer to the component on the given entity.
+			* @param entityID Target entity ID.
+			* @return Pointer to component, or nullptr if not present.
+			*/
+			tType* Get( EntityID entityID ) {
+				return mComponents.Get( entityID );
+			}
 
-		/* @brief Checks whether the given entity has this component.
-		* @param entityID Target entity ID.
-		* @return True if the component exists on the entity.
-		*/
-		bool Has( EntityID entityID ) {
-			return mComponents.Contains( entityID );
-		}
+			/* @brief Removes the component from the given entity.
+			* @param entityID Target entity ID.
+			*/
+			void Remove( EntityID& entityID ) override {
+				mComponents.Remove( entityID );
+				entityID = skNullEntity;
+			}
 
-		StringView GetParseName( ) override { return GetComponentParseName<tType>( ); }
-		StringView GetDisplayName( ) override { return GetComponentDisplayName<tType>( ); }
-		StringView GetCategoryName( ) override { return GetComponentCategoryName<tType>( ); }
+			bool Contains( EntityID entityID ) override {
+				return Has( entityID );
+			}
+
+			/* @brief Checks whether the given entity has this component.
+			* @param entityID Target entity ID.
+			* @return True if the component exists on the entity.
+			*/
+			bool Has( EntityID entityID ) {
+				return mComponents.Contains( entityID );
+			}
+
+			StringView GetParseName( ) override { return GetComponentParseName<tType>( ); }
+			StringView GetDisplayName( ) override { return GetComponentDisplayName<tType>( ); }
+			StringView GetCategoryName( ) override { return GetComponentCategoryName<tType>( ); }
 
 
-	protected:
+		protected:
 
-		cstd::SparseSet<EntityID, tType> mComponents{ limits::gMaxEntity };
+			cstd::SparseSet<EntityID, tType> mComponents{ limits::gMaxEntity };
 
-	};
+		};
 
-} // namespace lum::ecs::detail
+	} // namespace lum::ecs::detail
+
+} // namespace lum::ecs

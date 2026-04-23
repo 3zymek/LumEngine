@@ -6,14 +6,15 @@
 
 namespace lum::editor {
 
-	namespace detail { 
-		using EditorFn = void(*)(ecs::MEntityManager&, EntityID); 
+	namespace detail {
+		using EditorFn = void(*)(ecs::MEntityManager&, EntityID);
 	}
 	struct EditorComponentEntry {
 		detail::EditorFn mEditorFn = {};
 		detail::EditorFn mCreateFn = {};
 		StringView mDisplayName = {};
 		StringView mCategoryName = {};
+		ComponentTypeID mTypeID = 0;
 	};
 
 	const EditorComponentEntry* FindComponentEntry( StringView name );

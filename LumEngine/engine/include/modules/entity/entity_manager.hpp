@@ -173,7 +173,7 @@ namespace lum {
 			void ForEachComponent( EntityID id, tCallback&& callback ) {
 				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
 					if (mComponentPools[ i ] && mComponentPools[ i ]->Contains( id )) {
-						callback( mComponentPools[ i ] );
+						callback( i, mComponentPools[ i ] );
 					}
 				}
 			}
@@ -189,7 +189,7 @@ namespace lum {
 		private:
 
 			/* @brief Array of component pools indexed by component type ID. */
-			detail::BasePool* mComponentPools[ limits::gMaxComponentTypes ];
+			BasePool* mComponentPools[ limits::gMaxComponentTypes ];
 
 			ev::EventBus* mEventBus = nullptr;
 

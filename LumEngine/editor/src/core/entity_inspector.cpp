@@ -8,7 +8,7 @@ namespace lum::editor {
 
 		ImGui::Begin( "Entity" );
 		if (ImGui::Button( ICON_FA_PENCIL )) {
-			mComponentsCreator.Toggle( true );
+			mEntityEditor.Toggle( true );
 		}
 		ImGui::SameLine( );
 		ImGui::SetNextItemWidth( -1 );
@@ -20,7 +20,7 @@ namespace lum::editor {
 			FCollapsingHeaderArgs args;
 			scene->mEntityMgr.ForEachComponent(
 				selectedEntity,
-				[&]( ecs::detail::BasePool* pool ) {
+				[&]( int32 typeID, ecs::BasePool* pool ) {
 
 					bool opened = true;
 
@@ -40,7 +40,7 @@ namespace lum::editor {
 
 				} );
 
-			mComponentsCreator.Handle( scene, selectedEntity );
+			mEntityEditor.Handle( scene, selectedEntity );
 
 		}
 		ImGui::End( );

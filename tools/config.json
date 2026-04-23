@@ -34,6 +34,7 @@
     "editor_fn_getter_check": "if(!{Var}) return;",
     "editor_fn_registry": "RegisterEditorComponents( std::unordered_map<uint64, EditorComponentEntry>& {Param} )",
     "editor_fn_registry_add_fn": "[]( ecs::MEntityManager& mgr, EntityID id ) { mgr.AddComponent<{ClassName}>( id ); }",
+    "editor_fn_registry_typeid": "GenerateTypeID::Get<{ClassName}>()",
 
     "get_parse_name_namespace": "lum::ecs::detail",
     "get_parse_name_signature": "GetComponentParseName<{ClassName}>()",

@@ -18,6 +18,7 @@ namespace lum {
 
 	/* @brief Unique identifier for an entity. */
 	using EntityID = uint64;
+	using ComponentTypeID = usize;
 
 	/* @brief Entity Component System namespace.
 	*  Provides core ECS primitives including entity management,
