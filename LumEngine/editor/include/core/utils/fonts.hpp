@@ -4,6 +4,7 @@
 
 namespace lum::editor {
 	struct Fonts {
+
         inline static ImFont* sDefaultSuperSmall = nullptr;
 		inline static ImFont* sDefaultSmall = nullptr;
         inline static ImFont* sDefaultMedium = nullptr;

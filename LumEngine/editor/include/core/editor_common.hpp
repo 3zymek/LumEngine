@@ -10,8 +10,9 @@ namespace lum::editor {
 		using EditorFn = void(*)(ecs::MEntityManager&, EntityID);
 	}
 	struct EditorComponentEntry {
-		detail::EditorFn mEditorFn = {};
+		detail::EditorFn mDisplayFn = {};
 		detail::EditorFn mCreateFn = {};
+		detail::EditorFn mDeleteFn = {};
 		StringView mDisplayName = {};
 		StringView mCategoryName = {};
 		ComponentTypeID mTypeID = 0;

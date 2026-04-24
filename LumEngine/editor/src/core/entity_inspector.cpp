@@ -1,15 +1,24 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: UI panel for inspecting and editing components of a selected entity.
+//
+//=============================================================================//
+
 #include "core/entity_inspector.hpp"
-#include "editor_dep_manager.generated.hpp"
 #include "editor.hpp"
 
 namespace lum::editor {
+
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
 
 	void EntityInspector::Handle( EntityID selectedEntity, FScene* scene ) {
 
 		ImGui::Begin( "Entity" );
 		if (ImGui::Button( ICON_FA_PENCIL )) {
 			mEntityEditor.Toggle( true );
-		}
+		} TooltipOnHover( "Edit entity" );
 		ImGui::SameLine( );
 		ImGui::SetNextItemWidth( -1 );
 		SearchField( "##ComponentsSearchField", "Filter fields...", mFieldsFilter.Data( ), mFieldsFilter.MaxSize( ) );
@@ -33,7 +42,7 @@ namespace lum::editor {
 						const ComponentsEntriesMap& map = Editor::GetComponentsEntries( );
 						auto it = map.find( HashStr( pool->GetParseName( ) ) );
 						if (it != map.end( )) {
-							it->second.mEditorFn( scene->mEntityMgr, selectedEntity );
+							it->second.mDisplayFn( scene->mEntityMgr, selectedEntity );
 						}
 					}
 

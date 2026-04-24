@@ -1,7 +1,18 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: UI dialog for creating new entities with a custom component set.
+//
+//=============================================================================//
+
 #include "core/entity_creator.hpp"
 #include "editor.hpp"
 #include "editor_dep_manager.generated.hpp"
+
 namespace lum::editor {
+
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
 
 	void EntityCreator::Handle( FScene* scene ) {
 
@@ -42,6 +53,9 @@ namespace lum::editor {
 	}
 
 
+	//---------------------------------------------------------
+	// Private
+	//---------------------------------------------------------
 
 	void EntityCreator::handle_left_panel( ) {
 
@@ -62,16 +76,19 @@ namespace lum::editor {
 			ImGui::Indent( 5.0f );
 			for (auto* entry : entries) {
 
-				auto found = std::find( mAddedComponents.begin( ), mAddedComponents.end( ), entry );
-				if (found != mAddedComponents.end( )) continue;
+				{
+					auto it = std::find( mAddedComponents.begin( ), mAddedComponents.end( ), entry );
+					if (it != mAddedComponents.end( )) continue;
+				}
 
-				auto it = std::search(
-					entry->mDisplayName.begin( ), entry->mDisplayName.end( ),
-					mComponentsFilter.begin( ), mComponentsFilter.end( ),
-					[]( char a, char b ) { return tolower( a ) == tolower( b ); }
-				);
-
-				if (it == entry->mDisplayName.end( )) continue;
+				{
+					auto it = std::search(
+						entry->mDisplayName.begin( ), entry->mDisplayName.end( ),
+						mComponentsFilter.begin( ), mComponentsFilter.end( ),
+						[]( char a, char b ) { return tolower( a ) == tolower( b ); }
+					);
+					if (it == entry->mDisplayName.end( )) continue;
+				}
 
 				ImGui::TextColored( categoryColor, ICON_FA_CUBE );
 				ImGui::SameLine( );

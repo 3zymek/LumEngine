@@ -1,13 +1,24 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: UI dialog for inspecting and editing components of an existing entity.
+//
+//=============================================================================//
+
 #include "core/entity_editor.hpp"
 #include "editor.hpp"
 #include "editor_dep_manager.generated.hpp"
+
 namespace lum::editor {
+
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
 
 	void EntityEditor::Handle( FScene* scene, EntityID entityID ) {
 
 		mActionTooltip.Draw( );
 		if (!bOpened) return;
-
+		
 		if (bFindComponents) {
 			scene->mEntityMgr.ForEachComponent(
 				entityID,
@@ -18,7 +29,7 @@ namespace lum::editor {
 								mEntityComponents.push_back( { entry, skOldComponent } );
 						}
 					}
-				} 
+				}
 			);
 
 			bFindComponents = false;
@@ -32,7 +43,7 @@ namespace lum::editor {
 			ImGuiWindowFlags_NoTitleBar |
 			ImGuiWindowFlags_NoDocking |
 			ImGuiWindowFlags_NoResize;
-		
+
 		ImGui::Begin( "##EntityCreator", &bOpened, flags );
 		ImGui::Text( "LumEngine Entity Creator" );
 		ImGui::Separator( );
@@ -58,6 +69,10 @@ namespace lum::editor {
 	}
 
 
+
+	//---------------------------------------------------------
+	// Private
+	//---------------------------------------------------------
 
 	void EntityEditor::handle_left_panel( EntityID entityID ) {
 
@@ -118,17 +133,21 @@ namespace lum::editor {
 		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 2, 2 ) );
 
 		char buff[ 6 ]{};
-		for (int32 i = 0; i < mEntityComponents.size( ); i++ ) {
+		for (int32 i = 0; i < mEntityComponents.size( ); i++) {
 			FormatString( buff, "%c##%d", '-', i );
 
 			std::pair<const EditorComponentEntry*, bool>& pair = mEntityComponents[ i ];
-			
+
 			if (pair.second == skNewComponent) continue;
 
 			ImGui::SetNextItemWidth( 16.0f );
 			if (ImGui::Button( buff, ImVec2( 19, 19 ) )) {
-				mEntityComponents.erase( mEntityComponents.begin( ) + i );
+
+				auto it = mEntityComponents.begin( ) + i;
+				mComponentsToDelete.push_back( it->first );
+				mEntityComponents.erase( it );
 				continue;
+
 			}
 			ImGui::SameLine( );
 			ImGui::TextColored( GetCategoryColor( pair.first->mCategoryName ), pair.first->mDisplayName.data( ) );
@@ -155,11 +174,13 @@ namespace lum::editor {
 			std::pair<const EditorComponentEntry*, bool>& pair = mEntityComponents[ i ];
 
 			if (pair.second == skOldComponent) continue;
-			
+
 			ImGui::SetNextItemWidth( 16.0f );
 			if (ImGui::Button( buff, ImVec2( 19, 19 ) )) {
+
 				mEntityComponents.erase( mEntityComponents.begin( ) + i );
 				continue;
+
 			}
 			ImGui::SameLine( );
 			ImGui::TextColored( GetCategoryColor( pair.first->mCategoryName ), pair.first->mDisplayName.data( ) );
@@ -219,6 +240,12 @@ namespace lum::editor {
 
 		}
 
+		for (auto& comp : mComponentsToDelete) {
+
+			comp->mDeleteFn( scene->mEntityMgr, entityID );
+
+		}
+
 		handle_closing( );
 
 	}
@@ -226,6 +253,7 @@ namespace lum::editor {
 		bOpened = false;
 		mEntityComponents.clear( );
 		mComponentsFilter.Clear( );
+		mComponentsToDelete.clear( );
 		bFindComponents = true;
 	}
 

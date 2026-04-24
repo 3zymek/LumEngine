@@ -1,5 +1,6 @@
 #pragma once
 #include "core/editor_common.hpp"
+#include "core/utils/fixed_string.hpp"
 
 namespace lum::editor {
 
@@ -7,11 +8,12 @@ namespace lum::editor {
 	public:
 
 		void Update( StringView root );
-		void DrawDirectory( const std::filesystem::path& path );
 
 	private:
 
+		FixedString<64> mFileFilter;
 
+		void draw_directory( const std::filesystem::path& path );
 
 	};
 

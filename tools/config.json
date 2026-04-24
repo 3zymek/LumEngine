@@ -35,6 +35,7 @@
     "editor_fn_registry": "RegisterEditorComponents( std::unordered_map<uint64, EditorComponentEntry>& {Param} )",
     "editor_fn_registry_add_fn": "[]( ecs::MEntityManager& mgr, EntityID id ) { mgr.AddComponent<{ClassName}>( id ); }",
     "editor_fn_registry_typeid": "GenerateTypeID::Get<{ClassName}>()",
+    "editor_fn_registry_remove_fn": "[]( ecs::MEntityManager& mgr, EntityID id ) { mgr.RemoveComponent<{ClassName}>( id ); }",
 
     "get_parse_name_namespace": "lum::ecs::detail",
     "get_parse_name_signature": "GetComponentParseName<{ClassName}>()",

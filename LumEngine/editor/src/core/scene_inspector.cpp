@@ -1,9 +1,18 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: UI panel for browsing, selecting and managing scene entities.
+//
+//=============================================================================//
+
 #include "core/scene_inspector.hpp"
-#include "scene/scene_manager.hpp"
 #include "entity/components/name.hpp"
 #include "core/utils/style.hpp"
-#include "core/editor_common.hpp"
+
 namespace lum::editor {
+
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
 
 	void SceneInspector::Update( FScene* scene ) {
 
@@ -13,7 +22,7 @@ namespace lum::editor {
 
 		if (ImGui::Button( ICON_FA_PLUS )) {
 			mEntityCreator.Toggle( true );
-		}
+		} TooltipOnHover( "Add entity" );
 		ImGui::SameLine( );
 
 		ImGui::PushItemWidth( -1 );
