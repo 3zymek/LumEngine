@@ -191,7 +191,7 @@ namespace lum {
 	* @param str String view to hash.
 	* @return 64-bit hash of the input string.
 	*/
-	inline uint64 HashStr( StringView str ) noexcept {
+	inline constexpr uint64 HashStr( StringView str ) noexcept {
 		return cstd::StringHasher::Hash( str );
 	}
 

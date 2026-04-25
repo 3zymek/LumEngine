@@ -39,7 +39,7 @@ namespace lum::cstd {
 		}
 
 		// Runtime hash for StringView.
-		inline static HashedStr Hash( StringView str ) noexcept {
+		inline constexpr static HashedStr Hash( StringView str ) noexcept {
 
 			HashedStr h = skFNV1AOffset;
 
