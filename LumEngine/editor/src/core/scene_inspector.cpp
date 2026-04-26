@@ -52,10 +52,10 @@ namespace lum::editor {
 
 			if (it == label + len) continue;
 
-			float32 height = ImGui::GetTextLineHeightWithSpacing( );
-			ImVec2 pos = ImGui::GetCursorScreenPos( );
-			float32 width = ImGui::GetContentRegionAvail( ).x;
-			bool hovered = ImGui::IsMouseHoveringRect( pos, ImVec2( pos.x + width, pos.y + height ) );
+			const float32 height = ImGui::GetTextLineHeightWithSpacing( );
+			const ImVec2 pos = ImGui::GetCursorScreenPos( );
+			const float32 width = ImGui::GetContentRegionAvail( ).x;
+			const bool hovered = ImGui::IsMouseHoveringRect( pos, ImVec2( pos.x + width, pos.y + height ) );
 
 			if (entity == mSelectedEntity)
 				DrawRowBackground( style::skItemSelected );
@@ -79,8 +79,6 @@ namespace lum::editor {
 				mSelectedEntity = entity;
 			}
 			if (selected) {
-				ImVec2 min = ImGui::GetItemRectMin( );
-				ImVec2 max = ImGui::GetItemRectMax( );
 				ImGui::GetWindowDrawList( )->AddRectFilled(
 					ImVec2( pos.x + 2.0f, pos.y + 2.0f ),
 					ImVec2( pos.x + 5.0f, pos.y + 16.5f ),

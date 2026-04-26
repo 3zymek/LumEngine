@@ -28,100 +28,88 @@ namespace lum::editor {
 
 		ImDrawList* dl = ImGui::GetWindowDrawList( );
 
+		int32 iteration = 0;
+		char buffer[ 256 ];
 		for (const auto& entry : std::filesystem::directory_iterator( path )) {
 
+			const std::filesystem::path entryPath = entry.path( );
 			const bool isDir = entry.is_directory( );
-			const String name = entry.path( ).filename( ).string( );
+			FileIconInfo iconInfo = GetFileIcon( entryPath, isDir );
 
-			if (mFileFilter.Length( ) > 0 && !isDir) {
-				const auto it = std::search(
-					name.begin( ), name.end( ),
-					mFileFilter.begin( ), mFileFilter.end( ),
-					[]( char a, char b ) { return tolower( a ) == tolower( b ); }
-				);
-				if (it == name.end( )) continue;
-			}
-
-			FileIconInfo iconInfo = GetFileIcon( path, isDir );
-			const ImU32 iconColor = ImGui::ColorConvertFloat4ToU32( iconInfo.mColor );
-			const float32 iconWidth = ImGui::CalcTextSize( iconInfo.mIcon ).x + 4.f;
-			const float32 itemHeight = ImGui::GetTextLineHeightWithSpacing( );
-			const ImVec2 pos = ImGui::GetCursorScreenPos( );
-			const float32 width = ImGui::GetContentRegionAvail( ).x;
-			const bool hovered = ImGui::IsMouseHoveringRect( pos, ImVec2( pos.x + width, pos.y + itemHeight ) );
-			const bool selected = (mSelectedPath == entry.path( ));
-
-			if (selected)
-				DrawRowBackground( style::skItemSelected );
-			else if (hovered)
-				DrawRowBackground( style::skItemHovered );
-
-			ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0, 0, 0, 0 ) );
-			ImGui::PushStyleColor( ImGuiCol_HeaderHovered, ImVec4( 0, 0, 0, 0 ) );
-			ImGui::PushStyleColor( ImGuiCol_HeaderActive, ImVec4( 0, 0, 0, 0 ) );
-			ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 12.0f, 4.0f ) );
-
+			FormatString( buffer, "%s %s", iconInfo.mIcon, entryPath.filename( ).string( ).c_str( ) );
 			if (isDir) {
 
-				ImVec2 iconPos = ImGui::GetCursorScreenPos( );
-				iconPos.y += (itemHeight - ImGui::GetTextLineHeight( )) * 0.5f;
-				ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) + iconWidth );
+				const bool selected = mSelectedPath == entryPath;
+				const ImVec2 pos = ImGui::GetCursorScreenPos( );
+				const float32 width = ImGui::GetContentRegionAvail( ).x;
+				const float32 height = ImGui::GetTextLineHeightWithSpacing( );
+				const bool hovered = ImGui::IsMouseHoveringRect( pos, ImVec2( pos.x + width, pos.y + height ) );
 
-				bool open = ImGui::TreeNodeEx( name.c_str( ),
-											   ImGuiTreeNodeFlags_SpanFullWidth |
-											   ImGuiTreeNodeFlags_FramePadding
-				);
+				if (selected)
+					DrawRowBackground( style::skItemSelected );
+				else if (hovered)
+					DrawRowBackground( style::skItemHovered );
+				else
+					DrawRowBackground( style::skBg );
 
-				dl->AddText( iconPos, iconColor, iconInfo.mIcon );
+				ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0, 0, 0, 0 ) );
+				ImGui::PushStyleColor( ImGuiCol_HeaderHovered, ImVec4( 0, 0, 0, 0 ) );
+				ImGui::PushStyleColor( ImGuiCol_HeaderActive, ImVec4( 0, 0, 0, 0 ) );
 
-				if (selected) {
-					dl->AddRectFilled(
-						ImVec2( pos.x + 2.f, pos.y + 2.f ),
-						ImVec2( pos.x + 5.f, pos.y + 16.5f ),
-						ImGui::ColorConvertFloat4ToU32( style::skAccentActive ),
-						1.f
-					);
-				}
+				bool open = ImGui::TreeNodeEx( buffer, ImGuiTreeNodeFlags_SpanFullWidth );
 
-				if (ImGui::IsItemClicked( ))
-					mSelectedPath = entry.path( );
+				if (ImGui::IsItemClicked( ) && !ImGui::IsItemToggledOpen( ))
+					mSelectedPath = entryPath;
 
-				ImGui::PopStyleVar( );
 				ImGui::PopStyleColor( 3 );
 
 				if (open) {
-					draw_directory( entry.path( ) );
+					draw_directory( entryPath );
 					ImGui::TreePop( );
 				}
 
 			}
 			else {
 
-				const float32 indent = ImGui::GetTreeNodeToLabelSpacing( );
-				ImGui::SetCursorPosY( ImGui::GetCursorPosY( ) + (itemHeight - ImGui::GetTextLineHeight( )) * 0.5f );
-				ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) + indent + iconWidth );
+				float32 indent = ImGui::GetTreeNodeToLabelSpacing( );
+				ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) + indent );
 
-				if (ImGui::Selectable( name.c_str( ), selected, ImGuiSelectableFlags_None, ImVec2( 0, itemHeight ) ))
-					mSelectedPath = entry.path( );
+				const bool selected = mSelectedPath == entryPath ? true : false;
+				const ImVec2 pos = ImGui::GetCursorScreenPos( );
+				const float32 width = ImGui::GetContentRegionAvail( ).x;
+				const float32 height = ImGui::GetTextLineHeightWithSpacing( );
+				const bool hovered = ImGui::IsMouseHoveringRect( pos, ImVec2( pos.x + width, pos.y + height ) );
 
-				ImVec2 iconPos = ImGui::GetItemRectMin( );
-				iconPos.x -= iconWidth;
-				iconPos.y += (ImGui::GetItemRectSize( ).y - ImGui::GetTextLineHeight( )) * 0.5f;
-				dl->AddText( iconPos, iconColor, iconInfo.mIcon );
+				if (selected)
+					DrawRowBackground( style::skItemSelected );
+				else if (hovered)
+					DrawRowBackground( style::skItemHovered );
+				else
+					DrawRowBackground( style::skBg );
 
-				if (selected) {
-					dl->AddRectFilled(
-						ImVec2( pos.x, pos.y ),
-						ImVec2( pos.x + 5.f, pos.y + 16.5f ),
-						ImGui::ColorConvertFloat4ToU32( style::skAccentActive ),
-						1.f
-					);
+
+				ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0, 0, 0, 0 ) );
+				ImGui::PushStyleColor( ImGuiCol_HeaderHovered, ImVec4( 0, 0, 0, 0 ) );
+				ImGui::PushStyleColor( ImGuiCol_HeaderActive, ImVec4( 0, 0, 0, 0 ) );
+
+				ImGui::SetCursorPosY( ImGui::GetCursorPosY( ) + (height - ImGui::GetTextLineHeight( )) * 0.5f );
+
+				if (ImGui::Selectable( buffer, selected )) {
+					mSelectedPath = entryPath;
 				}
-
-				ImGui::PopStyleVar( );
 				ImGui::PopStyleColor( 3 );
+				DrawPopupContext( {
+					.mItems = {
+						{ ICON_FA_TRASH,  "Delete", "Del",    [&]( ) {  }},
+						{ ICON_FA_PENCIL, "Rename", "F2",     [&]( ) {  }},
+						{ ICON_FA_FILES_O,"Copy",   "Ctrl+C", [&]( ) {  }},
+					}
+				} ); 
 
 			}
+
+			iteration++;
+
 		}
 
 	}
