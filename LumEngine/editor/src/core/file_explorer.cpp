@@ -97,14 +97,22 @@ namespace lum::editor {
 				if (ImGui::Selectable( buffer, selected )) {
 					mSelectedPath = entryPath;
 				}
+				if (ImGui::BeginDragDropSource( )) {
+
+					const String& path = entryPath.string( );
+					ImGui::SetDragDropPayload( "FILE", path.data(), path.size() + 1 );
+					ImGui::Text( entryPath.filename( ).string().c_str( ) );
+					ImGui::EndDragDropSource( );
+
+				}
 				ImGui::PopStyleColor( 3 );
 				DrawPopupContext( {
 					.mItems = {
-						{ ICON_FA_TRASH,  "Delete", "Del",    [&]( ) {  }},
-						{ ICON_FA_PENCIL, "Rename", "F2",     [&]( ) {  }},
-						{ ICON_FA_FILES_O,"Copy",   "Ctrl+C", [&]( ) {  }},
+						{ ICON_FA_TRASH,  "Delete", "Del",    [&]( ) { }},
+						{ ICON_FA_PENCIL, "Rename", "F2",     [&]( ) { }},
+						{ ICON_FA_FILES_O,"Copy",   "Ctrl+C", [&]( ) { }},
 					}
-				} ); 
+								  } );
 
 			}
 

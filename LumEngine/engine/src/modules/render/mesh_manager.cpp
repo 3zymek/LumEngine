@@ -69,8 +69,8 @@ namespace lum {
 		if (!data) {
 			LUM_LOG_ERROR( "Failed to load model %s: %s", path, AssetLoader::GetErrorMessage( ) );
 			FMeshData fallback;
-			fallback.mVertices = mBasicVertices;
-			fallback.mIndices = mBasicIndices;
+			fallback.mVertices = mDefaultVertices;
+			fallback.mIndices = mDefaultIndices;
 			data = fallback;
 		}
 
@@ -184,8 +184,8 @@ namespace lum {
 		{ // Default mesh
 
 			FMeshData data;
-			data.mVertices = mBasicVertices;
-			data.mIndices = mBasicIndices;
+			data.mVertices = mDefaultVertices;
+			data.mIndices = mDefaultIndices;
 
 			detail::FRenderResources res = upload_gpu( detail::MeshType::Static, data );
 

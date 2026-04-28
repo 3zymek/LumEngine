@@ -15,8 +15,10 @@ namespace lum {
 	*/
 	LCLASS( Category = "RENDERING" ) struct CStaticMesh : public Component {
 
-		LPROPERTY( )
+		LPROPERTY( Droppable = "FILE" )
 		String mPath;
+
+		String mLastLoadedPath = "";
 
 		/* @brief Handle to the static mesh asset registered in MMeshManager. */
 		StaticMeshHandle mHandle;

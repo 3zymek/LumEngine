@@ -69,7 +69,7 @@ namespace lum {
 			value ? mState.Enable( WindowFlags::Floating ) : mState.Disable( WindowFlags::Floating );
 		}
 	}
-	void Window::ToggleVisibility( bool value ) { 
+	void Window::ToggleVisibility( bool value ) {
 		if (mState.Has( WindowFlags::Invisible ) != value) {
 			if (value) {
 				glfwShowWindow( mWindow );
@@ -166,6 +166,19 @@ namespace lum {
 			glfwWindowHint( GLFW_VISIBLE, GLFW_FALSE );
 
 		mWindow = glfwCreateWindow( desc.mWidth, desc.mHeight, desc.mTitle.c_str( ), nullptr, nullptr );
+
+		if (desc.mIconData.has_value( )) {
+
+			const auto& icon = desc.mIconData.value( );
+
+			GLFWimage image;
+			image.pixels = const_cast< unsigned char* >(icon.mPixels.data( ));
+			image.height = icon.mHeight;
+			image.width = icon.mWidth;
+
+			glfwSetWindowIcon( mWindow, 1, &image );
+
+		}
 
 		mWidth = desc.mWidth;
 		mHeight = desc.mHeight;

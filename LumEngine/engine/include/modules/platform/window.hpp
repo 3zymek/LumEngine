@@ -7,6 +7,7 @@
 #include "core/types.hpp"
 #include "core/utils/flags.hpp"
 #include "rhi/rhi_pch.hpp"
+#include "core/utils/asset_loader.hpp"
 
 namespace lum {
 
@@ -29,6 +30,7 @@ namespace lum {
 	struct WindowDescriptor {
 		Flags<WindowFlags> mFlags = {};
 		String mTitle = "LumEngine";			/* @brief Window title bar text. */
+		std::optional<FTextureData> mIconData = std::nullopt; /* Optional loaded icon texture data. */
 		uint32 mHeight = 500;					/* @brief Initial window height in pixels. */
 		uint32 mWidth = 500;					/* @brief Initial window width in pixels. */
 		ev::EventBus* mEventBus = nullptr;		/* @brief Event bus to emit window events to. */

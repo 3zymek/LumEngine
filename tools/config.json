@@ -58,7 +58,8 @@
     "drag_speed": "0.01f",
     "min_val": "0.0f",
     "max_val": "0.0f",
-    "category": "GENERAL"
+    "category": "GENERAL",
+    "droppable": ""
   },
   "types": {
     "float": {
@@ -143,15 +144,18 @@
     },
     "String": {
       "reader": "detail::ReadStringParameter",
-      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} )"
+      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} )",
+      "droppable_inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} ); if( ImGui::BeginDragDropTarget() ) { if( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( \"{Droppable}\" ) ) { {Var}->{FieldName} = (const char*)payload->Data; } ImGui::EndDragDropTarget(); }"
     },
     "string": {
       "reader": "detail::ReadStringParameter",
-      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} )"
+      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} )",
+      "droppable_inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} ); if( ImGui::BeginDragDropTarget() ) { if( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( \"{Droppable}\" ) ) { {Var}->{FieldName} = (const char*)payload->Data; } ImGui::EndDragDropTarget(); }"
     },
     "FixedString": {
       "reader": "detail::ReadStringParameter",
-      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), std::max( {Var}->{FieldName}.MaxSize(), (usize)2 ) )"
+      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), std::max( {Var}->{FieldName}.MaxSize(), (usize)2 ) )",
+      "droppable_inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::InputText( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), std::max( {Var}->{FieldName}.MaxSize(), (usize)2 ) ); if( ImGui::BeginDragDropTarget() ) { if( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( \"{Droppable}\" ) ) { {Var}->{FieldName} = (const char*)payload->Data; } ImGui::EndDragDropTarget(); }"
     }
   }
 }

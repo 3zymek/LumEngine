@@ -38,6 +38,16 @@ namespace lum::editor {
 
 			Update( delta );
 
+			auto& meshMgr = mEngine.GetResource( ).mMeshMgr;
+			mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( )->mEntityMgr.Each<CStaticMesh>(
+				[&]( CStaticMesh& mesh ) {
+					if (mesh.mPath != mesh.mLastLoadedPath) {
+						mesh.mHandle = meshMgr.CreateStatic( mesh.mPath );
+						mesh.mLastLoadedPath = mesh.mPath;
+					}
+				} 
+			);
+
 			mEngine.EndFrame( );
 			end_imgui( );
 			mEngine.GetPlatform( ).mRenderDevice->SwapBuffers( );
@@ -111,7 +121,7 @@ namespace lum::editor {
 		ImGui::PopStyleVar( );
 	}
 	void Editor::draw_layout( ) {
-		
+
 		static bool bLayoutInitialized = false;
 
 		ImGuiDockNodeFlags dockFlags =

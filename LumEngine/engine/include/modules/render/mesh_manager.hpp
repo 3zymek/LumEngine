@@ -69,7 +69,7 @@ namespace lum {
 		std::unordered_map<uint64, StaticMeshHandle> mStaticMeshCache; // Path hash -> handle cache.
 		cstd::HandlePool<StaticMeshHandle, FStaticMeshResource> mStaticMeshes{ limits::gMaxModels };
 
-		std::vector<FVertex> mBasicVertices = {
+		std::vector<FVertex> mDefaultVertices = {
 			// position                normal               uv
 			{{ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }},
 			{{  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }},
@@ -77,7 +77,7 @@ namespace lum {
 			{{ -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }},
 		};
 
-		std::vector<uint32> mBasicIndices = { 0, 1, 2, 2, 3, 0 };
+		std::vector<uint32> mDefaultIndices = { 0, 1, 2, 2, 3, 0 };
 
 		/* @brief Initializes built-in default and error meshes. */
 		void init( );
