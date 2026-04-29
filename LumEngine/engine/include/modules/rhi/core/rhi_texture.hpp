@@ -36,10 +36,10 @@ namespace lum::rhi {
 	/* @brief Dimensionality and type of a GPU texture resource. */
 	enum class TextureType : byte {
 		None,
-		Texture2D,
-		Texture2DMS,
-		Texture3D,
-		Cubemap
+		Texture2D,          /* Standard 2D texture (render target, GBuffer attachment). */
+		Texture2DSampled,	/* 2D multisample texture (MSAA render target). */
+		Texture3D,          /* Volumetric 3D texture. */
+		Cubemap             /* 6-face cube texture (skybox, IBL environment maps). */
 	};
 
 	/* @brief GPU-side internal storage format for a texture.

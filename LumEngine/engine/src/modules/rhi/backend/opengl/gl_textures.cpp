@@ -13,7 +13,7 @@ namespace lum::rhi::gl {
 
 		LUM_ASSERT( desc.mTextureType != TextureType::None, "No texture type given" );
 
-		if (desc.mTextureType == TextureType::Texture2D)
+		if (desc.mTextureType == TextureType::Texture2D || desc.mTextureType == TextureType::Texture2DSampled)
 			return create_texture_2d( desc );
 
 		else if (desc.mTextureType == TextureType::Texture3D)
@@ -156,9 +156,10 @@ namespace lum::rhi::gl {
 		texture.mDataFormat = desc.mImageFormat;
 		texture.mDataType = desc.mDataType;
 		texture.mInternalFormat = desc.mImageLayout;
+		texture.mSamples = desc.mSamples;
 		texture.mRect.mWidth = width;
 		texture.mRect.mHeight = height;
-		texture.mType = (desc.mSamples > 0) ? TextureType::Texture2DMS : TextureType::Texture2D;
+		texture.mType = (desc.mSamples > 0) ? TextureType::Texture2DSampled : TextureType::Texture2D;
 		texture.mMipmapLevels = mipmapLevels;
 
 		RTextureHandle textureHandle = mTextures.Append( std::move( texture ) );

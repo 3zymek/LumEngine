@@ -125,10 +125,17 @@ namespace lum {
 
 	/* @brief Returns the maximum representable value for an arithmetic type.
 	* @tparam T Arithmetic type to query.
-	* @return std::numeric_limits<T>::max().
+	* @return std::numeric_limits<tType>::max().
 	*/
 	template<cArithmetic tType>
 	inline constexpr tType MaxValue( ) { return std::numeric_limits<tType>::max( ); }
+
+	/* @brief Returns the minimum representable value for an arithmetic type.
+	* @tparam T Arithmetic type to query.
+	* @return std::numeric_limits<tType>::min().
+	*/
+	template<cArithmetic tType>
+	inline constexpr tType MinValue( ) { return std::numeric_limits<tType>::min( ); }
 
 	/* @brief Returns the total byte size of a std::vector's contents.
 	* @param vector Vector to calculate byte size for.

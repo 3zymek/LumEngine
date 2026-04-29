@@ -30,6 +30,8 @@ namespace lum::render {
 		mPostprocessPass.Initialize( mContext );
 		mGBuffer.Initialize( mContext, 500, 500 );
 
+		mContext.mRenderDev->ToggleMultisample( true );
+
 		init( );
 
 	}

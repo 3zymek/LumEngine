@@ -5,22 +5,23 @@
 //=============================================================================//
 #pragma once
 #include "rhi/rhi_common.hpp"
+#include "core/utils/ranged.hpp"
 
 namespace lum::rhi {
 
 	enum class State : bitfield {
-		None = 1 << 0, // No state
-		DepthTest = 1 << 1, // Depth testing enabled
-		DepthWrite = 1 << 2, // Depth writes enabled
+		None		= 1 << 0, // No state
+		DepthTest	= 1 << 1, // Depth testing enabled
+		DepthWrite	= 1 << 2, // Depth writes enabled
 		StencilTest = 1 << 3, // Stencil testing enabled
-		Scissor = 1 << 4, // Scissor test enabled
-		Blend = 1 << 5, // Blending enabled
-		Cull = 1 << 6, // Backface culling enabled
-		DepthBias = 1 << 7, // Depth bias enabled
-		Multisample = 1 << 8, // MSAA enabled
-		MultisampleCoverage = 1 << 9, // Sample coverage enabled
-		MultisampleAlphaToOne = 1 << 10,// Alpha-to-one enabled
-		MultisampleAlphaToCoverage = 1 << 11,// Alpha-to-coverage enabled
+		Scissor		= 1 << 4, // Scissor test enabled
+		Blend		= 1 << 5, // Blending enabled
+		Cull		= 1 << 6, // Backface culling enabled
+		DepthBias	= 1 << 7, // Depth bias enabled
+		Multisample				= 1 << 8, // MSAA enabled
+		SampleCoverage			= 1 << 9, // Sample coverage enabled
+		SampleAlphaToOne		= 1 << 10,// Alpha-to-one enabled
+		SampleAlphaToCoverage	= 1 << 11,// Alpha-to-coverage enabled
 	};
 
 	// Specifies the comparison function used in LumEngine RHI.
@@ -51,6 +52,7 @@ namespace lum::rhi {
 		* the size of points/lines when rendering point or line topology.
 		*/
 		struct RPolygonState {
+			
 			// Polygon rasterization mode (fill, wireframe, or points)
 			TopologyMode mTopologyMode = TopologyMode::Fill;
 
@@ -62,6 +64,7 @@ namespace lum::rhi {
 
 			// Line width for line topology
 			float32 mLineWidth = 1.f;
+
 		} mPolygon;
 
 		/*!
@@ -90,6 +93,18 @@ namespace lum::rhi {
 			float32 mClamp = 0.f;
 
 		} mDepthBias;
+
+		struct FMultisampleState {
+
+			bool bEnable = false;
+			bool bEnableSampleCoverage = false;
+			bool bEnableSampleAlphaToCoverage = false;
+			bool bEnableSampleAlphaToOne = false;
+
+			Ranged<float32, 0.0f, 1.0f> mSampleCoverage = 1.0f;
+			bool bCoverageInvert = false;
+
+		} mMSAA;
 
 	};
 
@@ -327,18 +342,6 @@ namespace lum::rhi {
 		int32 y{};
 		int32 mWidth{};
 		int32 mHeight{};
-
-	};
-
-	struct FMultisampleState {
-
-		bool bEnable = false;
-		bool bEnableSampleCoverage = false;
-		bool bEnableSampleAlphaToCoverage = false;
-		bool bEnableSampleAlphaToOne = false;
-
-		float32 mSampleCoverage = 0.0f;
-		bool bCoverageInvert = false;
 
 	};
 

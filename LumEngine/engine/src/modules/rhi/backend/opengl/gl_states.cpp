@@ -1046,21 +1046,90 @@ namespace lum::rhi::gl {
 
 	}
 
-	// TODO implement
 	void GLDevice::ToggleSampleCoverage( bool toggle ) {
 
+		if (toggle == mEnabledStates.Has( State::SampleCoverage )) {
+			LUM_PROFILER_CACHE_HIT( );
+			return;
+		}
+
+		if (toggle) {
+
+			glEnable( GL_SAMPLE_COVERAGE );
+			mEnabledStates.Enable( State::SampleCoverage );
+
+		}
+		else {
+
+			glDisable( GL_SAMPLE_COVERAGE );
+			mEnabledStates.Disable( State::SampleCoverage );
+
+		}
+
+		LUM_PROFILER_CACHE_MISS( );
 
 	}
 	void GLDevice::ToggleSampleAlphaToCoverage( bool toggle ) {
 
+		if (toggle == mEnabledStates.Has( State::SampleAlphaToCoverage )) {
+			LUM_PROFILER_CACHE_HIT( );
+			return;
+		}
+
+		if (toggle) {
+
+			glEnable( GL_SAMPLE_ALPHA_TO_COVERAGE );
+			mEnabledStates.Enable( State::SampleAlphaToCoverage );
+
+		}
+		else {
+
+			glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
+			mEnabledStates.Disable( State::SampleAlphaToCoverage );
+
+		}
+
+		LUM_PROFILER_CACHE_MISS( );
 
 	}
 	void GLDevice::ToggleSampleAlphaToOne( bool toggle ) {
 
+		if (toggle == mEnabledStates.Has( State::SampleAlphaToOne )) {
+			LUM_PROFILER_CACHE_HIT( );
+			return;
+		}
+
+		if (toggle) {
+
+			glEnable( GL_SAMPLE_ALPHA_TO_ONE );
+			mEnabledStates.Enable( State::SampleAlphaToOne );
+
+		}
+		else {
+
+			glDisable( GL_SAMPLE_ALPHA_TO_ONE );
+			mEnabledStates.Disable( State::SampleAlphaToOne );
+
+		}
+
+		LUM_PROFILER_CACHE_MISS( );
 
 	}
 	void GLDevice::SetSampleCoverage( float32 value, bool invert ) {
 
+		auto& msaaState = mRasterizerState.mMSAA;
+
+		if (value == msaaState.mSampleCoverage && invert == msaaState.bCoverageInvert) {
+			LUM_PROFILER_CACHE_HIT( );
+			return;
+		}
+
+		msaaState.mSampleCoverage = value;
+		msaaState.bCoverageInvert = invert;
+
+		glSampleCoverage( value, invert ? GL_TRUE : GL_FALSE );
+
+		LUM_PROFILER_CACHE_MISS( );
 
 	}
 
