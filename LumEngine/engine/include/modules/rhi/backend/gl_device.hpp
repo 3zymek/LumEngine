@@ -82,6 +82,8 @@ namespace lum::rhi::gl {
 
 		RTextureHandle CreateTexture( const FTextureDescriptor& desc ) override;
 
+		void Copy( RTextureHandle, RTextureHandle ) override;
+
 		void UnbindTexture( TextureType ) override;
 
 		void UpdateTexture( RTextureHandle, const FTextureUpdateDescriptor& ) override;

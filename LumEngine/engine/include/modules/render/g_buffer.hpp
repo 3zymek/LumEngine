@@ -55,10 +55,10 @@ namespace lum::render::detail {
 
 		FRendererContext mContext;
 
-		rhi::RFramebufferHandle mFramebuffer; /* @brief Framebuffer with albedo and normal attachments. */
-		rhi::RTextureHandle mAlbedo;          /* @brief Albedo + roughness texture (SRGB8_Alpha8). */
-		rhi::RTextureHandle mNormal;          /* @brief World space normal + metallic texture (RGBA16F). */
-		rhi::RTextureHandle mDepth;           /* @brief Depth texture for position reconstruction (Depth32F). */
+		rhi::RFramebufferHandle mFramebuffer;	/* @brief Framebuffer with albedo and normal attachments. */
+		rhi::RTextureHandle mAlbedo;			/* @brief Albedo + roughness texture (SRGB8_Alpha8). */
+		rhi::RTextureHandle mNormal;			/* @brief World space normal + metallic texture (RGBA16F). */
+		rhi::RTextureHandle mDepth;				/* @brief Depth texture for position reconstruction (Depth32F). */
 
 		/* @brief Creates or recreates all G-Buffer textures at the given dimensions. */
 		void create_textures( uint32 width, uint32 height );

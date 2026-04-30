@@ -133,12 +133,16 @@ namespace lum::render {
 		struct FScreenQuad {
 
 			rhi::RVertexLayoutHandle mVao;
+
 			rhi::RBufferHandle mVbo;
 			rhi::RBufferHandle mEbo;
+
 			rhi::RFramebufferHandle mSceneFbo;
 			rhi::RFramebufferHandle mPostprocessFbo;
-			rhi::RTextureHandle mSceneTexture;
-			rhi::RTextureHandle mPostprocessTexture;
+
+			rhi::RTextureHandle mSceneHistoryTex;
+			rhi::RTextureHandle mSceneTex;
+			rhi::RTextureHandle mPostprocessTex;
 
 		};
 

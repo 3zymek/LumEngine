@@ -205,6 +205,12 @@ namespace lum::rhi {
 		LUM_NODISCARD
 		virtual RTextureHandle CreateTexture( const FTextureDescriptor& desc ) = 0;
 
+		/* @brief Copies the contents of one texture to another.
+		*  Both textures must have identical dimensions and formats.
+		*  Equivalent to a GPU-side blit with no format conversion.
+		*/
+		virtual void Copy( RTextureHandle src, RTextureHandle dst ) = 0;
+
 		/* @brief Unbinds any texture of the given type from the pipeline.
 		* @param type Texture type to unbind (e.g. Texture2D, Cubemap).
 		*/

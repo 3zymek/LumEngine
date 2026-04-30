@@ -25,6 +25,21 @@ namespace lum::rhi::gl {
 		return {};
 
 	}
+	void GLDevice::Copy( RTextureHandle src, RTextureHandle dst ) {
+
+		LUM_ASSERT( IsValid( src ), "Invalid source texture" );
+		LUM_ASSERT( IsValid( dst ), "Invalid destination texture" );
+
+		const FTexture& srcTex = mTextures[ src ];
+		const FTexture& dstTex = mTextures[ dst ];
+
+		glCopyImageSubData(
+			srcTex.mHandle, skTextureTypeLookup[ LookupCast( srcTex.mType ) ], 0, 0, 0, 0,
+			dstTex.mHandle, skTextureTypeLookup[ LookupCast( dstTex.mType ) ], 0, 0, 0, 0,
+			srcTex.mRect.mWidth, srcTex.mRect.mHeight, 1
+		);
+
+	}
 	void GLDevice::UnbindTexture( TextureType type ) {
 
 		glBindTextureUnit( skTextureTypeLookup[ LookupCast( type ) ], 0 );
@@ -36,14 +51,13 @@ namespace lum::rhi::gl {
 		LUM_ASSERT( desc.mData.mPixels.data( ) != nullptr, "Texture pixel data is null" );
 		LUM_ASSERT( desc.mData.mWidth > 0 && desc.mData.mHeight > 0, "Invalid texture dimensions" );
 
-		const auto& texture = mTextures[ tex ];
+		const FTexture& texture = mTextures[ tex ];
 
 		uint32 width = (desc.mRect.mWidth == 0) ? desc.mData.mWidth : desc.mRect.mWidth;
 		uint32 height = (desc.mRect.mHeight == 0) ? desc.mData.mHeight : desc.mRect.mHeight;
 
 		width = std::clamp( width, 0u, texture.mRect.mWidth - desc.mRect.x );
 		height = std::clamp( height, 0u, texture.mRect.mHeight - desc.mRect.y );
-
 
 		glTextureSubImage2D(
 			texture.mHandle,

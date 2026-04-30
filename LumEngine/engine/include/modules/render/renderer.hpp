@@ -27,7 +27,7 @@ namespace lum::render {
 		*/
 		void Initialize( const FRendererContext& ctx );
 
-		rhi::RTextureHandle GetFrameTexture( ) { return mScreenQuad.mPostprocessTexture; }
+		rhi::RTextureHandle GetFrameTexture( ) { return mScreenQuad.mPostprocessTex; }
 
 
 		//---------------------------------------------------------

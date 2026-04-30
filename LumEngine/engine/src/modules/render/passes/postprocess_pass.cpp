@@ -21,9 +21,12 @@ namespace lum::render {
 
 		mContext.mRenderDev->BindFramebuffer( quad.mPostprocessFbo );
 		mContext.mRenderDev->BindShader( mShader );
-		mContext.mRenderDev->BindTexture( quad.mSceneTexture, 0 );
+		mContext.mRenderDev->BindTexture( quad.mSceneTex, LUM_TEX_FRAME );
+		mContext.mRenderDev->BindTexture( quad.mSceneHistoryTex, LUM_TEX_FRAME_HISTORY );
 
 		mContext.mRenderDev->DrawElements( quad.mVao, 6 );
+
+		mContext.mRenderDev->Copy( quad.mSceneTex, quad.mSceneHistoryTex );
 
 		mContext.mRenderDev->BindFramebuffer( rhi::gDefaultFramebuffer );
 

@@ -23,6 +23,8 @@
 #define LUM_TEX_CUBEMAP		4 // Cubemap texture binding.
 #define LUM_TEX_IRRADIANCE	5 // Irradiance map (IBL)
 #define LUM_TEX_PREFILTERED 7 // Prefiltered environment map (IBL)
+#define LUM_TEX_FRAME		8
+#define LUM_TEX_FRAME_HISTORY 9
 
 // GBuffer sampler bindings - light pass
 #define LUM_GBUFFER_ALBEDO  0 // Albedo GBuffer sampler binding.

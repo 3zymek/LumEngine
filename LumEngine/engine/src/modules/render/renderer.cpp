@@ -186,13 +186,13 @@ namespace lum::render {
 
 		{
 			rhi::FFramebufferDescriptor desc;
-			desc.mColorTex.push_back( { 0, mScreenQuad.mSceneTexture } );
+			desc.mColorTex.push_back( { 0, mScreenQuad.mSceneTex } );
 			desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
 			mScreenQuad.mSceneFbo = mContext.mRenderDev->CreateFramebuffer( desc );
 		}
 		{
 			rhi::FFramebufferDescriptor desc;
-			desc.mColorTex.push_back( { 0, mScreenQuad.mPostprocessTexture } );
+			desc.mColorTex.push_back( { 0, mScreenQuad.mPostprocessTex } );
 			desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
 			mScreenQuad.mPostprocessFbo = mContext.mRenderDev->CreateFramebuffer( desc );
 		}
@@ -200,11 +200,14 @@ namespace lum::render {
 	}
 	void Renderer::create_screenquad_texture( uint32 w, uint32 h ) {
 
-		if (mContext.mRenderDev->IsValid( mScreenQuad.mSceneTexture ))
-			mContext.mRenderDev->DeleteTexture( mScreenQuad.mSceneTexture );
+		if (mContext.mRenderDev->IsValid( mScreenQuad.mSceneTex ))
+			mContext.mRenderDev->DeleteTexture( mScreenQuad.mSceneTex );
 
-		if (mContext.mRenderDev->IsValid( mScreenQuad.mPostprocessTexture ))
-			mContext.mRenderDev->DeleteTexture( mScreenQuad.mPostprocessTexture );
+		if (mContext.mRenderDev->IsValid( mScreenQuad.mSceneHistoryTex ))
+			mContext.mRenderDev->DeleteTexture( mScreenQuad.mSceneHistoryTex );
+
+		if (mContext.mRenderDev->IsValid( mScreenQuad.mPostprocessTex ))
+			mContext.mRenderDev->DeleteTexture( mScreenQuad.mPostprocessTex );
 
 		{
 			rhi::FTextureDescriptor desc;
@@ -213,7 +216,8 @@ namespace lum::render {
 			desc.mTextureType = rhi::TextureType::Texture2D;
 			desc.mWidth = w;
 			desc.mHeight = h;
-			mScreenQuad.mSceneTexture = mContext.mRenderDev->CreateTexture( desc );
+			mScreenQuad.mSceneTex = mContext.mRenderDev->CreateTexture( desc );
+			mScreenQuad.mSceneHistoryTex = mContext.mRenderDev->CreateTexture( desc );
 		}
 		{
 			rhi::FTextureDescriptor desc;
@@ -222,7 +226,7 @@ namespace lum::render {
 			desc.mTextureType = rhi::TextureType::Texture2D;
 			desc.mWidth = w;
 			desc.mHeight = h;
-			mScreenQuad.mPostprocessTexture = mContext.mRenderDev->CreateTexture( desc );
+			mScreenQuad.mPostprocessTex = mContext.mRenderDev->CreateTexture( desc );
 		}
 
 	}
