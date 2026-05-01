@@ -51,7 +51,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::DeleteSampler( RSamplerHandle sampler ) {
+	void GLDevice::Delete( RSamplerHandle sampler ) {
 
 		LUM_RETURN_IF( !IsValid( sampler ), LUM_SEV_WARN, "Invalid sampler" );
 

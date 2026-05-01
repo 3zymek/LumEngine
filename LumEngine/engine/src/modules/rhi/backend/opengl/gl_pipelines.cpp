@@ -99,7 +99,7 @@ namespace lum::rhi::gl {
 		return mPipelines.Append( std::move( pipeline ) );
 
 	}
-	void GLDevice::DeletePipeline( RPipelineHandle& pipeline ) {
+	void GLDevice::Delete( RPipelineHandle& pipeline ) {
 
 		LUM_RETURN_IF( !IsValid( pipeline ), LUM_SEV_WARN, "Invalid pipeline" );
 

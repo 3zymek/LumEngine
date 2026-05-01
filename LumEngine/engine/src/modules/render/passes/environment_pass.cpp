@@ -100,8 +100,8 @@ namespace lum::render {
 
 		}
 
-		mContext.mRenderDev->DeleteFramebuffer( captureFBO );
-		mContext.mRenderDev->DeleteBuffer( captureUBO );
+		mContext.mRenderDev->Delete( captureFBO );
+		mContext.mRenderDev->Delete( captureUBO );
 
 		mContext.mRenderDev->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
 
@@ -164,8 +164,8 @@ namespace lum::render {
 
 		}
 
-		mContext.mRenderDev->DeleteFramebuffer( captureFBO );
-		mContext.mRenderDev->DeleteBuffer( captureUBO );
+		mContext.mRenderDev->Delete( captureFBO );
+		mContext.mRenderDev->Delete( captureUBO );
 
 		mContext.mRenderDev->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
 

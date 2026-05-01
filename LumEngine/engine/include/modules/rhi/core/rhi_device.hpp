@@ -81,7 +81,7 @@ namespace lum::rhi {
 		/* @brief Frees the GPU memory associated with the given buffer.
 		* @param buff Handle to delete. Becomes invalid after this call.
 		*/
-		virtual void DeleteBuffer( RBufferHandle& buff ) = 0;
+		virtual void Delete( RBufferHandle& buff ) = 0;
 
 		/* @brief Maps a GPU buffer into CPU address space for direct access.
 		* @param buff   Handle of the buffer to map.
@@ -146,7 +146,7 @@ namespace lum::rhi {
 		/* @brief Destroys the framebuffer and releases its GPU resources.
 		* @param fbo Handle to delete. Becomes invalid after this call.
 		*/
-		virtual void DeleteFramebuffer( RFramebufferHandle& fbo ) = 0;
+		virtual void Delete( RFramebufferHandle& fbo ) = 0;
 
 		/* @brief Sets the active framebuffer for all subsequent draw operations.
 		* @param fbo Handle of the framebuffer to bind.
@@ -169,7 +169,7 @@ namespace lum::rhi {
 		/* @brief Destroys a vertex layout and releases its GPU resources.
 		* @param layout Handle to delete. Becomes invalid after this call.
 		*/
-		virtual void DeleteVertexLayout( RVertexLayoutHandle& layout ) = 0;
+		virtual void Delete( RVertexLayoutHandle& layout ) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -191,7 +191,7 @@ namespace lum::rhi {
 		/* @brief Destroys a shader and releases its GPU resources.
 		* @param shader Handle to delete. Becomes invalid after this call.
 		*/
-		virtual void DeleteShader( RShaderHandle& shader ) = 0;
+		virtual void Delete( RShaderHandle& shader ) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -225,7 +225,7 @@ namespace lum::rhi {
 		/* @brief Destroys a texture and frees its GPU memory.
 		* @param texture Handle to delete. Becomes invalid after this call.
 		*/
-		virtual void DeleteTexture( RTextureHandle& texture ) = 0;
+		virtual void Delete( RTextureHandle& texture ) = 0;
 
 		/* @brief Binds a texture to a shader slot.
 		* Skips the bind if the texture is already bound to the given slot (cached).
@@ -255,7 +255,7 @@ namespace lum::rhi {
 		/* @brief Destroys a sampler and releases its GPU resources.
 		* @param sampler Handle to delete. Becomes invalid after this call.
 		*/
-		virtual void DeleteSampler( RSamplerHandle sampler ) = 0;
+		virtual void Delete( RSamplerHandle sampler ) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -272,7 +272,7 @@ namespace lum::rhi {
 		/* @brief Destroys a pipeline and releases its GPU resources.
 		* @param pipeline Handle to delete. Becomes invalid after this call.
 		*/
-		virtual void DeletePipeline( RPipelineHandle& pipeline ) = 0;
+		virtual void Delete( RPipelineHandle& pipeline ) = 0;
 
 		/* @brief Binds a pipeline for use in subsequent draw calls.
 		* @param pipeline Handle of the pipeline to bind.

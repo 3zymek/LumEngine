@@ -49,7 +49,7 @@ namespace lum::rhi::gl {
 		return mLayouts.Append( std::move( layout ) );
 
 	}
-	void GLDevice::DeleteVertexLayout( RVertexLayoutHandle& layout ) {
+	void GLDevice::Delete( RVertexLayoutHandle& layout ) {
 
 		LUM_RETURN_IF( !IsValid( layout ), LUM_SEV_WARN, "Invalid layout" );
 		glDeleteVertexArrays( 1, &mLayouts[ layout ].mHandle );

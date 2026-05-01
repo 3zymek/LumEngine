@@ -137,9 +137,9 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::DeleteFramebuffer( RFramebufferHandle& buff ) {
+	void GLDevice::Delete( RFramebufferHandle& buff ) {
 
-		LUM_HOTCHK_RETURN_VOID( IsValid( buff ), LUM_SEV_WARN, "Invalid framebuffer" );
+		if (!IsValid( buff )) return;
 
 		FFramebuffer& fbo = mFramebuffers[ buff ];
 		glDeleteFramebuffers( 1, &fbo.mHandle );

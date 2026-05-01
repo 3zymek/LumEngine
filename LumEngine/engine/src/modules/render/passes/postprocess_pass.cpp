@@ -17,16 +17,18 @@ namespace lum::render {
 
 	}
 
-	void PostprocessPass::Execute( const detail::FScreenQuad& quad ) {
+	void PostprocessPass::Execute( const detail::FScreenQuad& quad, const PostprocessPassExecute& exe ) {
 
 		mContext.mRenderDev->BindFramebuffer( quad.mPostprocessFbo );
 		mContext.mRenderDev->BindShader( mShader );
 		mContext.mRenderDev->BindTexture( quad.mSceneTex, LUM_TEX_FRAME );
-		mContext.mRenderDev->BindTexture( quad.mSceneHistoryTex, LUM_TEX_FRAME_HISTORY );
+		if(exe.bTAAEnabled)
+			mContext.mRenderDev->BindTexture( exe.mPreviousFrameTex, LUM_TEX_FRAME_HISTORY );
 
 		mContext.mRenderDev->DrawElements( quad.mVao, 6 );
 
-		mContext.mRenderDev->Copy( quad.mSceneTex, quad.mSceneHistoryTex );
+		if (exe.bTAAEnabled)
+			mContext.mRenderDev->Copy( quad.mSceneTex, exe.mPreviousFrameTex );
 
 		mContext.mRenderDev->BindFramebuffer( rhi::gDefaultFramebuffer );
 

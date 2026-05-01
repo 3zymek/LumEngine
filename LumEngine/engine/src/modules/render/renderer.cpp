@@ -38,10 +38,12 @@ namespace lum::render {
 
 	void Renderer::UpdateCamera( const FRenderCamera& camera ) {
 
+		glm::mat4 jittered = mTemporalAA.ApplyJitter( camera.mProjection );
+
 		mCameraUBOData.mPosition = glm::vec4( camera.mPosition, 0.0 );
-		mCameraUBOData.mProjection = camera.mProjection;
+		mCameraUBOData.mProjection = jittered;
 		mCameraUBOData.mView = camera.mView;
-		mCameraUBOData.mInvViewProj = glm::inverse( camera.mProjection * camera.mView );
+		mCameraUBOData.mInvViewProj = glm::inverse( jittered * camera.mView );
 
 		upload_camera_uniform( );
 
@@ -80,7 +82,12 @@ namespace lum::render {
 
 		mEnvironmentPass.Execute( mGBuffer, mScreenQuad );
 
-		mPostprocessPass.Execute( mScreenQuad );
+		{
+			PostprocessPassExecute desc;
+			desc.bTAAEnabled = true;
+			desc.mPreviousFrameTex = mTemporalAA.GetPreviousFrameTex( );
+			mPostprocessPass.Execute( mScreenQuad, desc );
+		}
 
 	}
 
@@ -94,12 +101,14 @@ namespace lum::render {
 
 	void Renderer::init( ) {
 
+		mTemporalAA.Initialize( mContext.mRenderDev );
+
 		mContext.mEvBus->SubscribePermanently<EWindowResized>(
 			[&]( const EWindowResized& e ) {
 				if (e.mWidth <= 0 || e.mHeight <= 0) return;
 				mContext.mRenderDev->SetViewport( 0, 0, e.mWidth, e.mHeight );
-				create_screenquad_texture( e.mWidth, e.mHeight );
-				create_screenquad_fbo( );
+				ensure_screenquad_texture( e.mWidth, e.mHeight );
+				ensure_screenquad_fbo( );
 			}
 		);
 
@@ -172,17 +181,14 @@ namespace lum::render {
 
 		}
 
-		create_screenquad_texture( 500, 500 );
-		create_screenquad_fbo( );
+		ensure_screenquad_texture( 500, 500 );
+		ensure_screenquad_fbo( );
 	}
 
-	void Renderer::create_screenquad_fbo( ) {
+	void Renderer::ensure_screenquad_fbo( ) {
 
-		if (mContext.mRenderDev->IsValid( mScreenQuad.mSceneFbo ))
-			mContext.mRenderDev->DeleteFramebuffer( mScreenQuad.mSceneFbo );
-
-		if (mContext.mRenderDev->IsValid( mScreenQuad.mPostprocessFbo ))
-			mContext.mRenderDev->DeleteFramebuffer( mScreenQuad.mPostprocessFbo );
+		mContext.mRenderDev->Delete( mScreenQuad.mSceneFbo );
+		mContext.mRenderDev->Delete( mScreenQuad.mPostprocessFbo );
 
 		{
 			rhi::FFramebufferDescriptor desc;
@@ -198,16 +204,10 @@ namespace lum::render {
 		}
 
 	}
-	void Renderer::create_screenquad_texture( uint32 w, uint32 h ) {
+	void Renderer::ensure_screenquad_texture( uint32 w, uint32 h ) {
 
-		if (mContext.mRenderDev->IsValid( mScreenQuad.mSceneTex ))
-			mContext.mRenderDev->DeleteTexture( mScreenQuad.mSceneTex );
-
-		if (mContext.mRenderDev->IsValid( mScreenQuad.mSceneHistoryTex ))
-			mContext.mRenderDev->DeleteTexture( mScreenQuad.mSceneHistoryTex );
-
-		if (mContext.mRenderDev->IsValid( mScreenQuad.mPostprocessTex ))
-			mContext.mRenderDev->DeleteTexture( mScreenQuad.mPostprocessTex );
+		mContext.mRenderDev->Delete( mScreenQuad.mSceneTex );
+		mContext.mRenderDev->Delete( mScreenQuad.mPostprocessTex );
 
 		{
 			rhi::FTextureDescriptor desc;
@@ -217,7 +217,7 @@ namespace lum::render {
 			desc.mWidth = w;
 			desc.mHeight = h;
 			mScreenQuad.mSceneTex = mContext.mRenderDev->CreateTexture( desc );
-			mScreenQuad.mSceneHistoryTex = mContext.mRenderDev->CreateTexture( desc );
+			mTemporalAA.EnsureFrameTex( desc );
 		}
 		{
 			rhi::FTextureDescriptor desc;

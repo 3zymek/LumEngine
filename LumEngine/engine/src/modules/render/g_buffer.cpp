@@ -56,9 +56,9 @@ namespace lum::render::detail {
 
 	void GBuffer::create_textures( uint32 width, uint32 height ) {
 
-		mContext.mRenderDev->DeleteTexture( mAlbedo );
-		mContext.mRenderDev->DeleteTexture( mNormal );
-		mContext.mRenderDev->DeleteTexture( mDepth );
+		mContext.mRenderDev->Delete( mAlbedo );
+		mContext.mRenderDev->Delete( mNormal );
+		mContext.mRenderDev->Delete( mDepth );
 
 		rhi::FTextureDescriptor desc;
 		{ // Albedo
@@ -90,7 +90,7 @@ namespace lum::render::detail {
 
 	void GBuffer::create_framebuffer( ) {
 
-		if (mContext.mRenderDev->IsValid( mFramebuffer )) mContext.mRenderDev->DeleteFramebuffer( mFramebuffer );
+		if (mContext.mRenderDev->IsValid( mFramebuffer )) mContext.mRenderDev->Delete( mFramebuffer );
 
 		{
 			rhi::FFramebufferDescriptor desc;

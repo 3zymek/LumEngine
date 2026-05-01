@@ -12,8 +12,8 @@ vec3 GammaCorrection22( vec3 color ) {
 	return pow(color, vec3(1.0/2.2));
 }
 vec3 TemporalAA( vec3 color ) {
-    vec3 history = texture(uHistory, fUV).rgb * 0.4;
-    return mix(history, color, 0.1);
+    vec3 history = texture(uHistory, fUV).rgb;
+    return mix(history, color, 0.5);
 }
 
 void main( ) {

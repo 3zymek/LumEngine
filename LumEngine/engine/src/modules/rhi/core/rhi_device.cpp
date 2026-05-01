@@ -13,13 +13,13 @@ namespace lum::rhi {
 
 	void RenderDevice::Finalize( ) {
 
-		for (auto [handle, p] : mPipelines.Each())    DeletePipeline(handle);
-		for (auto [handle, f] : mFramebuffers.Each()) DeleteFramebuffer(handle);
-		for (auto [handle, l] : mLayouts.Each())      DeleteVertexLayout(handle);
-		for (auto [handle, b] : mBuffers.Each())      DeleteBuffer(handle);
-		for (auto [handle, t] : mTextures.Each())     DeleteTexture(handle);
-		for (auto [handle, s] : mShaders.Each())      DeleteShader(handle);
-		for (auto [handle, l] : mSamplers.Each())     DeleteSampler(handle);
+		for (auto [handle, p] : mPipelines.Each())    Delete(handle);
+		for (auto [handle, f] : mFramebuffers.Each()) Delete(handle);
+		for (auto [handle, l] : mLayouts.Each())      Delete(handle);
+		for (auto [handle, b] : mBuffers.Each())      Delete(handle);
+		for (auto [handle, t] : mTextures.Each())     Delete(handle);
+		for (auto [handle, s] : mShaders.Each())      Delete(handle);
+		for (auto [handle, l] : mSamplers.Each())     Delete(handle);
 	
 	}
 

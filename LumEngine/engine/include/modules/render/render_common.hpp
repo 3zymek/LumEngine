@@ -140,7 +140,6 @@ namespace lum::render {
 			rhi::RFramebufferHandle mSceneFbo;
 			rhi::RFramebufferHandle mPostprocessFbo;
 
-			rhi::RTextureHandle mSceneHistoryTex;
 			rhi::RTextureHandle mSceneTex;
 			rhi::RTextureHandle mPostprocessTex;
 

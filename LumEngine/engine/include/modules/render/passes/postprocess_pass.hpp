@@ -9,6 +9,11 @@
 
 namespace lum::render {
 
+	struct PostprocessPassExecute {
+		bool bTAAEnabled = false;
+		rhi::RTextureHandle mPreviousFrameTex;
+	};
+
 	class PostprocessPass {
 	public:
 
@@ -16,7 +21,7 @@ namespace lum::render {
 
 		void Initialize( const FRendererContext& ctx );
 
-		void Execute( const detail::FScreenQuad& quad );
+		void Execute( const detail::FScreenQuad& quad, const PostprocessPassExecute& exe );
 
 
 	private:

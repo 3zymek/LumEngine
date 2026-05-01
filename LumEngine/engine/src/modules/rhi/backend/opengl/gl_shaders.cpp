@@ -57,7 +57,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS( );
 
 	}
-	void GLDevice::DeleteShader( RShaderHandle& shader ) {
+	void GLDevice::Delete( RShaderHandle& shader ) {
 
 		LUM_RETURN_IF( !IsValid( shader ), LUM_SEV_WARN, "Invalid shader" );
 

@@ -10,6 +10,7 @@
 #include "render/passes/environment_pass.hpp"
 #include "render/passes/shadow_pass.hpp"
 #include "render/passes/postprocess_pass.hpp"
+#include "render/temporal_antialiasing.hpp"
 #include "render/g_buffer.hpp"
 
 namespace lum::render {
@@ -145,6 +146,9 @@ namespace lum::render {
 		detail::FCameraUBOData mCameraUBOData{};
 
 
+		TemporalAntiAliasing mTemporalAA;
+
+
 
 		//---------------------------------------------------------
 		// Internal
@@ -154,13 +158,13 @@ namespace lum::render {
 		void init( );
 
 		/* @brief Allocates the screen quad FBO used for deferred and post-process passes. */
-		void create_screenquad_fbo( );
+		void ensure_screenquad_fbo( );
 
 		/* @brief Allocates the screen quad color texture at the given resolution.
 		*  @param w Width in pixels.
 		*  @param h Height in pixels.
 		*/
-		void create_screenquad_texture( uint32 w, uint32 h );
+		void ensure_screenquad_texture( uint32 w, uint32 h );
 
 		/* @brief Uploads the current camera data to the GPU uniform buffer. */
 		void upload_camera_uniform( );

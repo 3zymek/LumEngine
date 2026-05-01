@@ -22,7 +22,7 @@ namespace lum::rhi::gl {
 
 		void UpdateBuffer( RBufferHandle, cvptr, usize, usize ) override;
 
-		void DeleteBuffer( RBufferHandle& ) override;
+		void Delete( RBufferHandle& ) override;
 
 		vptr MapBuffer( RBufferHandle, Flags<MapFlag>, usize, usize ) override;
 
@@ -48,7 +48,7 @@ namespace lum::rhi::gl {
 
 		void ClearFramebuffer( RFramebufferHandle, ChannelRGBA, float32 ) override;
 
-		void DeleteFramebuffer( RFramebufferHandle& ) override;
+		void Delete( RFramebufferHandle& ) override;
 
 		void BindFramebuffer( RFramebufferHandle ) override;
 
@@ -60,7 +60,7 @@ namespace lum::rhi::gl {
 
 		RVertexLayoutHandle	CreateVertexLayout( const FVertexLayoutDescriptor&, RBufferHandle ) override;
 
-		void DeleteVertexLayout( RVertexLayoutHandle& ) override;
+		void Delete( RVertexLayoutHandle& ) override;
 
 
 
@@ -72,7 +72,7 @@ namespace lum::rhi::gl {
 
 		void BindShader( RShaderHandle ) override;
 
-		void DeleteShader( RShaderHandle& ) override;
+		void Delete( RShaderHandle& ) override;
 
 
 
@@ -88,7 +88,7 @@ namespace lum::rhi::gl {
 
 		void UpdateTexture( RTextureHandle, const FTextureUpdateDescriptor& ) override;
 
-		void DeleteTexture( RTextureHandle& ) override;
+		void Delete( RTextureHandle& ) override;
 
 		void BindTexture( RTextureHandle, uint16 ) override;
 
@@ -102,7 +102,7 @@ namespace lum::rhi::gl {
 
 		void BindSampler( RSamplerHandle, uint16 )	override;
 
-		void DeleteSampler( RSamplerHandle ) override;
+		void Delete( RSamplerHandle ) override;
 
 
 
@@ -112,7 +112,7 @@ namespace lum::rhi::gl {
 
 		RPipelineHandle CreatePipeline( const FPipelineDescriptor& ) override;
 
-		void DeletePipeline( RPipelineHandle& ) override;
+		void Delete( RPipelineHandle& ) override;
 
 		void BindPipeline( RPipelineHandle ) override;
 

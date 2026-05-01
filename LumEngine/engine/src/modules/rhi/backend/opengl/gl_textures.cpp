@@ -78,7 +78,7 @@ namespace lum::rhi::gl {
 		}
 
 	}
-	void GLDevice::DeleteTexture( RTextureHandle& texture ) {
+	void GLDevice::Delete( RTextureHandle& texture ) {
 
 		if (!IsValid( texture )) return;
 

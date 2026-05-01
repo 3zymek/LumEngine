@@ -53,7 +53,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::DeleteBuffer( RBufferHandle& buff ) {
+	void GLDevice::Delete( RBufferHandle& buff ) {
 
 		LUM_RETURN_IF( !IsValid( buff ), LUM_SEV_DEBUG, "Invalid buffer" );
 
