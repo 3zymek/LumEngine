@@ -8,7 +8,7 @@
 #include "render/passes/geometry_pass.hpp"
 #include "render/passes/light_pass.hpp"
 #include "render/passes/environment_pass.hpp"
-#include "render/passes/shadow_pass.hpp"
+#include "render/shadow_system.hpp"
 #include "render/passes/postprocess_pass.hpp"
 #include "render/temporal_antialiasing.hpp"
 #include "render/g_buffer.hpp"
@@ -128,12 +128,10 @@ namespace lum::render {
 		/* @brief Environment pass — renders the HDR skybox and precomputes IBL maps. */
 		EnvironmentPass mEnvironmentPass;
 
-		/* @brief Shadow pass — generates the directional light shadow map. */
-		ShadowPass mShadowPass;
-
 		PostprocessPass mPostprocessPass;
 
 
+		ShadowSystem mShadowSys;
 
 		//---------------------------------------------------------
 		// Uniforms

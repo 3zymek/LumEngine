@@ -26,7 +26,7 @@ namespace lum::render {
 		mGeometryPass.Initialize( mContext );
 		mLightPass.Initialize( mContext );
 		mEnvironmentPass.Initialize( mContext );
-		mShadowPass.Initialize( mContext );
+		mShadowSys.Initialize( mContext );
 		mPostprocessPass.Initialize( mContext );
 		mGBuffer.Initialize( mContext, 500, 500 );
 
@@ -70,13 +70,13 @@ namespace lum::render {
 			rhi::BufferBit::Stencil
 		);
 
-		mShadowPass.Execute( mGeometryPass, mLightPass );
+		mShadowSys.Execute( mGeometryPass, mLightPass );
 
 		mGeometryPass.Execute( mGBuffer );
 
 		mLightPassExecutables.mIrradianceMap = mEnvironmentPass.GetTexture( detail::IBLTexture::IrradianceMap );
 		mLightPassExecutables.mPrefilteredEnvMap = mEnvironmentPass.GetTexture( detail::IBLTexture::PrefilteredMap );
-		mLightPassExecutables.mShadowMap = mShadowPass.GetShadowMap( );
+		mLightPassExecutables.mShadowMap = mShadowSys.mDirectionalLight.GetShadowMap( );
 
 		mLightPass.Execute( mGBuffer, mScreenQuad, mLightPassExecutables );
 
