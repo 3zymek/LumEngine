@@ -95,7 +95,13 @@ namespace lum::render {
 
 			glm::mat4 matrices[ ] = { captureProjection, captureViews[ i ] };
 			mContext.mRenderDev->UpdateBuffer( captureUBO, matrices );
-			mContext.mRenderDev->AttachCubemapFace( captureFBO, mIBL.mIrradiance.mTexture, i, 0 );
+
+			rhi::FTextureLayerAttachment attach;
+			attach.mAttachment = rhi::BufferBit::Color;
+			attach.mMip = 1;
+			attach.mLayer = i;
+			attach.mSlot = 0;
+			mContext.mRenderDev->AttachTextureLayer( captureFBO, mIBL.mIrradiance.mTexture, attach );
 			mContext.mRenderDev->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
 
 		}
@@ -144,7 +150,7 @@ namespace lum::render {
 
 		for (uint32 mip = 0; mip < mIBL.mPrefiltered.skMipmapLevels; mip++) {
 
-			float32 roughness = ( float32 ) mip / ( float32 ) (mIBL.mPrefiltered.skMipmapLevels - 1);
+			float32 roughness = ToFloat32( mip ) / ToFloat32( (mIBL.mPrefiltered.skMipmapLevels - 1) );
 
 			uint32 mipSize = 128 >> mip;
 			mContext.mRenderDev->SetViewport( 0, 0, mipSize, mipSize );
@@ -157,7 +163,13 @@ namespace lum::render {
 				data.mRoughness = roughness;
 
 				mContext.mRenderDev->UpdateBuffer( captureUBO, &data );
-				mContext.mRenderDev->AttachCubemapFace( captureFBO, mIBL.mPrefiltered.mTexture, i, mip );
+
+				rhi::FTextureLayerAttachment attach;
+				attach.mAttachment = rhi::BufferBit::Color;
+				attach.mMip = mip;
+				attach.mLayer = i;
+				attach.mSlot = 0;
+				mContext.mRenderDev->AttachTextureLayer( captureFBO, mIBL.mPrefiltered.mTexture, attach );
 				mContext.mRenderDev->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
 
 			}

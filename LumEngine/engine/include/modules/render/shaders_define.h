@@ -46,7 +46,8 @@
 #define LUM_SSBO_LIGHTS_BINDING 0 // Point light array.
 
 /* @brief Maximum number of point lights active in a single frame. */
-#define LUM_MAX_LIGHTS 64
+#define LUM_MAX_LIGHTS 32
+#define LUM_MAX_SHADOW_CASTING_SPOT_LIGHTS 8
 
 // Cubemap face indices
 #define LUM_CUBEMAP_POSITIVE_X 0 // +X face.

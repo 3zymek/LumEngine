@@ -5,10 +5,6 @@
 //=============================================================================//
 #pragma once
 
-	//---------------------------------------------------------
-	// Public
-	//---------------------------------------------------------
-
 /* @brief Root namespace for all LumEngine types, systems and subsystems. */
 namespace lum {
 
@@ -44,5 +40,27 @@ namespace lum {
 
 	using String = std::string;				/* @brief Owning heap-allocated string. */
 	using StringView = std::string_view;	/* @brief Non-owning view into a string. */
+
+
+
+	//------------------------------------------------
+	// Concepts
+	//------------------------------------------------
+
+	template<typename tType>
+	concept cArithmetic = std::is_arithmetic_v<tType>;
+
+	template<typename tType>
+	concept cStringable = std::same_as<tType, char> || requires(tType t) {
+		{ t.data( ) } -> std::convertible_to<const char*>;
+		{ t.size( ) } -> std::convertible_to<usize>;
+	};
+
+	template<typename tType>
+	concept cEnum = std::is_enum_v<tType>;
+
+	template<typename tType>
+	concept cFloating = std::is_floating_point_v<tType>;
+
 
 } // namespace lum

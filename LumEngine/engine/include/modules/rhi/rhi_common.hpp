@@ -17,19 +17,19 @@ namespace lum {
 	struct alignas(16) FVertex {
 
 		/* @brief Vertex position in 3D space. */
-		glm::vec3 mPosition;
+		Vector3 mPosition;
 
 		/* @brief Vertex normal vector. */
-		glm::vec3 mNormal;
+		Vector3 mNormal;
 
 		/* @brief Texture coordinates. */
-		glm::vec2 mUv;
+		Vector2 mUv;
 
 		/* @brief Tangent vector used for TBN matrix construction. */
-		glm::vec3 mTangent;
+		Vector3 mTangent;
 
 		/* @brief Bitangent vector used for TBN matrix construction. */
-		glm::vec3 mBitangent;
+		Vector3 mBitangent;
 
 	};
 
@@ -45,8 +45,8 @@ namespace lum {
 		* @param height Height of the texture in pixels.
 		* @return Number of mip levels, always >= 1.
 		*/
-		inline uint32 MipmapLvls(uint32 width, uint32 height) {
-			return 1 + std::floor(std::log2(std::max(width, height)));
+		inline uint32 MipmapLvls( uint32 width, uint32 height ) {
+			return 1 + std::floor( std::log2( std::max( width, height ) ) );
 		}
 
 		/* @brief Casts an enum to its underlying integer type.
@@ -56,8 +56,8 @@ namespace lum {
 		*/
 		template<typename E>
 			requires std::is_enum_v<E>
-		constexpr inline std::underlying_type_t<E> LookupCast(E e) {
-			return ToUnderlyingEnum(e);
+		constexpr inline std::underlying_type_t<E> LookupCast( E e ) {
+			return ToUnderlyingEnum( e );
 		}
 
 		/* @brief Returns a sentinel null value for arithmetic ID types.
@@ -67,8 +67,8 @@ namespace lum {
 		*/
 		template<typename T>
 			requires std::is_arithmetic_v<T>
-		inline constexpr T NullID() {
-			return MaxValue<T>();
+		inline constexpr T NullID( ) {
+			return MaxValue<T>( );
 		}
 
 		using RBufferID = uint32; /* @brief Numeric identifier for a GPU buffer object. */
@@ -79,30 +79,28 @@ namespace lum {
 		using RPipelineID = uint32; /* @brief Numeric identifier for a pipeline state object. */
 		using RShaderID = uint8;  /* @brief Numeric identifier for a shader program (compact). */
 
-
 		/* @brief Typed handle wrapping a pipeline state object ID. */
-		struct RPipelineHandle : public cstd::BaseHandle<RPipelineID> {};
+		struct RPipelineHandle : public cstd::BaseHandle<RPipelineID> { };
 
 		/* @brief Typed handle wrapping a framebuffer object ID. */
 		struct RFramebufferHandle : public cstd::BaseHandle<RFramebufferID> { using BaseHandle::BaseHandle; };
 
 		/* @brief Typed handle wrapping a texture sampler ID. */
-		struct RSamplerHandle : public cstd::BaseHandle<RSamplerID> {};
+		struct RSamplerHandle : public cstd::BaseHandle<RSamplerID> { };
 
 		/* @brief Typed handle wrapping a shader program ID. */
-		struct RShaderHandle : public cstd::BaseHandle<RShaderID> {};
+		struct RShaderHandle : public cstd::BaseHandle<RShaderID> { };
 
 		/* @brief Typed handle wrapping a GPU texture ID. */
-		struct RTextureHandle : public cstd::BaseHandle<RTextureID> {};
+		struct RTextureHandle : public cstd::BaseHandle<RTextureID> { };
 
 		/* @brief Typed handle wrapping a GPU buffer object ID. */
-		struct RBufferHandle : public cstd::BaseHandle<RBufferID> {};
+		struct RBufferHandle : public cstd::BaseHandle<RBufferID> { };
 
 		/* @brief Typed handle wrapping a vertex layout (VAO) ID. */
-		struct RVertexLayoutHandle : public cstd::BaseHandle<RLayoutID> {};
+		struct RVertexLayoutHandle : public cstd::BaseHandle<RLayoutID> { };
 
-		inline RFramebufferHandle gDefaultFramebuffer{ 0, MaxValue<RFramebufferID>() };
-
+		inline constexpr RFramebufferHandle gDefaultFramebuffer { 0, MaxValue<RFramebufferID>( ) };
 
 		/* @brief Bitmask storage type used for RHI flag enums. */
 		using REnumFlag = uint16;
@@ -120,6 +118,23 @@ namespace lum {
 			Color = 1 << 0, /* @brief Color buffer. */
 			Depth = 1 << 1, /* @brief Depth buffer. */
 			Stencil = 1 << 2  /* @brief Stencil buffer. */
+		};
+
+		/* @brief Describes a single texture layer attachment operation for a framebuffer.
+		* Used to bind a specific layer of a Texture2DArray or Cubemap to an FBO attachment point.
+		*
+		* @param mLayer        Layer index to attach (array layer or cubemap face).
+		* @param mMip          Mip level to attach. 0 = base level.
+		* @param mSlot         Color attachment index. Only used when mAttachment == Color.
+		* @param mAttachment   Framebuffer attachment point (Color, Depth, Stencil, or Depth|Stencil).
+		*/
+		struct FTextureLayerAttachment {
+
+			uint32 mLayer = 0;
+			uint32 mMip = 0;
+			uint32 mSlot = 0;
+			Flags<BufferBit> mAttachment = BufferBit::Color;
+
 		};
 
 		/* @brief Vertex attribute data format passed to the GPU.
@@ -160,14 +175,14 @@ namespace lum {
 
 		/* @brief Bitmask flags controlling CPU-side buffer mapping behavior. */
 		enum class MapFlag : bitfield {
-			None = 0,
-			Persistent = 1 << 0, /* @brief Mapping persists across multiple frames. */
-			Write = 1 << 1, /* @brief CPU may write to the mapped range. */
-			Read = 1 << 2, /* @brief CPU may read from the mapped range. */
-			Coherent = 1 << 3, /* @brief Writes are immediately visible to the GPU. */
-			Invalidate_Range = 1 << 4, /* @brief GPU allocates a new range; old range remains valid. */
-			Invalidate_Buffer = 1 << 5, /* @brief GPU allocates a new buffer; old buffer is discarded. */
-			Unsynchronized = 1 << 6, /* @brief Map without GPU synchronization guarantees. */
+			None				= 0,
+			Persistent			= 1 << 0, /* @brief Mapping persists across multiple frames. */
+			Write				= 1 << 1, /* @brief CPU may write to the mapped range. */
+			Read				= 1 << 2, /* @brief CPU may read from the mapped range. */
+			Coherent			= 1 << 3, /* @brief Writes are immediately visible to the GPU. */
+			Invalidate_Range	= 1 << 4, /* @brief GPU allocates a new range; old range remains valid. */
+			Invalidate_Buffer	= 1 << 5, /* @brief GPU allocates a new buffer; old buffer is discarded. */
+			Unsynchronized		= 1 << 6, /* @brief Map without GPU synchronization guarantees. */
 		};
 
 		/* @brief Specifies which polygon face(s) an operation applies to. */
@@ -197,39 +212,38 @@ namespace lum {
 		namespace detail {
 
 #		if LUM_ENABLE_DEBUG_RENDER == 1
-				inline void APIENTRY GLDebugCallback(
-					GLenum src,
-					GLenum type,
-					GLuint id,
-					GLenum severity,
-					GLsizei length,
-					const char* msg,
-					const void* usrParam
-				)
-				{
-					if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
-						LUM_LOG_DEBUG(msg);
-					else if (severity == GL_DEBUG_SEVERITY_LOW)
-						LUM_LOG_INFO(msg);
-					else if (severity == GL_DEBUG_SEVERITY_MEDIUM)
-						LUM_LOG_WARN(msg);
-					else if (severity == GL_DEBUG_SEVERITY_HIGH)
-						LUM_LOG_ERROR(msg);
+			inline void APIENTRY GLDebugCallback(
+				GLenum src,
+				GLenum type,
+				GLuint id,
+				GLenum severity,
+				GLsizei length,
+				const char* msg,
+				const void* usrParam
+			) {
+				if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+					LUM_LOG_DEBUG( msg );
+				else if (severity == GL_DEBUG_SEVERITY_LOW)
+					LUM_LOG_INFO( msg );
+				else if (severity == GL_DEBUG_SEVERITY_MEDIUM)
+					LUM_LOG_WARN( msg );
+				else if (severity == GL_DEBUG_SEVERITY_HIGH)
+					LUM_LOG_ERROR( msg );
 
-				}
+			}
 #		endif
 
 			/* @brief Lookup table mapping EDataFormat enum values to their component counts.
 			* Indexed by the underlying value of EDataFormat.
 			*/
 			inline constexpr
-			uint8 gDataFormatLookup[] = { 1, 2, 3, 4, 9, 16 };
+				uint8 gDataFormatLookup[ ] = { 1, 2, 3, 4, 9, 16 };
 
 		} // namespace lum::rhi::detail
 
 	} // namespace lum::rhi
 
-	LUM_ENUM_OPERATIONS(rhi::MapFlag);
-	LUM_ENUM_OPERATIONS(rhi::BufferBit);
+	LUM_ENUM_OPERATIONS( rhi::MapFlag );
+	LUM_ENUM_OPERATIONS( rhi::BufferBit );
 
 } // namespace lum

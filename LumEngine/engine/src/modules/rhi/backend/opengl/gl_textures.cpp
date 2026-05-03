@@ -114,6 +114,7 @@ namespace lum::rhi::gl {
 			(desc.mMipmapLevels == 0 ? MipmapLvls( width, height ) : desc.mMipmapLevels) : 1;
 
 		cvptr data;
+
 		// HDRI
 		if (desc.mData.bIsHDR) {
 			data = (desc.mData.mFloatPixels.empty( )) ? nullptr : desc.mData.mFloatPixels.data( );
@@ -123,22 +124,7 @@ namespace lum::rhi::gl {
 			data = (desc.mData.mPixels.empty( )) ? nullptr : desc.mData.mPixels.data( );
 		}
 
-		// Multisample enabled
-		if (desc.mSamples > 0) {
-
-			glCreateTextures( GL_TEXTURE_2D_MULTISAMPLE, 1, &texture.mHandle );
-			glTextureStorage2DMultisample(
-				texture.mHandle,
-				desc.mSamples,
-				skImageLayoutLookup[ LookupCast( desc.mImageLayout ) ],
-				width,
-				height,
-				GL_TRUE
-			);
-
-		}
-		// Multisample disabled
-		else {
+		if (desc.mTextureType == TextureType::Texture2D) {
 
 			glCreateTextures( GL_TEXTURE_2D, 1, &texture.mHandle );
 			glTextureStorage2D(
@@ -161,10 +147,38 @@ namespace lum::rhi::gl {
 					data
 				);
 
-			if (mipmapLevels > 1) {
-				glGenerateTextureMipmap( texture.mHandle );
-			}
+		}
+		else if (desc.mTextureType == TextureType::Texture2DSampled) {
 
+			glCreateTextures( GL_TEXTURE_2D_MULTISAMPLE, 1, &texture.mHandle );
+			glTextureStorage2DMultisample(
+				texture.mHandle,
+				desc.mSamples,
+				skImageLayoutLookup[ LookupCast( desc.mImageLayout ) ],
+				width,
+				height,
+				GL_TRUE
+			);
+
+		}
+		else if (desc.mTextureType == TextureType::Texture2DArray) {
+
+			LUM_ASSERT( desc.mDepth > 0, "Texture2DArray requires at least 1 layer (mDepth)" );
+
+			glCreateTextures( GL_TEXTURE_2D_ARRAY, 1, &texture.mHandle );
+			glTextureStorage3D(
+				texture.mHandle,
+				mipmapLevels,
+				skImageLayoutLookup[ LookupCast( desc.mImageLayout ) ],
+				width,
+				height,
+				desc.mDepth
+			);
+
+		}
+
+		if (mipmapLevels > 1) {
+			glGenerateTextureMipmap( texture.mHandle );
 		}
 
 		texture.mDataFormat = desc.mImageFormat;
@@ -173,7 +187,8 @@ namespace lum::rhi::gl {
 		texture.mSamples = desc.mSamples;
 		texture.mRect.mWidth = width;
 		texture.mRect.mHeight = height;
-		texture.mType = (desc.mSamples > 0) ? TextureType::Texture2DSampled : TextureType::Texture2D;
+		texture.mRect.mDepth = desc.mDepth;
+		texture.mType = desc.mTextureType;
 		texture.mMipmapLevels = mipmapLevels;
 
 		RTextureHandle textureHandle = mTextures.Append( std::move( texture ) );

@@ -17,7 +17,8 @@ namespace lum::render {
 		void Execute( GeometryPass& geoPass, const LightPass& lightPass );
 
 		// Shadow map generation pass for the directional light.
-		struct DirectionalLight {
+		class DirectionalLight {
+		public:
 
 			/* @brief Initializes the pass, allocates GPU resources and compiles shaders.
 			*  @param ctx Context struct containing valid pointers to all subsystem managers.
@@ -36,7 +37,7 @@ namespace lum::render {
 		private:
 
 			/* @brief Shadow map texture dimensions in pixels. */
-			glm::vec2 mShadowMapTexSize = { 4096, 4096 };
+			glm::uvec2 mShadowMapTexSize = { 4096, 4096 };
 
 			/* @brief Distance from the scene origin used to position the light. */
 			float32 mShadowMapDistance = 50.f;
@@ -54,16 +55,13 @@ namespace lum::render {
 			rhi::RTextureHandle mShadowMap;
 
 			/* @brief Framebuffer with the shadow map as its depth attachment. */
-			rhi::RFramebufferHandle mShadowFramebuffer;
+			rhi::RFramebufferHandle mFramebuffer;
 
 			/* @brief Shader program used during the shadow pass. */
 			rhi::RShaderHandle mShader;
 
 			/* @brief Uniform buffer holding the light space transformation matrix. */
 			rhi::RBufferHandle mLightSpaceUBO;
-
-			/* @brief Pipeline ensuring that everyting is prepared to generate shadow map. */
-			rhi::RPipelineHandle mShadowPipeline;
 
 			/* @brief Computes and uploads the light space matrix from the given light direction.
 			*  @param direction Normalized direction vector of the directional light.
@@ -77,16 +75,50 @@ namespace lum::render {
 
 		} mDirectionalLight;
 
-		struct PointLight {
+		class SpotLight {
+		public:
+			
+			void Initialize( FRendererContext& ctx );
 
+			void Execute( GeometryPass& geoPass, const LightPass& lightPass, FRendererContext& ctx );
+			
+			rhi::RTextureHandle GetShadowMaps( ) const noexcept { return mShadowMaps; }
+			
+		private:
+			
+			/* @brief Shadow map texture dimensions in pixels. */
+			glm::uvec2 mShadowMapTexSize = { 1024, 1024 };
 
+			/* @brief Near plane of the light space projection. */
+			float32 mShadowMapNear = 0.1f;
 
-		} mPointLight;
+			/* @brief Far plane of the light space projection. */
+			float32 mShadowMapFar = 100.0f;
+
+			/* @brief Depth texture used as the shadow maps attachments. */
+			rhi::RTextureHandle mShadowMaps;
+
+			/* @brief Framebuffer with the shadow maps as its depth attachment. */
+			rhi::RFramebufferHandle mFramebuffer;
+
+			/* @brief Shader program used during the shadow pass. */
+			rhi::RShaderHandle mShader;
+
+			/* @brief Uniform buffer holding the light space transformation matrix. */
+			rhi::RBufferHandle mLightSpaceUBO;
+			
+			void calculate_lightspace_matrix( const glm::vec3& dir, const glm::vec3 pos, float32 fov, FRendererContext& ctx );
+
+			void upload_lightspace_matrix( const glm::mat4& mat, FRendererContext& ctx );
+			
+		} mSpotLight;
 
 
 	private:
 
 		FRendererContext mContext;
+
+		rhi::RPipelineHandle mShadowMappingPipeline;
 
 	};
 

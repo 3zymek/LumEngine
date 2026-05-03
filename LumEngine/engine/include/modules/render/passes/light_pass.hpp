@@ -10,6 +10,8 @@
 namespace lum::render {
 
 	namespace detail { class GBuffer; }
+	using PointLightsArr = std::array<FPointLight, LUM_MAX_LIGHTS>;
+	using SpotLightsArr = std::array<FSpotLight, LUM_MAX_LIGHTS>;
 
 	/* @brief Descriptor passed to Execute() containing IBL and shadow map handles
 	*  required for the deferred lighting calculation.
@@ -55,6 +57,9 @@ namespace lum::render {
 		FDirectionalLight GetDirectionalLight( );
 		FDirectionalLight GetDirectionalLight( ) const;
 
+		const std::pair<PointLightsArr, uint32>& GetPointLights( ) const { return { mPointLights, mActivePointLights }; }
+		const std::pair<SpotLightsArr, uint32>& GetSpotLights( ) const { return { mSpotLights, mActiveSpotLights }; }
+
 		/* @brief Clears all point and spot lights submitted in the previous frame.
 		*  Should be called at the start of each frame before submitting new lights.
 		*/
@@ -80,10 +85,10 @@ namespace lum::render {
 		FRendererContext mContext;
 
 		/* @brief Array of active point lights for this frame. */
-		std::array<FPointLight, LUM_MAX_LIGHTS> mPointLights{};
+		PointLightsArr mPointLights{};
 
 		/* @brief Array of active spot lights for this frame. */
-		std::array<FSpotLight, LUM_MAX_LIGHTS> mSpotLights{};
+		SpotLightsArr mSpotLights{};
 
 		/* @brief Number of currently active point lights. */
 		uint32 mActivePointLights = 0;

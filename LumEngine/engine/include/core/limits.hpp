@@ -68,6 +68,9 @@ namespace lum::limits {
 	/* @brief Maximum number of draw calls per frame. */
 	inline constexpr usize gMaxDrawCallsPf = 256;
 
+	/* @brief Maximum number of spot lights that can cast shadows simultaneously. */
+	inline constexpr uint8 gMaxShadowCastingSpotLights = LUM_MAX_SHADOW_CASTING_SPOT_LIGHTS;
+
 
 	//============================= Assets ==================================
 

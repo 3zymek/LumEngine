@@ -77,18 +77,27 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::AttachCubemapFace( RFramebufferHandle fbo, RTextureHandle tex, int32 face, uint32 mip ) {
+	void GLDevice::AttachTextureLayer( rhi::RFramebufferHandle fbo, rhi::RTextureHandle tex, const FTextureLayerAttachment& desc ) {
 
 		LUM_ASSERT( IsValid( fbo ), "Invalid framebuffer" );
 		LUM_ASSERT( IsValid( tex ), "Invalid texture" );
 
+		GLenum attachment;
+		if (desc.mAttachment.Has( BufferBit::Depth ) && desc.mAttachment.Has( BufferBit::Stencil ))
+			attachment = GL_DEPTH_STENCIL_ATTACHMENT;
+		else if (desc.mAttachment.Has( BufferBit::Depth ))
+			attachment = GL_DEPTH_ATTACHMENT;
+		else if (desc.mAttachment.Has( BufferBit::Stencil ))
+			attachment = GL_STENCIL_ATTACHMENT;
+		else
+			attachment = GL_COLOR_ATTACHMENT0 + desc.mSlot;
 
-		glNamedFramebufferTextureLayer( 
-			mFramebuffers[fbo ].mHandle, 
-			GL_COLOR_ATTACHMENT0, 
-			mTextures[tex ].mHandle, 
-			mip, 
-			face 
+		glNamedFramebufferTextureLayer(
+			mFramebuffers[fbo ].mHandle,
+			attachment,
+			mTextures[tex ].mHandle,
+			desc.mMip,
+			desc.mLayer
 		);
 
 	}

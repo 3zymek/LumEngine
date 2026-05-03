@@ -11,6 +11,7 @@
 #include "core/utils/string_hasher.hpp"
 #include "core/utils/logger.hpp"
 #include "core/utils/lum_assert.hpp"
+#include "core/math/math_common.hpp"
 
 namespace lum {
 
@@ -56,15 +57,6 @@ namespace lum {
 		/* @brief Global atomic counter shared across all type ID assignments. */
 		inline static std::atomic<uint32> sID = 0;
 
-	};
-
-	template<typename tType>
-	concept cArithmetic = std::is_arithmetic_v<tType>;
-
-	template<typename tType>
-	concept cStringable = std::same_as<tType, char> || requires(tType t) {
-		{ t.data( ) } -> std::convertible_to<const char*>;
-		{ t.size( ) } -> std::convertible_to<usize>;
 	};
 
 	/* @brief Converts any arithmetic type to float32 at compile-time.

@@ -7,9 +7,6 @@
 
 namespace lum {
 
-	template<typename T>
-	concept cEnum = std::is_enum_v<T>;
-
 	/*!
 	* @brief Type-safe bitflag wrapper for enum types.
 	*

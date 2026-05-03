@@ -228,8 +228,8 @@ namespace lum {
 					}
 					dir = glm::normalize( dir );
 
-					float32 eu = atan2( dir.z, dir.x ) / (2.0f * glm::pi<float32>( )) + 0.5f;
-					float32 ev = 0.5f - asin( std::clamp( dir.y, -1.0f, 1.0f ) ) / glm::pi<float32>( );
+					float32 eu = atan2( dir.z, dir.x ) / (2.0f * Pi()) + 0.5f;
+					float32 ev = 0.5f - asin( std::clamp( dir.y, -1.0f, 1.0f ) ) / Pi();
 
 					int32 px = ( int32 ) (eu * equirect.mWidth) % equirect.mWidth;
 					int32 py = ( int32 ) (ev * equirect.mHeight) % equirect.mHeight;

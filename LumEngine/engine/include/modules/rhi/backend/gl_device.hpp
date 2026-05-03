@@ -42,7 +42,7 @@ namespace lum::rhi::gl {
 
 		RFramebufferHandle CreateFramebuffer( const FFramebufferDescriptor& ) override;
 
-		void AttachCubemapFace( RFramebufferHandle fbo, RTextureHandle tex, int32 face, uint32 mip ) override;
+		void AttachTextureLayer( rhi::RFramebufferHandle fbo, rhi::RTextureHandle tex, const FTextureLayerAttachment& desc ) override;
 
 		void BlitFramebuffer( const FFramebufferBlitDescriptor& ) override;
 
@@ -380,7 +380,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps ClearFlag bits to GL clear buffer bits. */
-		inline constexpr static GLenum skClearOpLookup[] =
+		inline constexpr static GLenum skBufferBitLookup[] =
 		{
 			GL_COLOR_BUFFER_BIT,
 			GL_DEPTH_BUFFER_BIT,
@@ -499,7 +499,9 @@ namespace lum::rhi::gl {
 		bool link_program( GLuint program );
 
 		/* @brief Creates a 2D texture from the given descriptor. */
-		RTextureHandle create_texture_2d( const FTextureDescriptor& );
+		RTextureHandle create_texture_2d( const FTextureDescriptor& desc );
+
+		RTextureHandle create_texture_2d_array( const FTextureDescriptor& desc );
 
 		/* @brief Creates a 3D texture from the given descriptor. */
 		RTextureHandle create_texture_3d( const FTextureDescriptor& );

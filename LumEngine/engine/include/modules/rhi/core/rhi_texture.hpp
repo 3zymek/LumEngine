@@ -37,6 +37,7 @@ namespace lum::rhi {
 	enum class TextureType : byte {
 		None,
 		Texture2D,          /* Standard 2D texture (render target, GBuffer attachment). */
+		Texture2DArray,		/* Array with multiple texture 2D layers. */
 		Texture2DSampled,	/* 2D multisample texture (MSAA render target). */
 		Texture3D,          /* Volumetric 3D texture. */
 		Cubemap             /* 6-face cube texture (skybox, IBL environment maps). */
