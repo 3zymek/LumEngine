@@ -41,7 +41,7 @@ namespace lum::ahi {
 
 		float32		mVolume = 1.0f;
 		float32		mPitch = 1.0f;
-		glm::vec3	mPosition = { 0.0f, 0.0f, 0.0f };
+		Vector3		mPosition;
 		float32		mMinDistance = 10.0f;
 		float32		mMaxDistance = 50.0f;
 

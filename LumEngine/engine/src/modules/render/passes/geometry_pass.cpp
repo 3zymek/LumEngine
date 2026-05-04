@@ -138,21 +138,21 @@ namespace lum::render {
 
 	void GeometryPass::upload_model_matrix( const FRenderInstance& instance ) {
 
-		glm::quat rot = glm::quat( glm::radians( instance.mTransform->mRotation ) );
-		glm::mat4 rotation = glm::mat4_cast( rot );
-		glm::mat4 model = glm::mat4( 1.f );
+		Quaternion rot = FromEuler( instance.mTransform->mRotation );
+		Matrix4 rotation = ToMat4( rot );
+		Matrix4 model = Matrix4( 1.f );
 
-		model = glm::mat4( 1.f );
-		model = glm::translate( model, instance.mTransform->mPosition );
+		model = Matrix4( 1.f );
+		model = Translate( model, instance.mTransform->mPosition );
 		model = model * rotation;
-		model = glm::scale( model, instance.mTransform->mScale );
+		model = Scale( model, instance.mTransform->mScale );
 
-		mContext.mRenderDev->UpdateBuffer( mModelUniform, glm::value_ptr( model ), 0, 0 );
+		mContext.mRenderDev->UpdateBuffer( mModelUniform, model.Data(), 0, 0 );
 
 	}
 	void GeometryPass::upload_material( const CMaterialInstance& mat ) {
 
-		mMaterialUBO.mBaseColor = glm::vec4( mat.mBaseColor, 1.0 );
+		mMaterialUBO.mBaseColor = Vector4( mat.mBaseColor, 1.0f );
 		mMaterialUBO.mRoughness = mat.mRoughnessValue;
 		mMaterialUBO.mMetallic = mat.mMetallicValue;
 

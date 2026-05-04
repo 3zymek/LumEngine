@@ -10,11 +10,26 @@ namespace lum {
 		constexpr TVector4( ) : x( tType( 0 ) ), y( tType( 0 ) ), z( tType( 0 ) ), w( tType( 0 ) ) { }
 		constexpr TVector4( tType x, tType y, tType z, tType w ) : x( x ), y( y ), z( z ), w( w ) { }
 		constexpr explicit TVector4( tType scalar ) : x( scalar ), y( scalar ), z( scalar ), w(scalar) { }
+		template<cArithmetic tOther>
+		constexpr TVector4( const TVector3<tOther>& v, tOther w )
+			: x( static_cast< tType >(v.x) ),
+			y( static_cast< tType >(v.y) ),
+			z( static_cast< tType >(v.z) ),
+			w( static_cast< tType >(w) ) { }
 
 		template<cArithmetic tOther>
 		explicit operator TVector4<tOther>( ) const {
 			return { static_cast< tOther >(x), static_cast< tOther >(y), static_cast< tOther >(z), static_cast< tOther >(w) };
 		}
+		template<cArithmetic tOther>
+		explicit operator TVector3<tOther>( ) const {
+			return { static_cast< tOther >(x), static_cast< tOther >(y), static_cast< tOther >(z) };
+		}
+		template<cArithmetic tOther>
+		explicit operator TVector2<tOther>( ) const {
+			return { static_cast< tOther >(x), static_cast< tOther >(y) };
+		}
+
 		union {
 			struct { tType x, y, z, w; };
 			struct { tType r, g, b, a; };

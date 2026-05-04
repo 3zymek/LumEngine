@@ -37,7 +37,7 @@ namespace lum::render {
 		private:
 
 			/* @brief Shadow map texture dimensions in pixels. */
-			glm::uvec2 mShadowMapTexSize = { 4096, 4096 };
+			Vector2u mShadowMapTexSize = { 4096, 4096 };
 
 			/* @brief Distance from the scene origin used to position the light. */
 			float32 mShadowMapDistance = 50.f;
@@ -66,12 +66,12 @@ namespace lum::render {
 			/* @brief Computes and uploads the light space matrix from the given light direction.
 			*  @param direction Normalized direction vector of the directional light.
 			*/
-			void calculate_lightspace_matrix( const glm::vec3& dir, FRendererContext& ctx );
+			void calculate_lightspace_matrix( const Vector3& dir, FRendererContext& ctx );
 
 			/* @brief Uploads the light space matrix to the GPU uniform buffer.
 			*  @param mat Light space transformation matrix to upload.
 			*/
-			void upload_lightspace_matrix( const glm::mat4& mat, FRendererContext& ctx );
+			void upload_lightspace_matrix( const Matrix4& mat, FRendererContext& ctx );
 
 		} mDirectionalLight;
 
@@ -87,7 +87,7 @@ namespace lum::render {
 		private:
 			
 			/* @brief Shadow map texture dimensions in pixels. */
-			glm::uvec2 mShadowMapTexSize = { 1024, 1024 };
+			Vector2u mShadowMapTexSize = { 1024, 1024 };
 
 			/* @brief Near plane of the light space projection. */
 			float32 mShadowMapNear = 0.1f;
@@ -107,9 +107,9 @@ namespace lum::render {
 			/* @brief Uniform buffer holding the light space transformation matrix. */
 			rhi::RBufferHandle mLightSpaceUBO;
 			
-			void calculate_lightspace_matrix( const glm::vec3& dir, const glm::vec3 pos, float32 fov, FRendererContext& ctx );
+			void calculate_lightspace_matrix( const Vector3& dir, const Vector3& pos, float32 fov, FRendererContext& ctx );
 
-			void upload_lightspace_matrix( const glm::mat4& mat, FRendererContext& ctx );
+			void upload_lightspace_matrix( const Matrix4& mat, FRendererContext& ctx );
 			
 		} mSpotLight;
 

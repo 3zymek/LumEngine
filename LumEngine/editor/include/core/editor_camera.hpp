@@ -20,9 +20,9 @@ namespace lum::editor {
 
 		render::FRenderCamera Update( float64 delta ) {
 
-			glm::vec3 forward = glm::normalize( mTarget - mPosition );
-			glm::vec3 right = glm::normalize( glm::cross( forward, glm::vec3( 0, 1, 0 ) ) );
-			glm::vec3 up = glm::normalize( glm::cross( right, forward ) );
+			Vector3 forward = Normalize( mTarget - mPosition );
+			Vector3 right = Normalize( Cross( forward, Vector3( 0, 1, 0 ) ) );
+			Vector3 up = Normalize( Cross( right, forward ) );
 
 			static glm::vec2 sLastPos = input::GetMousePos( );
 
@@ -43,11 +43,11 @@ namespace lum::editor {
 				mPitch -= deltaPos.y * mSensivity;
 				mPitch = glm::clamp( mPitch, -89.0f, 89.0f );
 
-				glm::vec3 direction;
-				direction.x = cos( glm::radians( mYaw ) ) * cos( glm::radians( mPitch ) );
-				direction.y = sin( glm::radians( mPitch ) );
-				direction.z = sin( glm::radians( mYaw ) ) * cos( glm::radians( mPitch ) );
-				mTarget = mPosition + glm::normalize( direction );
+				Vector3 direction;
+				direction.x = cos( Radians( mYaw ) ) * cos( Radians( mPitch ) );
+				direction.y = sin( Radians( mPitch ) );
+				direction.z = sin( Radians( mYaw ) ) * cos( Radians( mPitch ) );
+				mTarget = mPosition + Normalize( direction );
 				mUp = up;
 
 			}
@@ -56,8 +56,8 @@ namespace lum::editor {
 			render::FRenderCamera data;
 
 			data.mPosition = mPosition;
-			data.mProjection = glm::perspective( glm::radians( mFov ), mAspectRatio, mNearPlane, mFarPlane );
-			data.mView = glm::lookAt( mPosition, mTarget, mUp );
+			data.mProjection = Perspective( Radians( mFov ), mAspectRatio, mNearPlane, mFarPlane );
+			data.mView = LookAt( mPosition, mTarget, mUp );
 
 			return data;
 
@@ -82,9 +82,9 @@ namespace lum::editor {
 		float32 mNearPlane = 0.1f;
 		float32 mFarPlane = 1000.0f;
 
-		glm::vec3 mPosition = glm::vec3( 0.0f );
-		glm::vec3 mUp = glm::vec3( 0.0f, 1.0f, 0.0f );
-		glm::vec3 mTarget = glm::vec3( 1.0f );
+		Vector3 mPosition;
+		Vector3 mUp;
+		Vector3 mTarget;
 
 
 	};

@@ -73,15 +73,15 @@ namespace lum::render {
 			desc.mBufferType = rhi::BufferType::Uniform;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
-			desc.mSize = sizeof( glm::mat4 ) * 2;
+			desc.mSize = sizeof( Matrix4 ) * 2;
 			captureUBO = mContext.mRenderDev->CreateBuffer( desc );
 			mContext.mRenderDev->SetUniformBufferBinding( captureUBO, LUM_UBO_IRRADIANCE );
 
 		}
 
 		rhi::RFramebufferHandle		captureFBO = mContext.mRenderDev->CreateFramebuffer( { } );
-		glm::mat4					captureProjection = IBL::GetCaptureProjection( );
-		std::array<glm::mat4, 6>	captureViews = IBL::GetCaptureViews( );
+		Matrix4						captureProjection = IBL::GetCaptureProjection( );
+		std::array<Matrix4, 6>		captureViews = IBL::GetCaptureViews( );
 		rhi::FViewportState			viewport = mContext.mRenderDev->GetViewport( );
 
 		mContext.mRenderDev->SetViewport( 0, 0, 32, 32 );
@@ -93,7 +93,7 @@ namespace lum::render {
 
 		for (int32 i = 0; i < 6; i++) {
 
-			glm::mat4 matrices[ ] = { captureProjection, captureViews[ i ] };
+			Matrix4 matrices[ ] = { captureProjection, captureViews[ i ] };
 			mContext.mRenderDev->UpdateBuffer( captureUBO, matrices );
 
 			rhi::FTextureLayerAttachment attach;
@@ -131,8 +131,8 @@ namespace lum::render {
 		}
 
 		rhi::RFramebufferHandle		captureFBO = mContext.mRenderDev->CreateFramebuffer( { } );
-		glm::mat4					captureProjection = IBL::GetCaptureProjection( );
-		std::array<glm::mat4, 6>	captureViews = IBL::GetCaptureViews( );
+		Matrix4						captureProjection = IBL::GetCaptureProjection( );
+		std::array<Matrix4, 6>		captureViews = IBL::GetCaptureViews( );
 		rhi::FViewportState			viewport = mContext.mRenderDev->GetViewport( );
 
 		mContext.mRenderDev->BindFramebuffer( captureFBO );
@@ -142,8 +142,8 @@ namespace lum::render {
 		mContext.mRenderDev->BindShader( mIBL.mPrefiltered.mShader );
 
 		LUM_UNIFORM_BUFFER_STRUCT UniformData{
-			glm::mat4 mProjection;
-			glm::mat4 mView;
+			Matrix4 mProjection;
+			Matrix4 mView;
 			float32 mRoughness;
 			float32 _pad[ 3 ];
 		};

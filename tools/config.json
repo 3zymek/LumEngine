@@ -82,13 +82,25 @@
       "reader": "detail::ReadVec2Parameter",
       "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat2( \"##{FieldName}##lhc\", glm::value_ptr({Var}->{FieldName}), {Speed}, {MinVal}, {MaxVal} )"
     },
+    "Vector2": {
+      "reader": "detail::ReadVec2Parameter",
+      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat2( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), {Speed}, {MinVal}, {MaxVal} )"
+    },
     "glm::vec3": {
       "reader": "detail::ReadVec3Parameter",
       "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat3( \"##{FieldName}##lhc\", glm::value_ptr({Var}->{FieldName}), {Speed}, {MinVal}, {MaxVal} )"
     },
+    "Vector3": {
+      "reader": "detail::ReadVec3Parameter",
+      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat3( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), {Speed}, {MinVal}, {MaxVal} )"
+    },
     "glm::vec4": {
       "reader": "detail::ReadVec4Parameter",
       "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat4( \"##{FieldName}##lhc\", glm::value_ptr({Var}->{FieldName}), {Speed}, {MinVal}, {MaxVal} )"
+    },
+    "Vector4": {
+      "reader": "detail::ReadVec4Parameter",
+      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat4( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), {Speed}, {MinVal}, {MaxVal} )"
     },
     "bool": {
       "reader": "detail::ReadBoolParameter",

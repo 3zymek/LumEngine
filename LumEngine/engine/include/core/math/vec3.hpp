@@ -44,7 +44,7 @@ namespace lum {
 		bool operator==( const TVector3& rhs ) const { return x == rhs.x && y == rhs.y && z == rhs.z; }
 		bool operator!=( const TVector3& rhs ) const { return !(*this == rhs); }
 
-		const float32* Data( ) const { return &x; }
+		tType* Data( ) { return &x; }
 
 	};
 
@@ -61,22 +61,22 @@ namespace lum {
 	//-----------------------------------------
 
 	template<cArithmetic tType>
-	constexpr float32 Length( const TVector3<tType>& v ) { return sqrt( v.x * v.x + v.y * v.y + v.z * v.z ); }
+	float32 Length( const TVector3<tType>& v ) { return sqrt( v.x * v.x + v.y * v.y + v.z * v.z ); }
 
 	template<cArithmetic tType>
 	constexpr float32 LengthSq( const TVector3<tType>& v ) { return v.x * v.x + v.y * v.y + v.z * v.z; }
 
 	template<cArithmetic tType>
-	constexpr float32 Distance( const TVector3<tType>& a, const TVector3<tType>& b ) { return Length( b - a ); }
+	float32 Distance( const TVector3<tType>& a, const TVector3<tType>& b ) { return Length( b - a ); }
 
 	template<cArithmetic tType>
-	constexpr TVector3<tType> Normalize( const TVector3<tType>& v ) {
+	TVector3<tType> Normalize( const TVector3<tType>& v ) {
 		float32 invLen = 1.0f / Length( v );
 		return { v.x * invLen, v.y * invLen, v.z * invLen };
 	}
 
 	template<cArithmetic tType>
-	constexpr float32 Dot( const TVector3<tType>& v1, const TVector3<tType>& v2 ) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
+	float32 Dot( const TVector3<tType>& v1, const TVector3<tType>& v2 ) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
 
 	template<cArithmetic tType>
 	constexpr TVector3<tType> Cross( const TVector3<tType>& v1, const TVector3<tType>& v2 ) {
@@ -97,7 +97,7 @@ namespace lum {
 	}
 
 	template<cArithmetic tType>
-	constexpr TVector3<tType> Abs( const TVector3<tType>& v ) {
+	TVector3<tType> Abs( const TVector3<tType>& v ) {
 		return { std::abs( v.x ), std::abs( v.y ), std::abs( v.z ) };
 	}
 

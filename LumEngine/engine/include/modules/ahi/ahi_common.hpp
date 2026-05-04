@@ -37,10 +37,10 @@ namespace lum::ahi {
 
 	struct FListenerAttributes {
 
-		glm::vec3 mPosition = glm::vec3( 0.0f );
-		glm::vec3 mVelocity = glm::vec3( 0.0f );
-		glm::vec3 mForward = glm::vec3( 0.0f );
-		glm::vec3 mUp = glm::vec3( 0.0f );
+		Vector3 mPosition;
+		Vector3 mVelocity;
+		Vector3 mForward;
+		Vector3 mUp;
 
 	};
 

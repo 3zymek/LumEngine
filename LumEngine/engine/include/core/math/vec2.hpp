@@ -28,10 +28,15 @@ namespace lum {
 		TVector2 operator/( const TVector2& rhs ) const { return { x / rhs.x, y / rhs.y }; }
 
 		// Scalar
+		TVector2 operator+( tType scalar ) const { return { x + scalar, y + scalar }; }
+		TVector2& operator+=( tType scalar ) { x += scalar, y += scalar; return *this; }
+		TVector2 operator-( tType scalar ) const { return { x - scalar, y - scalar }; }
+		TVector2& operator-=( tType scalar ) { x -= scalar, y -= scalar; return *this; }
 		TVector2 operator*( tType scalar ) const { return { x * scalar, y * scalar }; }
 		TVector2& operator*=( tType scalar ) { x *= scalar; y *= scalar; return *this; }
 		TVector2 operator/( tType scalar ) const { tType inv = tType( 1 ) / scalar; return { x * inv, y * inv }; }
 		TVector2& operator/=( tType scalar ) { tType inv = tType( 1 ) / scalar; x *= inv; y *= inv; return *this; }
+
 
 		// Assignment
 		TVector2& operator+=( const TVector2& rhs ) { x += rhs.x; y += rhs.y; return *this; }
@@ -60,16 +65,16 @@ namespace lum {
 	//-----------------------------------------
 
 	template<cArithmetic tType>
-	constexpr float32 Length( const TVector2<tType>& v ) { return sqrt( v.x * v.x + v.y * v.y ); }
+	float32 Length( const TVector2<tType>& v ) { return sqrt( v.x * v.x + v.y * v.y ); }
 
 	template<cArithmetic tType>
 	constexpr float32 LengthSq( const TVector2<tType>& v ) { return v.x * v.x + v.y * v.y; }
 
 	template<cArithmetic tType>
-	constexpr float32 Distance( const TVector2<tType>& a, const TVector2<tType>& b ) { return Length( b - a ); }
+	float32 Distance( const TVector2<tType>& a, const TVector2<tType>& b ) { return Length( b - a ); }
 
 	template<cArithmetic tType>
-	constexpr TVector2<tType> Normalize( const TVector2<tType>& v ) {
+	TVector2<tType> Normalize( const TVector2<tType>& v ) {
 		float32 invLen = 1.0f / Length( v );
 		return { v.x * invLen, v.y * invLen };
 	}
@@ -89,7 +94,7 @@ namespace lum {
 	}
 
 	template<cArithmetic tType>
-	constexpr TVector2<tType> Abs( const TVector2<tType>& v ) {
+	TVector2<tType> Abs( const TVector2<tType>& v ) {
 		return { std::abs( v.x ), std::abs( v.y ) };
 	}
 

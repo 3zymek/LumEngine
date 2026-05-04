@@ -114,6 +114,9 @@ namespace lum {
 
 		const float32* Data( ) const { return &mData[ 0 ]; }
 
+		float32* operator[]( uint32 col ) { return &mData[ col * 4 ]; }
+		const float32* operator[]( uint32 col ) const { return &mData[ col * 4 ]; }
+
 	};
 
 }

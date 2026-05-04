@@ -212,7 +212,7 @@ namespace lum {
 
 				attrs.mPosition = transform.mPosition;
 				attrs.mUp = camera.mUp;
-				attrs.mForward = glm::normalize( camera.mTarget - transform.mPosition );
+				attrs.mForward = Normalize( camera.mTarget - transform.mPosition );
 
 				Set3DListenerAttributes( attrs );
 

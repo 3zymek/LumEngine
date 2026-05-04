@@ -29,10 +29,10 @@ namespace lum {
 		LPROPERTY( ) float32 mPitch = 0.0f;
 
 		/* @brief Point in world space the camera looks at. */
-		LPROPERTY( ) glm::vec3 mTarget = glm::vec3( 0.0f );
+		LPROPERTY( ) Vector3 mTarget;
 
 		/* @brief Up vector defining camera orientation. */
-		LPROPERTY( ) glm::vec3 mUp = glm::vec3( 0.0f, 1.0f, 0.0f );
+		LPROPERTY( ) Vector3 mUp = Vector3( 0.0f, 1.0f, 0.0f );
 
 	};
 

@@ -13,11 +13,11 @@ namespace lum {
 	*/
 	LCLASS( Category = "LIGHTNING" ) struct CPointLight : public Component {
 
-		LPROPERTY( ) float32 mIntensity = 1.f; // Light intensity in linear space
+		LPROPERTY( ) float32 mIntensity = 1.0f; // Light intensity in linear space
 
-		LPROPERTY( ) float32 mRadius = 10.f; // Maximum range of the light
+		LPROPERTY( ) float32 mRadius = 10.0f; // Maximum range of the light
 
-		LPROPERTY( ) glm::vec3 mColor = { 1.f, 1.f, 1.f }; // Light color in linear RGB
+		LPROPERTY( ) Vector3 mColor = Vector3( 1.0f ); // Light color in linear RGB
 
 	};
 
@@ -36,10 +36,10 @@ namespace lum {
 		float32 mOuterCone = 30.f;
 
 		LPROPERTY( ) 
-		glm::vec3 mDirection = glm::vec3( 0.f, -1.f, 0.f );
+		Vector3 mDirection = Vector3( 0.f, -1.f, 0.f );
 
-		LPROPERTY( DragSpeed = 0.2f, MaxVal = 1.0f ) 
-		glm::vec3 mColor = { 1.f, 1.f, 1.f }; // Light color in linear RGB
+		LPROPERTY( DragSpeed = 0.2f, MaxVal = 1.0f )
+		Vector3 mColor = Vector3( 1.f ); // Light color in linear RGB
 
 	};
 

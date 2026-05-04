@@ -16,7 +16,7 @@ namespace lum {
 		LPROPERTY( ) String mBasePath;
 
 		/* @brief Base color multiplier. */
-		LPROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) glm::vec3 mBaseColor = glm::vec3( 1.0f );
+		LPROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) Vector3 mBaseColor = Vector3( 1.0f );
 
 		/* @brief Roughness scalar fallback when no map is bound. */
 		LPROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) float32 mRoughnessValue = 0.5f;

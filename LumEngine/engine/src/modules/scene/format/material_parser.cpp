@@ -52,7 +52,7 @@ namespace lum::fmt {
 				}
 				else if (tokens[i].mValue == "base_color") {
 					
-					glm::vec3 value = detail::ReadVec3Parameter(tokens, i);
+					Vector3 value = detail::ReadVec3Parameter(tokens, i);
 
 					material.mBaseColor = value;
 

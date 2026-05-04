@@ -18,9 +18,9 @@ namespace lum::render {
 
 	}
 
-	glm::mat4 TemporalAntiAliasing::ApplyJitter( const glm::mat4& projection ) {
+	Matrix4 TemporalAntiAliasing::ApplyJitter( const Matrix4& projection ) {
 
-		static const glm::vec2 skOffsets[ ] = {
+		static const Vector2 skOffsets[ ] = {
 			{ 0.500000f,  0.333333f },
 			{ 0.250000f,  0.666667f },
 			{ 0.750000f,  0.111111f },
@@ -32,11 +32,11 @@ namespace lum::render {
 		};
 
 		uint32 index = mFrameIndex % 8;
-		glm::vec2 offset = skOffsets[ index ];
+		Vector2 offset = skOffsets[ index ];
 
-		glm::vec2 jitter = (offset * 2.0f - 1.0f) / glm::vec2( mWidth, mHeight ) * 0.5f;
+		Vector2 jitter = (offset * 2.0f - 1.0f) / Vector2( mWidth, mHeight ) * 0.5f;
 
-		glm::mat4 jittered = projection;
+		Matrix4 jittered = projection;
 		jittered[ 2 ][ 0 ] += jitter.x;
 		jittered[ 2 ][ 1 ] += jitter.y;
 

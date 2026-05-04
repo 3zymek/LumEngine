@@ -262,7 +262,7 @@ namespace lum::ahi::fmod {
 		channel->setPaused( instance.mFlags.Has( InstanceFlag::Paused ) );
 		if (instance.mFlags.Has( InstanceFlag::Paused )) return;
 
-		glm::vec3 instPos = instance.mPosition;
+		Vector3 instPos = instance.mPosition;
 		FMOD_VECTOR pos = { instPos.x, instPos.y, instPos.z };
 
 		channel->setVolume( std::clamp( instance.mVolume, 0.0f, 1.0f ) );

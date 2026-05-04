@@ -38,12 +38,12 @@ namespace lum::render {
 
 	void Renderer::UpdateCamera( const FRenderCamera& camera ) {
 
-		glm::mat4 jittered = mTemporalAA.ApplyJitter( camera.mProjection );
+		Matrix4 jittered = mTemporalAA.ApplyJitter( camera.mProjection );
 
-		mCameraUBOData.mPosition = glm::vec4( camera.mPosition, 0.0 );
+		mCameraUBOData.mPosition = Vector4( camera.mPosition, 0.0f );
 		mCameraUBOData.mProjection = jittered;
 		mCameraUBOData.mView = camera.mView;
-		mCameraUBOData.mInvViewProj = glm::inverse( jittered * camera.mView );
+		mCameraUBOData.mInvViewProj = Inverse( jittered * camera.mView );
 
 		upload_camera_uniform( );
 

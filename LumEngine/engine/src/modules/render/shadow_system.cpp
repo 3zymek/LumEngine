@@ -135,23 +135,23 @@ namespace lum::render {
 	// Private
 	//---------------------------------------------------------
 
-	void ShadowSystem::DirectionalLight::calculate_lightspace_matrix( const glm::vec3& dir, FRendererContext& ctx ) {
+	void ShadowSystem::DirectionalLight::calculate_lightspace_matrix( const Vector3& dir, FRendererContext& ctx ) {
 
-		glm::vec3 lightDir = glm::normalize( dir );
-		glm::vec3 up = glm::vec3( 0.0f, 1.0f, 0.0f );
+		Vector3 lightDir = Normalize( dir );
+		Vector3 up = Vector3( 0.0f, 1.0f, 0.0f );
 
-		if (glm::abs( glm::dot( lightDir, up ) ) > 0.99f)
-			up = glm::vec3( 0.0f, 0.0f, 1.0f );
+		if (Abs( Dot( lightDir, up ) ) > 0.99f)
+			up = Vector3( 0.0f, 0.0f, 1.0f );
 
-		glm::vec3 lightPos = -lightDir * mShadowMapDistance;
+		Vector3 lightPos = -lightDir * mShadowMapDistance;
 
-		glm::mat4 lightViewMatrix = glm::lookAt(
+		Matrix4 lightViewMatrix = LookAt(
 			lightPos,
-			glm::vec3( 0.0f ),
+			Vector3( 0.0f ),
 			up
 		);
 
-		glm::mat4 lightProjectionMatrix = glm::ortho(
+		Matrix4 lightProjectionMatrix = Orthographic(
 			-mShadowMapSize, mShadowMapSize,
 			-mShadowMapSize, mShadowMapSize,
 			mShadowMapNear, mShadowMapFar
@@ -161,15 +161,15 @@ namespace lum::render {
 
 	}
 
-	void ShadowSystem::SpotLight::calculate_lightspace_matrix( const glm::vec3& dir, const glm::vec3 pos, float32 fov, FRendererContext& ctx ) {
+	void ShadowSystem::SpotLight::calculate_lightspace_matrix( const Vector3& dir, const Vector3& pos, float32 fov, FRendererContext& ctx ) {
 
-		glm::vec3 lightDir = glm::normalize( dir );
-		glm::vec3 up = glm::vec3( 0.0f, 1.0f, 0.0f );
+		Vector3 lightDir = Normalize( dir );
+		Vector3 up = Vector3( 0.0f, 1.0f, 0.0f );
 
-		if (glm::abs( glm::dot( lightDir, up ) ) > 0.99f)
-			up = glm::vec3( 0.0f, 0.0f, 1.0f );
+		if (Abs( Dot( lightDir, up ) ) > 0.99f)
+			up = Vector3( 0.0f, 0.0f, 1.0f );
 
-		glm::mat4 lightViewMatrix = glm::lookAt(
+		Matrix4 lightViewMatrix = LookAt(
 			pos,
 			pos + lightDir,
 			up
@@ -177,7 +177,7 @@ namespace lum::render {
 
 		float32 aspectRatio = ToFloat32( mShadowMapTexSize.x ) / ToFloat32( mShadowMapTexSize.y );
 
-		glm::mat4 lightProjectionMatrix = glm::perspective(
+		Matrix4 lightProjectionMatrix = Perspective(
 			fov,
 			aspectRatio,
 			mShadowMapNear,
@@ -188,16 +188,16 @@ namespace lum::render {
 
 	}
 
-	void ShadowSystem::DirectionalLight::upload_lightspace_matrix( const glm::mat4& mat, FRendererContext& ctx ) {
+	void ShadowSystem::DirectionalLight::upload_lightspace_matrix( const Matrix4& mat, FRendererContext& ctx ) {
 
 		ctx.mRenderDev->UpdateBuffer(
 			mLightSpaceUBO,
-			glm::value_ptr( mat )
+			mat.Data()
 		);
 
 	}
 
-	void ShadowSystem::SpotLight::upload_lightspace_matrix( const glm::mat4& mat, FRendererContext& ctx ) {
+	void ShadowSystem::SpotLight::upload_lightspace_matrix( const Matrix4& mat, FRendererContext& ctx ) {
 
 		
 

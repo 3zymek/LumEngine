@@ -43,24 +43,24 @@ namespace lum::render {
 
 	void LightPass::SetDirectionalLight( const FDirectionalLight& light ) {
 
-		mDirectionalLightData.mColor = glm::vec4( light.mColor, 0.0 );
-		mDirectionalLightData.mDirection = glm::vec4( light.mDirection, 0.0 );
+		mDirectionalLightData.mColor = Vector4( light.mColor, 0.0f );
+		mDirectionalLightData.mDirection = Vector4( light.mDirection, 0.0f );
 		mDirectionalLightData.mIntensity = light.mIntensity;
 
 	}
 
 	FDirectionalLight LightPass::GetDirectionalLight( ) {
 		return {
-			glm::vec3( mDirectionalLightData.mDirection ),
+			Vector3( mDirectionalLightData.mDirection ),
 			mDirectionalLightData.mIntensity,
-			glm::vec3( mDirectionalLightData.mColor )
+			Vector3( mDirectionalLightData.mColor )
 		};
 	}
 	FDirectionalLight LightPass::GetDirectionalLight( ) const {
 		return {
-			glm::vec3( mDirectionalLightData.mDirection ),
+			Vector3( mDirectionalLightData.mDirection ),
 			mDirectionalLightData.mIntensity,
-			glm::vec3( mDirectionalLightData.mColor )
+			Vector3( mDirectionalLightData.mColor )
 		};
 	}
 

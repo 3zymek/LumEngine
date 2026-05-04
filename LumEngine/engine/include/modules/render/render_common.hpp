@@ -60,16 +60,16 @@ namespace lum::render {
 	struct FDirectionalLight {
 
 		/* @brief Normalized direction vector the light is pointing towards. */
-		glm::vec3 mDirection = glm::vec3( 0.0f, 1.0f, 0.0f );
+		Vector3 mDirection = Vector3( 0.0f, 1.0f, 0.0f );
 
 		/* @brief Intensity multiplier applied to the light color. */
 		float32 mIntensity = 10.f;
 		
 		/* @brief Linear RGB color of the light. */
-		glm::vec3 mColor = { 1.0f, 1.0f, 1.0f };
+		Vector3 mColor = { 1.0f, 1.0f, 1.0f };
 
 		/* Matrix used to calculate directrional light shadows. */
-		glm::mat4 mLightSpaceMatrix = glm::mat4( 1.0f );
+		Matrix4 mLightSpaceMatrix = Matrix4( 1.0f );
 
 	};
 
@@ -77,22 +77,22 @@ namespace lum::render {
 	/* @brief Point light source — emits light in all directions from a single position. */
 	struct FPointLight {
 
-		glm::vec3 mPosition = glm::vec3( 0.0f );
+		Vector3 mPosition = Vector3( 0.0f );
 		float32 mIntensity = 10.f;
-		glm::vec3 mColor = glm::vec3( 1.0f );
+		Vector3 mColor = Vector3( 1.0f );
 		float32 mRadius = 10.f;
 
 	};
 
 	struct FSpotLight {
 
-		glm::vec3 mPosition = glm::vec3( 0.0f );
+		Vector3 mPosition = Vector3( 0.0f );
 		float32 mIntensity = 10.0f;
 
-		glm::vec3 mDirection = glm::vec3( 0.0f, 1.0f, 0.0f );
+		Vector3 mDirection = Vector3( 0.0f, 1.0f, 0.0f );
 		float32 mRadius = 35.0f;;
 
-		glm::vec3 mColor = glm::vec3( 1.0f );
+		Vector3 mColor = Vector3( 1.0f );
 		float32 mInnerCone = 10.0f;
 
 		float32 mOuterCone = 50.0f;
@@ -118,13 +118,13 @@ namespace lum::render {
 	struct FRenderCamera {
 
 		/* @brief World-space position of the camera. */
-		glm::vec3 mPosition = glm::vec3( 0.0f );
+		Vector3 mPosition = Vector3( 0.0f );
 
 		/* @brief View matrix transforming world space to camera space. */
-		glm::mat4 mView = glm::mat4( 1.0f );
+		Matrix4 mView = Matrix4( 1.0f );
 
 		/* @brief Projection matrix transforming camera space to clip space. */
-		glm::mat4 mProjection = glm::mat4( 1.0f );
+		Matrix4 mProjection = Matrix4( 1.0f );
 
 	};
 
@@ -173,29 +173,29 @@ namespace lum::render {
 
 		LUM_UNIFORM_BUFFER_STRUCT FLightSpaceMatricesUBOData {
 
-			glm::mat4 mDirectionalLightSpaceMatrix = glm::mat4( 1.0f );
+			Matrix4 mDirectionalLightSpaceMatrix = Matrix4( 1.0f );
 
 		};
 
 
 		/* @brief GPU-side camera uniform buffer layout. Aligned to std140. */
 		LUM_UNIFORM_BUFFER_STRUCT FCameraUBOData {
-			glm::mat4 mView = glm::mat4( 1.0f );
-			glm::mat4 mProjection = glm::mat4( 1.0f );
-			glm::mat4 mInvViewProj = glm::mat4( 1.0f );
-			glm::vec4 mPosition = glm::vec4( 1.0f );
+			Matrix4 mView = Matrix4( 1.0f );
+			Matrix4 mProjection = Matrix4( 1.0f );
+			Matrix4 mInvViewProj = Matrix4( 1.0f );
+			Vector4 mPosition = Vector4( 1.0f );
 		};
 
 
 		/* @brief GPU-side model uniform buffer layout. Aligned to std140. */
 		LUM_UNIFORM_BUFFER_STRUCT FModelUBOData {
-			glm::mat4 mModel = glm::mat4( 1.0f );
+			Matrix4 mModel = Matrix4( 1.0f );
 		};
 
 
 		/* @brief GPU-side material uniform buffer layout. Aligned to std140. */
 		LUM_UNIFORM_BUFFER_STRUCT FMaterialUBOData {
-			glm::vec4 mBaseColor = glm::vec4( 1.0f );
+			Vector4 mBaseColor = Vector4( 1.0f );
 			float32 mRoughness = 0.5f;
 			float32 mMetallic = 0.0f;
 
@@ -205,8 +205,8 @@ namespace lum::render {
 
 		LUM_UNIFORM_BUFFER_STRUCT FDirectionalLightUBOData {
 
-			glm::vec4 mDirection = glm::vec4( 0.0f, -1.0f, 0.0f, 0.0f );
-			glm::vec4 mColor = glm::vec4( 1.00, 0.97, 0.90, 0.0f );
+			Vector4 mDirection = Vector4( 0.0f, -1.0f, 0.0f, 0.0f );
+			Vector4 mColor = Vector4( 1.00, 0.97, 0.90, 0.0f );
 			float32 mIntensity = 5.0f;
 
 			float32 _pad0 = 0.f;

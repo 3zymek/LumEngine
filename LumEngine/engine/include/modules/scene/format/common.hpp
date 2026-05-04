@@ -111,23 +111,23 @@ namespace lum {
 			}
 
 			/* @brief Reads three consecutive float values as a vec3 after a colon separator. */
-			inline glm::vec3 ReadVec3Parameter( std::vector<FToken>& tokens, int32& i ) {
+			inline Vector3 ReadVec3Parameter( std::vector<FToken>& tokens, int32& i ) {
 				ExpectColon( tokens, i );
 				float32 x = std::stof( tokens[ i++ ].mValue );
 				float32 y = std::stof( tokens[ i++ ].mValue );
 				float32 z = std::stof( tokens[ i ].mValue );
 				LUM_ASSERT( i + 1 >= tokens.size( ) || tokens[ i + 1 ].mType != TokenType::Number, "Vec3 expected" );
-				return glm::vec3( x, y, z );
+				return Vector3( x, y, z );
 			}
 
 			/* @brief Reads two consecutive float values as a vec2 after a colon separator. */
-			inline glm::vec2 ReadVec2Parameter( std::vector<FToken>& tokens, int32& i ) {
+			inline Vector2 ReadVec2Parameter( std::vector<FToken>& tokens, int32& i ) {
 				LUM_ASSERT( tokens[ i ].mType == TokenType::Colon, "Colon expected" );
 				++i;
 				float32 x = std::stof( tokens[ i++ ].mValue );
 				float32 y = std::stof( tokens[ i ].mValue );
 				LUM_ASSERT( tokens[ i + 1 ].mType != TokenType::Number, "Vec2 expected" );
-				return glm::vec2( x, y );
+				return Vector2( x, y );
 			}
 
 		} // namespace lum::fmt::detail

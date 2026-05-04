@@ -39,7 +39,7 @@ namespace lum {
 		rhi::RTextureHandle mAmbientTex;
 
 		/* @brief Base color multiplier. */
-		glm::vec3 mBaseColor = glm::vec3(1.0f);
+		Vector3 mBaseColor = Vector3( 1.0f );
 
 		/* @brief Roughness scalar fallback when no map is bound. */
 		float32 mRoughnessValue = 0.5f;
@@ -60,11 +60,11 @@ namespace lum {
 		std::optional<String> mRoughnessTex;   // Path to roughness map
 		std::optional<String> mMetallicTex;    // Path to metallic map
 
-		std::optional<glm::vec3> mBaseColor;   // Base color multiplier, defaults to (1, 1, 1)
+		std::optional<Vector3> mBaseColor;   // Base color multiplier, defaults to (1, 1, 1)
 
 		std::optional<float32> mRoughnessValue = 0.5f; // Roughness multiplier, defaults to 0.5
 		std::optional<float32> mMetallicValue = 0.0f;  // Metallic multiplier, defaults to 0.0
-	
+
 	};
 
 	/* @brief Strongly typed handle referencing a base material in the pool. */

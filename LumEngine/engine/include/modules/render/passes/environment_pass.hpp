@@ -92,18 +92,18 @@ namespace lum::render {
 
 			} mPrefiltered;
 
-			static glm::mat4 GetCaptureProjection( ) {
-				return glm::perspective( glm::radians( 90.0f ), 1.0f, 0.1f, 10.0f );
+			static Matrix4 GetCaptureProjection( ) {
+				return Perspective( Radians( 90.0f ), 1.0f, 0.1f, 10.0f );
 			}
 
-			static std::array<glm::mat4, 6> GetCaptureViews( ) {
+			static std::array<Matrix4, 6> GetCaptureViews( ) {
 				return { {
-					glm::lookAt( glm::vec3( 0 ), glm::vec3( 1,  0,  0 ), glm::vec3( 0, -1,  0 ) ),
-					glm::lookAt( glm::vec3( 0 ), glm::vec3( -1,  0,  0 ), glm::vec3( 0, -1,  0 ) ),
-					glm::lookAt( glm::vec3( 0 ), glm::vec3( 0,  1,  0 ), glm::vec3( 0,  0,  1 ) ),
-					glm::lookAt( glm::vec3( 0 ), glm::vec3( 0, -1,  0 ), glm::vec3( 0,  0, -1 ) ),
-					glm::lookAt( glm::vec3( 0 ), glm::vec3( 0,  0,  1 ), glm::vec3( 0, -1,  0 ) ),
-					glm::lookAt( glm::vec3( 0 ), glm::vec3( 0,  0, -1 ), glm::vec3( 0, -1,  0 ) ),
+					LookAt( Vector3( 0 ), Vector3( 1,  0,  0 ), Vector3( 0, -1,  0 ) ),
+					LookAt( Vector3( 0 ), Vector3( -1,  0,  0 ), Vector3( 0, -1,  0 ) ),
+					LookAt( Vector3( 0 ), Vector3( 0,  1,  0 ), Vector3( 0,  0,  1 ) ),
+					LookAt( Vector3( 0 ), Vector3( 0, -1,  0 ), Vector3( 0,  0, -1 ) ),
+					LookAt( Vector3( 0 ), Vector3( 0,  0,  1 ), Vector3( 0, -1,  0 ) ),
+					LookAt( Vector3( 0 ), Vector3( 0,  0, -1 ), Vector3( 0, -1,  0 ) ),
 				} };
 			}
 
