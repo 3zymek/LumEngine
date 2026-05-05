@@ -24,7 +24,7 @@ namespace lum::editor {
 			Vector3 right = Normalize( Cross( forward, Vector3( 0, 1, 0 ) ) );
 			Vector3 up = Normalize( Cross( right, forward ) );
 
-			static glm::vec2 sLastPos = input::GetMousePos( );
+			static Vector2 sLastPos = input::GetMousePos( );
 
 			if (!bLocked) {
 
@@ -35,13 +35,13 @@ namespace lum::editor {
 				if (input::KeyPressed( input::Key::A )) mPosition -= right * moveSpeed;
 				if (input::KeyPressed( input::Key::D )) mPosition += right * moveSpeed;
 
-				glm::vec2 currentPos = input::GetMousePos( );
-				glm::vec2 deltaPos = currentPos - sLastPos;
+				Vector2 currentPos = input::GetMousePos( );
+				Vector2 deltaPos = currentPos - sLastPos;
 				sLastPos = currentPos;
 
 				mYaw += deltaPos.x * mSensivity;
 				mPitch -= deltaPos.y * mSensivity;
-				mPitch = glm::clamp( mPitch, -89.0f, 89.0f );
+				mPitch = std::clamp( mPitch, -89.0f, 89.0f );
 
 				Vector3 direction;
 				direction.x = cos( Radians( mYaw ) ) * cos( Radians( mPitch ) );

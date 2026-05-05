@@ -50,7 +50,7 @@ namespace lum {
 			return {};
 		}
 
-		ahi::SoundHandle handle = mDevice->LoadSound( fullPath, GetSoundFlags( cat ) );
+		ahi::SoundHandle handle = mDevice->LoadSound( fullPath, ahi::detail::GetSoundFlags( cat ) );
 		mSounds.insert( { hash, handle } );
 
 		LUM_LOG_INFO( "Loaded sound %s", relativePath.data( ) );
@@ -59,7 +59,7 @@ namespace lum {
 	}
 	ahi::SoundHandle MAudioManager::GetSound( StringView relativePath, StringView cat ) {
 
-		return GetSound( relativePath, detail::ParseSoundCategory( cat ) );
+		return GetSound( relativePath, ahi::detail::ParseSoundCategory( cat ) );
 
 	}
 	void MAudioManager::UnloadSound( StringView alias ) {

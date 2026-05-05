@@ -19,7 +19,7 @@ namespace lum {
 		Ambient, // Streamed positional ambience (wind, water, etc.)
 	};
 
-	namespace detail {
+	namespace ahi::detail {
 
 		// Parses a string into a SoundCategory. Case-insensitive.
 		// Falls back to Music and logs a warning on unknown input.
@@ -52,11 +52,11 @@ namespace lum {
 			ahi::SoundFlag::CreateStream | ahi::SoundFlag::Spatial3D | ahi::SoundFlag::InverseRolloff,
 		};
 
-	} // namespace detail
+		// Returns the AHI sound flags associated with the given category.
+		inline constexpr Flags<ahi::SoundFlag> GetSoundFlags( SoundCategory category ) {
+			return detail::gkSoundCategoryFlags[ static_cast< byte >(category) ];
+		}
 
-	// Returns the AHI sound flags associated with the given category.
-	inline constexpr Flags<ahi::SoundFlag> GetSoundFlags( SoundCategory category ) {
-		return detail::gkSoundCategoryFlags[ static_cast< byte >(category) ];
-	}
+	} // namespace detail
 
 } // namespace lum

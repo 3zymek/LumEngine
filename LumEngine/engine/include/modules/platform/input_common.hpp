@@ -83,11 +83,11 @@ namespace lum {
 		/* @brief Returns the current mouse cursor position in screen coordinates.
 		*  @return Mouse position as a 2D vector (x, y).
 		*/
-		inline glm::vec2 GetMousePos( ) {
+		inline Vector2 GetMousePos( ) {
 			LUM_ASSERT( detail::gActiveWindow != nullptr, "Active window isn't set" );
 			float64 xpos, ypos;
 			glfwGetCursorPos( detail::gActiveWindow, &xpos, &ypos );
-			return glm::vec2( xpos, ypos );
+			return Vector2( xpos, ypos );
 		}
 
 	} // namespace lum::input

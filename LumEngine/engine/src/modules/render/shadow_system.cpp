@@ -56,7 +56,7 @@ namespace lum::render {
 			desc.mBufferType = rhi::BufferType::Uniform;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
-			desc.mSize = sizeof( glm::mat4 );
+			desc.mSize = sizeof( Matrix4 );
 			mLightSpaceUBO = ctx.mRenderDev->CreateBuffer( desc );
 			ctx.mRenderDev->SetUniformBufferBinding( mLightSpaceUBO, LUM_UBO_LIGHTSPACE_MATRIX );
 		}
@@ -86,7 +86,7 @@ namespace lum::render {
 			desc.mBufferType = rhi::BufferType::Uniform;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
-			desc.mSize = sizeof( glm::mat4 ) * limits::gMaxShadowCastingSpotLights;
+			desc.mSize = sizeof( Matrix4 ) * limits::gMaxShadowCastingSpotLights;
 			mLightSpaceUBO = ctx.mRenderDev->CreateBuffer( desc );
 			ctx.mRenderDev->SetUniformBufferBinding( mLightSpaceUBO, LUM_UBO_LIGHTSPACE_MATRIX );
 		}

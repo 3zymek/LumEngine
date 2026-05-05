@@ -106,7 +106,7 @@ namespace lum {
 		using REnumFlag = uint16;
 
 		/* @brief RGBA color channel represented as a vec4 (r, g, b, a). */
-		using ChannelRGBA = glm::vec4;
+		using ChannelRGBA = Vector4;
 
 		enum class RenderBackend : byte {
 			OpenGL,

@@ -25,8 +25,4 @@
 #include <cmath>
 #include <deque>
 
-#include "glm.hpp"
-#include "gtc/matrix_transform.hpp"
-#include "gtc/type_ptr.hpp"
-
 #include "core/core_defines.hpp"

@@ -217,7 +217,7 @@ namespace lum {
 					float32 u = (x + 0.5f) / faceSize * 2.0f - 1.0f;
 					float32 v = (y + 0.5f) / faceSize * 2.0f - 1.0f;
 
-					glm::vec3 dir;
+					Vector3 dir;
 					switch (face) {
 					case LUM_CUBEMAP_POSITIVE_X: dir = { 1, -v, -u }; break;
 					case LUM_CUBEMAP_NEGATIVE_X: dir = { -1, -v, u }; break;
@@ -226,7 +226,7 @@ namespace lum {
 					case LUM_CUBEMAP_POSITIVE_Z: dir = { u, -v, 1 }; break;
 					case LUM_CUBEMAP_NEGATIVE_Z: dir = { -u, -v, -1 }; break;
 					}
-					dir = glm::normalize( dir );
+					dir = Normalize( dir );
 
 					float32 eu = atan2( dir.z, dir.x ) / (2.0f * Pi()) + 0.5f;
 					float32 ev = 0.5f - asin( std::clamp( dir.y, -1.0f, 1.0f ) ) / Pi();

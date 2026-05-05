@@ -124,7 +124,7 @@ namespace lum::render {
 			desc.mBufferType = rhi::BufferType::Uniform;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
-			desc.mSize = sizeof( glm::mat4 ) * 2 + sizeof( float32 );
+			desc.mSize = sizeof( Matrix4 ) * 2 + sizeof( float32 );
 			captureUBO = mContext.mRenderDev->CreateBuffer( desc );
 			mContext.mRenderDev->SetUniformBufferBinding( captureUBO, LUM_UBO_PREFILTERED_MAP );
 
