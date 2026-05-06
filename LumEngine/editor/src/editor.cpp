@@ -12,7 +12,7 @@ namespace lum::editor {
 
 		mCamera.Initialize( mEngine.GetEventBus( ) );
 
-		init_imgui( &mEngine.GetPlatform( ).mWindow );
+		init_imgui( &mEngine.GetModulePlatform( ).mWindow );
 
 		RegisterEditorComponents( skComponentsEntries );
 		for (auto& [hash, entry] : skComponentsEntries) {
@@ -38,7 +38,7 @@ namespace lum::editor {
 
 			Update( delta );
 
-			auto& meshMgr = mEngine.GetResource( ).mMeshMgr;
+			auto& meshMgr = mEngine.GetModuleResource( ).mMeshMgr;
 			mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( )->mEntityMgr.Each<CStaticMesh>(
 				[&]( CStaticMesh& mesh ) {
 					if (mesh.mPath != mesh.mLastLoadedPath) {
@@ -50,7 +50,7 @@ namespace lum::editor {
 
 			mEngine.EndFrame( );
 			end_imgui( );
-			mEngine.GetPlatform( ).mRenderDevice->SwapBuffers( );
+			mEngine.GetModulePlatform( ).mRenderDevice->SwapBuffers( );
 
 		}
 
@@ -89,7 +89,7 @@ namespace lum::editor {
 		mCamera.SetAspectRatio( ( float32 ) available.x / ( float32 ) available.y );
 		mEngine.GetModuleRender( ).mRenderer.UpdateCamera( mCamera.Update( delta ) );
 
-		uint32 texID = mEngine.GetPlatform( ).mRenderDevice->GetNativeHandle(
+		uint32 texID = mEngine.GetModulePlatform( ).mRenderDevice->GetNativeHandle(
 			mEngine.GetModuleRender( ).mRenderer.GetFrameTexture( )
 		);
 
@@ -108,7 +108,7 @@ namespace lum::editor {
 				ImGui::MenuItem( "Open scene", "Ctrl + O" );
 				ImGui::Separator( );
 				if (ImGui::MenuItem( "Quit", "Ctrl + Q" )) {
-					mEngine.GetPlatform( ).mWindow.Close( );
+					mEngine.GetModulePlatform( ).mWindow.Close( );
 				} ImGui::SameLine( ); ImGui::TextUnformatted( ICON_FA_TIMES );
 				ImGui::EndMenu( );
 			}

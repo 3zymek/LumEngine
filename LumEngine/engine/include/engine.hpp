@@ -30,9 +30,9 @@ namespace lum {
 		void Finalize( );
 
 		ev::EventBus&		GetEventBus( ) { return mEvBus; }
-		MAudioModule&		GetAudio( ) { return mAudio; }
-		MPlatformModule&	GetPlatform( ) { return mPlatform; }
-		MResourceModule&	GetResource( ) { return mRes; }
+		MAudioModule&		GetModuleAudio( ) { return mAudio; }
+		MPlatformModule&	GetModulePlatform( ) { return mPlatform; }
+		MResourceModule&	GetModuleResource( ) { return mRes; }
 		MRenderModule&		GetModuleRender( ) { return mRender; }
 		MSceneModule&		GeModuleScene( ) { return mScene; }
 

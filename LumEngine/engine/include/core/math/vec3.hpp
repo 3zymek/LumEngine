@@ -28,6 +28,10 @@ namespace lum {
 		TVector3 operator/( const TVector3& rhs ) const { return { x / rhs.x, y / rhs.y, z / rhs.z }; }
 
 		// Scalar
+		TVector3 operator+( tType scalar ) const { return { x + scalar, y + scalar, z + scalar }; }
+		TVector3& operator+=( tType scalar ) { x += scalar, y += scalar; z += scalar; return *this; }
+		TVector3 operator-( tType scalar ) const { return { x - scalar, y - scalar, z - scalar }; }
+		TVector3& operator-=( tType scalar ) { x -= scalar, y -= scalar; z -= scalar; return *this; }
 		TVector3 operator*( tType scalar ) const { return { x * scalar, y * scalar, z * scalar }; }
 		TVector3& operator*=( tType scalar ) { x *= scalar; y *= scalar; z *= scalar; return *this; }
 		TVector3 operator/( tType scalar ) const { tType inv = tType( 1 ) / scalar; return { x * inv, y * inv, z * inv }; }

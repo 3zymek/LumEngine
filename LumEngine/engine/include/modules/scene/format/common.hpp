@@ -110,6 +110,13 @@ namespace lum {
 				return value;
 			}
 
+			inline int64 ReadIntParameter( std::vector<FToken>& tokens, int32& i ) {
+				ExpectColon( tokens, i );
+				int64 value = std::stoi( tokens[ i ].mValue );
+				LUM_ASSERT( i + 1 >= tokens.size( ) || tokens[ i + 1 ].mType != TokenType::Number, "Integer expected" );
+				return value;
+			}
+
 			/* @brief Reads three consecutive float values as a vec3 after a colon separator. */
 			inline Vector3 ReadVec3Parameter( std::vector<FToken>& tokens, int32& i ) {
 				ExpectColon( tokens, i );

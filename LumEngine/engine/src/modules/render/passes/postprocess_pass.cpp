@@ -28,7 +28,7 @@ namespace lum::render {
 		mContext.mRenderDev->DrawElements( quad.mVao, 6 );
 
 		if (exe.bTAAEnabled)
-			mContext.mRenderDev->Copy( quad.mSceneTex, exe.mPreviousFrameTex );
+			mContext.mRenderDev->Copy( quad.mPostprocessTex, exe.mPreviousFrameTex );
 
 		mContext.mRenderDev->BindFramebuffer( rhi::gDefaultFramebuffer );
 

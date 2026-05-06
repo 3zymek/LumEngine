@@ -13,16 +13,16 @@ vec3 GammaCorrection22( vec3 color ) {
 }
 vec3 TemporalAA( vec3 color ) {
     vec3 history = texture(uHistory, fUV).rgb;
-    return mix(history, color, 0.5);
+    return mix(history, color, 0.1);
 }
 
 void main( ) {
     
     vec3 color = texture(uScreen, fUV).rgb;
     color *= 0.4;
-    color = TemporalAA(color);
     color = TonemapACES(color);
     color = GammaCorrection22(color);
+    color = TemporalAA(color);
 
     oColor = vec4(color, 1.0);
 

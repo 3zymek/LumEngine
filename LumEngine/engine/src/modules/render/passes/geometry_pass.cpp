@@ -36,9 +36,8 @@ namespace lum::render {
 
 	void GeometryPass::Submit( const FRenderInstance& instance ) {
 
-		LUM_HOTCHK_RETURN_VOID(
-			(mInstances.size( ) < limits::gMaxDrawCallsPf),
-			LUM_SEV_WARN,
+		LUM_ASSERT(
+			mInstances.size( ) < limits::gMaxDrawCallsPf,
 			"Draw calls per frame limit reached"
 		);
 
@@ -138,16 +137,7 @@ namespace lum::render {
 
 	void GeometryPass::upload_model_matrix( const FRenderInstance& instance ) {
 
-		Quaternion rot = FromEuler( instance.mTransform->mRotation );
-		Matrix4 rotation = ToMat4( rot );
-		Matrix4 model = Matrix4( 1.f );
-
-		model = Matrix4( 1.f );
-		model = Translate( model, instance.mTransform->mPosition );
-		model = model * rotation;
-		model = Scale( model, instance.mTransform->mScale );
-
-		mContext.mRenderDev->UpdateBuffer( mModelUniform, model.Data(), 0, 0 );
+		mContext.mRenderDev->UpdateBuffer( mModelUniform, instance.mTransform->mWorldMatrix.Data(), 0, 0 );
 
 	}
 	void GeometryPass::upload_material( const CMaterialInstance& mat ) {

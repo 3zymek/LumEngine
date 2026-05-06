@@ -11,25 +11,18 @@ namespace lum {
 	/* @brief ECS component storing the 3D transform of an entity. */
 	LCLASS( Category = "TRANSFORM" ) struct CTransform : public Component {
 
-		/* @brief World position. */
-		LPROPERTY( ) Vector3 mPosition = { 0.f, 0.f, 0.f };
+        /* @brief Local position relative to parent. */
+        LPROPERTY( ) Vector3 mPosition = Vector3( 0.0f );
 
-		/* @brief Non-uniform scale. */
-		LPROPERTY( ) Vector3 mScale = { 1.f, 1.f, 1.f };
+        /* @brief Local non-uniform scale relative to parent. */
+        LPROPERTY( ) Vector3 mScale = Vector3( 1.0f );
 
-		/* @brief Euler rotation in degrees. */
-		LPROPERTY( ) Vector3 mRotation = { 0.f, 0.f, 0.f };
+        /* @brief Local Euler rotation in degrees relative to parent. */
+        LPROPERTY( ) Vector3 mRotation = Vector3( 0.0f );
+
+        /* @brief World space transform matrix, computed by TransformSystem. */
+        Matrix4 mWorldMatrix = Matrix4( 1.0f );
 
 	};
-
-	LCLASS( ) struct CTest21 : public Component { };
-	LCLASS( ) struct CTest231 : public Component { };
-	LCLASS( ) struct CTest2231 : public Component { };
-	LCLASS( ) struct CTest211 : public Component { };
-	LCLASS( ) struct CTest2461 : public Component { };
-	LCLASS( ) struct CTest2A1 : public Component { };
-	LCLASS( ) struct CTest2S1 : public Component { };
-	LCLASS( ) struct CTest2G1 : public Component { };
-	LCLASS( ) struct CTest2D1 : public Component { };
 
 } // namespace lum

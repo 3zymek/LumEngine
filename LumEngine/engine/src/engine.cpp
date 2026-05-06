@@ -5,6 +5,7 @@
 //=============================================================================//
 
 #include "engine.hpp"
+#include "core/transform_system.hpp"
 
 namespace lum {
 
@@ -38,6 +39,8 @@ namespace lum {
 
 	}
 	void Engine::Tick( ) {
+
+		TransformSystem::Update( mScene.mSceneMgr.GetCurrentScene( ) );
 
 		mRender.mRenderSys.Update( &mScene.mSceneMgr.GetCurrentScene( )->mEntityMgr, &mPlatform.mWindow );
 

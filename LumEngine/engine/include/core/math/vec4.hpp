@@ -42,6 +42,10 @@ namespace lum {
 		TVector4 operator/( const TVector4& rhs ) const { return { x / rhs.x, y / rhs.y, z / rhs.z, w / rhs.w }; }
 
 		// Scalar
+		TVector4 operator+( tType scalar ) const { return { x + scalar, y + scalar, z + scalar, w + scalar }; }
+		TVector4& operator+=( tType scalar ) { x += scalar, y += scalar; z += scalar; w += scalar; return *this; }
+		TVector4 operator-( tType scalar ) const { return { x - scalar, y - scalar, z - scalar, w - scalar }; }
+		TVector4& operator-=( tType scalar ) { x -= scalar, y -= scalar; z -= scalar; w -= scalar; return *this; }
 		TVector4 operator*( tType scalar ) const { return { x * scalar, y * scalar, z * scalar, w * scalar }; }
 		TVector4& operator*=( tType scalar ) { x *= scalar; y *= scalar; z *= scalar; w *= scalar; return *this; }
 		TVector4 operator/( tType scalar ) const { tType inv = tType( 1 ) / scalar; return { x * inv, y * inv, z * inv, w * inv }; }
