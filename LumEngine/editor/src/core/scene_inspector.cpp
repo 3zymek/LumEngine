@@ -7,6 +7,7 @@
 #include "core/scene_inspector.hpp"
 #include "entity/components/name.hpp"
 #include "core/utils/style.hpp"
+#include "event/events/window_events.hpp"
 
 namespace lum::editor {
 
@@ -14,16 +15,24 @@ namespace lum::editor {
 	// Public
 	//---------------------------------------------------------
 
+	void SceneInspector::Initialize( ev::EventBus* eventBus ) {
+		
+		mEntityCreator.Initialize( eventBus );
+
+	}
+
 	void SceneInspector::Update( FScene* scene ) {
 
 		auto& entities = scene->mEntities;
 
 		ImGui::Begin( "Scene" );
 
+		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0.0f, 0.0f, 0.0f, 0.0f ) );
 		if (ImGui::Button( ICON_FA_PLUS )) {
 			mEntityCreator.Toggle( true );
 		} TooltipOnHover( "Add entity" );
 		ImGui::SameLine( );
+		ImGui::PopStyleColor( );
 
 		ImGui::PushItemWidth( -1 );
 		SearchField( "##Entities search", "Filter entities...", mEntitiesFilter.Data( ), mEntitiesFilter.MaxSize( ) );
@@ -35,6 +44,46 @@ namespace lum::editor {
 
 			auto& entity = entities[ i ];
 
+			bool isSelected = (mSelectedEntity == entity);
+			
+			CName* displayName = scene->mEntityMgr.GetComponent<CName>( entity );
+			char displayLabel[ 64 ]{};
+			if (!displayName || displayName->mName.Length( ) == 0)
+				FormatString( displayLabel, "%s %llu", "Entity ", entity );
+			else
+				FormatString( displayLabel, "%s", displayName->mName.Data( ) );
+
+			const usize len = strlen( displayLabel );
+			auto it = std::search(
+				displayLabel, displayLabel + len,
+				mEntitiesFilter.begin( ), mEntitiesFilter.end( ),
+				[]( char a, char b ) { return tolower( a ) == tolower( b ); }
+			);
+
+			if (it == displayLabel + len) continue;
+
+			auto parentIterator = scene->mParents.find( entity );
+
+			if(parentIterator != scene->mParents.end()){
+			
+				if (ImGui::TreeNode( displayLabel )) {
+					
+					
+
+					ImGui::TreePop( );
+				}
+			
+			}
+			else {
+
+				if (ImGui::Selectable( displayLabel, isSelected )) {
+					mSelectedEntity = entity;
+				}
+
+			}
+			
+
+			/*
 			bool selected = (mSelectedEntity == entity);
 			CName* name = scene->mEntityMgr.GetComponent<CName>( entity );
 			char label[ 64 ]{};
@@ -89,7 +138,7 @@ namespace lum::editor {
 
 			ImGui::PopStyleVar( );
 			ImGui::PopStyleColor( 3 );
-
+		   */
 		}
 		ImGui::End( ); // Scene Inspector
 

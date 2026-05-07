@@ -218,7 +218,7 @@ namespace lum::rhi {
 		/* @brief Number of samples for multisampled textures. 0 = not multisampled. */
 		uint32 mSamples = 0;
 
-		/* @brief Underlying GPU texture handle (OpenGL object ID). */
+		/* @brief Underlying GPU texture handle. */
 		RTextureID mHandle = 0;
 
 	};

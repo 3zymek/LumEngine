@@ -9,6 +9,8 @@
 
 namespace lum {
 
+	using Key = input::Key;
+
 	/* @brief Public input polling API.
 	*  Contains all user-facing functions for querying keyboard and mouse state.
 	*  Wraps GLFW input calls behind an engine-friendly interface.
@@ -47,7 +49,21 @@ namespace lum {
 			return detail::gKeyMap[ static_cast< uint32 >(key) ];
 		}
 
-		/* @brief (USE EBS INSTEAD) 
+		/* @brief Returns true every frame the key is held down.
+		*  @param key Key to check.
+		*  @return True if key is currently pressed.
+		*/
+		inline bool KeyPressed( Key key ) {
+			LUM_ASSERT( detail::gActiveWindow != nullptr, "Active window isn't set" );
+
+			if (key == Key::MOUSE_LEFT || key == Key::MOUSE_RIGHT || key == Key::MOUSE_MIDDLE) {
+				return glfwGetMouseButton( detail::gActiveWindow, GetGLFWKey( key ) ) == GLFW_PRESS;
+			}
+
+			return glfwGetKey( detail::gActiveWindow, GetGLFWKey( key ) ) == GLFW_PRESS;
+		}
+
+		/* @brief (USE Event Bus System INSTEAD) 
 		*  @brief Returns true only on the first frame the key is held down.
 		*  Subsequent frames while the key is held will return false.
 		*  @param key Key to check.
@@ -57,7 +73,7 @@ namespace lum {
 
 			LUM_ASSERT( detail::gActiveWindow != nullptr, "Active window isn't set" );
 
-			bool keyPressed = glfwGetKey( detail::gActiveWindow, GetGLFWKey( key ) ) == GLFW_PRESS;
+			bool keyPressed = KeyPressed( key );
 			int32 keyCode = static_cast< int32 >(key);
 
 			if (keyPressed && !detail::gKeyIsPressed[ keyCode ]) {
@@ -69,15 +85,6 @@ namespace lum {
 				detail::gKeyIsPressed[ keyCode ] = false;
 
 			return false;
-		}
-
-		/* @brief Returns true every frame the key is held down.
-		*  @param key Key to check.
-		*  @return True if key is currently pressed.
-		*/
-		inline bool KeyPressed( Key key ) {
-			LUM_ASSERT( detail::gActiveWindow != nullptr, "Active window isn't set" );
-			return glfwGetKey( detail::gActiveWindow, GetGLFWKey( key ) ) == GLFW_PRESS;
 		}
 
 		/* @brief Returns the current mouse cursor position in screen coordinates.

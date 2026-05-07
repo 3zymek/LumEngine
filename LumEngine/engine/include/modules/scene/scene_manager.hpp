@@ -27,6 +27,9 @@ namespace lum {
         /* @brief List of all entity IDs belonging to this scene. */
         std::vector<EntityID> mEntities;
 
+        std::unordered_map<EntityID, EntityID> mParents;
+        std::unordered_map<EntityID, std::vector<EntityID>> mChildren;
+
         /* @brief ECS manager owning and managing components for this scene. */
         ecs::MEntityManager mEntityMgr;
 

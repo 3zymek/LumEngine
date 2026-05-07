@@ -84,7 +84,7 @@ namespace lum::render {
 
 		{
 			PostprocessPassExecute desc;
-			desc.bTAAEnabled = true;
+			desc.bTAAEnabled = false;
 			desc.mPreviousFrameTex = mTemporalAA.GetPreviousFrameTex( );
 			mPostprocessPass.Execute( mScreenQuad, desc );
 		}

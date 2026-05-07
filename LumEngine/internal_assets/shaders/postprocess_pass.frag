@@ -22,7 +22,7 @@ void main( ) {
     color *= 0.4;
     color = TonemapACES(color);
     color = GammaCorrection22(color);
-    color = TemporalAA(color);
+    //color = TemporalAA(color);
 
     oColor = vec4(color, 1.0);
 

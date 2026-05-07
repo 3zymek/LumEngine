@@ -7,26 +7,23 @@ namespace lum::editor {
 	class EditorCamera {
 	public:
 
-		void Initialize( ev::EventBus& bus ) {
-
-			bus.SubscribePermanently<EKeyPressed>(
-				[&]( const EKeyPressed& ev ) {
-					if (ev.mKey == input::Key::LEFT_CONTROL) {
-						bLocked = !bLocked;
-					}
-				}
-			);
-		}
-
-		render::FRenderCamera Update( float64 delta ) {
+		render::FRenderCamera Update( float64 delta, bool moveMouse = true ) {
 
 			Vector3 forward = Normalize( mTarget - mPosition );
 			Vector3 right = Normalize( Cross( forward, Vector3( 0, 1, 0 ) ) );
 			Vector3 up = Normalize( Cross( right, forward ) );
 
-			static Vector2 sLastPos = input::GetMousePos( );
+			static bool sbInitialized = false;
+			static Vector2 sLastPos;
 
-			if (!bLocked) {
+			Vector2 currentPos = input::GetMousePos( );
+
+			if (!sbInitialized) {
+				sLastPos = currentPos;
+				sbInitialized = true;
+			}
+
+			if (moveMouse) {
 
 				float32 moveSpeed = mMovementSpeed * delta;
 
@@ -51,7 +48,7 @@ namespace lum::editor {
 				mUp = up;
 
 			}
-			else sLastPos = input::GetMousePos();
+			else sLastPos = input::GetMousePos( );
 
 			render::FRenderCamera data;
 
@@ -68,12 +65,10 @@ namespace lum::editor {
 
 	private:
 
-		bool bLocked = false;
-
 		float32 mMovementSpeed = 13.0f;
 		float32 mSensivity = 0.1f;
 
-		float32 mYaw = 0.0f;
+		float32 mYaw = -90.0f;
 		float32 mPitch = 0.0f;
 
 		float32 mAspectRatio = 16.0f / 9.0f;
@@ -82,10 +77,9 @@ namespace lum::editor {
 		float32 mNearPlane = 0.1f;
 		float32 mFarPlane = 1000.0f;
 
-		Vector3 mPosition;
-		Vector3 mUp;
+		Vector3 mPosition = Vector3( 0.0f, 0.0f, 3.0f );
+		Vector3 mUp = Vector3( 0.0f, 1.0f, 0.0f );
 		Vector3 mTarget;
-
 
 	};
 

@@ -1,10 +1,11 @@
 #pragma once
 #include "core/editor_common.hpp"
-#include "core/editor_camera.hpp"
 #include "core/editor_console.hpp"
 #include "core/file_explorer.hpp"
 #include "core/scene_inspector.hpp"
 #include "core/entity_inspector.hpp"
+#include "core/viewport.hpp"
+#include "core/utils/shortcuts.hpp"
 
 namespace lum::editor {
 
@@ -28,8 +29,14 @@ namespace lum::editor {
 	private:
 
 		Engine mEngine;
+
+		Window* mWindow;
+		rhi::RenderDevice* mRenderDevice;
+		render::Renderer* mRenderer;
+		FScene* mCurrentScene;
+
 		Console mConsole;
-		EditorCamera mCamera;
+		Viewport mViewport;
 		FileExplorer mExplorer;
 		SceneInspector mSceneInspector;
 		EntityInspector mEntityInspector;
@@ -37,7 +44,6 @@ namespace lum::editor {
 		inline static ComponentsEntriesMap skComponentsEntries;
 		inline static ComponentsByCategoryMap skComponentsByCategory;
 
-		void draw_viewport( float64 delta );
 		void draw_menu_bar( );
 		void draw_layout( );
 

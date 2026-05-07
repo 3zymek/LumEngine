@@ -16,6 +16,8 @@ namespace lum::editor {
 	class SceneInspector {
 	public:
 
+		void Initialize( ev::EventBus* eventBus );
+			
 		// Updates and renders the scene inspector panel.
 		void Update( FScene* scene );
 
@@ -36,6 +38,7 @@ namespace lum::editor {
 		TimedTooltip mActionTooltip;
 
 		EntityCreator mEntityCreator;
+
 	};
 
 } // namespace lum::editor

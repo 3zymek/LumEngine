@@ -8,7 +8,6 @@
 #include "scene/scene_manager.hpp"
 #include "entity/entity_manager.hpp"
 #include "entity/components/transform.hpp"
-#include "entity/components/relationship.hpp"
 
 namespace lum {
 
@@ -25,16 +24,14 @@ namespace lum {
 				matrix = Rotate( matrix, transform.mRotation );
 				matrix = Scale( matrix, transform.mScale );
 
-				CChild* child = mgr.GetComponent<CChild>( id );
+				auto it = scene->mParents.find( id );
 
-				if (child) {
+				if (it != scene->mParents.end()) {
 
-					CTransform* parentTransform = mgr.GetComponent<CTransform>( child->mParentID );
-
-					if (!parentTransform)
-						return;
-
-					matrix = parentTransform->mWorldMatrix * matrix;
+					EntityID parent = it->second;
+					
+					if( CTransform* parentTransform = mgr.GetComponent<CTransform>(parent))
+						matrix = parentTransform->mWorldMatrix * matrix;
 
 				}
 

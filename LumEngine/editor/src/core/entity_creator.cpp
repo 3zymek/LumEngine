@@ -14,6 +14,12 @@ namespace lum::editor {
 	// Public
 	//---------------------------------------------------------
 
+	void EntityCreator::Initialize( ev::EventBus* eventBus ) {
+
+		AddShortcut<Key::LEFT_CONTROL, Key::A>( eventBus, [&]( ) { bOpened = true; } );
+
+	}
+
 	void EntityCreator::Handle( FScene* scene ) {
 
 		mActionTooltip.Draw( );

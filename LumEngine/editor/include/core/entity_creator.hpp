@@ -15,6 +15,8 @@ namespace lum::editor {
 	class EntityCreator {
 	public:
 
+		void Initialize( ev::EventBus* eventBus );
+
 		// Updates and renders the entity creator dialog.
 		void Handle( FScene* scene );
 

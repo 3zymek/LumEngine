@@ -10,14 +10,18 @@ namespace lum::editor {
 
 		mEngine.Initialize( "C:/Users/szymek/Desktop/lumen_assets" ); mEngine.SetScene( "scene.lsc" );
 
-		mCamera.Initialize( mEngine.GetEventBus( ) );
-
 		init_imgui( &mEngine.GetModulePlatform( ).mWindow );
 
 		RegisterEditorComponents( skComponentsEntries );
 		for (auto& [hash, entry] : skComponentsEntries) {
 			skComponentsByCategory[ entry.mCategoryName ].emplace_back( &entry );
 		}
+
+		mWindow = &mEngine.GetModulePlatform( ).mWindow;
+		mRenderDevice = mEngine.GetModulePlatform( ).mRenderDevice;
+		mRenderer = &mEngine.GetModuleRender( ).mRenderer;
+		
+		mSceneInspector.Initialize( &mEngine.GetEventBus( ) );
 
 	}
 
@@ -57,13 +61,13 @@ namespace lum::editor {
 	}
 	void Editor::Update( float64 delta ) {
 
-		FScene* scene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( );
+		mCurrentScene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( );
 
 		draw_layout( );
 		draw_menu_bar( );
-		draw_viewport( delta );
-		mSceneInspector.Update( scene );
-		mEntityInspector.Handle( mSceneInspector.GetSelectedEntity( ), scene );
+		mViewport.Update( delta, mRenderer->GetFrameTexture( ), mRenderDevice, mWindow, mRenderer );
+		mSceneInspector.Update( mCurrentScene );
+		mEntityInspector.Handle( mSceneInspector.GetSelectedEntity( ), mCurrentScene );
 
 		mExplorer.Update( AssetLoader::GetProjectRoot( ) );
 
@@ -74,30 +78,6 @@ namespace lum::editor {
 
 
 
-
-	void Editor::draw_viewport( float64 delta ) {
-
-		ImGui::Begin( "Viewport" );
-
-		ImGuiDockNode* node = ImGui::GetWindowDockNode( );
-		if (node) {
-			node->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
-		}
-
-		ImVec2 available = ImGui::GetContentRegionAvail( );
-
-		mCamera.SetAspectRatio( ( float32 ) available.x / ( float32 ) available.y );
-		mEngine.GetModuleRender( ).mRenderer.UpdateCamera( mCamera.Update( delta ) );
-
-		uint32 texID = mEngine.GetModulePlatform( ).mRenderDevice->GetNativeHandle(
-			mEngine.GetModuleRender( ).mRenderer.GetFrameTexture( )
-		);
-
-		ImGui::Image( ( ImTextureID ) texID, available, ImVec2( 0, 1 ), ImVec2( 1, 0 ) );
-
-		ImGui::End( ); // Viewport
-
-	}
 	void Editor::draw_menu_bar( ) {
 
 		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0.0f, 12.0f ) );
