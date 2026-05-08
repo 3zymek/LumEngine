@@ -16,7 +16,7 @@ namespace lum::editor {
 	public:
 
 		// Updates and renders the inspector for the given entity.
-		void Handle( EntityID selectedEntity, FScene* scene );
+		void Update( EntityID selectedEntity, Scene* scene );
 
 	private:
 

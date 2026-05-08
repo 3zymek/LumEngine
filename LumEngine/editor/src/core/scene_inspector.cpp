@@ -21,7 +21,7 @@ namespace lum::editor {
 
 	}
 
-	void SceneInspector::Update( FScene* scene ) {
+	void SceneInspector::Update( Scene* scene ) {
 
 		auto& entities = scene->mEntities;
 
@@ -42,103 +42,9 @@ namespace lum::editor {
 
 		for (usize i = 0; i < entities.size( ); i++) {
 
-			auto& entity = entities[ i ];
-
-			bool isSelected = (mSelectedEntity == entity);
+			if (!scene->mParents.contains( entities[ i ] ))
+				draw_entity( scene, entities[ i ] );
 			
-			CName* displayName = scene->mEntityMgr.GetComponent<CName>( entity );
-			char displayLabel[ 64 ]{};
-			if (!displayName || displayName->mName.Length( ) == 0)
-				FormatString( displayLabel, "%s %llu", "Entity ", entity );
-			else
-				FormatString( displayLabel, "%s", displayName->mName.Data( ) );
-
-			const usize len = strlen( displayLabel );
-			auto it = std::search(
-				displayLabel, displayLabel + len,
-				mEntitiesFilter.begin( ), mEntitiesFilter.end( ),
-				[]( char a, char b ) { return tolower( a ) == tolower( b ); }
-			);
-
-			if (it == displayLabel + len) continue;
-
-			auto parentIterator = scene->mParents.find( entity );
-
-			if(parentIterator != scene->mParents.end()){
-			
-				if (ImGui::TreeNode( displayLabel )) {
-					
-					
-
-					ImGui::TreePop( );
-				}
-			
-			}
-			else {
-
-				if (ImGui::Selectable( displayLabel, isSelected )) {
-					mSelectedEntity = entity;
-				}
-
-			}
-			
-
-			/*
-			bool selected = (mSelectedEntity == entity);
-			CName* name = scene->mEntityMgr.GetComponent<CName>( entity );
-			char label[ 64 ]{};
-			if (!name || name->mName.Length( ) == 0)
-				FormatString( label, "%s %llu", "Entity", entity );
-			else
-				FormatString( label, "%s", name->mName.Data( ) );
-
-			const usize len = strlen( label );
-			auto it = std::search(
-				label, label + len,
-				mEntitiesFilter.begin( ), mEntitiesFilter.end( ),
-				[]( char a, char b ) { return tolower( a ) == tolower( b ); }
-			);
-
-			if (it == label + len) continue;
-
-			const float32 height = ImGui::GetTextLineHeightWithSpacing( );
-			const ImVec2 pos = ImGui::GetCursorScreenPos( );
-			const float32 width = ImGui::GetContentRegionAvail( ).x;
-			const bool hovered = ImGui::IsMouseHoveringRect( pos, ImVec2( pos.x + width, pos.y + height ) );
-
-			if (entity == mSelectedEntity)
-				DrawRowBackground( style::skItemSelected );
-			else if (hovered)
-				DrawRowBackground( style::skItemHovered );
-			else
-				DrawRowBackground(
-					(i % 2 != 0)
-					? style::skRowAlt
-					: style::skBg
-				);
-
-			ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0, 0, 0, 0 ) );
-			ImGui::PushStyleColor( ImGuiCol_HeaderHovered, ImVec4( 0, 0, 0, 0 ) );
-			ImGui::PushStyleColor( ImGuiCol_HeaderActive, ImVec4( 0, 0, 0, 0 ) );
-			ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 12.0f, 4.0f ) );
-
-			ImGui::SetCursorPosY( ImGui::GetCursorPosY( ) + (height - ImGui::GetTextLineHeight( )) * 0.5f );
-
-			if (ImGui::Selectable( label, selected, ImGuiSelectableFlags_None, ImVec2( 0, height ) )) {
-				mSelectedEntity = entity;
-			}
-			if (selected) {
-				ImGui::GetWindowDrawList( )->AddRectFilled(
-					ImVec2( pos.x + 2.0f, pos.y + 2.0f ),
-					ImVec2( pos.x + 5.0f, pos.y + 16.5f ),
-					ImGui::ColorConvertFloat4ToU32( style::skAccentActive ),
-					1.0f
-				);
-			}
-
-			ImGui::PopStyleVar( );
-			ImGui::PopStyleColor( 3 );
-		   */
 		}
 		ImGui::End( ); // Scene Inspector
 
@@ -147,5 +53,81 @@ namespace lum::editor {
 		mActionTooltip.Draw( );
 
 	}
+
+    void SceneInspector::draw_entity( Scene* scene, EntityID entity ) {
+
+        bool bHasChildren = scene->mChildren.contains( entity );
+        bool bSelected = (mSelectedEntity == entity);
+
+        CName* displayName = scene->mEntityMgr.GetComponent<CName>( entity );
+        char displayLabel[ 64 ]{};
+        if (!displayName || displayName->mName.Length( ) == 0)
+            FormatString( displayLabel, "%s %llu", "Entity ", entity );
+        else
+            FormatString( displayLabel, "%s", displayName->mName.Data( ) );
+
+        const usize len = strlen( displayLabel );
+        auto it = std::search(
+            displayLabel, displayLabel + len,
+            mEntitiesFilter.begin( ), mEntitiesFilter.end( ),
+            []( char a, char b ) { return tolower( a ) == tolower( b ); }
+        );
+
+        if (it == displayLabel + len) return;
+
+        auto handleDragDrop = [&]( ) {
+            if (ImGui::BeginDragDropSource( )) {
+                ImGui::SetDragDropPayload( "ENTITY", &entity, sizeof( EntityID ) );
+                ImGui::Text( displayLabel );
+                ImGui::EndDragDropSource( );
+            }
+            if (ImGui::BeginDragDropTarget( )) {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "ENTITY" )) {
+                    EntityID dragged = *( EntityID* ) payload->Data;
+                    scene->AttachChild( entity, dragged );
+                }
+                ImGui::EndDragDropTarget( );
+            }
+            };
+
+        ImGui::PushStyleColor( ImGuiCol_Header, style::skItemHovered );
+        ImGui::PushStyleColor( ImGuiCol_HeaderHovered, style::skItemHovered );
+        ImGui::PushStyleColor( ImGuiCol_HeaderActive, style::skItemHovered );
+
+        if (bHasChildren) {
+
+            bool bTreeOpened = false;
+            FCollapsingHeaderArgs args{
+                .mID = HashedStr(displayLabel ),
+                .mLabel = displayLabel,
+                .mIconOpened = ICON_FA_CHEVRON_DOWN,
+                .mIconClosed = ICON_FA_CHEVRON_RIGHT,
+                .mColor = ImGui::GetStyleColorVec4( ImGuiCol_Text ),
+                .mColorHovered = style::skAccent,
+                .mFont = Fonts::sDefaultSmall
+            };
+
+            TreeNodeCustom( args, bTreeOpened, [&]( ) {
+
+                if (ImGui::IsItemClicked( ))
+                    mSelectedEntity = entity;
+
+                for (auto child : scene->mChildren[ entity ])
+                    draw_entity( scene, child );
+
+                            } );
+
+            handleDragDrop( );
+
+        }
+        else {
+            if (ImGui::Selectable( displayLabel, bSelected ))
+                mSelectedEntity = entity;
+            handleDragDrop( );
+        }
+
+        ImGui::PopStyleColor( 3 );
+
+    }
 
 } // namespace lum::editor

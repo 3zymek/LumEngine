@@ -18,7 +18,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MSceneManager::Initialize( FSceneManagerContext& ctx ) {
+	void MSceneManager::Initialize( SceneManagerContext& ctx ) {
 
 		mContext = ctx;
 
@@ -58,14 +58,14 @@ namespace lum {
 
 		fmt::SceneDependencyManager parser;
 		parser.Initialize( tokenizer, mContext );
-		FScene scene;
+		Scene scene;
 		scene.mEntityMgr.Initialize( mContext.mEventBus );
 		parser.Parse( scene );
 		mScenes.emplace( hash, std::move( scene ) );
 
 	}
 
-	FScene* MSceneManager::GetCurrentScene( ) {
+	Scene* MSceneManager::GetCurrentScene( ) {
 		if (mCurrentScene != nullptr)
 			return mCurrentScene;
 		LUM_LOG_ERROR( "No scene set" );

@@ -9,8 +9,8 @@
 
 namespace lum::editor {
 
-	using ComponentsEntriesMap = std::unordered_map<HashedStr, EditorComponentEntry>;
-	using ComponentsByCategoryMap = std::unordered_map<StringView, std::vector<EditorComponentEntry*>>;
+	using ComponentsEntriesMap = std::unordered_map<HashedStr, EditorComponentMetadata>;
+	using ComponentsByCategoryMap = std::unordered_map<StringView, std::vector<EditorComponentMetadata*>>;
 
 	class Editor {
 	public:
@@ -33,7 +33,7 @@ namespace lum::editor {
 		Window* mWindow;
 		rhi::RenderDevice* mRenderDevice;
 		render::Renderer* mRenderer;
-		FScene* mCurrentScene;
+		Scene* mCurrentScene;
 
 		Console mConsole;
 		Viewport mViewport;

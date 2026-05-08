@@ -16,7 +16,7 @@ namespace lum::editor {
 	public:
 
 		// Updates and renders the entity editor dialog for the given entity.
-		void Handle( FScene* scene, EntityID entityID );
+		void Handle( Scene* scene, EntityID entityID );
 
 		// Opens or closes the entity editor dialog.
 		void Toggle( bool value ) noexcept { bOpened = value; }
@@ -30,10 +30,10 @@ namespace lum::editor {
 		void handle_right_panel( EntityID entityID );
 
 		// Draws the bottom footer with the apply and cancel buttons.
-		void handle_footer( FScene* scene, EntityID entityID );
+		void handle_footer( Scene* scene, EntityID entityID );
 
 		// Applies pending component additions and removals to the entity.
-		void handle_apply( FScene* scene, EntityID entityID );
+		void handle_apply( Scene* scene, EntityID entityID );
 
 		// Handles dialog close and resets transient state.
 		void handle_closing( );
@@ -41,8 +41,8 @@ namespace lum::editor {
 		static constexpr float32 mFooterHeight = 36.0f;
 
 		// Current component list for the entity; bool indicates if the entry is newly added.
-		std::vector<std::pair<const EditorComponentEntry*, bool>> mEntityComponents;
-		std::vector<const EditorComponentEntry*> mComponentsToDelete;
+		std::vector<std::pair<const EditorComponentMetadata*, bool>> mEntityComponents;
+		std::vector<const EditorComponentMetadata*> mComponentsToDelete;
 
 		TimedTooltip mActionTooltip;
 

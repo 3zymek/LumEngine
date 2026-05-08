@@ -22,7 +22,7 @@ namespace lum {
     /* @brief Represents a single scene — holds a list of active entities
     *  and their corresponding ECS manager.
     */
-    struct FScene {
+    struct Scene {
 
         /* @brief List of all entity IDs belonging to this scene. */
         std::vector<EntityID> mEntities;
@@ -33,12 +33,38 @@ namespace lum {
         /* @brief ECS manager owning and managing components for this scene. */
         ecs::MEntityManager mEntityMgr;
 
+        void AttachChild( EntityID parent, EntityID child ) {
+            if (parent == child) return;
+            if (mParents.contains( child )) return;
+            EntityID current = parent;
+            while (mParents.contains( current )) {
+                current = mParents[ current ];
+                if (current == child) return;
+            }
+            mParents[ child ] = parent;
+            mChildren[ parent ].push_back( child );
+        }
+        void DetachChild( EntityID child ) {
+            if (!mParents.contains( child )) return;
+
+            EntityID parent = mParents[ child ];
+            mParents.erase( child );
+
+            auto& children = mChildren[ parent ];
+            children.erase(
+                std::remove( children.begin( ), children.end( ), child ), children.end( )
+            );
+
+            if (children.empty( ))
+                mChildren.erase( parent );
+        }
+
     };
 
     /* @brief Aggregates all resource manager pointers required by the SceneManager
     *  to load and initialize scene assets.
     */
-    struct FSceneManagerContext {
+    struct SceneManagerContext {
 
         /* @brief Pointer to the active texture manager. */
         MTextureManager* mTextureMgr = nullptr;
@@ -71,7 +97,7 @@ namespace lum {
         /* @brief Initializes the manager with all required resource managers and renderer.
          *  @param ctx Context struct containing valid pointers to all subsystem managers.
          */
-        void Initialize( FSceneManagerContext& ctx );
+        void Initialize( SceneManagerContext& ctx );
 
         /* @brief Loads and sets the active scene from a given file path.
          *  If the scene is already cached, switches to it directly.
@@ -88,18 +114,18 @@ namespace lum {
         /* @brief Returns a pointer to the currently active scene.
          *  @return Pointer to the active Scene, or nullptr if none is set.
          */
-        FScene* GetCurrentScene( );
+        Scene* GetCurrentScene( );
 
     private:
         
         /* @brief Cached context holding all resource manager references. */
-        FSceneManagerContext mContext;
+        SceneManagerContext mContext;
 
         /* @brief Pointer to the currently active scene. */
-        FScene* mCurrentScene = nullptr;
+        Scene* mCurrentScene = nullptr;
         
         /* @brief Map of all loaded scenes, keyed by hashed scene path. */
-        std::unordered_map<uint64, FScene> mScenes;
+        std::unordered_map<uint64, Scene> mScenes;
 
     };
 

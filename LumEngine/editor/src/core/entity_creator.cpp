@@ -7,6 +7,7 @@
 #include "core/entity_creator.hpp"
 #include "editor.hpp"
 #include "editor_dep_manager.generated.hpp"
+#include "core/utils/style.hpp"
 
 namespace lum::editor {
 
@@ -20,7 +21,7 @@ namespace lum::editor {
 
 	}
 
-	void EntityCreator::Handle( FScene* scene ) {
+	void EntityCreator::Handle( Scene* scene ) {
 
 		mActionTooltip.Draw( );
 		if (!bOpened) return;
@@ -147,9 +148,21 @@ namespace lum::editor {
 				continue;
 			}
 			ImGui::SameLine( );
-			const EditorComponentEntry* entry = mAddedComponents[ i ];
-			ImGui::TextColored( GetCategoryColor( entry->mCategoryName ), entry->mDisplayName.data( ) );
+			const EditorComponentMetadata* entry = mAddedComponents[ i ];
 
+			bool bSelected = (mSelectedComponent == entry);
+
+			ImGui::PushStyleColor( ImGuiCol_Text, GetCategoryColor( entry->mCategoryName ) );
+			ImGui::PushStyleColor( ImGuiCol_Header, style::skItemHovered );
+			ImGui::PushStyleColor( ImGuiCol_HeaderHovered, style::skItemHovered );
+			ImGui::PushStyleColor( ImGuiCol_HeaderActive, style::skItemHovered );
+
+			if (ImGui::Selectable( entry->mDisplayName.data( ), bSelected )) {
+				mSelectedComponent = entry;
+			}
+
+			ImGui::PopStyleColor( 4 );
+			
 			++i;
 		}
 
@@ -164,18 +177,16 @@ namespace lum::editor {
 
 		ImGui::Separator( );
 
-		ImGui::TextDisabled( "Parent entity" );
-		static char parent[ 64 ]{};
-		ImGui::InputText( "##Parent", parent, sizeof( parent ), ImGuiInputTextFlags_ReadOnly );
-		ImGui::SameLine( );
-		ImGui::Button( "Pick" );
+		if (mSelectedComponent) {
+			// TODO ADD COMPONENTS DESCRIPTIONS
+			ImGui::TextDisabled( "Here there'll be component description (in future)" );
+		}
 
-		ImGui::TextDisabled( "Transform is NOT inherited (for now)" );
 
 		ImGui::EndChild( );
 
 	}
-	void EntityCreator::handle_footer( FScene* scene ) {
+	void EntityCreator::handle_footer( Scene* scene ) {
 
 		float32 avail = ImGui::GetContentRegionAvail( ).x;
 		float32 btnW = 80.0f * 2 + ImGui::GetStyle( ).ItemSpacing.x;
@@ -208,10 +219,10 @@ namespace lum::editor {
 		ImGui::PopStyleVar( ); // Frame rounding
 
 	}
-	void EntityCreator::handle_creation( FScene* scene ) {
+	void EntityCreator::handle_creation( Scene* scene ) {
 
 		Entity newEntity;
-		const EditorComponentEntry* entry = FindComponentEntry( "Name" );
+		const EditorComponentMetadata* entry = FindComponentEntry( "Name" );
 		auto it = std::find( mAddedComponents.begin( ), mAddedComponents.end( ), entry );
 		if (it != mAddedComponents.end( )) {
 			scene->mEntityMgr.AddComponent( newEntity, CName{ .mName = mEntityName.Data( ) } );

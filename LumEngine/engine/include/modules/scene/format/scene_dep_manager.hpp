@@ -8,7 +8,7 @@
 #include "entity/entity_manager.hpp"
 #include "scene/scene_manager.hpp"
 
-namespace lum { struct FScene; }
+namespace lum { struct Scene; }
 namespace lum::fmt {
 
 	struct Tokenizer;
@@ -20,32 +20,32 @@ namespace lum::fmt {
 	struct FParseContext {
 
 		/* @brief Reference to the scene being populated. */
-		FScene& mScene;
+		Scene& mScene;
 
 		/* @brief Entity currently being parsed and populated with components. */
 		EntityID mEntity;
 
 		/* @brief Resource manager context used to load and resolve assets. */
-		FSceneManagerContext mContext;
+		SceneManagerContext mContext;
 
 	};
 
 	/* @brief Function pointer type for parse dispatch functions. */
 	using ParseFn = void(*)(std::vector<FToken>&, int32&, FParseContext&);
 
-	/* @brief Parses a tokenized .lsc scene file and populates a FScene.
+	/* @brief Parses a tokenized .lsc scene file and populates a Scene.
 	* Dispatches identifiers and component blocks to their respective parse functions
 	* via hash-keyed lookup tables for efficient routing.
 	*/
 	class SceneDependencyManager {
 	public:
 
-		void Initialize( Tokenizer& tokenizer, FSceneManagerContext& ctx );
+		void Initialize( Tokenizer& tokenizer, SceneManagerContext& ctx );
 
 		/* @brief Parses the token stream and populates the given scene.
 		* @param scene Scene to populate with entities and components.
 		*/
-		void Parse( FScene& scene );
+		void Parse( Scene& scene );
 
 	private:
 
@@ -63,7 +63,7 @@ namespace lum::fmt {
 		Tokenizer* mTokenizer = nullptr;
 
 		/* @brief Resource manager context used during parsing for asset resolution. */
-		FSceneManagerContext* mContext = nullptr;
+		SceneManagerContext* mContext = nullptr;
 
 		/* @brief Lookup table mapping hashed identifier keywords to their parse functions.
 		* Used to dispatch top-level scene constructs such as entity and world blocks.

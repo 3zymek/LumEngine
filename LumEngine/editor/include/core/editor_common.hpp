@@ -9,7 +9,7 @@ namespace lum::editor {
 	namespace detail {
 		using EditorFn = void(*)(ecs::MEntityManager&, EntityID);
 	}
-	struct EditorComponentEntry {
+	struct EditorComponentMetadata {
 		detail::EditorFn mDisplayFn = {};
 		detail::EditorFn mCreateFn = {};
 		detail::EditorFn mDeleteFn = {};
@@ -18,7 +18,7 @@ namespace lum::editor {
 		ComponentTypeID mTypeID = 0;
 	};
 
-	const EditorComponentEntry* FindComponentEntry( StringView name );
+	const EditorComponentMetadata* FindComponentEntry( StringView name );
 
 	struct FCollapsingHeaderArgs {
 		HashedStr mID = {};
@@ -30,6 +30,52 @@ namespace lum::editor {
 		ImFont* mFont = nullptr;
 	};
 	void CollapsingHeaderCustom( const FCollapsingHeaderArgs& args, bool& opened );
+
+	void TreeNodeCustom( const FCollapsingHeaderArgs& args, bool& opened, auto innerFn ) {
+
+		ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0, 0, 0, 0 ) );
+		ImGui::PushStyleColor( ImGuiCol_HeaderHovered, ImVec4( 0, 0, 0, 0 ) );
+		ImGui::PushStyleColor( ImGuiCol_HeaderActive, ImVec4( 0, 0, 0, 0 ) );
+		ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 0, 0, 0, 0 ) );
+
+		ImGui::PushStyleVar( ImGuiStyleVar_IndentSpacing, 12.0f );
+
+		ImGui::PushID( args.mID );
+		opened = ImGui::TreeNodeEx( "##hidden",
+									ImGuiTreeNodeFlags_OpenOnArrow |
+									ImGuiTreeNodeFlags_SpanFullWidth |
+									ImGuiTreeNodeFlags_DefaultOpen
+		);
+		ImGui::PopID( );
+		ImGui::PopStyleColor( 4 );
+
+		ImGui::PopStyleVar( );
+
+		bool hovered = ImGui::IsItemHovered( );
+		ImVec2 min = ImGui::GetItemRectMin( );
+		ImVec2 textPos = ImVec2( min.x + 5.0f, min.y );
+
+		ccharptr chevron = opened ? args.mIconOpened.data( ) : args.mIconClosed.data( );
+
+		float32 chevronWidth = ImGui::CalcTextSize( args.mIconOpened.data( ) ).x;
+		chevronWidth = std::max( chevronWidth, ImGui::CalcTextSize( args.mIconClosed.data( ) ).x );
+
+		ImU32 color = hovered ? ImGui::GetColorU32( args.mColorHovered ) : ImGui::GetColorU32( args.mColor );
+
+		if (args.mFont) ImGui::PushFont( args.mFont );
+		ImGui::GetWindowDrawList( )->AddText( textPos, color, chevron );
+		ImGui::GetWindowDrawList( )->AddText(
+			ImVec2( textPos.x + chevronWidth + 6.0f, textPos.y ),
+			color,
+			args.mLabel.data( )
+		);
+		if (args.mFont) ImGui::PopFont( );
+
+		if (opened) {
+			innerFn( );
+			ImGui::TreePop( );
+		}
+	}
 
 	void DrawRowBackground( const ImVec4& color );
 	bool SearchField( ccharptr id, ccharptr hint, charptr buffer, usize bufferSize );

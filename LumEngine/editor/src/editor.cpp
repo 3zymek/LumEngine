@@ -67,7 +67,7 @@ namespace lum::editor {
 		draw_menu_bar( );
 		mViewport.Update( delta, mRenderer->GetFrameTexture( ), mRenderDevice, mWindow, mRenderer );
 		mSceneInspector.Update( mCurrentScene );
-		mEntityInspector.Handle( mSceneInspector.GetSelectedEntity( ), mCurrentScene );
+		mEntityInspector.Update( mSceneInspector.GetSelectedEntity( ), mCurrentScene );
 
 		mExplorer.Update( AssetLoader::GetProjectRoot( ) );
 

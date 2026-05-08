@@ -13,7 +13,7 @@ namespace lum::editor {
 	// Public
 	//---------------------------------------------------------
 
-	void EntityInspector::Handle( EntityID selectedEntity, FScene* scene ) {
+	void EntityInspector::Update( EntityID selectedEntity, Scene* scene ) {
 
 		ImGui::Begin( "Entity" );
 		if (ImGui::Button( ICON_FA_PENCIL )) {

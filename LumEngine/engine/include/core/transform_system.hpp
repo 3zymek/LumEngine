@@ -5,9 +5,11 @@
 //=============================================================================//
 #pragma once
 
+#include "entity/ecs_common.hpp"
+
 namespace lum {
 
-	struct FScene;
+	struct Scene;
 
 	/* @brief Computes world space transform matrices for all entities.
 	 * Must be called every frame before rendering.
@@ -16,9 +18,13 @@ namespace lum {
 	public:
 
 		/* @brief Updates the world matrix of every entity with a CTransform component.
-		 * Propagates parent transforms down the hierarchy using CChild relationships.
-		 */
-		static void Update( FScene* scene );
+		* Propagates parent transforms down the hierarchy using CChild relationships.
+		*/
+		static void Update( Scene* scene );
+
+	private:
+
+		static void update_recursive( Scene* scene, EntityID id );
 
 	};
 

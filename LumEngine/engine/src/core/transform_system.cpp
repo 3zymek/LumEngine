@@ -11,32 +11,49 @@
 
 namespace lum {
 
-	void TransformSystem::Update( FScene* scene ) {
+	void TransformSystem::Update( Scene* scene ) {
 
 		ecs::MEntityManager& mgr = scene->mEntityMgr;
 
 		mgr.EachWithID<CTransform>(
 			[&]( EntityID id, CTransform& transform ) {
 
-				Matrix4& matrix = transform.mWorldMatrix = Matrix4( 1.0f );
+				if (scene->mParents.contains( id )) return;
 
-				matrix = Translate( matrix, transform.mPosition );
-				matrix = Rotate( matrix, transform.mRotation );
-				matrix = Scale( matrix, transform.mScale );
-
-				auto it = scene->mParents.find( id );
-
-				if (it != scene->mParents.end()) {
-
-					EntityID parent = it->second;
-					
-					if( CTransform* parentTransform = mgr.GetComponent<CTransform>(parent))
-						matrix = parentTransform->mWorldMatrix * matrix;
-
-				}
+				transform.mWorldMatrix = Matrix4( 1.0f );
+				transform.mWorldMatrix = Translate( transform.mWorldMatrix, transform.mPosition );
+				transform.mWorldMatrix = Rotate( transform.mWorldMatrix, transform.mRotation );
+				transform.mWorldMatrix = Scale( transform.mWorldMatrix, transform.mScale );
 
 			}
 		);
+
+		for (auto& [parent, children] : scene->mChildren) {
+			for (EntityID child : children)
+				update_recursive( scene, child );
+		}
+
+
+	}
+
+	void TransformSystem::update_recursive( Scene* scene, EntityID id ) {
+
+		ecs::MEntityManager& mgr = scene->mEntityMgr;
+
+		CTransform* transform = mgr.GetComponent<CTransform>( id );
+
+		transform->mWorldMatrix = Matrix4( 1.0f );
+		transform->mWorldMatrix = Translate( transform->mWorldMatrix, transform->mPosition );
+		transform->mWorldMatrix = Rotate( transform->mWorldMatrix, transform->mRotation );
+		transform->mWorldMatrix = Scale( transform->mWorldMatrix, transform->mScale );
+
+		if (CTransform* parentTransform = mgr.GetComponent<CTransform>( scene->mParents[ id ] ))
+			transform->mWorldMatrix = parentTransform->mWorldMatrix * transform->mWorldMatrix;
+
+		if (scene->mChildren.contains( id )) {
+			for (EntityID child : scene->mChildren[ id ])
+				update_recursive( scene, child );
+		}
 
 
 	}

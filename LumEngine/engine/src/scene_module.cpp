@@ -14,7 +14,7 @@ namespace lum {
 
 	void MSceneModule::Initialize( MResourceModule& res, MRenderModule& render, MAudioModule& audio, ev::EventBus& bus ) {
 
-		FSceneManagerContext ctx;
+		SceneManagerContext ctx;
 		ctx.mAudioMgr = &audio.mAudioMgr;
 		ctx.mMaterialMgr = &res.mMaterialMgr;
 		ctx.mMeshMgr = &res.mMeshMgr;

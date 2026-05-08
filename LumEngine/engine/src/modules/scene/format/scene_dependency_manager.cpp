@@ -23,7 +23,7 @@ namespace lum::fmt {
 	// Public
 	//---------------------------------------------------------
 
-	void SceneDependencyManager::Initialize( Tokenizer& tokenizer, FSceneManagerContext& ctx ) {
+	void SceneDependencyManager::Initialize( Tokenizer& tokenizer, SceneManagerContext& ctx ) {
 
 		mTokenizer = &tokenizer;
 		mContext = &ctx;
@@ -33,7 +33,7 @@ namespace lum::fmt {
 	}
 
 
-	void SceneDependencyManager::Parse( FScene& scene ) {
+	void SceneDependencyManager::Parse( Scene& scene ) {
 
 		FParseContext ctx{ scene };
 		ctx.mContext = *mContext;

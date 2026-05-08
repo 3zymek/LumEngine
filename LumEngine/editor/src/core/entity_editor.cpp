@@ -14,7 +14,7 @@ namespace lum::editor {
 	// Public
 	//---------------------------------------------------------
 
-	void EntityEditor::Handle( FScene* scene, EntityID entityID ) {
+	void EntityEditor::Handle( Scene* scene, EntityID entityID ) {
 
 		mActionTooltip.Draw( );
 		if (!bOpened) return;
@@ -136,7 +136,7 @@ namespace lum::editor {
 		for (int32 i = 0; i < mEntityComponents.size( ); i++) {
 			FormatString( buff, "%c##%d", '-', i );
 
-			std::pair<const EditorComponentEntry*, bool>& pair = mEntityComponents[ i ];
+			std::pair<const EditorComponentMetadata*, bool>& pair = mEntityComponents[ i ];
 
 			if (pair.second == skNewComponent) continue;
 
@@ -171,7 +171,7 @@ namespace lum::editor {
 		for (int32 i = 0; i < mEntityComponents.size( ); i++) {
 			FormatString( buff, "%c##%d", '-', i );
 
-			std::pair<const EditorComponentEntry*, bool>& pair = mEntityComponents[ i ];
+			std::pair<const EditorComponentMetadata*, bool>& pair = mEntityComponents[ i ];
 
 			if (pair.second == skOldComponent) continue;
 
@@ -197,7 +197,7 @@ namespace lum::editor {
 		ImGui::EndChild( );
 
 	}
-	void EntityEditor::handle_footer( FScene* scene, EntityID entityID ) {
+	void EntityEditor::handle_footer( Scene* scene, EntityID entityID ) {
 
 		float32 avail = ImGui::GetContentRegionAvail( ).x;
 		float32 btnW = 80.0f * 2 + ImGui::GetStyle( ).ItemSpacing.x;
@@ -230,7 +230,7 @@ namespace lum::editor {
 		ImGui::PopStyleVar( ); // Frame rounding
 
 	}
-	void EntityEditor::handle_apply( FScene* scene, EntityID entityID ) {
+	void EntityEditor::handle_apply( Scene* scene, EntityID entityID ) {
 
 		for (auto& pair : mEntityComponents) {
 

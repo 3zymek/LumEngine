@@ -19,12 +19,14 @@ namespace lum::editor {
 		void Initialize( ev::EventBus* eventBus );
 			
 		// Updates and renders the scene inspector panel.
-		void Update( FScene* scene );
+		void Update( Scene* scene );
 
 		// Returns the currently selected entity, or skNullEntity if none.
 		EntityID GetSelectedEntity( ) const noexcept { return mSelectedEntity; }
 
 	private:
+
+		void draw_entity( Scene* scene, EntityID entity );
 
 		// Filter string for the entity list search input.
 		FixedString<64> mEntitiesFilter;

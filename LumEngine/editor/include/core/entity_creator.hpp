@@ -18,7 +18,7 @@ namespace lum::editor {
 		void Initialize( ev::EventBus* eventBus );
 
 		// Updates and renders the entity creator dialog.
-		void Handle( FScene* scene );
+		void Handle( Scene* scene );
 
 		// Opens or closes the entity creator dialog.
 		void Toggle( bool value ) noexcept { bOpened = value; }
@@ -32,17 +32,17 @@ namespace lum::editor {
 		void handle_right_panel( );
 
 		// Draws the bottom footer with entity name input and confirm button.
-		void handle_footer( FScene* scene );
+		void handle_footer( Scene* scene );
 
 		// Spawns the entity with selected components into the scene.
-		void handle_creation( FScene* scene );
+		void handle_creation( Scene* scene );
 
 		// Handles dialog close and resets transient state.
 		void handle_closing( );
 
 
 		// Components selected to be added to the new entity.
-		std::vector<const EditorComponentEntry*> mAddedComponents;
+		std::vector<const EditorComponentMetadata*> mAddedComponents;
 
 		static constexpr float32 mFooterHeight = 36.0f;
 		TimedTooltip mActionTooltip;
@@ -54,7 +54,9 @@ namespace lum::editor {
 		FixedString<64> mEntityName;
 
 		// Component entry used to drive the entity name field, if any.
-		const EditorComponentEntry* mNameEntry = nullptr;
+		const EditorComponentMetadata* mNameEntry = nullptr;
+
+		const EditorComponentMetadata* mSelectedComponent = nullptr;
 
 		bool bOpened = false;
 

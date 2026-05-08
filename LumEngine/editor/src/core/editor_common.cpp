@@ -3,7 +3,7 @@
 
 namespace lum::editor {
 
-	const EditorComponentEntry* FindComponentEntry( StringView name ) {
+	const EditorComponentMetadata* FindComponentEntry( StringView name ) {
 		for (auto& [category, entries] : Editor::GetComponentsByCategory( )) {
 			for (auto* entry : entries) {
 				if (entry->mDisplayName == name)
