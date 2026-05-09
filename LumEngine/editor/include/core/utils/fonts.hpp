@@ -25,7 +25,7 @@ namespace lum::editor {
                 return AssetLoader::ResolvePath( RootID::Internal, name );
                 };
 
-            load_font( sDefaultSuperSmall, path( "fonts/Inter.ttf"), 9.0f, &faConfig, faRanges );
+            load_font( sDefaultSuperSmall, path( "fonts/Inter.ttf"), 12.0f, &faConfig, faRanges );
             load_font( sDefaultSmall, path( "fonts/Inter.ttf" ), 16.0f, &faConfig, faRanges );
             load_font( sDefaultMedium, path( "fonts/Inter.ttf" ), 20.0f, &faConfig, faRanges );
             load_font( sDefaultBig, path( "fonts/Inter.ttf" ), 23.0f, &faConfig, faRanges );

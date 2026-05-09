@@ -16,7 +16,7 @@ namespace lum::editor {
 	//---------------------------------------------------------
 
 	void SceneInspector::Initialize( ev::EventBus* eventBus ) {
-		
+
 		mEntityCreator.Initialize( eventBus );
 
 	}
@@ -44,7 +44,15 @@ namespace lum::editor {
 
 			if (!scene->mParents.contains( entities[ i ] ))
 				draw_entity( scene, entities[ i ] );
-			
+
+		}
+		ImGui::Dummy( ImGui::GetContentRegionAvail( ) );
+		if (ImGui::BeginDragDropTarget( )) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "ENTITY" )) {
+				EntityID dragged = *( EntityID* ) payload->Data;
+				scene->DetachChild( dragged );
+			}
+			ImGui::EndDragDropTarget( );
 		}
 		ImGui::End( ); // Scene Inspector
 
@@ -54,80 +62,82 @@ namespace lum::editor {
 
 	}
 
-    void SceneInspector::draw_entity( Scene* scene, EntityID entity ) {
+	void SceneInspector::draw_entity( Scene* scene, EntityID entity ) {
 
-        bool bHasChildren = scene->mChildren.contains( entity );
-        bool bSelected = (mSelectedEntity == entity);
+		bool bHasChildren = scene->mChildren.contains( entity );
+		bool bSelected = (mSelectedEntity == entity);
 
-        CName* displayName = scene->mEntityMgr.GetComponent<CName>( entity );
-        char displayLabel[ 64 ]{};
-        if (!displayName || displayName->mName.Length( ) == 0)
-            FormatString( displayLabel, "%s %llu", "Entity ", entity );
-        else
-            FormatString( displayLabel, "%s", displayName->mName.Data( ) );
+		CName* displayName = scene->mEntityMgr.GetComponent<CName>( entity );
+		char displayLabel[ 64 ]{};
+		if (!displayName || displayName->mName.Length( ) == 0)
+			FormatString( displayLabel, "%s %llu", "Entity ", entity );
+		else
+			FormatString( displayLabel, "%s", displayName->mName.Data( ) );
 
-        const usize len = strlen( displayLabel );
-        auto it = std::search(
-            displayLabel, displayLabel + len,
-            mEntitiesFilter.begin( ), mEntitiesFilter.end( ),
-            []( char a, char b ) { return tolower( a ) == tolower( b ); }
-        );
+		const usize len = strlen( displayLabel );
+		auto it = std::search(
+			displayLabel, displayLabel + len,
+			mEntitiesFilter.begin( ), mEntitiesFilter.end( ),
+			[]( char a, char b ) { return tolower( a ) == tolower( b ); }
+		);
 
-        if (it == displayLabel + len) return;
+		if (it == displayLabel + len) return;
 
-        auto handleDragDrop = [&]( ) {
-            if (ImGui::BeginDragDropSource( )) {
-                ImGui::SetDragDropPayload( "ENTITY", &entity, sizeof( EntityID ) );
-                ImGui::Text( displayLabel );
-                ImGui::EndDragDropSource( );
-            }
-            if (ImGui::BeginDragDropTarget( )) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "ENTITY" )) {
-                    EntityID dragged = *( EntityID* ) payload->Data;
-                    scene->AttachChild( entity, dragged );
-                }
-                ImGui::EndDragDropTarget( );
-            }
-            };
+		auto handleDragDrop = [&]( ) {
+			if (ImGui::BeginDragDropSource( )) {
+				ImGui::SetDragDropPayload( "ENTITY", &entity, sizeof( EntityID ) );
+				ImGui::Text( displayLabel );
+				ImGui::EndDragDropSource( );
+			}
+			if (ImGui::BeginDragDropTarget( )) {
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "ENTITY" )) {
+					EntityID dragged = *( EntityID* ) payload->Data;
+					scene->DetachChild( dragged );
+					scene->AttachChild( entity, dragged );
+				}
+				ImGui::EndDragDropTarget( );
+			}
+			};
 
-        ImGui::PushStyleColor( ImGuiCol_Header, style::skItemHovered );
-        ImGui::PushStyleColor( ImGuiCol_HeaderHovered, style::skItemHovered );
-        ImGui::PushStyleColor( ImGuiCol_HeaderActive, style::skItemHovered );
+		ImGui::PushStyleColor( ImGuiCol_Header, style::skItemSelected );
+		ImGui::PushStyleColor( ImGuiCol_HeaderHovered, style::skItemHovered );
+		ImGui::PushStyleColor( ImGuiCol_HeaderActive, style::skItemSelected );
 
-        if (bHasChildren) {
+		if (bHasChildren) {
 
-            bool bTreeOpened = false;
-            FCollapsingHeaderArgs args{
-                .mID = HashedStr(displayLabel ),
-                .mLabel = displayLabel,
-                .mIconOpened = ICON_FA_CHEVRON_DOWN,
-                .mIconClosed = ICON_FA_CHEVRON_RIGHT,
-                .mColor = ImGui::GetStyleColorVec4( ImGuiCol_Text ),
-                .mColorHovered = style::skAccent,
-                .mFont = Fonts::sDefaultSmall
-            };
+			bool bTreeOpened = false;
+			FCollapsingHeaderArgs args{
+				.mID = HashStr( displayLabel ),
+				.mLabel = displayLabel,
+				.mIconOpened = ICON_FA_CHEVRON_DOWN,
+				.mIconClosed = ICON_FA_CHEVRON_RIGHT,
+				.mColor = ImGui::GetStyleColorVec4( ImGuiCol_Text ),
+				.mColorHovered = style::skAccent,
+				.mFont = Fonts::sDefaultSmall,
+				.bSelected = bSelected
+			};
 
-            TreeNodeCustom( args, bTreeOpened, [&]( ) {
+			if (TreeNodeCustom(
+				args,
+				bTreeOpened,
+				[&]( ) {
+					handleDragDrop( );
+					for (auto child : scene->mChildren[ entity ])
+						draw_entity( scene, child );
+				} ))
+				mSelectedEntity = entity;
 
-                if (ImGui::IsItemClicked( ))
-                    mSelectedEntity = entity;
+		}
+		else {
+			ImGui::Indent( 12.0f );
+			if (ImGui::Selectable( displayLabel, bSelected ))
+				mSelectedEntity = entity;
+			handleDragDrop( );
+			ImGui::Unindent( 12.0f );
+		}
 
-                for (auto child : scene->mChildren[ entity ])
-                    draw_entity( scene, child );
+		ImGui::PopStyleColor( 3 );
 
-                            } );
-
-            handleDragDrop( );
-
-        }
-        else {
-            if (ImGui::Selectable( displayLabel, bSelected ))
-                mSelectedEntity = entity;
-            handleDragDrop( );
-        }
-
-        ImGui::PopStyleColor( 3 );
-
-    }
+	}
 
 } // namespace lum::editor

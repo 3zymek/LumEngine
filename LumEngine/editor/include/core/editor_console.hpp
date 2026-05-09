@@ -17,7 +17,7 @@ namespace lum::editor {
 	public:
 
 		Console( ) {
-			LUM_LOG_INFO( "LumEngine v0.1.0.dev (c) 2025-present 3zymek" );
+			LUM_LOG_INFO( "LumEngine v0.0.1.dev (c) 2025-present 3zymek" );
 		}
 
 		// Logs an info message through global logger.

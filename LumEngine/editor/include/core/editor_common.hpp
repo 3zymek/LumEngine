@@ -3,6 +3,7 @@
 #include "core/editor_pch.hpp"
 #include "core/core_common.hpp"
 #include "core/utils/fonts.hpp"
+#include "core/utils/style.hpp"
 
 namespace lum::editor {
 
@@ -28,10 +29,11 @@ namespace lum::editor {
 		ImVec4 mColor = ImVec4( 0.8f, 0.8f, 0.8f, 1.0f );
 		ImVec4 mColorHovered = ImVec4( 1.0f, 1.0f, 1.0f, 1.0f );
 		ImFont* mFont = nullptr;
+		bool bSelected = false;
 	};
 	void CollapsingHeaderCustom( const FCollapsingHeaderArgs& args, bool& opened );
 
-	void TreeNodeCustom( const FCollapsingHeaderArgs& args, bool& opened, auto innerFn ) {
+	bool TreeNodeCustom( const FCollapsingHeaderArgs& args, bool& opened, auto innerFn ) {
 
 		ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0, 0, 0, 0 ) );
 		ImGui::PushStyleColor( ImGuiCol_HeaderHovered, ImVec4( 0, 0, 0, 0 ) );
@@ -41,26 +43,41 @@ namespace lum::editor {
 		ImGui::PushStyleVar( ImGuiStyleVar_IndentSpacing, 12.0f );
 
 		ImGui::PushID( args.mID );
-		opened = ImGui::TreeNodeEx( "##hidden",
-									ImGuiTreeNodeFlags_OpenOnArrow |
-									ImGuiTreeNodeFlags_SpanFullWidth |
-									ImGuiTreeNodeFlags_DefaultOpen
-		);
+
+		ImGuiTreeNodeFlags flags =
+			ImGuiTreeNodeFlags_OpenOnArrow |
+			ImGuiTreeNodeFlags_DefaultOpen;
+
+		if (args.bSelected)
+			flags |= ImGuiTreeNodeFlags_Selected;
+
+		opened = ImGui::TreeNodeEx( "##hidden", flags );
 		ImGui::PopID( );
 		ImGui::PopStyleColor( 4 );
 
-		ImGui::PopStyleVar( );
+		ImVec2 itemMin = ImGui::GetItemRectMin( );
+		ImVec2 itemMax = ImGui::GetItemRectMax( );
+		itemMax.x = ImGui::GetWindowPos( ).x + ImGui::GetWindowSize( ).x - ImGui::GetStyle( ).ScrollbarSize;
 
-		bool hovered = ImGui::IsItemHovered( );
-		ImVec2 min = ImGui::GetItemRectMin( );
-		ImVec2 textPos = ImVec2( min.x + 5.0f, min.y );
+		ImGui::SetCursorScreenPos( itemMin );
+		ImGui::InvisibleButton( "##treeclick", ImVec2( itemMax.x - itemMin.x, itemMax.y - itemMin.y ) );
+
+		bool bClicked = ImGui::IsItemClicked( );
+		bool bHovered = ImGui::IsItemHovered( );
+
+		ImVec2 textPos = ImVec2( itemMin.x + 5.0f, itemMin.y );
 
 		ccharptr chevron = opened ? args.mIconOpened.data( ) : args.mIconClosed.data( );
 
 		float32 chevronWidth = ImGui::CalcTextSize( args.mIconOpened.data( ) ).x;
 		chevronWidth = std::max( chevronWidth, ImGui::CalcTextSize( args.mIconClosed.data( ) ).x );
 
-		ImU32 color = hovered ? ImGui::GetColorU32( args.mColorHovered ) : ImGui::GetColorU32( args.mColor );
+		ImU32 color = ImGui::GetColorU32( args.mColor );
+
+		if (bHovered || args.bSelected) {
+			ImVec4 bgColor = args.bSelected ? style::skItemSelected : style::skItemHovered;
+			ImGui::GetWindowDrawList( )->AddRectFilled( itemMin, itemMax, ImGui::GetColorU32( bgColor ) );
+		}
 
 		if (args.mFont) ImGui::PushFont( args.mFont );
 		ImGui::GetWindowDrawList( )->AddText( textPos, color, chevron );
@@ -72,9 +89,26 @@ namespace lum::editor {
 		if (args.mFont) ImGui::PopFont( );
 
 		if (opened) {
+
+			ImVec2 lineStart = ImGui::GetCursorScreenPos( );
+			lineStart.x = itemMin.x + 6.0f;
+
 			innerFn( );
+
+			ImVec2 lineEnd = ImGui::GetCursorScreenPos( );
+			lineEnd.x = lineStart.x;
+
+			ImGui::GetWindowDrawList( )->AddLine(
+				lineStart, lineEnd,
+				IM_COL32( 80, 80, 80, 255 ), 1.0f
+			);
+
 			ImGui::TreePop( );
 		}
+
+		ImGui::PopStyleVar( );
+
+		return bClicked;
 	}
 
 	void DrawRowBackground( const ImVec4& color );

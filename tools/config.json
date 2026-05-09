@@ -9,9 +9,17 @@
     "GENERAL":   "#C8C8C8",
     "TRANSFORM": "#F0C27A",
     "RENDERING": "#7AB8F0",
-    "LIGHTNING":  "#F0E97A",
+    "LIGHTNING": "#F0E97A",
     "PHYSICS":   "#A8F07A",
     "AUDIO":     "#C47AF0"
+  },
+  "category_icons": {
+    "GENERAL":   "ICON_FA_DOT_CIRCLE",
+    "TRANSFORM": "ICON_FA_ARROWS_ALT",
+    "RENDERING": "ICON_FA_CUBE",
+    "LIGHTNING": "ICON_FA_LIGHTBULB",
+    "PHYSICS":   "ICON_FA_CROSSHAIRS",
+    "AUDIO":     "ICON_FA_VOLUME_UP"
   },
   "prefixes": ["m", "b"],
   "templates": {
@@ -50,8 +58,12 @@
     "get_category_name_return": "StringView",
     
     "get_category_color_namespace": "lum::editor",
-    "get_category_color_signature": "GetCategoryColor(StringView {VariableName})",
-    "get_category_color_return": "ImVec4"
+    "get_category_color_signature": "GetCategoryColor( StringView {VariableName} )",
+    "get_category_color_return": "ImVec4",
+
+    "get_category_icon_namespace": "lum::editor",
+    "get_category_icon_signature": "GetCategoryIcon( StringView {VariableName} )",
+    "get_category_icon_return": "StringView"
 
   },
   "defaults": {

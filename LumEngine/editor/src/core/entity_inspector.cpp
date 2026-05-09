@@ -16,7 +16,7 @@ namespace lum::editor {
 	void EntityInspector::Update( EntityID selectedEntity, Scene* scene ) {
 
 		ImGui::Begin( "Entity" );
-		if (ImGui::Button( ICON_FA_PENCIL )) {
+		if (ImGui::Button( ICON_FA_PEN )) {
 			mEntityEditor.Toggle( true );
 		} TooltipOnHover( "Edit entity" );
 		ImGui::SameLine( );

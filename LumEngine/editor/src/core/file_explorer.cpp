@@ -108,11 +108,12 @@ namespace lum::editor {
 				ImGui::PopStyleColor( 3 );
 				DrawPopupContext( {
 					.mItems = {
-						{ ICON_FA_TRASH,  "Delete", "Del",    [&]( ) { }},
-						{ ICON_FA_PENCIL, "Rename", "F2",     [&]( ) { }},
-						{ ICON_FA_FILES_O,"Copy",   "Ctrl+C", [&]( ) { }},
+						{ ICON_FA_TRASH,       "Delete", "Del",    [&]( ) { }},
+						{ ICON_FA_PEN,         "Rename", "F2",     [&]( ) { }},
+						{ ICON_FA_COPY,        "Copy",   "Ctrl+C", [&]( ) { }},
 					}
-								  } );
+					} 
+				);
 
 			}
 

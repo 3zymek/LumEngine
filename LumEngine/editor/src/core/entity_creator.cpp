@@ -97,7 +97,7 @@ namespace lum::editor {
 					if (it == entry->mDisplayName.end( )) continue;
 				}
 
-				ImGui::TextColored( categoryColor, ICON_FA_CUBE );
+				ImGui::TextColored( categoryColor, GetCategoryIcon( entry->mCategoryName ).data() );
 				ImGui::SameLine( );
 
 				if (ImGui::Selectable( entry->mDisplayName.data( ) ))
@@ -120,14 +120,14 @@ namespace lum::editor {
 
 		auto it = std::find( mAddedComponents.begin( ), mAddedComponents.end( ), mNameEntry );
 		if (mEntityName.Length( ) > 0) {
-			if(!mNameEntry)
+			if (!mNameEntry)
 				mNameEntry = FindComponentEntry( "Name" );
 			if (it == mAddedComponents.end( )) {
 				mAddedComponents.push_back( mNameEntry );
 			}
 		}
 		else {
-			if(it != mAddedComponents.end())
+			if (it != mAddedComponents.end( ))
 				mAddedComponents.erase( it );
 		}
 
@@ -162,7 +162,7 @@ namespace lum::editor {
 			}
 
 			ImGui::PopStyleColor( 4 );
-			
+
 			++i;
 		}
 
