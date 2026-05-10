@@ -7,6 +7,7 @@
 #include "core/scene_inspector.hpp"
 #include "entity/components/name.hpp"
 #include "core/utils/style.hpp"
+#include "core/editor_selection.hpp"
 #include "event/events/window_events.hpp"
 
 namespace lum::editor {
@@ -22,6 +23,10 @@ namespace lum::editor {
 	}
 
 	void SceneInspector::Update( Scene* scene ) {
+
+		if (input::KeyPressedOnce( Key::DELETE_KEY ) && (EditorSelection::GetSelectionType( ) == SelectionType::Entity)) {
+			scene->DeleteEntity( mSelectedEntity );
+		}
 
 		auto& entities = scene->mEntities;
 
@@ -40,11 +45,9 @@ namespace lum::editor {
 
 		ImGui::Separator( );
 
-		for (usize i = 0; i < entities.size( ); i++) {
-
-			if (!scene->mParents.contains( entities[ i ] ))
-				draw_entity( scene, entities[ i ] );
-
+		for (auto& [id, entity] : entities) {
+			if (!scene->mParents.contains( id ))
+				draw_entity( scene, id );
 		}
 		ImGui::Dummy( ImGui::GetContentRegionAvail( ) );
 		if (ImGui::BeginDragDropTarget( )) {
@@ -99,6 +102,12 @@ namespace lum::editor {
 			}
 			};
 
+		Entity* e = scene->GetEntity( entity );
+		bool    bVisible = e && e->IsVisible( );
+
+		float32 eyeWidth = ImGui::CalcTextSize( ICON_FA_EYE ).x + ImGui::GetStyle( ).FramePadding.x * 2.0f;
+		float32 availWidth = ImGui::GetContentRegionAvail( ).x - eyeWidth - ImGui::GetStyle( ).ItemSpacing.x;
+
 		ImGui::PushStyleColor( ImGuiCol_Header, style::skItemSelected );
 		ImGui::PushStyleColor( ImGuiCol_HeaderHovered, style::skItemHovered );
 		ImGui::PushStyleColor( ImGuiCol_HeaderActive, style::skItemSelected );
@@ -114,28 +123,50 @@ namespace lum::editor {
 				.mColor = ImGui::GetStyleColorVec4( ImGuiCol_Text ),
 				.mColorHovered = style::skAccent,
 				.mFont = Fonts::sDefaultSmall,
-				.bSelected = bSelected
+				.mMaxLabelWidth = availWidth,
+				.bSelected = bSelected,
 			};
 
-			if (TreeNodeCustom(
-				args,
-				bTreeOpened,
-				[&]( ) {
-					handleDragDrop( );
-					for (auto child : scene->mChildren[ entity ])
-						draw_entity( scene, child );
-				} ))
+			if (TreeNodeCustom( args, bTreeOpened, [&]( ) {
+				handleDragDrop( );
+				for (auto child : scene->mChildren[ entity ])
+					draw_entity( scene, child );
+								} )) {
 				mSelectedEntity = entity;
+				EditorSelection::SelectEntity( mSelectedEntity );
+			}
 
 		}
 		else {
 			ImGui::Indent( 12.0f );
-			if (ImGui::Selectable( displayLabel, bSelected ))
+			if (ImGui::Selectable( displayLabel, bSelected, 0, ImVec2( availWidth - 12.0f, 0 ) )) {
 				mSelectedEntity = entity;
+				EditorSelection::SelectEntity( mSelectedEntity );
+			}
 			handleDragDrop( );
 			ImGui::Unindent( 12.0f );
 		}
 
+		ImGui::SameLine( ImGui::GetContentRegionMax( ).x - eyeWidth );
+
+		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4( 0, 0, 0, 0 ) );
+		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4( 0, 0, 0, 0 ) );
+		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4( 0, 0, 0, 0 ) );
+
+		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 2.0f, 2.0f ) );
+
+		ImU32 eyeColor = bVisible ? ImGui::GetColorU32( ImGuiCol_Text ) : ImGui::GetColorU32( ImGuiCol_TextDisabled );
+		ImGui::PushStyleColor( ImGuiCol_Text, eyeColor );
+
+
+		char eyeIcon[ 32 ]{};
+		FormatString( eyeIcon, "%s##%d", bVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH, entity );
+		if (ImGui::Button( eyeIcon ))
+			if (e) e->SetVisible( !bVisible );
+
+
+		ImGui::PopStyleColor( 4 );
+		ImGui::PopStyleVar( );
 		ImGui::PopStyleColor( 3 );
 
 	}

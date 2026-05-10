@@ -22,10 +22,11 @@ namespace lum {
     /* @brief Represents a single scene — holds a list of active entities
     *  and their corresponding ECS manager.
     */
-    struct Scene {
+    class Scene {
+    public:
 
         /* @brief List of all entity IDs belonging to this scene. */
-        std::vector<EntityID> mEntities;
+        std::unordered_map<EntityID, Entity> mEntities;
 
         std::unordered_map<EntityID, EntityID> mParents;
         std::unordered_map<EntityID, std::vector<EntityID>> mChildren;
@@ -57,6 +58,29 @@ namespace lum {
 
             if (children.empty( ))
                 mChildren.erase( parent );
+        }
+        Entity* GetEntity( EntityID entity ) {
+            auto it = mEntities.find( entity );
+            return it != mEntities.end( ) ? &it->second : nullptr;
+        }
+        Entity& CreateEntity( ) {
+            EntityID id = GenerateID<Entity>::Get( );
+            return mEntities.emplace( id, Entity( id ) ).first->second;
+        }
+        void DeleteEntity( EntityID entity ) {
+            
+            auto it = mEntities.find( entity );
+            if (it != mEntities.end( )) {
+                for (EntityID child : mChildren[ entity ]) {
+                    DeleteEntity( child );
+                }
+                mChildren.erase( entity );
+            }
+
+            DetachChild( entity );
+            mEntities.erase( entity );
+            mEntityMgr.DestroyEntity( entity );
+            
         }
 
     };
@@ -110,6 +134,8 @@ namespace lum {
          *  @param scenePath Path to the scene file to load.
          */
         void LoadScene( StringView scenePath );
+
+        void SaveScene( StringView scenePath );
 
         /* @brief Returns a pointer to the currently active scene.
          *  @return Pointer to the active Scene, or nullptr if none is set.

@@ -91,4 +91,18 @@ namespace lum::editor {
 		}
 	}
 
+	void DrawPopupContext( const FPopupContextArgs& args ) {
+
+		if (ImGui::BeginPopupContextItem( )) {
+			char buffer[ 256 ]{};
+			for (auto& item : args.mItems) {
+				FormatString( buffer, "%s %s", item.mIcon.data( ), item.mLabel.data( ) );
+				if (ImGui::MenuItem( buffer, item.mShortcut.data( ) ))
+					item.Invoke( );
+			}
+			ImGui::EndPopup( );
+		}
+
+	}
+
 }

@@ -10,7 +10,6 @@
 #include "scene/format/tokenizer.hpp"
 #include "scene/scene_manager.hpp"
 
-
 #include "audio/audio_manager.hpp"
 #include "entity/components/audio_emitter.hpp"
 
@@ -51,6 +50,17 @@ namespace lum::fmt {
 
 	}
 
+	void SceneDependencyManager::Serialize( Scene& scene, StringView path ) {
+
+		FParseContext ctx{ scene };
+		ctx.mContext = *mContext;
+
+		for (auto& [entityID, entity] : scene.mEntities) {
+			
+		}
+
+	}
+
 
 
 
@@ -75,7 +85,7 @@ namespace lum::fmt {
 						if (detail::IsString( tokens, i, "path" )) {
 							detail::ExpectColon( tokens, i );
 							ctx.mContext.mRenderer->SetEnvironmentTexture(
-								ctx.mContext.mTextureMgr->LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ) ) 
+								ctx.mContext.mTextureMgr->LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ) )
 							);
 						}
 
@@ -95,9 +105,8 @@ namespace lum::fmt {
 
 	void SceneDependencyManager::parse_entity( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
 
-		Entity e;
-		EntityID id = e.GetID( );
-		ctx.mScene.mEntities.push_back( id );
+		Entity entity = ctx.mScene.CreateEntity( );
+		EntityID id = entity.GetID( );
 		ctx.mEntity = id;
 
 		detail::ExpectOpeningBracket( tokens, i );
@@ -115,74 +124,6 @@ namespace lum::fmt {
 			i++;
 
 		}
-
-	}
-
-	void SceneDependencyManager::parse_audio_emitter( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
-
-		detail::ExpectOpeningBracket( tokens, i );
-		CAudioEmitter emitter;
-		String path;
-		String category;
-
-		while (detail::InBlock( tokens, i )) {
-
-			if (tokens[ i ].mType == TokenType::Parameter) {
-
-				if (detail::IsString( tokens, i, "volume" )) {
-
-					emitter.mVolume = detail::ReadFloatParameter( tokens, i );
-
-				}
-				else if (detail::IsString( tokens, i, "pitch" )) {
-
-					emitter.mPitch = detail::ReadFloatParameter( tokens, i );
-
-				}
-				else if (detail::IsString( tokens, i, "min_distance" )) {
-
-					emitter.mMinDistance = detail::ReadFloatParameter( tokens, i );
-
-				}
-				else if (detail::IsString( tokens, i, "max_distance" )) {
-
-					emitter.mMaxDistance = detail::ReadFloatParameter( tokens, i );
-
-				}
-				else if (detail::IsString( tokens, i, "paused" )) {
-
-					emitter.bPaused = detail::ReadBoolParameter( tokens, i );
-
-				}
-				else if (detail::IsString( tokens, i, "looped" ) || detail::IsString( tokens, i, "loop" )) {
-
-					emitter.bLooped = detail::ReadBoolParameter( tokens, i );
-
-				}
-				else if (detail::IsString( tokens, i, "sound" )) {
-
-					path = detail::ReadStringParameter( tokens, i );
-
-				}
-				else if (detail::IsString( tokens, i, "category" )) {
-
-					category = detail::ReadStringParameter( tokens, i );
-
-				}
-				else if (detail::IsString( tokens, i, "group" )) {
-
-					emitter.mGroup = ctx.mContext.mAudioMgr->GetGroup( detail::ReadStringParameter( tokens, i ) );
-
-				}
-
-			}
-
-			i++;
-
-		}
-
-		emitter.mSound = ctx.mContext.mAudioMgr->GetSound( path, category );
-		ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, emitter );
 
 	}
 

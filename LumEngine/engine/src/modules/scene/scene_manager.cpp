@@ -65,6 +65,12 @@ namespace lum {
 
 	}
 
+	void SaveScene( StringView scenePath ) {
+
+		
+
+	}
+
 	Scene* MSceneManager::GetCurrentScene( ) {
 		if (mCurrentScene != nullptr)
 			return mCurrentScene;

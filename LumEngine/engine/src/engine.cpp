@@ -42,7 +42,7 @@ namespace lum {
 
 		TransformSystem::Update( mScene.mSceneMgr.GetCurrentScene( ) );
 
-		mRender.mRenderSys.Update( &mScene.mSceneMgr.GetCurrentScene( )->mEntityMgr, &mPlatform.mWindow );
+		mRender.mRenderSys.Update( mScene.mSceneMgr.GetCurrentScene( ), &mPlatform.mWindow );
 
 		mAudio.mAudioMgr.Update( &mScene.mSceneMgr.GetCurrentScene( )->mEntityMgr );
 		mAudio.mAudioDevice->EndFrame( );

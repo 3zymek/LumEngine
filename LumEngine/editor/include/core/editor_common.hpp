@@ -7,32 +7,58 @@
 
 namespace lum::editor {
 
+	//---------------------------------------------------------
+	// Component registry
+	//---------------------------------------------------------
+
 	namespace detail {
 		using EditorFn = void(*)(ecs::MEntityManager&, EntityID);
 	}
+
+	/* @brief Metadata for a registered component type in the editor.
+	*  Contains display, create, and delete callbacks along with UI info.
+	*/
 	struct EditorComponentMetadata {
 		detail::EditorFn mDisplayFn = {};
 		detail::EditorFn mCreateFn = {};
 		detail::EditorFn mDeleteFn = {};
-		StringView mDisplayName = {};
-		StringView mCategoryName = {};
-		ComponentTypeID mTypeID = 0;
+		StringView       mDisplayName = {};
+		StringView       mCategoryName = {};
+		ComponentTypeID  mTypeID = 0;
 	};
 
+	/* @brief Finds a registered component entry by display name. */
 	const EditorComponentMetadata* FindComponentEntry( StringView name );
 
+	//---------------------------------------------------------
+	// Collapsing header / tree node
+	//---------------------------------------------------------
+
+	/* @brief Arguments for custom collapsing header and tree node widgets. */
 	struct FCollapsingHeaderArgs {
-		HashedStr mID = {};
-		StringView mLabel = {};
-		StringView mIconOpened = ICON_FA_ANGLE_DOWN;
-		StringView mIconClosed = ICON_FA_ANGLE_RIGHT;
-		ImVec4 mColor = ImVec4( 0.8f, 0.8f, 0.8f, 1.0f );
-		ImVec4 mColorHovered = ImVec4( 1.0f, 1.0f, 1.0f, 1.0f );
-		ImFont* mFont = nullptr;
-		bool bSelected = false;
+		HashedStr	mID = {};
+		StringView	mLabel = {};
+		StringView	mIconOpened = ICON_FA_ANGLE_DOWN;
+		StringView	mIconClosed = ICON_FA_ANGLE_RIGHT;
+		ImVec4		mColor = ImVec4( 0.8f, 0.8f, 0.8f, 1.0f );
+		ImVec4		mColorHovered = ImVec4( 1.0f, 1.0f, 1.0f, 1.0f );
+		ImFont*		mFont = nullptr;
+		float32		mMaxLabelWidth = 0.0f;
+		bool		bSelected = false;
 	};
+
+	/* @brief Draws a custom collapsing header with icon and label.
+	*  @param args  Display configuration.
+	*  @param opened Output — true if the header is expanded.
+	*/
 	void CollapsingHeaderCustom( const FCollapsingHeaderArgs& args, bool& opened );
 
+	/* @brief Draws a custom tree node with chevron icon, hover/select highlight, and indent line.
+	*  @param args     Display configuration.
+	*  @param opened   Output — true if the node is expanded.
+	*  @param innerFn  Lambda called when the node is open; renders children.
+	*  @return True if the node label was clicked (not the arrow).
+	*/
 	bool TreeNodeCustom( const FCollapsingHeaderArgs& args, bool& opened, auto innerFn ) {
 
 		ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0, 0, 0, 0 ) );
@@ -55,41 +81,43 @@ namespace lum::editor {
 		ImGui::PopID( );
 		ImGui::PopStyleColor( 4 );
 
+		// compute item rect for custom hit-testing and drawing
 		ImVec2 itemMin = ImGui::GetItemRectMin( );
 		ImVec2 itemMax = ImGui::GetItemRectMax( );
 		itemMax.x = ImGui::GetWindowPos( ).x + ImGui::GetWindowSize( ).x - ImGui::GetStyle( ).ScrollbarSize;
 
+		// invisible button spanning the full row for click detection
 		ImGui::SetCursorScreenPos( itemMin );
 		ImGui::InvisibleButton( "##treeclick", ImVec2( itemMax.x - itemMin.x, itemMax.y - itemMin.y ) );
 
 		bool bClicked = ImGui::IsItemClicked( );
 		bool bHovered = ImGui::IsItemHovered( );
 
-		ImVec2 textPos = ImVec2( itemMin.x + 5.0f, itemMin.y );
-
-		ccharptr chevron = opened ? args.mIconOpened.data( ) : args.mIconClosed.data( );
-
-		float32 chevronWidth = ImGui::CalcTextSize( args.mIconOpened.data( ) ).x;
-		chevronWidth = std::max( chevronWidth, ImGui::CalcTextSize( args.mIconClosed.data( ) ).x );
-
-		ImU32 color = ImGui::GetColorU32( args.mColor );
-
+		// draw background highlight
 		if (bHovered || args.bSelected) {
 			ImVec4 bgColor = args.bSelected ? style::skItemSelected : style::skItemHovered;
 			ImGui::GetWindowDrawList( )->AddRectFilled( itemMin, itemMax, ImGui::GetColorU32( bgColor ) );
 		}
+
+		// draw chevron and label
+		ImVec2   textPos = ImVec2( itemMin.x + 5.0f, itemMin.y );
+		ccharptr chevron = opened ? args.mIconOpened.data( ) : args.mIconClosed.data( );
+		float32  chevronWidth = ImGui::CalcTextSize( args.mIconOpened.data( ) ).x;
+		chevronWidth = std::max( chevronWidth, ImGui::CalcTextSize( args.mIconClosed.data( ) ).x );
+		ImU32    color = ImGui::GetColorU32( args.mColor );
 
 		if (args.mFont) ImGui::PushFont( args.mFont );
 		ImGui::GetWindowDrawList( )->AddText( textPos, color, chevron );
 		ImGui::GetWindowDrawList( )->AddText(
 			ImVec2( textPos.x + chevronWidth + 6.0f, textPos.y ),
 			color,
-			args.mLabel.data( )
+			args.mLabel.data( ),
+			args.mMaxLabelWidth > 0.0f ? args.mLabel.data( ) + args.mLabel.size( ) : nullptr
 		);
 		if (args.mFont) ImGui::PopFont( );
 
+		// draw children and indent line
 		if (opened) {
-
 			ImVec2 lineStart = ImGui::GetCursorScreenPos( );
 			lineStart.x = itemMin.x + 6.0f;
 
@@ -111,10 +139,26 @@ namespace lum::editor {
 		return bClicked;
 	}
 
+	//---------------------------------------------------------
+	// Misc widgets
+	//---------------------------------------------------------
+
+	/* @brief Draws a colored background behind the current row. */
 	void DrawRowBackground( const ImVec4& color );
+
+	/* @brief Draws a search input field with a placeholder hint.
+	*  @return True if the content changed this frame.
+	*/
 	bool SearchField( ccharptr id, ccharptr hint, charptr buffer, usize bufferSize );
+
+	/* @brief Shows a tooltip when the last item is hovered. */
 	void TooltipOnHover( const char* text );
 
+	//---------------------------------------------------------
+	// Popup context menu
+	//---------------------------------------------------------
+
+	/* @brief Single item in a popup context menu. */
 	struct PopupContextItem {
 
 		template<typename tLambda>
@@ -143,22 +187,13 @@ namespace lum::editor {
 		void(*mInvoke)(vptr) = nullptr;
 
 	};
+
+	/* @brief Arguments for a popup context menu. */
 	struct FPopupContextArgs {
 		std::vector<PopupContextItem> mItems;
 	};
-	inline void DrawPopupContext( const FPopupContextArgs& args ) {
 
-		if (ImGui::BeginPopupContextItem( )) {
-			char buffer[ 256 ]{};
-			for (auto& item : args.mItems) {
-				FormatString( buffer, "%s %s", item.mIcon.data( ), item.mLabel.data( ) );
-				if (ImGui::MenuItem( buffer, item.mShortcut.data( ) )) {
-					item.Invoke();
-				}
-			}
-			ImGui::EndPopup( );
-		}
+	/* @brief Draws a right-click popup context menu with icon, label, and shortcut columns. */
+	void DrawPopupContext( const FPopupContextArgs& args );
 
-	}
-
-}
+} // namespace lum::editor

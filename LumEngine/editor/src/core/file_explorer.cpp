@@ -1,5 +1,6 @@
 #include "core/file_explorer.hpp"
 #include "core/utils/style.hpp"
+#include "core/editor_selection.hpp"
 
 namespace lum::editor {
 
@@ -58,8 +59,10 @@ namespace lum::editor {
 
 				bool open = ImGui::TreeNodeEx( buffer, ImGuiTreeNodeFlags_SpanFullWidth );
 
-				if (ImGui::IsItemClicked( ) && !ImGui::IsItemToggledOpen( ))
+				if (ImGui::IsItemClicked( ) && !ImGui::IsItemToggledOpen( )) {
 					mSelectedPath = entryPath;
+					EditorSelection::SelectFile( mSelectedPath );
+				}
 
 				ImGui::PopStyleColor( 3 );
 
@@ -96,6 +99,7 @@ namespace lum::editor {
 
 				if (ImGui::Selectable( buffer, selected )) {
 					mSelectedPath = entryPath;
+					EditorSelection::SelectFile( mSelectedPath );
 				}
 				if (ImGui::BeginDragDropSource( )) {
 

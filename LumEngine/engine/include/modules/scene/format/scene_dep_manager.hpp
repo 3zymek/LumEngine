@@ -47,6 +47,8 @@ namespace lum::fmt {
 		*/
 		void Parse( Scene& scene );
 
+		void Serialize( Scene& scene, StringView path );
+
 	private:
 
 		/* @brief Parses the world block and applies global scene settings. */
@@ -54,10 +56,6 @@ namespace lum::fmt {
 
 		/* @brief Parses an entity block and creates a new entity in the scene. */
 		static void parse_entity( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
-		/* @brief Parses a audio emitter component and attaches it to the current entity. */
-		static void parse_audio_emitter( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
-
 
 		/* @brief Reference to the tokenizer holding the pre-tokenized scene file. */
 		Tokenizer* mTokenizer = nullptr;

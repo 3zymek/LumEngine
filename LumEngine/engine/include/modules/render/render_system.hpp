@@ -9,6 +9,7 @@ namespace lum {
 
 	namespace ecs { class MEntityManager; }
 	class Window;
+	class Scene;
 
 	namespace render {
 
@@ -33,7 +34,7 @@ namespace lum {
 			* @param entityMgr Active entity manager to query components from.
 			* @param window    Window used to compute the current aspect ratio.
 			*/
-			void Update( ecs::MEntityManager* entityMgr, Window* window );
+			void Update( Scene* scene, Window* window );
 
 		private:
 

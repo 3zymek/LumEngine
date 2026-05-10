@@ -44,7 +44,7 @@ namespace lum {
 			void Initialize( ev::EventBus* bus ) { mEventBus = bus; }
 
 
-			/* @brief Creates a new entity and returns a managed handle to it.
+			/* @brief Creates a new managed entity and returns a managed handle to it.
 			*  @return ManagedEntity wrapping the newly created entity ID.
 			*/
 			ManagedEntity CreateEntity( );

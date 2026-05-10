@@ -221,7 +221,7 @@ namespace lum::editor {
 	}
 	void EntityCreator::handle_creation( Scene* scene ) {
 
-		Entity newEntity;
+		Entity newEntity = scene->CreateEntity( );
 		const EditorComponentMetadata* entry = FindComponentEntry( "Name" );
 		auto it = std::find( mAddedComponents.begin( ), mAddedComponents.end( ), entry );
 		if (it != mAddedComponents.end( )) {
@@ -231,7 +231,7 @@ namespace lum::editor {
 		for (auto& comp : mAddedComponents) {
 			comp->mCreateFn( scene->mEntityMgr, newEntity.GetID( ) );
 		}
-		scene->mEntities.push_back( newEntity.GetID( ) );
+		scene->mEntities.emplace( newEntity.GetID( ), newEntity );
 		bOpened = false;
 		mAddedComponents.clear( );
 

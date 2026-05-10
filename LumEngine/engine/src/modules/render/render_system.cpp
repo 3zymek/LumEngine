@@ -9,10 +9,11 @@
 
 #include "entity/entity_manager.hpp"
 
+#include "scene/scene_manager.hpp"
+
 #include "entity/components/transform.hpp"
 #include "entity/components/material.hpp"
 #include "entity/components/mesh.hpp"
-#include "entity/components/visible.hpp"
 #include "entity/components/light.hpp"
 
 #include "platform/window.hpp"
@@ -28,12 +29,14 @@ namespace lum {
 
 		}
 
-		void RenderSystem::Update( ecs::MEntityManager* entityMgr, Window* window ) {
+		void RenderSystem::Update( Scene* scene, Window* window ) {
 
-			entityMgr->Each<CVisibility, CTransform, CMaterialInstance, CStaticMesh>(
-				[&]( CVisibility& render, CTransform& transform, CMaterialInstance& material, CStaticMesh& mesh ) {
+			auto isVisible = [&]( EntityID id ) { Entity* e = scene->GetEntity( id ); return e && e->IsVisible( ); };
+		
+			scene->mEntityMgr.EachWithID<CTransform, CMaterialInstance, CStaticMesh>(
+				[&]( EntityID id, CTransform& transform, CMaterialInstance& material, CStaticMesh& mesh ) {
 
-					if (!render.bVisible) return;
+					if (!isVisible( id )) return;
 
 					render::FRenderInstance inst;
 					inst.mMaterial = &material;
@@ -45,8 +48,10 @@ namespace lum {
 				}
 			);
 
-			entityMgr->Each<CTransform, CPointLight>(
-				[&]( CTransform& transform, CPointLight& light ) {
+			scene->mEntityMgr.EachWithID<CTransform, CPointLight>(
+				[&]( EntityID id, CTransform& transform, CPointLight& light ) {
+
+					if (!isVisible( id )) return;
 
 					FPointLight pointL;
 
@@ -60,8 +65,10 @@ namespace lum {
 				}
 			);
 
-			entityMgr->Each<CTransform, CSpotLight>(
-				[&]( CTransform& transform, CSpotLight& light ) {
+			scene->mEntityMgr.EachWithID<CTransform, CSpotLight>(
+				[&]( EntityID id, CTransform& transform, CSpotLight& light ) {
+
+					if (!isVisible( id )) return;
 
 					FSpotLight spotL;
 
