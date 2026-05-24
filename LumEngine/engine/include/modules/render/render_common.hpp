@@ -132,16 +132,16 @@ namespace lum::render {
 
 		struct FScreenQuad {
 
-			rhi::RVertexLayoutHandle mVao;
+			rhi::VertexLayoutHandle mVao;
 
-			rhi::RBufferHandle mVbo;
-			rhi::RBufferHandle mEbo;
+			rhi::BufferHandle mVbo;
+			rhi::BufferHandle mEbo;
 
-			rhi::RFramebufferHandle mSceneFbo;
-			rhi::RFramebufferHandle mPostprocessFbo;
+			rhi::FramebufferHandle mSceneFbo;
+			rhi::FramebufferHandle mPostprocessFbo;
 
-			rhi::RTextureHandle mSceneTex;
-			rhi::RTextureHandle mPostprocessTex;
+			rhi::TextureHandle mSceneTex;
+			rhi::TextureHandle mPostprocessTex;
 
 		};
 
@@ -149,22 +149,22 @@ namespace lum::render {
 		struct FCubemap {
 
 			/* @brief Shader program used for skybox rendering. */
-			rhi::RShaderHandle mShader;
+			rhi::ShaderHandle mShader;
 
 			/* @brief Pipeline state for the environment pass. */
-			rhi::RPipelineHandle mPipeline;
+			rhi::PipelineHandle mPipeline;
 
 			/* @brief Cubemap or equirectangular environment texture. */
-			rhi::RTextureHandle	mTexture;
+			rhi::TextureHandle	mTexture;
 
 			/* @brief Vertex buffer holding skybox geometry. */
-			rhi::RBufferHandle mVbo;
+			rhi::BufferHandle mVbo;
 
 			/* @brief Index buffer for skybox geometry. */
-			rhi::RBufferHandle mEbo;
+			rhi::BufferHandle mEbo;
 
 			/* @brief Vertex layout describing skybox vertex attributes. */
-			rhi::RVertexLayoutHandle mVao;
+			rhi::VertexLayoutHandle mVao;
 
 			/* @brief Number of indices in the skybox index buffer. */
 			uint32 mNumIndices = 0;

@@ -9,27 +9,27 @@
 namespace lum::rhi {
 
     /* @brief Describes the attachments and dimensions used to create a framebuffer object. */
-    struct FFramebufferDescriptor {
+    struct FramebufferCreateInfo {
 
         /* @brief Color attachments — pairs of binding slot and texture handle. */
-        std::vector<std::pair<uint8, RTextureHandle>> mColorTex;
+        std::vector<std::pair<uint8, TextureHandle>> mColorTex;
 
         /* @brief Optional depth attachment texture. */
-        RTextureHandle mDepthTex;
+        TextureHandle mDepthTex;
 
         /* @brief Optional stencil attachment texture. */
-        RTextureHandle mStencilTex;
+        TextureHandle mStencilTex;
 
     };
 
     /* @brief Describes a blit operation between two framebuffers. */
-    struct FFramebufferBlitDescriptor {
+    struct FramebufferBlitDescription {
 
         /* @brief Source framebuffer to read from. */
-        RFramebufferHandle mSource;
+        FramebufferHandle mSource;
 
         /* @brief Destination framebuffer to write to. */
-        RFramebufferHandle mDestination;
+        FramebufferHandle mDestination;
 
         /* @brief Bottom-left corner of the source rectangle. */
         uint32 mSrcX0 = 0;
@@ -59,7 +59,7 @@ namespace lum::rhi {
     struct FFramebuffer {
 
         /* @brief Framebuffer object handle. */
-        RFramebufferID mHandle = 0;
+        FramebufferID mHandle = 0;
 
     };
 

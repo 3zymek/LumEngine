@@ -14,13 +14,13 @@ namespace lum {
 	struct FStaticMeshResource {
 
 		/* @brief Vertex buffer containing mesh geometry. */
-		rhi::RBufferHandle mVbo;
+		rhi::BufferHandle mVbo;
 
 		/* @brief Index buffer defining triangle topology. */
-		rhi::RBufferHandle mEbo;
+		rhi::BufferHandle mEbo;
 
 		/* @brief Vertex layout describing attribute bindings. */
-		rhi::RVertexLayoutHandle mVao;
+		rhi::VertexLayoutHandle mVao;
 
 		/* @brief Number of indices in the index buffer. */
 		uint32 mNumIndices = 0;
@@ -37,13 +37,13 @@ namespace lum {
 		FMeshData mData;
 
 		/* @brief Vertex buffer containing mesh geometry. */
-		rhi::RBufferHandle mVbo;
+		rhi::BufferHandle mVbo;
 
 		/* @brief Index buffer defining triangle topology. */
-		rhi::RBufferHandle mEbo;
+		rhi::BufferHandle mEbo;
 
 		/* @brief Vertex layout describing attribute bindings. */
-		rhi::RVertexLayoutHandle mVao;
+		rhi::VertexLayoutHandle mVao;
 
 		/* @brief Whether the GPU buffers are out of sync with CPU data and need re-upload. */
 		bool bDirty = false;

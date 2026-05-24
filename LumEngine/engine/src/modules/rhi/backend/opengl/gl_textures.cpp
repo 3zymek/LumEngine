@@ -9,7 +9,7 @@
 
 namespace lum::rhi::gl {
 
-	RTextureHandle GLDevice::CreateTexture( const FTextureDescriptor& desc ) {
+	TextureHandle GLDevice::CreateTexture( const TextureCreateInfo& desc ) {
 
 		LUM_ASSERT( desc.mTextureType != TextureType::None, "No texture type given" );
 
@@ -25,13 +25,13 @@ namespace lum::rhi::gl {
 		return {};
 
 	}
-	void GLDevice::Copy( RTextureHandle src, RTextureHandle dst ) {
+	void GLDevice::Copy( TextureHandle src, TextureHandle dst ) {
 
 		LUM_ASSERT( IsValid( src ), "Invalid source texture" );
 		LUM_ASSERT( IsValid( dst ), "Invalid destination texture" );
 
-		const FTexture& srcTex = mTextures[ src ];
-		const FTexture& dstTex = mTextures[ dst ];
+		const Texture& srcTex = mTextures[ src ];
+		const Texture& dstTex = mTextures[ dst ];
 
 		glCopyImageSubData(
 			srcTex.mHandle, skTextureTypeLookup[ LookupCast( srcTex.mType ) ], 0, 0, 0, 0,
@@ -45,25 +45,25 @@ namespace lum::rhi::gl {
 		glBindTextureUnit( skTextureTypeLookup[ LookupCast( type ) ], 0 );
 
 	}
-	void GLDevice::UpdateTexture( RTextureHandle tex, const FTextureUpdateDescriptor& desc ) {
+	void GLDevice::UpdateTexture( TextureHandle tex, const TextureUpdateDescription& desc ) {
 
 		if (!IsValid( tex )) return;
 		LUM_ASSERT( desc.mData.mPixels.data( ) != nullptr, "Texture pixel data is null" );
 		LUM_ASSERT( desc.mData.mWidth > 0 && desc.mData.mHeight > 0, "Invalid texture dimensions" );
 
-		const FTexture& texture = mTextures[ tex ];
+		const Texture& texture = mTextures[ tex ];
 
 		uint32 width = (desc.mRect.mWidth == 0) ? desc.mData.mWidth : desc.mRect.mWidth;
 		uint32 height = (desc.mRect.mHeight == 0) ? desc.mData.mHeight : desc.mRect.mHeight;
 
-		width = std::clamp( width, 0u, texture.mRect.mWidth - desc.mRect.x );
-		height = std::clamp( height, 0u, texture.mRect.mHeight - desc.mRect.y );
+		width = std::clamp( width, 0u, texture.mRect.mWidth - desc.mRect.mX );
+		height = std::clamp( height, 0u, texture.mRect.mHeight - desc.mRect.mY );
 
 		glTextureSubImage2D(
 			texture.mHandle,
 			0,
-			desc.mRect.x,
-			desc.mRect.y,
+			desc.mRect.mX,
+			desc.mRect.mY,
 			width,
 			height,
 			skImageFormatLookup[ LookupCast( mTextures[ tex ].mDataFormat ) ],
@@ -78,7 +78,7 @@ namespace lum::rhi::gl {
 		}
 
 	}
-	void GLDevice::Delete( RTextureHandle& texture ) {
+	void GLDevice::Delete( TextureHandle& texture ) {
 
 		if (!IsValid( texture )) return;
 
@@ -87,7 +87,7 @@ namespace lum::rhi::gl {
 		mTextures.Remove( texture );
 
 	}
-	void GLDevice::BindTexture( RTextureHandle texture, uint16 binding ) {
+	void GLDevice::BindTexture( TextureHandle texture, uint16 binding ) {
 
 		LUM_ASSERT( binding < skMaxTextureUnits, "Invalid texture binding" );
 		if (!IsValid( texture )) return;
@@ -104,9 +104,9 @@ namespace lum::rhi::gl {
 
 	}
 
-	RTextureHandle GLDevice::create_texture_2d( const FTextureDescriptor& desc ) {
+	TextureHandle GLDevice::create_texture_2d( const TextureCreateInfo& desc ) {
 
-		FTexture texture;
+		Texture texture;
 
 		uint32 width = (desc.mWidth == 0) ? desc.mData.mWidth : desc.mWidth;
 		uint32 height = (desc.mHeight == 0) ? desc.mData.mHeight : desc.mHeight;
@@ -191,21 +191,21 @@ namespace lum::rhi::gl {
 		texture.mType = desc.mTextureType;
 		texture.mMipmapLevels = mipmapLevels;
 
-		RTextureHandle textureHandle = mTextures.Append( std::move( texture ) );
+		TextureHandle textureHandle = mTextures.Append( std::move( texture ) );
 
 		return textureHandle;
 
 	}
-	RTextureHandle GLDevice::create_texture_3d( const FTextureDescriptor& ) {
+	TextureHandle GLDevice::create_texture_3d( const TextureCreateInfo& ) {
 
 		// TODO IMPLEMENT
 		return {};
 
 	}
 
-	RTextureHandle GLDevice::create_texture_cubemap( const FTextureDescriptor& desc ) {
+	TextureHandle GLDevice::create_texture_cubemap( const TextureCreateInfo& desc ) {
 
-		FTexture tex;
+		Texture tex;
 
 		glCreateTextures( GL_TEXTURE_CUBE_MAP, 1, &tex.mHandle );
 
@@ -227,7 +227,7 @@ namespace lum::rhi::gl {
 
 			for (usize i = 0; i < 6; i++) {
 
-				FTextureData texture = desc.mCubemap.mFaces[ i ];
+				TextureData texture = desc.mCubemap.mFaces[ i ];
 
 				cvptr data;
 

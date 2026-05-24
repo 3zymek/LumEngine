@@ -54,16 +54,16 @@ namespace lum::render {
 		detail::FMaterialUBOData mMaterialUBO{};
 
 		/* @brief GPU buffer holding the per-draw model matrix uniform. */
-		rhi::RBufferHandle mModelUniform;
+		rhi::BufferHandle mModelUniform;
 
 		/* @brief GPU buffer holding the per-draw material uniform. */
-		rhi::RBufferHandle mMaterialUniform;
+		rhi::BufferHandle mMaterialUniform;
 
 		/* @brief Pipeline state for geometry rendering. */
-		rhi::RPipelineHandle mPipeline;
+		rhi::PipelineHandle mPipeline;
 
 		/* @brief Shader program used for geometry rendering. */
-		rhi::RShaderHandle mShader;
+		rhi::ShaderHandle mShader;
 
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
 		void init( );

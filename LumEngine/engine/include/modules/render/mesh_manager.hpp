@@ -18,9 +18,9 @@ namespace lum {
 
 		/* @brief Stores raw GPU buffer handles for a mesh (VBO, EBO, VAO). */
 		struct FRenderResources {
-			rhi::RBufferHandle			mVbo;
-			rhi::RBufferHandle			mEbo;
-			rhi::RVertexLayoutHandle	mVao;
+			rhi::BufferHandle			mVbo;
+			rhi::BufferHandle			mEbo;
+			rhi::VertexLayoutHandle	mVao;
 		};
 
 	} // namespace lum::detail
@@ -69,7 +69,7 @@ namespace lum {
 		std::unordered_map<uint64, StaticMeshHandle> mStaticMeshCache; // Path hash -> handle cache.
 		cstd::HandlePool<StaticMeshHandle, FStaticMeshResource> mStaticMeshes{ limits::gMaxModels };
 
-		std::vector<FVertex> mDefaultVertices = {
+		std::vector<Vertex> mDefaultVertices = {
 			// position                normal               uv
 			{{ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }},
 			{{  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }},

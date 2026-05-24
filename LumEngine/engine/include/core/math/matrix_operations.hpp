@@ -20,24 +20,24 @@ namespace lum {
 	template<cArithmetic tType>
 	Matrix4 Translate( const Matrix4& m, const TVector4<tType>& pos ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 12 ] = pos.x;
-		result.mData[ 13 ] = pos.y;
-		result.mData[ 14 ] = pos.z;
+		result.mData[ 12 ] = pos.mX;
+		result.mData[ 13 ] = pos.mY;
+		result.mData[ 14 ] = pos.mZ;
 		return m * result;
 	}
 	template<cArithmetic tType>
 	Matrix4 Translate( const Matrix4& m, const TVector3<tType>& pos ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 12 ] = pos.x;
-		result.mData[ 13 ] = pos.y;
-		result.mData[ 14 ] = pos.z;
+		result.mData[ 12 ] = pos.mX;
+		result.mData[ 13 ] = pos.mY;
+		result.mData[ 14 ] = pos.mZ;
 		return m * result;
 	}
 	template<cArithmetic tType>
 	Matrix4 Translate( const Matrix4& m, const TVector2<tType>& pos ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 12 ] = pos.x;
-		result.mData[ 13 ] = pos.y;
+		result.mData[ 12 ] = pos.mX;
+		result.mData[ 13 ] = pos.mY;
 		return m * result;
 	}
 
@@ -49,26 +49,26 @@ namespace lum {
 	template<cArithmetic tType>
 	Matrix4 Scale( const Matrix4& m, const TVector4<tType>& scale ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 0 ] = scale.x;
-		result.mData[ 5 ] = scale.y;
-		result.mData[ 10 ] = scale.z;
+		result.mData[ 0 ] = scale.mX;
+		result.mData[ 5 ] = scale.mY;
+		result.mData[ 10 ] = scale.mZ;
 		return m * result;
 	}
 
 	template<cArithmetic tType>
 	Matrix4 Scale( const Matrix4& m, const TVector3<tType>& scale ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 0 ] = scale.x;
-		result.mData[ 5 ] = scale.y;
-		result.mData[ 10 ] = scale.z;
+		result.mData[ 0 ] = scale.mX;
+		result.mData[ 5 ] = scale.mY;
+		result.mData[ 10 ] = scale.mZ;
 		return m * result;
 	}
 
 	template<cArithmetic tType>
 	Matrix4 Scale( const Matrix4& m, const TVector2<tType>& scale ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 0 ] = scale.x;
-		result.mData[ 5 ] = scale.y;
+		result.mData[ 0 ] = scale.mX;
+		result.mData[ 5 ] = scale.mY;
 		return m * result;
 	}
 
@@ -88,7 +88,7 @@ namespace lum {
 
 	template<cArithmetic tType>
 	Matrix4 Rotate( const Matrix4& m, const TVector3<tType>& v ) {
-		Quaternion q = FromEuler( v.x, v.y, v.z );
+		Quaternion q = FromEuler( v.mX, v.mY, v.mZ );
 		return m * ToMat4( q );
 	}
 

@@ -18,21 +18,21 @@ namespace lum::rhi::gl {
 		// Buffers
 		//=================================================
 
-		RBufferHandle CreateBuffer( const FBufferDescriptor& desc ) override;
+		BufferHandle CreateBuffer( const BufferCreateInfo& desc ) override;
 
-		void UpdateBuffer( RBufferHandle, cvptr, usize, usize ) override;
+		void UpdateBuffer( BufferHandle, cvptr, usize, usize ) override;
 
-		void Delete( RBufferHandle& ) override;
+		void Delete( BufferHandle& ) override;
 
-		vptr MapBuffer( RBufferHandle, Flags<MapFlag>, usize, usize ) override;
+		vptr MapBuffer( BufferHandle, Flags<MapFlag>, usize, usize ) override;
 
-		void UnmapBuffer( RBufferHandle ) override;
+		void UnmapBuffer( BufferHandle ) override;
 
-		void SetShaderStorageBinding( RBufferHandle ssbo, uint32 binding ) override;
+		void SetShaderStorageBinding( BufferHandle ssbo, uint32 binding ) override;
 
-		void AttachElementBufferToLayout( RBufferHandle, RVertexLayoutHandle ) override;
+		void AttachElementBufferToLayout( BufferHandle, VertexLayoutHandle ) override;
 
-		void SetUniformBufferBinding( RBufferHandle, int32 ) override;
+		void SetUniformBufferBinding( BufferHandle, int32 ) override;
 
 
 
@@ -40,17 +40,17 @@ namespace lum::rhi::gl {
 		// Framebuffers
 		//=================================================
 
-		RFramebufferHandle CreateFramebuffer( const FFramebufferDescriptor& ) override;
+		FramebufferHandle CreateFramebuffer( const FramebufferCreateInfo& ) override;
 
-		void AttachTextureLayer( rhi::RFramebufferHandle fbo, rhi::RTextureHandle tex, const FTextureLayerAttachment& desc ) override;
+		void AttachTextureLayer( rhi::FramebufferHandle fbo, rhi::TextureHandle tex, const TextureLayerAttachment& desc ) override;
 
-		void BlitFramebuffer( const FFramebufferBlitDescriptor& ) override;
+		void BlitFramebuffer( const FFramebufferBlitDescrion& ) override;
 
-		void ClearFramebuffer( RFramebufferHandle, ChannelRGBA, float32 ) override;
+		void ClearFramebuffer( FramebufferHandle, ChannelRGBA, float32 ) override;
 
-		void Delete( RFramebufferHandle& ) override;
+		void Delete( FramebufferHandle& ) override;
 
-		void BindFramebuffer( RFramebufferHandle ) override;
+		void BindFramebuffer( FramebufferHandle ) override;
 
 
 
@@ -58,9 +58,9 @@ namespace lum::rhi::gl {
 		// Layouts
 		//=================================================
 
-		RVertexLayoutHandle	CreateVertexLayout( const FVertexLayoutDescriptor&, RBufferHandle ) override;
+		VertexLayoutHandle	CreateVertexLayout( const VertexLayoutCreateInfo&, BufferHandle ) override;
 
-		void Delete( RVertexLayoutHandle& ) override;
+		void Delete( VertexLayoutHandle& ) override;
 
 
 
@@ -68,11 +68,11 @@ namespace lum::rhi::gl {
 		// Shaders
 		//=================================================
 
-		RShaderHandle CreateShader( const FShaderDescriptor& ) override;
+		ShaderHandle CreateShader( const ShaderDescriptor& ) override;
 
-		void BindShader( RShaderHandle ) override;
+		void BindShader( ShaderHandle ) override;
 
-		void Delete( RShaderHandle& ) override;
+		void Delete( ShaderHandle& ) override;
 
 
 
@@ -80,17 +80,17 @@ namespace lum::rhi::gl {
 		// Textures
 		//=================================================
 
-		RTextureHandle CreateTexture( const FTextureDescriptor& desc ) override;
+		TextureHandle CreateTexture( const TextureCreateInfo& desc ) override;
 
-		void Copy( RTextureHandle, RTextureHandle ) override;
+		void Copy( TextureHandle, TextureHandle ) override;
 
 		void UnbindTexture( TextureType ) override;
 
-		void UpdateTexture( RTextureHandle, const FTextureUpdateDescriptor& ) override;
+		void UpdateTexture( TextureHandle, const TextureUpdateDescription& ) override;
 
-		void Delete( RTextureHandle& ) override;
+		void Delete( TextureHandle& ) override;
 
-		void BindTexture( RTextureHandle, uint16 ) override;
+		void BindTexture( TextureHandle, uint16 ) override;
 
 
 
@@ -98,11 +98,11 @@ namespace lum::rhi::gl {
 		// Samplers
 		//=================================================
 
-		RSamplerHandle CreateSampler( const FSamplerDescriptor& ) override;
+		SamplerHandle CreateSampler( const SamplerDescriptor& ) override;
 
-		void BindSampler( RSamplerHandle, uint16 )	override;
+		void BindSampler( SamplerHandle, uint16 )	override;
 
-		void Delete( RSamplerHandle ) override;
+		void Delete( SamplerHandle ) override;
 
 
 
@@ -110,11 +110,11 @@ namespace lum::rhi::gl {
 		// Pipelines
 		//=================================================
 
-		RPipelineHandle CreatePipeline( const FPipelineDescriptor& ) override;
+		PipelineHandle CreatePipeline( const PipelineCreateInfo& ) override;
 
-		void Delete( RPipelineHandle& ) override;
+		void Delete( PipelineHandle& ) override;
 
-		void BindPipeline( RPipelineHandle ) override;
+		void BindPipeline( PipelineHandle ) override;
 
 
 
@@ -227,7 +227,7 @@ namespace lum::rhi::gl {
 		// Framebuffer operations
 		void SetColorMask( bool, bool, bool, bool ) override;
 
-		void SetColorMask( FColorMask ) override;
+		void SetColorMask( ColorMask ) override;
 
 		void SetClearColor( ChannelRGBA ) override;
 
@@ -259,17 +259,17 @@ namespace lum::rhi::gl {
 
 
 
-		void Draw( RVertexLayoutHandle, uint32 ) override;
+		void Draw( VertexLayoutHandle, uint32 ) override;
 
-		void DrawInstanced( RVertexLayoutHandle, uint32, uint32 ) override;
+		void DrawInstanced( VertexLayoutHandle, uint32, uint32 ) override;
 
-		void DrawInstancedBase( RVertexLayoutHandle, uint32, uint32, uint32 ) override;
+		void DrawInstancedBase( VertexLayoutHandle, uint32, uint32, uint32 ) override;
 
-		void DrawElements( RVertexLayoutHandle, uint32 ) override;
+		void DrawElements( VertexLayoutHandle, uint32 ) override;
 
-		void DrawElementsInstanced( RVertexLayoutHandle, uint32, uint32 ) override;
+		void DrawElementsInstanced( VertexLayoutHandle, uint32, uint32 ) override;
 
-		void DrawElementsInstancedBase( RVertexLayoutHandle, uint32, uint32, uint32 ) override;
+		void DrawElementsInstancedBase( VertexLayoutHandle, uint32, uint32, uint32 ) override;
 
 
 
@@ -457,31 +457,31 @@ namespace lum::rhi::gl {
 
 		/* @brief Checks and applies shader state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_shader( const FPipeline& ) noexcept;
+		void bind_check_shader( const Pipeline& ) noexcept;
 
 		/* @brief Checks and applies rasterizer state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_rasterizer( const FPipeline& ) noexcept;
+		void bind_check_rasterizer( const Pipeline& ) noexcept;
 
 		/* @brief Checks and applies depth/stencil state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_depth_stencil( const FPipeline& ) noexcept;
+		void bind_check_depth_stencil( const Pipeline& ) noexcept;
 
 		/* @brief Checks and applies scissor state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_scissors( const FPipeline& ) noexcept;
+		void bind_check_scissors( const Pipeline& ) noexcept;
 
 		/* @brief Checks and applies blend state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_blend( const FPipeline& ) noexcept;
+		void bind_check_blend( const Pipeline& ) noexcept;
 
 		/* @brief Checks and applies cull state from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_cull( const FPipeline& ) noexcept;
+		void bind_check_cull( const Pipeline& ) noexcept;
 
 		/* @brief Checks and applies color mask from the pipeline if it differs from current state. */
 		LUM_FORCEINLINE
-		void bind_check_color_mask( const FPipeline& ) noexcept;
+		void bind_check_color_mask( const Pipeline& ) noexcept;
 
 		/* @brief Compiles a GLSL shader object and logs any errors.
 		*  @param shader OpenGL shader handle to compile.
@@ -499,15 +499,15 @@ namespace lum::rhi::gl {
 		bool link_program( GLuint program );
 
 		/* @brief Creates a 2D texture from the given descriptor. */
-		RTextureHandle create_texture_2d( const FTextureDescriptor& desc );
+		TextureHandle create_texture_2d( const TextureCreateInfo& desc );
 
-		RTextureHandle create_texture_2d_array( const FTextureDescriptor& desc );
+		TextureHandle create_texture_2d_array( const TextureCreateInfo& desc );
 
 		/* @brief Creates a 3D texture from the given descriptor. */
-		RTextureHandle create_texture_3d( const FTextureDescriptor& );
+		TextureHandle create_texture_3d( const TextureCreateInfo& );
 
 		/* @brief Creates a cubemap texture from the given descriptor. */
-		RTextureHandle create_texture_cubemap( const FTextureDescriptor& );
+		TextureHandle create_texture_cubemap( const TextureCreateInfo& );
 
 		/* @brief Translates engine MapFlag bits to the corresponding GL map access flags. */
 		GLbitfield translate_mapping_flags( Flags<MapFlag> ) noexcept;

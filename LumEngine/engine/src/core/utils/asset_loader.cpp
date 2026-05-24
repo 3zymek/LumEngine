@@ -21,7 +21,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	std::optional<FTextureData> AssetLoader::LoadTexture( RootID root, StringView filepath, uint8 expectedFormat ) {
+	std::optional<TextureData> AssetLoader::LoadTexture( RootID root, StringView filepath, uint8 expectedFormat ) {
 
 		String path = get_full_path( root, filepath );
 
@@ -30,7 +30,7 @@ namespace lum {
 			return std::nullopt;
 		}
 
-		FTextureData texture;
+		TextureData texture;
 		texture.bIsHDR = path.ends_with( ".hdr" );
 
 		int32 format{};
@@ -93,7 +93,7 @@ namespace lum {
 			aiMesh* mesh = scene->mMeshes[ meshIndex ];
 
 			for (uint32 vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
-				FVertex vert;
+				Vertex vert;
 
 				vert.mPosition = {
 					mesh->mVertices[ vertexIndex ].x,

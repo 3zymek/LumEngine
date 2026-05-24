@@ -11,13 +11,13 @@ namespace lum::rhi {
 	/* @brief Defines a rectangular region within a texture, used for partial updates.
 	* Also carries mip level and depth slice for 3D or array texture operations.
 	*/
-	struct RTextureRect {
+	struct TextureRect {
 
 		/* @brief X offset in pixels from the left edge of the texture. */
-		uint32 x = 0;
+		uint32 mX = 0;
 
 		/* @brief Y offset in pixels from the top edge of the texture. */
-		uint32 y = 0;
+		uint32 mY = 0;
 
 		/* @brief Width of the region in pixels. */
 		uint32 mWidth = 0;
@@ -130,10 +130,10 @@ namespace lum::rhi {
 	* @param mDepth             Depth in pixels, used for Texture3D only.
 	* @param mCubemap           Per-face pixel data, used for Cubemap only.
 	*/
-	struct FTextureDescriptor {
+	struct TextureCreateInfo {
 
 		/* @brief Raw pixel data loaded from the CPU side. */
-		FTextureData mData;
+		TextureData mData;
 
 		/* @brief GPU-side storage format for the texture. */
 		ImageLayout mImageLayout = ImageLayout::RGBA8;
@@ -168,10 +168,10 @@ namespace lum::rhi {
 		/* @brief Per-face pixel data for cubemap textures.
 		* Faces are ordered: +X, -X, +Y, -Y, +Z, -Z.
 		*/
-		struct RCubemap {
+		struct Cubemap {
 
 			/* @brief Pixel data for each of the six cubemap faces. */
-			FTextureData mFaces[6]{};
+			TextureData mFaces[6]{};
 
 		} mCubemap;
 	};
@@ -179,13 +179,13 @@ namespace lum::rhi {
 	/* @brief Describes a partial update to an existing GPU texture.
 	* Used to upload new pixel data to a specific region without recreating the texture.
 	*/
-	struct FTextureUpdateDescriptor {
+	struct TextureUpdateDescription {
 
 		/* @brief Target region within the texture to update. */
-		RTextureRect mRect;
+		TextureRect mRect;
 
 		/* @brief New pixel data to upload into the target region. */
-		FTextureData mData;
+		TextureData mData;
 
 		/* @brief Whether to regenerate mipmaps after the update. */
 		bool bGenerateMipmaps = false;
@@ -195,10 +195,10 @@ namespace lum::rhi {
 	/* @brief Internal GPU-side representation of an uploaded texture.
 	* Stores the OpenGL handle alongside format and geometry metadata.
 	*/
-	struct FTexture {
+	struct Texture {
 
 		/* @brief Region and dimensions of the texture. */
-		RTextureRect mRect;
+		TextureRect mRect;
 
 		/* @brief Dimensionality and type of the texture. */
 		TextureType mType = TextureType::None;
@@ -219,7 +219,7 @@ namespace lum::rhi {
 		uint32 mSamples = 0;
 
 		/* @brief Underlying GPU texture handle. */
-		RTextureID mHandle = 0;
+		TextureID mHandle = 0;
 
 	};
 

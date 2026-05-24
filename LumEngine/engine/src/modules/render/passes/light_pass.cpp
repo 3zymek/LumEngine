@@ -92,7 +92,7 @@ namespace lum::render {
 
 	void LightPass::init( ) {
 
-		rhi::FBufferDescriptor desc;
+		rhi::BufferCreateInfo desc;
 		desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 		desc.mMapFlags = rhi::MapFlag::Write;
 
@@ -117,7 +117,7 @@ namespace lum::render {
 
 		if (!mContext.mRenderDev->IsValid( mPipeline )) {
 		
-			rhi::FPipelineDescriptor desc;
+			rhi::PipelineCreateInfo desc;
 			desc.mDepthStencil.mDepth.bEnabled = false;
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = false;
 			mPipeline = mContext.mRenderDev->CreatePipeline( desc );

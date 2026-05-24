@@ -43,7 +43,7 @@ namespace lum::rhi {
 	* Can be applied to the graphics pipeline to control culling, fill mode,
 	* line/point size, and polygon offset.
 	*/
-	struct FRasterizerState {
+	struct RasterizerState {
 
 		/*!
 		* @brief Polygon rasterization settings.
@@ -51,7 +51,7 @@ namespace lum::rhi {
 		* Controls how polygons are drawn, which faces are affected, and
 		* the size of points/lines when rendering point or line topology.
 		*/
-		struct RPolygonState {
+		struct PolygonState {
 			
 			// Polygon rasterization mode (fill, wireframe, or points)
 			TopologyMode mTopologyMode = TopologyMode::Fill;
@@ -73,7 +73,7 @@ namespace lum::rhi {
 		* Used to offset polygon depth values to avoid z-fighting or to
 		* render decals, shadows, or polygons slightly in front/back of surfaces.
 		*/
-		struct RDepthBiasState {
+		struct DepthBiasState {
 
 			// Specifies whether the depth bias is enabled.
 			// If flag is false, depth bias is disabled. Otherwise, it is enabled. 
@@ -94,7 +94,7 @@ namespace lum::rhi {
 
 		} mDepthBias;
 
-		struct FMultisampleState {
+		struct MultisampleState {
 
 			bool bEnable = false;
 			bool bEnableSampleCoverage = false;
@@ -123,7 +123,7 @@ namespace lum::rhi {
 
 	// Represents the stencil state for a single face (front or back) in the pipeline.
 	// Includes reference value, read/write masks, comparison function, and stencil operations.
-	struct FStencilFaceState {
+	struct StencilFaceState {
 
 		// Specifies the reference value for the stencil test. 
 		// ref is clamped to the range [0,2n−1], where n is the number of bitplanes in the stencil buffer. 
@@ -161,7 +161,7 @@ namespace lum::rhi {
 
 	// Represents the depth and stencil state of the pipeline.
 	// Includes depth test enable/write, comparison function, and stencil face operations.
-	struct FDepthStencilState {
+	struct DepthStencilState {
 
 		struct RDepth {
 
@@ -181,20 +181,20 @@ namespace lum::rhi {
 
 		} mDepth;
 
-		struct RStencil {
+		struct Stencil {
 
 			// Defines if stencil test is enabled.
 			// The initial value is false.
 			bool bEnabled = false;
 
 			// Stencil state for front
-			FStencilFaceState mFront{};
+			StencilFaceState mFront{};
 
 			// Stencil state for back
-			FStencilFaceState mBack{};
+			StencilFaceState mBack{};
 
 			// Helper for creating same stencil face state for both sides.
-			static RStencil CreateBothSides(const FStencilFaceState& state) {
+			static Stencil CreateBothSides(const StencilFaceState& state) {
 				return { .bEnabled = true, .mFront = state, .mBack = state };
 			}
 
@@ -205,7 +205,7 @@ namespace lum::rhi {
 
 	// Represents the face culling state of the pipeline.
 	// Includes cull enable, which face to cull, and front face winding order.
-	struct FCullState {
+	struct CullState {
 
 		// Defines if cull is enabled.
 		// The initial value is false.
@@ -223,7 +223,7 @@ namespace lum::rhi {
 
 	// Represents the scissor test state of the pipeline.
 	// Includes enable flag and scissor rectangle dimensions.
-	struct FScissorState {
+	struct ScissorState {
 
 		// Defines if scissor test is enabled.
 		// The initial value is false.
@@ -299,7 +299,7 @@ namespace lum::rhi {
 
 	// Represents the blending state of the pipeline.
 	// Includes enable flag, source/destination factors, and blend operations for color and alpha.
-	struct FBlendState {
+	struct BlendState {
 
 		// Defines if blending is enabled.
 		// The initial value is false.
@@ -336,7 +336,7 @@ namespace lum::rhi {
 
 	};
 	
-	struct FViewportState {
+	struct ViewportState {
 
 		int32 x{};
 		int32 y{};

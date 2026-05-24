@@ -11,7 +11,7 @@ namespace lum {
 
 	struct FMaterialTexture {
 
-		rhi::RTextureHandle mTexture;
+		rhi::TextureHandle mTexture;
 
 		float32 mTextureScale = 1.0f;
 		rhi::SamplerWrap mWrap = rhi::SamplerWrap::Repeat;
@@ -24,19 +24,19 @@ namespace lum {
 	struct FMaterialBase {
 
 		/* @brief Albedo (base color) texture map. */
-		rhi::RTextureHandle mAlbedoTex;
+		rhi::TextureHandle mAlbedoTex;
 
 		/* @brief Normal map for surface detail. */
-		rhi::RTextureHandle mNormalTex;
+		rhi::TextureHandle mNormalTex;
 
 		/* @brief Roughness texture map. */
-		rhi::RTextureHandle mRoughnessTex;
+		rhi::TextureHandle mRoughnessTex;
 
 		/* @brief Metallic texture map. */
-		rhi::RTextureHandle mMetallicTex;
+		rhi::TextureHandle mMetallicTex;
 
 		/* @brief Ambient occlusion texture map. */
-		rhi::RTextureHandle mAmbientTex;
+		rhi::TextureHandle mAmbientTex;
 
 		/* @brief Base color multiplier. */
 		Vector3 mBaseColor = Vector3( 1.0f );

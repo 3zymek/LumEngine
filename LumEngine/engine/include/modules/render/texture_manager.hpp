@@ -9,7 +9,7 @@
 namespace lum {
 
 	///Forward Declare///
-	struct FTextureData;
+	struct TextureData;
 
 	/////////////////////
 
@@ -62,7 +62,7 @@ namespace lum {
 		* @param path Path to the texture asset.
 		* @param id Root directory identifier.
 		*/
-		rhi::RTextureHandle Get( StringView path, RootID id = RootID::External );
+		rhi::TextureHandle Get( StringView path, RootID id = RootID::External );
 
 		/* @brief Loads a texture from disk or returns cached version.
 		* Applies preset configuration (format, mipmaps) based on texture type.
@@ -71,7 +71,7 @@ namespace lum {
 		* @param preset Texture type preset (Albedo, Normal, Metalness, Roughness).
 		* @param id Root directory identifier.
 		*/
-		rhi::RTextureHandle Load( StringView path, TexturePreset preset, RootID id = RootID::External );
+		rhi::TextureHandle Load( StringView path, TexturePreset preset, RootID id = RootID::External );
 
 		/* @brief Maps a channel count to the corresponding RImageFormat.
 		* @param channels Number of color channels (1 = R, 2 = RG, 3 = RGB, 4 = RGBA).
@@ -84,12 +84,12 @@ namespace lum {
 		* @param faceSize Resolution of each cubemap face in pixels.
 		* @param root Root directory identifier.
 		*/
-		rhi::RTextureHandle LoadEquirectangularCubemap( StringView path, RootID root = RootID::External );
+		rhi::TextureHandle LoadEquirectangularCubemap( StringView path, RootID root = RootID::External );
 
 		/* @brief Returns a built-in fallback texture.
 		* @param fallback Fallback type (Missing = checkered, Default = white 1x1).
 		*/
-		rhi::RTextureHandle GetFallbackTexture( FallbackTexture fallback );
+		rhi::TextureHandle GetFallbackTexture( FallbackTexture fallback );
 
 
 	private:
@@ -97,18 +97,18 @@ namespace lum {
 		rhi::RenderDevice* mRenderDevice = nullptr;
 
 		/* @brief Fallback texture displayed when a requested asset cannot be found. */
-		rhi::RTextureHandle mMissingTexture;
+		rhi::TextureHandle mMissingTexture;
 
 		/* @brief Default 1x1 white texture used as a neutral fallback for albedo and non-color maps. */
-		rhi::RTextureHandle mDefaultAlbedoTexture;
+		rhi::TextureHandle mDefaultAlbedoTexture;
 
 		/* @brief Default 1x1 (128, 128, 255) texture representing a flat normal, used when no normal map is provided. */
-		rhi::RTextureHandle mDefaultNormalTexture;
-		rhi::RTextureHandle mDefaultRoughnessTexture;
-		rhi::RTextureHandle mDefaultMetallicTexture;
+		rhi::TextureHandle mDefaultNormalTexture;
+		rhi::TextureHandle mDefaultRoughnessTexture;
+		rhi::TextureHandle mDefaultMetallicTexture;
 
 		/* @brief Cache mapping texture path hashes to their GPU handles. */
-		std::unordered_map<uint64, rhi::RTextureHandle> mTextures;
+		std::unordered_map<uint64, rhi::TextureHandle> mTextures;
 
 
 		void init( );
@@ -127,10 +127,10 @@ namespace lum {
 		* @param faceSize Resolution of each output face in pixels.
 		* @return Array of six FTextureData, one per cubemap face.
 		*/
-		std::array<FTextureData, 6> convert_equirectangular_to_cubemap( const FTextureData& equirect, int32 faceSize = 4096 );
+		std::array<TextureData, 6> convert_equirectangular_to_cubemap( const TextureData& equirect, int32 faceSize = 4096 );
 
 		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
-		static inline rhi::FTextureDescriptor sTexturePresetsLookup[] = {
+		static inline rhi::TextureCreateInfo sTexturePresetsLookup[] = {
 			{ // ALBEDO
 				.mImageLayout = rhi::ImageLayout::SRGB8_Alpha8,
 				.mImageFormat = rhi::ImageFormat::RGBA,

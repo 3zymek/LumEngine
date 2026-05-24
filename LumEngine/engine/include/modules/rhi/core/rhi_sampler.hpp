@@ -32,7 +32,7 @@ namespace lum::rhi {
 		ClampBorder		// Sets color border outside bounds
 	};
 
-	struct FSamplerDescriptor {
+	struct SamplerCreateInfo {
 
 		// Filter that applies to texture, when texture is magnified ( scaled up )
 		SamplerMagFilter mMagFilter{};
@@ -51,9 +51,9 @@ namespace lum::rhi {
 
 	};
 
-	struct FSampler {
+	struct Sampler {
 
-		RSamplerID mHandle = 0;
+		SamplerID mHandle = 0;
 
 	};
 

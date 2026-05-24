@@ -38,7 +38,7 @@ namespace lum::render {
 		*  Must be called before Execute() for IBL to work correctly.
 		*  @param tex Handle to a valid HDR cubemap texture.
 		*/
-		void SetCubemapTexture( rhi::RTextureHandle tex );
+		void SetCubemapTexture( rhi::TextureHandle tex );
 
 		/* @brief Renders the skybox cubemap to the provided screen quad framebuffer.
 		*  @param gbuffer  GBuffer containing depth for correct skybox depth testing.
@@ -49,7 +49,7 @@ namespace lum::render {
 		/* @brief Returns a handle to a precomputed IBL texture.
 		*  @param tex Which IBL texture to retrieve.
 		*/
-		rhi::RTextureHandle GetTexture( detail::IBLTexture tex ) const noexcept;
+		rhi::TextureHandle GetTexture( detail::IBLTexture tex ) const noexcept;
 
 	private:
 
@@ -60,13 +60,13 @@ namespace lum::render {
 		detail::FCubemap mCubemap;
 
 		/* @brief Pipeline state for skybox rendering. */
-		rhi::RPipelineHandle mPipeline;
+		rhi::PipelineHandle mPipeline;
 
 		/* @brief Shader program for skybox rendering. */
-		rhi::RShaderHandle mShader;
+		rhi::ShaderHandle mShader;
 
 		/* @brief Sampler used for cubemap and IBL texture sampling. */
-		rhi::RSamplerHandle mSampler;
+		rhi::SamplerHandle mSampler;
 
 		/* @brief Contains all IBL precomputed textures and their generation shaders. */
 		struct IBL {
@@ -76,8 +76,8 @@ namespace lum::render {
 			*/
 			struct FIrradianceMap {
 
-				rhi::RTextureHandle mTexture;
-				rhi::RShaderHandle  mShader;
+				rhi::TextureHandle mTexture;
+				rhi::ShaderHandle  mShader;
 
 			} mIrradiance;
 
@@ -86,8 +86,8 @@ namespace lum::render {
 			*/
 			struct FPrefilteredMap {
 
-				rhi::RTextureHandle mTexture;
-				rhi::RShaderHandle  mShader;
+				rhi::TextureHandle mTexture;
+				rhi::ShaderHandle  mShader;
 				static constexpr uint8 skMipmapLevels = 5;
 
 			} mPrefiltered;

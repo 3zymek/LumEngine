@@ -8,11 +8,11 @@
 
 namespace lum::rhi::gl {
 
-	RSamplerHandle GLDevice::CreateSampler( const FSamplerDescriptor& desc ) {
+	SamplerHandle GLDevice::CreateSampler( const SamplerDescriptor& desc ) {
 
 		LUM_ASSERT( mSamplers.DenseSize( ) <= skMaxSamplers, "Max samplers reached" );
 
-		FSampler sampler;
+		Sampler sampler;
 
 		glCreateSamplers( 1, &sampler.mHandle );
 		glSamplerParameteri( sampler.mHandle, GL_TEXTURE_MAG_FILTER, (desc.mMagFilter == SamplerMagFilter::Nearest) ? GL_NEAREST : GL_LINEAR );
@@ -28,12 +28,12 @@ namespace lum::rhi::gl {
 		GLfloat finalAnisotropy = std::clamp( ( float32 ) desc.mAnisotropy, 1.0f, ( float32 ) maxAnisotropy );
 		glSamplerParameterf( sampler.mHandle, GL_TEXTURE_MAX_ANISOTROPY, finalAnisotropy );
 
-		RSamplerHandle samplerHandle = mSamplers.Append( std::move( sampler ) );
+		SamplerHandle samplerHandle = mSamplers.Append( std::move( sampler ) );
 
 		return samplerHandle;
 	}
 
-	void GLDevice::BindSampler( RSamplerHandle sampler, uint16 binding ) {
+	void GLDevice::BindSampler( SamplerHandle sampler, uint16 binding ) {
 
 		LUM_ASSERT( binding < skMaxSamplerUnits, "Sampler binding out of range" );
 		if (!IsValid( sampler )) return;
@@ -51,7 +51,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::Delete( RSamplerHandle sampler ) {
+	void GLDevice::Delete( SamplerHandle sampler ) {
 
 		LUM_RETURN_IF( !IsValid( sampler ), LUM_SEV_WARN, "Invalid sampler" );
 

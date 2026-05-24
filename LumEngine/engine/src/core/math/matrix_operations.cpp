@@ -5,9 +5,9 @@ namespace lum {
 	Matrix4 ToMat4( const Quaternion& q ) {
 		Matrix4 result( 1.0f );
 
-		float32 xx = q.x * q.x, yy = q.y * q.y, zz = q.z * q.z;
-		float32 xy = q.x * q.y, xz = q.x * q.z, yz = q.y * q.z;
-		float32 wx = q.w * q.x, wy = q.w * q.y, wz = q.w * q.z;
+		float32 xx = q.mX * q.mX, yy = q.mY * q.mY, zz = q.mZ * q.mZ;
+		float32 xy = q.mX * q.mY, xz = q.mX * q.mZ, yz = q.mY * q.mZ;
+		float32 wx = q.mW * q.mX, wy = q.mW * q.mY, wz = q.mW * q.mZ;
 
 		result.mData[ 0 ] = 1 - 2 * (yy + zz);
 		result.mData[ 1 ] = 2 * (xy + wz);

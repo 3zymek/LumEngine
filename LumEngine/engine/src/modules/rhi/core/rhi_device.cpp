@@ -27,7 +27,7 @@ namespace lum::rhi {
 	// Private
 	//---------------------------------------------------------
 
-	bool RenderDevice::validate_texture_descriptor(const FTextureDescriptor& desc) const noexcept {
+	bool RenderDevice::validate_texture_descriptor(const TextureCreateInfo& desc) const noexcept {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mTextures.DenseSize() <= skMaxTextures,
@@ -46,7 +46,7 @@ namespace lum::rhi {
 		return true;
 
 	}
-	bool RenderDevice::validate_buffer_descriptor( const FBufferDescriptor& desc ) const noexcept {
+	bool RenderDevice::validate_buffer_descriptor( const BufferCreateInfo& desc ) const noexcept {
 
 		if (desc.mBufferUsage == BufferUsage::Static) {
 			LUM_ASSERT(

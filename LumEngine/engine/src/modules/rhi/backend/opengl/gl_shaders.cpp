@@ -8,11 +8,11 @@
 
 namespace lum::rhi::gl {
 
-	RShaderHandle GLDevice::CreateShader( const FShaderDescriptor& desc ) {
+	ShaderHandle GLDevice::CreateShader( const ShaderDescriptor& desc ) {
 
 		LUM_ASSERT( mShaders.DenseSize( ) < skMaxShaders, "Max shaders reached" );
 
-		FShader shader;
+		Shader shader;
 
 		GLuint vshader = glCreateShader( GL_VERTEX_SHADER );
 		GLuint fshader = glCreateShader( GL_FRAGMENT_SHADER );
@@ -24,9 +24,9 @@ namespace lum::rhi::gl {
 		glShaderSource( fshader, 1, &fragmentContent, nullptr );
 
 		if (!compile_shader( vshader ))
-			return RShaderHandle{};
+			return ShaderHandle{};
 		if (!compile_shader( fshader ))
-			return RShaderHandle{};
+			return ShaderHandle{};
 
 		shader.mHandle = glCreateProgram( );
 
@@ -41,7 +41,7 @@ namespace lum::rhi::gl {
 		return mShaders.Append( std::move( shader ) );
 
 	}
-	void GLDevice::BindShader( RShaderHandle shader ) {
+	void GLDevice::BindShader( ShaderHandle shader ) {
 
 		if (!IsValid( shader )) return;
 
@@ -57,7 +57,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS( );
 
 	}
-	void GLDevice::Delete( RShaderHandle& shader ) {
+	void GLDevice::Delete( ShaderHandle& shader ) {
 
 		LUM_RETURN_IF( !IsValid( shader ), LUM_SEV_WARN, "Invalid shader" );
 

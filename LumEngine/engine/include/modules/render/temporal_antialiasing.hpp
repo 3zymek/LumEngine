@@ -8,8 +8,8 @@ namespace lum::render {
 	public:
 
 		void Initialize( rhi::RenderDevice* dev );
-		void EnsureFrameTex( const rhi::FTextureDescriptor& desc );
-		rhi::RTextureHandle GetPreviousFrameTex( ) const noexcept { return mPreviousFrameTex; }
+		void EnsureFrameTex( const rhi::TextureCreateInfo& desc );
+		rhi::TextureHandle GetPreviousFrameTex( ) const noexcept { return mPreviousFrameTex; }
 		Matrix4 ApplyJitter( const Matrix4& projection );
 
 	private:
@@ -17,7 +17,7 @@ namespace lum::render {
 		rhi::RenderDevice* mRenderDev = nullptr;
 
 		uint32 mFrameIndex = 0;
-		rhi::RTextureHandle mPreviousFrameTex;
+		rhi::TextureHandle mPreviousFrameTex;
 
 		uint32 mWidth = 0;
 		uint32 mHeight = 0;

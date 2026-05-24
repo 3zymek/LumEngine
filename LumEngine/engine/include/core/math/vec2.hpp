@@ -7,49 +7,49 @@ namespace lum {
 	template<cArithmetic tType>
 	struct TVector2 {
 
-		constexpr TVector2( ) : x( tType( 0 ) ), y( tType( 0 ) ) { }
-		constexpr TVector2( tType x, tType y ) : x( x ), y( y ) { }
-		constexpr explicit TVector2( tType scalar ) : x( scalar ), y( scalar ) { }
+		constexpr TVector2( ) : mX( tType( 0 ) ), mY( tType( 0 ) ) { }
+		constexpr TVector2( tType x, tType y ) : mX( x ), mY( y ) { }
+		constexpr explicit TVector2( tType scalar ) : mX( scalar ), mY( scalar ) { }
 
 		template<cArithmetic tOther>
 		explicit operator TVector2<tOther>( ) const {
-			return { static_cast< tOther >(x), static_cast< tOther >(y) };
+			return { static_cast< tOther >(mX), static_cast< tOther >(mY) };
 		}
 
 		union {
-			struct { tType x, y; };
-			struct { tType r, g; };
+			struct { tType mX{}, mY{ }; };
+			struct { tType mR{}, mG{ }; };
 		};
 
 		// Arithmetic
-		TVector2 operator+( const TVector2& rhs ) const { return { x + rhs.x, y + rhs.y }; }
-		TVector2 operator-( const TVector2& rhs ) const { return { x - rhs.x, y - rhs.y }; }
-		TVector2 operator*( const TVector2& rhs ) const { return { x * rhs.x, y * rhs.y }; }
-		TVector2 operator/( const TVector2& rhs ) const { return { x / rhs.x, y / rhs.y }; }
+		TVector2 operator+( const TVector2& rhs ) const { return { mX + rhs.mX, mY + rhs.mY }; }
+		TVector2 operator-( const TVector2& rhs ) const { return { mX - rhs.mX, mY - rhs.mY }; }
+		TVector2 operator*( const TVector2& rhs ) const { return { mX * rhs.mX, mY * rhs.mY }; }
+		TVector2 operator/( const TVector2& rhs ) const { return { mX / rhs.mX, mY / rhs.mY }; }
 
 		// Scalar
-		TVector2 operator+( tType scalar ) const { return { x + scalar, y + scalar }; }
-		TVector2& operator+=( tType scalar ) { x += scalar, y += scalar; return *this; }
-		TVector2 operator-( tType scalar ) const { return { x - scalar, y - scalar }; }
-		TVector2& operator-=( tType scalar ) { x -= scalar, y -= scalar; return *this; }
-		TVector2 operator*( tType scalar ) const { return { x * scalar, y * scalar }; }
-		TVector2& operator*=( tType scalar ) { x *= scalar; y *= scalar; return *this; }
-		TVector2 operator/( tType scalar ) const { tType inv = tType( 1 ) / scalar; return { x * inv, y * inv }; }
-		TVector2& operator/=( tType scalar ) { tType inv = tType( 1 ) / scalar; x *= inv; y *= inv; return *this; }
+		TVector2 operator+( tType scalar ) const { return { mX + scalar, mY + scalar }; }
+		TVector2& operator+=( tType scalar ) { mX += scalar, mY += scalar; return *this; }
+		TVector2 operator-( tType scalar ) const { return { mX - scalar, mY - scalar }; }
+		TVector2& operator-=( tType scalar ) { mX -= scalar, mY -= scalar; return *this; }
+		TVector2 operator*( tType scalar ) const { return { mX * scalar, mY * scalar }; }
+		TVector2& operator*=( tType scalar ) { mX *= scalar; mY *= scalar; return *this; }
+		TVector2 operator/( tType scalar ) const { tType inv = tType( 1 ) / scalar; return { mX * inv, mY * inv }; }
+		TVector2& operator/=( tType scalar ) { tType inv = tType( 1 ) / scalar; mX *= inv; mY *= inv; return *this; }
 
 
 		// Assignment
-		TVector2& operator+=( const TVector2& rhs ) { x += rhs.x; y += rhs.y; return *this; }
-		TVector2& operator-=( const TVector2& rhs ) { x -= rhs.x; y -= rhs.y; return *this; }
+		TVector2& operator+=( const TVector2& rhs ) { mX += rhs.mX; mY += rhs.mY; return *this; }
+		TVector2& operator-=( const TVector2& rhs ) { mX -= rhs.mX; mY -= rhs.mY; return *this; }
 
 		// Unary
-		TVector2 operator-( ) const { return { -x, -y }; }
+		TVector2 operator-( ) const { return { -mX, -mY }; }
 
 		// Comparison
-		bool operator==( const TVector2& rhs ) const { return x == rhs.x && y == rhs.y; }
+		bool operator==( const TVector2& rhs ) const { return mX == rhs.mX && mY == rhs.mY; }
 		bool operator!=( const TVector2& rhs ) const { return !(*this == rhs); }
 
-		const float32* Data( ) const { return &x; }
+		const float32* Data( ) const { return &mX; }
 
 	};
 
@@ -65,10 +65,10 @@ namespace lum {
 	//-----------------------------------------
 
 	template<cArithmetic tType>
-	float32 Length( const TVector2<tType>& v ) { return sqrt( v.x * v.x + v.y * v.y ); }
+	float32 Length( const TVector2<tType>& v ) { return sqrt( v.mX * v.mX + v.mY * v.mY ); }
 
 	template<cArithmetic tType>
-	constexpr float32 LengthSq( const TVector2<tType>& v ) { return v.x * v.x + v.y * v.y; }
+	constexpr float32 LengthSq( const TVector2<tType>& v ) { return v.mX * v.mX + v.mY * v.mY; }
 
 	template<cArithmetic tType>
 	float32 Distance( const TVector2<tType>& a, const TVector2<tType>& b ) { return Length( b - a ); }
@@ -76,26 +76,26 @@ namespace lum {
 	template<cArithmetic tType>
 	TVector2<tType> Normalize( const TVector2<tType>& v ) {
 		float32 invLen = 1.0f / Length( v );
-		return { v.x * invLen, v.y * invLen };
+		return { v.mX * invLen, v.mY * invLen };
 	}
 
 	template<cArithmetic tType>
-	constexpr float32 Dot( const TVector2<tType>& v1, const TVector2<tType>& v2 ) { return v1.x * v2.x + v1.y * v2.y; }
+	constexpr float32 Dot( const TVector2<tType>& v1, const TVector2<tType>& v2 ) { return v1.mX * v2.mX + v1.mY * v2.mY; }
 
 	template<cArithmetic tType>
-	constexpr float32 ScalarCross( const TVector2<tType>& v1, const TVector2<tType>& v2 ) { return v1.x * v2.y - v1.y * v2.x; }
+	constexpr float32 ScalarCross( const TVector2<tType>& v1, const TVector2<tType>& v2 ) { return v1.mX * v2.mY - v1.mY * v2.mX; }
 
 	template<cArithmetic tType>
 	constexpr TVector2<tType> Clamp( const TVector2<tType>& v, tType min, tType max ) {
 		return {
-			std::clamp( v.x, min, max ),
-			std::clamp( v.y, min, max )
+			std::clamp( v.mX, min, max ),
+			std::clamp( v.mY, min, max )
 		};
 	}
 
 	template<cArithmetic tType>
 	TVector2<tType> Abs( const TVector2<tType>& v ) {
-		return { std::abs( v.x ), std::abs( v.y ) };
+		return { std::abs( v.mX ), std::abs( v.mY ) };
 	}
 
 	using Vector2 = TVector2<float32>;

@@ -32,7 +32,7 @@ namespace lum::render {
 			*/
 			void Execute( GeometryPass& geoPass, const LightPass& lightPass, FRendererContext& ctx );
 
-			rhi::RTextureHandle GetShadowMap( ) const noexcept { return mShadowMap; }
+			rhi::TextureHandle GetShadowMap( ) const noexcept { return mShadowMap; }
 
 		private:
 
@@ -52,16 +52,16 @@ namespace lum::render {
 			float32 mShadowMapFar = mShadowMapDistance * 2.0f;
 
 			/* @brief Depth texture used as the shadow map attachment. */
-			rhi::RTextureHandle mShadowMap;
+			rhi::TextureHandle mShadowMap;
 
 			/* @brief Framebuffer with the shadow map as its depth attachment. */
-			rhi::RFramebufferHandle mFramebuffer;
+			rhi::FramebufferHandle mFramebuffer;
 
 			/* @brief Shader program used during the shadow pass. */
-			rhi::RShaderHandle mShader;
+			rhi::ShaderHandle mShader;
 
 			/* @brief Uniform buffer holding the light space transformation matrix. */
-			rhi::RBufferHandle mLightSpaceUBO;
+			rhi::BufferHandle mLightSpaceUBO;
 
 			/* @brief Computes and uploads the light space matrix from the given light direction.
 			*  @param direction Normalized direction vector of the directional light.
@@ -82,7 +82,7 @@ namespace lum::render {
 
 			void Execute( GeometryPass& geoPass, const LightPass& lightPass, FRendererContext& ctx );
 			
-			rhi::RTextureHandle GetShadowMaps( ) const noexcept { return mShadowMaps; }
+			rhi::TextureHandle GetShadowMaps( ) const noexcept { return mShadowMaps; }
 			
 		private:
 			
@@ -96,16 +96,16 @@ namespace lum::render {
 			float32 mShadowMapFar = 100.0f;
 
 			/* @brief Depth texture used as the shadow maps attachments. */
-			rhi::RTextureHandle mShadowMaps;
+			rhi::TextureHandle mShadowMaps;
 
 			/* @brief Framebuffer with the shadow maps as its depth attachment. */
-			rhi::RFramebufferHandle mFramebuffer;
+			rhi::FramebufferHandle mFramebuffer;
 
 			/* @brief Shader program used during the shadow pass. */
-			rhi::RShaderHandle mShader;
+			rhi::ShaderHandle mShader;
 
 			/* @brief Uniform buffer holding the light space transformation matrix. */
-			rhi::RBufferHandle mLightSpaceUBO;
+			rhi::BufferHandle mLightSpaceUBO;
 			
 			void calculate_lightspace_matrix( const Vector3& dir, const Vector3& pos, float32 fov, FRendererContext& ctx );
 
@@ -118,7 +118,7 @@ namespace lum::render {
 
 		FRendererContext mContext;
 
-		rhi::RPipelineHandle mShadowMappingPipeline;
+		rhi::PipelineHandle mShadowMappingPipeline;
 
 	};
 

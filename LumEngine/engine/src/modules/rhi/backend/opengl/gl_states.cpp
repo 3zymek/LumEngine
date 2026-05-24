@@ -615,7 +615,7 @@ namespace lum::rhi::gl {
 
 		if (face == Face::Front) {
 
-			FStencilFaceState& front = mDepthStencilState.mStencil.mFront;
+			StencilFaceState& front = mDepthStencilState.mStencil.mFront;
 
 			if (front.mReference == ref) {
 				LUM_PROFILER_CACHE_HIT( );
@@ -636,7 +636,7 @@ namespace lum::rhi::gl {
 		}
 		else if (face == Face::Back) {
 
-			FStencilFaceState& back = mDepthStencilState.mStencil.mBack;
+			StencilFaceState& back = mDepthStencilState.mStencil.mBack;
 
 			if (back.mReference == ref) {
 				LUM_PROFILER_CACHE_HIT( );
@@ -836,7 +836,7 @@ namespace lum::rhi::gl {
 
 		if (face == Face::Front) {
 
-			FStencilFaceState& front = stencil.mFront;
+			StencilFaceState& front = stencil.mFront;
 
 			if (front.mPassOp == op) {
 				LUM_PROFILER_CACHE_HIT( );
@@ -857,7 +857,7 @@ namespace lum::rhi::gl {
 		}
 		else if (face == Face::Back) {
 
-			FStencilFaceState& back = stencil.mBack;
+			StencilFaceState& back = stencil.mBack;
 
 			if (back.mPassOp == op) {
 				LUM_PROFILER_CACHE_HIT( );

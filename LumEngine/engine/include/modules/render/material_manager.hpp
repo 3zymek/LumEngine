@@ -61,7 +61,7 @@ namespace lum {
 		* @param mem      Which map to set (Albedo, Normal, Metallic, Roughness).
 		* @param tex      Texture handle to assign.
 		*/
-		void SetBaseMap( MaterialBaseHandle material, MaterialMember mem, rhi::RTextureHandle tex );
+		void SetBaseMap( MaterialBaseHandle material, MaterialMember mem, rhi::TextureHandle tex );
 
 	private:
 
@@ -74,7 +74,7 @@ namespace lum {
 		void init();
 
 		/* @brief Returns the texture if valid, otherwise returns the default fallback. */
-		rhi::RTextureHandle validate_texture( rhi::RTextureHandle tex );
+		rhi::TextureHandle validate_texture( rhi::TextureHandle tex );
 
 		/* @brief Creates and uploads the built-in default material. */
 		void create_defaults( );

@@ -83,7 +83,7 @@ namespace lum::render {
 
 	void GeometryPass::init( ) {
 
-		rhi::FBufferDescriptor desc;
+		rhi::BufferCreateInfo desc;
 		desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 		desc.mMapFlags = rhi::MapFlag::Write;
 		{ // Model Uniform
@@ -99,7 +99,7 @@ namespace lum::render {
 			mContext.mRenderDev->SetUniformBufferBinding( mMaterialUniform, LUM_UBO_MATERIAL_BINDING );
 		}
 		{ // Geometry pipeline
-			rhi::FPipelineDescriptor desc;
+			rhi::PipelineCreateInfo desc;
 			desc.mDepthStencil.mDepth.bEnabled = true;
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = true;
 			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::Less;

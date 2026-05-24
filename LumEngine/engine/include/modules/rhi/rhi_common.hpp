@@ -14,7 +14,7 @@ namespace lum {
 	/* @brief Interleaved vertex structure passed to the GPU per draw call.
 	* Aligned to 16 bytes for optimal GPU memory access.
 	*/
-	struct alignas(16) FVertex {
+	struct alignas(16) Vertex {
 
 		/* @brief Vertex position in 3D space. */
 		Vector3 mPosition;
@@ -71,36 +71,36 @@ namespace lum {
 			return MaxValue<T>( );
 		}
 
-		using RBufferID = uint32; /* @brief Numeric identifier for a GPU buffer object. */
-		using RLayoutID = uint32; /* @brief Numeric identifier for a vertex layout (VAO). */
-		using RTextureID = uint32; /* @brief Numeric identifier for a GPU texture object. */
-		using RSamplerID = uint32; /* @brief Numeric identifier for a texture sampler. */
-		using RFramebufferID = uint32; /* @brief Numeric identifier for a framebuffer object. */
-		using RPipelineID = uint32; /* @brief Numeric identifier for a pipeline state object. */
-		using RShaderID = uint8;  /* @brief Numeric identifier for a shader program (compact). */
+		using BufferID = uint32; /* @brief Numeric identifier for a GPU buffer object. */
+		using LayoutID = uint32; /* @brief Numeric identifier for a vertex layout (VAO). */
+		using TextureID = uint32; /* @brief Numeric identifier for a GPU texture object. */
+		using SamplerID = uint32; /* @brief Numeric identifier for a texture sampler. */
+		using FramebufferID = uint32; /* @brief Numeric identifier for a framebuffer object. */
+		using PipelineID = uint32; /* @brief Numeric identifier for a pipeline state object. */
+		using ShaderID = uint8;  /* @brief Numeric identifier for a shader program (compact). */
 
 		/* @brief Typed handle wrapping a pipeline state object ID. */
-		struct RPipelineHandle : public cstd::BaseHandle<RPipelineID> { };
+		struct PipelineHandle : public cstd::BaseHandle<PipelineID> { };
 
 		/* @brief Typed handle wrapping a framebuffer object ID. */
-		struct RFramebufferHandle : public cstd::BaseHandle<RFramebufferID> { using BaseHandle::BaseHandle; };
+		struct FramebufferHandle : public cstd::BaseHandle<FramebufferID> { using BaseHandle::BaseHandle; };
 
 		/* @brief Typed handle wrapping a texture sampler ID. */
-		struct RSamplerHandle : public cstd::BaseHandle<RSamplerID> { };
+		struct SamplerHandle : public cstd::BaseHandle<SamplerID> { };
 
 		/* @brief Typed handle wrapping a shader program ID. */
-		struct RShaderHandle : public cstd::BaseHandle<RShaderID> { };
+		struct ShaderHandle : public cstd::BaseHandle<ShaderID> { };
 
 		/* @brief Typed handle wrapping a GPU texture ID. */
-		struct RTextureHandle : public cstd::BaseHandle<RTextureID> { };
+		struct TextureHandle : public cstd::BaseHandle<TextureID> { };
 
 		/* @brief Typed handle wrapping a GPU buffer object ID. */
-		struct RBufferHandle : public cstd::BaseHandle<RBufferID> { };
+		struct BufferHandle : public cstd::BaseHandle<BufferID> { };
 
 		/* @brief Typed handle wrapping a vertex layout (VAO) ID. */
-		struct RVertexLayoutHandle : public cstd::BaseHandle<RLayoutID> { };
+		struct VertexLayoutHandle : public cstd::BaseHandle<LayoutID> { };
 
-		inline constexpr RFramebufferHandle gDefaultFramebuffer { 0, MaxValue<RFramebufferID>( ) };
+		inline constexpr FramebufferHandle gDefaultFramebuffer { 0, MaxValue<FramebufferID>( ) };
 
 		/* @brief Bitmask storage type used for RHI flag enums. */
 		using REnumFlag = uint16;
@@ -128,7 +128,7 @@ namespace lum {
 		* @param mSlot         Color attachment index. Only used when mAttachment == Color.
 		* @param mAttachment   Framebuffer attachment point (Color, Depth, Stencil, or Depth|Stencil).
 		*/
-		struct FTextureLayerAttachment {
+		struct TextureLayerAttachment {
 
 			uint32 mLayer = 0;
 			uint32 mMip = 0;
@@ -199,7 +199,7 @@ namespace lum {
 		};
 
 		/* @brief Per-channel write mask controlling which color channels are written to the framebuffer. */
-		struct FColorMask {
+		struct ColorMask {
 			bool r : 1 = true; /* @brief Enable writes to the red channel. */
 			bool g : 1 = true; /* @brief Enable writes to the green channel. */
 			bool b : 1 = true; /* @brief Enable writes to the blue channel. */

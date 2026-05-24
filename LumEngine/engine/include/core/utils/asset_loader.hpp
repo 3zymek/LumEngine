@@ -9,7 +9,7 @@
 
 namespace lum {
 
-	struct FVertex;
+	struct Vertex;
 	namespace detail {
 
 		namespace fs = std::filesystem;
@@ -23,7 +23,7 @@ namespace lum {
 	};
 
 	/* @brief Raw texture data loaded from disk. */
-	struct FTextureData {
+	struct TextureData {
 
 		/* @brief Texture width in pixels. */
 		int32 mWidth = 0;
@@ -48,7 +48,7 @@ namespace lum {
 	struct FMeshData {
 
 		/* @brief List of vertices. */
-		std::vector<FVertex> mVertices;
+		std::vector<Vertex> mVertices;
 
 		/* @brief List of indices. */
 		std::vector<uint32> mIndices;
@@ -86,7 +86,7 @@ namespace lum {
 		* @return FTextureData on success, or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<FTextureData> LoadTexture( RootID root, StringView filepath, uint8 expectedFormat = 0 );
+		static std::optional<TextureData> LoadTexture( RootID root, StringView filepath, uint8 expectedFormat = 0 );
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.

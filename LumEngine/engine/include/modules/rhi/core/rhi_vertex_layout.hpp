@@ -9,7 +9,7 @@
 namespace lum::rhi {
 
 	// Attributes for single vertex in vertex layout
-	struct FVertexAttribute {
+	struct VertexAttribute {
 
 		// Data in buffer format (Float, Float2, Mat4, etc.)
 		DataFormat mFormat{};
@@ -22,10 +22,10 @@ namespace lum::rhi {
 		usize mShaderLocation = 0;
 		
 	};
-	struct FVertexLayoutDescriptor {
+	struct VertexLayoutCreateInfo {
 
 		// Pointer to the array of vertex attributes.
-		std::span<const FVertexAttribute> mAttributes;
+		std::span<const VertexAttribute> mAttributes;
 
 		// Sizeof single element in buffer.
 		usize mStride = 0;
@@ -39,10 +39,10 @@ namespace lum::rhi {
 
 	};
 
-	struct FVertexLayout {
+	struct VertexLayout {
 		
-		RLayoutID		mHandle = 0;
-		RBufferHandle	mElementBuff;
+		LayoutID		mHandle = 0;
+		BufferHandle	mElementBuff;
 
 	};
 

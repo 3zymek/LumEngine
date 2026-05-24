@@ -18,9 +18,9 @@ namespace lum::render {
 	*/
 	struct FLightPassExecute {
 
-		rhi::RTextureHandle mIrradianceMap;     /* @brief Precomputed irradiance cubemap for diffuse IBL. */
-		rhi::RTextureHandle mPrefilteredEnvMap; /* @brief Prefiltered environment cubemap for specular IBL. */
-		rhi::RTextureHandle mShadowMap;         /* @brief Depth map from the shadow pass. */
+		rhi::TextureHandle mIrradianceMap;     /* @brief Precomputed irradiance cubemap for diffuse IBL. */
+		rhi::TextureHandle mPrefilteredEnvMap; /* @brief Prefiltered environment cubemap for specular IBL. */
+		rhi::TextureHandle mShadowMap;         /* @brief Depth map from the shadow pass. */
 
 	};
 
@@ -100,16 +100,16 @@ namespace lum::render {
 		detail::FDirectionalLightUBOData mDirectionalLightData{};
 
 		/* @brief Shader storage buffer holding all active point and spot lights. */
-		rhi::RBufferHandle mLightsUBO;
+		rhi::BufferHandle mLightsUBO;
 
 		/* @brief Uniform buffer holding the active directional light data. */
-		rhi::RBufferHandle mDirectionalLightUBO;
+		rhi::BufferHandle mDirectionalLightUBO;
 
 		/* @brief Pipeline state for the light pass. */
-		rhi::RPipelineHandle mPipeline;
+		rhi::PipelineHandle mPipeline;
 
 		/* @brief Shader program used for the light pass. */
-		rhi::RShaderHandle mShader;
+		rhi::ShaderHandle mShader;
 
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
 		void init( );

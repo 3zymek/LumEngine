@@ -34,7 +34,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::Draw( RVertexLayoutHandle layout, uint32 numVertices ) {
+	void GLDevice::Draw( VertexLayoutHandle layout, uint32 numVertices ) {
 
 		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
 
@@ -45,7 +45,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::DrawInstanced( RVertexLayoutHandle layout, uint32 numVertices, uint32 numInstances ) {
+	void GLDevice::DrawInstanced( VertexLayoutHandle layout, uint32 numVertices, uint32 numInstances ) {
 
 		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
 
@@ -55,7 +55,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_DRAW_CALL( );
 
 	}
-	void GLDevice::DrawInstancedBase( RVertexLayoutHandle layout, uint32 numVertices, uint32 numInstances, uint32 baseInstance ) {
+	void GLDevice::DrawInstancedBase( VertexLayoutHandle layout, uint32 numVertices, uint32 numInstances, uint32 baseInstance ) {
 
 		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
 
@@ -66,7 +66,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::DrawElements( RVertexLayoutHandle layout, uint32 numIndices ) {
+	void GLDevice::DrawElements( VertexLayoutHandle layout, uint32 numIndices ) {
 
 		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
 		LUM_ASSERT( mBuffers.Contains( mLayouts[ layout ].mElementBuff ), "Layout doesn't have attached any element buffers" );
@@ -78,7 +78,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::DrawElementsInstanced( RVertexLayoutHandle layout, uint32 numIndices, uint32 numInstances ) {
+	void GLDevice::DrawElementsInstanced( VertexLayoutHandle layout, uint32 numIndices, uint32 numInstances ) {
 
 		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
 		LUM_ASSERT( mBuffers.Contains( mLayouts[ layout ].mElementBuff ), "Layout doesn't have attached any element buffers" );
@@ -89,7 +89,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_DRAW_CALL( );
 
 	}
-	void GLDevice::DrawElementsInstancedBase( RVertexLayoutHandle layout, uint32 numIndices, uint32 numInstances, uint32 baseInstance ) {
+	void GLDevice::DrawElementsInstancedBase( VertexLayoutHandle layout, uint32 numIndices, uint32 numInstances, uint32 baseInstance ) {
 
 		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
 		LUM_ASSERT( mBuffers.Contains( mLayouts[ layout ].mElementBuff ), "Layout doesn't have attached any element buffers" );

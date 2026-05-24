@@ -7,62 +7,62 @@ namespace lum {
 	template<cArithmetic tType>
 	struct TVector4 {
 
-		constexpr TVector4( ) : x( tType( 0 ) ), y( tType( 0 ) ), z( tType( 0 ) ), w( tType( 0 ) ) { }
-		constexpr TVector4( tType x, tType y, tType z, tType w ) : x( x ), y( y ), z( z ), w( w ) { }
-		constexpr explicit TVector4( tType scalar ) : x( scalar ), y( scalar ), z( scalar ), w(scalar) { }
+		constexpr TVector4( ) : mX( tType( 0 ) ), mY( tType( 0 ) ), mZ( tType( 0 ) ), mW( tType( 0 ) ) { }
+		constexpr TVector4( tType x, tType y, tType z, tType w ) : mX( x ), mY( y ), mZ( z ), mW( w ) { }
+		constexpr explicit TVector4( tType scalar ) : mX( scalar ), mY( scalar ), mZ( scalar ), mW(scalar) { }
 		template<cArithmetic tOther>
 		constexpr TVector4( const TVector3<tOther>& v, tOther w )
-			: x( static_cast< tType >(v.x) ),
-			y( static_cast< tType >(v.y) ),
-			z( static_cast< tType >(v.z) ),
-			w( static_cast< tType >(w) ) { }
+			: mX( static_cast< tType >(v.mX) ),
+			mY( static_cast< tType >(v.mY) ),
+			mZ( static_cast< tType >(v.mZ) ),
+			mW( static_cast< tType >(w) ) { }
 
 		template<cArithmetic tOther>
 		explicit operator TVector4<tOther>( ) const {
-			return { static_cast< tOther >(x), static_cast< tOther >(y), static_cast< tOther >(z), static_cast< tOther >(w) };
+			return { static_cast< tOther >(mX), static_cast< tOther >(mY), static_cast< tOther >(mZ), static_cast< tOther >(mW) };
 		}
 		template<cArithmetic tOther>
 		explicit operator TVector3<tOther>( ) const {
-			return { static_cast< tOther >(x), static_cast< tOther >(y), static_cast< tOther >(z) };
+			return { static_cast< tOther >(mX), static_cast< tOther >(mY), static_cast< tOther >(z) };
 		}
 		template<cArithmetic tOther>
 		explicit operator TVector2<tOther>( ) const {
-			return { static_cast< tOther >(x), static_cast< tOther >(y) };
+			return { static_cast< tOther >(mX), static_cast< tOther >(mY) };
 		}
 
 		union {
-			struct { tType x, y, z, w; };
-			struct { tType r, g, b, a; };
+			struct { tType mX{}, mY{}, mZ{}, mW{}; };
+			struct { tType mR{}, mG{}, mB{}, mA{}; };
 		};
 
 		// Arithmetic
-		TVector4 operator+( const TVector4& rhs ) const { return { x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w }; }
-		TVector4 operator-( const TVector4& rhs ) const { return { x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w }; }
-		TVector4 operator*( const TVector4& rhs ) const { return { x * rhs.x, y * rhs.y, z * rhs.z, w * rhs.w }; }
-		TVector4 operator/( const TVector4& rhs ) const { return { x / rhs.x, y / rhs.y, z / rhs.z, w / rhs.w }; }
+		TVector4 operator+( const TVector4& rhs ) const { return { mX + rhs.mX, mY + rhs.mY, mZ + rhs.mZ, mW + rhs.mW }; }
+		TVector4 operator-( const TVector4& rhs ) const { return { mX - rhs.mX, mY - rhs.mY, mZ - rhs.mZ, mW - rhs.mW }; }
+		TVector4 operator*( const TVector4& rhs ) const { return { mX * rhs.mX, mY * rhs.mY, mZ * rhs.mZ, mW * rhs.mW }; }
+		TVector4 operator/( const TVector4& rhs ) const { return { mX / rhs.mX, mY / rhs.mY, mZ / rhs.mZ, mW / rhs.mW }; }
 
 		// Scalar
-		TVector4 operator+( tType scalar ) const { return { x + scalar, y + scalar, z + scalar, w + scalar }; }
-		TVector4& operator+=( tType scalar ) { x += scalar, y += scalar; z += scalar; w += scalar; return *this; }
-		TVector4 operator-( tType scalar ) const { return { x - scalar, y - scalar, z - scalar, w - scalar }; }
-		TVector4& operator-=( tType scalar ) { x -= scalar, y -= scalar; z -= scalar; w -= scalar; return *this; }
-		TVector4 operator*( tType scalar ) const { return { x * scalar, y * scalar, z * scalar, w * scalar }; }
-		TVector4& operator*=( tType scalar ) { x *= scalar; y *= scalar; z *= scalar; w *= scalar; return *this; }
-		TVector4 operator/( tType scalar ) const { tType inv = tType( 1 ) / scalar; return { x * inv, y * inv, z * inv, w * inv }; }
-		TVector4& operator/=( tType scalar ) { tType inv = tType( 1 ) / scalar; x *= inv; y *= inv; z *= inv; w *= inv; return *this; }
+		TVector4 operator+( tType scalar ) const { return { mX + scalar, mY + scalar, mZ + scalar, mW + scalar }; }
+		TVector4& operator+=( tType scalar ) { mX += scalar, mY += scalar; mZ += scalar; mW += scalar; return *this; }
+		TVector4 operator-( tType scalar ) const { return { mX - scalar, mY - scalar, mZ - scalar, mW - scalar }; }
+		TVector4& operator-=( tType scalar ) { mX -= scalar, mY -= scalar; mZ -= scalar; mW -= scalar; return *this; }
+		TVector4 operator*( tType scalar ) const { return { mX * scalar, mY * scalar, mZ * scalar, mW * scalar }; }
+		TVector4& operator*=( tType scalar ) { mX *= scalar; mY *= scalar; mZ *= scalar; mW *= scalar; return *this; }
+		TVector4 operator/( tType scalar ) const { tType inv = tType( 1 ) / scalar; return { mX * inv, mY * inv, mZ * inv, mW * inv }; }
+		TVector4& operator/=( tType scalar ) { tType inv = tType( 1 ) / scalar; mX *= inv; mY *= inv; mZ *= inv; mW *= inv; return *this; }
 
 		// Assignment
-		TVector4& operator+=( const TVector4& rhs ) { x += rhs.x; y += rhs.y; z += rhs.z; w += rhs.w; return *this; }
-		TVector4& operator-=( const TVector4& rhs ) { x -= rhs.x; y -= rhs.y; z -= rhs.z; w -= rhs.w; return *this; }
+		TVector4& operator+=( const TVector4& rhs ) { mX += rhs.mX; mY += rhs.mY; mZ += rhs.mZ; mW += rhs.mW; return *this; }
+		TVector4& operator-=( const TVector4& rhs ) { mX -= rhs.mX; mY -= rhs.mY; mZ -= rhs.mZ; mW -= rhs.mW; return *this; }
 
 		// Unary
-		TVector4 operator-( ) const { return { -x, -y, -z, -w }; }
+		TVector4 operator-( ) const { return { -mX, -mY, -mZ, -mW }; }
 
 		// Comparison
-		bool operator==( const TVector4& rhs ) const { return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w; }
+		bool operator==( const TVector4& rhs ) const { return mX == rhs.mX && mY == rhs.mY && mZ == rhs.mZ && mW == rhs.mW; }
 		bool operator!=( const TVector4& rhs ) const { return !(*this == rhs); }
 
-		const float32* Data( ) const { return &x; }
+		const float32* Data( ) const { return &mX; }
 
 	};
 
@@ -77,10 +77,10 @@ namespace lum {
 	//-----------------------------------------
 
 	template<cArithmetic tType>
-	constexpr float32 Length( const TVector4<tType>& v ) { return sqrt( v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w ); }
+	constexpr float32 Length( const TVector4<tType>& v ) { return sqrt( v.mX * v.mX + v.mY * v.mY + v.mZ * v.mZ + v.mW * v.mW ); }
 
 	template<cArithmetic tType>
-	constexpr float32 LengthSq( const TVector4<tType>& v ) { return v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w; }
+	constexpr float32 LengthSq( const TVector4<tType>& v ) { return v.mX * v.mX + v.mY * v.mY + v.mZ * v.mZ + v.mW * v.mW; }
 
 	template<cArithmetic tType>
 	constexpr float32 Distance( const TVector4<tType>& a, const TVector4<tType>& b ) { return Length( b - a ); }
@@ -88,25 +88,25 @@ namespace lum {
 	template<cArithmetic tType>
 	constexpr TVector4<tType> Normalize( const TVector4<tType>& v ) {
 		float32 invLen = 1.0f / Length( v );
-		return { v.x * invLen, v.y * invLen, v.z * invLen, v.w * invLen };
+		return { v.mX * invLen, v.mY * invLen, v.mZ * invLen, v.mW * invLen };
 	}
 
 	template<cArithmetic tType>
-	constexpr float32 Dot( const TVector4<tType>& v1, const TVector4<tType>& v2 ) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w; }
+	constexpr float32 Dot( const TVector4<tType>& v1, const TVector4<tType>& v2 ) { return v1.mX * v2.mX + v1.mY * v2.mY + v1.mZ * v2.mZ + v1.mW * v2.mW; }
 
 	template<cArithmetic tType>
 	constexpr TVector4<tType> Clamp( const TVector4<tType>& v, tType min, tType max ) {
 		return {
-			std::clamp( v.x, min, max ),
-			std::clamp( v.y, min, max ),
-			std::clamp( v.z, min, max ),
-			std::clamp( v.w, min, max )
+			std::clamp( v.mX, min, max ),
+			std::clamp( v.mY, min, max ),
+			std::clamp( v.mZ, min, max ),
+			std::clamp( v.mW, min, max )
 		};
 	}
 
 	template<cArithmetic tType>
 	constexpr TVector4<tType> Abs( const TVector4<tType>& v ) {
-		return { std::abs( v.x ), std::abs( v.y ), std::abs( v.z ), std::abs( v.w ) };
+		return { std::abs( v.mX ), std::abs( v.mY ), std::abs( v.mZ ), std::abs( v.mW ) };
 	}
 
 	using Vector4 = TVector4<float32>;

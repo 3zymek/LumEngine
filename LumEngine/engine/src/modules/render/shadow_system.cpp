@@ -17,7 +17,7 @@ namespace lum::render {
 
 		{ // Shadow mapping pipeline
 
-			rhi::FPipelineDescriptor desc;
+			rhi::PipelineCreateInfo desc;
 			desc.mDepthStencil.mDepth.bEnabled = true;
 			desc.mCull.bEnabled = true;
 			desc.mCull.mFace = rhi::Face::Back;
@@ -38,7 +38,7 @@ namespace lum::render {
 	void ShadowSystem::DirectionalLight::Initialize( FRendererContext& ctx ) {
 
 		{ // Shadow map texture
-			rhi::FTextureDescriptor desc;
+			rhi::TextureCreateInfo desc;
 			desc.mWidth = mShadowMapTexSize.x;
 			desc.mHeight = mShadowMapTexSize.y;
 			desc.mImageFormat = rhi::ImageFormat::DepthComponent;
@@ -47,12 +47,12 @@ namespace lum::render {
 			mShadowMap = ctx.mRenderDev->CreateTexture( desc );
 		}
 		{ // Shadow FBO
-			rhi::FFramebufferDescriptor desc;
+			rhi::FramebufferCreateInfo desc;
 			desc.mDepthTex = mShadowMap;
 			mFramebuffer = ctx.mRenderDev->CreateFramebuffer( desc );
 		}
 		{ // Light space matrices UBO
-			rhi::FBufferDescriptor desc;
+			rhi::BufferCreateInfo desc;
 			desc.mBufferType = rhi::BufferType::Uniform;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
@@ -69,7 +69,7 @@ namespace lum::render {
 	void ShadowSystem::SpotLight::Initialize( FRendererContext& ctx ) {
 
 		{ // Shadow maps texture
-			rhi::FTextureDescriptor desc;
+			rhi::TextureCreateInfo desc;
 			desc.mTextureType = rhi::TextureType::Texture2DArray;
 			desc.mDepth = limits::gMaxShadowCastingSpotLights;
 			desc.mWidth = mShadowMapTexSize.x;
@@ -77,12 +77,12 @@ namespace lum::render {
 			mShadowMaps = ctx.mRenderDev->CreateTexture( desc );
 		}
 		{ // Shadow FBO
-			rhi::FFramebufferDescriptor desc;
+			rhi::FramebufferCreateInfo desc;
 			desc.mDepthTex = mShadowMaps;
 			mFramebuffer = ctx.mRenderDev->CreateFramebuffer( desc );
 		}
 		{ // Light space matrices UBO
-			rhi::FBufferDescriptor desc;
+			rhi::BufferCreateInfo desc;
 			desc.mBufferType = rhi::BufferType::Uniform;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
@@ -99,7 +99,7 @@ namespace lum::render {
 
 	void ShadowSystem::DirectionalLight::Execute( GeometryPass& geoPass, const LightPass& lightPass, FRendererContext& ctx ) {
 
-		rhi::FViewportState viewport = ctx.mRenderDev->GetViewport( );
+		rhi::ViewportState viewport = ctx.mRenderDev->GetViewport( );
 
 		calculate_lightspace_matrix( lightPass.GetDirectionalLight( ).mDirection, ctx );
 		ctx.mRenderDev->BindFramebuffer( mFramebuffer );

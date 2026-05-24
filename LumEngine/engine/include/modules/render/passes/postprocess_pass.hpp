@@ -11,7 +11,7 @@ namespace lum::render {
 
 	struct PostprocessPassExecute {
 		bool bTAAEnabled = false;
-		rhi::RTextureHandle mPreviousFrameTex;
+		rhi::TextureHandle mPreviousFrameTex;
 	};
 
 	class PostprocessPass {
@@ -29,7 +29,7 @@ namespace lum::render {
 		FRendererContext mContext;
 
 		/* @brief Shader used for the final post-process blit to the default framebuffer. */
-		rhi::RShaderHandle mShader;
+		rhi::ShaderHandle mShader;
 
 		
 

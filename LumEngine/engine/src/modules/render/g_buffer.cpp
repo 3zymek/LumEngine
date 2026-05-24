@@ -36,7 +36,7 @@ namespace lum::render::detail {
 
 	}
 
-	rhi::RTextureHandle GBuffer::GetTexture( GBufferTexture tex ) {
+	rhi::TextureHandle GBuffer::GetTexture( GBufferTexture tex ) {
 
 		switch (tex) {
 		case GBufferTexture::Albedo: return mAlbedo;
@@ -60,7 +60,7 @@ namespace lum::render::detail {
 		mContext.mRenderDev->Delete( mNormal );
 		mContext.mRenderDev->Delete( mDepth );
 
-		rhi::FTextureDescriptor desc;
+		rhi::TextureCreateInfo desc;
 		{ // Albedo
 			desc.mImageFormat = rhi::ImageFormat::RGBA;
 			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
@@ -93,7 +93,7 @@ namespace lum::render::detail {
 		if (mContext.mRenderDev->IsValid( mFramebuffer )) mContext.mRenderDev->Delete( mFramebuffer );
 
 		{
-			rhi::FFramebufferDescriptor desc;
+			rhi::FramebufferCreateInfo desc;
 			desc.mColorTex.push_back( { LUM_GBUFFER_ALBEDO, mAlbedo } );
 			desc.mColorTex.push_back( { LUM_GBUFFER_NORMAL, mNormal } );
 			desc.mDepthTex = mDepth;

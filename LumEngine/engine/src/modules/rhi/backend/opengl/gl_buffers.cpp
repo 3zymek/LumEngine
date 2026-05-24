@@ -9,11 +9,11 @@
 
 namespace lum::rhi::gl {
 
-	RBufferHandle GLDevice::CreateBuffer( const FBufferDescriptor& desc ) {
+	BufferHandle GLDevice::CreateBuffer( const BufferCreateInfo& desc ) {
 
 		LUM_ASSERT( validate_buffer_descriptor( desc ), "Invalid buffer descriptor" );
 
-		FBuffer buffer;
+		Buffer buffer;
 
 		buffer.mSize = desc.mSize;
 		buffer.mType = desc.mBufferType;
@@ -37,11 +37,11 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::UpdateBuffer( RBufferHandle buff, cvptr data, usize offset, usize size ) {
+	void GLDevice::UpdateBuffer( BufferHandle buff, cvptr data, usize offset, usize size ) {
 
 		LUM_ASSERT( IsValid( buff ), "Invalid buffer" );
 
-		FBuffer& buffer = mBuffers[ buff ];
+		Buffer& buffer = mBuffers[ buff ];
 
 		if (size == 0) size = buffer.mSize;
 
@@ -53,11 +53,11 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::Delete( RBufferHandle& buff ) {
+	void GLDevice::Delete( BufferHandle& buff ) {
 
 		LUM_RETURN_IF( !IsValid( buff ), LUM_SEV_DEBUG, "Invalid buffer" );
 
-		FBuffer& buffer = mBuffers[ buff ];
+		Buffer& buffer = mBuffers[ buff ];
 		UnmapBuffer( buff );
 
 		glDeleteBuffers( 1, &buffer.mHandle );
@@ -66,11 +66,11 @@ namespace lum::rhi::gl {
 
 	}
 
-	vptr GLDevice::MapBuffer( RBufferHandle buff, Flags<MapFlag> flags, usize offset, usize size ) {
+	vptr GLDevice::MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset, usize size ) {
 
 		LUM_RETURN_DEF_IF( !IsValid( buff ), LUM_SEV_WARN, "Invalid buffer" );
 
-		FBuffer& buffer = mBuffers[ buff ];
+		Buffer& buffer = mBuffers[ buff ];
 
 		LUM_ASSERT( offset + size < buffer.mSize || size < buffer.mSize, "Invalid offset or size" );
 		if (size <= 0) size = buffer.mSize;
@@ -82,18 +82,18 @@ namespace lum::rhi::gl {
 		return ptr;
 	}
 
-	void GLDevice::UnmapBuffer( RBufferHandle buff ) {
+	void GLDevice::UnmapBuffer( BufferHandle buff ) {
 
 		LUM_RETURN_IF( !IsValid( buff ), LUM_SEV_WARN, "Invalid buffer" );
 
-		FBuffer& buffer = mBuffers[ buff ];
+		Buffer& buffer = mBuffers[ buff ];
 		if (buffer.bMapped) return;
 
 		glUnmapNamedBuffer( buffer.mHandle );
 
 	}
 
-	void GLDevice::SetShaderStorageBinding( RBufferHandle ssbo, uint32 binding ) {
+	void GLDevice::SetShaderStorageBinding( BufferHandle ssbo, uint32 binding ) {
 
 		LUM_ASSERT( IsValid( ssbo ), "Invalid buffer" );
 
@@ -103,7 +103,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::AttachElementBufferToLayout( RBufferHandle ebo, RVertexLayoutHandle vao ) {
+	void GLDevice::AttachElementBufferToLayout( BufferHandle ebo, VertexLayoutHandle vao ) {
 
 		LUM_ASSERT( mLayouts.Contains( vao ), "Invalid layout" );
 		LUM_ASSERT( mBuffers.Contains( ebo ), "Invalid buffer" );
@@ -113,7 +113,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::SetUniformBufferBinding( RBufferHandle ubo, int32 binding ) {
+	void GLDevice::SetUniformBufferBinding( BufferHandle ubo, int32 binding ) {
 
 		LUM_ASSERT( IsValid( ubo ), "Invalid buffer" );
 

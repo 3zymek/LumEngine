@@ -9,7 +9,7 @@
 
 namespace lum::rhi::gl {
 
-	RFramebufferHandle GLDevice::CreateFramebuffer( const FFramebufferDescriptor& desc ) {
+	FramebufferHandle GLDevice::CreateFramebuffer( const FramebufferCreateInfo& desc ) {
 
 		LUM_ASSERT( mFramebuffers.DenseSize( ) <= skMaxFramebuffers, "Max framebuffers reached" );
 
@@ -21,7 +21,7 @@ namespace lum::rhi::gl {
 
 		for (auto& [slot, texHandle] : desc.mColorTex) {
 
-			const FTexture* tex = mTextures.Get( texHandle );
+			const Texture* tex = mTextures.Get( texHandle );
 
 			if (samples == 0)
 				samples = tex->mSamples;
@@ -50,7 +50,7 @@ namespace lum::rhi::gl {
 
 		if (IsValid( desc.mDepthTex )) {
 
-			const FTexture* tex = mTextures.Get( desc.mDepthTex );
+			const Texture* tex = mTextures.Get( desc.mDepthTex );
 
 			LUM_ASSERT( is_depth_format( tex->mInternalFormat ), "Invalid framebuffer depth texture format" );
 			LUM_ASSERT( tex->mSamples == samples, "Depth sample mismatch" );
@@ -59,7 +59,7 @@ namespace lum::rhi::gl {
 
 		if (IsValid( desc.mStencilTex )) {
 
-			const FTexture* tex = mTextures.Get( desc.mStencilTex );
+			const Texture* tex = mTextures.Get( desc.mStencilTex );
 
 			LUM_ASSERT( is_stencil_format( tex->mInternalFormat ), "Invalid framebuffer stencil texture format" );
 			glNamedFramebufferTexture( fbo.mHandle, GL_STENCIL_ATTACHMENT, mTextures.Get( desc.mStencilTex )->mHandle, 0 );
@@ -77,7 +77,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::AttachTextureLayer( rhi::RFramebufferHandle fbo, rhi::RTextureHandle tex, const FTextureLayerAttachment& desc ) {
+	void GLDevice::AttachTextureLayer( rhi::FramebufferHandle fbo, rhi::TextureHandle tex, const TextureLayerAttachment& desc ) {
 
 		LUM_ASSERT( IsValid( fbo ), "Invalid framebuffer" );
 		LUM_ASSERT( IsValid( tex ), "Invalid texture" );
@@ -102,7 +102,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::BlitFramebuffer( const FFramebufferBlitDescriptor& desc ) {
+	void GLDevice::BlitFramebuffer( const FFramebufferBlitDescrion& desc ) {
 
 		LUM_ASSERT( validate_framebuffer_handle( desc.mDestination ), "Invalid destination framebuffer" );
 		LUM_ASSERT( validate_framebuffer_handle( desc.mSource ), "Invalid source framebuffer handle" );
@@ -136,7 +136,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::ClearFramebuffer( RFramebufferHandle fbo, ChannelRGBA color, float32 depth ) {
+	void GLDevice::ClearFramebuffer( FramebufferHandle fbo, ChannelRGBA color, float32 depth ) {
 
 		BindFramebuffer( fbo );
 
@@ -146,7 +146,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::Delete( RFramebufferHandle& buff ) {
+	void GLDevice::Delete( FramebufferHandle& buff ) {
 
 		if (!IsValid( buff )) return;
 
@@ -156,7 +156,7 @@ namespace lum::rhi::gl {
 		mFramebuffers.Remove( buff );
 	}
 
-	void GLDevice::BindFramebuffer( RFramebufferHandle buff ) {
+	void GLDevice::BindFramebuffer( FramebufferHandle buff ) {
 
 		LUM_ASSERT( validate_framebuffer_handle( buff ), "Invalid framebuffer" );
 
@@ -206,7 +206,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::SetColorMask( FColorMask rgba ) {
+	void GLDevice::SetColorMask( ColorMask rgba ) {
 
 		if (rgba.r == mColorMask.r &&
 			 rgba.g == mColorMask.g &&

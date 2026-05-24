@@ -8,13 +8,13 @@
 
 namespace lum::rhi::gl {
 
-	RVertexLayoutHandle GLDevice::CreateVertexLayout( const FVertexLayoutDescriptor& desc, RBufferHandle vbo ) {
+	VertexLayoutHandle GLDevice::CreateVertexLayout( const VertexLayoutCreateInfo& desc, BufferHandle vbo ) {
 
 		LUM_ASSERT( IsValid( vbo ), "Invalid buffer" );
 		LUM_ASSERT( desc.mAttributes.size( ) > 0, "Vertex layout has no attributes" );
 
-		FVertexLayout layout;
-		FBuffer& buffer = mBuffers[ vbo ];
+		VertexLayout layout;
+		Buffer& buffer = mBuffers[ vbo ];
 
 		glCreateVertexArrays( 1, &layout.mHandle );
 		glVertexArrayVertexBuffer(
@@ -49,7 +49,7 @@ namespace lum::rhi::gl {
 		return mLayouts.Append( std::move( layout ) );
 
 	}
-	void GLDevice::Delete( RVertexLayoutHandle& layout ) {
+	void GLDevice::Delete( VertexLayoutHandle& layout ) {
 
 		LUM_RETURN_IF( !IsValid( layout ), LUM_SEV_WARN, "Invalid layout" );
 		glDeleteVertexArrays( 1, &mLayouts[ layout ].mHandle );

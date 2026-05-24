@@ -127,7 +127,7 @@ namespace lum {
 
 		detail::FRenderResources res;
 
-		rhi::FBufferDescriptor vboDesc;
+		rhi::BufferCreateInfo vboDesc;
 		vboDesc.mBufferUsage = usage;
 		vboDesc.mData = data.mVertices.data( );
 		vboDesc.mMapFlags = mapFlag;
@@ -135,7 +135,7 @@ namespace lum {
 		vboDesc.mBufferType = rhi::BufferType::Vertex;
 		res.mVbo = mContext->mRenderDev->CreateBuffer( vboDesc );
 
-		rhi::FBufferDescriptor eboDesc;
+		rhi::BufferCreateInfo eboDesc;
 		eboDesc.mBufferUsage = usage;
 		eboDesc.mData = data.mIndices.data( );
 		eboDesc.mMapFlags = mapFlag;
@@ -143,36 +143,36 @@ namespace lum {
 		eboDesc.mBufferType = rhi::BufferType::Element;
 		res.mEbo = mContext->mRenderDev->CreateBuffer( eboDesc );
 
-		rhi::FVertexAttribute vaoAttrib[ 5 ];
+		rhi::VertexAttribute vaoAttrib[ 5 ];
 
 		auto& position = vaoAttrib[ 0 ];
 		position.mFormat = rhi::DataFormat::Vec3;
-		position.mRelativeOffset = offsetof( FVertex, mPosition );
+		position.mRelativeOffset = offsetof( Vertex, mPosition );
 		position.mShaderLocation = LUM_LAYOUT_POSITION;
 
 		auto& normal = vaoAttrib[ 1 ];
 		normal.mFormat = rhi::DataFormat::Vec3;
-		normal.mRelativeOffset = offsetof( FVertex, mNormal );
+		normal.mRelativeOffset = offsetof( Vertex, mNormal );
 		normal.mShaderLocation = LUM_LAYOUT_NORMAL;
 
 		auto& uv = vaoAttrib[ 2 ];
 		uv.mFormat = rhi::DataFormat::Vec2;
-		uv.mRelativeOffset = offsetof( FVertex, mUv );
+		uv.mRelativeOffset = offsetof( Vertex, mUv );
 		uv.mShaderLocation = LUM_LAYOUT_UV;
 
 		auto& tg = vaoAttrib[ 3 ];
 		tg.mFormat = rhi::DataFormat::Vec3;
-		tg.mRelativeOffset = offsetof( FVertex, mTangent );
+		tg.mRelativeOffset = offsetof( Vertex, mTangent );
 		tg.mShaderLocation = LUM_LAYOUT_TANGENT;
 
 		auto& btg = vaoAttrib[ 4 ];
 		btg.mFormat = rhi::DataFormat::Vec3;
-		btg.mRelativeOffset = offsetof( FVertex, mBitangent );
+		btg.mRelativeOffset = offsetof( Vertex, mBitangent );
 		btg.mShaderLocation = LUM_LAYOUT_BITANGENT;
 
-		rhi::FVertexLayoutDescriptor vaoDesc;
+		rhi::VertexLayoutCreateInfo vaoDesc;
 		vaoDesc.mAttributes = vaoAttrib;
-		vaoDesc.mStride = sizeof( FVertex );
+		vaoDesc.mStride = sizeof( Vertex );
 		res.mVao = mContext->mRenderDev->CreateVertexLayout( vaoDesc, res.mVbo );
 
 		mContext->mRenderDev->AttachElementBufferToLayout( res.mEbo, res.mVao );

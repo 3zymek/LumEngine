@@ -12,7 +12,7 @@ namespace lum {
 
 	namespace rhi {
 		class RenderDevice;
-		struct RShaderHandle;
+		struct ShaderHandle;
 	} // lum::rhi
 
 	/* @brief Manages loading and caching of GPU shaders.
@@ -44,7 +44,7 @@ namespace lum {
 		* @param root         Root directory identifier for asset resolution. Defaults to ERootID::External.
 		* @return             Handle to the loaded (or cached) shader program.
 		*/
-		rhi::RShaderHandle LoadShader( ccharptr vertexPath, ccharptr fragmentPath, RootID root = RootID::External );
+		rhi::ShaderHandle LoadShader( ccharptr vertexPath, ccharptr fragmentPath, RootID root = RootID::External );
 
 	private:
 

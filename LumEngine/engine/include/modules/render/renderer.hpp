@@ -28,7 +28,7 @@ namespace lum::render {
 		*/
 		void Initialize( const FRendererContext& ctx );
 
-		rhi::RTextureHandle GetFrameTexture( ) { return mScreenQuad.mPostprocessTex; }
+		rhi::TextureHandle GetFrameTexture( ) { return mScreenQuad.mPostprocessTex; }
 
 
 		//---------------------------------------------------------
@@ -38,7 +38,7 @@ namespace lum::render {
 		/* @brief Sets the environment cubemap texture used for skybox rendering and IBL precomputation.
 		*  @param tex Handle to a valid HDR cubemap texture.
 		*/
-		void SetEnvironmentTexture( rhi::RTextureHandle tex ) { mEnvironmentPass.SetCubemapTexture( tex ); }
+		void SetEnvironmentTexture( rhi::TextureHandle tex ) { mEnvironmentPass.SetCubemapTexture( tex ); }
 
 
 
@@ -138,7 +138,7 @@ namespace lum::render {
 		//---------------------------------------------------------
 
 		/* @brief Uniform buffer holding per-frame camera matrices and position. */
-		rhi::RBufferHandle mCameraUBO;
+		rhi::BufferHandle mCameraUBO;
 
 		/* @brief CPU-side camera data uploaded to mCameraUBO once per frame. */
 		detail::FCameraUBOData mCameraUBOData{};

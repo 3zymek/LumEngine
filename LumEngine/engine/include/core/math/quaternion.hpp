@@ -6,49 +6,46 @@ namespace lum {
 
 	struct Quaternion {
 
-		constexpr Quaternion( float32 x, float32 y, float32 z, float32 w ) : x( x ), y( y ), z( z ), w( w ) { }
-		constexpr explicit Quaternion( float32 scalar ) : x( scalar ), y( scalar ), z( scalar ), w(scalar) { }
+		constexpr Quaternion( float32 x, float32 y, float32 z, float32 w ) : mX( x ), mY( y ), mZ( z ), mW( w ) { }
+		constexpr explicit Quaternion( float32 scalar ) : mX( scalar ), mY( scalar ), mZ( scalar ), mW(scalar) { }
 
-		float32 x{};
-		float32 y{};
-		float32 z{};
-		float32 w{};
+		float32 mX{}, mY{}, mZ{}, mW{};
 
 		// Arithmetic
-		Quaternion operator+( const Quaternion& rhs ) const { return { x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w }; }
-		Quaternion operator-( const Quaternion& rhs ) const { return { x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w }; }
+		Quaternion operator+( const Quaternion& rhs ) const { return { mX + rhs.mX, mY + rhs.mY, mZ + rhs.mZ, mW + rhs.mW }; }
+		Quaternion operator-( const Quaternion& rhs ) const { return { mX - rhs.mX, mY - rhs.mY, mZ - rhs.mZ, mW - rhs.mW }; }
 		Quaternion operator*( const Quaternion& rhs ) const { 
 			return {
-				w * rhs.x + x * rhs.w + y * rhs.z - z * rhs.y,
-				w * rhs.y - x * rhs.z + y * rhs.w + z * rhs.x,
-				w * rhs.z + x * rhs.y - y * rhs.x + z * rhs.w,
-				w * rhs.w - x * rhs.x - y * rhs.y - z * rhs.z
+				mW * rhs.mX + mX * rhs.mW + mY * rhs.mZ - mZ * rhs.mY,
+				mW * rhs.mY - mX * rhs.mZ + mY * rhs.mW + mZ * rhs.mX,
+				mW * rhs.mZ + mX * rhs.mY - mY * rhs.mX + mZ * rhs.mW,
+				mW * rhs.mW - mX * rhs.mX - mY * rhs.mY - mZ * rhs.mZ
 			};
 		}
-		Quaternion operator/( const Quaternion& rhs ) const { return { x / rhs.x, y / rhs.y, z / rhs.z, w / rhs.w }; }
+		Quaternion operator/( const Quaternion& rhs ) const { return { mX / rhs.mX, mY / rhs.mY, mZ / rhs.mZ, mW / rhs.mW }; }
 
 		// Scalar
 		template<cArithmetic tType>
-		Quaternion operator*( tType scalar ) const { return { x * scalar, y * scalar, z * scalar, w * scalar }; }
+		Quaternion operator*( tType scalar ) const { return { mX * scalar, mY * scalar, mZ * scalar, mW * scalar }; }
 		template<cArithmetic tType>
-		Quaternion& operator*=( tType scalar ) { x *= scalar; y *= scalar; z *= scalar; w *= scalar; return *this; }
+		Quaternion& operator*=( tType scalar ) { mX *= scalar; mY *= scalar; mZ *= scalar; mW *= scalar; return *this; }
 		template<cArithmetic tType>
-		Quaternion operator/( tType scalar ) const { tType inv = tType( 1 ) / scalar; return { x * inv, y * inv, z * inv, w * inv }; }
+		Quaternion operator/( tType scalar ) const { tType inv = tType( 1 ) / scalar; return { mX * inv, mY * inv, mZ * inv, mW * inv }; }
 		template<cArithmetic tType>
-		Quaternion& operator/=( tType scalar ) { tType inv = tType( 1 ) / scalar; x *= inv; y *= inv; z *= inv; w *= inv; return *this; }
+		Quaternion& operator/=( tType scalar ) { tType inv = tType( 1 ) / scalar; mX *= inv; mY *= inv; mZ *= inv; mW *= inv; return *this; }
 
 		// Assignment
-		Quaternion& operator+=( const Quaternion& rhs ) { x += rhs.x; y += rhs.y; z += rhs.z; w += rhs.w; return *this; }
-		Quaternion& operator-=( const Quaternion& rhs ) { x -= rhs.x; y -= rhs.y; z -= rhs.z; w -= rhs.w; return *this; }
+		Quaternion& operator+=( const Quaternion& rhs ) { mX += rhs.mX; mY += rhs.mY; mZ += rhs.mZ; mW += rhs.mW; return *this; }
+		Quaternion& operator-=( const Quaternion& rhs ) { mX -= rhs.mX; mY -= rhs.mY; mZ -= rhs.mZ; mW -= rhs.mW; return *this; }
 
 		// Unary
-		Quaternion operator-( ) const { return { -x, -y, -z, -w }; }
+		Quaternion operator-( ) const { return { -mX, -mY, -mZ, -mW }; }
 
 		// Comparison
-		bool operator==( const Quaternion& rhs ) const { return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w; }
+		bool operator==( const Quaternion& rhs ) const { return mX == rhs.mX && mY == rhs.mY && mZ == rhs.mZ && mW == rhs.mW; }
 		bool operator!=( const Quaternion& rhs ) const { return !(*this == rhs); }
 
-		const float32* Data( ) const { return &x; }
+		const float32* Data( ) const { return &mX; }
 
 	};
 
@@ -62,23 +59,23 @@ namespace lum {
 	// Other operations
 	//-----------------------------------------
 
-	inline float32 Length( const Quaternion& q ) { return sqrt( q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w ); }
+	inline float32 Length( const Quaternion& q ) { return sqrt( q.mX * q.mX + q.mY * q.mY + q.mZ * q.mZ + q.mW * q.mW ); }
 
-	inline float32 LengthSq( const Quaternion& q ) { return q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w; }
+	inline float32 LengthSq( const Quaternion& q ) { return q.mX * q.mX + q.mY * q.mY + q.mZ * q.mZ + q.mW * q.mW; }
 
 	inline Quaternion Normalize( const Quaternion& q ) {
 		float32 invLen = 1.0f / Length( q );
-		return { q.x * invLen, q.y * invLen, q.z * invLen, q.w * invLen };
+		return { q.mX * invLen, q.mY * invLen, q.mZ * invLen, q.mW * invLen };
 	}
 
-	inline float32 Dot( const Quaternion& q1, const Quaternion& q2 ) { return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w; }
+	inline float32 Dot( const Quaternion& q1, const Quaternion& q2 ) { return q1.mX * q2.mX + q1.mY * q2.mY + q1.mZ * q2.mZ + q1.mW * q2.mW; }
 
 	inline Quaternion Abs( const Quaternion& q ) {
-		return { std::abs( q.x ), std::abs( q.y ), std::abs( q.z ), std::abs( q.w ) };
+		return { std::abs( q.mX ), std::abs( q.mY ), std::abs( q.mZ ), std::abs( q.mW ) };
 	}
 
 	inline Quaternion Conjugate( const Quaternion& q ) {
-		return { -q.x, -q.y, -q.z, q.w };
+		return { -q.mX, -q.mY, -q.mZ, q.mW };
 	}
 	inline Quaternion Inverse( const Quaternion& q ) {
 		return Conjugate( q ) / LengthSq( q );

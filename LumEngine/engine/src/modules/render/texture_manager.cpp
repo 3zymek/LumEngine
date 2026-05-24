@@ -22,7 +22,7 @@ namespace lum {
 
 	}
 
-	rhi::RTextureHandle MTextureManager::Get( StringView path, RootID id ) {
+	rhi::TextureHandle MTextureManager::Get( StringView path, RootID id ) {
 
 		uint64 hash = HashStr( path );
 
@@ -34,26 +34,26 @@ namespace lum {
 
 	}
 
-	rhi::RTextureHandle MTextureManager::Load( StringView path, TexturePreset preset, RootID id ) {
+	rhi::TextureHandle MTextureManager::Load( StringView path, TexturePreset preset, RootID id ) {
 
 		uint64 hash = HashStr( path );
 
 		if (mTextures.contains( hash ))
 			return mTextures[ hash ];
 
-		std::optional<FTextureData> data = AssetLoader::LoadTexture( id, path );
+		std::optional<TextureData> data = AssetLoader::LoadTexture( id, path );
 
 		if (!data) {
 			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), AssetLoader::GetErrorMessage( ) );
 			return mMissingTexture;
 		}
 
-		rhi::FTextureDescriptor desc = sTexturePresetsLookup[ ToUnderlyingEnum( preset ) ];
+		rhi::TextureCreateInfo desc = sTexturePresetsLookup[ ToUnderlyingEnum( preset ) ];
 
 		desc.mData = data.value( );
 		desc.mTextureType = rhi::TextureType::Texture2D;
 		desc.mImageFormat = ChannelsToFormat( data.value( ).mChannels );
-		rhi::RTextureHandle handle = mRenderDevice->CreateTexture( desc );
+		rhi::TextureHandle handle = mRenderDevice->CreateTexture( desc );
 
 		mTextures[ hash ] = handle;
 
@@ -71,14 +71,14 @@ namespace lum {
 		return rhi::ImageFormat::RGBA;
 	}
 
-	rhi::RTextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, RootID root ) {
+	rhi::TextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, RootID root ) {
 
 		uint64 hash = HashStr( path );
 
 		if (mTextures.contains( hash ))
 			return mTextures[ hash ];
 
-		std::optional<FTextureData> data = AssetLoader::LoadTexture( root, path );
+		std::optional<TextureData> data = AssetLoader::LoadTexture( root, path );
 		if (!data) {
 			LUM_LOG_ERROR( "Failed to load texture %s", path.data( ) );
 			return mMissingTexture;
@@ -86,9 +86,9 @@ namespace lum {
 
 		uint32 faceSize = std::min(data.value().mWidth / 4, data.value().mHeight / 2);
 
-		std::array<FTextureData, 6> convertedData = convert_equirectangular_to_cubemap( data.value( ), faceSize );
+		std::array<TextureData, 6> convertedData = convert_equirectangular_to_cubemap( data.value( ), faceSize );
 
-		rhi::FTextureDescriptor desc;
+		rhi::TextureCreateInfo desc;
 		for (int32 i = 0; i < 6; i++) {
 			desc.mCubemap.mFaces[ i ] = convertedData[ i ];
 		}
@@ -97,12 +97,12 @@ namespace lum {
 		desc.mImageFormat = rhi::ImageFormat::RGB;
 		desc.mTextureType = rhi::TextureType::Cubemap;
 
-		rhi::RTextureHandle handle = mRenderDevice->CreateTexture( desc );
+		rhi::TextureHandle handle = mRenderDevice->CreateTexture( desc );
 		mTextures[ hash ] = handle;
 		return handle;
 	}
 
-	rhi::RTextureHandle MTextureManager::GetFallbackTexture( FallbackTexture fallback ) {
+	rhi::TextureHandle MTextureManager::GetFallbackTexture( FallbackTexture fallback ) {
 		switch (fallback) {
 		case FallbackTexture::Missing: return mMissingTexture;
 		case FallbackTexture::DefaultNormal: return mDefaultNormalTexture;
@@ -128,12 +128,12 @@ namespace lum {
 
 	void MTextureManager::create_defaults( ) {
 		{ // Default albedo texture
-			FTextureData data;
+			TextureData data;
 			data.mPixels = { 255, 255, 255, 255 };
 			data.mWidth = 1;
 			data.mHeight = 1;
 			data.mChannels = 4;
-			rhi::FTextureDescriptor desc;
+			rhi::TextureCreateInfo desc;
 			desc.mData = data;
 			desc.mImageLayout = rhi::ImageLayout::SRGB8_Alpha8;
 			desc.mImageFormat = rhi::ImageFormat::RGBA;
@@ -141,12 +141,12 @@ namespace lum {
 			mDefaultAlbedoTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Default normal texture
-			FTextureData data;
+			TextureData data;
 			data.mPixels = { 128, 128, 255 };
 			data.mWidth = 1;
 			data.mHeight = 1;
 			data.mChannels = 3;
-			rhi::FTextureDescriptor desc;
+			rhi::TextureCreateInfo desc;
 			desc.mData = data;
 			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
 			desc.mImageFormat = rhi::ImageFormat::RGBA;
@@ -154,12 +154,12 @@ namespace lum {
 			mDefaultNormalTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Default roughness texture
-			FTextureData data;
+			TextureData data;
 			data.mPixels = { 128 };
 			data.mWidth = 1;
 			data.mHeight = 1;
 			data.mChannels = 1;
-			rhi::FTextureDescriptor desc;
+			rhi::TextureCreateInfo desc;
 			desc.mData = data;
 			desc.mImageLayout = rhi::ImageLayout::R8;
 			desc.mImageFormat = rhi::ImageFormat::R;
@@ -167,12 +167,12 @@ namespace lum {
 			mDefaultRoughnessTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Default metallic texture
-			FTextureData data;
+			TextureData data;
 			data.mPixels = { 255 };
 			data.mWidth = 1;
 			data.mHeight = 1;
 			data.mChannels = 1;
-			rhi::FTextureDescriptor desc;
+			rhi::TextureCreateInfo desc;
 			desc.mData = data;
 			desc.mImageLayout = rhi::ImageLayout::R8;
 			desc.mImageFormat = rhi::ImageFormat::R;
@@ -180,13 +180,13 @@ namespace lum {
 			mDefaultMetallicTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Missing texture
-			std::optional<FTextureData> data = AssetLoader::LoadTexture( RootID::Internal, "textures/missingTex.png" );
+			std::optional<TextureData> data = AssetLoader::LoadTexture( RootID::Internal, "textures/missingTex.png" );
 			if (!data) {
 				LUM_LOG_ERROR( "Failed to load missing texture fallback" );
 				mMissingTexture = mDefaultAlbedoTexture;
 				return;
 			}
-			rhi::FTextureDescriptor desc;
+			rhi::TextureCreateInfo desc;
 			desc.mData = data.value( );
 			desc.mImageLayout = rhi::ImageLayout::RGB8;
 			desc.mImageFormat = rhi::ImageFormat::RGB;
@@ -195,10 +195,10 @@ namespace lum {
 		}
 	}
 
-	std::array<FTextureData, 6>
-	MTextureManager::convert_equirectangular_to_cubemap( const FTextureData& equirect, int32 faceSize ) {
+	std::array<TextureData, 6>
+	MTextureManager::convert_equirectangular_to_cubemap( const TextureData& equirect, int32 faceSize ) {
 
-		std::array<FTextureData, 6> faces;
+		std::array<TextureData, 6> faces;
 		for (int32 i = 0; i < 6; i++) {
 			faces[ i ].mWidth = faceSize;
 			faces[ i ].mHeight = faceSize;

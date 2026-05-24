@@ -8,7 +8,7 @@
 
 namespace lum::rhi {
 
-	struct FBufferDescriptor {
+	struct BufferCreateInfo {
 
 		// Defines if buffer is static ( data cannot be changed in runtime ) or dynamic.
 		BufferUsage mBufferUsage = BufferUsage::Static;
@@ -26,9 +26,9 @@ namespace lum::rhi {
 		cvptr mData = nullptr;
 	};
 
-	struct FBuffer {
+	struct Buffer {
 
-		RBufferID		mHandle = 0;
+		BufferID		mHandle = 0;
 
 		BufferType		mType	= BufferType::None;
 		BufferUsage		mUsage	= BufferUsage::Static;

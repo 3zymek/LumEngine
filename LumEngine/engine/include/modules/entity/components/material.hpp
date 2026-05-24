@@ -24,11 +24,11 @@ namespace lum {
 		/* @brief Metallic scalar fallback when no map is bound. */
 		LPROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) float32 mMetallicValue = 0.0f;
 
-		rhi::RTextureHandle mAlbedoTex; /* @brief Albedo (base color) texture map. */
-		rhi::RTextureHandle mNormalTex; /* @brief Normal map for surface detail. */
-		rhi::RTextureHandle mRoughnessTex; /* @brief Roughness texture map. */
-		rhi::RTextureHandle mMetallicTex; /* @brief Metallic texture map. */
-		rhi::RTextureHandle mAmbientTex; /* @brief Ambient occlusion texture map. */
+		rhi::TextureHandle mAlbedoTex; /* @brief Albedo (base color) texture map. */
+		rhi::TextureHandle mNormalTex; /* @brief Normal map for surface detail. */
+		rhi::TextureHandle mRoughnessTex; /* @brief Roughness texture map. */
+		rhi::TextureHandle mMetallicTex; /* @brief Metallic texture map. */
+		rhi::TextureHandle mAmbientTex; /* @brief Ambient occlusion texture map. */
 
 	};
 

@@ -90,7 +90,7 @@ namespace lum {
 		return CreateInstance( mDefaultMaterial );
 	}
 
-	void MMaterialManager::SetBaseMap( MaterialBaseHandle material, MaterialMember mem, rhi::RTextureHandle tex ) {
+	void MMaterialManager::SetBaseMap( MaterialBaseHandle material, MaterialMember mem, rhi::TextureHandle tex ) {
 		switch (mem) {
 		case MaterialMember::Albedo: mBaseMaterials[ material ].mAlbedoTex = tex; break;
 		case MaterialMember::Normal: mBaseMaterials[ material ].mNormalTex = tex; break;
@@ -133,7 +133,7 @@ namespace lum {
 	
 	}
 
-	rhi::RTextureHandle MMaterialManager::validate_texture( rhi::RTextureHandle tex ) {
+	rhi::TextureHandle MMaterialManager::validate_texture( rhi::TextureHandle tex ) {
 
 		if (!mContext->mRenderDev->IsValid( tex )) {
 			LUM_LOG_DEBUG( "No texture given, setting default fallback" );

@@ -115,7 +115,7 @@ namespace lum::render {
 		// Camera Uniform
 		if (!mContext.mRenderDev->IsValid( mCameraUBO )) {
 
-			rhi::FBufferDescriptor desc;
+			rhi::BufferCreateInfo desc;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
 			desc.mSize = sizeof( detail::FCameraUBOData );
@@ -128,14 +128,14 @@ namespace lum::render {
 		// Screen quad VBO
 		if (!mContext.mRenderDev->IsValid( mScreenQuad.mVbo )) {
 
-			std::vector<FVertex> vertices = {
+			std::vector<Vertex> vertices = {
 				{ {-1.f, -1.f, 0.f}, {}, {0.f, 0.f}, {}, {} },
 				{ { 1.f, -1.f, 0.f}, {}, {1.f, 0.f}, {}, {} },
 				{ { 1.f,  1.f, 0.f}, {}, {1.f, 1.f}, {}, {} },
 				{ {-1.f,  1.f, 0.f}, {}, {0.f, 1.f}, {}, {} },
 			};
 
-			rhi::FBufferDescriptor desc;
+			rhi::BufferCreateInfo desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
 			desc.mSize = ByteSize( vertices );
 			desc.mBufferType = rhi::BufferType::Vertex;
@@ -151,7 +151,7 @@ namespace lum::render {
 				2, 3, 0
 			};
 
-			rhi::FBufferDescriptor desc;
+			rhi::BufferCreateInfo desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
 			desc.mSize = ByteSize( indices );
 			desc.mBufferType = rhi::BufferType::Element;
@@ -163,18 +163,18 @@ namespace lum::render {
 		// Screen quad VAO
 		if (!mContext.mRenderDev->IsValid( mScreenQuad.mVao )) {
 
-			std::vector<rhi::FVertexAttribute> attrs( 2 );
+			std::vector<rhi::VertexAttribute> attrs( 2 );
 			attrs[ 0 ].mFormat = rhi::DataFormat::Vec3;
-			attrs[ 0 ].mRelativeOffset = offsetof( FVertex, mPosition );
+			attrs[ 0 ].mRelativeOffset = offsetof( Vertex, mPosition );
 			attrs[ 0 ].mShaderLocation = LUM_LAYOUT_POSITION;
 
 			attrs[ 1 ].mFormat = rhi::DataFormat::Vec2;
-			attrs[ 1 ].mRelativeOffset = offsetof( FVertex, mUv );
+			attrs[ 1 ].mRelativeOffset = offsetof( Vertex, mUv );
 			attrs[ 1 ].mShaderLocation = LUM_LAYOUT_UV;
 
-			rhi::FVertexLayoutDescriptor desc;
+			rhi::VertexLayoutCreateInfo desc;
 			desc.mAttributes = attrs;
-			desc.mStride = sizeof( FVertex );
+			desc.mStride = sizeof( Vertex );
 			mScreenQuad.mVao = mContext.mRenderDev->CreateVertexLayout( desc, mScreenQuad.mVbo );
 
 			mContext.mRenderDev->AttachElementBufferToLayout( mScreenQuad.mEbo, mScreenQuad.mVao );
@@ -191,13 +191,13 @@ namespace lum::render {
 		mContext.mRenderDev->Delete( mScreenQuad.mPostprocessFbo );
 
 		{
-			rhi::FFramebufferDescriptor desc;
+			rhi::FramebufferCreateInfo desc;
 			desc.mColorTex.push_back( { 0, mScreenQuad.mSceneTex } );
 			desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
 			mScreenQuad.mSceneFbo = mContext.mRenderDev->CreateFramebuffer( desc );
 		}
 		{
-			rhi::FFramebufferDescriptor desc;
+			rhi::FramebufferCreateInfo desc;
 			desc.mColorTex.push_back( { 0, mScreenQuad.mPostprocessTex } );
 			desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
 			mScreenQuad.mPostprocessFbo = mContext.mRenderDev->CreateFramebuffer( desc );
@@ -210,7 +210,7 @@ namespace lum::render {
 		mContext.mRenderDev->Delete( mScreenQuad.mPostprocessTex );
 
 		{
-			rhi::FTextureDescriptor desc;
+			rhi::TextureCreateInfo desc;
 			desc.mImageFormat = rhi::ImageFormat::RGBA;
 			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
 			desc.mTextureType = rhi::TextureType::Texture2D;
@@ -220,7 +220,7 @@ namespace lum::render {
 			mTemporalAA.EnsureFrameTex( desc );
 		}
 		{
-			rhi::FTextureDescriptor desc;
+			rhi::TextureCreateInfo desc;
 			desc.mImageFormat = rhi::ImageFormat::RGBA;
 			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
 			desc.mTextureType = rhi::TextureType::Texture2D;
