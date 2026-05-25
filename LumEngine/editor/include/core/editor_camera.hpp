@@ -36,14 +36,14 @@ namespace lum::editor {
 				Vector2 deltaPos = currentPos - sLastPos;
 				sLastPos = currentPos;
 
-				mYaw += deltaPos.x * mSensivity;
-				mPitch -= deltaPos.y * mSensivity;
+				mYaw += deltaPos.mX * mSensivity;
+				mPitch -= deltaPos.mY * mSensivity;
 				mPitch = std::clamp( mPitch, -89.0f, 89.0f );
 
 				Vector3 direction;
-				direction.x = cos( Radians( mYaw ) ) * cos( Radians( mPitch ) );
-				direction.y = sin( Radians( mPitch ) );
-				direction.z = sin( Radians( mYaw ) ) * cos( Radians( mPitch ) );
+				direction.mX = cos( Radians( mYaw ) ) * cos( Radians( mPitch ) );
+				direction.mY = sin( Radians( mPitch ) );
+				direction.mZ = sin( Radians( mYaw ) ) * cos( Radians( mPitch ) );
 				mTarget = mPosition + Normalize( direction );
 				mUp = up;
 

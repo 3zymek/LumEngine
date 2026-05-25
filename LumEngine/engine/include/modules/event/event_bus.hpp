@@ -98,7 +98,7 @@ namespace lum {
 			*  @thread_safety Call from the main thread or the thread that owns the EventBus.
 			*/
 			void PollEvents( ) {
-				for (usize i = 0; i < limits::gMaxEventTypes; i++) {
+				for (usize i = 0; i < limits::kMaxEventTypes; i++) {
 					if (mPools[ i ])
 						mPools[ i ]->PollEvents( );
 				}
@@ -113,7 +113,7 @@ namespace lum {
 
 				auto typeID = GenerateTypeID::Get<tType>( );
 
-				LUM_ASSERT( typeID < limits::gMaxEventTypes, "Max event types reached" );
+				LUM_ASSERT( typeID < limits::kMaxEventTypes, "Max event types reached" );
 
 				auto& ptr = mPools[ typeID ];
 
@@ -125,13 +125,13 @@ namespace lum {
 			}
 
 			void init( ) {
-				for (usize i = 0; i < limits::gMaxEventTypes; i++) {
+				for (usize i = 0; i < limits::kMaxEventTypes; i++) {
 					mPools[ i ] = nullptr;
 				}
 			}
 
 			void destruct( ) {
-				for (usize i = 0; i < limits::gMaxEventTypes; i++) {
+				for (usize i = 0; i < limits::kMaxEventTypes; i++) {
 					if (mPools[ i ] != nullptr) {
 						delete mPools[ i ];
 						mPools[ i ] = nullptr;
@@ -139,7 +139,7 @@ namespace lum {
 				}
 			}
 
-			detail::BasePool* mPools[ limits::gMaxEventTypes ]{};
+			detail::BasePool* mPools[ limits::kMaxEventTypes ]{};
 
 		};
 

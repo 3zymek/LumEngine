@@ -31,11 +31,11 @@ namespace lum {
 		}
 
 		TextureData texture;
-		texture.bIsHDR = path.ends_with( ".hdr" );
+		texture.mIsHdr = path.ends_with( ".hdr" );
 
 		int32 format{};
 
-		if (texture.bIsHDR) {
+		if (texture.mIsHdr) {
 
 			float32* data = stbi_loadf( path.c_str( ), &texture.mWidth, &texture.mHeight, &format, expectedFormat );
 			if (!data) {
@@ -63,7 +63,7 @@ namespace lum {
 		return texture;
 	}
 
-	std::optional<FMeshData> AssetLoader::LoadMesh( RootID root, StringView filepath ) {
+	std::optional<MeshData> AssetLoader::LoadMesh( RootID root, StringView filepath ) {
 
 		String path = get_full_path( root, filepath );
 
@@ -84,7 +84,7 @@ namespace lum {
 			return std::nullopt;
 		}
 
-		FMeshData finalData;
+		MeshData finalData;
 
 		uint32 elementOffset = 0;
 

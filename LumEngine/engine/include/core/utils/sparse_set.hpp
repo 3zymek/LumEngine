@@ -29,19 +29,19 @@ namespace lum::cstd {
 		/* @brief Constructs the sparse set with a fixed maximum key capacity.
 		* @param size Maximum sparse key value that can be stored.
 		*/
-		constexpr SparseSet(SparseT maxSize) : kMaxSize(maxSize) { init(maxSize); }
+		constexpr SparseSet( SparseT maxSize ) : mkMaxSize( maxSize ) { init( maxSize ); }
 		~SparseSet( ) = default;
 
 
 		// Standard iterators over dense value array.
 		using Iterator = typename std::vector<tDense>::iterator;
 		using ConstIterator = typename std::vector<tDense>::const_iterator;
-		Iterator begin( ) { return mDense.begin(); }
-		Iterator end( ) { return mDense.end(); }
-		ConstIterator begin( ) const { return mDense.begin(); }
-		ConstIterator end( ) const { return mDense.end(); }
+		Iterator begin( ) { return mDense.begin( ); }
+		Iterator end( ) { return mDense.end( ); }
+		ConstIterator begin( ) const { return mDense.begin( ); }
+		ConstIterator end( ) const { return mDense.end( ); }
 
-		
+
 		/* @brief Iterator that yields key-value pairs during iteration.
 		*
 		* Allows range-based for loops with structured bindings:
@@ -49,15 +49,15 @@ namespace lum::cstd {
 		*/
 		struct KeyValIterator {
 
-			tDense*		mDense;          // Pointer to dense value array.
-			SparseT*	mDenseToSparse;  // Pointer to key array parallel to dense.
-			SparseT		mIndex;          // Current position in dense array.
+			tDense*  mDense;          // Pointer to dense value array.
+			SparseT* mDenseToSparse;  // Pointer to key array parallel to dense.
+			SparseT	 mIndex;          // Current position in dense array.
 
 			/* @brief Returns the current key-value pair.
 			* @return Pair of (sparse key, pointer to dense value).
 			*/
 			std::pair<SparseT, tDense*> operator*( ) {
-				return { mDenseToSparse[mIndex], &mDense[mIndex] };
+				return { mDenseToSparse[ mIndex ], &mDense[ mIndex ] };
 			}
 			KeyValIterator& operator++( ) { mIndex++; return *this; }
 			bool operator!=( const KeyValIterator& other ) { return mIndex != other.mIndex; }
@@ -77,8 +77,8 @@ namespace lum::cstd {
 		*/
 		KeyValRange Each( ) {
 			return {
-				{ mDense.data(), mDenseToSparse.data(), 0 },
-				{ mDense.data(), mDenseToSparse.data(), static_cast<SparseT>(mDense.size()) }
+				{ mDense.data( ), mDenseToSparse.data( ), 0 },
+				{ mDense.data( ), mDenseToSparse.data( ), static_cast< SparseT >(mDense.size( )) }
 			};
 		}
 
@@ -87,7 +87,7 @@ namespace lum::cstd {
 		* @param idx Sparse key to look up.
 		*/
 		inline constexpr tDense& operator[]( SparseT idx ) {
-			return mDense[mSparse[idx]];
+			return mDense[ mSparse[ idx ] ];
 		}
 
 		/* @brief Returns value at sparse index with bounds and null checking.
@@ -95,9 +95,10 @@ namespace lum::cstd {
 		*/
 		constexpr tDense* Get( SparseT idx ) {
 
-			if ((idx > kMaxSize) || (mSparse[idx] == skNullSparse)) return nullptr;
+			if ((idx > mkMaxSize) || (mSparse[ idx ] == skNullSparse)) return nullptr;
 
-			return &mDense[mSparse[idx]];
+			return &mDense[ mSparse[ idx ] ];
+
 		}
 
 		/* @brief Inserts a value at the given sparse key.
@@ -107,28 +108,28 @@ namespace lum::cstd {
 		*/
 		constexpr void Append( tDense value, SparseT idx ) {
 
-			if ((idx >= kMaxSize) || (mSparse[idx] != skNullSparse)) return;
+			if ((idx >= mkMaxSize) || (mSparse[ idx ] != skNullSparse)) return;
 
-			mDense.emplace_back(std::move(value));
-			mSparse[idx] = mDense.size() - 1;
-			mDenseToSparse.push_back(idx);
+			mDense.emplace_back( std::move( value ) );
+			mSparse[ idx ] = mDense.size( ) - 1;
+			mDenseToSparse.push_back( idx );
 
 		}
 
-		inline constexpr SparseT MaxSize	( )	const noexcept { return kMaxSize; }   // Maximum sparse capacity.
-		inline constexpr SparseT DenseSize	( )	const noexcept { return mDense.size(); } // Number of stored elements.
-		inline constexpr bool    DenseEmpty	( )	const noexcept { return mDense.empty(); }
+		inline constexpr SparseT MaxSize( )	const noexcept { return mkMaxSize; }   // Maximum sparse capacity.
+		inline constexpr SparseT DenseSize( )	const noexcept { return mDense.size( ); } // Number of stored elements.
+		inline constexpr bool    DenseEmpty( )	const noexcept { return mDense.empty( ); }
 
 		/* @brief Clears all stored values and resets the container.
 		* Sparse array is refilled with null sentinels after clear.
 		*/
 		inline constexpr void Clear( ) {
 
-			mDense.clear();
-			mSparse.clear();
-			mDenseToSparse.clear();
+			mDense.clear( );
+			mSparse.clear( );
+			mDenseToSparse.clear( );
 
-			init(kMaxSize);
+			init( mkMaxSize );
 
 		}
 
@@ -138,24 +139,24 @@ namespace lum::cstd {
 		*/
 		void Remove( SparseT idx ) {
 
-			if ((idx > kMaxSize) || (mSparse[idx] == skNullSparse)) return;
+			if ((idx > mkMaxSize) || (mSparse[ idx ] == skNullSparse)) return;
 
-			SparseT toDelete = mSparse[idx];
-			SparseT last = mDense.size() - 1;
+			SparseT toDelete = mSparse[ idx ];
+			SparseT last = mDense.size( ) - 1;
 
 			if (toDelete != last) {
 
-				mDense[toDelete] = mDense[last];
-				SparseT moved = mDenseToSparse[last];
-				mSparse[moved] = toDelete;
-				mDenseToSparse[toDelete] = moved;
+				mDense[ toDelete ] = mDense[ last ];
+				SparseT moved = mDenseToSparse[ last ];
+				mSparse[ moved ] = toDelete;
+				mDenseToSparse[ toDelete ] = moved;
 
 			}
 
-			mDense.pop_back();
-			mDenseToSparse.pop_back();
+			mDense.pop_back( );
+			mDenseToSparse.pop_back( );
 
-			mSparse[idx] = skNullSparse;
+			mSparse[ idx ] = skNullSparse;
 
 		}
 
@@ -164,23 +165,23 @@ namespace lum::cstd {
 		* @return True if the key is occupied.
 		*/
 		inline constexpr bool Contains( SparseT idx ) const noexcept {
-			return idx < kMaxSize && mSparse[idx] != skNullSparse;
+			return idx < mkMaxSize && mSparse[ idx ] != skNullSparse;
 		}
 
 	private:
 
-		static constexpr SparseT skNullSparse = MaxValue<SparseT>(); // Sentinel value for empty slots.
-		const SparseT kMaxSize = 0;
+		static constexpr SparseT skNullSparse = MaxValue<SparseT>( ); // Sentinel value for empty slots.
+		const SparseT mkMaxSize = 0;
 
 		std::vector<tDense>		mDense;         // Contiguous value storage.
 		std::vector<SparseT>	mSparse;        // Maps sparse key → dense index.
 		std::vector<SparseT>	mDenseToSparse; // Maps dense index → sparse key.
 
 		inline constexpr void init( SparseT size ) {
-			mDense.reserve(size);
-			mDenseToSparse.reserve(size);
+			mDense.reserve( size );
+			mDenseToSparse.reserve( size );
 
-			mSparse.resize(size, skNullSparse);
+			mSparse.resize( size, skNullSparse );
 		}
 
 	};

@@ -17,8 +17,8 @@ namespace lum {
 		}
 
 		union {
-			struct { tType mX{}, mY{}, mZ{}; };
-			struct { tType mR{}, mG{}, mB{}; };
+			struct { tType mX, mY, mZ; };
+			struct { tType mR, mG, mB; };
 		};
 
 		// Arithmetic

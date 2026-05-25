@@ -23,7 +23,7 @@ namespace lum {
 		}
 		template<cArithmetic tOther>
 		explicit operator TVector3<tOther>( ) const {
-			return { static_cast< tOther >(mX), static_cast< tOther >(mY), static_cast< tOther >(z) };
+			return { static_cast< tOther >(mX), static_cast< tOther >(mY), static_cast< tOther >(mZ) };
 		}
 		template<cArithmetic tOther>
 		explicit operator TVector2<tOther>( ) const {
@@ -31,8 +31,8 @@ namespace lum {
 		}
 
 		union {
-			struct { tType mX{}, mY{}, mZ{}, mW{}; };
-			struct { tType mR{}, mG{}, mB{}, mA{}; };
+			struct { tType mX, mY, mZ, mW; };
+			struct { tType mR, mG, mB, mA; };
 		};
 
 		// Arithmetic

@@ -102,7 +102,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::BlitFramebuffer( const FFramebufferBlitDescrion& desc ) {
+	void GLDevice::BlitFramebuffer( const FramebufferBlitDescription& desc ) {
 
 		LUM_ASSERT( validate_framebuffer_handle( desc.mDestination ), "Invalid destination framebuffer" );
 		LUM_ASSERT( validate_framebuffer_handle( desc.mSource ), "Invalid source framebuffer handle" );
@@ -140,7 +140,7 @@ namespace lum::rhi::gl {
 
 		BindFramebuffer( fbo );
 
-		glClearColor( color.r, color.g, color.b, color.a );
+		glClearColor( color.mR, color.mG, color.mB, color.mA );
 		glClearDepth( std::clamp( depth, 0.0f, 1.0f ) );
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
@@ -239,7 +239,7 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		glClearColor( color.r, color.g, color.b, color.a );
+		glClearColor( color.mR, color.mG, color.mB, color.mA );
 
 		LUM_PROFILER_CACHE_MISS( );
 

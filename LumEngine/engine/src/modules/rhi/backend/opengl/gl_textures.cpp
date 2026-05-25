@@ -116,7 +116,7 @@ namespace lum::rhi::gl {
 		cvptr data;
 
 		// HDRI
-		if (desc.mData.bIsHDR) {
+		if (desc.mData.mIsHdr) {
 			data = (desc.mData.mFloatPixels.empty( )) ? nullptr : desc.mData.mFloatPixels.data( );
 		}
 		// Non HDRI
@@ -231,7 +231,7 @@ namespace lum::rhi::gl {
 
 				cvptr data;
 
-				if (!texture.bIsHDR)
+				if (!texture.mIsHdr)
 					data = (texture.mPixels.empty( )) ? nullptr : texture.mPixels.data( );
 				else
 					data = (texture.mFloatPixels.empty( )) ? nullptr : texture.mFloatPixels.data( );
@@ -249,7 +249,7 @@ namespace lum::rhi::gl {
 					texture.mHeight,
 					1,
 					skImageFormatLookup[ LookupCast( desc.mImageFormat ) ],
-					texture.bIsHDR ? GL_FLOAT : GL_UNSIGNED_BYTE,
+					texture.mIsHdr ? GL_FLOAT : GL_UNSIGNED_BYTE,
 					data
 				);
 

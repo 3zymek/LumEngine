@@ -28,7 +28,7 @@ namespace lum::editor {
 		*/
 		void Update(
 			float64 delta,
-			rhi::RTextureHandle frame,
+			rhi::TextureHandle frame,
 			rhi::RenderDevice* dev,
 			Window* window,
 			render::Renderer* renderer
@@ -40,7 +40,7 @@ namespace lum::editor {
 		EditorCamera mCamera;
 
 		/* @brief True if viewport currently has input focus. */
-		bool bCameraFocused = true;
+		bool mCameraFocused = true;
 
 	};
 

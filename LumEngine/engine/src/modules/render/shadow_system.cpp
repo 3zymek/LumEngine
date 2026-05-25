@@ -39,8 +39,8 @@ namespace lum::render {
 
 		{ // Shadow map texture
 			rhi::TextureCreateInfo desc;
-			desc.mWidth = mShadowMapTexSize.x;
-			desc.mHeight = mShadowMapTexSize.y;
+			desc.mWidth = mShadowMapTexSize.mX;
+			desc.mHeight = mShadowMapTexSize.mY;
 			desc.mImageFormat = rhi::ImageFormat::DepthComponent;
 			desc.mImageLayout = rhi::ImageLayout::Depth32F;
 			desc.mTextureType = rhi::TextureType::Texture2D;
@@ -71,9 +71,9 @@ namespace lum::render {
 		{ // Shadow maps texture
 			rhi::TextureCreateInfo desc;
 			desc.mTextureType = rhi::TextureType::Texture2DArray;
-			desc.mDepth = limits::gMaxShadowCastingSpotLights;
-			desc.mWidth = mShadowMapTexSize.x;
-			desc.mHeight = mShadowMapTexSize.y;
+			desc.mDepth = limits::kMaxShadowCastingSpotLights;
+			desc.mWidth = mShadowMapTexSize.mX;
+			desc.mHeight = mShadowMapTexSize.mY;
 			mShadowMaps = ctx.mRenderDev->CreateTexture( desc );
 		}
 		{ // Shadow FBO
@@ -86,7 +86,7 @@ namespace lum::render {
 			desc.mBufferType = rhi::BufferType::Uniform;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
-			desc.mSize = sizeof( Matrix4 ) * limits::gMaxShadowCastingSpotLights;
+			desc.mSize = sizeof( Matrix4 ) * limits::kMaxShadowCastingSpotLights;
 			mLightSpaceUBO = ctx.mRenderDev->CreateBuffer( desc );
 			ctx.mRenderDev->SetUniformBufferBinding( mLightSpaceUBO, LUM_UBO_LIGHTSPACE_MATRIX );
 		}
@@ -103,7 +103,7 @@ namespace lum::render {
 
 		calculate_lightspace_matrix( lightPass.GetDirectionalLight( ).mDirection, ctx );
 		ctx.mRenderDev->BindFramebuffer( mFramebuffer );
-		ctx.mRenderDev->SetViewport( 0, 0, mShadowMapTexSize.x, mShadowMapTexSize.y );
+		ctx.mRenderDev->SetViewport( 0, 0, mShadowMapTexSize.mX, mShadowMapTexSize.mY );
 		ctx.mRenderDev->ClearDepth( );
 		
 		ctx.mRenderDev->BindShader( mShader );
@@ -175,7 +175,7 @@ namespace lum::render {
 			up
 		);
 
-		float32 aspectRatio = ToFloat32( mShadowMapTexSize.x ) / ToFloat32( mShadowMapTexSize.y );
+		float32 aspectRatio = ToFloat32( mShadowMapTexSize.mX ) / ToFloat32( mShadowMapTexSize.mY );
 
 		Matrix4 lightProjectionMatrix = Perspective(
 			fov,

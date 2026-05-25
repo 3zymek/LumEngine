@@ -68,7 +68,7 @@ namespace lum::rhi {
 		* @return Handle to the created buffer.
 		*/
 		LUM_NODISCARD
-		virtual BufferHandle CreateBuffer( const BufferCreateInfo& desc ) = 0;
+			virtual BufferHandle CreateBuffer( const BufferCreateInfo& desc ) = 0;
 
 		/* @brief Uploads data from CPU memory into a GPU buffer.
 		* @param buff   Handle of the buffer to update.
@@ -92,7 +92,7 @@ namespace lum::rhi {
 		* @note Must be followed by UnmapBuffer() when done.
 		*/
 		LUM_NODISCARD
-		virtual vptr MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset = 0, usize size = 0 ) = 0;
+			virtual vptr MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset = 0, usize size = 0 ) = 0;
 
 		/* @brief Unmaps a previously mapped buffer and synchronizes with the GPU.
 		* @param buff Handle of the buffer to unmap.
@@ -127,7 +127,7 @@ namespace lum::rhi {
 		* @return Handle to the created framebuffer.
 		*/
 		LUM_NODISCARD
-		virtual FramebufferHandle CreateFramebuffer( const FramebufferCreateInfo& desc ) = 0;
+			virtual FramebufferHandle CreateFramebuffer( const FramebufferCreateInfo& desc ) = 0;
 
 		virtual void AttachTextureLayer( rhi::FramebufferHandle fbo, rhi::TextureHandle tex, const TextureLayerAttachment& desc ) = 0;
 
@@ -141,7 +141,7 @@ namespace lum::rhi {
 		/* @brief Copies a region of one framebuffer to another.
 		*  @param desc Descriptor specifying source, destination, regions, buffer mask and filter.
 		*/
-		virtual void BlitFramebuffer(const FFramebufferBlitDescrion& desc) = 0;
+		virtual void BlitFramebuffer( const FramebufferBlitDescription& desc ) = 0;
 
 		/* @brief Destroys the framebuffer and releases its GPU resources.
 		* @param fbo Handle to delete. Becomes invalid after this call.
@@ -164,7 +164,7 @@ namespace lum::rhi {
 		* @return Handle to the created vertex layout.
 		*/
 		LUM_NODISCARD
-		virtual VertexLayoutHandle CreateVertexLayout( const VertexLayoutCreateInfo& desc, BufferHandle vbo ) = 0;
+			virtual VertexLayoutHandle CreateVertexLayout( const VertexLayoutCreateInfo& desc, BufferHandle vbo ) = 0;
 
 		/* @brief Destroys a vertex layout and releases its GPU resources.
 		* @param layout Handle to delete. Becomes invalid after this call.
@@ -181,7 +181,7 @@ namespace lum::rhi {
 		* @return Handle to the created shader.
 		*/
 		LUM_NODISCARD
-		virtual ShaderHandle CreateShader( const ShaderDescriptor& desc ) = 0;
+			virtual ShaderHandle CreateShader( const ShaderModuleCreateInfo& desc ) = 0;
 
 		/* @brief Binds a shader for use in subsequent draw or dispatch calls.
 		* @param shader Handle of the shader to bind.
@@ -203,7 +203,7 @@ namespace lum::rhi {
 		* @return Handle to the created texture.
 		*/
 		LUM_NODISCARD
-		virtual TextureHandle CreateTexture( const TextureCreateInfo& desc ) = 0;
+			virtual TextureHandle CreateTexture( const TextureCreateInfo& desc ) = 0;
 
 		/* @brief Copies the contents of one texture to another.
 		*  Both textures must have identical dimensions and formats.
@@ -244,7 +244,7 @@ namespace lum::rhi {
 		* @return Handle to the created sampler.
 		*/
 		LUM_NODISCARD
-		virtual SamplerHandle CreateSampler( const SamplerDescriptor& desc ) = 0;
+			virtual SamplerHandle CreateSampler( const SamplerCreateInfo& desc ) = 0;
 
 		/* @brief Binds a sampler to a shader slot.
 		* @param sampler Handle of the sampler to bind.
@@ -267,7 +267,7 @@ namespace lum::rhi {
 		* @return Handle to the created pipeline.
 		*/
 		LUM_NODISCARD
-		virtual PipelineHandle CreatePipeline( const PipelineCreateInfo& desc ) = 0;
+			virtual PipelineHandle CreatePipeline( const PipelineCreateInfo& desc ) = 0;
 
 		/* @brief Destroys a pipeline and releases its GPU resources.
 		* @param pipeline Handle to delete. Becomes invalid after this call.
@@ -317,7 +317,7 @@ namespace lum::rhi {
 		virtual void ToggleScissors( bool toggle ) = 0;
 
 		/* @brief Returns whether the scissor test is currently enabled. */
-		bool IsScissorEnabled( ) const noexcept { return mEnabledStates.Has(State::Scissor); }
+		bool IsScissorEnabled( ) const noexcept { return mEnabledStates.Has( State::Scissor ); }
 
 		/* @brief Sets the full scissor rectangle.
 		* @param x      Left coordinate in pixels.
@@ -352,7 +352,7 @@ namespace lum::rhi {
 		virtual void ToggleCull( bool toggle ) = 0;
 
 		/* @brief Returns whether face culling is currently enabled. */
-		bool IsCullEnabled( ) const noexcept { return mEnabledStates.Has(State::Cull); }
+		bool IsCullEnabled( ) const noexcept { return mEnabledStates.Has( State::Cull ); }
 
 		/* @brief Selects which polygon faces are culled.
 		* @param face Cull face selection (Front, Back, or FrontBack).
@@ -376,7 +376,7 @@ namespace lum::rhi {
 		virtual void ToggleBlend( bool toggle ) = 0;
 
 		/* @brief Returns whether color blending is currently enabled. */
-		bool IsBlendEnabled( ) const noexcept { return mEnabledStates.Has(State::Blend); }
+		bool IsBlendEnabled( ) const noexcept { return mEnabledStates.Has( State::Blend ); }
 
 		/* @brief Sets the constant RGBA color used in constant-factor blend modes. */
 		virtual void SetBlendConstantColor( ChannelRGBA rgba ) = 0;
@@ -443,7 +443,7 @@ namespace lum::rhi {
 		virtual void ToggleDepthWrite( bool toggle ) = 0;
 
 		/* @brief Returns whether depth buffer writes are currently enabled. */
-		bool IsDepthWriteEnabled( ) const noexcept { return mEnabledStates.Has(State::DepthWrite); }
+		bool IsDepthWriteEnabled( ) const noexcept { return mEnabledStates.Has( State::DepthWrite ); }
 
 		/* @brief Enables or disables depth testing.
 		* Failing fragments are discarded before blending.
@@ -452,7 +452,7 @@ namespace lum::rhi {
 		virtual void ToggleDepthTest( bool enable ) = 0;
 
 		/* @brief Returns whether depth testing is currently enabled. */
-		bool IsDepthTestEnabled( ) const noexcept { return mEnabledStates.Has(State::DepthTest); }
+		bool IsDepthTestEnabled( ) const noexcept { return mEnabledStates.Has( State::DepthTest ); }
 
 		/* @brief Sets the depth comparison function.
 		* @param func Comparison function (e.g. Less, LessOrEqual, Always).
@@ -471,7 +471,7 @@ namespace lum::rhi {
 		virtual void ToggleStencilTest( bool toggle ) = 0;
 
 		/* @brief Returns whether stencil testing is currently enabled. */
-		bool IsStencilTestEnabled( ) const noexcept { return mEnabledStates.Has(State::StencilTest); }
+		bool IsStencilTestEnabled( ) const noexcept { return mEnabledStates.Has( State::StencilTest ); }
 
 		/* @brief Sets the reference value used in stencil comparisons.
 		* @param ref  Reference value (typically 0-255).
@@ -498,7 +498,7 @@ namespace lum::rhi {
 		* @param face Polygon faces this applies to.
 		*/
 		virtual void SetStencilOpOnDepthFail( StencilOp op, Face face = Face::FrontBack ) = 0;
-		
+
 		/* @brief Sets the stencil operation applied when both tests pass.
 		* @param op   Operation to apply.
 		* @param face Polygon faces this applies to.
@@ -517,7 +517,7 @@ namespace lum::rhi {
 		virtual void ToggleDepthBias( bool toggle ) = 0;
 
 		/* @brief Returns whether depth bias is currently enabled. */
-		bool IsDepthBiasEnabled( ) const noexcept { return mEnabledStates.Has(State::DepthBias); }
+		bool IsDepthBiasEnabled( ) const noexcept { return mEnabledStates.Has( State::DepthBias ); }
 
 		/* @brief Sets depth bias scale factors. Offset = slope * dZ + constant.
 		* @param slope    Scale factor applied to the polygon's depth slope.
@@ -593,25 +593,25 @@ namespace lum::rhi {
 		///////////////////////////////////////////////////
 
 		/* @brief Returns true if the buffer handle refers to a live resource. */
-		bool IsValid( BufferHandle handle ) const noexcept { return mBuffers.Contains(handle); }
+		bool IsValid( BufferHandle handle ) const noexcept { return mBuffers.Contains( handle ); }
 
 		/* @brief Returns true if the texture handle refers to a live resource. */
-		bool IsValid( TextureHandle handle ) const noexcept { return mTextures.Contains(handle); }
+		bool IsValid( TextureHandle handle ) const noexcept { return mTextures.Contains( handle ); }
 
 		/* @brief Returns true if the shader handle refers to a live resource. */
-		bool IsValid( ShaderHandle handle ) const noexcept { return mShaders.Contains(handle); }
+		bool IsValid( ShaderHandle handle ) const noexcept { return mShaders.Contains( handle ); }
 
 		/* @brief Returns true if the framebuffer handle refers to a live resource. */
-		bool IsValid( FramebufferHandle handle ) const noexcept { return mFramebuffers.Contains(handle); }
+		bool IsValid( FramebufferHandle handle ) const noexcept { return mFramebuffers.Contains( handle ); }
 
 		/* @brief Returns true if the vertex layout handle refers to a live resource. */
-		bool IsValid( VertexLayoutHandle handle ) const noexcept { return mLayouts.Contains(handle); }
+		bool IsValid( VertexLayoutHandle handle ) const noexcept { return mLayouts.Contains( handle ); }
 
 		/* @brief Returns true if the pipeline handle refers to a live resource. */
-		bool IsValid( PipelineHandle handle ) const noexcept { return mPipelines.Contains(handle); }
+		bool IsValid( PipelineHandle handle ) const noexcept { return mPipelines.Contains( handle ); }
 
 		/* @brief Returns true if the sampler handle refers to a live resource. */
-		bool IsValid( SamplerHandle handle ) const noexcept { return mSamplers.Contains(handle); }
+		bool IsValid( SamplerHandle handle ) const noexcept { return mSamplers.Contains( handle ); }
 
 
 		uint32 GetNativeHandle( BufferHandle handle ) noexcept {
@@ -689,7 +689,7 @@ namespace lum::rhi {
 		* @param layout         Vertex layout to draw.
 		* @param numVertices Number of vertices.
 		*/
-		virtual void Draw( VertexLayoutHandle layout, uint32 numVertices) = 0;
+		virtual void Draw( VertexLayoutHandle layout, uint32 numVertices ) = 0;
 
 		/* @brief Draws non-indexed geometry with instancing.
 		* @param layout           Vertex layout to draw.
@@ -717,7 +717,7 @@ namespace lum::rhi {
 		* @param numIndices    Number of indices per instance.
 		* @param numInstances  Number of instances.
 		*/
-		virtual void DrawElementsInstanced( VertexLayoutHandle layout, uint32 numIndices, uint32 numInstances) = 0;
+		virtual void DrawElementsInstanced( VertexLayoutHandle layout, uint32 numIndices, uint32 numInstances ) = 0;
 
 		/* @brief Draws indexed geometry with instancing and a base instance offset.
 		* @param layout        Vertex layout with attached EBO.
@@ -732,9 +732,9 @@ namespace lum::rhi {
 
 
 #		if LUM_ENABLE_RENDER_PROFILER == 1
-			inline void GetProfilerInfo( ) {
-				LUM_LOG_INFO("Cache hit rate: %f", mProfiler.GetCacheHitRate());
-			}
+		inline void GetProfilerInfo( ) {
+			LUM_LOG_INFO( "Cache hit rate: %f", mProfiler.GetCacheHitRate( ) );
+		}
 #		endif
 
 	protected:
@@ -777,13 +777,13 @@ namespace lum::rhi {
 
 #		endif
 
-		inline constexpr static uint32 skMaxShaders			= 8;
-		inline constexpr static uint32 skMaxSamplers		= 500;
-		inline constexpr static uint32 skMaxBuffers			= 10000;
-		inline constexpr static uint32 skMaxLayouts			= 10000;
-		inline constexpr static uint32 skMaxTextures		= 1000;
-		inline constexpr static uint32 skMaxFramebuffers	= 100;
-		inline constexpr static uint32 skMaxPipelines		= 100;
+		inline constexpr static uint32 skMaxShaders = 8;
+		inline constexpr static uint32 skMaxSamplers = 500;
+		inline constexpr static uint32 skMaxBuffers = 10000;
+		inline constexpr static uint32 skMaxLayouts = 10000;
+		inline constexpr static uint32 skMaxTextures = 1000;
+		inline constexpr static uint32 skMaxFramebuffers = 100;
+		inline constexpr static uint32 skMaxPipelines = 100;
 
 		cstd::HandlePool<SamplerHandle, Sampler, SamplerID>				mSamplers{ skMaxSamplers };
 		cstd::HandlePool<ShaderHandle, Shader, ShaderID>					mShaders{ skMaxShaders };
@@ -794,7 +794,7 @@ namespace lum::rhi {
 		cstd::HandlePool<PipelineHandle, Pipeline, PipelineID>			mPipelines{ skMaxPipelines };
 
 
-		bool validate_framebuffer_handle( FramebufferHandle buff ) const noexcept { return IsValid(buff) || (buff == gDefaultFramebuffer); }
+		bool validate_framebuffer_handle( FramebufferHandle buff ) const noexcept { return IsValid( buff ) || (buff == gDefaultFramebuffer); }
 
 		/* @brief Validates a texture descriptor before resource creation.
 		*  @param desc Texture descriptor to validate.

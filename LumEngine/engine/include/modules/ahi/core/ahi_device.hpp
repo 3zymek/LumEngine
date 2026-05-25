@@ -134,9 +134,9 @@ namespace lum::ahi {
 
 	protected:
 
-		cstd::HandlePool<SoundHandle, vptr>	mSounds{ limits::gMaxAudioSounds };
-		cstd::HandlePool<ChannelGroupHandle, vptr> mChannelGroups{ limits::gMaxChannelsGroup };
-		cstd::HandlePool<AudioEffectHandle, FAudioEffect> mEffects{ limits::gMaxAudioEffects };
+		cstd::HandlePool<SoundHandle, vptr>	mSounds{ limits::kMaxAudioSounds };
+		cstd::HandlePool<ChannelGroupHandle, vptr> mChannelGroups{ limits::kMaxChannelsGroup };
+		cstd::HandlePool<AudioEffectHandle, FAudioEffect> mEffects{ limits::kMaxAudioEffects };
 		std::unordered_map<InstID, vptr> mChannels;
 
 	};

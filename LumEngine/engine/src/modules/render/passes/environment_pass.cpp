@@ -251,7 +251,7 @@ namespace lum::render {
 		// Cubemap sampler
 		if (!mContext.mRenderDev->IsValid( mSampler )) {
 
-			rhi::SamplerDescriptor desc;
+			rhi::SamplerCreateInfo desc;
 			desc.mMinFilter = rhi::SamplerMinFilter::LinearMipmapLinear;
 			desc.mMagFilter = rhi::SamplerMagFilter::Linear;
 			desc.mWrapR = rhi::SamplerWrap::ClampEdge;

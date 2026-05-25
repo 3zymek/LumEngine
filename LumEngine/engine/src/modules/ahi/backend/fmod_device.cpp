@@ -216,10 +216,10 @@ namespace lum::ahi::fmod {
 
 	void FMODDevice::Set3DListenerAttributes( const ahi::FListenerAttributes& attrs ) {
 
-		FMOD_VECTOR fmodPos = { attrs.mPosition.x, attrs.mPosition.y, attrs.mPosition.z };
-		FMOD_VECTOR fmodVel = { attrs.mVelocity.x, attrs.mVelocity.y, attrs.mVelocity.z };
-		FMOD_VECTOR fmodForward = { attrs.mForward.x, attrs.mForward.y, attrs.mForward.z };
-		FMOD_VECTOR fmodUp = { attrs.mUp.x, attrs.mUp.y, attrs.mUp.z };
+		FMOD_VECTOR fmodPos = { attrs.mPosition.mX, attrs.mPosition.mY, attrs.mPosition.mZ };
+		FMOD_VECTOR fmodVel = { attrs.mVelocity.mX, attrs.mVelocity.mY, attrs.mVelocity.mZ };
+		FMOD_VECTOR fmodForward = { attrs.mForward.mX, attrs.mForward.mY, attrs.mForward.mZ };
+		FMOD_VECTOR fmodUp = { attrs.mUp.mX, attrs.mUp.mY, attrs.mUp.mZ };
 
 		mSystem->set3DListenerAttributes( 0, &fmodPos, &fmodVel, &fmodForward, &fmodUp );
 
@@ -263,7 +263,7 @@ namespace lum::ahi::fmod {
 		if (instance.mFlags.Has( InstanceFlag::Paused )) return;
 
 		Vector3 instPos = instance.mPosition;
-		FMOD_VECTOR pos = { instPos.x, instPos.y, instPos.z };
+		FMOD_VECTOR pos = { instPos.mX, instPos.mY, instPos.mZ };
 
 		channel->setVolume( std::clamp( instance.mVolume, 0.0f, 1.0f ) );
 		channel->setPitch( std::clamp( instance.mPitch, 0.0f, 1.0f ) );

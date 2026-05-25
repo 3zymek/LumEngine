@@ -6,6 +6,7 @@
 #pragma once
 #include "event/event_common.hpp"
 #include "core/utils/lum_assert.hpp"
+#include "core/limits.hpp"
 
 namespace lum::ev::detail {
 
@@ -20,8 +21,8 @@ namespace lum::ev::detail {
 	public:
 
 		EventPool( ) {
-			mEventsCurrent.reserve( limits::gMaxCallbackPf );
-			mEventsNext.reserve( limits::gMaxCallbackPf );
+			mEventsCurrent.reserve( limits::kMaxCallbackPf );
+			mEventsNext.reserve( limits::kMaxCallbackPf );
 		}
 
 		// Registers a one-shot callback, destroyed after dispatch.
@@ -34,7 +35,7 @@ namespace lum::ev::detail {
 		// Registers a persistent callback that survives across frames.
 		template<typename tLambda>
 		SubscribtionID SubscribePermanently( tLambda&& lambda ) {
-			for (usize i = 0; i < limits::gMaxPermanentCallbacks; i++) {
+			for (usize i = 0; i < limits::kMaxPermanentCallbacks; i++) {
 				if (!mPermCallbacks[ i ].bActive) {
 					setup_callback( std::forward<tLambda>( lambda ), mPermCallbacks[ i ] );
 					return i;
@@ -61,7 +62,7 @@ namespace lum::ev::detail {
 
 		// Queues an event for dispatch. Dropped if queue is full.
 		void Emit( const tType& event ) {
-			if (mEventsCurrent.size( ) >= limits::gMaxEventEmittsPerFrame) return;
+			if (mEventsCurrent.size( ) >= limits::kMaxEventEmittsPerFrame) return;
 			if (!bPolling)
 				mEventsCurrent.push_back( event );
 			else
@@ -82,8 +83,8 @@ namespace lum::ev::detail {
 
 	private:
 
-		std::array<Callback, limits::gMaxCallbackPf>         mCallbacks;
-		std::array<Callback, limits::gMaxPermanentCallbacks> mPermCallbacks;
+		std::array<Callback, limits::kMaxCallbackPf>         mCallbacks;
+		std::array<Callback, limits::kMaxPermanentCallbacks> mPermCallbacks;
 		EventT mCurrentCallbacksID = 0;
 
 		std::vector<tType> mEventsCurrent;

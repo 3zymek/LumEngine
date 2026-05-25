@@ -37,8 +37,8 @@ namespace lum::render {
 		Vector2 jitter = (offset * 2.0f - 1.0f) / Vector2( mWidth, mHeight ) * 0.5f;
 
 		Matrix4 jittered = projection;
-		jittered[ 2 ][ 0 ] += jitter.x;
-		jittered[ 2 ][ 1 ] += jitter.y;
+		jittered[ 2 ][ 0 ] += jitter.mX;
+		jittered[ 2 ][ 1 ] += jitter.mY;
 
 		mFrameIndex++;
 

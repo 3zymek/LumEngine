@@ -44,7 +44,7 @@ namespace lum::rhi::gl {
 
 		void AttachTextureLayer( rhi::FramebufferHandle fbo, rhi::TextureHandle tex, const TextureLayerAttachment& desc ) override;
 
-		void BlitFramebuffer( const FFramebufferBlitDescrion& ) override;
+		void BlitFramebuffer( const FramebufferBlitDescription& ) override;
 
 		void ClearFramebuffer( FramebufferHandle, ChannelRGBA, float32 ) override;
 
@@ -68,7 +68,7 @@ namespace lum::rhi::gl {
 		// Shaders
 		//=================================================
 
-		ShaderHandle CreateShader( const ShaderDescriptor& ) override;
+		ShaderHandle CreateShader( const ShaderModuleCreateInfo& ) override;
 
 		void BindShader( ShaderHandle ) override;
 
@@ -98,7 +98,7 @@ namespace lum::rhi::gl {
 		// Samplers
 		//=================================================
 
-		SamplerHandle CreateSampler( const SamplerDescriptor& ) override;
+		SamplerHandle CreateSampler( const SamplerCreateInfo& ) override;
 
 		void BindSampler( SamplerHandle, uint16 )	override;
 

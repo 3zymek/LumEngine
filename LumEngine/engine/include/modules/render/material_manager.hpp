@@ -69,7 +69,7 @@ namespace lum {
 		MaterialBaseHandle mDefaultMaterial;
 
 		/* @brief Pool storing all uploaded base materials, indexed by MaterialBaseHandle. */
-		cstd::HandlePool<MaterialBaseHandle, FMaterialBase> mBaseMaterials{ limits::gMaxMaterials };
+		cstd::HandlePool<MaterialBaseHandle, FMaterialBase> mBaseMaterials{ limits::kMaxMaterials };
 
 		void init();
 

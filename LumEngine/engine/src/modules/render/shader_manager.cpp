@@ -21,7 +21,7 @@ namespace lum {
 		mRenderDevice = device;
 	}
 
-	rhi::RShaderHandle MShaderManager::LoadShader( ccharptr vertexPath, ccharptr fragmentPath, RootID root ) {
+	rhi::ShaderHandle MShaderManager::LoadShader( ccharptr vertexPath, ccharptr fragmentPath, RootID root ) {
 
 		uint64 hash = HashStr(vertexPath) ^ HashStr(fragmentPath);
 		if (mShaders.contains(hash))
@@ -39,11 +39,11 @@ namespace lum {
 			return {};
 		}
 
-		rhi::ShaderDescriptor desc;
+		rhi::ShaderModuleCreateInfo desc;
 		desc.mVertexContent = vertexData.value();
 		desc.mFragmentContent = fragmentData.value();
 
-		rhi::RShaderHandle shader = mRenderDevice->CreateShader(desc);
+		rhi::ShaderHandle shader = mRenderDevice->CreateShader(desc);
 
 		mShaders[hash] = shader;
 

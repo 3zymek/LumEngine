@@ -52,7 +52,7 @@ namespace lum {
 		rhi::RenderDevice* mRenderDevice = nullptr;
 
 		/* @brief Cache mapping shader path hashes to their corresponding shader handles. */
-		std::unordered_map<uint64, rhi::RShaderHandle> mShaders;
+		std::unordered_map<uint64, rhi::ShaderHandle> mShaders;
 
 	};
 } // namespace lum

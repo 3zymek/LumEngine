@@ -8,7 +8,7 @@
 
 namespace lum::rhi::gl {
 
-	SamplerHandle GLDevice::CreateSampler( const SamplerDescriptor& desc ) {
+	SamplerHandle GLDevice::CreateSampler( const SamplerCreateInfo& desc ) {
 
 		LUM_ASSERT( mSamplers.DenseSize( ) <= skMaxSamplers, "Max samplers reached" );
 

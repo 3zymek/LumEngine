@@ -8,7 +8,7 @@
 
 namespace lum::rhi::gl {
 
-	ShaderHandle GLDevice::CreateShader( const ShaderDescriptor& desc ) {
+	ShaderHandle GLDevice::CreateShader( const ShaderModuleCreateInfo& desc ) {
 
 		LUM_ASSERT( mShaders.DenseSize( ) < skMaxShaders, "Max shaders reached" );
 

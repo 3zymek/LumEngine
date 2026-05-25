@@ -69,7 +69,7 @@ namespace lum::editor {
 		};
 
 		// Draws timestamp prefix for a log entry.
-		void draw_timestamp( const FLogEntry& log );
+		void draw_timestamp( const LogEntry& log );
 
 		// Draws left sidebar with severity filters and counters.
 		void draw_sidebar( );

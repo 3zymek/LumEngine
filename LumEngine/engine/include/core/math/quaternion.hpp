@@ -93,7 +93,7 @@ namespace lum {
 		};
 	}
 	inline Quaternion FromEuler( const Vector3& v ) {
-		return FromEuler( v.y, v.x, v.z );
+		return FromEuler( v.mY, v.mX, v.mZ );
 	}
 
 } // namespace lum

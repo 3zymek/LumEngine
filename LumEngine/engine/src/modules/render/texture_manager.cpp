@@ -203,8 +203,8 @@ namespace lum {
 			faces[ i ].mWidth = faceSize;
 			faces[ i ].mHeight = faceSize;
 			faces[ i ].mChannels = 3;
-			faces[ i ].bIsHDR = equirect.bIsHDR;
-			if (equirect.bIsHDR)
+			faces[ i ].mIsHdr = equirect.mIsHdr;
+			if (equirect.mIsHdr)
 				faces[ i ].mFloatPixels.resize( faceSize * faceSize * 3 );
 			else
 				faces[ i ].mPixels.resize( faceSize * faceSize * 3 );
@@ -228,8 +228,8 @@ namespace lum {
 					}
 					dir = Normalize( dir );
 
-					float32 eu = atan2( dir.z, dir.x ) / (2.0f * Pi()) + 0.5f;
-					float32 ev = 0.5f - asin( std::clamp( dir.y, -1.0f, 1.0f ) ) / Pi();
+					float32 eu = atan2( dir.mZ, dir.mX ) / (2.0f * Pi()) + 0.5f;
+					float32 ev = 0.5f - asin( std::clamp( dir.mY, -1.0f, 1.0f ) ) / Pi();
 
 					int32 px = ( int32 ) (eu * equirect.mWidth) % equirect.mWidth;
 					int32 py = ( int32 ) (ev * equirect.mHeight) % equirect.mHeight;
@@ -237,7 +237,7 @@ namespace lum {
 					int32 srcIdx = (py * equirect.mWidth + px) * equirect.mChannels;
 					int32 dstIdx = (y * faceSize + x) * 3;
 
-					if (equirect.bIsHDR) {
+					if (equirect.mIsHdr) {
 						faces[ face ].mFloatPixels[ dstIdx + 0 ] = equirect.mFloatPixels[ srcIdx + 0 ];
 						faces[ face ].mFloatPixels[ dstIdx + 1 ] = equirect.mFloatPixels[ srcIdx + 1 ];
 						faces[ face ].mFloatPixels[ dstIdx + 2 ] = equirect.mFloatPixels[ srcIdx + 2 ];

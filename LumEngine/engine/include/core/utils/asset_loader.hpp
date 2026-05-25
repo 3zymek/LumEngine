@@ -13,7 +13,7 @@ namespace lum {
 	namespace detail {
 
 		namespace fs = std::filesystem;
-	
+
 	} // namespace lum::detail
 
 	/* @brief Identifies the root directory used for asset path resolution. */
@@ -40,12 +40,12 @@ namespace lum {
 		/* @brief Raw float pixels used in HDRI. */
 		std::vector<float32> mFloatPixels;
 
-		bool bIsHDR = false;
+		bool mIsHdr = false;
 
 	};
 
 	/* @brief Raw mesh data loaded from disk. */
-	struct FMeshData {
+	struct MeshData {
 
 		/* @brief List of vertices. */
 		std::vector<Vertex> mVertices;
@@ -77,8 +77,8 @@ namespace lum {
 
 		/* @brief Returns the current project root path as a string. */
 		LUM_NODISCARD
-		static String GetProjectRoot( ) { return sProjectRoot.string( ); }
-		
+			static String GetProjectRoot( ) { return sProjectRoot.string( ); }
+
 		/* @brief Loads a texture from disk.
 		* @param root           Root directory identifier.
 		* @param filepath       Path relative to the selected root.
@@ -86,7 +86,7 @@ namespace lum {
 		* @return FTextureData on success, or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<TextureData> LoadTexture( RootID root, StringView filepath, uint8 expectedFormat = 0 );
+			static std::optional<TextureData> LoadTexture( RootID root, StringView filepath, uint8 expectedFormat = 0 );
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.
@@ -94,7 +94,7 @@ namespace lum {
 		* @return Populated FMeshData or empty on failure.
 		*/
 		LUM_NODISCARD
-		static std::optional<FMeshData> LoadMesh( RootID root, StringView filepath );
+			static std::optional<MeshData> LoadMesh( RootID root, StringView filepath );
 
 		/* @brief Resolves an absolute path from a root directory and a relative filepath.
 		* @param root     Root directory identifier.
@@ -102,7 +102,7 @@ namespace lum {
 		* @return Resolved absolute path, or empty if the file does not exist.
 		*/
 		LUM_NODISCARD
-		static String ResolvePath( RootID root, StringView filepath );
+			static String ResolvePath( RootID root, StringView filepath );
 
 		/* @brief Loads a shader source file from disk.
 		* Prepends the engine shader define header automatically.
@@ -111,7 +111,7 @@ namespace lum {
 		* @return Shader source as String or empty on failure.
 		*/
 		LUM_NODISCARD
-		static String LoadShader( RootID root, StringView filepath );
+			static String LoadShader( RootID root, StringView filepath );
 
 		/* @brief Writes text content to a file at the given path.
 		* Creates the file if it does not exist, overwrites if it does.
@@ -128,7 +128,7 @@ namespace lum {
 		* @return File contents as String or empty String on failure.
 		*/
 		LUM_NODISCARD
-		static String ReadFile( RootID root, StringView filepath );
+			static String ReadFile( RootID root, StringView filepath );
 
 		/* @brief Returns the last error message set by a failed load operation. */
 		static ccharptr GetErrorMessage( ) { return sLastErrorMessage; }
@@ -139,31 +139,31 @@ namespace lum {
 		static inline Path sProjectRoot = "";
 
 		/* @brief Absolute path to the engine internal assets directory. */
-		static inline Path sInternalRoot = detail::fs::current_path().parent_path() / "LumEngine" / "internal_assets";
+		static inline Path sInternalRoot = detail::fs::current_path( ).parent_path( ) / "LumEngine" / "internal_assets";
 
 		/* @brief Path to the shared shader define header prepended to all shaders. */
-		static inline Path sShaderDefine = detail::fs::current_path().parent_path() / "LumEngine" / "engine" / "include" / "modules" / "render" / "shaders_define.h";
+		static inline Path sShaderDefine = detail::fs::current_path( ).parent_path( ) / "LumEngine" / "engine" / "include" / "modules" / "render" / "shaders_define.h";
 
 		/* @brief Buffer storing the last asset load error message. */
-		static inline char sLastErrorMessage[limits::gMaxErrorAssetLoadLength]{};
+		static inline char sLastErrorMessage[ limits::kMaxErrorAssetLoadLength ]{};
 
 		/* @brief Sets the error message from a string literal. */
 		template<usize tL>
-		static void set_error_msg( const char(&msg)[tL] ) {
-			usize length = (tL < limits::gMaxErrorAssetLoadLength) ? tL : limits::gMaxErrorAssetLoadLength;
-			std::strncpy(sLastErrorMessage, msg, length);
+		static void set_error_msg( const char( &msg )[ tL ] ) {
+			usize length = (tL < limits::kMaxErrorAssetLoadLength) ? tL : limits::kMaxErrorAssetLoadLength;
+			std::strncpy( sLastErrorMessage, msg, length );
 		}
 
 		/* @brief Sets the error message from a runtime string. */
 		static void set_error_msg( String msg ) {
-			std::strncpy(sLastErrorMessage, msg.data(), sizeof(sLastErrorMessage));
+			std::strncpy( sLastErrorMessage, msg.data( ), sizeof( sLastErrorMessage ) );
 		}
 
 		static String get_full_path( RootID root, StringView filepath ) {
 			if (root == RootID::External)
-				return (sProjectRoot / filepath).lexically_normal().string();
+				return (sProjectRoot / filepath).lexically_normal( ).string( );
 			else if (root == RootID::Internal)
-				return (sInternalRoot / filepath).lexically_normal().string();
+				return (sInternalRoot / filepath).lexically_normal( ).string( );
 			return "";
 		}
 

@@ -100,7 +100,7 @@ namespace lum::editor {
 	// Private
 	//---------------------------------------------------------
 
-	void Console::draw_timestamp( const FLogEntry& log ) {
+	void Console::draw_timestamp( const LogEntry& log ) {
 
 		char time[ 10 ]{};
 		Logger::FormatTime( log.mTime, time );

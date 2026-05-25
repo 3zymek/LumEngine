@@ -19,21 +19,21 @@ namespace lum::cstd {
 	public:
 
 		/* @brief Marks the value as modified and returns a pointer to it. */
-		tType* operator->( ) { bMarked = true; return &mValue; }
+		tType* operator->( ) { mMarked = true; return &mValue; }
 
 		/* @brief Returns a pointer to the value without marking. */
 		const tType* operator->( ) const { return &mValue; }
 
 		/* @brief Returns true if the value has been modified since the last Unmark(). */
-		bool IsMarked( ) const noexcept { return bMarked; }
+		bool IsMarked( ) const noexcept { return mMarked; }
 
 		/* @brief Clears the modified mark. Call after processing the change. */
-		void Unmark( ) { bMarked = false; }
+		void Unmark( ) { mMarked = false; }
 
 	private:
 
 		tType mValue;
-		bool  bMarked = false;
+		bool  mMarked = false;
 
 	};
 

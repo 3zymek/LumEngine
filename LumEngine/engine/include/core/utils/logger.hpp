@@ -25,7 +25,7 @@ namespace lum {
 	LUM_ENUM_OPERATIONS( lum::LogSeverity );
 
 	// Data for a single log entry.
-	struct FLogEntry {
+	struct LogEntry {
 		uint64      mTime = 0;
 		String      mMessage = "";
 		ccharptr    mFunction = "";
@@ -39,10 +39,10 @@ namespace lum {
 
 		LogBuffer( uint32 maxLogs ) : mMaxLogs( maxLogs ) { }
 
-		const std::deque<FLogEntry>& GetLogs( ) const { return mLogs; }
+		const std::deque<LogEntry>& GetLogs( ) const { return mLogs; }
 
 		// Pushes entry, drops oldest if full.
-		void Push( FLogEntry& entry ) {
+		void Push( LogEntry& entry ) {
 			if (mLogs.size( ) >= mMaxLogs)
 				mLogs.pop_front( );
 			mLogs.push_back( entry );
@@ -51,7 +51,7 @@ namespace lum {
 
 	private:
 		uint32 mMaxLogs = 0;
-		std::deque<FLogEntry> mLogs;
+		std::deque<LogEntry> mLogs;
 	};
 
 	// Singleton logger with severity filtering and formatted output.
@@ -64,7 +64,7 @@ namespace lum {
 			return log;
 		}
 
-		const std::deque<FLogEntry>& GetLogs( ) const { return mLogs.GetLogs( ); }
+		const std::deque<LogEntry>& GetLogs( ) const { return mLogs.GetLogs( ); }
 		void ClearLogs( ) { mLogs.Clear( ); }
 
 		// Converts severity to string label.
@@ -84,10 +84,10 @@ namespace lum {
 			tArgs&&... args
 		) {
 
-			char formatMsg[ sMaxDescriptionLength ]{};
+			char formatMsg[ skMaxDescriptionLength ]{};
 			std::snprintf( formatMsg, sizeof( formatMsg ), msg.data( ), std::forward<tArgs>( args )... );
 
-			FLogEntry entry;
+			LogEntry entry;
 			entry.mMessage = formatMsg;
 			entry.mSeverity = sev;
 			entry.mTime = get_time( );
@@ -96,10 +96,10 @@ namespace lum {
 
 	private:
 
-		Logger( ) = default;
-
-		inline constexpr static uint32 sMaxDescriptionLength = 128;	// Max formatted message length.
+		inline constexpr static uint32 skMaxDescriptionLength = 128;	// Max formatted message length.
 		LogBuffer mLogs { LUM_MAX_LOGS };                           // Stored log entries.
+
+		Logger( ) = default;
 
 		// Returns current unix timestamp in milliseconds.
 		static uint64 get_time( );

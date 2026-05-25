@@ -29,7 +29,7 @@ namespace lum::ev {
 	public:
 
 		explicit EventEmitter( EventBus& bus ) : mBus( bus ) {
-			mSubscriptions.reserve( limits::gMaxPermanentCallbacks );
+			mSubscriptions.reserve( limits::kMaxPermanentCallbacks );
 		}
 		~EventEmitter( ) { destroy( ); }
 
@@ -49,7 +49,7 @@ namespace lum::ev {
 		// Ignored if gMaxPermanentCallbacks limit is reached.
 		template<detail::tEvent EventType, typename Lambda>
 		void SubscribePermamently( Lambda&& lambda ) {
-			if (mSubscriptions.size( ) >= limits::gMaxPermanentCallbacks) return;
+			if (mSubscriptions.size( ) >= limits::kMaxPermanentCallbacks) return;
 
 			SubscribtionID id = mBus.SubscribePermanently<EventType>( std::forward<Lambda>( lambda ) );
 			mSubscriptions.push_back( { id, []( SubscribtionID id, EventBus& bus ) {

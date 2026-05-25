@@ -108,17 +108,17 @@ namespace lum {
 		Vector3 u = Cross( r, f );               // up
 
 		Matrix4 result;
-		result.mData[ 0 ] = r.x;
-		result.mData[ 1 ] = u.x;
-		result.mData[ 2 ] = -f.x;
+		result.mData[ 0 ] = r.mX;
+		result.mData[ 1 ] = u.mX;
+		result.mData[ 2 ] = -f.mX;
 
-		result.mData[ 4 ] = r.y;
-		result.mData[ 5 ] = u.y;
-		result.mData[ 6 ] = -f.y;
+		result.mData[ 4 ] = r.mY;
+		result.mData[ 5 ] = u.mY;
+		result.mData[ 6 ] = -f.mY;
 
-		result.mData[ 8 ] = r.z;
-		result.mData[ 9 ] = u.z;
-		result.mData[ 10 ] = -f.z;
+		result.mData[ 8 ] = r.mZ;
+		result.mData[ 9 ] = u.mZ;
+		result.mData[ 10 ] = -f.mZ;
 
 		result.mData[ 12 ] = -Dot( r, eye );
 		result.mData[ 13 ] = -Dot( u, eye );

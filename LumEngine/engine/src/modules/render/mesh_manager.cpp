@@ -40,7 +40,7 @@ namespace lum {
 		if (mStaticMeshCache.contains( hash ))
 			return mStaticMeshCache[ hash ];
 
-		std::optional<FMeshData> data = AssetLoader::LoadMesh( root, path );
+		std::optional<MeshData> data = AssetLoader::LoadMesh( root, path );
 
 		if (!data) {
 			LUM_LOG_ERROR( "Failed to load model %s: %s", path.data(), AssetLoader::GetErrorMessage( ) );
@@ -64,11 +64,11 @@ namespace lum {
 
 	FDynamicMeshInstance MMeshManager::CreateDynamic( StringView path, RootID root ) {
 
-		std::optional<FMeshData> data = AssetLoader::LoadMesh( root, path );
+		std::optional<MeshData> data = AssetLoader::LoadMesh( root, path );
 
 		if (!data) {
 			LUM_LOG_ERROR( "Failed to load model %s: %s", path, AssetLoader::GetErrorMessage( ) );
-			FMeshData fallback;
+			MeshData fallback;
 			fallback.mVertices = mDefaultVertices;
 			fallback.mIndices = mDefaultIndices;
 			data = fallback;
@@ -107,7 +107,7 @@ namespace lum {
 
 	}
 
-	detail::FRenderResources MMeshManager::upload_gpu( detail::MeshType type, const FMeshData& data ) {
+	detail::FRenderResources MMeshManager::upload_gpu( detail::MeshType type, const MeshData& data ) {
 
 		Flags<rhi::MapFlag> mapFlag{};
 		rhi::BufferUsage usage{};
@@ -183,7 +183,7 @@ namespace lum {
 	void MMeshManager::create_meshes( ) {
 		{ // Default mesh
 
-			FMeshData data;
+			MeshData data;
 			data.mVertices = mDefaultVertices;
 			data.mIndices = mDefaultIndices;
 
@@ -199,7 +199,7 @@ namespace lum {
 
 		}
 		{ // Error mesh
-			std::optional<FMeshData> data = AssetLoader::LoadMesh( RootID::Internal, "models/ERRORText.fbx" );
+			std::optional<MeshData> data = AssetLoader::LoadMesh( RootID::Internal, "models/ERRORText.fbx" );
 			if (!data) {
 				LUM_LOG_ERROR( "Failed to load fallback error model: %s", AssetLoader::GetErrorMessage( ) );
 				mErrorMesh = mDefaultMesh;

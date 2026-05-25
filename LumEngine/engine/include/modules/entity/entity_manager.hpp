@@ -31,7 +31,7 @@ namespace lum {
 
 			MEntityManager( ) { init( ); }
 			MEntityManager( MEntityManager&& other ) noexcept {
-				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
+				for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
 					mComponentPools[ i ] = other.mComponentPools[ i ];
 					other.mComponentPools[ i ] = nullptr;
 				}
@@ -171,7 +171,7 @@ namespace lum {
 			*/
 			template<typename tCallback>
 			void ForEachComponent( EntityID id, tCallback&& callback ) {
-				for (int32 i = 0; i < limits::gMaxComponentTypes; i++) {
+				for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
 					if (mComponentPools[ i ] && mComponentPools[ i ]->Contains( id )) {
 						callback( i, mComponentPools[ i ] );
 					}
@@ -189,7 +189,7 @@ namespace lum {
 		private:
 
 			/* @brief Array of component pools indexed by component type ID. */
-			BasePool* mComponentPools[ limits::gMaxComponentTypes ];
+			BasePool* mComponentPools[ limits::kMaxComponentTypes ];
 
 			ev::EventBus* mEventBus = nullptr;
 

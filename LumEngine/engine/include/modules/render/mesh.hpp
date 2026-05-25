@@ -34,7 +34,7 @@ namespace lum {
 	struct FDynamicMeshInstance {
 
 		/* @brief CPU-side mesh data used to re-upload when dirty. */
-		FMeshData mData;
+		MeshData mData;
 
 		/* @brief Vertex buffer containing mesh geometry. */
 		rhi::BufferHandle mVbo;

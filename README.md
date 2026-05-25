@@ -58,17 +58,15 @@ LumEngine/
 ### Prefixes
 
 ```
-M  (Manager)          - Class that manages data flow and object lifetime
 C  (Component)        - Component in ECS (Entity Component System)
 E  (Event)            - Event in EBS (Event Bus System)
-R  (Render)           - Render Hardware Interface handles
-F  (Plain Data)       - Stores only data
 m  (member)           - Variable is a member of a class
 s  (static)           - Variable is static
-sk (static constexpr) - Variable is static and constexpr
+b  (boolean)          - Variable is boolean
 g  (global)           - Variable doesn't belong to any class (global state)
 k  (const)            - Variable is constant (or constexpr)
 t  (template)         - Template type/variable
+c  (concept)          - C++ Concept
 
 I use PascalCase for public functions and classes, snake_case for private methods and camelCase for variables.
 ```

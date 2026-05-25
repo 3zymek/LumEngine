@@ -67,7 +67,7 @@ namespace lum {
 		StaticMeshHandle mErrorMesh;   // Fallback mesh used when loading fails.
 
 		std::unordered_map<uint64, StaticMeshHandle> mStaticMeshCache; // Path hash -> handle cache.
-		cstd::HandlePool<StaticMeshHandle, FStaticMeshResource> mStaticMeshes{ limits::gMaxModels };
+		cstd::HandlePool<StaticMeshHandle, FStaticMeshResource> mStaticMeshes{ limits::kMaxModels };
 
 		std::vector<Vertex> mDefaultVertices = {
 			// position                normal               uv
@@ -87,7 +87,7 @@ namespace lum {
 		* @param data   CPU-side mesh data to upload.
 		* @return Render resources containing VBO, EBO, and VAO handles.
 		*/
-		detail::FRenderResources upload_gpu( detail::MeshType type, const FMeshData& data );
+		detail::FRenderResources upload_gpu( detail::MeshType type, const MeshData& data );
 
 		/* @brief Creates and uploads built-in meshes (default, error). */
 		void create_meshes( );
