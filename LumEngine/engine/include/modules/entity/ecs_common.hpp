@@ -13,7 +13,7 @@ namespace lum {
 	*/
 	struct Component {
 		/* @brief Defines if component was changed. */
-		bool bMarked = true;
+		bool mMarked = true;
 	};
 
 	/* @brief Unique identifier for an entity. */
@@ -27,7 +27,7 @@ namespace lum {
 	namespace ecs {
 
 		/* @brief Means that entity doesn't exists. */
-		inline constexpr EntityID skNullEntity = MaxValue<EntityID>( );
+		inline constexpr EntityID kNullEntity = MaxValue<EntityID>( );
 
 		/* @brief Internal implementation details for the ECS.
 		*  Not intended for direct use outside of the ECS subsystem.

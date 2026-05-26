@@ -13,31 +13,31 @@ namespace lum::rhi {
 
 	void RenderDevice::Finalize( ) {
 
-		for (auto [handle, p] : mPipelines.Each())    Delete(handle);
-		for (auto [handle, f] : mFramebuffers.Each()) Delete(handle);
-		for (auto [handle, l] : mLayouts.Each())      Delete(handle);
-		for (auto [handle, b] : mBuffers.Each())      Delete(handle);
-		for (auto [handle, t] : mTextures.Each())     Delete(handle);
-		for (auto [handle, s] : mShaders.Each())      Delete(handle);
-		for (auto [handle, l] : mSamplers.Each())     Delete(handle);
-	
+		for (auto [handle, p] : mPipelines.Each( ))    Delete( handle );
+		for (auto [handle, f] : mFramebuffers.Each( )) Delete( handle );
+		for (auto [handle, l] : mLayouts.Each( ))      Delete( handle );
+		for (auto [handle, b] : mBuffers.Each( ))      Delete( handle );
+		for (auto [handle, t] : mTextures.Each( ))     Delete( handle );
+		for (auto [handle, s] : mShaders.Each( ))      Delete( handle );
+		for (auto [handle, l] : mSamplers.Each( ))     Delete( handle );
+
 	}
 
 	//---------------------------------------------------------
 	// Private
 	//---------------------------------------------------------
 
-	bool RenderDevice::validate_texture_descriptor(const TextureCreateInfo& desc) const noexcept {
+	bool RenderDevice::validate_texture_descriptor( const TextureCreateInfo& desc ) const noexcept {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
-			mTextures.DenseSize() <= skMaxTextures,
+			mTextures.DenseSize( ) <= skMaxTextures,
 			LUM_SEV_WARN,
 			false,
 			"Max textures reached"
 		);
 
 		LUM_HOTCHK_RETURN_CUSTOM(
-			desc.mData.mPixels.data() != nullptr,
+			desc.mData.mPixels.data( ) != nullptr,
 			LUM_SEV_WARN,
 			false,
 			"Texture pixel data is null"
@@ -50,34 +50,34 @@ namespace lum::rhi {
 
 		if (desc.mBufferUsage == BufferUsage::Static) {
 			LUM_ASSERT(
-				desc.mMapFlags.IsEmpty(),
+				desc.mMapFlags.IsEmpty( ),
 				"Static buffers cannot be mapped"
 			);
 		}
 
-		if (desc.mMapFlags.Has(MapFlag::Coherent)) {
+		if (desc.mMapFlags.Has( MapFlag::Coherent )) {
 			LUM_ASSERT(
-				desc.mMapFlags.Has(MapFlag::Persistent),
+				desc.mMapFlags.Has( MapFlag::Persistent ),
 				"Coherent flag requires Persistent flag"
 			);
 		}
 
-		if (desc.mMapFlags.Has(MapFlag::Persistent)) {
+		if (desc.mMapFlags.Has( MapFlag::Persistent )) {
 			LUM_ASSERT(
-				desc.mMapFlags.Has(MapFlag::Read) || desc.mMapFlags.Has(MapFlag::Write),
+				desc.mMapFlags.Has( MapFlag::Read ) || desc.mMapFlags.Has( MapFlag::Write ),
 				"Persistent flag requires Read or Write flag"
 			);
 		}
 
 		LUM_HOTCHK_RETURN_CUSTOM(
-			mBuffers.DenseSize() < skMaxBuffers,
+			mBuffers.DenseSize( ) < skMaxBuffers,
 			LUM_SEV_ERROR,
 			false,
 			"Max buffers reached"
 		);
 
-		LUM_ASSERT(desc.mSize > 0, "Invalid buffer size");
-		LUM_ASSERT(desc.mBufferType != BufferType::None, "No buffer type given");
+		LUM_ASSERT( desc.mSize > 0, "Invalid buffer size" );
+		LUM_ASSERT( desc.mBufferType != BufferType::None, "No buffer type given" );
 
 		return true;
 
@@ -102,18 +102,18 @@ namespace lum::rhi {
 	}
 	bool RenderDevice::is_color_format( ImageLayout fmt ) const noexcept {
 
-		return !is_depth_format(fmt) && !is_stencil_format(fmt);
+		return !is_depth_format( fmt ) && !is_stencil_format( fmt );
 
 	}
 
 	RenderDevice* CreateDevice( RenderBackend backend ) {
-		
+
 		rhi::RenderDevice* device = nullptr;
 
 		switch (backend) {
-		case RenderBackend::OpenGL: device = new gl::GLDevice();
+		case RenderBackend::OpenGL: device = new gl::GLDevice( );
 		}
-	
+
 		return device;
 	}
 

@@ -21,7 +21,7 @@ namespace lum::editor {
 		// Updates and renders the scene inspector panel.
 		void Update( Scene* scene );
 
-		// Returns the currently selected entity, or skNullEntity if none.
+		// Returns the currently selected entity, or kNullEntity if none.
 		EntityID GetSelectedEntity( ) const noexcept { return mSelectedEntity; }
 
 	private:
@@ -35,7 +35,7 @@ namespace lum::editor {
 		FixedString<32> mComponentsFilter;
 
 		// Currently selected entity in the inspector.
-		EntityID mSelectedEntity = ecs::skNullEntity;
+		EntityID mSelectedEntity = ecs::kNullEntity;
 
 		TimedTooltip mActionTooltip;
 

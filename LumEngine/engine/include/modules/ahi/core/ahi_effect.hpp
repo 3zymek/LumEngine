@@ -16,29 +16,29 @@ namespace lum::ahi {
 	* Only effects with bEnabled = true are created by AudioDevice::CreateEffect().
 	* Multiple effects can be enabled simultaneously and will be chained in order.
 	*/
-	struct FAudioEffectDescriptor {
+	struct AudioEffectCreateInfo {
 
 		/* @brief Low and high frequency pass filters (lowpass / highpass). */
-		struct FFrequencyPass {
+		struct FrequencyPass {
 
 			/* @brief Parameters for a single frequency pass filter. */
-			struct FPass {
+			struct Pass {
 
-				bool bEnabled = false;
+				bool mEnabled = false;
 
 				float32 mCutoff = 10.0f;  // Cutoff frequency in Hz
 				float32 mResonance = 5.0f;   // Resonance (Q factor) at the cutoff point
 			};
 
-			FPass mLow;   // Lowpass  — attenuates frequencies above cutoff
-			FPass mHigh;  // Highpass — attenuates frequencies below cutoff
+			Pass mLow;   // Lowpass  — attenuates frequencies above cutoff
+			Pass mHigh;  // Highpass — attenuates frequencies below cutoff
 
 		} mFreqPass;
 
 		/* @brief Reverb effect simulating acoustic environments. */
-		struct FReverb {
+		struct Reverb {
 
-			bool bEnabled = false;
+			bool mEnabled = false;
 
 			float32 mDecayTime = 0.5f;  // Reverberation decay time in ms
 			float32 mEarlyDelay = 0.1f;  // Delay before early reflections in ms
@@ -52,9 +52,9 @@ namespace lum::ahi {
 		} mReverb;
 
 		/* @brief Echo effect with configurable delay and feedback. */
-		struct FEcho {
+		struct Echo {
 
-			bool bEnabled = false;
+			bool mEnabled = false;
 
 			float32 mDelay = 500.0f; // Delay between repetitions in ms
 			float32 mFeedback = 50.0f;  // Amount of echo fed back into input (0–100%). Higher = more repetitions
@@ -64,18 +64,18 @@ namespace lum::ahi {
 		} mEcho;
 
 		/* @brief Distortion effect — clips the signal to add harmonic content. */
-		struct FDistortion {
+		struct Distortion {
 
-			bool bEnabled = false;
+			bool mEnabled = false;
 			
 			float32 mLevel = 0.0f; // Distortion amount (0.0 = clean, 1.0 = heavy clipping)
 
 		} mDistortion;
 
 		/* @brief Chorus effect — thickens sound by layering modulated copies of the signal. */
-		struct FChorus {
+		struct Chorus {
 
-			bool bEnabled = false;
+			bool mEnabled = false;
 
 			float32 mRate = 0.5f;  // Modulation rate in Hz
 			float32 mDepth = 3.0f;  // Modulation depth in ms
@@ -84,9 +84,9 @@ namespace lum::ahi {
 		} mChorus;
 
 		/* @brief Flanger effect — metallic sweeping sound via short modulated delay with feedback. */
-		struct FFlange {
+		struct Flange {
 
-			bool bEnabled = false;
+			bool mEnabled = false;
 
 			float32 mRate = 0.5f;	// Modulation rate in Hz
 			float32 mDepth = 3.0f;  // Modulation depth (0–1)
@@ -95,9 +95,9 @@ namespace lum::ahi {
 		} mFlange;
 
 		/* @brief Dynamic range compressor — reduces volume peaks and evens out loudness. */
-		struct FCompressor {
+		struct Compressor {
 
-			bool bEnabled = false;
+			bool mEnabled = false;
 
 			float32 mThreshold = -20.0f; // Level in dB above which compression is applied
 			float32 mRatio = 4.0f;   // Compression ratio (e.g. 4:1 — 4dB in becomes 1dB out)
@@ -108,9 +108,9 @@ namespace lum::ahi {
 		} mCompressor;
 
 		/* @brief Parametric equalizer — boosts or cuts a specific frequency band. */
-		struct FParamEQ {
+		struct ParamEQ {
 
-			bool bEnabled = false;
+			bool mEnabled = false;
 
 			float32 mCenter		= 1000.0f;	// Center frequency of the band in Hz
 			float32 mBandwidth	= 1.0f;		// Bandwidth in octaves around the center frequency
@@ -123,9 +123,9 @@ namespace lum::ahi {
 	/* @brief Backend-side effect handle storing DSP node pointers.
 	* Owned by the AudioDevice. Do not access DSPs directly from outside the backend.
 	*/
-	struct FAudioEffect {
+	struct AudioEffect {
 
-		std::vector<vptr> mDSPs;
+		std::vector<vptr> mDsps;
 
 	};
 

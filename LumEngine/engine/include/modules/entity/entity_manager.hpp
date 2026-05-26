@@ -55,7 +55,7 @@ namespace lum {
 			* @return Reference to the newly added component.
 			*/
 			template<detail::Component tType>
-			tType& AddComponent( EntityID entityID, tType component = {} );
+			tType& AddComponent( EntityID entityId, tType component = {} );
 
 			/* @brief Adds a component of type tType to the given entity.
 			* @param entity Target entity.
@@ -74,7 +74,7 @@ namespace lum {
 			* @return Pointer to component, or nullptr if not present.
 			*/
 			template<detail::Component tType>
-			tType* GetComponent( EntityID entityID );
+			tType* GetComponent( EntityID entityId );
 
 			/* @brief Returns a pointer to the component of type tType on the given entity.
 			* @param entity Target entity.
@@ -91,7 +91,7 @@ namespace lum {
 			* @param entityID Target entity ID.
 			*/
 			template<detail::Component tType>
-			void RemoveComponent( EntityID entityID );
+			void RemoveComponent( EntityID entityId );
 
 			/* @brief Removes a component of type tType from the given entity.
 			* @param entity Target entity.
@@ -108,7 +108,7 @@ namespace lum {
 			* @return True if the component exists on the entity.
 			*/
 			template<detail::Component tType>
-			bool HasComponent( EntityID entityID );
+			bool HasComponent( EntityID entityId );
 
 			/* @brief Checks whether the given entity has a component of type tType.
 			* @param entity Target entity.
@@ -122,7 +122,7 @@ namespace lum {
 			* @return True if the components exists on the entity.
 			*/
 			template<ecs::detail::Component tType, ecs::detail::Component... tRest>
-			bool HasComponents( EntityID entityID );
+			bool HasComponents( EntityID entityId );
 
 			/* @brief Checks whether the given entity has a components of types.
 			* @param entity Target entity.
@@ -139,7 +139,7 @@ namespace lum {
 			* Iterates over all registered pools and removes the entity from each.
 			* @param entityID Target entity ID.
 			*/
-			void DestroyEntity( EntityID& entityID );
+			void DestroyEntity( EntityID& entityId );
 
 			/* @brief Destroys all components belonging to the given entity.
 			* Iterates over all registered pools and removes the entity from each.
@@ -170,9 +170,9 @@ namespace lum {
 			* @param callback Callable with signature [ ]( ecs::detail::ComponentPool* pool ) { ... }.
 			*/
 			template<typename tCallback>
-			void ForEachComponent( EntityID id, tCallback&& callback ) {
+			void ForEachComponent( EntityID entityId, tCallback&& callback ) {
 				for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
-					if (mComponentPools[ i ] && mComponentPools[ i ]->Contains( id )) {
+					if (mComponentPools[ i ] && mComponentPools[ i ]->Contains( entityId )) {
 						callback( i, mComponentPools[ i ] );
 					}
 				}

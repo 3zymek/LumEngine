@@ -20,7 +20,7 @@ namespace lum::ahi::fmod {
 		void        UnloadSound( SoundHandle& ) override;
 
 		// Effects
-		AudioEffectHandle CreateEffect( const FAudioEffectDescriptor& ) override;
+		AudioEffectHandle CreateEffect( const AudioEffectCreateInfo& ) override;
 		AudioEffectHandle CreateEffect( ahi::EffectPreset ) override;
 		void              DeleteEffect( AudioEffectHandle& ) override;
 
@@ -32,17 +32,17 @@ namespace lum::ahi::fmod {
 		void RemoveGroupEffect( ChannelGroupHandle, AudioEffectHandle ) override;
 
 		// Playback
-		void PlayOneShot( SoundHandle, const FPlaybackDescriptor& ) override;
-		void Play( FSoundInstance&, ChannelGroupHandle ) override;
+		void PlayOneShot( SoundHandle, const PlaybackDescriptor& ) override;
+		void Play( SoundInstance&, ChannelGroupHandle ) override;
 		void StopAll( ) override;
 
 		// Global settings
 		void SetMasterVolume( float32 ) override;
-		void Set3DListenerAttributes( const ahi::FListenerAttributes& ) override;
+		void Set3DListenerAttributes( const ahi::ListenerAttributes& ) override;
 		void Set3DSettings( float32, float32, float32 ) override;
 
 		// Per-frame
-		void UpdateInstance( FSoundInstance& ) override;
+		void UpdateInstance( SoundInstance& ) override;
 		void EndFrame( ) override;
 
 	private:
@@ -60,14 +60,14 @@ namespace lum::ahi::fmod {
 		static FMOD_INITFLAGS translate_init_flags( Flags<InitFlag> );
 
 		// DSP factory methods
-		FMOD::DSP* create_reverb_effect( const FAudioEffectDescriptor::FReverb& );
-		FMOD::DSP* create_frequency_effect( const FAudioEffectDescriptor::FFrequencyPass::FPass&, detail::FrequnecyType );
-		FMOD::DSP* create_echo_effect( const FAudioEffectDescriptor::FEcho& );
-		FMOD::DSP* create_distortion_effect( const FAudioEffectDescriptor::FDistortion& );
-		FMOD::DSP* create_chorus_effect( const FAudioEffectDescriptor::FChorus& );
-		FMOD::DSP* create_flange_effect( const FAudioEffectDescriptor::FFlange& );
-		FMOD::DSP* create_compressor_effect( const FAudioEffectDescriptor::FCompressor& );
-		FMOD::DSP* create_parameq( const FAudioEffectDescriptor::FParamEQ& );
+		FMOD::DSP* create_reverb_effect( const AudioEffectCreateInfo::Reverb& );
+		FMOD::DSP* create_frequency_effect( const AudioEffectCreateInfo::FrequencyPass::Pass&, detail::FrequnecyType );
+		FMOD::DSP* create_echo_effect( const AudioEffectCreateInfo::Echo& );
+		FMOD::DSP* create_distortion_effect( const AudioEffectCreateInfo::Distortion& );
+		FMOD::DSP* create_chorus_effect( const AudioEffectCreateInfo::Chorus& );
+		FMOD::DSP* create_flange_effect( const AudioEffectCreateInfo::Flange& );
+		FMOD::DSP* create_compressor_effect( const AudioEffectCreateInfo::Compressor& );
+		FMOD::DSP* create_parameq( const AudioEffectCreateInfo::ParamEQ& );
 	};
 
 } // namespace lum::ahi::fmod

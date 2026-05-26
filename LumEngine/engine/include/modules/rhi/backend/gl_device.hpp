@@ -84,7 +84,7 @@ namespace lum::rhi::gl {
 
 		void Copy( TextureHandle, TextureHandle ) override;
 
-		void UnbindTexture( TextureType ) override;
+		void UnbindTexture( uint16 ) override;
 
 		void UpdateTexture( TextureHandle, const TextureUpdateDescription& ) override;
 

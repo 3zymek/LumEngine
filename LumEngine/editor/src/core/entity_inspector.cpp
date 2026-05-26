@@ -25,7 +25,7 @@ namespace lum::editor {
 
 		ImGui::Separator( );
 
-		if (selectedEntity != ecs::skNullEntity) {
+		if (selectedEntity != ecs::kNullEntity) {
 			FCollapsingHeaderArgs args;
 			scene->mEntityMgr.ForEachComponent(
 				selectedEntity,

@@ -34,7 +34,7 @@ namespace lum::rhi {
 		BufferUsage		mUsage	= BufferUsage::Static;
 		Flags<MapFlag>	mFlags	{};
 		usize			mSize	= 0;
-		bool			bMapped	= false;
+		bool			mMapped	= false;
 
 	};
 

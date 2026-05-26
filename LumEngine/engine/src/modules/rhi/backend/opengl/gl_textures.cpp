@@ -40,9 +40,9 @@ namespace lum::rhi::gl {
 		);
 
 	}
-	void GLDevice::UnbindTexture( TextureType type ) {
+	void GLDevice::UnbindTexture( uint16 unit ) {
 
-		glBindTextureUnit( skTextureTypeLookup[ LookupCast( type ) ], 0 );
+		glBindTextureUnit( unit, 0 );
 
 	}
 	void GLDevice::UpdateTexture( TextureHandle tex, const TextureUpdateDescription& desc ) {

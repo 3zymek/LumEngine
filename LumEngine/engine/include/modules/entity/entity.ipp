@@ -12,28 +12,28 @@ namespace lum {
 
 	template<ecs::detail::Component tType>
 	tType& ManagedEntity::AddComponent( tType component ) {
-		return mEntityManager->template AddComponent<tType>(mID, component);
+		return mEntityManager->template AddComponent<tType>(mId, component);
 	}
 
 	template<ecs::detail::Component tType>
 	tType* ManagedEntity::GetComponent( ) {
-		return mEntityManager->template GetComponent<tType>(mID);
+		return mEntityManager->template GetComponent<tType>(mId);
 	}
 
 	template<ecs::detail::Component tType>
 	ManagedEntity& ManagedEntity::RemoveComponent( ) {
-		mEntityManager->template RemoveComponent<tType>(mID);
+		mEntityManager->template RemoveComponent<tType>(mId);
 		return *this;
 	}
 
 	template<ecs::detail::Component tType>
 	bool ManagedEntity::HasComponent( ) {
-		return mEntityManager->template HasComponent<tType>(mID);
+		return mEntityManager->template HasComponent<tType>(mId);
 	}
 
 	template<ecs::detail::Component tType, ecs::detail::Component... tRest>
 	bool ManagedEntity::HasComponents( ) {
-		return mEntityManager->template HasComponents<tType, tRest...>(mID);
+		return mEntityManager->template HasComponents<tType, tRest...>(mId);
 	}
 
 }

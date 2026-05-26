@@ -31,7 +31,7 @@ namespace lum::ecs {
 		for (EntityID i = 0; i < limits::kMaxComponentTypes; i++) {
 
 			if (mComponentPools[ i ] != nullptr)
-				mComponentPools[ i ]->Remove( entity.mID );
+				mComponentPools[ i ]->Remove( entity.mId );
 
 		}
 	}

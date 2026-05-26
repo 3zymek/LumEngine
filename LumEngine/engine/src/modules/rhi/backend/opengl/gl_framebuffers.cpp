@@ -182,10 +182,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetColorMask( bool r, bool g, bool b, bool a ) {
 
-		if (r == mColorMask.r &&
-			 g == mColorMask.g &&
-			 b == mColorMask.b &&
-			 a == mColorMask.a) {
+		if (r == mColorMask.mR &&
+			 g == mColorMask.mG &&
+			 b == mColorMask.mB &&
+			 a == mColorMask.mA) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
@@ -197,10 +197,10 @@ namespace lum::rhi::gl {
 			a ? GL_TRUE : GL_FALSE
 		);
 
-		mColorMask.r = r;
-		mColorMask.g = g;
-		mColorMask.b = b;
-		mColorMask.a = a;
+		mColorMask.mR = r;
+		mColorMask.mG = g;
+		mColorMask.mB = b;
+		mColorMask.mA = a;
 
 		LUM_PROFILER_CACHE_MISS( );
 
@@ -208,25 +208,25 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetColorMask( ColorMask rgba ) {
 
-		if (rgba.r == mColorMask.r &&
-			 rgba.g == mColorMask.g &&
-			 rgba.b == mColorMask.b &&
-			 rgba.a == mColorMask.a) {
+		if (rgba.mR == mColorMask.mR &&
+			 rgba.mG == mColorMask.mG &&
+			 rgba.mB == mColorMask.mB &&
+			 rgba.mA == mColorMask.mA) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
 		glColorMask(
-			rgba.r ? GL_TRUE : GL_FALSE,
-			rgba.g ? GL_TRUE : GL_FALSE,
-			rgba.b ? GL_TRUE : GL_FALSE,
-			rgba.a ? GL_TRUE : GL_FALSE
+			rgba.mR ? GL_TRUE : GL_FALSE,
+			rgba.mG ? GL_TRUE : GL_FALSE,
+			rgba.mB ? GL_TRUE : GL_FALSE,
+			rgba.mA ? GL_TRUE : GL_FALSE
 		);
 
-		mColorMask.r = rgba.r;
-		mColorMask.g = rgba.g;
-		mColorMask.b = rgba.b;
-		mColorMask.a = rgba.a;
+		mColorMask.mR = rgba.mR;
+		mColorMask.mG = rgba.mG;
+		mColorMask.mB = rgba.mB;
+		mColorMask.mA = rgba.mA;
 
 		LUM_PROFILER_CACHE_MISS( );
 

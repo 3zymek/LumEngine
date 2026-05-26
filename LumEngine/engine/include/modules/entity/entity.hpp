@@ -22,16 +22,16 @@ namespace lum {
 	public:
 
 		friend class ecs::MEntityManager;
-		Entity( EntityID id ) : mID( id ) { }
+		Entity( EntityID id ) : mId( id ) { }
 
-		EntityID GetID( ) const noexcept { return mID; }
-		bool IsVisible( ) const noexcept { return bVisible; }
-		void SetVisible( bool visible ) { bVisible = visible; }
+		EntityID GetID( ) const noexcept { return mId; }
+		bool IsVisible( ) const noexcept { return mVisible; }
+		void SetVisible( bool visible ) { mVisible = visible; }
 
 	private:
 
-		EntityID mID;
-		bool bVisible = true;
+		EntityID mId;
+		bool mVisible = true;
 
 	};
 

@@ -19,18 +19,18 @@ namespace lum::ecs {
 	//-----------------------------------------------------------------------------
 
 	template<detail::Component tType>
-	tType& MEntityManager::AddComponent( EntityID entityID, tType component ) {
-		tType& retVal = GetPool<tType>( ).Add( entityID, component );
+	tType& MEntityManager::AddComponent( EntityID entityId, tType component ) {
+		tType& retVal = GetPool<tType>( ).Add( entityId, component );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus->Emit( EComponentAdded<tType>{.mID = entityID, .mComponent = &retVal } );
+		mEventBus->Emit( EComponentAdded<tType>{.mID = entityId, .mComponent = &retVal } );
 		return retVal;
 	}
 
 	template<detail::Component tType>
 	tType& MEntityManager::AddComponent( Entity entity, tType component ) {
-		tType& retVal = GetPool<tType>( ).Add( entity.mID, component );
+		tType& retVal = GetPool<tType>( ).Add( entity.mId, component );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus->Emit( EComponentAdded<tType>{.mID = entity.mID, .mComponent = &retVal } );
+		mEventBus->Emit( EComponentAdded<tType>{.mID = entity.mId, .mComponent = &retVal } );
 		return retVal;
 	}
 
@@ -39,13 +39,13 @@ namespace lum::ecs {
 	//-----------------------------------------------------------------------------
 
 	template<detail::Component tType>
-	tType* MEntityManager::GetComponent( EntityID entityID ) {
-		return GetPool<tType>( ).Get( entityID );
+	tType* MEntityManager::GetComponent( EntityID entityId ) {
+		return GetPool<tType>( ).Get( entityId );
 	}
 
 	template<detail::Component tType>
 	tType* MEntityManager::GetComponent( Entity entity ) {
-		return GetPool<tType>( ).Get( entity.mID );
+		return GetPool<tType>( ).Get( entity.mId );
 	}
 
 	//-----------------------------------------------------------------------------
@@ -53,17 +53,17 @@ namespace lum::ecs {
 	//-----------------------------------------------------------------------------
 
 	template<detail::Component tType>
-	void MEntityManager::RemoveComponent( EntityID entityID ) {
-		GetPool<tType>( ).Remove( entityID );
+	void MEntityManager::RemoveComponent( EntityID entityId ) {
+		GetPool<tType>( ).Remove( entityId );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus->Emit( EComponentRemoved<tType>{ .mID = entityID } );
+		mEventBus->Emit( EComponentRemoved<tType>{ .mID = entityId } );
 	}
 
 	template<detail::Component tType>
 	void MEntityManager::RemoveComponent( Entity entity ) {
-		GetPool<tType>( ).Remove( entity.mID );
+		GetPool<tType>( ).Remove( entity.mId );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus->Emit( EComponentRemoved<tType>{ .mID = entity.mID } );
+		mEventBus->Emit( EComponentRemoved<tType>{ .mID = entity.mId } );
 	}
 
 	//-----------------------------------------------------------------------------
@@ -71,23 +71,23 @@ namespace lum::ecs {
 	//-----------------------------------------------------------------------------
 
 	template<detail::Component tType>
-	bool MEntityManager::HasComponent( EntityID entityID ) {
-		return GetPool<tType>( ).Has( entityID );
+	bool MEntityManager::HasComponent( EntityID entityId ) {
+		return GetPool<tType>( ).Has( entityId );
 	}
 
 	template<detail::Component tType>
 	bool MEntityManager::HasComponent( Entity entity ) {
-		return GetPool<tType>( ).Has( entity.mID );
+		return GetPool<tType>( ).Has( entity.mId );
 	}
 
 	template<detail::Component tFirst, detail::Component... tRest>
-	bool MEntityManager::HasComponents( EntityID entityID ) {
-		return (HasComponent<tFirst>( entityID ) && (HasComponent<tRest>( entityID ) && ...));
+	bool MEntityManager::HasComponents( EntityID entityId ) {
+		return (HasComponent<tFirst>( entityId ) && (HasComponent<tRest>( entityId ) && ...));
 	}
 
 	template<detail::Component tFirst, detail::Component... tRest>
 	bool MEntityManager::HasComponents( Entity entity ) {
-		return (HasComponent<tFirst>( entity.mID ) && (HasComponent<tRest>( entity.mID ) && ...));
+		return (HasComponent<tFirst>( entity.mId ) && (HasComponent<tRest>( entity.mId ) && ...));
 	}
 
 	//-----------------------------------------------------------------------------

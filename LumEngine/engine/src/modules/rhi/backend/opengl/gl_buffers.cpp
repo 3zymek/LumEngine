@@ -72,12 +72,13 @@ namespace lum::rhi::gl {
 
 		Buffer& buffer = mBuffers[ buff ];
 
-		LUM_ASSERT( offset + size < buffer.mSize || size < buffer.mSize, "Invalid offset or size" );
-		if (size <= 0) size = buffer.mSize;
+		LUM_ASSERT( offset + size <= buffer.mSize || size < buffer.mSize, "Invalid offset or size" );
+		if (size == 0) size = buffer.mSize;
 
 		vptr ptr = glMapNamedBufferRange( buffer.mHandle, offset, size, translate_mapping_flags( flags ) );
 
 		LUM_ASSERT( ptr, "Failed to map buffer" );
+		buffer.mMapped = true;
 
 		return ptr;
 	}
@@ -87,7 +88,7 @@ namespace lum::rhi::gl {
 		LUM_RETURN_IF( !IsValid( buff ), LUM_SEV_WARN, "Invalid buffer" );
 
 		Buffer& buffer = mBuffers[ buff ];
-		if (buffer.bMapped) return;
+		if (!buffer.mMapped) return;
 
 		glUnmapNamedBuffer( buffer.mHandle );
 

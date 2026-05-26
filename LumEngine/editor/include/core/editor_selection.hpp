@@ -34,7 +34,7 @@ namespace lum::editor {
 	private:
 
 		inline static SelectionType mType = SelectionType::None;
-		inline static EntityID mEntity = ecs::skNullEntity;
+		inline static EntityID mEntity = ecs::kNullEntity;
 		inline static std::filesystem::path mFilepath;
 
 	};

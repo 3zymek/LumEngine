@@ -200,10 +200,10 @@ namespace lum {
 
 		/* @brief Per-channel write mask controlling which color channels are written to the framebuffer. */
 		struct ColorMask {
-			bool r : 1 = true; /* @brief Enable writes to the red channel. */
-			bool g : 1 = true; /* @brief Enable writes to the green channel. */
-			bool b : 1 = true; /* @brief Enable writes to the blue channel. */
-			bool a : 1 = true; /* @brief Enable writes to the alpha channel. */
+			bool mR : 1 = true; /* @brief Enable writes to the red channel. */
+			bool mG : 1 = true; /* @brief Enable writes to the green channel. */
+			bool mB : 1 = true; /* @brief Enable writes to the blue channel. */
+			bool mA : 1 = true; /* @brief Enable writes to the alpha channel. */
 		};
 
 		/* @brief Internal implementation details for the RHI.
@@ -237,7 +237,7 @@ namespace lum {
 			* Indexed by the underlying value of EDataFormat.
 			*/
 			inline constexpr
-				uint8 gDataFormatLookup[ ] = { 1, 2, 3, 4, 9, 16 };
+				uint8 kDataFormatLookup[ ] = { 1, 2, 3, 4, 9, 16 };
 
 		} // namespace lum::rhi::detail
 

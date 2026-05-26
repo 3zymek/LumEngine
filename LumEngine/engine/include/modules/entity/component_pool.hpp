@@ -49,38 +49,38 @@ namespace lum::ecs {
 			* @param component Component value to store.
 			* @return Reference to the stored component.
 			*/
-			tType& Add( EntityID entityID, tType component ) {
-				if (!Has( entityID ))
-					mComponents.Append( component, entityID );
-				return mComponents[ entityID ];
+			tType& Add( EntityID entityId, tType component ) {
+				if (!Has( entityId ))
+					mComponents.Append( component, entityId );
+				return mComponents[ entityId ];
 			}
 
 			/* @brief Returns a pointer to the component on the given entity.
 			* @param entityID Target entity ID.
 			* @return Pointer to component, or nullptr if not present.
 			*/
-			tType* Get( EntityID entityID ) {
-				return mComponents.Get( entityID );
+			tType* Get( EntityID entityId ) {
+				return mComponents.Get( entityId );
 			}
 
 			/* @brief Removes the component from the given entity.
 			* @param entityID Target entity ID.
 			*/
-			void Remove( EntityID& entityID ) override {
-				mComponents.Remove( entityID );
-				entityID = skNullEntity;
+			void Remove( EntityID& entityId ) override {
+				mComponents.Remove( entityId );
+				entityId = kNullEntity;
 			}
 
-			bool Contains( EntityID entityID ) override {
-				return Has( entityID );
+			bool Contains( EntityID entityId ) override {
+				return Has( entityId );
 			}
 
 			/* @brief Checks whether the given entity has this component.
 			* @param entityID Target entity ID.
 			* @return True if the component exists on the entity.
 			*/
-			bool Has( EntityID entityID ) {
-				return mComponents.Contains( entityID );
+			bool Has( EntityID entityId ) {
+				return mComponents.Contains( entityId );
 			}
 
 			StringView GetParseName( ) override { return GetComponentParseName<tType>( ); }

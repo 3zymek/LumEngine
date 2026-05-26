@@ -39,7 +39,7 @@ namespace lum {
 
 		// Compile-time flag table indexed by SoundCategory.
 		// Order must match SoundCategory enum declaration exactly.
-		inline constexpr Flags<ahi::SoundFlag> gkSoundCategoryFlags[ ] = {
+		inline constexpr Flags<ahi::SoundFlag> kSoundCategoryFlags[ ] = {
 			// SFX
 			ahi::SoundFlag::CreateSample | ahi::SoundFlag::Flat2D,
 			// SFX3D
@@ -54,7 +54,7 @@ namespace lum {
 
 		// Returns the AHI sound flags associated with the given category.
 		inline constexpr Flags<ahi::SoundFlag> GetSoundFlags( SoundCategory category ) {
-			return detail::gkSoundCategoryFlags[ static_cast< byte >(category) ];
+			return detail::kSoundCategoryFlags[ static_cast< byte >(category) ];
 		}
 
 	} // namespace detail

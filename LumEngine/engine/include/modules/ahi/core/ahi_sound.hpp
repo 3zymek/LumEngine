@@ -31,11 +31,11 @@ namespace lum::ahi {
 	* Owns playback parameters (volume, pitch, position, loop) and a dirty flag
 	* that signals AudioDevice::Update() to flush changes to the backend.
 	*/
-	struct FSoundInstance {
+	struct SoundInstance {
 
-		FSoundInstance( ) : mInstanceID( GenerateID<FSoundInstance, InstID>::Get() ) { }
+		SoundInstance( ) : mInstanceId( GenerateID<SoundInstance, InstID>::Get() ) { }
 
-		InstID		mInstanceID = 0;
+		InstID		mInstanceId = 0;
 		SoundHandle	mSound;
 		ChannelGroupHandle mGroup;
 
@@ -52,7 +52,7 @@ namespace lum::ahi {
 	/* @brief Lightweight handle to a loaded sound asset. */
 	struct FAudioSound {
 
-		uint32 mID = 0;
+		uint32 mId = 0;
 
 	};
 

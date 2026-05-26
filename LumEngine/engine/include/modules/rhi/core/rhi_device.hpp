@@ -212,9 +212,9 @@ namespace lum::rhi {
 		virtual void Copy( TextureHandle src, TextureHandle dst ) = 0;
 
 		/* @brief Unbinds any texture of the given type from the pipeline.
-		* @param type Texture type to unbind (e.g. Texture2D, Cubemap).
+		* @param unit Texture unit to unbind.
 		*/
-		virtual void UnbindTexture( TextureType type ) = 0;
+		virtual void UnbindTexture( uint16 unit ) = 0;
 
 		/* @brief Updates the contents of an existing texture.
 		* @param tex  Handle of the texture to update.
@@ -753,7 +753,7 @@ namespace lum::rhi {
 		CullState			mCullState{};
 		ScissorState		mScissorState{};
 		DepthStencilState	mDepthStencilState{};
-		RasterizerState	mRasterizerState{};
+		RasterizerState		mRasterizerState{};
 		ViewportState		mViewportState{};
 		ColorMask			mColorMask{};
 

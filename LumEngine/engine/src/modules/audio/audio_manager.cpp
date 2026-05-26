@@ -71,14 +71,14 @@ namespace lum {
 
 	}
 
-	void MAudioManager::PlayOneShot( StringView relativePath, const ahi::FPlaybackDescriptor& desc ) {
+	void MAudioManager::PlayOneShot( StringView relativePath, const ahi::PlaybackDescriptor& desc ) {
 
 		ahi::SoundHandle sound = GetSound( relativePath );
 		mDevice->PlayOneShot( sound, desc );
 
 	}
 
-	void MAudioManager::Set3DListenerAttributes( const ahi::FListenerAttributes& attrs ) {
+	void MAudioManager::Set3DListenerAttributes( const ahi::ListenerAttributes& attrs ) {
 
 		mDevice->Set3DListenerAttributes( attrs );
 
@@ -92,10 +92,10 @@ namespace lum {
 
 	ahi::AudioEffectHandle MAudioManager::CreateEffect( StringView name, ahi::EffectPreset preset ) {
 
-		return CreateEffect( name, ahi::detail::gkEffectPresetLookup[ ToUnderlyingEnum( preset ) ] );
+		return CreateEffect( name, ahi::detail::kEffectPresetLookup[ ToUnderlyingEnum( preset ) ] );
 
 	}
-	ahi::AudioEffectHandle MAudioManager::CreateEffect( StringView name, const ahi::FAudioEffectDescriptor& desc ) {
+	ahi::AudioEffectHandle MAudioManager::CreateEffect( StringView name, const ahi::AudioEffectCreateInfo& desc ) {
 
 		HashedStr hash = HashStr( name );
 
@@ -208,7 +208,7 @@ namespace lum {
 
 		mgr->Each<CCamera, CTransform>(
 			[&]( CCamera& camera, CTransform& transform ) {
-				ahi::FListenerAttributes attrs;
+				ahi::ListenerAttributes attrs;
 
 				attrs.mPosition = transform.mPosition;
 				attrs.mUp = camera.mUp;
@@ -221,7 +221,7 @@ namespace lum {
 		mgr->EachWithID<CTransform, CAudioEmitter>(
 			[&]( EntityID id, CTransform& transf, CAudioEmitter& emitter ) {
 
-				if (emitter.bMarked) {
+				if (emitter.mMarked) {
 
 					auto& inst = mInstances[ id ];
 
@@ -229,13 +229,13 @@ namespace lum {
 					inst.mPitch = emitter.mPitch;
 					inst.mMinDistance = emitter.mMinDistance;
 					inst.mMaxDistance = emitter.mMaxDistance;
-					if (emitter.bPaused)
+					if (emitter.mPaused)
 						inst.mFlags.Enable( ahi::InstanceFlag::Paused );
-					if (emitter.bPlaying)
+					if (emitter.mPlaying)
 						inst.mFlags.Enable( ahi::InstanceFlag::Playing );
-					if (emitter.bLooped)
+					if (emitter.mLooped)
 						inst.mFlags.Enable( ahi::InstanceFlag::Looped );
-					if (emitter.bPlay)
+					if (emitter.mPlay)
 						inst.mFlags.Enable( ahi::InstanceFlag::Play );
 					inst.mSound = emitter.mSound;
 
@@ -243,7 +243,7 @@ namespace lum {
 
 				}
 
-				emitter.bMarked = false;
+				emitter.mMarked = false;
 
 			} );
 

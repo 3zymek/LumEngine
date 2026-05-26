@@ -31,15 +31,15 @@ namespace lum {
 		float32 mMaxDistance = 50.0f;
 
 		/* @brief Whether playback is currently paused. */
-		bool bPaused = false;
+		bool mPaused = false;
 
 		/* @brief Whether the emitter is in an active playing state (true even if paused). */
-		bool bPlaying = false;
-		bool bStop = false;
-		bool bPlay = false;
+		bool mPlaying = false;
+		bool mStop = false;
+		bool mPlay = false;
 
 		/* @brief Whether playback should loop. */
-		bool bLooped = false;
+		bool mLooped = false;
 
 	};
 

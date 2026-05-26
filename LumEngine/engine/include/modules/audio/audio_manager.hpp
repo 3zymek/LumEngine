@@ -48,12 +48,12 @@ namespace lum {
 		* @param relativePath Path to the sound asset.
 		* @param desc         Playback parameters (volume, pitch).
 		*/
-		void PlayOneShot( StringView relativePath, const ahi::FPlaybackDescriptor& desc );
+		void PlayOneShot( StringView relativePath, const ahi::PlaybackDescriptor& desc );
 
 		/* @brief Updates the 3D listener position and orientation for spatial audio.
 		* Should be called once per frame with the active camera transform.
 		*/
-		void Set3DListenerAttributes( const ahi::FListenerAttributes& );
+		void Set3DListenerAttributes( const ahi::ListenerAttributes& );
 
 		/* @brief Immediately stops all currently playing sounds. */
 		void StopAll( );
@@ -72,7 +72,7 @@ namespace lum {
 		* @param name Identifier used for later lookup.
 		* @param desc Effect descriptor with per-effect parameters.
 		*/
-		ahi::AudioEffectHandle CreateEffect( StringView name, const ahi::FAudioEffectDescriptor& desc );
+		ahi::AudioEffectHandle CreateEffect( StringView name, const ahi::AudioEffectCreateInfo& desc );
 
 		/* @brief Destroys a registered effect by name or handle. */
 		void DeleteEffect( StringView name );
@@ -127,10 +127,10 @@ namespace lum {
 		ahi::AudioDevice* mDevice = nullptr;
 		ev::EventBus* mEventBus = nullptr;
 
-		std::unordered_map<HashedStr, ahi::SoundHandle>        mSounds;
-		std::unordered_map<HashedStr, ahi::ChannelGroupHandle> mGroups;
-		std::unordered_map<HashedStr, ahi::AudioEffectHandle>  mEffects;
-		std::unordered_map<EntityID, ahi::FSoundInstance>     mInstances;
+		std::unordered_map<HashedStr, ahi::SoundHandle>			mSounds;
+		std::unordered_map<HashedStr, ahi::ChannelGroupHandle>	mGroups;
+		std::unordered_map<HashedStr, ahi::AudioEffectHandle>	mEffects;
+		std::unordered_map<EntityID, ahi::SoundInstance>		mInstances;
 
 	};
 

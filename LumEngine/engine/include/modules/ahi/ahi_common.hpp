@@ -35,7 +35,7 @@ namespace lum::ahi {
 
 	};
 
-	struct FListenerAttributes {
+	struct ListenerAttributes {
 
 		Vector3 mPosition;
 		Vector3 mVelocity;
@@ -70,12 +70,12 @@ namespace lum::ahi {
 	/* @brief Sentinel handle representing the master channel group.
 	* Used as the default routing target in AudioDevice::Play().
 	*/
-	inline constexpr ChannelGroupHandle gDefaultGroup( 0, 5000 );
+	inline constexpr ChannelGroupHandle kDefaultGroup( 0, 5000 );
 
 	/* @brief Parameters for fire-and-forget one-shot playback. */
-	struct FPlaybackDescriptor {
+	struct PlaybackDescriptor {
 
-		ChannelGroupHandle mGroup = gDefaultGroup;
+		ChannelGroupHandle mGroup = kDefaultGroup;
 
 		float32 mVolume = 1.0f; // Playback volume (0.0 = silent, 1.0 = full)
 		float32 mPitch = 1.0f; // Playback pitch (1.0 = original, 2.0 = one octave up)

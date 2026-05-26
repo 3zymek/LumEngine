@@ -49,7 +49,7 @@ namespace lum::ahi {
 		* @param desc Descriptor containing enabled effects and their parameters.
 		* @return Handle to the created effect.
 		*/
-		virtual AudioEffectHandle CreateEffect( const FAudioEffectDescriptor& desc ) = 0;
+		virtual AudioEffectHandle CreateEffect( const AudioEffectCreateInfo& desc ) = 0;
 
 		/* @brief Creates an audio effect chain from a built-in preset.
 		* @param preset  Named preset from AudioPreset — pass AudioPreset::Off for a no-op chain.
@@ -89,13 +89,13 @@ namespace lum::ahi {
 		* @param sound Handle to the sound to play.
 		* @param desc  Playback parameters (volume, pitch).
 		*/
-		virtual void PlayOneShot( SoundHandle sound, const FPlaybackDescriptor& desc ) = 0;
+		virtual void PlayOneShot( SoundHandle sound, const PlaybackDescriptor& desc ) = 0;
 
 		/* @brief Plays a sound as a tracked instance, allowing runtime control.
 		* @param inst  Sound instance carrying playback state (volume, pitch, position, loop).
 		* @param group Channel group to route the sound through. Defaults to master.
 		*/
-		virtual void Play( FSoundInstance& inst, ChannelGroupHandle group = gDefaultGroup ) = 0;
+		virtual void Play( SoundInstance& inst, ChannelGroupHandle group = kDefaultGroup ) = 0;
 
 		/* @brief Immediately stops all currently playing sounds. */
 		virtual void StopAll( ) = 0;
@@ -111,7 +111,7 @@ namespace lum::ahi {
 		* @param forward Forward direction vector.
 		* @param up      Up direction vector.
 		*/
-		virtual void Set3DListenerAttributes( const ahi::FListenerAttributes& ) = 0;
+		virtual void Set3DListenerAttributes( const ahi::ListenerAttributes& ) = 0;
 
 		/* @brief Configures global 3D audio behaviour.
 		* @param dopplerScale    Doppler effect intensity. 0 = off, 1 = realistic.
@@ -128,7 +128,7 @@ namespace lum::ahi {
 		* Must be called once per frame. Applies dirty state (volume, pitch, position, loop, pause, stop).
 		* @param instances All currently marked sound instances to update.
 		*/
-		virtual void UpdateInstance( FSoundInstance& instance ) = 0;
+		virtual void UpdateInstance( SoundInstance& instance ) = 0;
 
 		virtual void EndFrame( ) = 0;
 
@@ -136,7 +136,7 @@ namespace lum::ahi {
 
 		cstd::HandlePool<SoundHandle, vptr>	mSounds{ limits::kMaxAudioSounds };
 		cstd::HandlePool<ChannelGroupHandle, vptr> mChannelGroups{ limits::kMaxChannelsGroup };
-		cstd::HandlePool<AudioEffectHandle, FAudioEffect> mEffects{ limits::kMaxAudioEffects };
+		cstd::HandlePool<AudioEffectHandle, AudioEffect> mEffects{ limits::kMaxAudioEffects };
 		std::unordered_map<InstID, vptr> mChannels;
 
 	};
