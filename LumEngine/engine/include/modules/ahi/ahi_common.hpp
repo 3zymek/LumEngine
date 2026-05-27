@@ -85,6 +85,6 @@ namespace lum::ahi {
 } // namespace lum::ahi
 
 namespace lum {
-	LUM_ENUM_OPERATIONS( ahi::SoundFlag );
-	LUM_ENUM_OPERATIONS( ahi::InitFlag );
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( ahi::SoundFlag );
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( ahi::InitFlag );
 } // namespace lum

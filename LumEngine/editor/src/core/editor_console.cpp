@@ -47,16 +47,27 @@ namespace lum::editor {
 			if (bDrawTime)
 				draw_timestamp( log );
 
-			if (log.mSeverity == LogSeverity::Debug)
-				mNumDebugLogs++;
-			else if (log.mSeverity == LogSeverity::Info)
-				mNumInfoLogs++;
-			else if (log.mSeverity == LogSeverity::Warn)
-				mNumWarnLogs++;
-			else if (log.mSeverity == LogSeverity::Error)
-				mNumErrorLogs++;
+			SeverityBitmask severity = {};
 
-			if (!mSeverity.Has( log.mSeverity )) continue;
+			if (log.mSeverity == LogSeverityLevel::Debug) {
+				mNumDebugLogs++;
+				severity = SeverityBitmask::Debug;
+			}
+			else if (log.mSeverity == LogSeverityLevel::Info) {
+				mNumInfoLogs++;
+				severity = SeverityBitmask::Info;
+			}
+			else if (log.mSeverity == LogSeverityLevel::Warn) {
+				mNumWarnLogs++;
+				severity = SeverityBitmask::Warn;
+			}
+			else if (log.mSeverity == LogSeverityLevel::Error) {
+				mNumErrorLogs++;
+				severity = SeverityBitmask::Error;
+			}
+			else severity = SeverityBitmask::Fatal;
+
+			if (!mSeverity.Has( severity )) continue;
 
 			auto it = std::search(
 				log.mMessage.begin( ), log.mMessage.end( ),
@@ -66,7 +77,7 @@ namespace lum::editor {
 
 			if (it == log.mMessage.end() && bFilterEnabled) continue;
 
-			ImVec4 color = sSeverityColors[ ToUnderlyingEnum( log.mSeverity ) ];
+			ImVec4 color = skSeverityColors.at( severity );
 			ImGui::TextColored( color, "%s", log.mMessage.data( ) );
 
 		}
@@ -127,10 +138,10 @@ namespace lum::editor {
 
 		ImGui::Separator( );
 
-		handle_filter( ICON_FA_BUG, mNumDebugLogs, LogSeverity::Debug );
-		handle_filter( ICON_FA_INFO_CIRCLE, mNumInfoLogs, LogSeverity::Info );
-		handle_filter( ICON_FA_EXCLAMATION_TRIANGLE, mNumWarnLogs, LogSeverity::Warn );
-		handle_filter( ICON_FA_EXCLAMATION_CIRCLE, mNumErrorLogs, LogSeverity::Error );
+		handle_filter( ICON_FA_BUG, mNumDebugLogs, SeverityBitmask::Debug );
+		handle_filter( ICON_FA_INFO_CIRCLE, mNumInfoLogs, SeverityBitmask::Info );
+		handle_filter( ICON_FA_EXCLAMATION_TRIANGLE, mNumWarnLogs, SeverityBitmask::Warn );
+		handle_filter( ICON_FA_EXCLAMATION_CIRCLE, mNumErrorLogs, SeverityBitmask::Error );
 
 		ImGui::EndChild( ); // ##ConsoleSidebar
 
@@ -183,7 +194,7 @@ namespace lum::editor {
 
 	}
 
-	void Console::handle_filter( StringView icon, uint32 numLogs, LogSeverity sev ) {
+	void Console::handle_filter( StringView icon, uint32 numLogs, SeverityBitmask sev ) {
 
 		static char buff[ 32 ]{};
 		FormatString( buff, "%s  %d", icon.data( ), numLogs );
@@ -195,7 +206,7 @@ namespace lum::editor {
 		ImGui::PushStyleColor( ImGuiCol_Button, color );
 		ImGui::PushStyleColor( ImGuiCol_Border, ImVec4( 1.0f, 1.0f, 1.0f, 0.1f ) );
 		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4( 0.2f, 0.2f, 0.2f, 1.0f ) );
-		ImVec4 base = sSeverityColors[ ToUnderlyingEnum( sev ) ];
+		ImVec4 base = skSeverityColors.at( sev );
 		ImVec4 finalCol = mSeverity.Has( sev ) ? base : ImVec4( base.x, base.y, base.z, 0.3f);
 		ImGui::PushStyleColor( ImGuiCol_Text, finalCol );
 

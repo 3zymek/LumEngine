@@ -34,10 +34,10 @@ namespace lum {
 		using EventT = uint32;
 
 		/* @brief Function pointer type for invoking a stored callback. */
-		using InvokeFn = void(*)(vptr userParam, cvptr event);
+		using InvokeFunction = void(*)(vptr userParam, cvptr event);
 
 		/* @brief Function pointer type for destroying a stored callback. */
-		using DestroyFn = void(*)(vptr userParam);
+		using DestroyFunction = void(*)(vptr userParam);
 
 		/* @brief Aligned storage buffer for type-erased lambda storage.
 		*  Sized to 256 bytes with maximum natural alignment.
@@ -50,15 +50,15 @@ namespace lum {
 		/* @brief Type-erased callback slot storing a lambda, invoke and destroy pointers. */
 		struct Callback {
 
-			Storage   mStorage{};          /* @brief Raw storage for the captured lambda. */
-			InvokeFn  mInvoke = nullptr;  /* @brief Pointer to the lambda invocation wrapper. */
-			DestroyFn mDestroy = nullptr;  /* @brief Pointer to the lambda destructor wrapper. */
-			bool      bActive = false;    /* @brief Whether this slot is currently occupied. */
+			Storage			mStorage{};          /* @brief Raw storage for the captured lambda. */
+			InvokeFunction  mInvoke = nullptr;  /* @brief Pointer to the lambda invocation wrapper. */
+			DestroyFunction mDestroy = nullptr;  /* @brief Pointer to the lambda destructor wrapper. */
+			bool			mActive = false;    /* @brief Whether this slot is currently occupied. */
 
 			/* @brief Destroys the stored lambda and marks the slot as inactive. */
 			void Destroy( ) {
 				(*mDestroy)(&mStorage);
-				bActive = false;
+				mActive = false;
 			}
 		};
 

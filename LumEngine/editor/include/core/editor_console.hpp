@@ -12,6 +12,16 @@
 
 namespace lum::editor {
 
+	enum class SeverityBitmask : bitfield {
+		None	= 0,
+		Debug	= 1 << 0,
+		Info	= 1 << 1,
+		Warn	= 1 << 2,
+		Error	= 1 << 3,
+		Fatal	= 1 << 4,
+		All		= Debug | Info | Warn | Error | Fatal
+	};
+
 	// In-engine console used for displaying and interacting with logs.
 	class Console {
 	public:
@@ -23,19 +33,19 @@ namespace lum::editor {
 		// Logs an info message through global logger.
 		template<typename... tArgs>
 		void Log( StringView msg, tArgs&&... args ) const noexcept {
-			LUM_LOG_INFO( msg.data( ), std::forward<tArgs>( args )... );
+			LogSeverityFlagLUM_LOG_INFO( msg.data( ), std::forward<tArgs>( args )... );
 		}
 
 		// Logs a warning message through global logger.
 		template<typename... tArgs>
 		void Warn( StringView msg, tArgs&&... args ) const noexcept {
-			LUM_LOG_WARN( msg.data( ), std::forward<tArgs>( args )... );
+			LogSeverityFlagLUM_LOG_WARN( msg.data( ), std::forward<tArgs>( args )... );
 		}
 
 		// Logs an error message through global logger.
 		template<typename... tArgs>
 		void Error( StringView msg, tArgs&&... args ) const noexcept {
-			LUM_LOG_ERROR( msg.data( ), std::forward<tArgs>( args )... );
+			LogSeverityFlagLUM_LOG_ERROR( msg.data( ), std::forward<tArgs>( args )... );
 		}
 
 		// Updates and renders console UI.
@@ -58,14 +68,14 @@ namespace lum::editor {
 
 		TimedTooltip mActionTooltip;
 
-		Flags<LogSeverity> mSeverity{ LogSeverity::All };
+		Flags<SeverityBitmask> mSeverity{ SeverityBitmask::All };
 
-		inline static std::unordered_map<SeverityMask, ImVec4> sSeverityColors = {
-			{ ToUnderlyingEnum( LogSeverity::Debug ), ImVec4( 0.55f, 0.55f, 0.60f, 1.0f ) },
-			{ ToUnderlyingEnum( LogSeverity::Info ),  ImVec4( 0.85f, 0.85f, 0.85f, 1.0f ) },
-			{ ToUnderlyingEnum( LogSeverity::Warn ),  ImVec4( 0.90f, 0.70f, 0.20f, 1.0f ) },
-			{ ToUnderlyingEnum( LogSeverity::Error ), ImVec4( 0.90f, 0.30f, 0.30f, 1.0f ) },
-			{ ToUnderlyingEnum( LogSeverity::Fatal ), ImVec4( 0.85f, 0.25f, 0.70f, 1.0f ) }
+		inline static const std::unordered_map<SeverityBitmask, ImVec4> skSeverityColors = {
+			{ SeverityBitmask::Debug, ImVec4( 0.55f, 0.55f, 0.60f, 1.0f ) },
+			{ SeverityBitmask::Info,  ImVec4( 0.85f, 0.85f, 0.85f, 1.0f ) },
+			{ SeverityBitmask::Warn,  ImVec4( 0.90f, 0.70f, 0.20f, 1.0f ) },
+			{ SeverityBitmask::Error, ImVec4( 0.90f, 0.30f, 0.30f, 1.0f ) },
+			{ SeverityBitmask::Fatal, ImVec4( 0.85f, 0.25f, 0.70f, 1.0f ) }
 		};
 
 		// Draws timestamp prefix for a log entry.
@@ -102,7 +112,10 @@ namespace lum::editor {
 		};
 
 		// Handles rendering of a filter button for given severity.
-		void handle_filter( StringView icon, uint32 numLogs, LogSeverity sev );
+		void handle_filter( StringView icon, uint32 numLogs, SeverityBitmask sev );
 	};
 
 } // namespace lum::editor
+namespace lum {
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::editor::SeverityBitmask );
+}

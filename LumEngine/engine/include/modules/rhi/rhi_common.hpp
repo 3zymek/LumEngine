@@ -243,7 +243,7 @@ namespace lum {
 
 	} // namespace lum::rhi
 
-	LUM_ENUM_OPERATIONS( rhi::MapFlag );
-	LUM_ENUM_OPERATIONS( rhi::BufferBit );
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::MapFlag );
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::BufferBit );
 
 } // namespace lum

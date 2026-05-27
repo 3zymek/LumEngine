@@ -179,7 +179,7 @@ namespace lum::ahi::fmod {
 
 		LUM_ASSERT( mSounds.Contains( inst.mSound ), "Invalid sound" );
 
-		FMOD::Sound* fmodSound = static_cast< FMOD::Sound* >(mSounds[ inst.mSound.mID ]);
+		FMOD::Sound* fmodSound = static_cast< FMOD::Sound* >(mSounds[ inst.mSound.mId ]);
 		FMOD::Channel* channel = nullptr;
 
 		mSystem->playSound( fmodSound, nullptr, inst.mFlags.Has( InstanceFlag::Paused ), &channel );

@@ -21,7 +21,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	std::optional<TextureData> AssetLoader::LoadTexture( RootID root, StringView filepath, uint8 expectedFormat ) {
+	std::optional<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, StringView filepath, uint8 expectedFormat ) {
 
 		String path = get_full_path( root, filepath );
 
@@ -30,7 +30,7 @@ namespace lum {
 			return std::nullopt;
 		}
 
-		TextureData texture;
+		ImageData texture;
 		texture.mIsHdr = path.ends_with( ".hdr" );
 
 		int32 format{};
@@ -63,7 +63,7 @@ namespace lum {
 		return texture;
 	}
 
-	std::optional<MeshData> AssetLoader::LoadMesh( RootID root, StringView filepath ) {
+	std::optional<MeshGeometry> ResourceLoader::LoadMeshFromFile( ResourceRoot root, StringView filepath ) {
 
 		String path = get_full_path( root, filepath );
 
@@ -84,7 +84,7 @@ namespace lum {
 			return std::nullopt;
 		}
 
-		MeshData finalData;
+		MeshGeometry finalData;
 
 		uint32 elementOffset = 0;
 
@@ -157,7 +157,7 @@ namespace lum {
 	}
 
 
-	String AssetLoader::ResolvePath( RootID root, StringView filepath ) {
+	String ResourceLoader::ResolvePath( ResourceRoot root, StringView filepath ) {
 
 		String path = get_full_path( root, filepath );
 
@@ -170,7 +170,7 @@ namespace lum {
 	}
 
 
-	String AssetLoader::LoadShader( RootID root, StringView filepath ) {
+	String ResourceLoader::BuildShaderSource( ResourceRoot root, StringView filepath ) {
 
 		String path = get_full_path( root, filepath );
 
@@ -180,7 +180,7 @@ namespace lum {
 			return "";
 		}
 
-		std::ifstream defines( sShaderDefine );
+		std::ifstream defines( sShaderDefineFile );
 		if (!defines.is_open( )) {
 			set_error_msg( strerror( errno ) );
 			return "";
@@ -197,7 +197,7 @@ namespace lum {
 		return ss.str( );
 	}
 
-	bool AssetLoader::WriteFile( RootID root, StringView filepath, const String& content ) {
+	bool ResourceLoader::WriteTextFile( ResourceRoot root, StringView filepath, const String& content ) {
 
 		String path = get_full_path( root, filepath );
 
@@ -211,7 +211,7 @@ namespace lum {
 
 		return true;
 	}
-	String AssetLoader::ReadFile( RootID root, StringView filepath ) {
+	String ResourceLoader::ReadTextFile( ResourceRoot root, StringView filepath ) {
 
 		String path = get_full_path( root, filepath );
 

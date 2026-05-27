@@ -24,13 +24,13 @@ namespace lum {
 		CenterCursor	= 1 << 6, // Cursor is centered in the window on creation.
 		NoCursor		= 1 << 7
 	};
-	LUM_ENUM_OPERATIONS( lum::WindowFlags );
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::WindowFlags );
 
 	/* @brief Descriptor used to configure a window on creation. */
 	struct WindowDescriptor {
 		Flags<WindowFlags> mFlags = {};
 		String mTitle = "LumEngine";			/* @brief Window title bar text. */
-		std::optional<TextureData> mIconData = std::nullopt; /* Optional loaded icon texture data. */
+		std::optional<ImageData> mIconData = std::nullopt; /* Optional loaded icon texture data. */
 		uint32 mHeight = 500;					/* @brief Initial window height in pixels. */
 		uint32 mWidth = 500;					/* @brief Initial window width in pixels. */
 		ev::EventBus* mEventBus = nullptr;		/* @brief Event bus to emit window events to. */

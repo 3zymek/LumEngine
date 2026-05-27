@@ -62,8 +62,6 @@ C  (Component)        - Component in ECS (Entity Component System)
 E  (Event)            - Event in EBS (Event Bus System)
 m  (member)           - Variable is a member of a class
 s  (static)           - Variable is static
-b  (boolean)          - Variable is boolean
-g  (global)           - Variable doesn't belong to any class (global state)
 k  (const)            - Variable is constant (or constexpr)
 t  (template)         - Template type/variable
 c  (concept)          - C++ Concept

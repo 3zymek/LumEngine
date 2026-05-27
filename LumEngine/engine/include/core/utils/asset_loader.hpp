@@ -17,13 +17,13 @@ namespace lum {
 	} // namespace lum::detail
 
 	/* @brief Identifies the root directory used for asset path resolution. */
-	enum class RootID : byte {
+	enum class ResourceRoot : byte {
 		Internal, // Engine internal assets directory.
 		External  // Project root directory set by the user.
 	};
 
 	/* @brief Raw texture data loaded from disk. */
-	struct TextureData {
+	struct ImageData {
 
 		/* @brief Texture width in pixels. */
 		int32 mWidth = 0;
@@ -45,7 +45,7 @@ namespace lum {
 	};
 
 	/* @brief Raw mesh data loaded from disk. */
-	struct MeshData {
+	struct MeshGeometry {
 
 		/* @brief List of vertices. */
 		std::vector<Vertex> mVertices;
@@ -64,16 +64,16 @@ namespace lum {
 	*
 	* @note Non-constructible and non-copyable — use static methods only.
 	*/
-	class AssetLoader {
+	class ResourceLoader {
 
-		using Path = detail::fs::path;
+		using FilePath = detail::fs::path;
 
 	public:
 
 		/* @brief Sets the project root directory for external asset resolution.
 		* @param path Absolute path to the project root.
 		*/
-		static void SetProjectRoot( Path path ) { sProjectRoot = path; }
+		static void SetProjectRoot( FilePath path ) { sProjectRoot = path; }
 
 		/* @brief Returns the current project root path as a string. */
 		LUM_NODISCARD
@@ -83,18 +83,18 @@ namespace lum {
 		* @param root           Root directory identifier.
 		* @param filepath       Path relative to the selected root.
 		* @param expectedFormat Number of channels to force (1-4). 0 = use native format from file.
-		* @return FTextureData on success, or empty on failure.
+		* @return TextureData on success, or empty on failure.
 		*/
 		LUM_NODISCARD
-			static std::optional<TextureData> LoadTexture( RootID root, StringView filepath, uint8 expectedFormat = 0 );
+			static std::optional<ImageData> LoadImageFromFile( ResourceRoot root, StringView filepath, uint8 expectedFormat = 0 );
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.
 		* @param filepath Path relative to the selected root.
-		* @return Populated FMeshData or empty on failure.
+		* @return Populated MeshData or empty on failure.
 		*/
 		LUM_NODISCARD
-			static std::optional<MeshData> LoadMesh( RootID root, StringView filepath );
+			static std::optional<MeshGeometry> LoadMeshFromFile( ResourceRoot root, StringView filepath );
 
 		/* @brief Resolves an absolute path from a root directory and a relative filepath.
 		* @param root     Root directory identifier.
@@ -102,7 +102,7 @@ namespace lum {
 		* @return Resolved absolute path, or empty if the file does not exist.
 		*/
 		LUM_NODISCARD
-			static String ResolvePath( RootID root, StringView filepath );
+			static String ResolvePath( ResourceRoot root, StringView filepath );
 
 		/* @brief Loads a shader source file from disk.
 		* Prepends the engine shader define header automatically.
@@ -111,16 +111,16 @@ namespace lum {
 		* @return Shader source as String or empty on failure.
 		*/
 		LUM_NODISCARD
-			static String LoadShader( RootID root, StringView filepath );
+			static String BuildShaderSource( ResourceRoot root, StringView filepath );
 
 		/* @brief Writes text content to a file at the given path.
 		* Creates the file if it does not exist, overwrites if it does.
 		* @param root Root directory identifier.
 		* @param filepath Path relative to the selected root.
 		* @param content Text content to write.
-		* @return If operation went succesfully.
+		* @return True if operation completed successfully.
 		*/
-		static bool WriteFile( RootID root, StringView filepath, const String& content );
+		static bool WriteTextFile( ResourceRoot root, StringView filepath, const String& content );
 
 		/* @brief Reads raw text content from a file.
 		* @param root Root directory identifier.
@@ -128,7 +128,7 @@ namespace lum {
 		* @return File contents as String or empty String on failure.
 		*/
 		LUM_NODISCARD
-			static String ReadFile( RootID root, StringView filepath );
+			static String ReadTextFile( ResourceRoot root, StringView filepath );
 
 		/* @brief Returns the last error message set by a failed load operation. */
 		static ccharptr GetErrorMessage( ) { return sLastErrorMessage; }
@@ -136,40 +136,40 @@ namespace lum {
 	private:
 
 		/* @brief Absolute path to the project root (external assets). */
-		static inline Path sProjectRoot = "";
+		static inline FilePath sProjectRoot = "";
 
 		/* @brief Absolute path to the engine internal assets directory. */
-		static inline Path sInternalRoot = detail::fs::current_path( ).parent_path( ) / "LumEngine" / "internal_assets";
+		static inline FilePath sInternalAssetsRoot = detail::fs::current_path( ).parent_path( ) / "LumEngine" / "internal_assets";
 
 		/* @brief Path to the shared shader define header prepended to all shaders. */
-		static inline Path sShaderDefine = detail::fs::current_path( ).parent_path( ) / "LumEngine" / "engine" / "include" / "modules" / "render" / "shaders_define.h";
+		static inline FilePath sShaderDefineFile = detail::fs::current_path( ).parent_path( ) / "LumEngine" / "engine" / "include" / "modules" / "render" / "shaders_define.h";
 
 		/* @brief Buffer storing the last asset load error message. */
 		static inline char sLastErrorMessage[ limits::kMaxErrorAssetLoadLength ]{};
 
 		/* @brief Sets the error message from a string literal. */
-		template<usize tL>
-		static void set_error_msg( const char( &msg )[ tL ] ) {
-			usize length = (tL < limits::kMaxErrorAssetLoadLength) ? tL : limits::kMaxErrorAssetLoadLength;
+		template<usize tLength>
+		static void set_error_msg( const char( &msg )[ tLength ] ) {
+			usize length = (tLength < limits::kMaxErrorAssetLoadLength) ? tLength : limits::kMaxErrorAssetLoadLength;
 			std::strncpy( sLastErrorMessage, msg, length );
 		}
 
 		/* @brief Sets the error message from a runtime string. */
-		static void set_error_msg( String msg ) {
+		static void set_error_msg( const String& msg ) {
 			std::strncpy( sLastErrorMessage, msg.data( ), sizeof( sLastErrorMessage ) );
 		}
 
-		static String get_full_path( RootID root, StringView filepath ) {
-			if (root == RootID::External)
+		static String get_full_path( ResourceRoot root, StringView filepath ) {
+			if (root == ResourceRoot::External)
 				return (sProjectRoot / filepath).lexically_normal( ).string( );
-			else if (root == RootID::Internal)
-				return (sInternalRoot / filepath).lexically_normal( ).string( );
+			else if (root == ResourceRoot::Internal)
+				return (sInternalAssetsRoot / filepath).lexically_normal( ).string( );
 			return "";
 		}
 
-		AssetLoader( const AssetLoader& ) = delete;
-		AssetLoader( AssetLoader&& ) = delete;
-		AssetLoader( ) = default;
+		ResourceLoader( const ResourceLoader& ) = delete;
+		ResourceLoader( ResourceLoader&& ) = delete;
+		ResourceLoader( ) = default;
 
 	};
 } // namespace lum

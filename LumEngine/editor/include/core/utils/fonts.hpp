@@ -22,7 +22,7 @@ namespace lum::editor {
             faConfig.GlyphMinAdvanceX = 16.0f;
 
             auto path = []( StringView name ) {
-                return AssetLoader::ResolvePath( RootID::Internal, name );
+                return ResourceLoader::ResolvePath( ResourceRoot::Internal, name );
                 };
 
             load_font( sDefaultSuperSmall, path( "fonts/Inter.ttf"), 12.0f, &faConfig, faRanges );
@@ -44,7 +44,7 @@ namespace lum::editor {
 
             font = io.Fonts->AddFontFromFileTTF( path.data(), size );
             io.Fonts->AddFontFromFileTTF(
-                AssetLoader::ResolvePath( RootID::Internal, "fonts/FontAwesome.ttf" ).data( ),
+                ResourceLoader::ResolvePath( ResourceRoot::Internal, "fonts/FontAwesome.ttf" ).data( ),
                 size,
                 cfg,
                 ranges

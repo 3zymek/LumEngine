@@ -21,21 +21,21 @@ namespace lum {
 		mRenderDevice = device;
 	}
 
-	rhi::ShaderHandle MShaderManager::LoadShader( ccharptr vertexPath, ccharptr fragmentPath, RootID root ) {
+	rhi::ShaderHandle MShaderManager::LoadShader( ccharptr vertexPath, ccharptr fragmentPath, ResourceRoot root ) {
 
 		uint64 hash = HashStr(vertexPath) ^ HashStr(fragmentPath);
 		if (mShaders.contains(hash))
 			return mShaders[hash];
 
-		std::optional<String> vertexData = AssetLoader::LoadShader(root, vertexPath);
+		std::optional<String> vertexData = ResourceLoader::BuildShaderSource(root, vertexPath);
 		if (!vertexData.has_value()) {
-			LUM_LOG_ERROR("Failed to load shader %s: %s", vertexPath, AssetLoader::GetErrorMessage());
+			LUM_LOG_ERROR("Failed to load shader %s: %s", vertexPath, ResourceLoader::GetErrorMessage());
 			return {};
 		}
 
-		std::optional<String> fragmentData = AssetLoader::LoadShader(root, fragmentPath);
+		std::optional<String> fragmentData = ResourceLoader::BuildShaderSource(root, fragmentPath);
 		if (!fragmentData.has_value()) {
-			LUM_LOG_ERROR("Failed to load shader %s: %s", vertexPath, AssetLoader::GetErrorMessage());
+			LUM_LOG_ERROR("Failed to load shader %s: %s", vertexPath, ResourceLoader::GetErrorMessage());
 			return {};
 		}
 

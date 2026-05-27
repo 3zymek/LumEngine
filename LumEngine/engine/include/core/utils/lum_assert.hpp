@@ -49,26 +49,26 @@
 
 #if LUM_ENABLE_LOGGER == 1
 
-#   define LUM_SEV_DEBUG LogSeverity::Debug
-#   define LUM_SEV_INFO  LogSeverity::Info
-#   define LUM_SEV_WARN  LogSeverity::Warn
-#   define LUM_SEV_ERROR LogSeverity::Error
-#   define LUM_SEV_FATAL LogSeverity::Fatal
+#   define LUM_SEV_DEBUG LogSeverityLevel::Debug
+#   define LUM_SEV_INFO  LogSeverityLevel::Info
+#   define LUM_SEV_WARN  LogSeverityLevel::Warn
+#   define LUM_SEV_ERROR LogSeverityLevel::Error
+#   define LUM_SEV_FATAL LogSeverityLevel::Fatal
 
 #   define LUM_LOG_FATAL(msg, ...) \
-        do { lum::Logger::Get().LogCmd(lum::LogSeverity::Fatal, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
+        do { lum::Logger::Get().LogCmd(lum::LogSeverityLevel::Fatal, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
 
 #   define LUM_LOG_ERROR(msg, ...) \
-        do { lum::Logger::Get().LogCmd(lum::LogSeverity::Error, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
+        do { lum::Logger::Get().LogCmd(lum::LogSeverityLevel::Error, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
 
 #   define LUM_LOG_WARN(msg, ...) \
-        do { lum::Logger::Get().LogCmd(lum::LogSeverity::Warn, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
+        do { lum::Logger::Get().LogCmd(lum::LogSeverityLevel::Warn, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
 
 #   define LUM_LOG_INFO(msg, ...) \
-        do { lum::Logger::Get().LogCmd(lum::LogSeverity::Info, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
+        do { lum::Logger::Get().LogCmd(lum::LogSeverityLevel::Info, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
 
 #   define LUM_LOG_DEBUG(msg, ...) \
-        do { lum::Logger::Get().LogCmd(lum::LogSeverity::Debug, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
+        do { lum::Logger::Get().LogCmd(lum::LogSeverityLevel::Debug, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while (0)
 
 #   define LUM_LOG(msg, sev, ...) \
         do { lum::Logger::Get().LogCmd(sev, __FILE__, __func__, __LINE__, msg, ##__VA_ARGS__); } while(0)

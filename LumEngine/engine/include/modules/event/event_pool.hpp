@@ -36,7 +36,7 @@ namespace lum::ev::detail {
 		template<typename tLambda>
 		SubscribtionID SubscribePermanently( tLambda&& lambda ) {
 			for (usize i = 0; i < limits::kMaxPermanentCallbacks; i++) {
-				if (!mPermCallbacks[ i ].bActive) {
+				if (!mPermCallbacks[ i ].mActive) {
 					setup_callback( std::forward<tLambda>( lambda ), mPermCallbacks[ i ] );
 					return i;
 				}
@@ -49,21 +49,21 @@ namespace lum::ev::detail {
 		void Unsubscribe( SubscribtionID id ) {
 			if (mCurrentCallbacksID < id) return;
 			auto& callback = mCallbacks[ id ];
-			if (callback.bActive)
+			if (callback.mActive)
 				callback.Destroy( );
 		}
 
 		// Destroys a permanent callback by ID.
 		void UnsubscribePermanent( SubscribtionID id ) {
 			auto& callback = mPermCallbacks[ id ];
-			if (callback.bActive)
+			if (callback.mActive)
 				callback.Destroy( );
 		}
 
 		// Queues an event for dispatch. Dropped if queue is full.
 		void Emit( const tType& event ) {
 			if (mEventsCurrent.size( ) >= limits::kMaxEventEmittsPerFrame) return;
-			if (!bPolling)
+			if (!mPolling)
 				mEventsCurrent.push_back( event );
 			else
 				mEventsNext.push_back( event );
@@ -71,13 +71,13 @@ namespace lum::ev::detail {
 
 		// Dispatches all queued events to subscribers.
 		void PollEvents( ) override {
-			bPolling = true;
+			mPolling = true;
 
 			for (auto& event : mEventsCurrent)
 				invoke_callbacks( event );
 
 			mEventsCurrent.clear( );
-			bPolling = false;
+			mPolling = false;
 			std::swap( mEventsCurrent, mEventsNext );
 		}
 
@@ -90,7 +90,7 @@ namespace lum::ev::detail {
 		std::vector<tType> mEventsCurrent;
 		std::vector<tType> mEventsNext;
 
-		bool bPolling = false;
+		bool mPolling = false;
 
 		// Stores lambda in callback slot using placement new.
 		template<typename tLambda>
@@ -106,7 +106,7 @@ namespace lum::ev::detail {
 			callback.mDestroy = []( vptr userParam ) {
 				reinterpret_cast< tLambda* >(userParam)->~tLambda( );
 				};
-			callback.bActive = true;
+			callback.mActive = true;
 		}
 
 		// Invokes all active callbacks for an event, then destroys one-shot callbacks.
@@ -115,14 +115,14 @@ namespace lum::ev::detail {
 
 			for (int32 i = 0; i < temp; i++) {
 				auto& callback = mCallbacks[ i ];
-				if (!callback.bActive) continue;
+				if (!callback.mActive) continue;
 				callback.mInvoke( &callback.mStorage, &event );
 				callback.Destroy( );
 			}
 			mCurrentCallbacksID = 0;
 
 			for (auto& callback : mPermCallbacks) {
-				if (callback.bActive)
+				if (callback.mActive)
 					callback.mInvoke( &callback.mStorage, &event );
 			}
 		}

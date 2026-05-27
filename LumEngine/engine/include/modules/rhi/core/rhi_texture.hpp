@@ -133,7 +133,7 @@ namespace lum::rhi {
 	struct TextureCreateInfo {
 
 		/* @brief Raw pixel data loaded from the CPU side. */
-		TextureData mData;
+		ImageData mData;
 
 		/* @brief GPU-side storage format for the texture. */
 		ImageLayout mImageLayout = ImageLayout::RGBA8;
@@ -171,7 +171,7 @@ namespace lum::rhi {
 		struct Cubemap {
 
 			/* @brief Pixel data for each of the six cubemap faces. */
-			TextureData mFaces[6]{};
+			ImageData mFaces[6]{};
 
 		} mCubemap;
 	};
@@ -185,7 +185,7 @@ namespace lum::rhi {
 		TextureRect mRect;
 
 		/* @brief New pixel data to upload into the target region. */
-		TextureData mData;
+		ImageData mData;
 
 		/* @brief Whether to regenerate mipmaps after the update. */
 		bool bGenerateMipmaps = false;

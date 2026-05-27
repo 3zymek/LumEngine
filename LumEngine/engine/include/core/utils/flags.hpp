@@ -16,17 +16,17 @@ namespace lum {
 	*
 	* @tparam T Enum type to wrap (must satisfy Enum concept)
 	*/
-	template<cEnum T>
+	template<cEnum tType>
 	struct Flags {
 
-		using U = std::underlying_type_t<T>;
+		using UnderlyingType = std::underlying_type_t<tType>;
 
-		U mFlags = 0;
+		UnderlyingType mFlags = 0;
 
 		constexpr Flags( ) noexcept = default;
-		constexpr Flags( T flag ) noexcept : mFlags( static_cast<U>(flag) ) {}
-		constexpr Flags( std::initializer_list<T> list ) {
-			for (T f : list)
+		constexpr Flags( tType flag ) noexcept : mFlags( static_cast<UnderlyingType>(flag) ) {}
+		constexpr Flags( std::initializer_list<tType> list ) {
+			for (tType f : list)
 				Enable(f);
 		}
 
@@ -37,7 +37,7 @@ namespace lum {
 		*
 		* @param flags Flag to enable.
 		*/
-		constexpr void Enable( T flags ) noexcept { mFlags |= static_cast<U>(flags); }
+		constexpr void Enable( tType flags ) noexcept { mFlags |= static_cast<UnderlyingType>(flags); }
 
 		/*!
 		* @brief Enables (sets) multiple flags.
@@ -46,7 +46,7 @@ namespace lum {
 		*		
 		* @param flags Flags to enable.
 		*/
-		constexpr void Enable( Flags<T> flags ) noexcept { mFlags |= flags.mFlags; }
+		constexpr void Enable( Flags<tType> flags ) noexcept { mFlags |= flags.mFlags; }
 		/*!
 		* @brief Disables (clears) a single flag.
 		*
@@ -54,7 +54,7 @@ namespace lum {
 		*
 		* @param flags Flag to disable.
 		*/
-		constexpr void Disable( T flags ) noexcept { mFlags &= ~static_cast<U>(flags); }
+		constexpr void Disable( tType flags ) noexcept { mFlags &= ~static_cast<UnderlyingType>(flags); }
 
 		/*!
 		* @brief Disables (clears) multiple flags.
@@ -63,7 +63,7 @@ namespace lum {
 		*
 		* @param flags Flags to disable.
 		*/
-		constexpr void Disable( Flags<T> flags ) noexcept { mFlags &= ~flags.mFlags; }
+		constexpr void Disable( Flags<tType> flags ) noexcept { mFlags &= ~flags.mFlags; }
 
 		/*!
 		* @brief Checks if no flags are set.
@@ -78,7 +78,7 @@ namespace lum {
 		* @param flag Flag to check.
 		* @return True if the flag is set, false otherwise.
 		*/
-		constexpr bool Has( T flag ) const noexcept { return (mFlags & static_cast<U>(flag)) != 0; }
+		constexpr bool Has( tType flag ) const noexcept { return (mFlags & static_cast<UnderlyingType>(flag)) != 0; }
 
 		/*!
 		* @brief Checks if only the allowed flags are set.
@@ -88,7 +88,7 @@ namespace lum {
 		* @param allowed Set of allowed flags.
 		* @return True if only allowed flags are set, false otherwise.
 		*/
-		constexpr bool HasOnly( Flags<T> allowed ) const noexcept { return (mFlags & ~allowed.mFlags) == 0; }
+		constexpr bool HasOnly( Flags<tType> allowed ) const noexcept { return (mFlags & ~allowed.mFlags) == 0; }
 
 		/*!
 		* @brief Clears all flags.
@@ -97,14 +97,14 @@ namespace lum {
 		*/
 		constexpr void Clear( ) noexcept { mFlags = 0; }
 
-		constexpr Flags& operator=( T flag ) noexcept {
-			mFlags = static_cast<U>(flag);
+		constexpr Flags& operator=( tType flag ) noexcept {
+			mFlags = static_cast<UnderlyingType>(flag);
 			return *this;
 		}
 
 	};
 
-	template<cEnum T>
+	template<cEnum tType>
 	struct EnableEnumFlags : std::false_type {};
 
 	/* @brief Enables bitwise flag operations for a given enum class.
@@ -120,43 +120,43 @@ namespace lum {
 	*   LUM_ENUM_OPERATIONS(ShaderStage);
 	*   ShaderStage stages = ShaderStage::Vertex | ShaderStage::Fragment;
 	*/
-#	define LUM_ENUM_OPERATIONS(T) \
+#	define LUM_ENABLE_ENUM_BITFLAG_OPERATIONS(tType) \
 		template<> \
-		struct EnableEnumFlags<T> : std::true_type {}
+		struct EnableEnumFlags<tType> : std::true_type {}
 
-	template<cEnum T>
-		requires EnableEnumFlags<T>::value
-	constexpr Flags<T> operator|( T a, T b ) {
-		Flags<T> f;
+	template<cEnum tType>
+		requires EnableEnumFlags<tType>::value
+	constexpr Flags<tType> operator|( tType a, tType b ) {
+		Flags<tType> f;
 		f.Enable(a);
 		f.Enable(b);
 		return f;
 	}
 
-	template<cEnum T>
-		requires EnableEnumFlags<T>::value
-	constexpr Flags<T> operator|( Flags<T> a, T b ) {
+	template<cEnum tType>
+		requires EnableEnumFlags<tType>::value
+	constexpr Flags<tType> operator|( Flags<tType> a, tType b ) {
 		a.Enable(b);
 		return a;
 	}
 
-	template<cEnum T>
-		requires EnableEnumFlags<T>::value
-	constexpr Flags<T>& operator|=( Flags<T>& a, T b ) {
+	template<cEnum tType>
+		requires EnableEnumFlags<tType>::value
+	constexpr Flags<tType>& operator|=( Flags<tType>& a, tType b ) {
 		a.Enable(b);
 		return a;
 	}
 
 	
-	template<cEnum T>
-		requires EnableEnumFlags<T>::value
-	constexpr Flags<T> operator&( T a, T b ) {
-		Flags<T> result;
-		if ((static_cast<std::underlying_type_t<T>>(a) &
-			static_cast<std::underlying_type_t<T>>(b)) != 0) {
+	template<cEnum tType>
+		requires EnableEnumFlags<tType>::value
+	constexpr Flags<tType> operator&( tType a, tType b ) {
+		Flags<tType> result;
+		if ((static_cast<std::underlying_type_t<tType>>(a) &
+			static_cast<std::underlying_type_t<tType>>(b)) != 0) {
 			result.Enable(a & b);
 		}
 		return result;
 	}
 
-}
+} // namespace lum

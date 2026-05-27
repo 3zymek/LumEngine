@@ -8,7 +8,7 @@ namespace lum {
 	template<uint32 tSize>
 	struct Bitset {
 
-		uint64 mBits[ tSize / 64 + 1 ]{};
+		uint64 mBits[ (tSize + 63) / 64 ]{};
 
 		// Sets bit at given index.
 		void Set( uint32 bit ) {
@@ -16,7 +16,7 @@ namespace lum {
 		}
 
 		// Clears bit at given index.
-		void UnSet( uint32 bit ) {
+		void Reset( uint32 bit ) {
 			mBits[ bit / 64 ] &= ~(1ULL << (bit % 64));
 		}
 

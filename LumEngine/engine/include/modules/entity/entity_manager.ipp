@@ -22,7 +22,7 @@ namespace lum::ecs {
 	tType& MEntityManager::AddComponent( EntityID entityId, tType component ) {
 		tType& retVal = GetPool<tType>( ).Add( entityId, component );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus->Emit( EComponentAdded<tType>{.mID = entityId, .mComponent = &retVal } );
+		mEventBus->Emit( EComponentAdded<tType>{.mId = entityId, .mComponent = &retVal } );
 		return retVal;
 	}
 
@@ -30,7 +30,7 @@ namespace lum::ecs {
 	tType& MEntityManager::AddComponent( Entity entity, tType component ) {
 		tType& retVal = GetPool<tType>( ).Add( entity.mId, component );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus->Emit( EComponentAdded<tType>{.mID = entity.mId, .mComponent = &retVal } );
+		mEventBus->Emit( EComponentAdded<tType>{.mId = entity.mId, .mComponent = &retVal } );
 		return retVal;
 	}
 
@@ -56,14 +56,14 @@ namespace lum::ecs {
 	void MEntityManager::RemoveComponent( EntityID entityId ) {
 		GetPool<tType>( ).Remove( entityId );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus->Emit( EComponentRemoved<tType>{ .mID = entityId } );
+		mEventBus->Emit( EComponentRemoved<tType>{ .mId = entityId } );
 	}
 
 	template<detail::Component tType>
 	void MEntityManager::RemoveComponent( Entity entity ) {
 		GetPool<tType>( ).Remove( entity.mId );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus->Emit( EComponentRemoved<tType>{ .mID = entity.mId } );
+		mEventBus->Emit( EComponentRemoved<tType>{ .mId = entity.mId } );
 	}
 
 	//-----------------------------------------------------------------------------

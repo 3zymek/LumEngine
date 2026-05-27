@@ -106,7 +106,7 @@ namespace lum::render {
 			desc.mCull.bEnabled = true;
 			desc.mCull.mFace = rhi::Face::Back;
 			mPipeline = mContext.mRenderDev->CreatePipeline( desc );
-			mShader = mContext.mShaderMgr->LoadShader( "shaders/geometry_pass.vert", "shaders/geometry_pass.frag", RootID::Internal );
+			mShader = mContext.mShaderMgr->LoadShader( "shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ResourceRoot::Internal );
 		}
 
 	}

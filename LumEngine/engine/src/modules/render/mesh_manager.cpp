@@ -33,17 +33,17 @@ namespace lum {
 			return mStaticMeshes[ mDefaultMesh ];
 	}
 
-	StaticMeshHandle MMeshManager::CreateStatic( StringView path, RootID root ) {
+	StaticMeshHandle MMeshManager::CreateStatic( StringView path, ResourceRoot root ) {
 
 		uint64 hash = HashStr( path );
 
 		if (mStaticMeshCache.contains( hash ))
 			return mStaticMeshCache[ hash ];
 
-		std::optional<MeshData> data = AssetLoader::LoadMesh( root, path );
+		std::optional<MeshGeometry> data = ResourceLoader::LoadMeshFromFile( root, path );
 
 		if (!data) {
-			LUM_LOG_ERROR( "Failed to load model %s: %s", path.data(), AssetLoader::GetErrorMessage( ) );
+			LUM_LOG_ERROR( "Failed to load model %s: %s", path.data(), ResourceLoader::GetErrorMessage( ) );
 			return mErrorMesh;
 		}
 
@@ -62,13 +62,13 @@ namespace lum {
 		return meshHandle;
 	}
 
-	FDynamicMeshInstance MMeshManager::CreateDynamic( StringView path, RootID root ) {
+	FDynamicMeshInstance MMeshManager::CreateDynamic( StringView path, ResourceRoot root ) {
 
-		std::optional<MeshData> data = AssetLoader::LoadMesh( root, path );
+		std::optional<MeshGeometry> data = ResourceLoader::LoadMeshFromFile( root, path );
 
 		if (!data) {
-			LUM_LOG_ERROR( "Failed to load model %s: %s", path, AssetLoader::GetErrorMessage( ) );
-			MeshData fallback;
+			LUM_LOG_ERROR( "Failed to load model %s: %s", path, ResourceLoader::GetErrorMessage( ) );
+			MeshGeometry fallback;
 			fallback.mVertices = mDefaultVertices;
 			fallback.mIndices = mDefaultIndices;
 			data = fallback;
@@ -107,7 +107,7 @@ namespace lum {
 
 	}
 
-	detail::FRenderResources MMeshManager::upload_gpu( detail::MeshType type, const MeshData& data ) {
+	detail::FRenderResources MMeshManager::upload_gpu( detail::MeshType type, const MeshGeometry& data ) {
 
 		Flags<rhi::MapFlag> mapFlag{};
 		rhi::BufferUsage usage{};
@@ -183,7 +183,7 @@ namespace lum {
 	void MMeshManager::create_meshes( ) {
 		{ // Default mesh
 
-			MeshData data;
+			MeshGeometry data;
 			data.mVertices = mDefaultVertices;
 			data.mIndices = mDefaultIndices;
 
@@ -199,9 +199,9 @@ namespace lum {
 
 		}
 		{ // Error mesh
-			std::optional<MeshData> data = AssetLoader::LoadMesh( RootID::Internal, "models/ERRORText.fbx" );
+			std::optional<MeshGeometry> data = ResourceLoader::LoadMeshFromFile( ResourceRoot::Internal, "models/ERRORText.fbx" );
 			if (!data) {
-				LUM_LOG_ERROR( "Failed to load fallback error model: %s", AssetLoader::GetErrorMessage( ) );
+				LUM_LOG_ERROR( "Failed to load fallback error model: %s", ResourceLoader::GetErrorMessage( ) );
 				mErrorMesh = mDefaultMesh;
 				return;
 			}

@@ -126,7 +126,7 @@ namespace lum::render {
 
 		{ // Shaders
 
-			mShader = mContext.mShaderMgr->LoadShader( "shaders/light_pass.vert", "shaders/light_pass.frag", RootID::Internal );
+			mShader = mContext.mShaderMgr->LoadShader( "shaders/light_pass.vert", "shaders/light_pass.frag", ResourceRoot::Internal );
 		
 		}
 

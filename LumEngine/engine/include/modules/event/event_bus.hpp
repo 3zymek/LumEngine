@@ -108,6 +108,8 @@ namespace lum {
 
 		private:
 
+			detail::BasePool* mPools[ limits::kMaxEventTypes ]{};
+
 			template<detail::tEvent tType>
 			detail::EventPool<tType>& get_pool( ) {
 
@@ -138,8 +140,6 @@ namespace lum {
 					}
 				}
 			}
-
-			detail::BasePool* mPools[ limits::kMaxEventTypes ]{};
 
 		};
 

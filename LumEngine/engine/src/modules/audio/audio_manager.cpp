@@ -32,8 +32,8 @@ namespace lum {
 		mEventBus->SubscribePermanently<EEntityDestroyed>(
 			[&]( const EEntityDestroyed& ev ) {
 
-				if (mInstances.contains( ev.mID ))
-					mInstances[ ev.mID ].mFlags.Enable( ahi::InstanceFlag::Kill );
+				if (mInstances.contains( ev.mId ))
+					mInstances[ ev.mId ].mFlags.Enable( ahi::InstanceFlag::Kill );
 
 			} );
 
@@ -44,9 +44,9 @@ namespace lum {
 		HashedStr hash = HashStr( relativePath );
 		if (mSounds.contains( hash )) return mSounds[ hash ];
 
-		String fullPath = AssetLoader::ResolvePath( RootID::External, relativePath );
+		String fullPath = ResourceLoader::ResolvePath( ResourceRoot::External, relativePath );
 		if (fullPath.empty( )) {
-			LUM_LOG_ERROR( "Couldn't load audio file: %s", AssetLoader::GetErrorMessage( ) );
+			LUM_LOG_ERROR( "Couldn't load audio file: %s", ResourceLoader::GetErrorMessage( ) );
 			return {};
 		}
 

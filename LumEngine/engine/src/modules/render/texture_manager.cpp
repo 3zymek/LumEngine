@@ -22,7 +22,7 @@ namespace lum {
 
 	}
 
-	rhi::TextureHandle MTextureManager::Get( StringView path, RootID id ) {
+	rhi::TextureHandle MTextureManager::Get( StringView path, ResourceRoot id ) {
 
 		uint64 hash = HashStr( path );
 
@@ -34,17 +34,17 @@ namespace lum {
 
 	}
 
-	rhi::TextureHandle MTextureManager::Load( StringView path, TexturePreset preset, RootID id ) {
+	rhi::TextureHandle MTextureManager::Load( StringView path, TexturePreset preset, ResourceRoot id ) {
 
 		uint64 hash = HashStr( path );
 
 		if (mTextures.contains( hash ))
 			return mTextures[ hash ];
 
-		std::optional<TextureData> data = AssetLoader::LoadTexture( id, path );
+		std::optional<ImageData> data = ResourceLoader::LoadImageFromFile( id, path );
 
 		if (!data) {
-			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), AssetLoader::GetErrorMessage( ) );
+			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), ResourceLoader::GetErrorMessage( ) );
 			return mMissingTexture;
 		}
 
@@ -71,14 +71,14 @@ namespace lum {
 		return rhi::ImageFormat::RGBA;
 	}
 
-	rhi::TextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, RootID root ) {
+	rhi::TextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, ResourceRoot root ) {
 
 		uint64 hash = HashStr( path );
 
 		if (mTextures.contains( hash ))
 			return mTextures[ hash ];
 
-		std::optional<TextureData> data = AssetLoader::LoadTexture( root, path );
+		std::optional<ImageData> data = ResourceLoader::LoadImageFromFile( root, path );
 		if (!data) {
 			LUM_LOG_ERROR( "Failed to load texture %s", path.data( ) );
 			return mMissingTexture;
@@ -86,7 +86,7 @@ namespace lum {
 
 		uint32 faceSize = std::min(data.value().mWidth / 4, data.value().mHeight / 2);
 
-		std::array<TextureData, 6> convertedData = convert_equirectangular_to_cubemap( data.value( ), faceSize );
+		std::array<ImageData, 6> convertedData = convert_equirectangular_to_cubemap( data.value( ), faceSize );
 
 		rhi::TextureCreateInfo desc;
 		for (int32 i = 0; i < 6; i++) {
@@ -128,7 +128,7 @@ namespace lum {
 
 	void MTextureManager::create_defaults( ) {
 		{ // Default albedo texture
-			TextureData data;
+			ImageData data;
 			data.mPixels = { 255, 255, 255, 255 };
 			data.mWidth = 1;
 			data.mHeight = 1;
@@ -141,7 +141,7 @@ namespace lum {
 			mDefaultAlbedoTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Default normal texture
-			TextureData data;
+			ImageData data;
 			data.mPixels = { 128, 128, 255 };
 			data.mWidth = 1;
 			data.mHeight = 1;
@@ -154,7 +154,7 @@ namespace lum {
 			mDefaultNormalTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Default roughness texture
-			TextureData data;
+			ImageData data;
 			data.mPixels = { 128 };
 			data.mWidth = 1;
 			data.mHeight = 1;
@@ -167,7 +167,7 @@ namespace lum {
 			mDefaultRoughnessTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Default metallic texture
-			TextureData data;
+			ImageData data;
 			data.mPixels = { 255 };
 			data.mWidth = 1;
 			data.mHeight = 1;
@@ -180,7 +180,7 @@ namespace lum {
 			mDefaultMetallicTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Missing texture
-			std::optional<TextureData> data = AssetLoader::LoadTexture( RootID::Internal, "textures/missingTex.png" );
+			std::optional<ImageData> data = ResourceLoader::LoadImageFromFile( ResourceRoot::Internal, "textures/missingTex.png" );
 			if (!data) {
 				LUM_LOG_ERROR( "Failed to load missing texture fallback" );
 				mMissingTexture = mDefaultAlbedoTexture;
@@ -195,10 +195,10 @@ namespace lum {
 		}
 	}
 
-	std::array<TextureData, 6>
-	MTextureManager::convert_equirectangular_to_cubemap( const TextureData& equirect, int32 faceSize ) {
+	std::array<ImageData, 6>
+	MTextureManager::convert_equirectangular_to_cubemap( const ImageData& equirect, int32 faceSize ) {
 
-		std::array<TextureData, 6> faces;
+		std::array<ImageData, 6> faces;
 		for (int32 i = 0; i < 6; i++) {
 			faces[ i ].mWidth = faceSize;
 			faces[ i ].mHeight = faceSize;

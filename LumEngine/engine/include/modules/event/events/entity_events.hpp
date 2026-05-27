@@ -9,15 +9,15 @@
 
 namespace lum {
 
-	struct EEntityCreated : public Event { EntityID mID; };
-	struct EEntityDestroyed : public Event { EntityID mID; };
+	struct EEntityCreated : public Event { EntityID mId; };
+	struct EEntityDestroyed : public Event { EntityID mId; };
 
 	// Fired when a component of type tType is added to an entity.
 	template<ecs::detail::Component tType>
-	struct EComponentAdded : public Event { EntityID mID; tType* mComponent; };
+	struct EComponentAdded : public Event { EntityID mId; tType* mComponent; };
 
 	// Fired when a component of type tType is removed from an entity.
 	template<ecs::detail::Component tType>
-	struct EComponentRemoved : public Event { EntityID mID; tType* mComponent; };
+	struct EComponentRemoved : public Event { EntityID mId; tType* mComponent; };
 
 } // namespace lum

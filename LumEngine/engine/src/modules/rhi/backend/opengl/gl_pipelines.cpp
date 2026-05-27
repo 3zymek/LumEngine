@@ -10,7 +10,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::bind_check_shader( const Pipeline& pip ) noexcept {
 
-		if (pip.mShader.mID == NullID<ShaderID>( ))
+		if (pip.mShader.mId == NullID<ShaderID>( ))
 			return;
 
 		BindShader( pip.mShader );
@@ -89,8 +89,8 @@ namespace lum::rhi::gl {
 
 		LUM_ASSERT( mPipelines.DenseSize( ) <= skMaxPipelines, "Max pipelines reached" );
 
-		if (desc.mShader.mID != NullID<ShaderID>( ) && !IsValid( desc.mShader )) {
-			LUM_LOG_ERROR( "Shader %d doesn't exist", desc.mShader.mID );
+		if (desc.mShader.mId != NullID<ShaderID>( ) && !IsValid( desc.mShader )) {
+			LUM_LOG_ERROR( "Shader %d doesn't exist", desc.mShader.mId );
 		}
 
 		Pipeline pipeline;

@@ -18,7 +18,7 @@ namespace lum {
 
 		WindowDescriptor desc;
 		desc.mEventBus = &bus;
-		desc.mIconData = AssetLoader::LoadTexture( RootID::Internal, "branding/lumengine-icon.png", 4 );
+		desc.mIconData = ResourceLoader::LoadImageFromFile( ResourceRoot::Internal, "branding/lumengine-icon.png", 4 );
 
 		mWindow.Initialize( desc );
 		input::SetActiveWindow( static_cast< GLFWwindow* >(mWindow.GetNativeWindow( )) );

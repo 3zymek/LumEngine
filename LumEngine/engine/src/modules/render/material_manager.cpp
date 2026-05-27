@@ -111,9 +111,9 @@ namespace lum {
 		mContext->mEvBus->SubscribePermanently<EComponentAdded<CMaterialInstance>>(
 			[&]( const EComponentAdded<CMaterialInstance>& mat ) {
 
-				std::optional<String> content = AssetLoader::ReadFile( RootID::External, mat.mComponent->mBasePath );
+				std::optional<String> content = ResourceLoader::ReadTextFile( ResourceRoot::External, mat.mComponent->mBasePath );
 				if (!content) {
-					LUM_LOG_ERROR( "Failed to load material %s: %s", mat.mComponent->mBasePath.data(), AssetLoader::GetErrorMessage( ) );
+					LUM_LOG_ERROR( "Failed to load material %s: %s", mat.mComponent->mBasePath.data(), ResourceLoader::GetErrorMessage( ) );
 					*mat.mComponent = GetDefaultInstance();
 					return;
 				}

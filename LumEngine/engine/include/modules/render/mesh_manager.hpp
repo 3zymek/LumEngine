@@ -50,14 +50,14 @@ namespace lum {
 		* @param root Root directory identifier.
 		* @return Handle to the uploaded static mesh.
 		*/
-		StaticMeshHandle CreateStatic( StringView path, RootID root = RootID::External );
+		StaticMeshHandle CreateStatic( StringView path, ResourceRoot root = ResourceRoot::External );
 
 		/* @brief Loads a dynamic mesh instance from disk.
 		* @param path Path to the mesh file.
 		* @param root Root directory identifier.
 		* @return Dynamic mesh instance.
 		*/
-		FDynamicMeshInstance CreateDynamic( StringView path, RootID root = RootID::External );
+		FDynamicMeshInstance CreateDynamic( StringView path, ResourceRoot root = ResourceRoot::External );
 
 	private:
 
@@ -87,7 +87,7 @@ namespace lum {
 		* @param data   CPU-side mesh data to upload.
 		* @return Render resources containing VBO, EBO, and VAO handles.
 		*/
-		detail::FRenderResources upload_gpu( detail::MeshType type, const MeshData& data );
+		detail::FRenderResources upload_gpu( detail::MeshType type, const MeshGeometry& data );
 
 		/* @brief Creates and uploads built-in meshes (default, error). */
 		void create_meshes( );

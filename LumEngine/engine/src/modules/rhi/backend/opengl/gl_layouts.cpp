@@ -4,7 +4,8 @@
 //
 //=============================================================================//
 
-#include "modules/rhi/backend/gl_device.hpp"
+#include "rhi/backend/gl_device.hpp"
+#include "rhi/rhi_common.hpp"
 
 namespace lum::rhi::gl {
 
@@ -30,7 +31,7 @@ namespace lum::rhi::gl {
 			glVertexArrayAttribFormat(
 				layout.mHandle,
 				desc.mAttributes[ i ].mShaderLocation,
-				detail::gDataFormatLookup[ LookupCast( desc.mAttributes[ i ].mFormat ) ],
+				detail::kDataFormatLookup[ LookupCast( desc.mAttributes[ i ].mFormat ) ],
 				GL_FLOAT,
 				GL_FALSE,
 				desc.mAttributes[ i ].mRelativeOffset

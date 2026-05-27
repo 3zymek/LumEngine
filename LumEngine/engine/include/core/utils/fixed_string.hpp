@@ -8,28 +8,29 @@
 
 namespace lum {
 
-	static constexpr usize skStrNpos = usize( -1 );
+	constexpr usize kStrNpos = usize( -1 );
 
 	/* @brief Stack-allocated string with a compile-time maximum length.
 	*  Never allocates heap memory — all storage lives in a fixed-size char buffer.
-	*  @tparam tL Maximum number of characters the string can hold, excluding null terminator.
+	*  @tparam tLength Maximum number of characters the string can hold, excluding null terminator.
 	*/
-	template<usize tL>
+	template<usize tLength>
 	struct FixedString {
 
 		/* @brief Constructs a FixedString from a string literal.
 		*  Triggers a static assert if the literal exceeds the maximum length.
-		*  @tparam tNewL Length of the source literal including null terminator.
+		*  @tparam tNewLength Length of the source literal including null terminator.
 		*  @param src Source string literal.
 		*/
-		template<usize tNewL>
-		FixedString( const char( &src )[ tNewL ] ) noexcept {
-			LUM_SASSERT( tNewL <= tL && "String is too big" );
-			std::memcpy( mData, src, tNewL );
+		template<usize tNewLength>
+		FixedString( const char( &src )[ tNewLength ] ) noexcept {
+			LUM_SASSERT( tNewLength <= tLength && "String is too big" );
+			std::memcpy( mData, src, tNewLength );
+			mData[ tNewLength - 1 ] = '\0';
 		}
 		FixedString( ccharptr src ) noexcept {
 			usize len = strlen( src );
-			if (len > tL - 1) len = tL - 1;
+			if (len > tLength - 1) len = tLength - 1;
 			std::memcpy( mData, src, len );
 			mData[ len ] = '\0';
 		}
@@ -38,35 +39,35 @@ namespace lum {
 			mData[ 0 ] = '\0';
 		}
 
-		template<usize tNewL>
-		FixedString& operator=( const char( &src )[ tNewL ] ) noexcept {
-			usize len = tNewL;
-			if (len > tL) len = tL - 1;
-			std::memcpy( mData, src.data( ), len );
+		template<usize tNewLength>
+		FixedString& operator=( const char( &src )[ tNewLength ] ) noexcept {
+			usize len = tNewLength;
+			if (len > tLength) len = tLength - 1;
+			std::memcpy( mData, src, len );
 			mData[ len ] = '\0';
 			return *this;
 		}
 
 		FixedString& operator=( ccharptr src ) noexcept {
 			usize len = strlen( src );
-			if (len > tL) len = tL - 1;
+			if (len > tLength) len = tLength - 1;
 			std::memcpy( mData, src, len );
 			mData[ len ] = '\0';
 			return *this;
 		}
 		FixedString& operator=( const String& src ) noexcept {
 			usize len = src.length( );
-			if (len > tL) len = tL - 1;
+			if (len > tLength) len = tLength - 1;
 			std::memcpy( mData, src.data( ), len );
 			mData[ len ] = '\0';
 			return *this;
 		}
-		template<usize tNewL>
-		bool operator!=( const char( &src )[ tNewL ] ) const noexcept {
+		template<usize tNewLength>
+		bool operator!=( const char( &src )[ tNewLength ] ) const noexcept {
 			return !(*this == src);
 		}
-		template<usize tNewL>
-		bool operator!=( const FixedString<tNewL>& oth ) const noexcept {
+		template<usize tNewLength>
+		bool operator!=( const FixedString<tNewLength>& oth ) const noexcept {
 			return !(*this == oth);
 		}
 		bool operator==( ccharptr src ) const noexcept {
@@ -83,13 +84,13 @@ namespace lum {
 		FixedString& operator+=( ccharptr src ) noexcept {
 			usize curLen = strlen( mData );
 			usize srcLen = strlen( src );
-			usize copyLen = std::min( srcLen, tL - curLen - 1 );
+			usize copyLen = std::min( srcLen, tLength - curLen - 1 );
 			std::memcpy( mData + curLen, src, copyLen );
 			mData[ curLen + copyLen ] = '\0';
 			return *this;
 		}
-		template<usize tNewL>
-		FixedString& operator+=( const FixedString<tNewL>& oth ) noexcept {
+		template<usize tNewLength>
+		FixedString& operator+=( const FixedString<tNewLength>& oth ) noexcept {
 			return *this += oth.Data( );
 		}
 
@@ -113,24 +114,24 @@ namespace lum {
 			for (usize i = 0; i < strlen( mData ); i++) {
 				if (mData[ i ] == c) return i;
 			}
-			return skStrNpos;
+			return kStrNpos;
 		}
 
 		usize Find( StringView sv ) const {
 			usize size = strlen( mData );
-			if (sv.size( ) > size) return skStrNpos;
+			if (sv.size( ) > size) return kStrNpos;
 			for (usize i = 0; i <= size - sv.size( ); i++) {
 				if (memcmp( mData + i, sv.data( ), sv.size( ) ) == 0) return i;
 			}
-			return skStrNpos;
+			return kStrNpos;
 		}
 
 		/* @brief Compares this string against a string literal using hash comparison.
-		*  @tparam tNewL Length of the source literal.
+		*  @tparam tNewLength Length of the source literal.
 		*  @param src String literal to compare against.
 		*/
-		template<usize tNewL>
-		bool operator==( const char( &src )[ tNewL ] ) const noexcept {
+		template<usize tNewLength>
+		bool operator==( const char( &src )[ tNewLength ] ) const noexcept {
 			if (HashStr( src ) == HashStr( mData ))
 				return true;
 			return false;
@@ -139,7 +140,7 @@ namespace lum {
 		/* @brief Compares this string against another FixedString using hash comparison.
 		*  @param oth FixedString to compare against.
 		*/
-		template<usize tNewL>
+		template<usize tNewLength>
 		bool operator==( const FixedString& oth ) const noexcept {
 			if (HashStr( oth.mData ) == HashStr( mData ))
 				return true;
@@ -155,7 +156,7 @@ namespace lum {
 		LUM_FORCEINLINE constexpr usize Length( )  noexcept { return strlen(mData); }
 
 		/* @brief Returns the maximum number of characters this string can hold. */
-		LUM_FORCEINLINE constexpr usize MaxSize( ) noexcept { return tL; }
+		LUM_FORCEINLINE constexpr usize MaxSize( ) noexcept { return tLength; }
 
 		/* @brief Returns a pointer to the underlying null-terminated character buffer. */
 		LUM_FORCEINLINE constexpr ccharptr Data( ) const { return mData; }
@@ -170,7 +171,7 @@ namespace lum {
 	private:
 
 		/* @brief Internal character buffer of fixed compile-time size. */
-		char mData[ tL ]{};
+		char mData[ tLength ]{};
 
 	};
 

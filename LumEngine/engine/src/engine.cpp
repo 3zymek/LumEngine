@@ -15,7 +15,7 @@ namespace lum {
 
 	void Engine::Initialize( StringView projectDir ) {
 	    
-		AssetLoader::SetProjectRoot( projectDir );
+		ResourceLoader::SetProjectRoot( projectDir );
 
 		mAudio.Initialize( mEvBus );
 		mPlatform.Initialize( mEvBus );

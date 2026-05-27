@@ -11,11 +11,11 @@ namespace lum::ev {
 
 	namespace detail {
 
-		using UnsubscribeInvoke = void (*)(SubscribtionID, EventBus&);
+		using UnsubscribeInvokeFunction = void (*)(SubscribtionID, EventBus&);
 
 		struct EmitterSlot {
-			SubscribtionID    mID = MaxValue<SubscribtionID>( );
-			UnsubscribeInvoke mUnsub = nullptr;
+			SubscribtionID				mId = MaxValue<SubscribtionID>( );
+			UnsubscribeInvokeFunction	mUnsub = nullptr;
 		};
 
 	}
@@ -23,8 +23,8 @@ namespace lum::ev {
 	// RAII wrapper for EventBus. Automatically unsubscribes permanent callbacks on destruction.
 	class EventEmitter {
 
-		using EmitterSlot = detail::EmitterSlot;
-		using SubscribtionID = detail::SubscribtionID;
+		using EmitterSlot		= detail::EmitterSlot;
+		using SubscribtionID	= detail::SubscribtionID;
 
 	public:
 
@@ -64,7 +64,7 @@ namespace lum::ev {
 
 		void destroy( ) {
 			for (auto& slot : mSubscriptions)
-				slot.mUnsub( slot.mID, mBus );
+				slot.mUnsub( slot.mId, mBus );
 		}
 
 	};

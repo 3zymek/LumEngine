@@ -8,36 +8,6 @@
 
 namespace lum {
 
-	StringView Logger::SeverityToString( LogSeverity sev ) {
-		switch (sev) {
-		case LogSeverity::Fatal:
-		{
-			return "FATAL";
-			break;
-		}
-		case LogSeverity::Error:
-		{
-			return "ERROR";
-			break;
-		}
-		case LogSeverity::Warn:
-		{
-			return "WARN";
-			break;
-		}
-		case LogSeverity::Info:
-		{
-			return "INFO";
-			break;
-		}
-		case LogSeverity::Debug:
-		{
-			return "DEBUG";
-			break;
-		}
-		}
-		return "UNKNOWN";
-	}
 	void Logger::FormatTime( uint64 timestamp, charptr out ) {
 		std::time_t t = timestamp / 1000;
 		std::tm tm{};

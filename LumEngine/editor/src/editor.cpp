@@ -69,7 +69,7 @@ namespace lum::editor {
 		mSceneInspector.Update( mCurrentScene );
 		mEntityInspector.Update( mSceneInspector.GetSelectedEntity( ), mCurrentScene );
 
-		mExplorer.Update( AssetLoader::GetProjectRoot( ) );
+		mExplorer.Update( ResourceLoader::GetProjectRoot( ) );
 
 		mConsole.Update( );
 
