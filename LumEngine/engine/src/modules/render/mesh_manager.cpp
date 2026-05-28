@@ -35,7 +35,7 @@ namespace lum {
 
 	StaticMeshHandle MMeshManager::CreateStatic( StringView path, ResourceRoot root ) {
 
-		uint64 hash = HashStr( path );
+		uint64 hash = HashString( path );
 
 		if (mStaticMeshCache.contains( hash ))
 			return mStaticMeshCache[ hash ];
@@ -131,7 +131,7 @@ namespace lum {
 		vboDesc.mBufferUsage = usage;
 		vboDesc.mData = data.mVertices.data( );
 		vboDesc.mMapFlags = mapFlag;
-		vboDesc.mSize = ByteSize( data.mVertices );
+		vboDesc.mSize = ComputeByteSize( data.mVertices );
 		vboDesc.mBufferType = rhi::BufferType::Vertex;
 		res.mVbo = mContext->mRenderDev->CreateBuffer( vboDesc );
 
@@ -139,7 +139,7 @@ namespace lum {
 		eboDesc.mBufferUsage = usage;
 		eboDesc.mData = data.mIndices.data( );
 		eboDesc.mMapFlags = mapFlag;
-		eboDesc.mSize = ByteSize( data.mIndices );
+		eboDesc.mSize = ComputeByteSize( data.mIndices );
 		eboDesc.mBufferType = rhi::BufferType::Element;
 		res.mEbo = mContext->mRenderDev->CreateBuffer( eboDesc );
 

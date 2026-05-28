@@ -75,8 +75,16 @@ namespace lum::ahi {
 		*/
 		virtual void SetGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) = 0;
 
-
+		/* @brief Sets the volume for all sounds routed through the given channel group.
+		* @param group  Target channel group.
+		* @param volume Volume scalar (0.0 = silent, 1.0 = full).
+		*/
 		virtual void SetGroupVolume( ChannelGroupHandle group, float32 volume ) = 0;
+
+		/* @brief Sets the pitch for all sounds routed through the given channel group.
+		* @param group Target channel group.
+		* @param pitch Pitch multiplier (1.0 = normal, 2.0 = one octave up).
+		*/
 		virtual void SetGroupPitch( ChannelGroupHandle group, float32 pitch ) = 0;
 
 		/* @brief Detaches an effect chain from a channel group.
@@ -130,14 +138,19 @@ namespace lum::ahi {
 		*/
 		virtual void UpdateInstance( SoundInstance& instance ) = 0;
 
-		virtual void EndFrame( ) = 0;
+		/* @brief Advances the audio backend by one frame. Must be called once per frame after UpdateInstance(). */
+		virtual void SubmitFrame( ) = 0;
 
 	protected:
 
 		cstd::HandlePool<SoundHandle, vptr>	mSounds{ limits::kMaxAudioSounds };
 		cstd::HandlePool<ChannelGroupHandle, vptr> mChannelGroups{ limits::kMaxChannelsGroup };
 		cstd::HandlePool<AudioEffectHandle, AudioEffect> mEffects{ limits::kMaxAudioEffects };
-		std::unordered_map<InstID, vptr> mChannels;
+		
+		/* @brief Maps active sound instance IDs to their backend channel pointers.
+		*  Entries are inserted on Play() and removed when playback ends or StopAll() is called.
+		*/
+		std::unordered_map<SoundInstanceID, vptr> mChannels;
 
 	};
 

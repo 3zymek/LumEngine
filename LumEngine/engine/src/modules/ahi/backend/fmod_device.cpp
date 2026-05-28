@@ -30,7 +30,6 @@ namespace lum::ahi::fmod {
 	SoundHandle FMODDevice::LoadSound( StringView path, Flags<SoundFlag> flags ) {
 
 		FMOD::Sound* sound = nullptr;
-
 		FMOD_MODE fmodFlags = translate_sound_flags( flags );
 
 		mSystem->createSound( path.data( ), fmodFlags, nullptr, &sound );
@@ -55,10 +54,10 @@ namespace lum::ahi::fmod {
 			effect.mDsps.push_back( create_reverb_effect( desc.mReverb ) );
 
 		if (desc.mFreqPass.mLow.mEnabled)
-			effect.mDsps.push_back( create_frequency_effect( desc.mFreqPass.mLow, detail::FrequnecyType::Low ) );
+			effect.mDsps.push_back( create_frequency_effect( desc.mFreqPass.mLow, detail::FrequencyType::Low ) );
 
 		if (desc.mFreqPass.mHigh.mEnabled)
-			effect.mDsps.push_back( create_frequency_effect( desc.mFreqPass.mHigh, detail::FrequnecyType::High ) );
+			effect.mDsps.push_back( create_frequency_effect( desc.mFreqPass.mHigh, detail::FrequencyType::High ) );
 
 		if (desc.mEcho.mEnabled)
 			effect.mDsps.push_back( create_echo_effect( desc.mEcho ) );
@@ -94,12 +93,11 @@ namespace lum::ahi::fmod {
 	void FMODDevice::DeleteEffect( AudioEffectHandle& effect ) {
 
 		LUM_RETURN_IF( !IsValid( effect ), LUM_SEV_WARN, "Invalid effect handle" );
-
 		AudioEffect& sfx = mEffects[ effect ];
 
 		for (auto [slot, value] : mChannelGroups.Each( )) {
 
-			FMOD::ChannelGroup* group = to_fmod_chgroup( *value );
+			FMOD::ChannelGroup* group = to_fmod_channel_group( *value );
 			for (auto* dsp : sfx.mDsps) {
 				group->removeDSP( to_fmod_dsp( dsp ) );
 			}
@@ -108,8 +106,8 @@ namespace lum::ahi::fmod {
 
 		for (auto* dsp : sfx.mDsps)
 			to_fmod_dsp( dsp )->release( );
-
 		mEffects.Remove( effect );
+
 	}
 
 	void FMODDevice::SetGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) {
@@ -117,7 +115,7 @@ namespace lum::ahi::fmod {
 		LUM_RETURN_IF( !IsValid( effect ), LUM_SEV_WARN, "Invalid effect handle" );
 		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group handle" );
 
-		FMOD::ChannelGroup* fmodGroup = to_fmod_chgroup( mChannelGroups[ group ] );
+		FMOD::ChannelGroup* fmodGroup = to_fmod_channel_group( mChannelGroups[ group ] );
 		AudioEffect sfx = mEffects[ effect ];
 
 		for (int32 i = 0; i < sfx.mDsps.size( ); i++) {
@@ -128,15 +126,13 @@ namespace lum::ahi::fmod {
 	void FMODDevice::SetGroupVolume( ChannelGroupHandle group, float32 volume ) {
 
 		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group" );
-
-		to_fmod_chgroup( mChannelGroups[ group ] )->setVolume( std::clamp( volume, 0.0f, 1.0f ) );
+		to_fmod_channel_group( mChannelGroups[ group ] )->setVolume( std::clamp( volume, 0.0f, 1.0f ) );
 
 	}
 	void FMODDevice::SetGroupPitch( ChannelGroupHandle group, float32 pitch ) {
 
 		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group" );
-
-		to_fmod_chgroup( mChannelGroups[ group ] )->setPitch( std::clamp( pitch, 0.0f, 1.0f ) );
+		to_fmod_channel_group( mChannelGroups[ group ] )->setPitch( std::clamp( pitch, 0.0f, 1.0f ) );
 
 	}
 	void FMODDevice::RemoveGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) {
@@ -144,7 +140,7 @@ namespace lum::ahi::fmod {
 		LUM_RETURN_IF( !IsValid( effect ), LUM_SEV_WARN, "Invalid effect handle" );
 		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group handle" );
 
-		FMOD::ChannelGroup* fmodGroup = to_fmod_chgroup( mChannelGroups[ group ] );
+		FMOD::ChannelGroup* fmodGroup = to_fmod_channel_group( mChannelGroups[ group ] );
 		AudioEffect sfx = mEffects[ effect ];
 
 		for (int32 i = 0; i < sfx.mDsps.size( ); i++) {
@@ -157,7 +153,6 @@ namespace lum::ahi::fmod {
 
 		FMOD::ChannelGroup* group;
 		mSystem->createChannelGroup( name.data( ), &group );
-
 		return mChannelGroups.Append( std::move( group ) );
 
 	}
@@ -169,7 +164,7 @@ namespace lum::ahi::fmod {
 		if (desc.mGroup == kDefaultGroup)
 			mSystem->playSound( fmodSound, nullptr, false, &channel );
 		else
-			mSystem->playSound( fmodSound, to_fmod_chgroup( mChannelGroups[ desc.mGroup ] ), false, &channel );
+			mSystem->playSound( fmodSound, to_fmod_channel_group( mChannelGroups[ desc.mGroup ] ), false, &channel );
 		channel->setVolume( desc.mVolume );
 		channel->setPitch( desc.mPitch );
 
@@ -182,18 +177,18 @@ namespace lum::ahi::fmod {
 		FMOD::Sound* fmodSound = static_cast< FMOD::Sound* >(mSounds[ inst.mSound.mId ]);
 		FMOD::Channel* channel = nullptr;
 
-		mSystem->playSound( fmodSound, nullptr, inst.mFlags.Has( InstanceFlag::Paused ), &channel );
+		mSystem->playSound( fmodSound, nullptr, inst.mFlags.Has( SoundInstanceFlag::Paused ), &channel );
 		channel->setVolume( std::clamp( inst.mVolume, 0.0f, 1.0f ) );
 		channel->setPitch( std::clamp( inst.mPitch, 0.0f, 1.0f ) );
 
 		if (group != kDefaultGroup) {
 
 			LUM_ASSERT( mChannelGroups.Contains( group ), "Invalid group" );
-			channel->setChannelGroup( to_fmod_chgroup( mChannelGroups[ group ] ) );
+			channel->setChannelGroup( to_fmod_channel_group( mChannelGroups[ group ] ) );
 
 		}
 
-		inst.mFlags.Enable( InstanceFlag::Playing );
+		inst.mFlags.Enable( SoundInstanceFlag::Playing );
 		mChannels.insert( { inst.mInstanceId, channel } );
 
 	}
@@ -231,53 +226,53 @@ namespace lum::ahi::fmod {
 
 	}
 
-	void FMODDevice::UpdateInstance( SoundInstance& instance ) {
+	void FMODDevice::UpdateInstance( SoundInstance& inst ) {
 
-		if (instance.mFlags.Has( InstanceFlag::Play )) {
+		if (inst.mFlags.Has( SoundInstanceFlag::Play )) {
 
-			Play( instance, instance.mGroup );
-			instance.mFlags.Disable( InstanceFlag::Play );
+			Play( inst, inst.mGroup );
+			inst.mFlags.Disable( SoundInstanceFlag::Play );
 
 		}
 
-		if (!mChannels.contains( instance.mInstanceId )) return;
+		if (!mChannels.contains( inst.mInstanceId )) return;
 
-		FMOD::Channel* channel = to_fmod_channel( mChannels[ instance.mInstanceId ] );
+		FMOD::Channel* channel = to_fmod_channel( mChannels[ inst.mInstanceId ] );
 
 		bool playing;
 		channel->isPlaying( &playing );
 
 		// End streaming
-		if (!playing) { mChannels.erase( instance.mInstanceId ); return; }
-		if (instance.mFlags.Has( InstanceFlag::Stop )) {
+		if (!playing) { mChannels.erase( inst.mInstanceId ); return; }
+		if (inst.mFlags.Has( SoundInstanceFlag::Stop )) {
 			channel->stop( );
-			mChannels.erase( instance.mInstanceId );
+			mChannels.erase( inst.mInstanceId );
 			return;
 		}
 
-		if (instance.mFlags.Has( InstanceFlag::Kill )) {
+		if (inst.mFlags.Has( SoundInstanceFlag::Kill )) {
 
 		}
 
-		channel->setPaused( instance.mFlags.Has( InstanceFlag::Paused ) );
-		if (instance.mFlags.Has( InstanceFlag::Paused )) return;
+		channel->setPaused( inst.mFlags.Has( SoundInstanceFlag::Paused ) );
+		if (inst.mFlags.Has( SoundInstanceFlag::Paused )) return;
 
-		Vector3 instPos = instance.mPosition;
+		Vector3 instPos = inst.mPosition;
 		FMOD_VECTOR pos = { instPos.mX, instPos.mY, instPos.mZ };
 
-		channel->setVolume( std::clamp( instance.mVolume, 0.0f, 1.0f ) );
-		channel->setPitch( std::clamp( instance.mPitch, 0.0f, 1.0f ) );
+		channel->setVolume( std::clamp( inst.mVolume, 0.0f, 1.0f ) );
+		channel->setPitch( std::clamp( inst.mPitch, 0.0f, 1.0f ) );
 		channel->set3DAttributes( &pos, nullptr );
-		channel->set3DMinMaxDistance( instance.mMinDistance, instance.mMaxDistance );
+		channel->set3DMinMaxDistance( inst.mMinDistance, inst.mMaxDistance );
 
-		if (instance.mFlags.Has( InstanceFlag::Looped ))
+		if (inst.mFlags.Has( SoundInstanceFlag::Looped ))
 			channel->setMode( FMOD_LOOP_NORMAL );
 		else
 			channel->setMode( FMOD_LOOP_OFF );
 
 	}
 
-	void FMODDevice::EndFrame( ) {
+	void FMODDevice::SubmitFrame( ) {
 
 		mSystem->update( );
 
@@ -337,11 +332,11 @@ namespace lum::ahi::fmod {
 		return dsp;
 	}
 
-	FMOD::DSP* FMODDevice::create_frequency_effect( const AudioEffectCreateInfo::FrequencyPass::Pass& desc, detail::FrequnecyType type ) {
+	FMOD::DSP* FMODDevice::create_frequency_effect( const AudioEffectCreateInfo::FrequencyPass::Pass& desc, detail::FrequencyType type ) {
 
 		FMOD::DSP* dsp = nullptr;
 
-		if (type == detail::FrequnecyType::Low) {
+		if (type == detail::FrequencyType::Low) {
 
 			mSystem->createDSPByType( FMOD_DSP_TYPE_LOWPASS, &dsp );
 
@@ -349,7 +344,7 @@ namespace lum::ahi::fmod {
 			dsp->setParameterFloat( FMOD_DSP_LOWPASS_RESONANCE, desc.mResonance );
 
 		}
-		else if (type == detail::FrequnecyType::High) {
+		else if (type == detail::FrequencyType::High) {
 
 			mSystem->createDSPByType( FMOD_DSP_TYPE_HIGHPASS, &dsp );
 

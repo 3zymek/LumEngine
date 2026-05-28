@@ -41,7 +41,7 @@ namespace lum::fmt {
 
 		for (int32 i = 0; i < tokens.size( ); i++) {
 			if (tokens[ i ].mType == TokenType::Identifier) {
-				auto it = sIdentifiersParseFunctions.find( HashStr( ToLower( tokens[ i ].mValue ) ) );
+				auto it = sIdentifiersParseFunctions.find( HashString( ToLower( tokens[ i ].mValue ) ) );
 				if (it != sIdentifiersParseFunctions.end( )) {
 					it->second( tokens, i, ctx );
 				}
@@ -114,7 +114,7 @@ namespace lum::fmt {
 		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Component) {
-				auto it = sComponentsParseFunctions.find( HashStr( ToLower( tokens[ i ].mValue ) ) );
+				auto it = sComponentsParseFunctions.find( HashString( ToLower( tokens[ i ].mValue ) ) );
 				if (it != sComponentsParseFunctions.end( )) {
 					it->second( tokens, i, ctx );
 				}

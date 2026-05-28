@@ -12,62 +12,62 @@ namespace lum::ahi::fmod {
 	public:
 
 		// Lifecycle
-		void Initialize( int32, Flags<InitFlag> ) override;
+		void Initialize( int32 maxChannels, Flags<InitFlag> flags ) override;
 		void Finalize( ) override;
 
 		// Sound loading
-		SoundHandle LoadSound( StringView, Flags<SoundFlag> ) override;
-		void        UnloadSound( SoundHandle& ) override;
+		SoundHandle LoadSound( StringView path, Flags<SoundFlag> flags ) override;
+		void        UnloadSound( SoundHandle& sound ) override;
 
 		// Effects
-		AudioEffectHandle CreateEffect( const AudioEffectCreateInfo& ) override;
-		AudioEffectHandle CreateEffect( ahi::EffectPreset ) override;
-		void              DeleteEffect( AudioEffectHandle& ) override;
+		AudioEffectHandle CreateEffect( const AudioEffectCreateInfo& desc ) override;
+		AudioEffectHandle CreateEffect( ahi::EffectPreset preset ) override;
+		void              DeleteEffect( AudioEffectHandle& effect ) override;
 
 		// Channel groups
-		ChannelGroupHandle CreateChannelGroup( StringView ) override;
-		void SetGroupEffect( ChannelGroupHandle, AudioEffectHandle ) override;
-		void SetGroupVolume( ChannelGroupHandle, float32 ) override;
-		void SetGroupPitch( ChannelGroupHandle, float32 ) override;
-		void RemoveGroupEffect( ChannelGroupHandle, AudioEffectHandle ) override;
+		void SetGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) override;
+		void SetGroupVolume( ChannelGroupHandle group, float32 volume ) override;
+		void SetGroupPitch( ChannelGroupHandle group, float32 pitch ) override;
+		void RemoveGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) override;
+		ChannelGroupHandle CreateChannelGroup( StringView name ) override;
 
 		// Playback
-		void PlayOneShot( SoundHandle, const PlaybackDescriptor& ) override;
-		void Play( SoundInstance&, ChannelGroupHandle ) override;
+		void PlayOneShot( SoundHandle sound, const PlaybackDescriptor& desc ) override;
+		void Play( SoundInstance& inst, ChannelGroupHandle group ) override;
 		void StopAll( ) override;
 
 		// Global settings
-		void SetMasterVolume( float32 ) override;
-		void Set3DListenerAttributes( const ahi::ListenerAttributes& ) override;
-		void Set3DSettings( float32, float32, float32 ) override;
+		void SetMasterVolume( float32 volume ) override;
+		void Set3DListenerAttributes( const ahi::ListenerAttributes& attrs ) override;
+		void Set3DSettings( float32 dopplerScale, float32 distanceFactor, float32 rolloffScale ) override;
 
 		// Per-frame
-		void UpdateInstance( SoundInstance& ) override;
-		void EndFrame( ) override;
+		void UpdateInstance( SoundInstance& inst ) override;
+		void SubmitFrame( ) override;
 
 	private:
 
 		FMOD::System* mSystem = nullptr;
 
 		// Handle casts
-		FMOD::Sound* to_fmod_sound( vptr ptr )    const noexcept { return static_cast< FMOD::Sound* >(ptr); }
-		FMOD::Channel* to_fmod_channel( vptr ptr )  const noexcept { return static_cast< FMOD::Channel* >(ptr); }
-		FMOD::ChannelGroup* to_fmod_chgroup( vptr ptr )  const noexcept { return static_cast< FMOD::ChannelGroup* >(ptr); }
-		FMOD::DSP* to_fmod_dsp( vptr ptr )      const noexcept { return static_cast< FMOD::DSP* >(ptr); }
+		FMOD::Sound* to_fmod_sound( vptr ptr ) const noexcept { return static_cast< FMOD::Sound* >(ptr); }
+		FMOD::Channel* to_fmod_channel( vptr ptr ) const noexcept { return static_cast< FMOD::Channel* >(ptr); }
+		FMOD::ChannelGroup* to_fmod_channel_group( vptr ptr )  const noexcept { return static_cast< FMOD::ChannelGroup* >(ptr); }
+		FMOD::DSP* to_fmod_dsp( vptr ptr ) const noexcept { return static_cast< FMOD::DSP* >(ptr); }
 
 		// Flag translation
-		static FMOD_MODE      translate_sound_flags( Flags<SoundFlag> );
-		static FMOD_INITFLAGS translate_init_flags( Flags<InitFlag> );
+		static FMOD_MODE      translate_sound_flags( Flags<SoundFlag> flags );
+		static FMOD_INITFLAGS translate_init_flags( Flags<InitFlag> flags );
 
 		// DSP factory methods
-		FMOD::DSP* create_reverb_effect( const AudioEffectCreateInfo::Reverb& );
-		FMOD::DSP* create_frequency_effect( const AudioEffectCreateInfo::FrequencyPass::Pass&, detail::FrequnecyType );
-		FMOD::DSP* create_echo_effect( const AudioEffectCreateInfo::Echo& );
-		FMOD::DSP* create_distortion_effect( const AudioEffectCreateInfo::Distortion& );
-		FMOD::DSP* create_chorus_effect( const AudioEffectCreateInfo::Chorus& );
-		FMOD::DSP* create_flange_effect( const AudioEffectCreateInfo::Flange& );
-		FMOD::DSP* create_compressor_effect( const AudioEffectCreateInfo::Compressor& );
-		FMOD::DSP* create_parameq( const AudioEffectCreateInfo::ParamEQ& );
+		FMOD::DSP* create_reverb_effect( const AudioEffectCreateInfo::Reverb& desc );
+		FMOD::DSP* create_frequency_effect( const AudioEffectCreateInfo::FrequencyPass::Pass&, detail::FrequencyType type );
+		FMOD::DSP* create_echo_effect( const AudioEffectCreateInfo::Echo& desc );
+		FMOD::DSP* create_distortion_effect( const AudioEffectCreateInfo::Distortion& desc );
+		FMOD::DSP* create_chorus_effect( const AudioEffectCreateInfo::Chorus& desc );
+		FMOD::DSP* create_flange_effect( const AudioEffectCreateInfo::Flange& desc );
+		FMOD::DSP* create_compressor_effect( const AudioEffectCreateInfo::Compressor& desc );
+		FMOD::DSP* create_parameq( const AudioEffectCreateInfo::ParamEQ& desc );
 	};
 
 } // namespace lum::ahi::fmod

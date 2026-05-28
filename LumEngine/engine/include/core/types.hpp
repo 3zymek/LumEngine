@@ -47,18 +47,22 @@ namespace lum {
 	// Concepts
 	//------------------------------------------------
 
+	/* @brief Constrains tType to arithmetic types (integral or floating point). */
 	template<typename tType>
 	concept cArithmetic = std::is_arithmetic_v<tType>;
 
+	/* @brief Constrains tType to types representable as a C string (char or string-like objects). */
 	template<typename tType>
 	concept cStringable = std::same_as<tType, char> || requires(tType t) {
 		{ t.data( ) } -> std::convertible_to<const char*>;
 		{ t.size( ) } -> std::convertible_to<usize>;
 	};
 
+	/* @brief Constrains tType to enum types. */
 	template<typename tType>
 	concept cEnum = std::is_enum_v<tType>;
 
+	/* @brief Constrains tType to floating point types (float, double, long double). */
 	template<typename tType>
 	concept cFloating = std::is_floating_point_v<tType>;
 

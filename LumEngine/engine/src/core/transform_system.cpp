@@ -30,13 +30,13 @@ namespace lum {
 
 		for (auto& [parent, children] : scene->mChildren) {
 			for (EntityID child : children)
-				update_recursive( scene, child );
+				update_entity_recursive( scene, child );
 		}
 
 
 	}
 
-	void TransformSystem::update_recursive( Scene* scene, EntityID id ) {
+	void TransformSystem::update_entity_recursive( Scene* scene, EntityID id ) {
 
 		ecs::MEntityManager& mgr = scene->mEntityMgr;
 
@@ -52,7 +52,7 @@ namespace lum {
 
 		if (scene->mChildren.contains( id )) {
 			for (EntityID child : scene->mChildren[ id ])
-				update_recursive( scene, child );
+				update_entity_recursive( scene, child );
 		}
 
 

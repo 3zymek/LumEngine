@@ -137,7 +137,7 @@ namespace lum::render {
 
 			rhi::BufferCreateInfo desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
-			desc.mSize = ByteSize( vertices );
+			desc.mSize = ComputeByteSize( vertices );
 			desc.mBufferType = rhi::BufferType::Vertex;
 			desc.mData = vertices.data( );
 			mScreenQuad.mVbo = mContext.mRenderDev->CreateBuffer( desc );
@@ -153,7 +153,7 @@ namespace lum::render {
 
 			rhi::BufferCreateInfo desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
-			desc.mSize = ByteSize( indices );
+			desc.mSize = ComputeByteSize( indices );
 			desc.mBufferType = rhi::BufferType::Element;
 			desc.mData = indices.data( );
 			mScreenQuad.mEbo = mContext.mRenderDev->CreateBuffer( desc );

@@ -1,6 +1,6 @@
 //========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
-// Purpose: LumEngine setup defines
+// Purpose: LumEngine setup defines.
 // 
 //=============================================================================//
 #pragma once

@@ -24,7 +24,7 @@ namespace lum {
 
 	private:
 
-		static void update_recursive( Scene* scene, EntityID id );
+		static void update_entity_recursive( Scene* scene, EntityID id );
 
 	};
 

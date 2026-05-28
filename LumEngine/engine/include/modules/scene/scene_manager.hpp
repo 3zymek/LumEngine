@@ -14,7 +14,7 @@ namespace lum {
     class MMaterialManager;
     class MMeshManager;
     class MShaderManager;
-    class MAudioManager;
+    class AudioManager;
     namespace render { class Renderer; }
     ////////////////////////
 
@@ -64,7 +64,7 @@ namespace lum {
             return it != mEntities.end( ) ? &it->second : nullptr;
         }
         Entity& CreateEntity( ) {
-            EntityID id = GenerateID<Entity>::Get( );
+            EntityID id = UniqueID<Entity>::Get( );
             return mEntities.emplace( id, Entity( id ) ).first->second;
         }
         void DeleteEntity( EntityID entity ) {
@@ -103,7 +103,7 @@ namespace lum {
         MShaderManager* mShaderMgr = nullptr;
 
         /* @brief Pointer to the active audio manager. */
-        MAudioManager* mAudioMgr = nullptr;
+        AudioManager* mAudioMgr = nullptr;
 
         ev::EventBus* mEventBus = nullptr;
 

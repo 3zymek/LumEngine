@@ -28,13 +28,16 @@ namespace lum::ahi {
 		Unique		= 1 << 5,  // Only one instance of this sound can play at a time
 		LowMem		= 1 << 6,  // Reduce memory footprint at the cost of quality
 
-		Spatial3D		= 1 << 10, // Enable 3D spatialization — requires SetSoundPosition() each frame
-		Flat2D			= 1 << 11, // No spatialization — ignore 3D position entirely
-		LinearRolloff	= 1 << 12, // Volume decreases linearly with distance
-		InverseRolloff	= 1 << 13, // Volume decreases naturally (inverse square) with distance
+		Spatial3D		= 1 << 7, // Enable 3D spatialization — requires SetSoundPosition() each frame
+		Flat2D			= 1 << 8, // No spatialization — ignore 3D position entirely
+		LinearRolloff	= 1 << 9, // Volume decreases linearly with distance
+		InverseRolloff	= 1 << 10, // Volume decreases naturally (inverse square) with distance
 
 	};
 
+	/* @brief World-space transform and velocity of the audio listener (typically the camera).
+	*  Passed to Set3DListenerAttributes() once per frame.
+	*/
 	struct ListenerAttributes {
 
 		Vector3 mPosition;
@@ -75,8 +78,7 @@ namespace lum::ahi {
 	/* @brief Parameters for fire-and-forget one-shot playback. */
 	struct PlaybackDescriptor {
 
-		ChannelGroupHandle mGroup = kDefaultGroup;
-
+		ChannelGroupHandle mGroup = kDefaultGroup; // Channel group to route this sound through.
 		float32 mVolume = 1.0f; // Playback volume (0.0 = silent, 1.0 = full)
 		float32 mPitch = 1.0f; // Playback pitch (1.0 = original, 2.0 = one octave up)
 

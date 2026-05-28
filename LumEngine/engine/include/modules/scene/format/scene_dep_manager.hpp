@@ -67,8 +67,8 @@ namespace lum::fmt {
 		* Used to dispatch top-level scene constructs such as entity and world blocks.
 		*/
 		static inline std::unordered_map<uint64, ParseFn> sIdentifiersParseFunctions = {
-			{ HashStr( "entity" ), parse_entity },
-			{ HashStr( "world" ),  parse_world  }
+			{ HashString( "entity" ), parse_entity },
+			{ HashString( "world" ),  parse_world  }
 		};
 
 		/* @brief Lookup table mapping hashed component keywords to their parse functions.

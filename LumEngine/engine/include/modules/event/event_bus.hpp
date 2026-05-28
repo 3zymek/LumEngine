@@ -113,7 +113,7 @@ namespace lum {
 			template<detail::tEvent tType>
 			detail::EventPool<tType>& get_pool( ) {
 
-				auto typeID = GenerateTypeID::Get<tType>( );
+				auto typeID = RuntimeTypeID::Get<tType>( );
 
 				LUM_ASSERT( typeID < limits::kMaxEventTypes, "Max event types reached" );
 

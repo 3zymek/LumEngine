@@ -24,7 +24,7 @@ namespace lum {
 
 	rhi::TextureHandle MTextureManager::Get( StringView path, ResourceRoot id ) {
 
-		uint64 hash = HashStr( path );
+		uint64 hash = HashString( path );
 
 		if (mTextures.contains( hash )) {
 			return mTextures[ hash ];
@@ -36,7 +36,7 @@ namespace lum {
 
 	rhi::TextureHandle MTextureManager::Load( StringView path, TexturePreset preset, ResourceRoot id ) {
 
-		uint64 hash = HashStr( path );
+		uint64 hash = HashString( path );
 
 		if (mTextures.contains( hash ))
 			return mTextures[ hash ];
@@ -73,7 +73,7 @@ namespace lum {
 
 	rhi::TextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, ResourceRoot root ) {
 
-		uint64 hash = HashStr( path );
+		uint64 hash = HashString( path );
 
 		if (mTextures.contains( hash ))
 			return mTextures[ hash ];

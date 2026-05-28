@@ -21,7 +21,7 @@ namespace lum {
 	* @tparam tNullVal Sentinel null value; the counter starts one above this.
 	*/
 	template<typename tType, std::integral tIntegral = usize, tIntegral tNullVal = 0>
-	struct GenerateID {
+	struct UniqueID {
 
 		/* @brief Returns the next available unique ID.
 		* @return Atomically incremented uint32 identifier.
@@ -40,7 +40,7 @@ namespace lum {
 	/* @brief Generates a unique compile-time stable ID per type.
 	* Each distinct type receives a single ID assigned on first call.
 	*/
-	struct GenerateTypeID {
+	struct RuntimeTypeID {
 
 		/* @brief Returns the unique ID assigned to tType.
 		* @tparam tType Type to retrieve the ID for.
@@ -73,12 +73,26 @@ namespace lum {
 	template<cArithmetic tType>
 	inline constexpr uint8 ToUint8( tType value ) { return static_cast< uint8 >(value); }
 
+	/* @brief Converts any arithmetic type to int8 at compile-time.
+	* @param value The numeric value to cast.
+	* @return The value casted to int8.
+	*/
+	template<cArithmetic tType>
+	inline constexpr int8 ToInt8( tType value ) { return static_cast< int8 >(value); }
+
 	/* @brief Converts any arithmetic type to uint16 at compile-time.
 	* @param value The numeric value to cast.
 	* @return The value casted to uint16.
 	*/
 	template<cArithmetic tType>
 	inline constexpr uint16 ToUint16( tType value ) { return static_cast< uint16 >(value); }
+
+	/* @brief Converts any arithmetic type to int16 at compile-time.
+	* @param value The numeric value to cast.
+	* @return The value casted to int16.
+	*/
+	template<cArithmetic tType>
+	inline constexpr int16 ToInt16( tType value ) { return static_cast< int16 >(value); }
 
 	/* @brief Converts any arithmetic type to uint32 at compile-time.
 	* @param value The numeric value to cast.
@@ -87,6 +101,13 @@ namespace lum {
 	template<cArithmetic tType>
 	inline constexpr uint32 ToUint32( tType value ) { return static_cast< uint32 >(value); }
 
+	/* @brief Converts any arithmetic type to int32 at compile-time.
+	* @param value The numeric value to cast.
+	* @return The value casted to int32.
+	*/
+	template<cArithmetic tType>
+	inline constexpr int32 ToInt32( tType value ) { return static_cast< int32 >(value); }
+
 	/* @brief Converts any arithmetic type to uint64 at compile-time.
 	* @param value The numeric value to cast.
 	* @return The value casted to uint64.
@@ -94,19 +115,19 @@ namespace lum {
 	template<cArithmetic tType>
 	inline constexpr uint64 ToUint64( tType value ) { return static_cast< uint64 >(value); }
 
+	/* @brief Converts any arithmetic type to int64 at compile-time.
+	* @param value The numeric value to cast.
+	* @return The value casted to int64.
+	*/
+	template<cArithmetic tType>
+	inline constexpr int64 ToInt64( tType value ) { return static_cast< int64 >(value); }
+
 	/* @brief Converts any arithmetic type to float64 at compile-time.
 	* @param value The numeric value to cast.
 	* @return The value casted to float64.
 	*/
 	template<cArithmetic tType>
 	inline constexpr float64 ToFloat64( tType value ) { return static_cast< float64 >(value); }
-
-	/* @brief Converts any arithmetic type to int32 at compile-time.
-	* @param value The numeric value to cast.
-	* @return The value casted to int32.
-	*/
-	template<cArithmetic tType>
-	inline constexpr int32 ToInteger( tType value ) { return static_cast< int32 >(value); }
 
 	/* @brief Converts any arithmetic type to String at compile-time.
 	* @param value The numeric value to cast.
@@ -134,7 +155,7 @@ namespace lum {
 	* @return sizeof(T) * vector.size().
 	*/
 	template<typename tType>
-	inline constexpr usize ByteSize( const std::vector<tType>& vector ) {
+	inline constexpr usize ComputeByteSize( const std::vector<tType>& vector ) {
 		return sizeof( tType ) * vector.size( );
 	}
 
@@ -143,7 +164,7 @@ namespace lum {
 	* @return sizeof(T) * L.
 	*/
 	template<typename tType, usize tL>
-	inline constexpr usize ByteSize( const tType( &arr )[ tL ] ) {
+	inline constexpr usize ComputeByteSize( const tType( &arr )[ tL ] ) {
 		return sizeof( tType ) * tL;
 	}
 
@@ -153,7 +174,7 @@ namespace lum {
 	* @return sizeof(T) * size.
 	*/
 	template<typename tType>
-	inline constexpr usize ByteSize( const tType* arr, usize size ) {
+	inline constexpr usize ComputeByteSize( const tType* arr, usize size ) {
 		return sizeof( tType ) * size;
 	}
 
@@ -162,7 +183,7 @@ namespace lum {
 	* @return Number of elements L.
 	*/
 	template<typename tType, usize tL>
-	inline constexpr usize ArraySize( const tType( &arr )[ tL ] ) {
+	inline constexpr usize ElementCount( const tType( &arr )[ tL ] ) {
 		return tL;
 	}
 
@@ -182,7 +203,7 @@ namespace lum {
 	* @return 64-bit hash of the input string.
 	*/
 	template<usize tL>
-	inline constexpr uint64 HashStr( const char( &str )[ tL ] ) noexcept {
+	inline constexpr uint64 HashString( const char( &str )[ tL ] ) noexcept {
 		return cstd::StringHasher::Hash( str );
 	}
 
@@ -190,7 +211,7 @@ namespace lum {
 	* @param str String view to hash.
 	* @return 64-bit hash of the input string.
 	*/
-	inline constexpr uint64 HashStr( StringView str ) noexcept {
+	inline constexpr uint64 HashString( StringView str ) noexcept {
 		return cstd::StringHasher::Hash( str );
 	}
 
@@ -220,8 +241,14 @@ namespace lum {
 		return result;
 	}
 
+	/* @brief Formats a string into a fixed-size stack buffer using printf-style syntax.
+	*  @tparam tL     Size of the destination buffer in bytes.
+	*  @param buff    Destination character buffer to write into.
+	*  @param format  printf-style format string.
+	*  @param args    Variadic arguments matching the format specifiers.
+	*/
 	template<usize tL, typename... tArgs>
-	inline void FormatString( char( &buff )[ tL ], ccharptr format, tArgs&&... args ) {
+	inline void FormatBuffer( char( &buff )[ tL ], ccharptr format, tArgs&&... args ) {
 		snprintf( buff, tL, format, std::forward<tArgs>( args )... );
 	} 
 

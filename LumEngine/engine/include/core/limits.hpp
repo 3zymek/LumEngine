@@ -28,13 +28,16 @@ namespace lum::limits {
 	/* @brief Maximum number of audio sound assets that can be loaded at once. */
 	inline constexpr usize kMaxAudioSounds = 256;
 
-	inline constexpr usize kMaxAudioInstances = 64;
-
 	/* @brief Maximum number of concurrent audio channels. */
 	inline constexpr usize kMaxAudioChannels = 256;
 
+	/* @brief Maximum number of active audio instances playing simultaneously. */
+	inline constexpr usize kMaxAudioInstances = 64;
+
+	/* @brief Maximum number of audio channel groups for mixing and routing. */
 	inline constexpr usize kMaxChannelsGroup = 8;
 
+	/* @brief Maximum number of audio effects applied to a single channel or group. */
 	inline constexpr usize kMaxAudioEffects = 10;
 
 	//============================= Events ==================================
@@ -43,13 +46,13 @@ namespace lum::limits {
 	inline constexpr usize kMaxEventTypes = 128;
 
 	/* @brief Maximum number of callbacks invoked per frame for a single event type. */
-	inline constexpr usize kMaxCallbackPf = 8;
+	inline constexpr usize kMaxCallbackPerFrame = 8;
 
 	/* @brief Maximum number of persistent callbacks registered for a single event type. */
 	inline constexpr usize kMaxPermanentCallbacks = 8;
 
 	/* @brief Maximum number of times a single event type can be emitted per frame. */
-	inline constexpr usize kMaxEventEmittsPerFrame = 64;
+	inline constexpr usize kMaxEventEmitsPerFrame = 64;
 
 	//============================= Render ==================================
 
@@ -66,7 +69,7 @@ namespace lum::limits {
 	inline constexpr usize kMaxTextures = 256;
 
 	/* @brief Maximum number of draw calls per frame. */
-	inline constexpr usize kMaxDrawCallsPf = 256;
+	inline constexpr usize kMaxDrawCallsPerFrame = 256;
 
 	/* @brief Maximum number of spot lights that can cast shadows simultaneously. */
 	inline constexpr uint8 kMaxShadowCastingSpotLights = LUM_MAX_SHADOW_CASTING_SPOT_LIGHTS;

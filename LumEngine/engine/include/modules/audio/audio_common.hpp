@@ -12,8 +12,8 @@ namespace lum {
 	// High-level sound category used to classify audio assets.
 	// Each category maps to a fixed set of AHI sound flags (see gkSoundCategoryFlags).
 	enum class SoundCategory : byte {
-		SFX,     // Short, non-positional sound effects (gunshots, UI clicks, etc.)
-		SFX3D,   // Positional sound effects with inverse distance rolloff
+		Sfx,     // Short, non-positional sound effects (gunshots, UI clicks, etc.)
+		Sfx3D,   // Positional sound effects with inverse distance rolloff
 		Music,   // Streamed background music, non-positional
 		Voice,   // Streamed dialogue, non-positional, unique (one instance at a time)
 		Ambient, // Streamed positional ambience (wind, water, etc.)
@@ -25,8 +25,8 @@ namespace lum {
 		// Falls back to Music and logs a warning on unknown input.
 		inline SoundCategory ParseSoundCategory( StringView cat ) {
 
-			if (ToLower( cat ) == "sfx") { return SoundCategory::SFX; }
-			if (ToLower( cat ) == "sfx3d") { return SoundCategory::SFX3D; }
+			if (ToLower( cat ) == "sfx") { return SoundCategory::Sfx; }
+			if (ToLower( cat ) == "sfx3d") { return SoundCategory::Sfx3D; }
 			if (ToLower( cat ) == "music") { return SoundCategory::Music; }
 			if (ToLower( cat ) == "voice") { return SoundCategory::Voice; }
 			if (ToLower( cat ) == "ambient") { return SoundCategory::Ambient; }

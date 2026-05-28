@@ -201,7 +201,7 @@ namespace lum::render {
 			4,5,1, 1,0,4  // bottom
 
 		};
-		mCubemap.mNumIndices = ArraySize( cubemapIndices );
+		mCubemap.mNumIndices = ElementCount( cubemapIndices );
 
 
 		// Cubemap VBO
@@ -210,7 +210,7 @@ namespace lum::render {
 			rhi::BufferCreateInfo desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
 			desc.mMapFlags = rhi::MapFlag::None;
-			desc.mSize = ByteSize( cubemapVertices );
+			desc.mSize = ComputeByteSize( cubemapVertices );
 			desc.mData = cubemapVertices;
 			desc.mBufferType = rhi::BufferType::Vertex;
 			mCubemap.mVbo = mContext.mRenderDev->CreateBuffer( desc );
@@ -223,7 +223,7 @@ namespace lum::render {
 			rhi::BufferCreateInfo desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
 			desc.mMapFlags = rhi::MapFlag::None;
-			desc.mSize = ByteSize( cubemapIndices );
+			desc.mSize = ComputeByteSize( cubemapIndices );
 			desc.mData = cubemapIndices;
 			desc.mBufferType = rhi::BufferType::Element;
 			mCubemap.mEbo = mContext.mRenderDev->CreateBuffer( desc );

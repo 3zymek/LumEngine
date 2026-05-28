@@ -45,7 +45,7 @@ namespace lum {
 		mRender.mRenderSys.Update( mScene.mSceneMgr.GetCurrentScene( ), &mPlatform.mWindow );
 
 		mAudio.mAudioMgr.Update( &mScene.mSceneMgr.GetCurrentScene( )->mEntityMgr );
-		mAudio.mAudioDevice->EndFrame( );
+		mAudio.mAudioDevice->SubmitFrame( );
 
 	}
 	void Engine::Finalize( ) {

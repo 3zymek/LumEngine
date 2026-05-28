@@ -26,7 +26,7 @@ namespace lum {
 
 	void MSceneManager::SetScene( StringView scenePath ) {
 
-		uint64 hash = HashStr( scenePath );
+		uint64 hash = HashString( scenePath );
 
 		if (!mScenes.contains( hash )) {
 
@@ -40,7 +40,7 @@ namespace lum {
 
 	void MSceneManager::LoadScene( StringView scenePath ) {
 
-		uint64 hash = HashStr( scenePath );
+		uint64 hash = HashString( scenePath );
 
 		std::optional<String> content = ResourceLoader::ReadTextFile( ResourceRoot::External, scenePath );
 

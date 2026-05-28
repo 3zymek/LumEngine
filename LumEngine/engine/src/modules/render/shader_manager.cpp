@@ -23,7 +23,7 @@ namespace lum {
 
 	rhi::ShaderHandle MShaderManager::LoadShader( ccharptr vertexPath, ccharptr fragmentPath, ResourceRoot root ) {
 
-		uint64 hash = HashStr(vertexPath) ^ HashStr(fragmentPath);
+		uint64 hash = HashString(vertexPath) ^ HashString(fragmentPath);
 		if (mShaders.contains(hash))
 			return mShaders[hash];
 

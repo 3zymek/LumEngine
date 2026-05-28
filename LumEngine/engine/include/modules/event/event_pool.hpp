@@ -21,8 +21,8 @@ namespace lum::ev::detail {
 	public:
 
 		EventPool( ) {
-			mEventsCurrent.reserve( limits::kMaxCallbackPf );
-			mEventsNext.reserve( limits::kMaxCallbackPf );
+			mEventsCurrent.reserve( limits::kMaxCallbackPerFrame );
+			mEventsNext.reserve( limits::kMaxCallbackPerFrame );
 		}
 
 		// Registers a one-shot callback, destroyed after dispatch.
@@ -62,7 +62,7 @@ namespace lum::ev::detail {
 
 		// Queues an event for dispatch. Dropped if queue is full.
 		void Emit( const tType& event ) {
-			if (mEventsCurrent.size( ) >= limits::kMaxEventEmittsPerFrame) return;
+			if (mEventsCurrent.size( ) >= limits::kMaxEventEmitsPerFrame) return;
 			if (!mPolling)
 				mEventsCurrent.push_back( event );
 			else
@@ -83,7 +83,7 @@ namespace lum::ev::detail {
 
 	private:
 
-		std::array<Callback, limits::kMaxCallbackPf>         mCallbacks;
+		std::array<Callback, limits::kMaxCallbackPerFrame>         mCallbacks;
 		std::array<Callback, limits::kMaxPermanentCallbacks> mPermCallbacks;
 		EventT mCurrentCallbacksID = 0;
 

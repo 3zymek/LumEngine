@@ -1,8 +1,8 @@
 //========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Sound instance and sound asset descriptors for AHI.
-//          FSoundInstance carries runtime playback state for a single
-//          tracked sound, updated each frame via AudioDevice::Update().
+//          SoundInstance carries runtime playback state for a single
+//          tracked sound, updated each frame via AudioDevice::UpdateInstance().
 //
 //=============================================================================//
 #pragma once
@@ -10,9 +10,9 @@
 
 namespace lum::ahi {
 
-	using InstID = uint32;
+	using SoundInstanceID = uint32;
 
-	enum class InstanceFlag : bitfield {
+	enum class SoundInstanceFlag : uint32 {
 
 		// State
 		Paused,
@@ -33,24 +33,24 @@ namespace lum::ahi {
 	*/
 	struct SoundInstance {
 
-		SoundInstance( ) : mInstanceId( GenerateID<SoundInstance, InstID>::Get() ) { }
+		SoundInstance( ) : mInstanceId( UniqueID<SoundInstance, SoundInstanceID>::Get() ) { }
 
-		InstID		mInstanceId = 0;
-		SoundHandle	mSound;
-		ChannelGroupHandle mGroup;
-
+		SoundInstanceID		mInstanceId = 0;
+		SoundHandle			mSound;
+		ChannelGroupHandle	mGroup;
+		
 		float32		mVolume = 1.0f;
 		float32		mPitch = 1.0f;
 		Vector3		mPosition;
 		float32		mMinDistance = 10.0f;
 		float32		mMaxDistance = 50.0f;
 
-		Flags<InstanceFlag> mFlags;
+		Flags<SoundInstanceFlag> mFlags;
 
 	};
 
 	/* @brief Lightweight handle to a loaded sound asset. */
-	struct FAudioSound {
+	struct SoundAsset {
 
 		uint32 mId = 0;
 

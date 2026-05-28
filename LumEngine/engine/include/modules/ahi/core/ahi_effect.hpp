@@ -125,13 +125,16 @@ namespace lum::ahi {
 	*/
 	struct AudioEffect {
 
+		/* @brief Opaque DSP node handles owned by the audio backend (e.g. FMOD::DSP*).
+		*  Cast to the backend-specific type inside the implementation.
+		*/
 		std::vector<vptr> mDsps;
 
 	};
 
 	namespace detail {
 		/* @brief Internal tag used to distinguish lowpass from highpass during effect creation. */
-		enum class FrequnecyType : byte {
+		enum class FrequencyType : byte {
 			Low,
 			High
 		};

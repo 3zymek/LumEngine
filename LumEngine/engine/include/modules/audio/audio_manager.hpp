@@ -19,11 +19,11 @@ namespace lum {
 	* Wraps AHI device calls with string-based lookups via string hashing.
 	* Sound instances are tracked per-entity and updated each frame via Update().
 	*/
-	class MAudioManager {
+	class AudioManager {
 	public:
 
-		MAudioManager( ) = default;
-		~MAudioManager( ) { }
+		AudioManager( ) = default;
+		~AudioManager( ) { }
 
 		/* @brief Initializes the audio manager and binds it to an AHI device.
 		* @param device Pointer to an initialized AudioDevice backend.
@@ -53,7 +53,7 @@ namespace lum {
 		/* @brief Updates the 3D listener position and orientation for spatial audio.
 		* Should be called once per frame with the active camera transform.
 		*/
-		void Set3DListenerAttributes( const ahi::ListenerAttributes& );
+		void Set3DListenerAttributes( const ahi::ListenerAttributes& attrs );
 
 		/* @brief Immediately stops all currently playing sounds. */
 		void StopAll( );
@@ -81,7 +81,7 @@ namespace lum {
 		/* @brief Returns the handle of a previously created effect.
 		* Logs a warning and returns an invalid handle if not found.
 		*/
-		ahi::AudioEffectHandle GetEffect( StringView name );
+		ahi::AudioEffectHandle FindEffect( StringView name );
 
 		// -------------------------------------------------------------------------
 		// Channel groups
@@ -93,10 +93,10 @@ namespace lum {
 		/* @brief Attaches an effect to a channel group.
 		* All sounds routed through the group will be processed by the effect.
 		*/
-		void SetGroupEffect( ahi::ChannelGroupHandle group, ahi::AudioEffectHandle effect );
-		void SetGroupEffect( ahi::ChannelGroupHandle group, StringView effect );
-		void SetGroupEffect( StringView group, ahi::AudioEffectHandle effect );
-		void SetGroupEffect( StringView group, StringView effect );
+		void BindEffectToGroup( ahi::ChannelGroupHandle group, ahi::AudioEffectHandle effect );
+		void BindEffectToGroup( ahi::ChannelGroupHandle group, StringView effect );
+		void BindEffectToGroup( StringView group, ahi::AudioEffectHandle effect );
+		void BindEffectToGroup( StringView group, StringView effect );
 
 		/* @brief Sets the volume of a channel group.
 		* @param volume Volume scalar (0.0 = silent, 1.0 = full).

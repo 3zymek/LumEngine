@@ -1,9 +1,9 @@
 //========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Full-chain audio effect presets for AHI.
-//          Each FAudioPreset configures the entire effect chain at once —
+//          Each EffectPreset configures the entire effect chain at once —
 //          reverb, filters, echo, distortion, chorus, flange, and compression.
-//          Use AudioPreset enum with AudioDevice::CreateEffect(preset).
+//          Use EffectPreset enum with AudioDevice::CreateEffect(preset).
 //
 //=============================================================================//
 #pragma once
@@ -677,10 +677,14 @@ namespace lum::ahi {
 				},
 			},
 
-		}; // gkEffectPresetLookup
+		}; // kEffectPresetLookup
 
 	} // namespace detail
 
+	/* @brief Returns the AudioEffectCreateInfo descriptor for a given preset.
+	*  @param preset Named preset to look up.
+	*  @return Fully configured effect descriptor ready for AudioDevice::CreateEffect().
+	*/
 	inline ahi::AudioEffectCreateInfo GetPreset( EffectPreset preset ) {
 		return detail::kEffectPresetLookup[ ToUnderlyingEnum( preset ) ];
 	}

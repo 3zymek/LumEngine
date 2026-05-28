@@ -71,13 +71,13 @@ namespace lum {
 			return !(*this == oth);
 		}
 		bool operator==( ccharptr src ) const noexcept {
-			return HashStr( src ) == HashStr( mData );
+			return HashString( src ) == HashString( mData );
 		}
 		bool operator!=( ccharptr src ) const noexcept {
 			return !(*this == src);
 		}
 		bool operator==( StringView sv ) const noexcept {
-			return HashStr( sv.data( ) ) == HashStr( mData );
+			return HashString( sv.data( ) ) == HashString( mData );
 		}
 		operator StringView( ) const noexcept { return StringView( mData, strlen( mData ) ); }
 
@@ -132,7 +132,7 @@ namespace lum {
 		*/
 		template<usize tNewLength>
 		bool operator==( const char( &src )[ tNewLength ] ) const noexcept {
-			if (HashStr( src ) == HashStr( mData ))
+			if (HashString( src ) == HashString( mData ))
 				return true;
 			return false;
 		}
@@ -142,7 +142,7 @@ namespace lum {
 		*/
 		template<usize tNewLength>
 		bool operator==( const FixedString& oth ) const noexcept {
-			if (HashStr( oth.mData ) == HashStr( mData ))
+			if (HashString( oth.mData ) == HashString( mData ))
 				return true;
 			return false;
 		}
