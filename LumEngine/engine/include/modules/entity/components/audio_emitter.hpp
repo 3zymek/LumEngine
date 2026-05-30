@@ -11,7 +11,7 @@
 namespace lum {
 
 	/* @brief ECS component storing audio emitter properties for an entity. */
-	LCLASS( ) struct CAudioEmitter : public Component {
+	LCLASS( ) struct CAudioEmitter : public ComponentBase {
 
 		/* @brief Handle to loaded sound */
 		ahi::SoundHandle mSound;

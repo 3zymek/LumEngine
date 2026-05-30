@@ -28,7 +28,7 @@ namespace lum {
 
 		mPlatform.mWindow.Update( );
 
-		mEvBus.PollEvents( );
+		mEvBus.FlushEvents( );
 
 		mRender.mRenderer.BeginFrame( );
 		
@@ -44,7 +44,7 @@ namespace lum {
 
 		mRender.mRenderSys.Update( mScene.mSceneMgr.GetCurrentScene( ), &mPlatform.mWindow );
 
-		mAudio.mAudioMgr.Update( &mScene.mSceneMgr.GetCurrentScene( )->mEntityMgr );
+		mAudio.mAudioMgr.UpdateInstances( &mScene.mSceneMgr.GetCurrentScene( )->mEntityMgr );
 		mAudio.mAudioDevice->SubmitFrame( );
 
 	}

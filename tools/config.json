@@ -36,14 +36,14 @@
     "parse_fn_token_check": "tokens[i].mType == TokenType::Parameter",
     
     "editor_fn_namespace": "lum::editor",
-    "editor_fn_signature": "DrawInspector{ClassName}( ecs::MEntityManager& mgr, EntityID entity )",
+    "editor_fn_signature": "DrawInspector{ClassName}( ecs::EntityManager& mgr, EntityID entity )",
     "editor_fn_comp_name": "component",
     "editor_fn_comp_getter": "auto* {Var} = mgr.GetComponent<{ClassName}>( entity );",
     "editor_fn_getter_check": "if(!{Var}) return;",
     "editor_fn_registry": "RegisterEditorComponents( std::unordered_map<uint64, EditorComponentMetadata>& {Param} )",
-    "editor_fn_registry_add_fn": "[]( ecs::MEntityManager& mgr, EntityID id ) { mgr.AddComponent<{ClassName}>( id ); }",
-    "editor_fn_registry_typeid": "GenerateTypeID::Get<{ClassName}>()",
-    "editor_fn_registry_remove_fn": "[]( ecs::MEntityManager& mgr, EntityID id ) { mgr.RemoveComponent<{ClassName}>( id ); }",
+    "editor_fn_registry_add_fn": "[]( ecs::EntityManager& mgr, EntityID id ) { mgr.AddComponent<{ClassName}>( id ); }",
+    "editor_fn_registry_typeid": "TypeRegistry::Get<{ClassName}>()",
+    "editor_fn_registry_remove_fn": "[]( ecs::EntityManager& mgr, EntityID id ) { mgr.RemoveComponent<{ClassName}>( id ); }",
 
     "get_parse_name_namespace": "lum::ecs::detail",
     "get_parse_name_signature": "GetComponentParseName<{ClassName}>()",

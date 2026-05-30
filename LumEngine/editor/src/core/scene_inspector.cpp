@@ -115,8 +115,8 @@ namespace lum::editor {
 		if (bHasChildren) {
 
 			bool bTreeOpened = false;
-			FCollapsingHeaderArgs args{
-				.mID = HashStr( displayLabel ),
+			CollapsingHeaderArgs args{
+				.mID = HashString( displayLabel ),
 				.mLabel = displayLabel,
 				.mIconOpened = ICON_FA_CHEVRON_DOWN,
 				.mIconClosed = ICON_FA_CHEVRON_RIGHT,
@@ -124,7 +124,7 @@ namespace lum::editor {
 				.mColorHovered = style::skAccent,
 				.mFont = Fonts::sDefaultSmall,
 				.mMaxLabelWidth = availWidth,
-				.bSelected = bSelected,
+				.mSelected = bSelected,
 			};
 
 			if (TreeNodeCustom( args, bTreeOpened, [&]( ) {

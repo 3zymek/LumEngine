@@ -76,7 +76,7 @@ namespace lum::ahi {
 	inline constexpr ChannelGroupHandle kDefaultGroup( 0, 5000 );
 
 	/* @brief Parameters for fire-and-forget one-shot playback. */
-	struct PlaybackDescriptor {
+	struct SoundPlaybackDescription {
 
 		ChannelGroupHandle mGroup = kDefaultGroup; // Channel group to route this sound through.
 		float32 mVolume = 1.0f; // Playback volume (0.0 = silent, 1.0 = full)

@@ -16,7 +16,7 @@ namespace lum {
 
 	void MPlatformModule::Initialize( ev::EventBus& bus ) {
 
-		WindowDescriptor desc;
+		WindowCreateInfo desc;
 		desc.mEventBus = &bus;
 		desc.mIconData = ResourceLoader::LoadImageFromFile( ResourceRoot::Internal, "branding/lumengine-icon.png", 4 );
 

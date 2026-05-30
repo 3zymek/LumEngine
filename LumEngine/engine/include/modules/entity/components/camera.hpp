@@ -11,7 +11,7 @@ namespace lum {
 	/* @brief ECS component representing a camera.
 	* Stores projection and view parameters used for rendering.
 	*/
-	LCLASS( ) struct CCamera : public Component {
+	LCLASS( ) struct CCamera : public ComponentBase {
 
 		/* @brief Vertical field of view in degrees. */
 		LPROPERTY( ) float32 mFov = 0;

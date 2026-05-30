@@ -10,7 +10,7 @@ namespace lum {
 
 	// Hashed string representation using FNV-1a (64-bit).
 	// Use cstd::StringHasher::Hash() to produce values of this type.
-	using HashedStr = uint64;
+	using HashedString = uint64;
 
 }
 
@@ -25,9 +25,9 @@ namespace lum::cstd {
 		// Compile-time hash for string literals.
 		// Template parameter L is deduced from the array size (includes null terminator).
 		template<usize tL>
-		inline constexpr static HashedStr Hash( const char( &str )[ tL ] ) noexcept {
+		inline constexpr static HashedString Hash( const char( &str )[ tL ] ) noexcept {
 
-			HashedStr h = skFNV1AOffset;
+			HashedString h = skFNV1AOffset;
 
 			for (usize i = 0; i < tL - 1; i++) {
 				h ^= static_cast< uint8 >( str[ i ] );
@@ -39,9 +39,9 @@ namespace lum::cstd {
 		}
 
 		// Runtime hash for StringView.
-		inline constexpr static HashedStr Hash( StringView str ) noexcept {
+		inline constexpr static HashedString Hash( StringView str ) noexcept {
 
-			HashedStr h = skFNV1AOffset;
+			HashedString h = skFNV1AOffset;
 
 			for (auto s : str) {
 				h ^= static_cast< uint8 >(s);

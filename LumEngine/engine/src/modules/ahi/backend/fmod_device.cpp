@@ -157,7 +157,7 @@ namespace lum::ahi::fmod {
 
 	}
 
-	void FMODDevice::PlayOneShot( SoundHandle sound, const PlaybackDescriptor& desc ) {
+	void FMODDevice::PlayOneShot( SoundHandle sound, const SoundPlaybackDescription& desc ) {
 
 		FMOD::Sound* fmodSound = static_cast< FMOD::Sound* >(mSounds[ sound ]);
 		FMOD::Channel* channel = nullptr;

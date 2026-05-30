@@ -39,9 +39,9 @@ namespace lum {
 
 	}
 
-	ahi::SoundHandle AudioManager::GetSound( StringView relativePath, SoundCategory cat ) {
+	ahi::SoundHandle AudioManager::FindSound( StringView relativePath, SoundCategory cat ) {
 
-		HashedStr hash = HashString( relativePath );
+		HashedString hash = HashString( relativePath );
 		if (mSounds.contains( hash )) return mSounds[ hash ];
 
 		String fullPath = ResourceLoader::ResolvePath( ResourceRoot::External, relativePath );
@@ -57,23 +57,23 @@ namespace lum {
 		return handle;
 
 	}
-	ahi::SoundHandle AudioManager::GetSound( StringView relativePath, StringView cat ) {
+	ahi::SoundHandle AudioManager::FindSound( StringView relativePath, StringView cat ) {
 
-		return GetSound( relativePath, ahi::detail::ParseSoundCategory( cat ) );
+		return FindSound( relativePath, ahi::detail::ParseSoundCategory( cat ) );
 
 	}
 	void AudioManager::UnloadSound( StringView alias ) {
 
-		HashedStr hash = HashString( alias );
+		HashedString hash = HashString( alias );
 
 		if (mSounds.contains( hash ))
 			mSounds.erase( HashString( alias ) );
 
 	}
 
-	void AudioManager::PlayOneShot( StringView relativePath, const ahi::PlaybackDescriptor& desc ) {
+	void AudioManager::PlayOneShot( StringView relativePath, const ahi::SoundPlaybackDescription& desc ) {
 
-		ahi::SoundHandle sound = GetSound( relativePath );
+		ahi::SoundHandle sound = FindSound( relativePath );
 		mDevice->PlayOneShot( sound, desc );
 
 	}
@@ -97,7 +97,7 @@ namespace lum {
 	}
 	ahi::AudioEffectHandle AudioManager::CreateEffect( StringView name, const ahi::AudioEffectCreateInfo& desc ) {
 
-		HashedStr hash = HashString( name );
+		HashedString hash = HashString( name );
 
 		if (!mEffects.contains( hash )) {
 			mEffects[ hash ] = mDevice->CreateEffect( desc );
@@ -108,7 +108,7 @@ namespace lum {
 	}
 	void AudioManager::DeleteEffect( StringView name ) {
 
-		HashedStr hash = HashString( name );
+		HashedString hash = HashString( name );
 		LUM_RETURN_IF( !mEffects.contains( hash ), LUM_SEV_WARN, "Effect named %s doesn't exist", name.data( ) );
 		DeleteEffect( mEffects[ hash ] );
 
@@ -121,7 +121,7 @@ namespace lum {
 
 	ahi::AudioEffectHandle AudioManager::FindEffect( StringView name ) {
 
-		HashedStr hash = HashString( name );
+		HashedString hash = HashString( name );
 
 		if (!mEffects.contains( hash )) {
 			LUM_LOG_WARN( "Effect named %s doesn't exist", name.data( ) );
@@ -132,9 +132,9 @@ namespace lum {
 
 	}
 
-	ahi::ChannelGroupHandle AudioManager::GetGroup( StringView name ) {
+	ahi::ChannelGroupHandle AudioManager::FindGroup( StringView name ) {
 
-		HashedStr hash = HashString( name );
+		HashedString hash = HashString( name );
 
 		if (!mGroups.contains( hash )) {
 			mGroups[ hash ] = mDevice->CreateChannelGroup( name );
@@ -151,22 +151,22 @@ namespace lum {
 	}
 	void AudioManager::BindEffectToGroup( ahi::ChannelGroupHandle group, StringView effect ) {
 
-		HashedStr hash = HashString( effect );
+		HashedString hash = HashString( effect );
 		LUM_RETURN_IF( !mEffects.contains( hash ), LUM_SEV_WARN, "Invalid effect" );
 		BindEffectToGroup( group, mEffects[ hash ] );
 
 	}
 	void AudioManager::BindEffectToGroup( StringView group, ahi::AudioEffectHandle effect ) {
 
-		HashedStr hash = HashString( group );
+		HashedString hash = HashString( group );
 		LUM_RETURN_IF( !mGroups.contains( hash ), LUM_SEV_WARN, "Invalid group" );
 		BindEffectToGroup( mGroups[ hash ], effect );
 
 	}
 	void AudioManager::BindEffectToGroup( StringView group, StringView effect ) {
 
-		HashedStr hashGroup = HashString( group );
-		HashedStr hashEffect = HashString( effect );
+		HashedString hashGroup = HashString( group );
+		HashedString hashEffect = HashString( effect );
 
 		LUM_RETURN_IF( !mGroups.contains( hashGroup ), LUM_SEV_WARN, "Invalid group" );
 		LUM_RETURN_IF( !mEffects.contains( hashEffect ), LUM_SEV_WARN, "Invalid effect" );
@@ -175,7 +175,7 @@ namespace lum {
 	}
 	void AudioManager::SetGroupVolume( StringView group, float32 volume ) {
 
-		HashedStr hash = HashString( group );
+		HashedString hash = HashString( group );
 		LUM_RETURN_IF( !mGroups.contains( hash ), LUM_SEV_WARN, "Group %s dosen't exist", group.data( ) );
 		SetGroupVolume( mGroups[ hash ], volume );
 
@@ -187,7 +187,7 @@ namespace lum {
 	}
 	void AudioManager::SetGroupPitch( StringView group, float32 pitch ) {
 
-		HashedStr hash = HashString( group );
+		HashedString hash = HashString( group );
 		LUM_RETURN_IF( !mGroups.contains( hash ), LUM_SEV_WARN, "Group %s dosen't exist", group.data( ) );
 		SetGroupPitch( mGroups[ hash ], pitch );
 
@@ -204,7 +204,7 @@ namespace lum {
 
 	}
 
-	void AudioManager::Update( ecs::MEntityManager* mgr ) {
+	void AudioManager::UpdateInstances( ecs::EntityManager* mgr ) {
 
 		mgr->Each<CCamera, CTransform>(
 			[&]( CCamera& camera, CTransform& transform ) {

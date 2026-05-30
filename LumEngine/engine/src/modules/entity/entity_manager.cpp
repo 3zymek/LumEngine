@@ -14,11 +14,11 @@ namespace lum::ecs {
 	// Public
 	//---------------------------------------------------------
 
-	ManagedEntity MEntityManager::CreateEntity( ) {
+	ManagedEntity EntityManager::CreateEntity( ) {
 		return ManagedEntity{ this };
 	}
 
-	void MEntityManager::DestroyEntity( EntityID& entityID ) {
+	void EntityManager::DestroyEntity( EntityID& entityID ) {
 
 		for (EntityID i = 0; i < limits::kMaxComponentTypes; i++) {
 			if (mComponentPools[ i ] != nullptr)
@@ -27,7 +27,7 @@ namespace lum::ecs {
 		}
 	}
 
-	void MEntityManager::DestroyEntity( Entity& entity ) {
+	void EntityManager::DestroyEntity( Entity& entity ) {
 		for (EntityID i = 0; i < limits::kMaxComponentTypes; i++) {
 
 			if (mComponentPools[ i ] != nullptr)
@@ -42,13 +42,13 @@ namespace lum::ecs {
 	// Private
 	//---------------------------------------------------------
 
-	void MEntityManager::init( ) {
+	void EntityManager::initialize_pools( ) {
 		for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
 			mComponentPools[ i ] = nullptr;
 		}
 	}
 
-	void MEntityManager::destroy( ) {
+	void EntityManager::destroy_pools( ) {
 		for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
 			if (mComponentPools[ i ] != nullptr) {
 				delete mComponentPools[ i ];

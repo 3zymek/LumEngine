@@ -12,7 +12,7 @@
 
 namespace lum {
 
-	void Window::Initialize( const WindowDescriptor& desc ) {
+	void Window::Initialize( const WindowCreateInfo& desc ) {
 
 		mEventBus = desc.mEventBus;
 		init( desc );
@@ -50,46 +50,46 @@ namespace lum {
 	}
 
 	void Window::ToggleDecoration( bool value ) {
-		if (mState.Has( WindowFlags::NoDecoration ) != !value) {
+		if (mState.Has( WindowInitFlags::NoDecoration ) != !value) {
 			glfwSetWindowAttrib( mWindow, GLFW_DECORATED, value ? GLFW_TRUE : GLFW_FALSE );
-			value ? mState.Disable( WindowFlags::NoDecoration ) : mState.Enable( WindowFlags::NoDecoration );
+			value ? mState.Disable( WindowInitFlags::NoDecoration ) : mState.Enable( WindowInitFlags::NoDecoration );
 		}
 	}
 
 	void Window::ToggleResizable( bool value ) {
-		if (mState.Has( WindowFlags::NoResize ) != !value) {
+		if (mState.Has( WindowInitFlags::NoResize ) != !value) {
 			glfwSetWindowAttrib( mWindow, GLFW_RESIZABLE, value ? GLFW_TRUE : GLFW_FALSE );
-			value ? mState.Disable( WindowFlags::NoResize ) : mState.Enable( WindowFlags::NoResize );
+			value ? mState.Disable( WindowInitFlags::NoResize ) : mState.Enable( WindowInitFlags::NoResize );
 		}
 	}
 
 	void Window::ToggleFloating( bool value ) {
-		if (mState.Has( WindowFlags::Floating ) != value) {
+		if (mState.Has( WindowInitFlags::Floating ) != value) {
 			glfwSetWindowAttrib( mWindow, GLFW_FLOATING, value ? GLFW_TRUE : GLFW_FALSE );
-			value ? mState.Enable( WindowFlags::Floating ) : mState.Disable( WindowFlags::Floating );
+			value ? mState.Enable( WindowInitFlags::Floating ) : mState.Disable( WindowInitFlags::Floating );
 		}
 	}
 	void Window::ToggleVisibility( bool value ) {
-		if (mState.Has( WindowFlags::Invisible ) != value) {
+		if (mState.Has( WindowInitFlags::Invisible ) != value) {
 			if (value) {
 				glfwShowWindow( mWindow );
-				mState.Disable( WindowFlags::Invisible );
+				mState.Disable( WindowInitFlags::Invisible );
 			}
 			else {
 				glfwHideWindow( mWindow );
-				mState.Enable( WindowFlags::Invisible );
+				mState.Enable( WindowInitFlags::Invisible );
 			}
 		}
 	}
 	void Window::ToggleMaximized( bool value ) {
-		if (mState.Has( WindowFlags::Maximized ) != value) {
+		if (mState.Has( WindowInitFlags::Maximized ) != value) {
 			if (value) {
 				glfwMaximizeWindow( mWindow );
-				mState.Enable( WindowFlags::Maximized );
+				mState.Enable( WindowInitFlags::Maximized );
 			}
 			else {
 				glfwRestoreWindow( mWindow );
-				mState.Disable( WindowFlags::Maximized );
+				mState.Disable( WindowInitFlags::Maximized );
 			}
 		}
 	}
@@ -99,11 +99,11 @@ namespace lum {
 	void Window::ToggleCursor( bool value ) {
 		if (value) {
 			glfwSetInputMode( mWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
-			mState.Disable( WindowFlags::NoCursor );
+			mState.Disable( WindowInitFlags::NoCursor );
 		}
 		else {
 			glfwSetInputMode( mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
-			mState.Enable( WindowFlags::NoCursor );
+			mState.Enable( WindowInitFlags::NoCursor );
 		}
 	}
 
@@ -123,46 +123,46 @@ namespace lum {
 			mEventBus->Emit( ev );
 		}
 
-		for (uint32 i = 0; i < ArraySize( input::detail::gKeyMap ); i++) {
+		for (uint32 i = 0; i < ArraySize( input::detail::kKeyMap ); i++) {
 
 			bool keyPressed = glfwGetKey( static_cast< GLFWwindow* >( mWindow ), input::GetGLFWKey( input::Key( i ) ) ) == GLFW_PRESS;
 
-			if (keyPressed && !input::detail::gKeyIsPressed[ i ]) mEventBus->Emit( EKeyPressed{ .mKey = ( input::Key ) i } );
-			if (!keyPressed && input::detail::gKeyIsPressed[ i ]) mEventBus->Emit( EKeyReleased{ .mKey = ( input::Key ) i } );
+			if (keyPressed && !input::detail::keyIsPressed[ i ]) mEventBus->Emit( EKeyPressed{ .mKey = ( input::Key ) i } );
+			if (!keyPressed && input::detail::keyIsPressed[ i ]) mEventBus->Emit( EKeyReleased{ .mKey = ( input::Key ) i } );
 
-			input::detail::gKeyIsPressed[ i ] = keyPressed;
+			input::detail::keyIsPressed[ i ] = keyPressed;
 		}
 
 		glfwPollEvents( );
 
 	}
 
-	void Window::init( const WindowDescriptor& desc ) {
+	void Window::init( const WindowCreateInfo& desc ) {
 
 		if (!glfwInit( )) {
 			LUM_LOG_FATAL( "Failed to initialize GLFW" );
 			return;
 		}
 
-		if (desc.mFlags.Has( WindowFlags::NoResize ))
+		if (desc.mFlags.Has( WindowInitFlags::NoResize ))
 			glfwWindowHint( GLFW_RESIZABLE, GLFW_FALSE );
 
-		if (desc.mFlags.Has( WindowFlags::NoDecoration ))
+		if (desc.mFlags.Has( WindowInitFlags::NoDecoration ))
 			glfwWindowHint( GLFW_DECORATED, GLFW_FALSE );
 
-		if (desc.mFlags.Has( WindowFlags::Floating ))
+		if (desc.mFlags.Has( WindowInitFlags::Floating ))
 			glfwWindowHint( GLFW_FLOATING, GLFW_TRUE );
 
-		if (desc.mFlags.Has( WindowFlags::CenterCursor ))
+		if (desc.mFlags.Has( WindowInitFlags::CenterCursor ))
 			glfwWindowHint( GLFW_CENTER_CURSOR, GLFW_TRUE );
 
-		if (desc.mFlags.Has( WindowFlags::Maximized ))
+		if (desc.mFlags.Has( WindowInitFlags::Maximized ))
 			glfwWindowHint( GLFW_MAXIMIZED, GLFW_TRUE );
 
-		if (desc.mFlags.Has( WindowFlags::Focused ))
+		if (desc.mFlags.Has( WindowInitFlags::Focused ))
 			glfwWindowHint( GLFW_FOCUSED, GLFW_TRUE );
 
-		if (desc.mFlags.Has( WindowFlags::Invisible ))
+		if (desc.mFlags.Has( WindowInitFlags::Invisible ))
 			glfwWindowHint( GLFW_VISIBLE, GLFW_FALSE );
 
 		mWindow = glfwCreateWindow( desc.mWidth, desc.mHeight, desc.mTitle.c_str( ), nullptr, nullptr );

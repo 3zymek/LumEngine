@@ -201,7 +201,7 @@ namespace lum::render {
 			4,5,1, 1,0,4  // bottom
 
 		};
-		mCubemap.mNumIndices = ElementCount( cubemapIndices );
+		mCubemap.mNumIndices = ArraySize( cubemapIndices );
 
 
 		// Cubemap VBO

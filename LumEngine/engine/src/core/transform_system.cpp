@@ -13,7 +13,7 @@ namespace lum {
 
 	void TransformSystem::Update( Scene* scene ) {
 
-		ecs::MEntityManager& mgr = scene->mEntityMgr;
+		ecs::EntityManager& mgr = scene->mEntityMgr;
 
 		mgr.EachWithID<CTransform>(
 			[&]( EntityID id, CTransform& transform ) {
@@ -38,7 +38,7 @@ namespace lum {
 
 	void TransformSystem::update_entity_recursive( Scene* scene, EntityID id ) {
 
-		ecs::MEntityManager& mgr = scene->mEntityMgr;
+		ecs::EntityManager& mgr = scene->mEntityMgr;
 
 		CTransform* transform = mgr.GetComponent<CTransform>( id );
 

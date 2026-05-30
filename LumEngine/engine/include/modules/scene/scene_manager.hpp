@@ -32,7 +32,7 @@ namespace lum {
         std::unordered_map<EntityID, std::vector<EntityID>> mChildren;
 
         /* @brief ECS manager owning and managing components for this scene. */
-        ecs::MEntityManager mEntityMgr;
+        ecs::EntityManager mEntityMgr;
 
         void AttachChild( EntityID parent, EntityID child ) {
             if (parent == child) return;

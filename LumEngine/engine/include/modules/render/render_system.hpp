@@ -7,7 +7,7 @@
 
 namespace lum {
 
-	namespace ecs { class MEntityManager; }
+	namespace ecs { class EntityManager; }
 	class Window;
 	class Scene;
 

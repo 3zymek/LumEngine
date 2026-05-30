@@ -18,16 +18,16 @@ namespace lum::ecs {
 	// AddComponent
 	//-----------------------------------------------------------------------------
 
-	template<detail::Component tType>
-	tType& MEntityManager::AddComponent( EntityID entityId, tType component ) {
+	template<detail::cComponent tType>
+	tType& EntityManager::AddComponent( EntityID entityId, tType component ) {
 		tType& retVal = GetPool<tType>( ).Add( entityId, component );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
 		mEventBus->Emit( EComponentAdded<tType>{.mId = entityId, .mComponent = &retVal } );
 		return retVal;
 	}
 
-	template<detail::Component tType>
-	tType& MEntityManager::AddComponent( Entity entity, tType component ) {
+	template<detail::cComponent tType>
+	tType& EntityManager::AddComponent( Entity entity, tType component ) {
 		tType& retVal = GetPool<tType>( ).Add( entity.mId, component );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
 		mEventBus->Emit( EComponentAdded<tType>{.mId = entity.mId, .mComponent = &retVal } );
@@ -38,13 +38,13 @@ namespace lum::ecs {
 	// GetComponent
 	//-----------------------------------------------------------------------------
 
-	template<detail::Component tType>
-	tType* MEntityManager::GetComponent( EntityID entityId ) {
+	template<detail::cComponent tType>
+	tType* EntityManager::GetComponent( EntityID entityId ) {
 		return GetPool<tType>( ).Get( entityId );
 	}
 
-	template<detail::Component tType>
-	tType* MEntityManager::GetComponent( Entity entity ) {
+	template<detail::cComponent tType>
+	tType* EntityManager::GetComponent( Entity entity ) {
 		return GetPool<tType>( ).Get( entity.mId );
 	}
 
@@ -52,15 +52,15 @@ namespace lum::ecs {
 	// RemoveComponent
 	//-----------------------------------------------------------------------------
 
-	template<detail::Component tType>
-	void MEntityManager::RemoveComponent( EntityID entityId ) {
+	template<detail::cComponent tType>
+	void EntityManager::RemoveComponent( EntityID entityId ) {
 		GetPool<tType>( ).Remove( entityId );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
 		mEventBus->Emit( EComponentRemoved<tType>{ .mId = entityId } );
 	}
 
-	template<detail::Component tType>
-	void MEntityManager::RemoveComponent( Entity entity ) {
+	template<detail::cComponent tType>
+	void EntityManager::RemoveComponent( Entity entity ) {
 		GetPool<tType>( ).Remove( entity.mId );
 		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
 		mEventBus->Emit( EComponentRemoved<tType>{ .mId = entity.mId } );
@@ -70,23 +70,23 @@ namespace lum::ecs {
 	// HasComponent / HasComponents
 	//-----------------------------------------------------------------------------
 
-	template<detail::Component tType>
-	bool MEntityManager::HasComponent( EntityID entityId ) {
+	template<detail::cComponent tType>
+	bool EntityManager::HasComponent( EntityID entityId ) {
 		return GetPool<tType>( ).Has( entityId );
 	}
 
-	template<detail::Component tType>
-	bool MEntityManager::HasComponent( Entity entity ) {
+	template<detail::cComponent tType>
+	bool EntityManager::HasComponent( Entity entity ) {
 		return GetPool<tType>( ).Has( entity.mId );
 	}
 
-	template<detail::Component tFirst, detail::Component... tRest>
-	bool MEntityManager::HasComponents( EntityID entityId ) {
+	template<detail::cComponent tFirst, detail::cComponent... tRest>
+	bool EntityManager::HasComponents( EntityID entityId ) {
 		return (HasComponent<tFirst>( entityId ) && (HasComponent<tRest>( entityId ) && ...));
 	}
 
-	template<detail::Component tFirst, detail::Component... tRest>
-	bool MEntityManager::HasComponents( Entity entity ) {
+	template<detail::cComponent tFirst, detail::cComponent... tRest>
+	bool EntityManager::HasComponents( Entity entity ) {
 		return (HasComponent<tFirst>( entity.mId ) && (HasComponent<tRest>( entity.mId ) && ...));
 	}
 
@@ -94,8 +94,8 @@ namespace lum::ecs {
 	// Each
 	//-----------------------------------------------------------------------------
 
-	template<detail::Component tFirst, detail::Component... tRest, typename tCallback>
-	void MEntityManager::Each( tCallback&& callback ) {
+	template<detail::cComponent tFirst, detail::cComponent... tRest, typename tCallback>
+	void EntityManager::Each( tCallback&& callback ) {
 		auto& pool = GetPool<tFirst>( );
 		for (auto [id, component] : pool.mComponents.Each( )) {
 			bool hasAll = true;
@@ -106,8 +106,8 @@ namespace lum::ecs {
 		}
 	}
 
-	template<detail::Component tFirst, detail::Component... tRest, typename tCallback>
-	void MEntityManager::EachWithID( tCallback&& callback ) {
+	template<detail::cComponent tFirst, detail::cComponent... tRest, typename tCallback>
+	void EntityManager::EachWithID( tCallback&& callback ) {
 		auto& pool = GetPool<tFirst>( );
 		for (auto [id, component] : pool.mComponents.Each( )) {
 			bool hasAll = true;
@@ -122,9 +122,9 @@ namespace lum::ecs {
 	// GetPool
 	//-----------------------------------------------------------------------------
 
-	template<detail::Component tType>
-	detail::ComponentPool<tType>& MEntityManager::GetPool( ) {
-		ComponentTypeID typeID = RuntimeTypeID::Get<tType>( );
+	template<detail::cComponent tType>
+	detail::ComponentPool<tType>& EntityManager::GetPool( ) {
+		ComponentTypeID typeID = TypeRegistry::Get<tType>( );
 		LUM_ASSERT( typeID < limits::kMaxComponentTypes, "Too many component types" );
 		if (mComponentPools[ typeID ] == nullptr)
 			mComponentPools[ typeID ] = new detail::ComponentPool<tType>( );

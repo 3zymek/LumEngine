@@ -26,21 +26,21 @@ namespace lum::editor {
 		ImGui::Separator( );
 
 		if (selectedEntity != ecs::kNullEntity) {
-			FCollapsingHeaderArgs args;
+			CollapsingHeaderArgs args;
 			scene->mEntityMgr.ForEachComponent(
 				selectedEntity,
-				[&]( int32 typeID, ecs::BasePool* pool ) {
+				[&]( int32 typeID, ecs::ComponentBasePool* pool ) {
 
 					bool opened = true;
 
 					args.mFont = Fonts::sDefaultMedium;
-					args.mID = HashStr( pool->GetParseName( ) );
+					args.mID = HashString( pool->GetParseName( ) );
 					args.mLabel = pool->GetDisplayName( );
 					CollapsingHeaderCustom( args, opened );
 
 					if (opened) {
 						const ComponentsEntriesMap& map = Editor::GetComponentsEntries( );
-						auto it = map.find( HashStr( pool->GetParseName( ) ) );
+						auto it = map.find( HashString( pool->GetParseName( ) ) );
 						if (it != map.end( )) {
 							it->second.mDisplayFn( scene->mEntityMgr, selectedEntity );
 						}

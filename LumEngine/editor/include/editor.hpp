@@ -9,7 +9,7 @@
 
 namespace lum::editor {
 
-	using ComponentsEntriesMap = std::unordered_map<HashedStr, EditorComponentMetadata>;
+	using ComponentsEntriesMap = std::unordered_map<HashedString, EditorComponentMetadata>;
 	using ComponentsByCategoryMap = std::unordered_map<StringView, std::vector<EditorComponentMetadata*>>;
 
 	class Editor {

@@ -27,7 +27,7 @@ namespace lum::render {
 
 		mContext = ctx;
 
-		mInstances.reserve( limits::kMaxDrawCallsPf );
+		mInstances.reserve( limits::kMaxDrawCallsPerFrame );
 		mTempInstances.reserve( mTempSize );
 
 		init( );
@@ -37,7 +37,7 @@ namespace lum::render {
 	void GeometryPass::Submit( const FRenderInstance& instance ) {
 
 		LUM_ASSERT(
-			mInstances.size( ) < limits::kMaxDrawCallsPf,
+			mInstances.size( ) < limits::kMaxDrawCallsPerFrame,
 			"Draw calls per frame limit reached"
 		);
 

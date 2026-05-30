@@ -9,7 +9,7 @@
 #include "entity/ecs_common.hpp"
 #include "core/utils/sparse_set.hpp"
 
-namespace lum::ecs { class MEntityManager; }
+namespace lum::ecs { class EntityManager; }
 
 namespace lum::ecs {
 
@@ -18,13 +18,13 @@ namespace lum::ecs {
 	* Allows MEntityManager to store pools of different types
 	* in a single array and call Remove without knowing the component type.
 	*/
-	struct BasePool {
-		virtual bool Contains( EntityID entityID ) = 0;
-		virtual void Remove( EntityID& entityID ) = 0;
-		virtual StringView GetParseName( ) = 0;
-		virtual StringView GetDisplayName( ) = 0;
-		virtual StringView GetCategoryName( ) = 0;
-		virtual ~BasePool( ) { }
+	struct ComponentBasePool {
+		virtual bool Contains( EntityID entityID ) = 0;      /* @brief Returns true if the entity has this component. */
+		virtual void Remove( EntityID& entityID ) = 0;       /* @brief Removes the component from the entity. */
+		virtual StringView GetParseName( ) = 0;              /* @brief Returns the serialization name of the component type. */
+		virtual StringView GetDisplayName( ) = 0;            /* @brief Returns the editor display name of the component type. */
+		virtual StringView GetCategoryName( ) = 0;           /* @brief Returns the editor category name of the component type. */
+		virtual ~ComponentBasePool( ) { }
 	};
 
 	namespace detail {
@@ -37,11 +37,11 @@ namespace lum::ecs {
 		*
 		* @tparam tType Component type. Must satisfy the Component concept.
 		*/
-		template<Component tType>
-		class ComponentPool : public BasePool {
+		template<cComponent tType>
+		class ComponentPool : public ComponentBasePool {
 		public:
 
-			friend class MEntityManager;
+			friend class EntityManager;
 
 			/* @brief Adds a component to the given entity.
 			* If the entity already has this component, returns the existing one.
@@ -64,7 +64,7 @@ namespace lum::ecs {
 			}
 
 			/* @brief Removes the component from the given entity.
-			* @param entityID Target entity ID.
+			* @param entityID Target entity ID. Set to kNullEntity after removal.
 			*/
 			void Remove( EntityID& entityId ) override {
 				mComponents.Remove( entityId );

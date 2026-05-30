@@ -9,7 +9,7 @@
 namespace lum {
 
 	/* @brief ECS component storing the 3D transform of an entity. */
-	LCLASS( Category = "TRANSFORM" ) struct CTransform : public Component {
+	LCLASS( Category = "TRANSFORM" ) struct CTransform : public ComponentBase {
 
         /* @brief Local position relative to parent. */
         LPROPERTY( ) Vector3 mPosition = Vector3( 0.0f );

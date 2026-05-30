@@ -14,7 +14,7 @@ namespace lum {
 	namespace ev { class EventBus; }
 
 	// Flags controlling window initialization behavior.
-	enum class WindowFlags : bitfield {
+	enum class WindowInitFlags : bitfield {
 		NoDecoration	= 1 << 0, // Removes the native OS title bar and border.
 		NoResize		= 1 << 1, // Prevents the user from resizing the window.
 		Invisible		= 1 << 2, // Window is hidden on creation, show manually later.
@@ -24,16 +24,29 @@ namespace lum {
 		CenterCursor	= 1 << 6, // Cursor is centered in the window on creation.
 		NoCursor		= 1 << 7
 	};
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::WindowFlags );
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::WindowInitFlags );
+
+	enum class WindowStateFlags : bitfield {
+		Decoration = 1 << 0,
+		Resizable = 1 << 1,
+		Floating = 1 << 2,
+		Visible = 1 << 3,
+		Maximized = 1 << 4,
+		Focused = 1 << 5,
+		Cursor = 1 << 6,
+	};
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::WindowStateFlags );
+
+	// TODO ADD STATE FLAGS INSTEAD OF FUNCTIONS TOGGLE* USE WindowStateFlags !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	/* @brief Descriptor used to configure a window on creation. */
-	struct WindowDescriptor {
-		Flags<WindowFlags> mFlags = {};
-		String mTitle = "LumEngine";			/* @brief Window title bar text. */
-		std::optional<ImageData> mIconData = std::nullopt; /* Optional loaded icon texture data. */
-		uint32 mHeight = 500;					/* @brief Initial window height in pixels. */
-		uint32 mWidth = 500;					/* @brief Initial window width in pixels. */
-		ev::EventBus* mEventBus = nullptr;		/* @brief Event bus to emit window events to. */
+	struct WindowCreateInfo {
+		Flags<WindowInitFlags>		mFlags = {};
+		String						mTitle = "LumEngine";		/* @brief Window title bar text. */
+		std::optional<ImageData>	mIconData = std::nullopt;	/* Optional loaded icon texture data. */
+		uint32						mHeight = 500;				/* @brief Initial window height in pixels. */
+		uint32						mWidth = 500;				/* @brief Initial window width in pixels. */
+		ev::EventBus*				mEventBus = nullptr;		/* @brief Event bus to emit window events to. */
 	};
 
 	/* @brief Platform window wrapping a GLFW window.
@@ -49,13 +62,13 @@ namespace lum {
 		*  Creates the underlying GLFW window and registers it with the event bus.
 		*  @param desc Configuration for the window.
 		*/
-		void Initialize( const WindowDescriptor& desc );
+		void Initialize( const WindowCreateInfo& desc );
 
 		/* @brief Sets the window width in pixels. */
-		void SetWidth( uint32 );
+		void SetWidth( uint32 width );
 
 		/* @brief Sets the window height in pixels. */
-		void SetHeight( uint32 );
+		void SetHeight( uint32 height );
 
 		/* @brief Returns the current window width in pixels. */
 		uint32 GetWidth( ) const noexcept;
@@ -92,13 +105,13 @@ namespace lum {
 		GLFWwindow* mWindow = nullptr; /* @brief Underlying GLFW window handle. */
 		ev::EventBus* mEventBus = nullptr; /* @brief Event bus for window events. */
 
-		Flags<WindowFlags> mState = {};
+		Flags<WindowInitFlags> mState = {};
 
 		uint32 mWidth = 0;
 		uint32 mHeight = 0;
 
 		/* @brief Internal initialization called by Initialize(). */
-		void init( const WindowDescriptor& desc );
+		void init( const WindowCreateInfo& desc );
 	};
 
 } // namespace lum

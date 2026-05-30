@@ -11,13 +11,15 @@ namespace lum {
 	/* @brief Base tag struct for all ECS components.
 	* Inherit from this to mark a struct as a valid component.
 	*/
-	struct Component {
+	struct ComponentBase {
 		/* @brief Defines if component was changed. */
 		bool mMarked = true;
 	};
 
 	/* @brief Unique identifier for an entity. */
 	using EntityID = uint64;
+
+	/* @brief Unique numeric identifier for a component type, assigned at runtime. */
 	using ComponentTypeID = usize;
 
 	/* @brief Entity Component System namespace.
@@ -39,15 +41,20 @@ namespace lum {
 			* be trivially copyable and trivially destructible.
 			*/
 			template<typename tType>
-			concept Component = std::is_base_of_v<lum::Component, tType>;
+			concept cComponent = std::is_base_of_v<lum::ComponentBase, tType>;
 
-			template<Component tType>
+			/* @brief Returns the serialization name of the component type.
+			*  Used for reading and writing component data to scene files.
+			*/
+			template<cComponent tType>
 			StringView GetComponentParseName( );
 
-			template<Component tType>
+			/* @brief Returns the human-readable display name shown in the editor. */
+			template<cComponent tType>
 			StringView GetComponentDisplayName( );
 
-			template<Component tType>
+			/* @brief Returns the editor category this component belongs to (e.g. "Rendering", "Physics"). */
+			template<cComponent tType>
 			StringView GetComponentCategoryName( );
 
 		} // namespace lum::ecs::detail

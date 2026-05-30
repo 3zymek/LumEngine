@@ -12,7 +12,7 @@ namespace lum::editor {
 	//---------------------------------------------------------
 
 	namespace detail {
-		using EditorFn = void(*)(ecs::MEntityManager&, EntityID);
+		using EditorFn = void(*)(ecs::EntityManager&, EntityID);
 	}
 
 	/* @brief Metadata for a registered component type in the editor.
@@ -35,23 +35,23 @@ namespace lum::editor {
 	//---------------------------------------------------------
 
 	/* @brief Arguments for custom collapsing header and tree node widgets. */
-	struct FCollapsingHeaderArgs {
-		HashedStr	mID = {};
-		StringView	mLabel = {};
-		StringView	mIconOpened = ICON_FA_ANGLE_DOWN;
-		StringView	mIconClosed = ICON_FA_ANGLE_RIGHT;
-		ImVec4		mColor = ImVec4( 0.8f, 0.8f, 0.8f, 1.0f );
-		ImVec4		mColorHovered = ImVec4( 1.0f, 1.0f, 1.0f, 1.0f );
-		ImFont*		mFont = nullptr;
-		float32		mMaxLabelWidth = 0.0f;
-		bool		bSelected = false;
+	struct CollapsingHeaderArgs {
+		HashedString	mID = {};
+		StringView		mLabel = {};
+		StringView		mIconOpened = ICON_FA_ANGLE_DOWN;
+		StringView		mIconClosed = ICON_FA_ANGLE_RIGHT;
+		ImVec4			mColor = ImVec4( 0.8f, 0.8f, 0.8f, 1.0f );
+		ImVec4			mColorHovered = ImVec4( 1.0f, 1.0f, 1.0f, 1.0f );
+		ImFont*			mFont = nullptr;
+		float32			mMaxLabelWidth = 0.0f;
+		bool			mSelected = false;
 	};
 
 	/* @brief Draws a custom collapsing header with icon and label.
 	*  @param args  Display configuration.
 	*  @param opened Output — true if the header is expanded.
 	*/
-	void CollapsingHeaderCustom( const FCollapsingHeaderArgs& args, bool& opened );
+	void CollapsingHeaderCustom( const CollapsingHeaderArgs& args, bool& opened );
 
 	/* @brief Draws a custom tree node with chevron icon, hover/select highlight, and indent line.
 	*  @param args     Display configuration.
@@ -59,7 +59,7 @@ namespace lum::editor {
 	*  @param innerFn  Lambda called when the node is open; renders children.
 	*  @return True if the node label was clicked (not the arrow).
 	*/
-	bool TreeNodeCustom( const FCollapsingHeaderArgs& args, bool& opened, auto innerFn ) {
+	bool TreeNodeCustom( const CollapsingHeaderArgs& args, bool& opened, auto innerFn ) {
 
 		ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0, 0, 0, 0 ) );
 		ImGui::PushStyleColor( ImGuiCol_HeaderHovered, ImVec4( 0, 0, 0, 0 ) );
@@ -74,7 +74,7 @@ namespace lum::editor {
 			ImGuiTreeNodeFlags_OpenOnArrow |
 			ImGuiTreeNodeFlags_DefaultOpen;
 
-		if (args.bSelected)
+		if (args.mSelected)
 			flags |= ImGuiTreeNodeFlags_Selected;
 
 		opened = ImGui::TreeNodeEx( "##hidden", flags );
@@ -94,8 +94,8 @@ namespace lum::editor {
 		bool bHovered = ImGui::IsItemHovered( );
 
 		// draw background highlight
-		if (bHovered || args.bSelected) {
-			ImVec4 bgColor = args.bSelected ? style::skItemSelected : style::skItemHovered;
+		if (bHovered || args.mSelected) {
+			ImVec4 bgColor = args.mSelected ? style::skItemSelected : style::skItemHovered;
 			ImGui::GetWindowDrawList( )->AddRectFilled( itemMin, itemMax, ImGui::GetColorU32( bgColor ) );
 		}
 

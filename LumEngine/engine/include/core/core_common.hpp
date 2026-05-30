@@ -40,7 +40,7 @@ namespace lum {
 	/* @brief Generates a unique compile-time stable ID per type.
 	* Each distinct type receives a single ID assigned on first call.
 	*/
-	struct RuntimeTypeID {
+	struct TypeRegistry {
 
 		/* @brief Returns the unique ID assigned to tType.
 		* @tparam tType Type to retrieve the ID for.
@@ -183,7 +183,7 @@ namespace lum {
 	* @return Number of elements L.
 	*/
 	template<typename tType, usize tL>
-	inline constexpr usize ElementCount( const tType( &arr )[ tL ] ) {
+	inline constexpr usize ArraySize( const tType( &arr )[ tL ] ) {
 		return tL;
 	}
 
@@ -248,7 +248,7 @@ namespace lum {
 	*  @param args    Variadic arguments matching the format specifiers.
 	*/
 	template<usize tL, typename... tArgs>
-	inline void FormatBuffer( char( &buff )[ tL ], ccharptr format, tArgs&&... args ) {
+	inline void FormatString( char( &buff )[ tL ], ccharptr format, tArgs&&... args ) {
 		snprintf( buff, tL, format, std::forward<tArgs>( args )... );
 	} 
 

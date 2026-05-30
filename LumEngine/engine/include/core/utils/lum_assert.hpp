@@ -7,8 +7,8 @@
 #include "core/setup.hpp"
 
 #if !defined(NDEBUG)
-#   define LUM_ASSERT(expr, msg) \
-        do { if(!(expr)) { LUM_LOG_FATAL(msg); LUM_DEBUGBREAK(); } } while(0)
+#   define LUM_ASSERT(expr, msg, ...) \
+        do { if(!(expr)) { LUM_LOG_FATAL(msg, ##__VA_ARGS__); LUM_DEBUGBREAK(); } } while(0)
 #else
 #   define LUM_ASSERT(expr, msg) ((void)0)
 #endif

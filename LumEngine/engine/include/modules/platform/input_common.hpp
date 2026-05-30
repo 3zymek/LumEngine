@@ -46,7 +46,7 @@ namespace lum {
 		*/
 		inline uint32 GetGLFWKey( Key key ) {
 			LUM_ASSERT( detail::gActiveWindow != nullptr, "Active window isn't set" );
-			return detail::gKeyMap[ static_cast< uint32 >(key) ];
+			return detail::kKeyMap[ static_cast< uint32 >(key) ];
 		}
 
 		/* @brief Returns true every frame the key is held down.
@@ -76,13 +76,13 @@ namespace lum {
 			bool keyPressed = KeyPressed( key );
 			int32 keyCode = static_cast< int32 >(key);
 
-			if (keyPressed && !detail::gKeyIsPressed[ keyCode ]) {
-				detail::gKeyIsPressed[ keyCode ] = true;
+			if (keyPressed && !detail::keyIsPressed[ keyCode ]) {
+				detail::keyIsPressed[ keyCode ] = true;
 				return true;
 			}
 
 			if (!keyPressed)
-				detail::gKeyIsPressed[ keyCode ] = false;
+				detail::keyIsPressed[ keyCode ] = false;
 
 			return false;
 		}

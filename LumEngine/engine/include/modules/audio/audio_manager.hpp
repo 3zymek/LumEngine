@@ -38,8 +38,8 @@ namespace lum {
 		* @param relativePath Path relative to the project asset root.
 		* @param cat          Sound category controlling load flags and routing.
 		*/
-		ahi::SoundHandle GetSound( StringView relativePath, SoundCategory cat = SoundCategory::Music );
-		ahi::SoundHandle GetSound( StringView relativePath, StringView cat );
+		ahi::SoundHandle FindSound( StringView relativePath, SoundCategory cat = SoundCategory::Music );
+		ahi::SoundHandle FindSound( StringView relativePath, StringView cat );
 
 		/* @brief Unloads the sound asset at the given path and frees its handle. */
 		void UnloadSound( StringView relativePath );
@@ -48,7 +48,7 @@ namespace lum {
 		* @param relativePath Path to the sound asset.
 		* @param desc         Playback parameters (volume, pitch).
 		*/
-		void PlayOneShot( StringView relativePath, const ahi::PlaybackDescriptor& desc );
+		void PlayOneShot( StringView relativePath, const ahi::SoundPlaybackDescription& desc );
 
 		/* @brief Updates the 3D listener position and orientation for spatial audio.
 		* Should be called once per frame with the active camera transform.
@@ -88,7 +88,7 @@ namespace lum {
 		// -------------------------------------------------------------------------
 
 		/* @brief Returns the handle of a channel group by name, creating it if necessary. */
-		ahi::ChannelGroupHandle GetGroup( StringView name );
+		ahi::ChannelGroupHandle FindGroup( StringView name );
 
 		/* @brief Attaches an effect to a channel group.
 		* All sounds routed through the group will be processed by the effect.
@@ -120,17 +120,17 @@ namespace lum {
 		/* @brief Updates active sound instances based on entity audio components.
 		* Must be called once per frame.
 		*/
-		void Update( ecs::MEntityManager* mgr );
+		void UpdateInstances( ecs::EntityManager* mgr );
 
 	private:
 
-		ahi::AudioDevice* mDevice = nullptr;
-		ev::EventBus* mEventBus = nullptr;
+		ahi::AudioDevice*	mDevice = nullptr;
+		ev::EventBus*		mEventBus = nullptr;
 
-		std::unordered_map<HashedStr, ahi::SoundHandle>			mSounds;
-		std::unordered_map<HashedStr, ahi::ChannelGroupHandle>	mGroups;
-		std::unordered_map<HashedStr, ahi::AudioEffectHandle>	mEffects;
-		std::unordered_map<EntityID, ahi::SoundInstance>		mInstances;
+		std::unordered_map<HashedString, ahi::SoundHandle>			mSounds;
+		std::unordered_map<HashedString, ahi::ChannelGroupHandle>	mGroups;
+		std::unordered_map<HashedString, ahi::AudioEffectHandle>	mEffects;
+		std::unordered_map<EntityID, ahi::SoundInstance>			mInstances;
 
 	};
 

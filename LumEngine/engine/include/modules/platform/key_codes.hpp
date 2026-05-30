@@ -42,10 +42,10 @@ namespace lum {
 
 		namespace detail {
 
-			inline std::array<bool, static_cast< int32 >( Key::MAX_COUNT )> gKeyIsPressed{};
+			inline std::array<bool, static_cast< int32 >( Key::MAX_COUNT )> keyIsPressed{};
 
 			inline constexpr
-				int32 gKeyMap[ ] = {
+				int32 kKeyMap[ ] = {
 					GLFW_KEY_SPACE,
 					GLFW_KEY_APOSTROPHE,
 					GLFW_KEY_COMMA,
@@ -84,7 +84,7 @@ namespace lum {
 			};
 		}
 
-		LUM_SASSERT( ElementCount( input::detail::gKeyMap ) == static_cast< int32 >(input::Key::MAX_COUNT) && "gKeyMap size mismatch!" );
+		LUM_SASSERT( ArraySize( input::detail::kKeyMap ) == static_cast< int32 >(input::Key::MAX_COUNT) && "gKeyMap size mismatch!" );
 
 	}
 }

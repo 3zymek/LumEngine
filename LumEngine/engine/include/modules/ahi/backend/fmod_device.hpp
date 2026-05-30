@@ -32,7 +32,7 @@ namespace lum::ahi::fmod {
 		ChannelGroupHandle CreateChannelGroup( StringView name ) override;
 
 		// Playback
-		void PlayOneShot( SoundHandle sound, const PlaybackDescriptor& desc ) override;
+		void PlayOneShot( SoundHandle sound, const SoundPlaybackDescription& desc ) override;
 		void Play( SoundInstance& inst, ChannelGroupHandle group ) override;
 		void StopAll( ) override;
 

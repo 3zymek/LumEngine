@@ -13,7 +13,7 @@ namespace lum::editor {
 		return nullptr;
 	}
 
-	void CollapsingHeaderCustom( const FCollapsingHeaderArgs& args, bool& opened ) {
+	void CollapsingHeaderCustom( const CollapsingHeaderArgs& args, bool& opened ) {
 
 		ImGui::PushStyleColor( ImGuiCol_Header, ImVec4( 0.0f, 0.0f, 0.0f, 0.0f ) );
 		ImGui::PushStyleColor( ImGuiCol_HeaderHovered, ImVec4( 0, 0, 0, 0 ) );

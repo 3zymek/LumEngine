@@ -19,8 +19,8 @@ namespace lum {
 		class EventBus {
 		public:
 
-			EventBus( ) { init( ); }
-			~EventBus( ) { destruct( ); }
+			EventBus( ) { initialize_pools( ); }
+			~EventBus( ) { destroy_pools( ); }
 
 			/*! @brief Emits an event to all subscribers of the given type.
 			*
@@ -30,7 +30,7 @@ namespace lum {
 			*  @param event Reference to the event instance to dispatch.
 			*  @thread_safety Call from the main thread or the thread that owns the EventBus.
 			*/
-			template< detail::tEvent EventType >
+			template< detail::cEvent EventType >
 			void Emit( const EventType& event ) {
 				get_pool<EventType>( ).Emit( event );
 			}
@@ -42,11 +42,11 @@ namespace lum {
 			*  @tparam EventType Type of event to subscribe to.
 			*  @tparam Lambda Type of the callback lambda/functor.
 			*  @param lambda Callback function to invoke on event.
-			*  @return SubscribtionID Handle to unsubscribe manually if needed.
+			*  @return SubscriptionID Handle to unsubscribe manually if needed.
 			*  @thread_safety Call from the main thread or bus-owning thread.
 			*/
-			template< detail::tEvent EventType, typename Lambda >
-			detail::SubscribtionID Subscribe( Lambda&& lambda ) {
+			template< detail::cEvent EventType, typename Lambda >
+			detail::SubscriptionID Subscribe( Lambda&& lambda ) {
 				return get_pool<EventType>( ).Subscribe( std::forward<Lambda>( lambda ) );
 			}
 
@@ -57,37 +57,37 @@ namespace lum {
 			*  @tparam EventType Type of event to subscribe to.
 			*  @tparam Lambda Type of the callback lambda/functor.
 			*  @param lambda Callback function to invoke on event.
-			*  @return SubscribtionID Handle for manual unsubscription.
+			*  @return SubscriptionID Handle for manual unsubscription.
 			*  @thread_safety Call from the main thread or bus-owning thread.
 			*/
-			template< detail::tEvent EventType, typename Lambda >
-			detail::SubscribtionID SubscribePermanently( Lambda&& lambda ) {
+			template< detail::cEvent EventType, typename Lambda >
+			detail::SubscriptionID SubscribePermanently( Lambda&& lambda ) {
 				return get_pool<EventType>( ).SubscribePermanently( std::forward<Lambda>( lambda ) );
 			}
 
 			/*! @brief Unsubscribes a previously registered one-time callback.
 			*
-			*  Removes the callback identified by SubscribtionID from the EventType pool.
+			*  Removes the callback identified by SubscriptionID from the EventType pool.
 			*
 			*  @tparam EventType Type of event the callback was subscribed to.
 			*  @param id Handle returned by Subscribe().
 			*  @thread_safety Call from the main thread or bus-owning thread.
 			*/
-			template< detail::tEvent EventType >
-			void Unsubscribe( detail::SubscribtionID id ) {
+			template< detail::cEvent EventType >
+			void Unsubscribe( detail::SubscriptionID id ) {
 				get_pool<EventType>( ).Unsubscribe( id );
 			}
 
 			/*! @brief Unsubscribes a previously registered permanent callback.
 			*
-			*  Removes the callback identified by SubscribtionID from the EventType pool.
+			*  Removes the callback identified by SubscriptionID from the EventType pool.
 			*
 			*  @tparam EventType Type of event the callback was subscribed to.
 			*  @param id Handle returned by SubscribePermanently().
 			*  @thread_safety Call from the main thread or bus-owning thread.
 			*/
-			template< detail::tEvent EventType >
-			void UnsubscribePermanent( detail::SubscribtionID id ) {
+			template< detail::cEvent EventType >
+			void UnsubscribePermanent( detail::SubscriptionID id ) {
 				get_pool<EventType>( ).UnsubscribePermanent( id );
 			}
 
@@ -97,23 +97,26 @@ namespace lum {
 			*
 			*  @thread_safety Call from the main thread or the thread that owns the EventBus.
 			*/
-			void PollEvents( ) {
+			void FlushEvents( ) {
 				for (usize i = 0; i < limits::kMaxEventTypes; i++) {
 					if (mPools[ i ])
-						mPools[ i ]->PollEvents( );
+						mPools[ i ]->FlushEvents( );
 				}
 			}
 
-
-
 		private:
 
-			detail::BasePool* mPools[ limits::kMaxEventTypes ]{};
+			detail::EventPoolBase* mPools[ limits::kMaxEventTypes ]{};
 
-			template<detail::tEvent tType>
+			/* @brief Returns or creates the event pool for the given event type.
+			*  Allocates a new EventPool on first access for the given type.
+			*  @tparam tType Event type to retrieve the pool for.
+			*  @return Reference to the EventPool for tType.
+			*/
+			template<detail::cEvent tType>
 			detail::EventPool<tType>& get_pool( ) {
 
-				auto typeID = RuntimeTypeID::Get<tType>( );
+				auto typeID = TypeRegistry::Get<tType>( );
 
 				LUM_ASSERT( typeID < limits::kMaxEventTypes, "Max event types reached" );
 
@@ -126,13 +129,15 @@ namespace lum {
 				return *static_cast< detail::EventPool<tType>* >( ptr );
 			}
 
-			void init( ) {
+			/* @brief Initializes all pool slots to nullptr. */
+			void initialize_pools( ) {
 				for (usize i = 0; i < limits::kMaxEventTypes; i++) {
 					mPools[ i ] = nullptr;
 				}
 			}
 
-			void destruct( ) {
+			/* @brief Deletes all allocated event pools and resets slots to nullptr. */
+			void destroy_pools( ) {
 				for (usize i = 0; i < limits::kMaxEventTypes; i++) {
 					if (mPools[ i ] != nullptr) {
 						delete mPools[ i ];

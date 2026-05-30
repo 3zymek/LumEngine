@@ -11,58 +11,81 @@ namespace lum::ev {
 
 	namespace detail {
 
-		using UnsubscribeInvokeFunction = void (*)(SubscribtionID, EventBus&);
+		/* @brief Function pointer type for unsubscribing a permanent callback from the EventBus. */
+		using EventUnsubscribeFunction = void (*)(SubscriptionID, EventBus&);
 
-		struct EmitterSlot {
-			SubscribtionID				mId = MaxValue<SubscribtionID>( );
-			UnsubscribeInvokeFunction	mUnsub = nullptr;
+		/* @brief Stores a subscription ID and its associated unsubscribe function pointer. */
+		struct EventEmitterSlot {
+			SubscriptionID				mId = MaxValue<SubscriptionID>( );
+			EventUnsubscribeFunction	mUnsub = nullptr;
 		};
 
-	}
+	} // namespace lum::ev::detail
 
-	// RAII wrapper for EventBus. Automatically unsubscribes permanent callbacks on destruction.
-	class EventEmitter {
 
-		using EmitterSlot		= detail::EmitterSlot;
-		using SubscribtionID	= detail::SubscribtionID;
+	/* @brief RAII wrapper for EventBus that automatically unsubscribes permanent callbacks on destruction.
+	*
+	* Owns a set of permanent subscriptions and releases them when the listener goes out of scope.
+	* One-shot subscriptions are forwarded directly to the EventBus without tracking.
+	*
+	* @note Requires a valid EventBus reference for the lifetime of this object.
+	*/
+	class EventListener {
+
+		using EventEmitterSlot = detail::EventEmitterSlot;
+		using SubscriptionID = detail::SubscriptionID;
 
 	public:
 
-		explicit EventEmitter( EventBus& bus ) : mBus( bus ) {
+		/* @brief Constructs an EventListener bound to the given EventBus. */
+		explicit EventListener( EventBus& bus ) : mBus( bus ) {
 			mSubscriptions.reserve( limits::kMaxPermanentCallbacks );
 		}
-		~EventEmitter( ) { destroy( ); }
 
-		// Emits an event through the bound EventBus.
-		template<detail::tEvent EventType>
-		void Emit( const EventType& event ) {
-			mBus.Emit<EventType>( event );
+		~EventListener( ) { unsubscribe_all( ); }
+
+		/* @brief Emits an event through the bound EventBus.
+		*  @tparam tEvent Event type to emit. Must satisfy cEvent concept.
+		*  @param event Reference to the event instance to dispatch.
+		*/
+		template<detail::cEvent tEvent>
+		void Emit( const tEvent& event ) {
+			mBus.Emit<tEvent>( event );
 		}
 
-		// Subscribes a one-shot callback. Removed automatically after first dispatch.
-		template<detail::tEvent EventType, typename Lambda>
+		/* @brief Subscribes a one-shot callback. Removed automatically after first dispatch.
+		*  @tparam tEvent  Event type to subscribe to.
+		*  @tparam Lambda  Type of the callback lambda.
+		*  @param lambda   Callback to invoke on event.
+		*/
+		template<detail::cEvent tEvent, typename Lambda>
 		void Subscribe( Lambda&& lambda ) {
-			mBus.Subscribe<EventType>( std::forward<Lambda>( lambda ) );
+			mBus.Subscribe<tEvent>( std::forward<Lambda>( lambda ) );
 		}
 
-		// Subscribes a permanent callback. Unsubscribed automatically on destruction.
-		// Ignored if gMaxPermanentCallbacks limit is reached.
-		template<detail::tEvent EventType, typename Lambda>
-		void SubscribePermamently( Lambda&& lambda ) {
+		/* @brief Subscribes a permanent callback. Unsubscribed automatically on destruction.
+		*  Ignored if kMaxPermanentCallbacks limit is reached.
+		*  @tparam tEvent  Event type to subscribe to.
+		*  @tparam Lambda  Type of the callback lambda.
+		*  @param lambda   Callback to invoke on event.
+		*/
+		template<detail::cEvent tEvent, typename Lambda>
+		void SubscribePermanently( Lambda&& lambda ) {
 			if (mSubscriptions.size( ) >= limits::kMaxPermanentCallbacks) return;
 
-			SubscribtionID id = mBus.SubscribePermanently<EventType>( std::forward<Lambda>( lambda ) );
-			mSubscriptions.push_back( { id, []( SubscribtionID id, EventBus& bus ) {
-				bus.UnsubscribePermanent<EventType>( id );
+			SubscriptionID id = mBus.SubscribePermanently<tEvent>( std::forward<Lambda>( lambda ) );
+			mSubscriptions.push_back( { id, []( SubscriptionID id, EventBus& bus ) {
+				bus.UnsubscribePermanent<tEvent>( id );
 			} } );
 		}
 
 	private:
 
 		EventBus& mBus;
-		std::vector<EmitterSlot> mSubscriptions;
+		std::vector<EventEmitterSlot> mSubscriptions;
 
-		void destroy( ) {
+		/* @brief Unsubscribes all tracked permanent callbacks from the EventBus. */
+		void unsubscribe_all( ) {
 			for (auto& slot : mSubscriptions)
 				slot.mUnsub( slot.mId, mBus );
 		}

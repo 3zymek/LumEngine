@@ -22,7 +22,7 @@ namespace lum::editor {
 		if (bFindComponents) {
 			scene->mEntityMgr.ForEachComponent(
 				entityID,
-				[&]( int32 typeID, ecs::BasePool* pool ) {
+				[&]( int32 typeID, ecs::ComponentBasePool* pool ) {
 					for (auto& [category, entries] : Editor::GetComponentsByCategory( )) {
 						for (auto& entry : entries) {
 							if (entry->mTypeID == typeID)

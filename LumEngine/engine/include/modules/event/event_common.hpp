@@ -25,13 +25,13 @@ namespace lum {
 		*  be trivially copyable and trivially constructible.
 		*/
 		template<typename tType>
-		concept tEvent =
+		concept cEvent =
 			std::is_base_of_v<Event, tType>&&
 			std::is_trivially_copyable_v<tType>&&
 			std::is_trivially_constructible_v<tType>;
 
 		/* @brief Underlying type for event type identifiers. */
-		using EventT = uint32;
+		using EventTypeID = uint32;
 
 		/* @brief Function pointer type for invoking a stored callback. */
 		using InvokeFunction = void(*)(vptr userParam, cvptr event);
@@ -42,15 +42,15 @@ namespace lum {
 		/* @brief Aligned storage buffer for type-erased lambda storage.
 		*  Sized to 256 bytes with maximum natural alignment.
 		*/
-		using Storage = std::aligned_storage_t<256, alignof(std::max_align_t)>;
+		using LambdaStorage = std::aligned_storage_t<256, alignof(std::max_align_t)>;
 
 		/* @brief Handle type returned by Subscribe and SubscribePermanently. */
-		using SubscribtionID = uint32;
+		using SubscriptionID = uint32;
 
 		/* @brief Type-erased callback slot storing a lambda, invoke and destroy pointers. */
-		struct Callback {
+		struct EventCallback {
 
-			Storage			mStorage{};          /* @brief Raw storage for the captured lambda. */
+			LambdaStorage	mStorage{};          /* @brief Raw storage for the captured lambda. */
 			InvokeFunction  mInvoke = nullptr;  /* @brief Pointer to the lambda invocation wrapper. */
 			DestroyFunction mDestroy = nullptr;  /* @brief Pointer to the lambda destructor wrapper. */
 			bool			mActive = false;    /* @brief Whether this slot is currently occupied. */

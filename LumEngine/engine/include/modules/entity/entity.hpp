@@ -2,7 +2,7 @@
 //
 // Purpose: Represents a unique entity in the scene.
 //          Entity stores only an ID. ManagedEntity extends it
-//          with component add/remove/get operations via MEntityManager.
+//          with component add/remove/get operations via EntityManager.
 //
 //=============================================================================//
 #pragma once
@@ -10,7 +10,7 @@
 
 namespace lum {
 
-	namespace ecs { class MEntityManager; }
+	namespace ecs { class EntityManager; }
 
 	/* @brief Represents a unique entity in the ECS world.
 	*
@@ -21,7 +21,7 @@ namespace lum {
 	class Entity {
 	public:
 
-		friend class ecs::MEntityManager;
+		friend class ecs::EntityManager;
 		Entity( EntityID id ) : mId( id ) { }
 
 		EntityID GetID( ) const noexcept { return mId; }
@@ -46,48 +46,48 @@ namespace lum {
 	class ManagedEntity : public Entity {
 	public:
 
-		friend class ecs::MEntityManager;
+		friend class ecs::EntityManager;
 
 		/* @brief Constructs a managed entity bound to the given entity manager.
 		* @param mgr Reference to the entity manager that owns this entity.
 		*/
-		ManagedEntity( ecs::MEntityManager* mgr ) : mEntityManager( mgr ), Entity( UniqueID<Entity>::Get( ) ) { }
+		ManagedEntity( ecs::EntityManager* mgr ) : Entity( UniqueID<Entity>::Get( ) ), mEntityManager( mgr ) { }
 
 		/* @brief Adds a component of type tType to this entity.
 		* @param component Component value to add (default constructed if not provided).
 		* @return Reference to the added component.
 		*/
-		template<ecs::detail::Component tType>
+		template<ecs::detail::cComponent tType>
 		tType& AddComponent( tType component = {} );
 
 		/* @brief Returns a pointer to the component of type tType on this entity.
 		* @return Pointer to component, or nullptr if not present.
 		*/
-		template<ecs::detail::Component tType>
+		template<ecs::detail::cComponent tType>
 		tType* GetComponent( );
 
 		/* @brief Removes the component of type tType from this entity.
 		* @return Reference to this entity for method chaining.
 		*/
-		template<ecs::detail::Component tType>
+		template<ecs::detail::cComponent tType>
 		ManagedEntity& RemoveComponent( );
 
 		/* @brief Checks whether this entity has a component of type tType.
 		* @return True if the component exists on this entity.
 		*/
-		template<ecs::detail::Component tType>
+		template<ecs::detail::cComponent tType>
 		bool HasComponent( );
 
 		/* @brief Checks whether this entity has all specified component types.
 		* @return True if all components exist on this entity.
 		*/
-		template<ecs::detail::Component tType, ecs::detail::Component... tRest>
+		template<ecs::detail::cComponent tType, ecs::detail::cComponent... tRest>
 		bool HasComponents( );
 
 
 	protected:
 
-		ecs::MEntityManager* mEntityManager;
+		ecs::EntityManager* mEntityManager;
 
 	};
 

@@ -10,7 +10,7 @@
 namespace lum {
 
 	/* @brief ECS component holding a PBR material instance for an entity. */
-	LCLASS( Category = "RENDERING" ) struct CMaterialInstance : public Component {
+	LCLASS( Category = "RENDERING" ) struct CMaterialInstance : public ComponentBase {
 
 		/* @brief Path to the .lmt file. */
 		LPROPERTY( ) String mBasePath;

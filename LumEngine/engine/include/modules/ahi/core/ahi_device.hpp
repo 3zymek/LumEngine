@@ -97,7 +97,7 @@ namespace lum::ahi {
 		* @param sound Handle to the sound to play.
 		* @param desc  Playback parameters (volume, pitch).
 		*/
-		virtual void PlayOneShot( SoundHandle sound, const PlaybackDescriptor& desc ) = 0;
+		virtual void PlayOneShot( SoundHandle sound, const SoundPlaybackDescription& desc ) = 0;
 
 		/* @brief Plays a sound as a tracked instance, allowing runtime control.
 		* @param inst  Sound instance carrying playback state (volume, pitch, position, loop).
