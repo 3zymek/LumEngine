@@ -5,7 +5,7 @@
 //=============================================================================//
 #pragma once
 
-#include "core/utils/asset_loader.hpp"
+#include "core/utils/resource_loader.hpp"
 #include "rhi/rhi_common.hpp"
 
 //====== Backend ======

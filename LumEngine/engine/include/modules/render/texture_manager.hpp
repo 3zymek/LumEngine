@@ -130,29 +130,29 @@ namespace lum {
 		std::array<ImageData, 6> convert_equirectangular_to_cubemap( const ImageData& equirect, int32 faceSize = 4096 );
 
 		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
-		static inline rhi::TextureCreateInfo sTexturePresetsLookup[] = {
+		static inline rhi::ImageCreateInfo sTexturePresetsLookup[] = {
 			{ // ALBEDO
 				.mImageLayout = rhi::ImageLayout::SRGB8_Alpha8,
 				.mImageFormat = rhi::ImageFormat::RGBA,
-				.mDataType = rhi::TextureDataType::UnsignedByte,
+				.mDataType = rhi::ImageDataType::UnsignedByte,
 				.bGenerateMipmaps = true,
 			},
 			{ // NORMAL
 				.mImageLayout = rhi::ImageLayout::RGB8,
 				.mImageFormat = rhi::ImageFormat::RGB,
-				.mDataType = rhi::TextureDataType::UnsignedByte,
+				.mDataType = rhi::ImageDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // METALNESS
 				.mImageLayout = rhi::ImageLayout::R8,
 				.mImageFormat = rhi::ImageFormat::R,
-				.mDataType = rhi::TextureDataType::UnsignedByte,
+				.mDataType = rhi::ImageDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // ROUGHNESS
 				.mImageLayout = rhi::ImageLayout::R8,
 				.mImageFormat = rhi::ImageFormat::R,
-				.mDataType = rhi::TextureDataType::UnsignedByte,
+				.mDataType = rhi::ImageDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 		};

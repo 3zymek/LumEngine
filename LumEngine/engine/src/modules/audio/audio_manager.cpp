@@ -9,7 +9,7 @@
 
 #include "ahi/core/ahi_device.hpp"
 
-#include "core/utils/asset_loader.hpp"
+#include "core/utils/resource_loader.hpp"
 
 #include "event/event_bus.hpp"
 
@@ -33,7 +33,7 @@ namespace lum {
 			[&]( const EEntityDestroyed& ev ) {
 
 				if (mInstances.contains( ev.mId ))
-					mInstances[ ev.mId ].mFlags.Enable( ahi::SoundInstanceFlag::Kill );
+					mInstances[ ev.mId ].mFlags.Set( ahi::SoundInstanceFlag::Kill );
 
 			} );
 
@@ -230,13 +230,13 @@ namespace lum {
 					inst.mMinDistance = emitter.mMinDistance;
 					inst.mMaxDistance = emitter.mMaxDistance;
 					if (emitter.mPaused)
-						inst.mFlags.Enable( ahi::SoundInstanceFlag::Paused );
+						inst.mFlags.Set( ahi::SoundInstanceFlag::Paused );
 					if (emitter.mPlaying)
-						inst.mFlags.Enable( ahi::SoundInstanceFlag::Playing );
+						inst.mFlags.Set( ahi::SoundInstanceFlag::Playing );
 					if (emitter.mLooped)
-						inst.mFlags.Enable( ahi::SoundInstanceFlag::Looped );
+						inst.mFlags.Set( ahi::SoundInstanceFlag::Looped );
 					if (emitter.mPlay)
-						inst.mFlags.Enable( ahi::SoundInstanceFlag::Play );
+						inst.mFlags.Set( ahi::SoundInstanceFlag::Play );
 					inst.mSound = emitter.mSound;
 
 					inst.mPosition = transf.mPosition;

@@ -19,7 +19,7 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void EnvironmentPass::Initialize( const FRendererContext& ctx ) {
+	void EnvironmentPass::Initialize( const RendererContext& ctx ) {
 
 		ValidateRendererContext( ctx );
 
@@ -35,7 +35,7 @@ namespace lum::render {
 		generate_prefiltered_map( );
 	}
 
-	void EnvironmentPass::Execute( detail::GBuffer& gbuffer, const detail::FScreenQuad& quad ) {
+	void EnvironmentPass::Execute( detail::DeferredBuffer& gbuffer, const detail::FScreenQuad& quad ) {
 
 		mContext.mRenderDev->BindFramebuffer( quad.mSceneFbo ); // Render skybox to screenquad
 		mContext.mRenderDev->BindPipeline( mCubemap.mPipeline );
@@ -277,11 +277,11 @@ namespace lum::render {
 		// Irradiance map (IBL)
 		if (!mContext.mRenderDev->IsValid( mIBL.mIrradiance.mTexture )) {
 
-			rhi::TextureCreateInfo desc;
-			desc.mTextureType = rhi::TextureType::Cubemap;
+			rhi::ImageCreateInfo desc;
+			desc.mTextureType = rhi::ImageType::Cubemap;
 			desc.mImageLayout = rhi::ImageLayout::RGB16F;
 			desc.mImageFormat = rhi::ImageFormat::RGB;
-			desc.mDataType = rhi::TextureDataType::Float;
+			desc.mDataType = rhi::ImageDataType::Float;
 			desc.mWidth = 32;
 			desc.mHeight = 32;
 			mIBL.mIrradiance.mTexture = mContext.mRenderDev->CreateTexture( desc );
@@ -291,8 +291,8 @@ namespace lum::render {
 		// Prefiltered environment map (IBL)
 		if (!mContext.mRenderDev->IsValid( mIBL.mPrefiltered.mTexture )) {
 
-			rhi::TextureCreateInfo desc;
-			desc.mTextureType = rhi::TextureType::Cubemap;
+			rhi::ImageCreateInfo desc;
+			desc.mTextureType = rhi::ImageType::Cubemap;
 			desc.mImageFormat = rhi::ImageFormat::RGB;
 			desc.mImageLayout = rhi::ImageLayout::RGB16F;
 			desc.mWidth = 128;

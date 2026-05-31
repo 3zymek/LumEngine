@@ -12,7 +12,7 @@ namespace lum::render {
 
 		ShadowSystem( ) = default;
 
-		void Initialize( const FRendererContext& ctx );
+		void Initialize( const RendererContext& ctx );
 
 		void Execute( GeometryPass& geoPass, const LightPass& lightPass );
 
@@ -23,14 +23,14 @@ namespace lum::render {
 			/* @brief Initializes the pass, allocates GPU resources and compiles shaders.
 			*  @param ctx Context struct containing valid pointers to all subsystem managers.
 			*/
-			void Initialize( FRendererContext& ctx );
+			void Initialize( RendererContext& ctx );
 			
 			/* @brief Renders the scene from the light's perspective and writes the depth to the shadow map.
 			*  @param geoPass Geometry pass providing the scene render queue.
 			*  @param lightPass Light pass providing the active directional light direction.
 			*  @param ctx Renderer context.
 			*/
-			void Execute( GeometryPass& geoPass, const LightPass& lightPass, FRendererContext& ctx );
+			void Execute( GeometryPass& geoPass, const LightPass& lightPass, RendererContext& ctx );
 
 			rhi::TextureHandle GetShadowMap( ) const noexcept { return mShadowMap; }
 
@@ -66,21 +66,21 @@ namespace lum::render {
 			/* @brief Computes and uploads the light space matrix from the given light direction.
 			*  @param direction Normalized direction vector of the directional light.
 			*/
-			void calculate_lightspace_matrix( const Vector3& dir, FRendererContext& ctx );
+			void calculate_lightspace_matrix( const Vector3& dir, RendererContext& ctx );
 
 			/* @brief Uploads the light space matrix to the GPU uniform buffer.
 			*  @param mat Light space transformation matrix to upload.
 			*/
-			void upload_lightspace_matrix( const Matrix4& mat, FRendererContext& ctx );
+			void upload_lightspace_matrix( const Matrix4& mat, RendererContext& ctx );
 
 		} mDirectionalLight;
 
 		class SpotLight {
 		public:
 			
-			void Initialize( FRendererContext& ctx );
+			void Initialize( RendererContext& ctx );
 
-			void Execute( GeometryPass& geoPass, const LightPass& lightPass, FRendererContext& ctx );
+			void Execute( GeometryPass& geoPass, const LightPass& lightPass, RendererContext& ctx );
 			
 			rhi::TextureHandle GetShadowMaps( ) const noexcept { return mShadowMaps; }
 			
@@ -107,16 +107,16 @@ namespace lum::render {
 			/* @brief Uniform buffer holding the light space transformation matrix. */
 			rhi::BufferHandle mLightSpaceUBO;
 			
-			void calculate_lightspace_matrix( const Vector3& dir, const Vector3& pos, float32 fov, FRendererContext& ctx );
+			void calculate_lightspace_matrix( const Vector3& dir, const Vector3& pos, float32 fov, RendererContext& ctx );
 
-			void upload_lightspace_matrix( const Matrix4& mat, FRendererContext& ctx );
+			void upload_lightspace_matrix( const Matrix4& mat, RendererContext& ctx );
 			
 		} mSpotLight;
 
 
 	private:
 
-		FRendererContext mContext;
+		RendererContext mContext;
 
 		rhi::PipelineHandle mShadowMappingPipeline;
 

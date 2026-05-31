@@ -11,7 +11,7 @@
 #include "render/shadow_system.hpp"
 #include "render/passes/postprocess_pass.hpp"
 #include "render/temporal_antialiasing.hpp"
-#include "render/g_buffer.hpp"
+#include "render/deferred_buffer.hpp"
 
 namespace lum::render {
 
@@ -26,7 +26,7 @@ namespace lum::render {
 		/* @brief Initializes the renderer and allocates all GPU resources.
 		*  @param ctx Context struct containing valid pointers to all subsystem managers.
 		*/
-		void Initialize( const FRendererContext& ctx );
+		void Initialize( const RendererContext& ctx );
 
 		rhi::TextureHandle GetFrameTexture( ) { return mScreenQuad.mPostprocessTex; }
 
@@ -102,10 +102,10 @@ namespace lum::render {
 	private:
 
 		/* @brief Cached context holding all subsystem manager references. */
-		FRendererContext mContext;
+		RendererContext mContext;
 
 		/* @brief GBuffer holding geometry pass output textures — albedo, normal and depth. */
-		detail::GBuffer mGBuffer;
+		detail::DeferredBuffer mGBuffer;
 
 		/* @brief Fullscreen quad used for deferred lighting and post-process passes. */
 		detail::FScreenQuad mScreenQuad;

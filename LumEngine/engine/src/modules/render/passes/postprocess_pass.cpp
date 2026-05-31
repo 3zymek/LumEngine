@@ -7,7 +7,7 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void PostprocessPass::Initialize( const FRendererContext& ctx ) {
+	void PostprocessPass::Initialize( const RendererContext& ctx ) {
 
 		ValidateRendererContext( ctx );
 
@@ -30,7 +30,7 @@ namespace lum::render {
 		if (exe.bTAAEnabled)
 			mContext.mRenderDev->Copy( quad.mPostprocessTex, exe.mPreviousFrameTex );
 
-		mContext.mRenderDev->BindFramebuffer( rhi::gDefaultFramebuffer );
+		mContext.mRenderDev->BindFramebuffer( rhi::kDefaultFramebuffer );
 
 
 	}

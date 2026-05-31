@@ -1,5 +1,5 @@
 #pragma once
-#include "core/utils/asset_loader.hpp"
+#include "core/utils/resource_loader.hpp"
 #include "core/utils/icons_font_awesome.h"
 
 namespace lum::editor {

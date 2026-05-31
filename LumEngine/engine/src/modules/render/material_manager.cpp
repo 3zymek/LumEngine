@@ -19,7 +19,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MMaterialManager::Initialize( render::FRendererContext* ctx ) {
+	void MMaterialManager::Initialize( render::RendererContext* ctx ) {
 
 		mContext = ctx;
 		init( );

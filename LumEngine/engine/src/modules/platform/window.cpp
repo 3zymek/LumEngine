@@ -49,61 +49,13 @@ namespace lum {
 
 	}
 
-	void Window::ToggleDecoration( bool value ) {
-		if (mState.Has( WindowInitFlags::NoDecoration ) != !value) {
-			glfwSetWindowAttrib( mWindow, GLFW_DECORATED, value ? GLFW_TRUE : GLFW_FALSE );
-			value ? mState.Disable( WindowInitFlags::NoDecoration ) : mState.Enable( WindowInitFlags::NoDecoration );
-		}
-	}
-
-	void Window::ToggleResizable( bool value ) {
-		if (mState.Has( WindowInitFlags::NoResize ) != !value) {
-			glfwSetWindowAttrib( mWindow, GLFW_RESIZABLE, value ? GLFW_TRUE : GLFW_FALSE );
-			value ? mState.Disable( WindowInitFlags::NoResize ) : mState.Enable( WindowInitFlags::NoResize );
-		}
-	}
-
-	void Window::ToggleFloating( bool value ) {
-		if (mState.Has( WindowInitFlags::Floating ) != value) {
-			glfwSetWindowAttrib( mWindow, GLFW_FLOATING, value ? GLFW_TRUE : GLFW_FALSE );
-			value ? mState.Enable( WindowInitFlags::Floating ) : mState.Disable( WindowInitFlags::Floating );
-		}
-	}
-	void Window::ToggleVisibility( bool value ) {
-		if (mState.Has( WindowInitFlags::Invisible ) != value) {
-			if (value) {
-				glfwShowWindow( mWindow );
-				mState.Disable( WindowInitFlags::Invisible );
+	void Window::ToggleState( Flags<WindowStateFlags> flags, bool value ) {
+		for (uint32 bit = 0; bit < skWindowStateHandlersSize; bit++) {
+			WindowStateFlags flag = static_cast< WindowStateFlags >( 1u << bit );
+			if (flags.Has( flag ) && (value != mState.Has( flag ))) {
+				skWindowStateHandlers[ bit ]( mWindow, value );
+				mState.Invert( flag );
 			}
-			else {
-				glfwHideWindow( mWindow );
-				mState.Enable( WindowInitFlags::Invisible );
-			}
-		}
-	}
-	void Window::ToggleMaximized( bool value ) {
-		if (mState.Has( WindowInitFlags::Maximized ) != value) {
-			if (value) {
-				glfwMaximizeWindow( mWindow );
-				mState.Enable( WindowInitFlags::Maximized );
-			}
-			else {
-				glfwRestoreWindow( mWindow );
-				mState.Disable( WindowInitFlags::Maximized );
-			}
-		}
-	}
-	void Window::ToggleFocused( ) {
-		glfwFocusWindow( mWindow );
-	}
-	void Window::ToggleCursor( bool value ) {
-		if (value) {
-			glfwSetInputMode( mWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
-			mState.Disable( WindowInitFlags::NoCursor );
-		}
-		else {
-			glfwSetInputMode( mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
-			mState.Enable( WindowInitFlags::NoCursor );
 		}
 	}
 

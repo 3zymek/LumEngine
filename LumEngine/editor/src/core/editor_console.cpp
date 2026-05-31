@@ -210,11 +210,8 @@ namespace lum::editor {
 		ImVec4 finalCol = mSeverity.Has( sev ) ? base : ImVec4( base.x, base.y, base.z, 0.3f);
 		ImGui::PushStyleColor( ImGuiCol_Text, finalCol );
 
-		if (ImGui::Button( buff, ImVec2( skSideBarWidth, 30 ) )) {
-			if (mSeverity.Has( sev ))
-				mSeverity.Disable( sev );
-			else mSeverity.Enable( sev );
-		}
+		if (ImGui::Button( buff, ImVec2( skSideBarWidth, 30 ) ))
+			mSeverity.Invert( sev );
 
 		ImGui::PopStyleColor( 4 );
 		ImGui::PopStyleVar( 1 );

@@ -9,7 +9,7 @@
 
 namespace lum::render {
 
-	namespace detail { class GBuffer; }
+	namespace detail { class DeferredBuffer; }
 	using PointLightsArr = std::array<FPointLight, LUM_MAX_LIGHTS>;
 	using SpotLightsArr = std::array<FSpotLight, LUM_MAX_LIGHTS>;
 
@@ -36,7 +36,7 @@ namespace lum::render {
 		/* @brief Initializes the pass, allocates GPU buffers and compiles shaders.
 		*  @param ctx Context struct containing valid pointers to all subsystem managers.
 		*/
-		void Initialize( const FRendererContext& ctx );
+		void Initialize( const RendererContext& ctx );
 
 		/* @brief Submits a point light to be included in the current frame's lighting.
 		*  @param light Point light to add. Ignored if LUM_MAX_LIGHTS is reached.
@@ -71,7 +71,7 @@ namespace lum::render {
 		*  @param quad    Fullscreen quad VAO to draw the lighting onto.
 		*  @param desc    IBL and shadow map handles required for lighting.
 		*/
-		void Execute( const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassExecute& desc );
+		void Execute( const detail::DeferredBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassExecute& desc );
 
 	private:
 
@@ -82,7 +82,7 @@ namespace lum::render {
 		static constexpr usize skOffsetActiveSpot = skOffsetActivePoint + sizeof( int32 );
 
 		/* @brief Cached context holding all subsystem manager references. */
-		FRendererContext mContext;
+		RendererContext mContext;
 
 		/* @brief Array of active point lights for this frame. */
 		PointLightsArr mPointLights{};

@@ -10,7 +10,7 @@
 
 namespace lum::render {
 
-	namespace detail { class GBuffer; }
+	namespace detail { class DeferredBuffer; }
 	namespace detail {
 
 		enum class IBLTexture : byte {
@@ -32,7 +32,7 @@ namespace lum::render {
 		/* @brief Initializes the pass, allocates GPU resources and compiles shaders.
 		*  @param ctx Context struct containing valid pointers to all subsystem managers.
 		*/
-		void Initialize( const FRendererContext& ctx );
+		void Initialize( const RendererContext& ctx );
 
 		/* @brief Sets the HDR cubemap texture and triggers IBL precomputation.
 		*  Must be called before Execute() for IBL to work correctly.
@@ -44,7 +44,7 @@ namespace lum::render {
 		*  @param gbuffer  GBuffer containing depth for correct skybox depth testing.
 		*  @param quad     Screen quad FBO to render into.
 		*/
-		void Execute( detail::GBuffer& gbuffer, const detail::FScreenQuad& quad );
+		void Execute( detail::DeferredBuffer& gbuffer, const detail::FScreenQuad& quad );
 
 		/* @brief Returns a handle to a precomputed IBL texture.
 		*  @param tex Which IBL texture to retrieve.
@@ -54,7 +54,7 @@ namespace lum::render {
 	private:
 
 		/* @brief Cached context holding all subsystem manager references. */
-		FRendererContext mContext;
+		RendererContext mContext;
 
 		/* @brief Cubemap mesh, shader, pipeline and texture data. */
 		detail::FCubemap mCubemap;

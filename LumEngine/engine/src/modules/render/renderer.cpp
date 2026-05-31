@@ -17,7 +17,7 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void Renderer::Initialize( const FRendererContext& ctx ) {
+	void Renderer::Initialize( const RendererContext& ctx ) {
 
 		ValidateRendererContext( ctx );
 
@@ -52,7 +52,7 @@ namespace lum::render {
 	void Renderer::BeginFrame( ) {
 
 		mLightPass.ClearLights( );
-		mContext.mRenderDev->BindFramebuffer( rhi::gDefaultFramebuffer );
+		mContext.mRenderDev->BindFramebuffer( rhi::kDefaultFramebuffer );
 		mContext.mRenderDev->Clear(
 			rhi::BufferBit::Color |
 			rhi::BufferBit::Depth |
@@ -193,13 +193,13 @@ namespace lum::render {
 		{
 			rhi::FramebufferCreateInfo desc;
 			desc.mColorTex.push_back( { 0, mScreenQuad.mSceneTex } );
-			desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
+			desc.mDepthTex = mGBuffer.GetAttachment( detail::DeferredBufferAttachment::Depth );
 			mScreenQuad.mSceneFbo = mContext.mRenderDev->CreateFramebuffer( desc );
 		}
 		{
 			rhi::FramebufferCreateInfo desc;
 			desc.mColorTex.push_back( { 0, mScreenQuad.mPostprocessTex } );
-			desc.mDepthTex = mGBuffer.GetTexture( detail::GBufferTexture::Depth );
+			desc.mDepthTex = mGBuffer.GetAttachment( detail::DeferredBufferAttachment::Depth );
 			mScreenQuad.mPostprocessFbo = mContext.mRenderDev->CreateFramebuffer( desc );
 		}
 
@@ -210,20 +210,20 @@ namespace lum::render {
 		mContext.mRenderDev->Delete( mScreenQuad.mPostprocessTex );
 
 		{
-			rhi::TextureCreateInfo desc;
+			rhi::ImageCreateInfo desc;
 			desc.mImageFormat = rhi::ImageFormat::RGBA;
 			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mTextureType = rhi::ImageType::Texture2D;
 			desc.mWidth = w;
 			desc.mHeight = h;
 			mScreenQuad.mSceneTex = mContext.mRenderDev->CreateTexture( desc );
 			mTemporalAA.EnsureFrameTex( desc );
 		}
 		{
-			rhi::TextureCreateInfo desc;
+			rhi::ImageCreateInfo desc;
 			desc.mImageFormat = rhi::ImageFormat::RGBA;
 			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mTextureType = rhi::ImageType::Texture2D;
 			desc.mWidth = w;
 			desc.mHeight = h;
 			mScreenQuad.mPostprocessTex = mContext.mRenderDev->CreateTexture( desc );

@@ -188,7 +188,7 @@ namespace lum::ahi::fmod {
 
 		}
 
-		inst.mFlags.Enable( SoundInstanceFlag::Playing );
+		inst.mFlags.Set( SoundInstanceFlag::Playing );
 		mChannels.insert( { inst.mInstanceId, channel } );
 
 	}
@@ -231,7 +231,7 @@ namespace lum::ahi::fmod {
 		if (inst.mFlags.Has( SoundInstanceFlag::Play )) {
 
 			Play( inst, inst.mGroup );
-			inst.mFlags.Disable( SoundInstanceFlag::Play );
+			inst.mFlags.Unset( SoundInstanceFlag::Play );
 
 		}
 

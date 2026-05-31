@@ -10,7 +10,7 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void ShadowSystem::Initialize( const FRendererContext& ctx ) {
+	void ShadowSystem::Initialize( const RendererContext& ctx ) {
 
 		mContext = ctx;
 		mDirectionalLight.Initialize( mContext );
@@ -35,15 +35,15 @@ namespace lum::render {
 
 	}
 
-	void ShadowSystem::DirectionalLight::Initialize( FRendererContext& ctx ) {
+	void ShadowSystem::DirectionalLight::Initialize( RendererContext& ctx ) {
 
 		{ // Shadow map texture
-			rhi::TextureCreateInfo desc;
+			rhi::ImageCreateInfo desc;
 			desc.mWidth = mShadowMapTexSize.mX;
 			desc.mHeight = mShadowMapTexSize.mY;
 			desc.mImageFormat = rhi::ImageFormat::DepthComponent;
 			desc.mImageLayout = rhi::ImageLayout::Depth32F;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mTextureType = rhi::ImageType::Texture2D;
 			mShadowMap = ctx.mRenderDev->CreateTexture( desc );
 		}
 		{ // Shadow FBO
@@ -66,11 +66,11 @@ namespace lum::render {
 
 	}
 
-	void ShadowSystem::SpotLight::Initialize( FRendererContext& ctx ) {
+	void ShadowSystem::SpotLight::Initialize( RendererContext& ctx ) {
 
 		{ // Shadow maps texture
-			rhi::TextureCreateInfo desc;
-			desc.mTextureType = rhi::TextureType::Texture2DArray;
+			rhi::ImageCreateInfo desc;
+			desc.mTextureType = rhi::ImageType::Image2DArray;
 			desc.mDepth = limits::kMaxShadowCastingSpotLights;
 			desc.mWidth = mShadowMapTexSize.mX;
 			desc.mHeight = mShadowMapTexSize.mY;
@@ -97,7 +97,7 @@ namespace lum::render {
 	}
 
 
-	void ShadowSystem::DirectionalLight::Execute( GeometryPass& geoPass, const LightPass& lightPass, FRendererContext& ctx ) {
+	void ShadowSystem::DirectionalLight::Execute( GeometryPass& geoPass, const LightPass& lightPass, RendererContext& ctx ) {
 
 		rhi::ViewportState viewport = ctx.mRenderDev->GetViewport( );
 
@@ -110,12 +110,12 @@ namespace lum::render {
 
 		geoPass.DrawScene( );
 
-		ctx.mRenderDev->BindFramebuffer( rhi::gDefaultFramebuffer );
+		ctx.mRenderDev->BindFramebuffer( rhi::kDefaultFramebuffer );
 		ctx.mRenderDev->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
 
 	}
 
-	void ShadowSystem::SpotLight::Execute( GeometryPass& geoPass, const LightPass& lightPass, FRendererContext& ctx ) {
+	void ShadowSystem::SpotLight::Execute( GeometryPass& geoPass, const LightPass& lightPass, RendererContext& ctx ) {
 
 		/*
 		const auto& spotLights = lightPass.GetSpotLights( );
@@ -135,7 +135,7 @@ namespace lum::render {
 	// Private
 	//---------------------------------------------------------
 
-	void ShadowSystem::DirectionalLight::calculate_lightspace_matrix( const Vector3& dir, FRendererContext& ctx ) {
+	void ShadowSystem::DirectionalLight::calculate_lightspace_matrix( const Vector3& dir, RendererContext& ctx ) {
 
 		Vector3 lightDir = Normalize( dir );
 		Vector3 up = Vector3( 0.0f, 1.0f, 0.0f );
@@ -161,7 +161,7 @@ namespace lum::render {
 
 	}
 
-	void ShadowSystem::SpotLight::calculate_lightspace_matrix( const Vector3& dir, const Vector3& pos, float32 fov, FRendererContext& ctx ) {
+	void ShadowSystem::SpotLight::calculate_lightspace_matrix( const Vector3& dir, const Vector3& pos, float32 fov, RendererContext& ctx ) {
 
 		Vector3 lightDir = Normalize( dir );
 		Vector3 up = Vector3( 0.0f, 1.0f, 0.0f );
@@ -188,7 +188,7 @@ namespace lum::render {
 
 	}
 
-	void ShadowSystem::DirectionalLight::upload_lightspace_matrix( const Matrix4& mat, FRendererContext& ctx ) {
+	void ShadowSystem::DirectionalLight::upload_lightspace_matrix( const Matrix4& mat, RendererContext& ctx ) {
 
 		ctx.mRenderDev->UpdateBuffer(
 			mLightSpaceUBO,
@@ -197,7 +197,7 @@ namespace lum::render {
 
 	}
 
-	void ShadowSystem::SpotLight::upload_lightspace_matrix( const Matrix4& mat, FRendererContext& ctx ) {
+	void ShadowSystem::SpotLight::upload_lightspace_matrix( const Matrix4& mat, RendererContext& ctx ) {
 
 		
 

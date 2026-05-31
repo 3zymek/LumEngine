@@ -19,14 +19,14 @@ namespace lum::render {
 
 		PostprocessPass( ) = default;
 
-		void Initialize( const FRendererContext& ctx );
+		void Initialize( const RendererContext& ctx );
 
 		void Execute( const detail::FScreenQuad& quad, const PostprocessPassExecute& exe );
 
 
 	private:
 
-		FRendererContext mContext;
+		RendererContext mContext;
 
 		/* @brief Shader used for the final post-process blit to the default framebuffer. */
 		rhi::ShaderHandle mShader;

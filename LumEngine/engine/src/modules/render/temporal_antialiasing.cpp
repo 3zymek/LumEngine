@@ -8,7 +8,7 @@ namespace lum::render {
 
 	}
 
-	void TemporalAntiAliasing::EnsureFrameTex( const rhi::TextureCreateInfo& desc ) {
+	void TemporalAntiAliasing::EnsureFrameTex( const rhi::ImageCreateInfo& desc ) {
 
 		mRenderDev->Delete( mPreviousFrameTex );
 		mWidth = desc.mWidth;

@@ -33,9 +33,9 @@ namespace lum::editor {
 			mCameraFocused = false;
 		
 		if (!mCameraFocused)
-			window->ToggleCursor( true );
+			window->ToggleState( WindowStateFlags::Cursor, true );
 		else {
-			window->ToggleCursor( false );
+			window->ToggleState( WindowStateFlags::Cursor, false );
 			ImGui::GetIO( ).WantCaptureMouse = false;
 			ImGui::GetIO( ).MousePos = ImVec2( -FLT_MAX, -FLT_MAX );
 		}

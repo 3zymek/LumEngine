@@ -5,7 +5,7 @@
 //=============================================================================//
 
 #include "render/mesh_manager.hpp"
-#include "core/utils/asset_loader.hpp"
+#include "core/utils/resource_loader.hpp"
 #include "render/mesh.hpp"
 #include "event/event_bus.hpp"
 #include "event/events/entity_events.hpp"
@@ -17,7 +17,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MMeshManager::Initialize( render::FRendererContext* ctx ) {
+	void MMeshManager::Initialize( render::RendererContext* ctx ) {
 
 		render::ValidateRendererContext( *ctx );
 

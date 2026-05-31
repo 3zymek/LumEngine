@@ -21,7 +21,7 @@ namespace lum::rhi::gl {
 
 		for (auto& [slot, texHandle] : desc.mColorTex) {
 
-			const Texture* tex = mTextures.Get( texHandle );
+			const Image* tex = mTextures.Get( texHandle );
 
 			if (samples == 0)
 				samples = tex->mSamples;
@@ -50,7 +50,7 @@ namespace lum::rhi::gl {
 
 		if (IsValid( desc.mDepthTex )) {
 
-			const Texture* tex = mTextures.Get( desc.mDepthTex );
+			const Image* tex = mTextures.Get( desc.mDepthTex );
 
 			LUM_ASSERT( is_depth_format( tex->mInternalFormat ), "Invalid framebuffer depth texture format" );
 			LUM_ASSERT( tex->mSamples == samples, "Depth sample mismatch" );
@@ -59,7 +59,7 @@ namespace lum::rhi::gl {
 
 		if (IsValid( desc.mStencilTex )) {
 
-			const Texture* tex = mTextures.Get( desc.mStencilTex );
+			const Image* tex = mTextures.Get( desc.mStencilTex );
 
 			LUM_ASSERT( is_stencil_format( tex->mInternalFormat ), "Invalid framebuffer stencil texture format" );
 			glNamedFramebufferTexture( fbo.mHandle, GL_STENCIL_ATTACHMENT, mTextures.Get( desc.mStencilTex )->mHandle, 0 );

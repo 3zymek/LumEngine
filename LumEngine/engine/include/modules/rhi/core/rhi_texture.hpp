@@ -11,7 +11,7 @@ namespace lum::rhi {
 	/* @brief Defines a rectangular region within a texture, used for partial updates.
 	* Also carries mip level and depth slice for 3D or array texture operations.
 	*/
-	struct TextureRect {
+	struct ImageRect {
 
 		/* @brief X offset in pixels from the left edge of the texture. */
 		uint32 mX = 0;
@@ -34,12 +34,12 @@ namespace lum::rhi {
 	};
 
 	/* @brief Dimensionality and type of a GPU texture resource. */
-	enum class TextureType : byte {
+	enum class ImageType : byte {
 		None,
-		Texture2D,          /* Standard 2D texture (render target, GBuffer attachment). */
-		Texture2DArray,		/* Array with multiple texture 2D layers. */
-		Texture2DSampled,	/* 2D multisample texture (MSAA render target). */
-		Texture3D,          /* Volumetric 3D texture. */
+		Image2D,          /* Standard 2D texture (render target, GBuffer attachment). */
+		Image2DArray,		/* Array with multiple texture 2D layers. */
+		Image2DSampled,	/* 2D multisample texture (MSAA render target). */
+		Image3D,          /* Volumetric 3D texture. */
 		Cubemap             /* 6-face cube texture (skybox, IBL environment maps). */
 	};
 
@@ -96,7 +96,7 @@ namespace lum::rhi {
 	};
 
 	/* @brief Data type of each pixel channel in the CPU-side pixel buffer. */
-	enum class TextureDataType : byte {
+	enum class ImageDataType : byte {
 		UnsignedByte,
 		Byte,
 		UnsignedShort,
@@ -130,7 +130,7 @@ namespace lum::rhi {
 	* @param mDepth             Depth in pixels, used for Texture3D only.
 	* @param mCubemap           Per-face pixel data, used for Cubemap only.
 	*/
-	struct TextureCreateInfo {
+	struct ImageCreateInfo {
 
 		/* @brief Raw pixel data loaded from the CPU side. */
 		ImageData mData;
@@ -142,7 +142,7 @@ namespace lum::rhi {
 		ImageFormat mImageFormat = ImageFormat::RGBA;
 
 		/* @brief Data type of each pixel channel in the source buffer. */
-		TextureDataType mDataType = TextureDataType::UnsignedByte;
+		ImageDataType mDataType = ImageDataType::UnsignedByte;
 
 		/* @brief Whether to automatically generate mipmaps after upload. */
 		bool bGenerateMipmaps = false;
@@ -154,7 +154,7 @@ namespace lum::rhi {
 		uint32 mSamples = 0;
 
 		/* @brief Dimensionality and type of the texture. */
-		TextureType mTextureType = TextureType::None;
+		ImageType mTextureType = ImageType::None;
 
 		/* @brief Texture width in pixels. 0 = infer from mData. */
 		uint32 mWidth = 0;
@@ -179,29 +179,29 @@ namespace lum::rhi {
 	/* @brief Describes a partial update to an existing GPU texture.
 	* Used to upload new pixel data to a specific region without recreating the texture.
 	*/
-	struct TextureUpdateDescription {
+	struct ImageUpdateDescription {
 
 		/* @brief Target region within the texture to update. */
-		TextureRect mRect;
+		ImageRect mRect;
 
 		/* @brief New pixel data to upload into the target region. */
 		ImageData mData;
 
 		/* @brief Whether to regenerate mipmaps after the update. */
-		bool bGenerateMipmaps = false;
+		bool mGenerateMipmaps = false;
 
 	};
 
 	/* @brief Internal GPU-side representation of an uploaded texture.
 	* Stores the OpenGL handle alongside format and geometry metadata.
 	*/
-	struct Texture {
+	struct Image {
 
 		/* @brief Region and dimensions of the texture. */
-		TextureRect mRect;
+		ImageRect mRect;
 
 		/* @brief Dimensionality and type of the texture. */
-		TextureType mType = TextureType::None;
+		ImageType mType = ImageType::None;
 
 		/* @brief GPU-side internal storage format. */
 		ImageLayout mInternalFormat = ImageLayout::RGBA8;
@@ -210,7 +210,7 @@ namespace lum::rhi {
 		ImageFormat mDataFormat = ImageFormat::RGBA;
 
 		/* @brief Data type of each pixel channel used during upload. */
-		TextureDataType mDataType = TextureDataType::UnsignedByte;
+		ImageDataType mDataType = ImageDataType::UnsignedByte;
 
 		/* @brief Number of mip levels generated for this texture. */
 		uint32 mMipmapLevels = 0;
@@ -219,7 +219,7 @@ namespace lum::rhi {
 		uint32 mSamples = 0;
 
 		/* @brief Underlying GPU texture handle. */
-		TextureID mHandle = 0;
+		ImageID mHandle = 0;
 
 	};
 

@@ -117,13 +117,13 @@ namespace lum::rhi::gl {
 		if (toggle) {
 
 			glEnable( GL_SCISSOR_TEST );
-			mEnabledStates.Enable( State::Scissor );
+			mEnabledStates.Set( State::Scissor );
 
 		}
 		else {
 
 			glDisable( GL_SCISSOR_TEST );
-			mEnabledStates.Disable( State::Scissor );
+			mEnabledStates.Unset( State::Scissor );
 
 		}
 
@@ -239,13 +239,13 @@ namespace lum::rhi::gl {
 		if (toggle) {
 
 			glEnable( GL_CULL_FACE );
-			mEnabledStates.Enable( State::Cull );
+			mEnabledStates.Set( State::Cull );
 
 		}
 		else {
 
 			glDisable( GL_CULL_FACE );
-			mEnabledStates.Disable( State::Cull );
+			mEnabledStates.Unset( State::Cull );
 
 		}
 
@@ -294,13 +294,13 @@ namespace lum::rhi::gl {
 		if (toggle) {
 
 			glEnable( GL_BLEND );
-			mEnabledStates.Enable( State::Blend );
+			mEnabledStates.Set( State::Blend );
 
 		}
 		else {
 
 			glDisable( GL_BLEND );
-			mEnabledStates.Disable( State::Blend );
+			mEnabledStates.Unset( State::Blend );
 
 		}
 
@@ -535,13 +535,13 @@ namespace lum::rhi::gl {
 		if (toggle) {
 
 			glDepthMask( ( GLboolean ) toggle );
-			mEnabledStates.Enable( State::DepthWrite );
+			mEnabledStates.Set( State::DepthWrite );
 
 		}
 		else {
 
 			glDepthMask( ( GLboolean ) toggle );
-			mEnabledStates.Disable( State::DepthWrite );
+			mEnabledStates.Unset( State::DepthWrite );
 
 		}
 
@@ -559,13 +559,13 @@ namespace lum::rhi::gl {
 		if (toggle) {
 
 			glEnable( GL_DEPTH_TEST );
-			mEnabledStates.Enable( State::DepthTest );
+			mEnabledStates.Set( State::DepthTest );
 
 		}
 		else {
 
 			glDisable( GL_DEPTH_TEST );
-			mEnabledStates.Disable( State::DepthTest );
+			mEnabledStates.Unset( State::DepthTest );
 
 		}
 
@@ -598,13 +598,13 @@ namespace lum::rhi::gl {
 		if (toggle) {
 
 			glEnable( GL_STENCIL_TEST );
-			mEnabledStates.Enable( State::StencilTest );
+			mEnabledStates.Set( State::StencilTest );
 
 		}
 		else {
 
 			glDisable( GL_STENCIL_TEST );
-			mEnabledStates.Disable( State::StencilTest );
+			mEnabledStates.Unset( State::StencilTest );
 
 		}
 
@@ -900,13 +900,13 @@ namespace lum::rhi::gl {
 		if (toggle) {
 
 			glEnable( GL_POLYGON_OFFSET_FILL );
-			mEnabledStates.Enable( State::DepthBias );
+			mEnabledStates.Set( State::DepthBias );
 
 		}
 		else {
 
 			glDisable( GL_POLYGON_OFFSET_FILL );
-			mEnabledStates.Disable( State::DepthBias );
+			mEnabledStates.Unset( State::DepthBias );
 
 		}
 
@@ -1032,13 +1032,13 @@ namespace lum::rhi::gl {
 		if (toggle) {
 
 			glEnable( GL_MULTISAMPLE );
-			mEnabledStates.Enable( State::Multisample );
+			mEnabledStates.Set( State::Multisample );
 
 		}
 		else {
 
 			glDisable( GL_MULTISAMPLE );
-			mEnabledStates.Disable( State::Multisample );
+			mEnabledStates.Unset( State::Multisample );
 
 		}
 
@@ -1056,13 +1056,13 @@ namespace lum::rhi::gl {
 		if (toggle) {
 
 			glEnable( GL_SAMPLE_COVERAGE );
-			mEnabledStates.Enable( State::SampleCoverage );
+			mEnabledStates.Set( State::SampleCoverage );
 
 		}
 		else {
 
 			glDisable( GL_SAMPLE_COVERAGE );
-			mEnabledStates.Disable( State::SampleCoverage );
+			mEnabledStates.Unset( State::SampleCoverage );
 
 		}
 
@@ -1079,13 +1079,13 @@ namespace lum::rhi::gl {
 		if (toggle) {
 
 			glEnable( GL_SAMPLE_ALPHA_TO_COVERAGE );
-			mEnabledStates.Enable( State::SampleAlphaToCoverage );
+			mEnabledStates.Set( State::SampleAlphaToCoverage );
 
 		}
 		else {
 
 			glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
-			mEnabledStates.Disable( State::SampleAlphaToCoverage );
+			mEnabledStates.Unset( State::SampleAlphaToCoverage );
 
 		}
 
@@ -1102,13 +1102,13 @@ namespace lum::rhi::gl {
 		if (toggle) {
 
 			glEnable( GL_SAMPLE_ALPHA_TO_ONE );
-			mEnabledStates.Enable( State::SampleAlphaToOne );
+			mEnabledStates.Set( State::SampleAlphaToOne );
 
 		}
 		else {
 
 			glDisable( GL_SAMPLE_ALPHA_TO_ONE );
-			mEnabledStates.Disable( State::SampleAlphaToOne );
+			mEnabledStates.Unset( State::SampleAlphaToOne );
 
 		}
 

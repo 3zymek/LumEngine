@@ -28,7 +28,7 @@ namespace lum {
 
 	private:
 
-		render::FRendererContext mCtx;
+		render::RendererContext mCtx;
 
 	};
 

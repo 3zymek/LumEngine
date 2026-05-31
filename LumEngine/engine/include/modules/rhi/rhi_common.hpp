@@ -73,7 +73,7 @@ namespace lum {
 
 		using BufferID = uint32; /* @brief Numeric identifier for a GPU buffer object. */
 		using LayoutID = uint32; /* @brief Numeric identifier for a vertex layout (VAO). */
-		using TextureID = uint32; /* @brief Numeric identifier for a GPU texture object. */
+		using ImageID = uint32; /* @brief Numeric identifier for a GPU texture object. */
 		using SamplerID = uint32; /* @brief Numeric identifier for a texture sampler. */
 		using FramebufferID = uint32; /* @brief Numeric identifier for a framebuffer object. */
 		using PipelineID = uint32; /* @brief Numeric identifier for a pipeline state object. */
@@ -92,7 +92,7 @@ namespace lum {
 		struct ShaderHandle : public cstd::BaseHandle<ShaderID> { };
 
 		/* @brief Typed handle wrapping a GPU texture ID. */
-		struct TextureHandle : public cstd::BaseHandle<TextureID> { };
+		struct TextureHandle : public cstd::BaseHandle<ImageID> { };
 
 		/* @brief Typed handle wrapping a GPU buffer object ID. */
 		struct BufferHandle : public cstd::BaseHandle<BufferID> { };
@@ -100,7 +100,7 @@ namespace lum {
 		/* @brief Typed handle wrapping a vertex layout (VAO) ID. */
 		struct VertexLayoutHandle : public cstd::BaseHandle<LayoutID> { };
 
-		inline constexpr FramebufferHandle gDefaultFramebuffer { 0, MaxValue<FramebufferID>( ) };
+		inline constexpr FramebufferHandle kDefaultFramebuffer { 0, MaxValue<FramebufferID>( ) };
 
 		/* @brief Bitmask storage type used for RHI flag enums. */
 		using REnumFlag = uint16;

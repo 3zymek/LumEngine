@@ -15,7 +15,7 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void LightPass::Initialize( const FRendererContext& ctx ) {
+	void LightPass::Initialize( const RendererContext& ctx ) {
 
 		ValidateRendererContext( ctx );
 
@@ -64,7 +64,7 @@ namespace lum::render {
 		};
 	}
 
-	void LightPass::Execute( const detail::GBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassExecute& desc ) {
+	void LightPass::Execute( const detail::DeferredBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassExecute& desc ) {
 
 		mContext.mRenderDev->BindFramebuffer( quad.mSceneFbo );
 		mContext.mRenderDev->BindPipeline( mPipeline );

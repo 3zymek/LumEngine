@@ -4,7 +4,7 @@
 //
 //=============================================================================//
 
-#include "core/utils/asset_loader.hpp"
+#include "core/utils/resource_loader.hpp"
 
 #include "scene/scene_manager.hpp"
 #include "scene/format/scene_dep_manager.hpp"

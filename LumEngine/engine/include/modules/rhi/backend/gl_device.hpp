@@ -80,13 +80,13 @@ namespace lum::rhi::gl {
 		// Textures
 		//=================================================
 
-		TextureHandle CreateTexture( const TextureCreateInfo& desc ) override;
+		TextureHandle CreateTexture( const ImageCreateInfo& desc ) override;
 
 		void Copy( TextureHandle, TextureHandle ) override;
 
 		void UnbindTexture( uint16 ) override;
 
-		void UpdateTexture( TextureHandle, const TextureUpdateDescription& ) override;
+		void UpdateTexture( TextureHandle, const ImageUpdateDescription& ) override;
 
 		void Delete( TextureHandle& ) override;
 
@@ -499,15 +499,15 @@ namespace lum::rhi::gl {
 		bool link_program( GLuint program );
 
 		/* @brief Creates a 2D texture from the given descriptor. */
-		TextureHandle create_texture_2d( const TextureCreateInfo& desc );
+		TextureHandle create_texture_2d( const ImageCreateInfo& desc );
 
-		TextureHandle create_texture_2d_array( const TextureCreateInfo& desc );
+		TextureHandle create_texture_2d_array( const ImageCreateInfo& desc );
 
 		/* @brief Creates a 3D texture from the given descriptor. */
-		TextureHandle create_texture_3d( const TextureCreateInfo& );
+		TextureHandle create_texture_3d( const ImageCreateInfo& );
 
 		/* @brief Creates a cubemap texture from the given descriptor. */
-		TextureHandle create_texture_cubemap( const TextureCreateInfo& );
+		TextureHandle create_texture_cubemap( const ImageCreateInfo& );
 
 		/* @brief Translates engine MapFlag bits to the corresponding GL map access flags. */
 		GLbitfield translate_mapping_flags( Flags<MapFlag> ) noexcept;

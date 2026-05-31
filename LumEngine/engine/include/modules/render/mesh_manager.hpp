@@ -36,7 +36,7 @@ namespace lum {
 
 		MMeshManager() {}
 
-		void Initialize( render::FRendererContext* ctx );
+		void Initialize( render::RendererContext* ctx );
 
 		/* @brief Returns the static mesh resource for the given handle.
 		* @param handle Handle to the static mesh.
@@ -61,7 +61,7 @@ namespace lum {
 
 	private:
 
-		render::FRendererContext* mContext = nullptr;
+		render::RendererContext* mContext = nullptr;
 
 		StaticMeshHandle mDefaultMesh; // Fallback mesh used when no mesh is assigned.
 		StaticMeshHandle mErrorMesh;   // Fallback mesh used when loading fails.

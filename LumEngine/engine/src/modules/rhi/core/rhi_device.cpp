@@ -27,7 +27,7 @@ namespace lum::rhi {
 	// Private
 	//---------------------------------------------------------
 
-	bool RenderDevice::validate_texture_descriptor( const TextureCreateInfo& desc ) const noexcept {
+	bool RenderDevice::validate_texture_descriptor( const ImageCreateInfo& desc ) const noexcept {
 
 		LUM_HOTCHK_RETURN_CUSTOM(
 			mTextures.DenseSize( ) <= skMaxTextures,

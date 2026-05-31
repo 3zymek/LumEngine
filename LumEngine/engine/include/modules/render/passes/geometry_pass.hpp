@@ -9,7 +9,7 @@
 
 namespace lum::render {
 	
-	namespace detail { class GBuffer; }
+	namespace detail { class DeferredBuffer; }
 
 	/* @brief Handles the main geometry render pass — uploads per-draw uniforms
 	*  and issues draw calls for all submitted render instances.
@@ -22,7 +22,7 @@ namespace lum::render {
 		/* @brief Initializes the pass, allocates GPU buffers and compiles shaders.
 		*  @param ctx Context struct containing valid pointers to all subsystem managers.
 		*/
-		void Initialize( const FRendererContext& ctx );
+		void Initialize( const RendererContext& ctx );
 
 		/* @brief Enqueues a render instance for drawing in the current frame.
 		*  @param instance Render instance containing transform, mesh and material.
@@ -32,7 +32,7 @@ namespace lum::render {
 		/* @brief Binds the GBuffer, pipeline and shader, then issues all queued draw calls.
 		*  @param gbuffer GBuffer to render geometry into.
 		*/
-		void Execute( const detail::GBuffer& gbuffer );
+		void Execute( const detail::DeferredBuffer& gbuffer );
 
 		/* @brief Issues draw calls for all queued instances without binding any pipeline state.
 		*  Used by other passes (e.g. ShadowPass) that manage their own shader and pipeline.
@@ -48,7 +48,7 @@ namespace lum::render {
 		std::vector<FRenderInstance> mTempInstances;
 
 		/* @brief Cached context holding all subsystem manager references. */
-		FRendererContext mContext;
+		RendererContext mContext;
 
 		/* @brief CPU-side material uniform buffer, uploaded per draw call. */
 		detail::FMaterialUBOData mMaterialUBO{};

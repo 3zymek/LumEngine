@@ -23,7 +23,7 @@ namespace lum::render::detail {
 	*  @brief Normal  (RGBA)  — rgb: world space normal, a: metallic
 	*  @brief Depth   (D32F)  — depth buffer for position reconstruction
 	*/
-	class DefferedBuffer {
+	class DeferredBuffer {
 	public:
 
 		/* @brief Initializes the G-Buffer with the given renderer context and dimensions.
@@ -49,7 +49,7 @@ namespace lum::render::detail {
 		LUM_FORCEINLINE
 		void UnbindBuffer( ) const { mContext.mRenderDev->BindFramebuffer( rhi::kDefaultFramebuffer ); }
 
-		rhi::TextureHandle GetTexture( DeferredBufferAttachment tex );
+		rhi::TextureHandle GetAttachment( DeferredBufferAttachment tex );
 
 	private:
 
@@ -67,7 +67,7 @@ namespace lum::render::detail {
 		void create_framebuffer( );
 
 		/* @brief Subscribes to window resize events to recreate textures and framebuffer. */
-		void init( );
+		void subscribe_event( );
 
 	};
 

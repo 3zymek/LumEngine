@@ -33,7 +33,7 @@ namespace lum::render {
 #	define LUM_UNIFORM_BUFFER_STRUCT struct alignas(16)
 
 	/* @brief Aggregates all external subsystem pointers required to initialize the renderer. */
-	struct FRendererContext {
+	struct RendererContext {
 
 		rhi::RenderDevice*	mRenderDev = nullptr;
 		MTextureManager*	mTextureMgr = nullptr;
@@ -43,7 +43,7 @@ namespace lum::render {
 		ev::EventBus*		mEvBus = nullptr;
 	};
 
-	constexpr void ValidateRendererContext( const FRendererContext& ctx ) {
+	constexpr void ValidateRendererContext( const RendererContext& ctx ) {
 
 		LUM_ASSERT( ctx.mRenderDev != nullptr, "RenderDevice is null" );
 		LUM_ASSERT( ctx.mTextureMgr != nullptr, "TextureManager is null" );

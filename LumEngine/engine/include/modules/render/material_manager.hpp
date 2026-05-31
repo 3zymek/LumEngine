@@ -26,7 +26,7 @@ namespace lum {
 		* @param device  Pointer to the active render device.
 		* @param texMgr  Pointer to the texture manager for fallback resolution.
 		*/
-		void Initialize( render::FRendererContext* ctx );
+		void Initialize( render::RendererContext* ctx );
 
 		/* @brief Uploads a material base to the pool and returns its handle.
 		* @param base Material base data to upload.
@@ -65,7 +65,7 @@ namespace lum {
 
 	private:
 
-		render::FRendererContext* mContext = nullptr;
+		render::RendererContext* mContext = nullptr;
 		MaterialBaseHandle mDefaultMaterial;
 
 		/* @brief Pool storing all uploaded base materials, indexed by MaterialBaseHandle. */

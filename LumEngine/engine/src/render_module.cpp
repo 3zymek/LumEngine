@@ -17,7 +17,7 @@ namespace lum {
 
 	void MRenderModule::Initialize( MPlatformModule& platform, MResourceModule& res, ev::EventBus& bus ) {
 
-		render::FRendererContext ctx;
+		render::RendererContext ctx;
 		ctx.mMaterialMgr = &res.mMaterialMgr;
 		ctx.mMeshMgr = &res.mMeshMgr;
 		ctx.mTextureMgr = &res.mTextureMgr;

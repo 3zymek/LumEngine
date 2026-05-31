@@ -5,7 +5,7 @@
 //
 //=============================================================================//
 
-#include "render/g_buffer.hpp"
+#include "render/deferred_buffer.hpp"
 #include "event/event_bus.hpp"
 #include "event/events/window_events.hpp"
 
@@ -15,7 +15,7 @@ namespace lum::render::detail {
 	// Public
 	//---------------------------------------------------------
 
-	void GBuffer::Initialize( const FRendererContext& ctx, uint32 w, uint32 h ) {
+	void DeferredBuffer::Initialize( const RendererContext& ctx, uint32 w, uint32 h ) {
 
 		ValidateRendererContext( ctx );
 
@@ -24,11 +24,11 @@ namespace lum::render::detail {
 		create_textures( w, h );
 		create_framebuffer( );
 
-		init( );
+		subscribe_event( );
 
 	}
 
-	void GBuffer::BindTextures( ) const {
+	void DeferredBuffer::BindTextures( ) const {
 
 		mContext.mRenderDev->BindTexture( mAlbedo, LUM_GBUFFER_ALBEDO );
 		mContext.mRenderDev->BindTexture( mNormal, LUM_GBUFFER_NORMAL );
@@ -36,12 +36,12 @@ namespace lum::render::detail {
 
 	}
 
-	rhi::TextureHandle GBuffer::GetTexture( GBufferTexture tex ) {
+	rhi::TextureHandle DeferredBuffer::GetAttachment( DeferredBufferAttachment tex ) {
 
 		switch (tex) {
-		case GBufferTexture::Albedo: return mAlbedo;
-		case GBufferTexture::Normal: return mNormal;
-		case GBufferTexture::Depth: return mDepth;
+		case DeferredBufferAttachment::Albedo: return mAlbedo;
+		case DeferredBufferAttachment::Normal: return mNormal;
+		case DeferredBufferAttachment::Depth: return mDepth;
 		default: return mAlbedo;
 		}
 
@@ -54,7 +54,7 @@ namespace lum::render::detail {
 	// Private
 	//---------------------------------------------------------
 
-	void GBuffer::create_textures( uint32 width, uint32 height ) {
+	void DeferredBuffer::create_textures( uint32 width, uint32 height ) {
 
 		mContext.mRenderDev->Delete( mAlbedo );
 		mContext.mRenderDev->Delete( mNormal );
@@ -66,7 +66,7 @@ namespace lum::render::detail {
 			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
 			desc.mWidth = width;
 			desc.mHeight = height;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mTextureType = rhi::ImageType::Texture2D;
 			mAlbedo = mContext.mRenderDev->CreateTexture( desc );
 		}
 		{ // Normal
@@ -74,7 +74,7 @@ namespace lum::render::detail {
 			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
 			desc.mWidth = width;
 			desc.mHeight = height;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mTextureType = rhi::ImageType::Texture2D;
 			mNormal = mContext.mRenderDev->CreateTexture( desc );
 		}
 		{ // Depth
@@ -82,13 +82,13 @@ namespace lum::render::detail {
 			desc.mImageLayout = rhi::ImageLayout::Depth32F;
 			desc.mWidth = width;
 			desc.mHeight = height;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mTextureType = rhi::ImageType::Texture2D;
 			mDepth = mContext.mRenderDev->CreateTexture( desc );
 		}
 
 	}
 
-	void GBuffer::create_framebuffer( ) {
+	void DeferredBuffer::create_framebuffer( ) {
 
 		if (mContext.mRenderDev->IsValid( mFramebuffer )) mContext.mRenderDev->Delete( mFramebuffer );
 
@@ -102,7 +102,7 @@ namespace lum::render::detail {
 
 	}
 
-	void GBuffer::init( ) {
+	void DeferredBuffer::subscribe_event( ) {
 
 		mContext.mEvBus->SubscribePermanently<EWindowResized>(
 			[&]( const EWindowResized& ev ) {

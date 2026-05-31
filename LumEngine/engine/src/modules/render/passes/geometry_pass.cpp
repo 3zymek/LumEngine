@@ -9,7 +9,7 @@
 #include "render/render_common.hpp"
 #include "render/shader_manager.hpp"
 #include "render/mesh_manager.hpp"
-#include "render/g_buffer.hpp"
+#include "render/deferred_buffer.hpp"
 
 #include "rhi/core/rhi_device.hpp"
 
@@ -21,7 +21,7 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void GeometryPass::Initialize( const FRendererContext& ctx ) {
+	void GeometryPass::Initialize( const RendererContext& ctx ) {
 
 		ValidateRendererContext( ctx );
 
@@ -45,7 +45,7 @@ namespace lum::render {
 
 	}
 
-	void GeometryPass::Execute( const detail::GBuffer& gbuffer ) {
+	void GeometryPass::Execute( const detail::DeferredBuffer& gbuffer ) {
 
 		gbuffer.BindBuffer( );
 		mContext.mRenderDev->Clear(

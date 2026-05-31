@@ -24,8 +24,8 @@ namespace lum::rhi::gl {
 
 	/* @brief Fills common metadata fields on a Texture from a TextureCreateInfo. */
 	LUM_FORCEINLINE static void fill_texture_metadata(
-		Texture& tex,
-		const TextureCreateInfo& desc,
+		Image& tex,
+		const ImageCreateInfo& desc,
 		uint32 width,
 		uint32 height,
 		uint32 mipmapLevels
@@ -45,16 +45,16 @@ namespace lum::rhi::gl {
 	// Public interface
 	// -------------------------------------------------------------------------
 
-	TextureHandle GLDevice::CreateTexture( const TextureCreateInfo& desc ) {
+	TextureHandle GLDevice::CreateTexture( const ImageCreateInfo& desc ) {
 
-		LUM_ASSERT( desc.mTextureType != TextureType::None, "No texture type given" );
+		LUM_ASSERT( desc.mTextureType != ImageType::None, "No texture type given" );
 
 		switch (desc.mTextureType) {
-		case TextureType::Texture2D:
-		case TextureType::Texture2DSampled:  return create_texture_2d( desc );
-		case TextureType::Texture2DArray:    return create_texture_2d_array( desc );
-		case TextureType::Texture3D:         return create_texture_3d( desc );
-		case TextureType::Cubemap:           return create_texture_cubemap( desc );
+		case ImageType::Texture2D:
+		case ImageType::Texture2DSampled:  return create_texture_2d( desc );
+		case ImageType::Image2DArray:    return create_texture_2d_array( desc );
+		case ImageType::Image3D:         return create_texture_3d( desc );
+		case ImageType::Cubemap:           return create_texture_cubemap( desc );
 		default:                             return {};
 		}
 
@@ -65,8 +65,8 @@ namespace lum::rhi::gl {
 		LUM_ASSERT( IsValid( src ), "Invalid source texture" );
 		LUM_ASSERT( IsValid( dst ), "Invalid destination texture" );
 
-		const Texture& srcTex = mTextures[ src ];
-		const Texture& dstTex = mTextures[ dst ];
+		const Image& srcTex = mTextures[ src ];
+		const Image& dstTex = mTextures[ dst ];
 
 		glCopyImageSubData(
 			srcTex.mHandle, skTextureTypeLookup[ LookupCast( srcTex.mType ) ], 0, 0, 0, 0,
@@ -82,14 +82,14 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::UpdateTexture( TextureHandle tex, const TextureUpdateDescription& desc ) {
+	void GLDevice::UpdateTexture( TextureHandle tex, const ImageUpdateDescription& desc ) {
 
 		if (!IsValid( tex )) return;
 
 		LUM_ASSERT( resolve_pixel_data( desc.mData ) != nullptr, "Texture pixel data is null" );
 		LUM_ASSERT( desc.mData.mWidth > 0 && desc.mData.mHeight > 0, "Invalid texture dimensions" );
 
-		const Texture& texture = mTextures[ tex ];
+		const Image& texture = mTextures[ tex ];
 
 		uint32 width = (desc.mRect.mWidth == 0) ? desc.mData.mWidth : desc.mRect.mWidth;
 		uint32 height = (desc.mRect.mHeight == 0) ? desc.mData.mHeight : desc.mRect.mHeight;
@@ -107,7 +107,7 @@ namespace lum::rhi::gl {
 			resolve_pixel_data( desc.mData )
 		);
 
-		if (desc.bGenerateMipmaps && MipmapLvls( width, height ) > 1)
+		if (desc.mGenerateMipmaps && MipmapLvls( width, height ) > 1)
 			glGenerateTextureMipmap( texture.mHandle );
 
 	}
@@ -142,9 +142,9 @@ namespace lum::rhi::gl {
 	// Private creation helpers
 	// -------------------------------------------------------------------------
 
-	TextureHandle GLDevice::create_texture_2d( const TextureCreateInfo& desc ) {
+	TextureHandle GLDevice::create_texture_2d( const ImageCreateInfo& desc ) {
 
-		Texture texture;
+		Image texture;
 
 		uint32 width = (desc.mWidth == 0) ? desc.mData.mWidth : desc.mWidth;
 		uint32 height = (desc.mHeight == 0) ? desc.mData.mHeight : desc.mHeight;
@@ -152,7 +152,7 @@ namespace lum::rhi::gl {
 			? (desc.mMipmapLevels == 0 ? MipmapLvls( width, height ) : desc.mMipmapLevels)
 			: 1;
 
-		if (desc.mTextureType == TextureType::Texture2D) {
+		if (desc.mTextureType == ImageType::Texture2D) {
 
 			cvptr data = resolve_pixel_data( desc.mData );
 
@@ -179,7 +179,7 @@ namespace lum::rhi::gl {
 				glGenerateTextureMipmap( texture.mHandle );
 
 		}
-		else if (desc.mTextureType == TextureType::Texture2DSampled) {
+		else if (desc.mTextureType == ImageType::Image2DSampled) {
 
 			glCreateTextures( GL_TEXTURE_2D_MULTISAMPLE, 1, &texture.mHandle );
 			glTextureStorage2DMultisample(
@@ -197,11 +197,11 @@ namespace lum::rhi::gl {
 
 	}
 
-	TextureHandle GLDevice::create_texture_2d_array( const TextureCreateInfo& desc ) {
+	TextureHandle GLDevice::create_texture_2d_array( const ImageCreateInfo& desc ) {
 
 		LUM_ASSERT( desc.mDepth > 0, "Texture2DArray requires at least 1 layer (mDepth)" );
 
-		Texture texture;
+		Image texture;
 
 		uint32 width = (desc.mWidth == 0) ? desc.mData.mWidth : desc.mWidth;
 		uint32 height = (desc.mHeight == 0) ? desc.mData.mHeight : desc.mHeight;
@@ -226,16 +226,16 @@ namespace lum::rhi::gl {
 
 	}
 
-	TextureHandle GLDevice::create_texture_3d( const TextureCreateInfo& ) {
+	TextureHandle GLDevice::create_texture_3d( const ImageCreateInfo& ) {
 
 		// TODO: implement
 		return {};
 
 	}
 
-	TextureHandle GLDevice::create_texture_cubemap( const TextureCreateInfo& desc ) {
+	TextureHandle GLDevice::create_texture_cubemap( const ImageCreateInfo& desc ) {
 
-		Texture tex;
+		Image tex;
 
 		glCreateTextures( GL_TEXTURE_CUBE_MAP, 1, &tex.mHandle );
 

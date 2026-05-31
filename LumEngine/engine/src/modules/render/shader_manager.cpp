@@ -7,7 +7,7 @@
 //=============================================================================//
 #pragma once
 
-#include "core/utils/asset_loader.hpp"
+#include "core/utils/resource_loader.hpp"
 #include "rhi/core/rhi_device.hpp"
 #include "render/shader_manager.hpp"
 

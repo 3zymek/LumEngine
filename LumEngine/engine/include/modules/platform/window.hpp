@@ -7,10 +7,10 @@
 #include "core/types.hpp"
 #include "core/utils/flags.hpp"
 #include "rhi/rhi_pch.hpp"
-#include "core/utils/asset_loader.hpp"
+#include "core/utils/resource_loader.hpp"
 
 namespace lum {
-
+	
 	namespace ev { class EventBus; }
 
 	// Flags controlling window initialization behavior.
@@ -26,24 +26,25 @@ namespace lum {
 	};
 	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::WindowInitFlags );
 
+	/* @brief Bitmask flags representing toggleable runtime states of a window.
+	*  Use with Window::ToggleState() to enable or disable individual states.
+	*/
 	enum class WindowStateFlags : bitfield {
-		Decoration = 1 << 0,
-		Resizable = 1 << 1,
-		Floating = 1 << 2,
-		Visible = 1 << 3,
-		Maximized = 1 << 4,
-		Focused = 1 << 5,
-		Cursor = 1 << 6,
+		Decoration	= 1 << 0, // Native OS title bar and border are visible.
+		Resizable	= 1 << 1, // Window can be resized by the user.
+		Floating	= 1 << 2, // Window stays always on top of other windows.
+		Visible		= 1 << 3, // Window is visible on screen.
+		Maximized	= 1 << 4, // Window fills the monitor work area.
+		Focused		= 1 << 5, // Window has input focus.
+		Cursor		= 1 << 6, // Cursor is visible inside the window.
 	};
 	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::WindowStateFlags );
-
-	// TODO ADD STATE FLAGS INSTEAD OF FUNCTIONS TOGGLE* USE WindowStateFlags !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	/* @brief Descriptor used to configure a window on creation. */
 	struct WindowCreateInfo {
 		Flags<WindowInitFlags>		mFlags = {};
 		String						mTitle = "LumEngine";		/* @brief Window title bar text. */
-		std::optional<ImageData>	mIconData = std::nullopt;	/* Optional loaded icon texture data. */
+		std::optional<ImageData>	mIconData = std::nullopt;	/* @brief Optional loaded icon texture data. */
 		uint32						mHeight = 500;				/* @brief Initial window height in pixels. */
 		uint32						mWidth = 500;				/* @brief Initial window width in pixels. */
 		ev::EventBus*				mEventBus = nullptr;		/* @brief Event bus to emit window events to. */
@@ -52,8 +53,6 @@ namespace lum {
 	/* @brief Platform window wrapping a GLFW window.
 	*  Responsible for window creation, size tracking and emitting
 	*  window events (resize, close) through the EventBus.
-	*
-	*  @note Create via CreateWindow() rather than constructing directly.
 	*/
 	class Window {
 	public:
@@ -79,15 +78,10 @@ namespace lum {
 		/* @brief Returns the underlying native GLFW window pointer. */
 		vptr GetNativeWindow( ) const noexcept { return mWindow; }
 
+		/* @brief Returns the time in seconds since GLFW was initialized. */
 		float64 GetTime( ) const noexcept { return glfwGetTime( ); }
 
-		void ToggleDecoration( bool value );
-		void ToggleResizable( bool value );
-		void ToggleFloating( bool value );
-		void ToggleVisibility( bool value );
-		void ToggleMaximized( bool value );
-		void ToggleFocused( );
-		void ToggleCursor( bool value );
+		void ToggleState( Flags<WindowStateFlags> flag, bool value );
 
 		/* @brief Polls window events and emits EWindowResized if size changed.
 		*  Call once per frame from the main loop.
@@ -97,20 +91,38 @@ namespace lum {
 		/* @brief Returns true if the window is still open. */
 		bool IsOpen( ) const noexcept { return !glfwWindowShouldClose( mWindow ); }
 
+		/* @brief Signals the window to close on the next Update() call. */
 		void Close( ) const { glfwSetWindowShouldClose( mWindow, true ); }
-		void Minimalize( ) const { glfwIconifyWindow( mWindow ); }
+
+		/* @brief Minimizes the window to the taskbar. */
+		void Minimize( ) const { glfwIconifyWindow( mWindow ); }
+
 
 	protected:
 
 		GLFWwindow* mWindow = nullptr; /* @brief Underlying GLFW window handle. */
 		ev::EventBus* mEventBus = nullptr; /* @brief Event bus for window events. */
 
-		Flags<WindowInitFlags> mState = {};
+		uint32 mWidth = 0; /* @brief Current width of window. */
+		uint32 mHeight = 0; /* @brief Current height of window. */
 
-		uint32 mWidth = 0;
-		uint32 mHeight = 0;
+		Flags<WindowStateFlags> mState = {};
 
-		/* @brief Internal initialization called by Initialize(). */
+		using WindowStateToggleFn = void(*)(GLFWwindow* window, int32 value);
+		static constexpr WindowStateToggleFn skWindowStateHandlers[ ] = {
+			[]( GLFWwindow* w, int32 v ) { glfwSetWindowAttrib( w, GLFW_DECORATED,  v ); },
+			[]( GLFWwindow* w, int32 v ) { glfwSetWindowAttrib( w, GLFW_RESIZABLE,  v ); },
+			[]( GLFWwindow* w, int32 v ) { glfwSetWindowAttrib( w, GLFW_FLOATING,   v ); },
+			[]( GLFWwindow* w, int32 v ) { v ? glfwShowWindow( w ) : glfwHideWindow( w ); },
+			[]( GLFWwindow* w, int32 v ) { v ? glfwMaximizeWindow( w ) : glfwRestoreWindow( w ); },
+			[]( GLFWwindow* w, int32 v ) { if (v) glfwFocusWindow( w ); },
+			[]( GLFWwindow* w, int32 v ) { glfwSetInputMode( w, GLFW_CURSOR, v ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN ); },
+		};
+		static constexpr uint32 skWindowStateHandlersSize = ArraySize( skWindowStateHandlers );
+
+		/* @brief Internal initialization called by Initialize().
+		*  @param desc Configuration descriptor forwarded from Initialize().
+		*/
 		void init( const WindowCreateInfo& desc );
 	};
 
