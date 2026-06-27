@@ -17,9 +17,9 @@ Learning indie game engine project from scratch in C++.
 
 This is my personal project where I'm learning game engine architecture by building one from the ground up. The goal is to understand how modern engines work by implementing core systems myself.
 
-<img width="2549" height="1393" alt="lumengine_shadows" src="https://github.com/user-attachments/assets/17341395-facc-4afe-a0ca-736b556e33eb" />
+<img width="1919" height="1052" alt="lumengine_june27" src="https://github.com/user-attachments/assets/28524e55-1351-4921-ba7a-1ea6dc3b2131" />
 
-*Shadow mapping showcase — Mar 8, 2026*
+*LumEngine editor showcase — June 27, 2026*
 
 **Status: Early Development** — Many features are incomplete or experimental.
 
