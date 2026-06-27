@@ -277,11 +277,11 @@ namespace lum::render {
 		// Irradiance map (IBL)
 		if (!mContext.mRenderDev->IsValid( mIBL.mIrradiance.mTexture )) {
 
-			rhi::ImageCreateInfo desc;
-			desc.mTextureType = rhi::ImageType::Cubemap;
-			desc.mImageLayout = rhi::ImageLayout::RGB16F;
-			desc.mImageFormat = rhi::ImageFormat::RGB;
-			desc.mDataType = rhi::ImageDataType::Float;
+			rhi::TextureCreateInfo desc;
+			desc.mTextureType = rhi::TextureType::Cubemap;
+			desc.mInternalFormat = rhi::TextureInternalFormat::RGB16F;
+			desc.mPixelFormat = rhi::TexturePixelFormat::RGB;
+			desc.mDataType = rhi::TextureDataType::Float;
 			desc.mWidth = 32;
 			desc.mHeight = 32;
 			mIBL.mIrradiance.mTexture = mContext.mRenderDev->CreateTexture( desc );
@@ -291,10 +291,10 @@ namespace lum::render {
 		// Prefiltered environment map (IBL)
 		if (!mContext.mRenderDev->IsValid( mIBL.mPrefiltered.mTexture )) {
 
-			rhi::ImageCreateInfo desc;
-			desc.mTextureType = rhi::ImageType::Cubemap;
-			desc.mImageFormat = rhi::ImageFormat::RGB;
-			desc.mImageLayout = rhi::ImageLayout::RGB16F;
+			rhi::TextureCreateInfo desc;
+			desc.mTextureType = rhi::TextureType::Cubemap;
+			desc.mPixelFormat = rhi::TexturePixelFormat::RGB;
+			desc.mInternalFormat = rhi::TextureInternalFormat::RGB16F;
 			desc.mWidth = 128;
 			desc.mHeight = 128;
 			desc.mMipmapLevels = 5;

@@ -210,20 +210,20 @@ namespace lum::render {
 		mContext.mRenderDev->Delete( mScreenQuad.mPostprocessTex );
 
 		{
-			rhi::ImageCreateInfo desc;
-			desc.mImageFormat = rhi::ImageFormat::RGBA;
-			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
-			desc.mTextureType = rhi::ImageType::Texture2D;
+			rhi::TextureCreateInfo desc;
+			desc.mPixelFormat = rhi::TexturePixelFormat::RGBA;
+			desc.mInternalFormat = rhi::TextureInternalFormat::RGBA16F;
+			desc.mTextureType = rhi::TextureType::Texture2D;
 			desc.mWidth = w;
 			desc.mHeight = h;
 			mScreenQuad.mSceneTex = mContext.mRenderDev->CreateTexture( desc );
 			mTemporalAA.EnsureFrameTex( desc );
 		}
 		{
-			rhi::ImageCreateInfo desc;
-			desc.mImageFormat = rhi::ImageFormat::RGBA;
-			desc.mImageLayout = rhi::ImageLayout::RGBA16F;
-			desc.mTextureType = rhi::ImageType::Texture2D;
+			rhi::TextureCreateInfo desc;
+			desc.mPixelFormat = rhi::TexturePixelFormat::RGBA;
+			desc.mInternalFormat = rhi::TextureInternalFormat::RGBA16F;
+			desc.mTextureType = rhi::TextureType::Texture2D;
 			desc.mWidth = w;
 			desc.mHeight = h;
 			mScreenQuad.mPostprocessTex = mContext.mRenderDev->CreateTexture( desc );

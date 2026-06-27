@@ -8,7 +8,7 @@ namespace lum::render {
 	public:
 
 		void Initialize( rhi::RenderDevice* dev );
-		void EnsureFrameTex( const rhi::ImageCreateInfo& desc );
+		void EnsureFrameTex( const rhi::TextureCreateInfo& desc );
 		rhi::TextureHandle GetPreviousFrameTex( ) const noexcept { return mPreviousFrameTex; }
 		Matrix4 ApplyJitter( const Matrix4& projection );
 

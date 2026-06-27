@@ -77,7 +77,7 @@ namespace lum {
 		* @param channels Number of color channels (1 = R, 2 = RG, 3 = RGB, 4 = RGBA).
 		* @return Matching RImageFormat. Defaults to RGBA for unknown values.
 		*/
-		rhi::ImageFormat ChannelsToFormat( uint32 channels );
+		rhi::TexturePixelFormat ChannelsToFormat( uint32 channels );
 
 		/* @brief Loads an equirectangular HDR image and converts it to a cubemap.
 		* @param path Path to the equirectangular texture asset.
@@ -130,29 +130,29 @@ namespace lum {
 		std::array<ImageData, 6> convert_equirectangular_to_cubemap( const ImageData& equirect, int32 faceSize = 4096 );
 
 		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
-		static inline rhi::ImageCreateInfo sTexturePresetsLookup[] = {
+		static inline rhi::TextureCreateInfo sTexturePresetsLookup[] = {
 			{ // ALBEDO
-				.mImageLayout = rhi::ImageLayout::SRGB8_Alpha8,
-				.mImageFormat = rhi::ImageFormat::RGBA,
-				.mDataType = rhi::ImageDataType::UnsignedByte,
+				.mInternalFormat = rhi::TextureInternalFormat::SRGB8_Alpha8,
+				.mPixelFormat = rhi::TexturePixelFormat::RGBA,
+				.mDataType = rhi::TextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true,
 			},
 			{ // NORMAL
-				.mImageLayout = rhi::ImageLayout::RGB8,
-				.mImageFormat = rhi::ImageFormat::RGB,
-				.mDataType = rhi::ImageDataType::UnsignedByte,
+				.mInternalFormat = rhi::TextureInternalFormat::RGB8,
+				.mPixelFormat = rhi::TexturePixelFormat::RGB,
+				.mDataType = rhi::TextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // METALNESS
-				.mImageLayout = rhi::ImageLayout::R8,
-				.mImageFormat = rhi::ImageFormat::R,
-				.mDataType = rhi::ImageDataType::UnsignedByte,
+				.mInternalFormat = rhi::TextureInternalFormat::R8,
+				.mPixelFormat = rhi::TexturePixelFormat::R,
+				.mDataType = rhi::TextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // ROUGHNESS
-				.mImageLayout = rhi::ImageLayout::R8,
-				.mImageFormat = rhi::ImageFormat::R,
-				.mDataType = rhi::ImageDataType::UnsignedByte,
+				.mInternalFormat = rhi::TextureInternalFormat::R8,
+				.mPixelFormat = rhi::TexturePixelFormat::R,
+				.mDataType = rhi::TextureDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 		};

@@ -38,12 +38,12 @@ namespace lum::render {
 	void ShadowSystem::DirectionalLight::Initialize( RendererContext& ctx ) {
 
 		{ // Shadow map texture
-			rhi::ImageCreateInfo desc;
+			rhi::TextureCreateInfo desc;
 			desc.mWidth = mShadowMapTexSize.mX;
 			desc.mHeight = mShadowMapTexSize.mY;
-			desc.mImageFormat = rhi::ImageFormat::DepthComponent;
-			desc.mImageLayout = rhi::ImageLayout::Depth32F;
-			desc.mTextureType = rhi::ImageType::Texture2D;
+			desc.mPixelFormat = rhi::TexturePixelFormat::DepthComponent;
+			desc.mInternalFormat = rhi::TextureInternalFormat::Depth32F;
+			desc.mTextureType = rhi::TextureType::Texture2D;
 			mShadowMap = ctx.mRenderDev->CreateTexture( desc );
 		}
 		{ // Shadow FBO
@@ -69,8 +69,8 @@ namespace lum::render {
 	void ShadowSystem::SpotLight::Initialize( RendererContext& ctx ) {
 
 		{ // Shadow maps texture
-			rhi::ImageCreateInfo desc;
-			desc.mTextureType = rhi::ImageType::Image2DArray;
+			rhi::TextureCreateInfo desc;
+			desc.mTextureType = rhi::TextureType::Texture2DArray;
 			desc.mDepth = limits::kMaxShadowCastingSpotLights;
 			desc.mWidth = mShadowMapTexSize.mX;
 			desc.mHeight = mShadowMapTexSize.mY;

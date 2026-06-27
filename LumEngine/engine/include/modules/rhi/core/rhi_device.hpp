@@ -203,7 +203,7 @@ namespace lum::rhi {
 		* @return Handle to the created texture.
 		*/
 		LUM_NODISCARD
-			virtual TextureHandle CreateTexture( const ImageCreateInfo& desc ) = 0;
+			virtual TextureHandle CreateTexture( const TextureCreateInfo& desc ) = 0;
 
 		/* @brief Copies the contents of one texture to another.
 		*  Both textures must have identical dimensions and formats.
@@ -220,7 +220,7 @@ namespace lum::rhi {
 		* @param tex  Handle of the texture to update.
 		* @param desc Update descriptor specifying region, format, and data.
 		*/
-		virtual void UpdateTexture( TextureHandle tex, const ImageUpdateDescription& desc ) = 0;
+		virtual void UpdateTexture( TextureHandle tex, const TextureUpdateDescription& desc ) = 0;
 
 		/* @brief Destroys a texture and frees its GPU memory.
 		* @param texture Handle to delete. Becomes invalid after this call.
@@ -789,7 +789,7 @@ namespace lum::rhi {
 		cstd::HandlePool<ShaderHandle, Shader, ShaderID>					mShaders{ skMaxShaders };
 		cstd::HandlePool<BufferHandle, Buffer, BufferID>					mBuffers{ skMaxBuffers };
 		cstd::HandlePool<VertexLayoutHandle, VertexLayout, LayoutID>		mLayouts{ skMaxLayouts };
-		cstd::HandlePool<TextureHandle, Image, ImageID>				mTextures{ skMaxTextures };
+		cstd::HandlePool<TextureHandle, Texture, TextureID>				mTextures{ skMaxTextures };
 		cstd::HandlePool<FramebufferHandle, FFramebuffer, FramebufferID>	mFramebuffers{ skMaxFramebuffers };
 		cstd::HandlePool<PipelineHandle, Pipeline, PipelineID>			mPipelines{ skMaxPipelines };
 
@@ -800,7 +800,7 @@ namespace lum::rhi {
 		*  @param desc Texture descriptor to validate.
 		*  @return True if the descriptor is valid, false otherwise.
 		*/
-		bool validate_texture_descriptor( const ImageCreateInfo& ) const noexcept;
+		bool validate_texture_descriptor( const TextureCreateInfo& ) const noexcept;
 
 		/* @brief Validates a buffer descriptor before resource creation.
 		*  @param desc Buffer descriptor to validate.
@@ -809,13 +809,13 @@ namespace lum::rhi {
 		bool validate_buffer_descriptor( const BufferCreateInfo& ) const noexcept;
 
 		/* @brief Returns true if the given image layout is a depth format. */
-		bool is_depth_format( ImageLayout fmt ) const noexcept;
+		bool is_depth_format( TextureInternalFormat fmt ) const noexcept;
 
 		/* @brief Returns true if the given image layout is a stencil format. */
-		bool is_stencil_format( ImageLayout fmt ) const noexcept;
+		bool is_stencil_format( TextureInternalFormat fmt ) const noexcept;
 
 		/* @brief Returns true if the given image layout is a color format. */
-		bool is_color_format( ImageLayout fmt ) const noexcept;
+		bool is_color_format( TextureInternalFormat fmt ) const noexcept;
 
 	};
 
