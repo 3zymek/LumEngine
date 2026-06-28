@@ -39,7 +39,7 @@ namespace lum {
 			return {};
 		}
 
-		rhi::ShaderModuleCreateInfo desc;
+		rhi::ShaderCreateInfo desc;
 		desc.mVertexContent = vertexData.value();
 		desc.mFragmentContent = fragmentData.value();
 

@@ -28,7 +28,7 @@ namespace lum::render {
 		mEnvironmentPass.Initialize( mContext );
 		mShadowSys.Initialize( mContext );
 		mPostprocessPass.Initialize( mContext );
-		mGBuffer.Initialize( mContext, 500, 500 );
+		mDefferedBuffer.Initialize( mContext, 500, 500 );
 
 		mContext.mRenderDev->ToggleMultisample( true );
 
@@ -64,28 +64,23 @@ namespace lum::render {
 	void Renderer::EndFrame( ) {
 
 		mContext.mRenderDev->BindFramebuffer( mScreenQuad.mSceneFbo );
-		mContext.mRenderDev->Clear(
-			rhi::BufferBit::Color |
-			rhi::BufferBit::Depth |
-			rhi::BufferBit::Stencil
-		);
+		mContext.mRenderDev->Clear( rhi::BufferBit::Color | rhi::BufferBit::Depth | rhi::BufferBit::Stencil );
 
 		mShadowSys.Execute( mGeometryPass, mLightPass );
-
-		mGeometryPass.Execute( mGBuffer );
-
+		mGeometryPass.Execute( mDefferedBuffer );
+		
 		mLightPassExecutables.mIrradianceMap = mEnvironmentPass.GetTexture( detail::IBLTexture::IrradianceMap );
 		mLightPassExecutables.mPrefilteredEnvMap = mEnvironmentPass.GetTexture( detail::IBLTexture::PrefilteredMap );
 		mLightPassExecutables.mShadowMap = mShadowSys.mDirectionalLight.GetShadowMap( );
 
-		mLightPass.Execute( mGBuffer, mScreenQuad, mLightPassExecutables );
-
-		mEnvironmentPass.Execute( mGBuffer, mScreenQuad );
+		mLightPass.Execute( mDefferedBuffer, mScreenQuad, mLightPassExecutables );
+		mEnvironmentPass.Execute( mDefferedBuffer, mScreenQuad );
 
 		{
 			PostprocessPassExecute desc;
-			desc.bTAAEnabled = false;
+			desc.mTAAEnabled = true;
 			desc.mPreviousFrameTex = mTemporalAA.GetPreviousFrameTex( );
+			desc.mJitterOffset = mTemporalAA.mCurrentJitter;
 			mPostprocessPass.Execute( mScreenQuad, desc );
 		}
 
@@ -193,13 +188,13 @@ namespace lum::render {
 		{
 			rhi::FramebufferCreateInfo desc;
 			desc.mColorTex.push_back( { 0, mScreenQuad.mSceneTex } );
-			desc.mDepthTex = mGBuffer.GetAttachment( detail::DeferredBufferAttachment::Depth );
+			desc.mDepthTex = mDefferedBuffer.GetAttachment( detail::DeferredBufferAttachment::Depth );
 			mScreenQuad.mSceneFbo = mContext.mRenderDev->CreateFramebuffer( desc );
 		}
 		{
 			rhi::FramebufferCreateInfo desc;
 			desc.mColorTex.push_back( { 0, mScreenQuad.mPostprocessTex } );
-			desc.mDepthTex = mGBuffer.GetAttachment( detail::DeferredBufferAttachment::Depth );
+			desc.mDepthTex = mDefferedBuffer.GetAttachment( detail::DeferredBufferAttachment::Depth );
 			mScreenQuad.mPostprocessFbo = mContext.mRenderDev->CreateFramebuffer( desc );
 		}
 

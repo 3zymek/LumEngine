@@ -10,8 +10,9 @@
 namespace lum::render {
 
 	struct PostprocessPassExecute {
-		bool bTAAEnabled = false;
+		bool mTAAEnabled = false;
 		rhi::TextureHandle mPreviousFrameTex;
+		Vector2 mJitterOffset{};
 	};
 
 	class PostprocessPass {

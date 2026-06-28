@@ -307,7 +307,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS( );
 
 	}
-	void GLDevice::SetBlendConstantColor( ChannelRGBA rgba ) {
+	void GLDevice::SetBlendConstantColor( Vector4 rgba ) {
 
 		if (mBlendState.mBlendColor == rgba) {
 			LUM_PROFILER_CACHE_HIT( );

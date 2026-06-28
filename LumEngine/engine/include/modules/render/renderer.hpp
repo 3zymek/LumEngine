@@ -10,7 +10,7 @@
 #include "render/passes/environment_pass.hpp"
 #include "render/shadow_system.hpp"
 #include "render/passes/postprocess_pass.hpp"
-#include "render/temporal_antialiasing.hpp"
+#include "render/postprocess/antialiasing/taa.hpp"
 #include "render/deferred_buffer.hpp"
 
 namespace lum::render {
@@ -105,7 +105,7 @@ namespace lum::render {
 		RendererContext mContext;
 
 		/* @brief GBuffer holding geometry pass output textures — albedo, normal and depth. */
-		detail::DeferredBuffer mGBuffer;
+		detail::DeferredBuffer mDefferedBuffer;
 
 		/* @brief Fullscreen quad used for deferred lighting and post-process passes. */
 		detail::FScreenQuad mScreenQuad;

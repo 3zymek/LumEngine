@@ -8,7 +8,7 @@
 
 namespace lum::rhi {
 
-	struct ShaderModuleCreateInfo {
+	struct ShaderCreateInfo {
 		String mVertexContent;
 		String mFragmentContent;
 	};

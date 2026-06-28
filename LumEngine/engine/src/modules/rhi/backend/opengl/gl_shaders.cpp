@@ -8,7 +8,7 @@
 
 namespace lum::rhi::gl {
 
-	ShaderHandle GLDevice::CreateShader( const ShaderModuleCreateInfo& desc ) {
+	ShaderHandle GLDevice::CreateShader( const ShaderCreateInfo& desc ) {
 
 		LUM_ASSERT( mShaders.DenseSize( ) < skMaxShaders, "Max shaders reached" );
 
@@ -98,6 +98,55 @@ namespace lum::rhi::gl {
 		}
 
 		return true;
+	}
+
+	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, float32 value ) {
+
+		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform1f( mShaders[ shader ].mHandle, location, value );
+
+	}
+	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, uint32 value ) {
+
+		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform1ui( mShaders[ shader ].mHandle, location, value );
+
+	}
+	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, bool value ) {
+
+		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform1i( mShaders[ shader ].mHandle, location, value ? 1 : 0 );
+
+	}
+	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, const Vector2& value ) {
+
+		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform2f( mShaders[ shader ].mHandle, location, value.mX, value.mY );
+
+	}
+	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, const Vector3& value ) {
+
+		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform3f( mShaders[ shader ].mHandle, location, value.mX, value.mY, value.mZ );
+
+	}
+	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, const Vector4& value ) {
+
+		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform4f( mShaders[ shader ].mHandle, location, value.mX, value.mY, value.mZ, value.mW );
+
+	}
+	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, const Matrix3& value ) {
+
+		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
+		glProgramUniformMatrix3fv( mShaders[ shader ].mHandle, location, 1, GL_FALSE, value.Data( ) );
+
+	}
+	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, const Matrix4& value ) {
+
+		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform4fv( mShaders[ shader ].mHandle, location, 1, value.Data( ) );
+
 	}
 
 }

@@ -332,7 +332,7 @@ namespace lum::rhi {
 		// Constant blend color used when blend factors are set to BlendFactor::ConstantColor or BlendFactor::OneMinusConstantColor.
 		// This color is independent of source and destination and acts as a fixed reference value in the blend equation.
 		// The initial value is (0, 0, 0, 0) - transparent black.
-		ChannelRGBA mBlendColor = { 0.f, 0.f, 0.f, 0.f };
+		Vector4 mBlendColor = { 0.f, 0.f, 0.f, 0.f };
 
 	};
 	

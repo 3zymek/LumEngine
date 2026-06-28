@@ -136,7 +136,7 @@ namespace lum::rhi {
 		* @param color RGBA clear color.
 		* @param depth Depth clear value (clamped to [0.0, 1.0]).
 		*/
-		virtual void ClearFramebuffer( FramebufferHandle fbo, ChannelRGBA color, float32 depth ) = 0;
+		virtual void ClearFramebuffer( FramebufferHandle fbo, Vector4 color, float32 depth ) = 0;
 
 		/* @brief Copies a region of one framebuffer to another.
 		*  @param desc Descriptor specifying source, destination, regions, buffer mask and filter.
@@ -181,7 +181,7 @@ namespace lum::rhi {
 		* @return Handle to the created shader.
 		*/
 		LUM_NODISCARD
-			virtual ShaderHandle CreateShader( const ShaderModuleCreateInfo& desc ) = 0;
+			virtual ShaderHandle CreateShader( const ShaderCreateInfo& desc ) = 0;
 
 		/* @brief Binds a shader for use in subsequent draw or dispatch calls.
 		* @param shader Handle of the shader to bind.
@@ -192,6 +192,15 @@ namespace lum::rhi {
 		* @param shader Handle to delete. Becomes invalid after this call.
 		*/
 		virtual void Delete( ShaderHandle& shader ) = 0;
+
+		virtual void SetUniform( ShaderHandle shader, uint32 location, float32 value ) = 0;
+		virtual void SetUniform( ShaderHandle shader, uint32 location, uint32 value ) = 0;
+		virtual void SetUniform( ShaderHandle shader, uint32 location, bool value ) = 0;
+		virtual void SetUniform( ShaderHandle shader, uint32 location, const Vector2& value ) = 0;
+		virtual void SetUniform( ShaderHandle shader, uint32 location, const Vector3& value ) = 0;
+		virtual void SetUniform( ShaderHandle shader, uint32 location, const Vector4& value ) = 0;
+		virtual void SetUniform( ShaderHandle shader, uint32 location, const Matrix3& value ) = 0;
+		virtual void SetUniform( ShaderHandle shader, uint32 location, const Matrix4& value ) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -379,7 +388,7 @@ namespace lum::rhi {
 		bool IsBlendEnabled( ) const noexcept { return mEnabledStates.Has( State::Blend ); }
 
 		/* @brief Sets the constant RGBA color used in constant-factor blend modes. */
-		virtual void SetBlendConstantColor( ChannelRGBA rgba ) = 0;
+		virtual void SetBlendConstantColor( Vector4 rgba ) = 0;
 
 		/* @brief Sets blend factors for both color and alpha channels.
 		* @param srcColor Source factor for RGB.
@@ -429,7 +438,7 @@ namespace lum::rhi {
 		virtual void SetBlendFactorsForTarget( uint8 target ) = 0;
 
 		/* @brief Enables or disables blending for a specific render target index. */
-		virtual void ToggleBlendForTarget( uint8 target, bool enable ) = 0;
+		virtual void ToggleBlendForTarget( uint8 target, bool toggle ) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -661,13 +670,13 @@ namespace lum::rhi {
 		virtual void SetColorMask( ColorMask rgba ) = 0;
 
 		/* @brief Sets the RGBA color used for subsequent ClearColor() calls. */
-		virtual void SetClearColor( ChannelRGBA color ) = 0;
+		virtual void SetClearColor( Vector4 color ) = 0;
 
 		/* @brief Clears the color buffer using the current clear color. */
 		virtual void ClearColor( ) = 0;
 
 		/* @brief Sets the clear color and immediately clears the color buffer. */
-		virtual void ClearColor( ChannelRGBA color ) = 0;
+		virtual void ClearColor( Vector4 color ) = 0;
 
 		/* @brief Clears the depth buffer to its default value (1.0). */
 		virtual void ClearDepth( ) = 0;
@@ -758,7 +767,7 @@ namespace lum::rhi {
 		ColorMask			mColorMask{};
 
 		Flags<State>		mEnabledStates{};
-		ChannelRGBA			mClearColor{};
+		Vector4			mClearColor{};
 
 #		if LUM_ENABLE_RENDER_PROFILER == 1
 		performance::Profiler mProfiler{};

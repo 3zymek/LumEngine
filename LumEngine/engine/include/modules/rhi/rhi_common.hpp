@@ -105,9 +105,6 @@ namespace lum {
 		/* @brief Bitmask storage type used for RHI flag enums. */
 		using REnumFlag = uint16;
 
-		/* @brief RGBA color channel represented as a vec4 (r, g, b, a). */
-		using ChannelRGBA = Vector4;
-
 		enum class RenderBackend : byte {
 			OpenGL,
 			/*Vulkan*/

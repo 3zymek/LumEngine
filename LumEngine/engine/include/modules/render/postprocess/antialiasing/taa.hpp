@@ -12,6 +12,8 @@ namespace lum::render {
 		rhi::TextureHandle GetPreviousFrameTex( ) const noexcept { return mPreviousFrameTex; }
 		Matrix4 ApplyJitter( const Matrix4& projection );
 
+		Vector2 mCurrentJitter{};
+
 	private:
 
 		rhi::RenderDevice* mRenderDev = nullptr;

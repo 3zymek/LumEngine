@@ -1,4 +1,4 @@
-#include "render/temporal_antialiasing.hpp"
+#include "render/postprocess/antialiasing/taa.hpp"
 
 namespace lum::render {
 
@@ -10,10 +10,15 @@ namespace lum::render {
 
 	void TemporalAntiAliasing::EnsureFrameTex( const rhi::TextureCreateInfo& desc ) {
 
-		mRenderDev->Delete( mPreviousFrameTex );
+		if (mWidth == desc.mWidth && mHeight == desc.mHeight && mPreviousFrameTex != 0) {
+			return;
+		}
+
+		if(mPreviousFrameTex != 0)
+			mRenderDev->Delete( mPreviousFrameTex );
+
 		mWidth = desc.mWidth;
 		mHeight = desc.mHeight;
-
 		mPreviousFrameTex = mRenderDev->CreateTexture( desc );
 
 	}
@@ -32,13 +37,12 @@ namespace lum::render {
 		};
 
 		uint32 index = mFrameIndex % 8;
-		Vector2 offset = skOffsets[ index ];
-
-		Vector2 jitter = (offset * 2.0f - 1.0f) / Vector2( mWidth, mHeight ) * 0.5f;
+		Vector2 rawJitter = skOffsets[ index ] - Vector2( 0.5f, 0.5f );
+		mCurrentJitter = rawJitter / Vector2( ToFloat32( mWidth ), ToFloat32( mHeight ) );
 
 		Matrix4 jittered = projection;
-		jittered[ 2 ][ 0 ] += jitter.mX;
-		jittered[ 2 ][ 1 ] += jitter.mY;
+		jittered[ 3 ][ 0 ] += mCurrentJitter.mX * 2.0f;
+		jittered[ 3 ][ 1 ] += mCurrentJitter.mY * 2.0f;
 
 		mFrameIndex++;
 

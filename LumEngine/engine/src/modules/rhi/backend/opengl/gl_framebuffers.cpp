@@ -136,7 +136,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::ClearFramebuffer( FramebufferHandle fbo, ChannelRGBA color, float32 depth ) {
+	void GLDevice::ClearFramebuffer( FramebufferHandle fbo, Vector4 color, float32 depth ) {
 
 		BindFramebuffer( fbo );
 
@@ -232,7 +232,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::SetClearColor( ChannelRGBA color ) {
+	void GLDevice::SetClearColor( Vector4 color ) {
 
 		if (mClearColor == color) {
 			LUM_PROFILER_CACHE_HIT( );
@@ -251,7 +251,7 @@ namespace lum::rhi::gl {
 		LUM_PROFILER_CACHE_MISS( );
 
 	}
-	void GLDevice::ClearColor( ChannelRGBA color ) {
+	void GLDevice::ClearColor( Vector4 color ) {
 
 		SetClearColor( color );
 		glClear( GL_COLOR_BUFFER_BIT );
