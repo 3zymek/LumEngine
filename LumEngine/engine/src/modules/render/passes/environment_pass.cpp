@@ -35,7 +35,7 @@ namespace lum::render {
 		generate_prefiltered_map( );
 	}
 
-	void EnvironmentPass::Execute( detail::DeferredBuffer& gbuffer, const detail::FScreenQuad& quad ) {
+	void EnvironmentPass::Execute( detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad ) {
 
 		mContext.mRenderDev->BindFramebuffer( quad.mSceneFbo ); // Render skybox to screenquad
 		mContext.mRenderDev->BindPipeline( mCubemap.mPipeline );
@@ -141,11 +141,11 @@ namespace lum::render {
 		mContext.mRenderDev->BindPipeline( mCubemap.mPipeline );
 		mContext.mRenderDev->BindShader( mIBL.mPrefiltered.mShader );
 
-		LUM_UNIFORM_BUFFER_STRUCT UniformData{
-			Matrix4 mProjection;
-			Matrix4 mView;
-			float32 mRoughness;
-			float32 _pad[ 3 ];
+		struct LUM_UBO_ALIGNMENT UniformData {
+			Matrix4 mProjection = Matrix4( 1.0f );
+			Matrix4 mView = Matrix4( 1.0f );
+			float32 mRoughness{};
+			float32 _pad[ 3 ]{};
 		};
 
 		for (uint32 mip = 0; mip < mIBL.mPrefiltered.skMipmapLevels; mip++) {

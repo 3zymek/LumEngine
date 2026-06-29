@@ -27,7 +27,7 @@ namespace lum::render {
 		/* @brief Enqueues a render instance for drawing in the current frame.
 		*  @param instance Render instance containing transform, mesh and material.
 		*/
-		void Submit( const FRenderInstance& instance );
+		void Submit( const RenderInstance& instance );
 
 		/* @brief Binds the GBuffer, pipeline and shader, then issues all queued draw calls.
 		*  @param gbuffer GBuffer to render geometry into.
@@ -41,17 +41,17 @@ namespace lum::render {
 
 	private:
 
-		std::vector<FRenderInstance> mInstances;
+		std::vector<RenderInstance> mInstances;
 
 		inline constexpr static uint32 mTempSize = 64;
 
-		std::vector<FRenderInstance> mTempInstances;
+		std::vector<RenderInstance> mTempInstances;
 
 		/* @brief Cached context holding all subsystem manager references. */
 		RendererContext mContext;
 
 		/* @brief CPU-side material uniform buffer, uploaded per draw call. */
-		detail::FMaterialUBOData mMaterialUBO{};
+		detail::MaterialGPU mMaterialUBO{};
 
 		/* @brief GPU buffer holding the per-draw model matrix uniform. */
 		rhi::BufferHandle mModelUniform;
@@ -69,15 +69,15 @@ namespace lum::render {
 		void init( );
 
 		/* @brief Uploads material uniforms, binds textures and issues a draw call for the given instance. */
-		void draw_instance( const FRenderInstance& instance );
+		void draw_instance( const RenderInstance& instance );
 
 		/* @brief Uploads the model matrix and issues a draw call without binding any material state. */
-		void draw_mesh( const FRenderInstance& instance );
+		void draw_mesh( const RenderInstance& instance );
 
 		/* @brief Computes and uploads the model matrix for the given instance.
 		*  @param instance Render instance to compute the model matrix from.
 		*/
-		void upload_model_matrix( const FRenderInstance& instance );
+		void upload_model_matrix( const RenderInstance& instance );
 
 		/* @brief Uploads material parameters for the given material instance.
 		*  @param mat Material instance to upload.

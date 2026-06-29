@@ -38,7 +38,7 @@ namespace lum {
 
 					if (!isVisible( id )) return;
 
-					render::FRenderInstance inst;
+					render::RenderInstance inst;
 					inst.mMaterial = &material;
 					inst.mStaticMesh = &mesh;
 					inst.mTransform = &transform;
@@ -53,7 +53,7 @@ namespace lum {
 
 					if (!isVisible( id )) return;
 
-					FPointLight pointL;
+					PointLight pointL;
 
 					pointL.mPosition = transform.mPosition;
 					pointL.mIntensity = light.mIntensity;
@@ -70,7 +70,7 @@ namespace lum {
 
 					if (!isVisible( id )) return;
 
-					FSpotLight spotL;
+					SpotLight spotL;
 
 					spotL.mPosition = transform.mPosition;
 					spotL.mIntensity = light.mIntensity;

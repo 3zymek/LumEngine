@@ -7,7 +7,7 @@ namespace lum::editor {
 	class EditorCamera {
 	public:
 
-		render::FRenderCamera Update( float64 delta, bool moveMouse = true ) {
+		render::RenderCamera Update( float64 delta, bool moveMouse = true ) {
 
 			Vector3 forward = Normalize( mTarget - mPosition );
 			Vector3 right = Normalize( Cross( forward, Vector3( 0, 1, 0 ) ) );
@@ -50,7 +50,7 @@ namespace lum::editor {
 			}
 			else sLastPos = input::GetMousePos( );
 
-			render::FRenderCamera data;
+			render::RenderCamera data;
 
 			data.mPosition = mPosition;
 			data.mProjection = Perspective( Radians( mFov ), mAspectRatio, mNearPlane, mFarPlane );

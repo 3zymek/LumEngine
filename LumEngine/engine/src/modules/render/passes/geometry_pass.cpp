@@ -34,7 +34,7 @@ namespace lum::render {
 
 	}
 
-	void GeometryPass::Submit( const FRenderInstance& instance ) {
+	void GeometryPass::Submit( const RenderInstance& instance ) {
 
 		LUM_ASSERT(
 			mInstances.size( ) < limits::kMaxDrawCallsPerFrame,
@@ -87,13 +87,13 @@ namespace lum::render {
 		desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 		desc.mMapFlags = rhi::MapFlag::Write;
 		{ // Model Uniform
-			desc.mSize = sizeof( detail::FModelUBOData );
+			desc.mSize = sizeof( detail::ModelGPU );
 			desc.mBufferType = rhi::BufferType::Uniform;
 			mModelUniform = mContext.mRenderDev->CreateBuffer( desc );
 			mContext.mRenderDev->SetUniformBufferBinding( mModelUniform, LUM_UBO_MODEL_BINDING );
 		}
 		{ // Material Uniform
-			desc.mSize = sizeof( detail::FMaterialUBOData );
+			desc.mSize = sizeof( detail::MaterialGPU );
 			desc.mBufferType = rhi::BufferType::Uniform;
 			mMaterialUniform = mContext.mRenderDev->CreateBuffer( desc );
 			mContext.mRenderDev->SetUniformBufferBinding( mMaterialUniform, LUM_UBO_MATERIAL_BINDING );
@@ -111,7 +111,7 @@ namespace lum::render {
 
 	}
 
-	void GeometryPass::draw_instance( const FRenderInstance& instance ) {
+	void GeometryPass::draw_instance( const RenderInstance& instance ) {
 
 		const auto* mat = instance.mMaterial;
 
@@ -126,7 +126,7 @@ namespace lum::render {
 
 	}
 
-	void GeometryPass::draw_mesh( const FRenderInstance& instance ) {
+	void GeometryPass::draw_mesh( const RenderInstance& instance ) {
 
 		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic( instance.mStaticMesh->mHandle );
 
@@ -135,7 +135,7 @@ namespace lum::render {
 
 	}
 
-	void GeometryPass::upload_model_matrix( const FRenderInstance& instance ) {
+	void GeometryPass::upload_model_matrix( const RenderInstance& instance ) {
 
 		mContext.mRenderDev->UpdateBuffer( mModelUniform, instance.mTransform->mWorldMatrix.Data(), 0, 0 );
 

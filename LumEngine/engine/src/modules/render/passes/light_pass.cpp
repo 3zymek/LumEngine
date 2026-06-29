@@ -25,14 +25,14 @@ namespace lum::render {
 
 	}
 
-	void LightPass::AddPointLight( const FPointLight& light ) {
+	void LightPass::AddPointLight( const PointLight& light ) {
 
 		LUM_ASSERT( mActivePointLights + 1 <= mPointLights.size( ), "Max point lights reached" );
 
 		mPointLights[ mActivePointLights++ ] = light;
 
 	}
-	void LightPass::AddSpotLight( const FSpotLight& light ) {
+	void LightPass::AddSpotLight( const SpotLight& light ) {
 
 		LUM_ASSERT( mActiveSpotLights + 1 <= mSpotLights.size( ), "Max spot lights reached" );
 
@@ -41,7 +41,7 @@ namespace lum::render {
 	}
 
 
-	void LightPass::SetDirectionalLight( const FDirectionalLight& light ) {
+	void LightPass::SetDirectionalLight( const DirectionalLight& light ) {
 
 		mDirectionalLightData.mColor = Vector4( light.mColor, 0.0f );
 		mDirectionalLightData.mDirection = Vector4( light.mDirection, 0.0f );
@@ -49,14 +49,14 @@ namespace lum::render {
 
 	}
 
-	FDirectionalLight LightPass::GetDirectionalLight( ) {
+	DirectionalLight LightPass::GetDirectionalLight( ) {
 		return {
 			Vector3( mDirectionalLightData.mDirection ),
 			mDirectionalLightData.mIntensity,
 			Vector3( mDirectionalLightData.mColor )
 		};
 	}
-	FDirectionalLight LightPass::GetDirectionalLight( ) const {
+	DirectionalLight LightPass::GetDirectionalLight( ) const {
 		return {
 			Vector3( mDirectionalLightData.mDirection ),
 			mDirectionalLightData.mIntensity,
@@ -64,7 +64,7 @@ namespace lum::render {
 		};
 	}
 
-	void LightPass::Execute( const detail::DeferredBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassExecute& desc ) {
+	void LightPass::Execute( const detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad, const FLightPassExecute& desc ) {
 
 		mContext.mRenderDev->BindFramebuffer( quad.mSceneFbo );
 		mContext.mRenderDev->BindPipeline( mPipeline );
@@ -99,7 +99,7 @@ namespace lum::render {
 		// Point Lights SSBO
 		if (!mContext.mRenderDev->IsValid( mLightsUBO )) {
 
-			desc.mSize = (sizeof( FPointLight ) * LUM_MAX_LIGHTS + sizeof( int32 )) + (sizeof( FSpotLight ) * LUM_MAX_LIGHTS + sizeof( int32 ));
+			desc.mSize = (sizeof( PointLight ) * LUM_MAX_LIGHTS + sizeof( int32 )) + (sizeof( SpotLight ) * LUM_MAX_LIGHTS + sizeof( int32 ));
 			desc.mBufferType = rhi::BufferType::ShaderStorage;
 			mLightsUBO = mContext.mRenderDev->CreateBuffer( desc );
 			mContext.mRenderDev->SetShaderStorageBinding( mLightsUBO, LUM_SSBO_LIGHTS_BINDING );
@@ -142,7 +142,7 @@ namespace lum::render {
 
 		mContext.mRenderDev->UpdateBuffer(
 			mLightsUBO, mPointLights.data( ),
-			skOffsetPointLights, sizeof( FPointLight ) * LUM_MAX_LIGHTS
+			skOffsetPointLights, sizeof( PointLight ) * LUM_MAX_LIGHTS
 		);
 
 	}
@@ -155,7 +155,7 @@ namespace lum::render {
 
 		mContext.mRenderDev->UpdateBuffer(
 			mLightsUBO, mSpotLights.data( ),
-			skOffsetSpotLights, sizeof( FSpotLight ) * LUM_MAX_LIGHTS
+			skOffsetSpotLights, sizeof( SpotLight ) * LUM_MAX_LIGHTS
 		);
 
 	}

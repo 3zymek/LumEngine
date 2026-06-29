@@ -17,7 +17,7 @@ namespace lum::render {
 
 	}
 
-	void PostprocessPass::Execute( const detail::FScreenQuad& quad, const PostprocessPassExecute& exe ) {
+	void PostprocessPass::Execute( const detail::ScreenQuad& quad, const PostprocessPassExecute& exe ) {
 		
 		mContext.mRenderDev->BindFramebuffer( quad.mPostprocessFbo );
 		mContext.mRenderDev->BindShader( mShader );

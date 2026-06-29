@@ -30,7 +30,7 @@ namespace lum {
 
 namespace lum::render {
 
-#	define LUM_UNIFORM_BUFFER_STRUCT struct alignas(16)
+#	define LUM_UBO_ALIGNMENT alignas(16)
 
 	/* @brief Aggregates all external subsystem pointers required to initialize the renderer. */
 	struct RendererContext {
@@ -41,6 +41,11 @@ namespace lum::render {
 		MMeshManager*		mMeshMgr = nullptr;
 		MShaderManager*		mShaderMgr = nullptr;
 		ev::EventBus*		mEvBus = nullptr;
+	};
+
+	struct PostprocessExecutables {
+		
+
 	};
 
 	constexpr void ValidateRendererContext( const RendererContext& ctx ) {
@@ -57,7 +62,7 @@ namespace lum::render {
 	/* @brief Directional light source — infinite distance, uniform direction.
 	*  Aligned to 16 bytes for std140 uniform buffer compatibility.
 	*/
-	struct FDirectionalLight {
+	struct DirectionalLight {
 
 		/* @brief Normalized direction vector the light is pointing towards. */
 		Vector3 mDirection = Vector3( 0.0f, 1.0f, 0.0f );
@@ -75,7 +80,7 @@ namespace lum::render {
 
 
 	/* @brief Point light source — emits light in all directions from a single position. */
-	struct FPointLight {
+	struct PointLight {
 
 		Vector3 mPosition = Vector3( 0.0f );
 		float32 mIntensity = 10.f;
@@ -84,7 +89,7 @@ namespace lum::render {
 
 	};
 
-	struct FSpotLight {
+	struct SpotLight {
 
 		Vector3 mPosition = Vector3( 0.0f );
 		float32 mIntensity = 10.0f;
@@ -97,13 +102,13 @@ namespace lum::render {
 
 		float32 mOuterCone = 50.0f;
 
-		float32 _pad[ 3 ];
+		float32 mPad[ 3 ]{};
 
 	};
 
 
 	/* @brief Represents a single renderable object submitted to the renderer per frame. */
-	struct FRenderInstance {
+	struct RenderInstance {
 
 		CTransform* mTransform = nullptr;
 
@@ -115,7 +120,7 @@ namespace lum::render {
 
 
 	/* @brief Per-frame camera data provided by the caller to the renderer. */
-	struct FRenderCamera {
+	struct RenderCamera {
 
 		/* @brief World-space position of the camera. */
 		Vector3 mPosition = Vector3( 0.0f );
@@ -130,7 +135,7 @@ namespace lum::render {
 
 	namespace detail {
 
-		struct FScreenQuad {
+		struct ScreenQuad {
 
 			rhi::VertexLayoutHandle mVao;
 
@@ -146,7 +151,7 @@ namespace lum::render {
 		};
 
 		/* @brief Internal state for the environment (skybox) render pass. */
-		struct FCubemap {
+		struct Cubemap {
 
 			/* @brief Shader program used for skybox rendering. */
 			rhi::ShaderHandle mShader;
@@ -155,7 +160,7 @@ namespace lum::render {
 			rhi::PipelineHandle mPipeline;
 
 			/* @brief Cubemap or equirectangular environment texture. */
-			rhi::TextureHandle	mTexture;
+			rhi::TextureHandle mTexture;
 
 			/* @brief Vertex buffer holding skybox geometry. */
 			rhi::BufferHandle mVbo;
@@ -171,7 +176,7 @@ namespace lum::render {
 
 		};
 
-		LUM_UNIFORM_BUFFER_STRUCT FLightSpaceMatricesUBOData {
+		struct LUM_UBO_ALIGNMENT LightSpaceMatricesGPU {
 
 			Matrix4 mDirectionalLightSpaceMatrix = Matrix4( 1.0f );
 
@@ -179,7 +184,7 @@ namespace lum::render {
 
 
 		/* @brief GPU-side camera uniform buffer layout. Aligned to std140. */
-		LUM_UNIFORM_BUFFER_STRUCT FCameraUBOData {
+		struct LUM_UBO_ALIGNMENT CameraGPU {
 			Matrix4 mView = Matrix4( 1.0f );
 			Matrix4 mProjection = Matrix4( 1.0f );
 			Matrix4 mInvViewProj = Matrix4( 1.0f );
@@ -188,30 +193,28 @@ namespace lum::render {
 
 
 		/* @brief GPU-side model uniform buffer layout. Aligned to std140. */
-		LUM_UNIFORM_BUFFER_STRUCT FModelUBOData {
+		struct LUM_UBO_ALIGNMENT ModelGPU {
 			Matrix4 mModel = Matrix4( 1.0f );
 		};
 
 
 		/* @brief GPU-side material uniform buffer layout. Aligned to std140. */
-		LUM_UNIFORM_BUFFER_STRUCT FMaterialUBOData {
+		struct LUM_UBO_ALIGNMENT MaterialGPU {
 			Vector4 mBaseColor = Vector4( 1.0f );
 			float32 mRoughness = 0.5f;
 			float32 mMetallic = 0.0f;
 
-			float32 _pad0 = 0.f;
-			float32 _pad1 = 0.f;
+			float32 mPad[ 2 ]{};
+			
 		};
 
-		LUM_UNIFORM_BUFFER_STRUCT FDirectionalLightUBOData {
+		struct LUM_UBO_ALIGNMENT DirectionalLightGPU {
 
 			Vector4 mDirection = Vector4( 0.0f, -1.0f, 0.0f, 0.0f );
 			Vector4 mColor = Vector4( 1.00, 0.97, 0.90, 0.0f );
 			float32 mIntensity = 5.0f;
 
-			float32 _pad0 = 0.f;
-			float32 _pad1 = 0.f;
-			float32 _pad2 = 0.f;
+			float32 mPad[ 3 ]{};
 
 		};
 

@@ -44,7 +44,7 @@ namespace lum::render {
 		*  @param gbuffer  GBuffer containing depth for correct skybox depth testing.
 		*  @param quad     Screen quad FBO to render into.
 		*/
-		void Execute( detail::DeferredBuffer& gbuffer, const detail::FScreenQuad& quad );
+		void Execute( detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad );
 
 		/* @brief Returns a handle to a precomputed IBL texture.
 		*  @param tex Which IBL texture to retrieve.
@@ -57,7 +57,7 @@ namespace lum::render {
 		RendererContext mContext;
 
 		/* @brief Cubemap mesh, shader, pipeline and texture data. */
-		detail::FCubemap mCubemap;
+		detail::Cubemap mCubemap;
 
 		/* @brief Pipeline state for skybox rendering. */
 		rhi::PipelineHandle mPipeline;

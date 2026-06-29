@@ -30,13 +30,11 @@ namespace lum::render {
 		mPostprocessPass.Initialize( mContext );
 		mDefferedBuffer.Initialize( mContext, 500, 500 );
 
-		mContext.mRenderDev->ToggleMultisample( true );
-
 		init( );
 
 	}
 
-	void Renderer::UpdateCamera( const FRenderCamera& camera ) {
+	void Renderer::UpdateCamera( const RenderCamera& camera ) {
 
 		Matrix4 jittered = mTemporalAA.ApplyJitter( camera.mProjection );
 
@@ -113,7 +111,7 @@ namespace lum::render {
 			rhi::BufferCreateInfo desc;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
-			desc.mSize = sizeof( detail::FCameraUBOData );
+			desc.mSize = sizeof( detail::CameraGPU );
 			desc.mBufferType = rhi::BufferType::Uniform;
 			mCameraUBO = mContext.mRenderDev->CreateBuffer( desc );
 			mContext.mRenderDev->SetUniformBufferBinding( mCameraUBO, LUM_UBO_CAMERA_BINDING );

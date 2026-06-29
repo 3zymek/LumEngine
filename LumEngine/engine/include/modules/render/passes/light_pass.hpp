@@ -10,8 +10,8 @@
 namespace lum::render {
 
 	namespace detail { class DeferredBuffer; }
-	using PointLightsArr = std::array<FPointLight, LUM_MAX_LIGHTS>;
-	using SpotLightsArr = std::array<FSpotLight, LUM_MAX_LIGHTS>;
+	using PointLightsArr = std::array<PointLight, LUM_MAX_LIGHTS>;
+	using SpotLightsArr = std::array<SpotLight, LUM_MAX_LIGHTS>;
 
 	/* @brief Descriptor passed to Execute() containing IBL and shadow map handles
 	*  required for the deferred lighting calculation.
@@ -41,21 +41,21 @@ namespace lum::render {
 		/* @brief Submits a point light to be included in the current frame's lighting.
 		*  @param light Point light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
-		void AddPointLight( const FPointLight& light );
+		void AddPointLight( const PointLight& light );
 
 		/* @brief Submits a spot light to be included in the current frame's lighting.
 		*  @param light Spot light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
-		void AddSpotLight( const FSpotLight& light );
+		void AddSpotLight( const SpotLight& light );
 
 		/* @brief Sets the active directional light for the current frame.
 		*  @param light Directional light to set.
 		*/
-		void SetDirectionalLight( const FDirectionalLight& light );
+		void SetDirectionalLight( const DirectionalLight& light );
 
 		/* @brief Returns the currently active directional light. */
-		FDirectionalLight GetDirectionalLight( );
-		FDirectionalLight GetDirectionalLight( ) const;
+		DirectionalLight GetDirectionalLight( );
+		DirectionalLight GetDirectionalLight( ) const;
 
 		const std::pair<PointLightsArr, uint32>& GetPointLights( ) const { return { mPointLights, mActivePointLights }; }
 		const std::pair<SpotLightsArr, uint32>& GetSpotLights( ) const { return { mSpotLights, mActiveSpotLights }; }
@@ -71,14 +71,14 @@ namespace lum::render {
 		*  @param quad    Fullscreen quad VAO to draw the lighting onto.
 		*  @param desc    IBL and shadow map handles required for lighting.
 		*/
-		void Execute( const detail::DeferredBuffer& gbuffer, const detail::FScreenQuad& quad, const FLightPassExecute& desc );
+		void Execute( const detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad, const FLightPassExecute& desc );
 
 	private:
 
 		/* @brief Byte offsets into the light SSBO for each data section. */
 		static constexpr usize skOffsetPointLights = 0;
-		static constexpr usize skOffsetSpotLights = sizeof( FPointLight ) * LUM_MAX_LIGHTS;
-		static constexpr usize skOffsetActivePoint = skOffsetSpotLights + sizeof( FSpotLight ) * LUM_MAX_LIGHTS;
+		static constexpr usize skOffsetSpotLights = sizeof( PointLight ) * LUM_MAX_LIGHTS;
+		static constexpr usize skOffsetActivePoint = skOffsetSpotLights + sizeof( SpotLight ) * LUM_MAX_LIGHTS;
 		static constexpr usize skOffsetActiveSpot = skOffsetActivePoint + sizeof( int32 );
 
 		/* @brief Cached context holding all subsystem manager references. */
@@ -97,7 +97,7 @@ namespace lum::render {
 		uint32 mActiveSpotLights = 0;
 
 		/* @brief GPU-ready uniform buffer representation of the active directional light. */
-		detail::FDirectionalLightUBOData mDirectionalLightData{};
+		detail::DirectionalLightGPU mDirectionalLightData{};
 
 		/* @brief Shader storage buffer holding all active point and spot lights. */
 		rhi::BufferHandle mLightsUBO;

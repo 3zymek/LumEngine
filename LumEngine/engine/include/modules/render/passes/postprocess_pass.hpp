@@ -22,7 +22,7 @@ namespace lum::render {
 
 		void Initialize( const RendererContext& ctx );
 
-		void Execute( const detail::FScreenQuad& quad, const PostprocessPassExecute& exe );
+		void Execute( const detail::ScreenQuad& quad, const PostprocessPassExecute& exe );
 
 
 	private:

@@ -24,7 +24,7 @@ namespace lum::render {
 	}
 
 	Matrix4 TemporalAntiAliasing::ApplyJitter( const Matrix4& projection ) {
-
+		
 		static const Vector2 skOffsets[ ] = {
 			{ 0.500000f,  0.333333f },
 			{ 0.250000f,  0.666667f },

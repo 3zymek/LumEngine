@@ -49,7 +49,7 @@ namespace lum::render {
 		/* @brief Updates the active camera used for rendering this frame.
 		*  @param camera Camera data containing view, projection and position.
 		*/
-		void UpdateCamera( const FRenderCamera& camera );
+		void UpdateCamera( const RenderCamera& camera );
 
 
 
@@ -60,20 +60,20 @@ namespace lum::render {
 		/* @brief Submits a point light to be included in the current frame's lighting.
 		*  @param light Point light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
-		void AddPointLight( const FPointLight& light ) { mLightPass.AddPointLight( light ); }
+		void AddPointLight( const PointLight& light ) { mLightPass.AddPointLight( light ); }
 
 		/* @brief Submits a spot light to be included in the current frame's lighting.
 		*  @param light Spot light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
-		void AddSpotLight( const FSpotLight& light ) { mLightPass.AddSpotLight( light ); }
+		void AddSpotLight( const SpotLight& light ) { mLightPass.AddSpotLight( light ); }
 
 		/* @brief Sets the active directional light for the current frame.
 		*  @param light Directional light to set.
 		*/
-		void SetDirectionalLight( const FDirectionalLight& light ) { mLightPass.SetDirectionalLight( light ); }
+		void SetDirectionalLight( const DirectionalLight& light ) { mLightPass.SetDirectionalLight( light ); }
 
 		/* @brief Returns the currently active directional light. */
-		FDirectionalLight GetDirectionalLight( ) { return mLightPass.GetDirectionalLight( ); }
+		DirectionalLight GetDirectionalLight( ) { return mLightPass.GetDirectionalLight( ); }
 
 
 
@@ -84,7 +84,7 @@ namespace lum::render {
 		/* @brief Submits a render instance for drawing in the current frame.
 		*  @param instance Render instance containing transform, mesh and material.
 		*/
-		void Submit( const FRenderInstance& instance ) { mGeometryPass.Submit( instance ); }
+		void Submit( const RenderInstance& instance ) { mGeometryPass.Submit( instance ); }
 
 
 
@@ -108,7 +108,7 @@ namespace lum::render {
 		detail::DeferredBuffer mDefferedBuffer;
 
 		/* @brief Fullscreen quad used for deferred lighting and post-process passes. */
-		detail::FScreenQuad mScreenQuad;
+		detail::ScreenQuad mScreenQuad;
 
 
 
@@ -141,7 +141,7 @@ namespace lum::render {
 		rhi::BufferHandle mCameraUBO;
 
 		/* @brief CPU-side camera data uploaded to mCameraUBO once per frame. */
-		detail::FCameraUBOData mCameraUBOData{};
+		detail::CameraGPU mCameraUBOData{};
 
 
 		TemporalAntiAliasing mTemporalAA;
