@@ -23,6 +23,28 @@
   },
   "prefixes": ["m", "b"],
   "templates": {
+    "parse_function": [
+      "namespace lum::fmt::detail {",
+      "    inline void Parse{ClassName}( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {",
+      "        detail::ExpectOpeningBracket( tokens, i );",
+      "        {ClassName} component;",
+      "        while( InBlock( tokens, i ) ) {",
+      "            if( tokens[i].mType == TokenType::Parameter ) {",
+      "                {Fields}",
+      "            }",
+      "            i++;",
+      "        }",
+      "        ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, component );",
+      "    }",
+      "}"
+    ],
+    "ecs_traits": [
+      "namespace lum::ecs::detail {",
+      "    template<> inline StringView GetComponentParseName<{ClassName}>() { return \"{ParseName}\"; }",
+      "    template<> inline StringView GetComponentDisplayName<{ClassName}>() { return \"{DisplayName}\"; }",
+      "    template<> inline StringView GetComponentCategoryName<{ClassName}>() { return \"{CategoryName}\"; }",
+      "}"
+    ],
     
     "parse_fn_namespace": "lum::fmt::detail",
     "parse_fn_signature": "Parse{ClassName}( std::vector<FToken>& tokens, int32& i, FParseContext& ctx )",
@@ -90,25 +112,13 @@
       "reader": "detail::ReadFloatParameter",
       "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat( \"##{FieldName}##lhc\", &{Var}->{FieldName}, {Speed}, {MinVal}, {MaxVal} )"
     },
-    "glm::vec2": {
-      "reader": "detail::ReadVec2Parameter",
-      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat2( \"##{FieldName}##lhc\", glm::value_ptr({Var}->{FieldName}), {Speed}, {MinVal}, {MaxVal} )"
-    },
     "Vector2": {
       "reader": "detail::ReadVec2Parameter",
       "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat2( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), {Speed}, {MinVal}, {MaxVal} )"
     },
-    "glm::vec3": {
-      "reader": "detail::ReadVec3Parameter",
-      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat3( \"##{FieldName}##lhc\", glm::value_ptr({Var}->{FieldName}), {Speed}, {MinVal}, {MaxVal} )"
-    },
     "Vector3": {
       "reader": "detail::ReadVec3Parameter",
       "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat3( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), {Speed}, {MinVal}, {MaxVal} )"
-    },
-    "glm::vec4": {
-      "reader": "detail::ReadVec4Parameter",
-      "inspector": "ImGui::Text( \"{DisplayName}\" ); ImGui::SameLine( 120.0f ); ImGui::SetNextItemWidth( -1.0f ); ImGui::DragFloat4( \"##{FieldName}##lhc\", glm::value_ptr({Var}->{FieldName}), {Speed}, {MinVal}, {MaxVal} )"
     },
     "Vector4": {
       "reader": "detail::ReadVec4Parameter",

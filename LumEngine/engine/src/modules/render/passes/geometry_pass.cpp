@@ -45,14 +45,7 @@ namespace lum::render {
 
 	}
 
-	void GeometryPass::Execute( const detail::DeferredBuffer& gbuffer ) {
-
-		gbuffer.BindBuffer( );
-		mContext.mRenderDev->Clear(
-			rhi::BufferBit::Color |
-			rhi::BufferBit::Depth |
-			rhi::BufferBit::Stencil
-		);
+	void GeometryPass::Execute( const detail::DeferredBuffer& defferedBuff ) {
 
 		mContext.mRenderDev->BindShader( mShader );
 
@@ -62,7 +55,7 @@ namespace lum::render {
 
 		mInstances.clear( );
 
-		gbuffer.UnbindBuffer( );
+		defferedBuff.UnbindFramebuffer( );
 
 	}
 

@@ -19,7 +19,7 @@ namespace lum::render {
 
 		ValidateRendererContext( ctx );
 
-		mContext = ctx;
+		mCtx = ctx;
 
 		init( );
 
@@ -64,22 +64,21 @@ namespace lum::render {
 		};
 	}
 
-	void LightPass::Execute( const detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad, const FLightPassExecute& desc ) {
+	void LightPass::Execute( const detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad, const LightPassExectueContext& desc ) {
 
-		mContext.mRenderDev->BindFramebuffer( quad.mSceneFbo );
-		mContext.mRenderDev->BindPipeline( mPipeline );
+		mCtx.mRenderDev->BindPipeline( mPipeline );
 
 		upload_directional_light( );
 		upload_point_lights( );
 		upload_spot_lights( );
 
-		mContext.mRenderDev->BindShader( mShader );
-		mContext.mRenderDev->BindTexture( desc.mShadowMap, LUM_SHADOW_MAP );
-		mContext.mRenderDev->BindTexture( desc.mIrradianceMap, LUM_TEX_IRRADIANCE );
-		mContext.mRenderDev->BindTexture( desc.mPrefilteredEnvMap, LUM_TEX_PREFILTERED );
+		mCtx.mRenderDev->BindShader( mShader );
+		mCtx.mRenderDev->BindTexture( desc.mShadowMap, LUM_SHADOW_MAP );
+		mCtx.mRenderDev->BindTexture( desc.mIrradianceMap, LUM_TEX_IRRADIANCE );
+		mCtx.mRenderDev->BindTexture( desc.mPrefilteredEnvMap, LUM_TEX_PREFILTERED );
 		gbuffer.BindTextures( );
 
-		mContext.mRenderDev->DrawElements( quad.mVao, 6 );
+		mCtx.mRenderDev->DrawElements( quad.mVao, 6 );
 
 	}
 
@@ -97,36 +96,36 @@ namespace lum::render {
 		desc.mMapFlags = rhi::MapFlag::Write;
 
 		// Point Lights SSBO
-		if (!mContext.mRenderDev->IsValid( mLightsUBO )) {
+		if (!mCtx.mRenderDev->IsValid( mLightsUBO )) {
 
 			desc.mSize = (sizeof( PointLight ) * LUM_MAX_LIGHTS + sizeof( int32 )) + (sizeof( SpotLight ) * LUM_MAX_LIGHTS + sizeof( int32 ));
 			desc.mBufferType = rhi::BufferType::ShaderStorage;
-			mLightsUBO = mContext.mRenderDev->CreateBuffer( desc );
-			mContext.mRenderDev->SetShaderStorageBinding( mLightsUBO, LUM_SSBO_LIGHTS_BINDING );
+			mLightsUBO = mCtx.mRenderDev->CreateBuffer( desc );
+			mCtx.mRenderDev->SetShaderStorageBinding( mLightsUBO, LUM_SSBO_LIGHTS_BINDING );
 
 		}
 		// Directional Light UBO
-		if (!mContext.mRenderDev->IsValid( mDirectionalLightUBO )) {
+		if (!mCtx.mRenderDev->IsValid( mDirectionalLightUBO )) {
 
 			desc.mSize = sizeof( mDirectionalLightData );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mDirectionalLightUBO = mContext.mRenderDev->CreateBuffer( desc );
-			mContext.mRenderDev->SetUniformBufferBinding( mDirectionalLightUBO, LUM_UBO_DIRECTIONAL_LIGHT );
+			mDirectionalLightUBO = mCtx.mRenderDev->CreateBuffer( desc );
+			mCtx.mRenderDev->SetUniformBufferBinding( mDirectionalLightUBO, LUM_UBO_DIRECTIONAL_LIGHT );
 
 		}
 
-		if (!mContext.mRenderDev->IsValid( mPipeline )) {
+		if (!mCtx.mRenderDev->IsValid( mPipeline )) {
 		
 			rhi::PipelineCreateInfo desc;
 			desc.mDepthStencil.mDepth.bEnabled = false;
 			desc.mDepthStencil.mDepth.bWriteToZBuffer = false;
-			mPipeline = mContext.mRenderDev->CreatePipeline( desc );
+			mPipeline = mCtx.mRenderDev->CreatePipeline( desc );
 		
 		}
 
 		{ // Shaders
 
-			mShader = mContext.mShaderMgr->LoadShader( "shaders/light_pass.vert", "shaders/light_pass.frag", ResourceRoot::Internal );
+			mShader = mCtx.mShaderMgr->LoadShader( "shaders/light_pass.vert", "shaders/light_pass.frag", ResourceRoot::Internal );
 		
 		}
 
@@ -135,12 +134,12 @@ namespace lum::render {
 
 	void LightPass::upload_point_lights( ) {
 
-		mContext.mRenderDev->UpdateBuffer(
+		mCtx.mRenderDev->UpdateBuffer(
 			mLightsUBO, &mActivePointLights,
 			skOffsetActivePoint, sizeof( int32 )
 		);
 
-		mContext.mRenderDev->UpdateBuffer(
+		mCtx.mRenderDev->UpdateBuffer(
 			mLightsUBO, mPointLights.data( ),
 			skOffsetPointLights, sizeof( PointLight ) * LUM_MAX_LIGHTS
 		);
@@ -148,12 +147,12 @@ namespace lum::render {
 	}
 	void LightPass::upload_spot_lights( ) {
 
-		mContext.mRenderDev->UpdateBuffer(
+		mCtx.mRenderDev->UpdateBuffer(
 			mLightsUBO, &mActiveSpotLights,
 			skOffsetActiveSpot, sizeof( int32 )
 		);
 
-		mContext.mRenderDev->UpdateBuffer(
+		mCtx.mRenderDev->UpdateBuffer(
 			mLightsUBO, mSpotLights.data( ),
 			skOffsetSpotLights, sizeof( SpotLight ) * LUM_MAX_LIGHTS
 		);
@@ -161,7 +160,7 @@ namespace lum::render {
 	}
 	void LightPass::upload_directional_light( ) {
 
-		mContext.mRenderDev->UpdateBuffer(
+		mCtx.mRenderDev->UpdateBuffer(
 			mDirectionalLightUBO,
 			&mDirectionalLightData
 		);

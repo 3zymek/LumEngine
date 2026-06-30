@@ -150,6 +150,12 @@ namespace lum::render {
 
 		};
 
+		struct PostprocessExecuteContext {
+
+			
+
+		};
+
 		/* @brief Internal state for the environment (skybox) render pass. */
 		struct Cubemap {
 

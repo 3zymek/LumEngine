@@ -1,6 +1,6 @@
 //========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
-// Purpose: G-Buffer management for deferred rendering.
+// Purpose: DeferredBuffer management for deferred rendering.
 //          Handles creation, resizing and binding of geometry buffers.
 //
 //=============================================================================//
@@ -26,7 +26,7 @@ namespace lum::render::detail {
 	class DeferredBuffer {
 	public:
 
-		/* @brief Initializes the G-Buffer with the given renderer context and dimensions.
+		/* @brief Initializes the DefferedBuffer with the given renderer context and dimensions.
 		*  Creates all textures, framebuffer and subscribes to window resize events.
 		*  @param ctx Renderer context providing access to RHI and event bus.
 		*  @param w Initial width in pixels.
@@ -34,39 +34,35 @@ namespace lum::render::detail {
 		*/
 		void Initialize( const RendererContext& ctx, uint32 w, uint32 h );
 
-		/* @brief Binds all G-Buffer textures to their respective sampler slots.
+		/* @brief Binds all DefferedBuffer textures to their respective sampler slots.
 		*  Call before the light pass draw call.
 		*/
 		void BindTextures( ) const;
 
-		/* @brief Binds the G-Buffer framebuffer as the active render target.
-		*  Call before the geometry pass draw calls.
-		*/
 		LUM_FORCEINLINE
-		void BindBuffer( ) const { mContext.mRenderDev->BindFramebuffer( mFramebuffer ); }
+		void BindFramebuffer( ) const { mCtx.mRenderDev->BindFramebuffer( mFramebuffer ); }
 
-		/* @brief Unbinds the G-Buffer framebuffer, restoring the default render target. */
 		LUM_FORCEINLINE
-		void UnbindBuffer( ) const { mContext.mRenderDev->BindFramebuffer( rhi::kDefaultFramebuffer ); }
+		void UnbindFramebuffer( ) const { mCtx.mRenderDev->BindFramebuffer( rhi::kDefaultFramebuffer ); }
+
+		void Clear( ) {
+			BindFramebuffer( );
+			mCtx.mRenderDev->Clear( rhi::BufferBit::Color | rhi::BufferBit::Depth | rhi::BufferBit::Stencil );
+		}
 
 		rhi::TextureHandle GetAttachment( DeferredBufferAttachment tex );
 
 	private:
 
-		RendererContext mContext;
+		RendererContext mCtx;
 
 		rhi::FramebufferHandle mFramebuffer;	/* @brief Framebuffer with albedo and normal attachments. */
-		rhi::TextureHandle mAlbedo;			/* @brief Albedo + roughness texture (SRGB8_Alpha8). */
-		rhi::TextureHandle mNormal;			/* @brief World space normal + metallic texture (RGBA16F). */
+		rhi::TextureHandle mAlbedo;				/* @brief Albedo + roughness texture (SRGB8_Alpha8). */
+		rhi::TextureHandle mNormal;				/* @brief World space normal + metallic texture (RGBA16F). */
 		rhi::TextureHandle mDepth;				/* @brief Depth texture for position reconstruction (Depth32F). */
 
-		/* @brief Creates or recreates all G-Buffer textures at the given dimensions. */
 		void create_textures( uint32 width, uint32 height );
-
-		/* @brief Creates or recreates the framebuffer with current texture handles. */
 		void create_framebuffer( );
-
-		/* @brief Subscribes to window resize events to recreate textures and framebuffer. */
 		void subscribe_event( );
 
 	};

@@ -16,7 +16,7 @@ namespace lum::render {
 	/* @brief Descriptor passed to Execute() containing IBL and shadow map handles
 	*  required for the deferred lighting calculation.
 	*/
-	struct FLightPassExecute {
+	struct LightPassExectueContext {
 
 		rhi::TextureHandle mIrradianceMap;     /* @brief Precomputed irradiance cubemap for diffuse IBL. */
 		rhi::TextureHandle mPrefilteredEnvMap; /* @brief Prefiltered environment cubemap for specular IBL. */
@@ -71,7 +71,7 @@ namespace lum::render {
 		*  @param quad    Fullscreen quad VAO to draw the lighting onto.
 		*  @param desc    IBL and shadow map handles required for lighting.
 		*/
-		void Execute( const detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad, const FLightPassExecute& desc );
+		void Execute( const detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad, const LightPassExectueContext& desc );
 
 	private:
 
@@ -82,7 +82,7 @@ namespace lum::render {
 		static constexpr usize skOffsetActiveSpot = skOffsetActivePoint + sizeof( int32 );
 
 		/* @brief Cached context holding all subsystem manager references. */
-		RendererContext mContext;
+		RendererContext mCtx;
 
 		/* @brief Array of active point lights for this frame. */
 		PointLightsArr mPointLights{};

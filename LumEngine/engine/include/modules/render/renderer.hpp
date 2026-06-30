@@ -102,7 +102,7 @@ namespace lum::render {
 	private:
 
 		/* @brief Cached context holding all subsystem manager references. */
-		RendererContext mContext;
+		RendererContext mCtx;
 
 		/* @brief GBuffer holding geometry pass output textures — albedo, normal and depth. */
 		detail::DeferredBuffer mDefferedBuffer;
@@ -123,7 +123,7 @@ namespace lum::render {
 		LightPass mLightPass;
 
 		/* @brief Descriptor passed to the light pass each frame with IBL and shadow map handles. */
-		FLightPassExecute mLightPassExecutables;
+		LightPassExectueContext mLightPassExecuteCtx;
 
 		/* @brief Environment pass — renders the HDR skybox and precomputes IBL maps. */
 		EnvironmentPass mEnvironmentPass;
@@ -138,14 +138,13 @@ namespace lum::render {
 		//---------------------------------------------------------
 
 		/* @brief Uniform buffer holding per-frame camera matrices and position. */
-		rhi::BufferHandle mCameraUBO;
+		rhi::BufferHandle mCameraUbo;
 
 		/* @brief CPU-side camera data uploaded to mCameraUBO once per frame. */
-		detail::CameraGPU mCameraUBOData{};
+		detail::CameraGPU mCameraGpu{};
 
 
-		TemporalAntiAliasing mTemporalAA;
-
+		TemporalAntiAliasing mTemporalAA{ };
 
 
 		//---------------------------------------------------------
