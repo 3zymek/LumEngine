@@ -9,7 +9,7 @@ Learning indie game engine project from scratch in C++.
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
 ![C++](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
 ![Status](https://img.shields.io/badge/status-in%20development-orange.svg)
-[![wakatime](https://wakatime.com/badge/github/3zymek/LumEngine.svg)](https://wakatime.com/badge/github/3zymek/LumEngine)
+[![wakatime](https://wakatime.com/badge/user/310bcf3b-245b-4e4b-ae84-e536cedafdb5/project/76570d0f-e7ce-4eef-9927-b645e54e42de.svg)](https://wakatime.com/badge/user/310bcf3b-245b-4e4b-ae84-e536cedafdb5/project/76570d0f-e7ce-4eef-9927-b645e54e42de)
 
 </div>
 
