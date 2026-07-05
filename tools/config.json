@@ -23,28 +23,6 @@
   },
   "prefixes": ["m", "b"],
   "templates": {
-    "parse_function": [
-      "namespace lum::fmt::detail {",
-      "    inline void Parse{ClassName}( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {",
-      "        detail::ExpectOpeningBracket( tokens, i );",
-      "        {ClassName} component;",
-      "        while( InBlock( tokens, i ) ) {",
-      "            if( tokens[i].mType == TokenType::Parameter ) {",
-      "                {Fields}",
-      "            }",
-      "            i++;",
-      "        }",
-      "        ctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, component );",
-      "    }",
-      "}"
-    ],
-    "ecs_traits": [
-      "namespace lum::ecs::detail {",
-      "    template<> inline StringView GetComponentParseName<{ClassName}>() { return \"{ParseName}\"; }",
-      "    template<> inline StringView GetComponentDisplayName<{ClassName}>() { return \"{DisplayName}\"; }",
-      "    template<> inline StringView GetComponentCategoryName<{ClassName}>() { return \"{CategoryName}\"; }",
-      "}"
-    ],
     
     "parse_fn_namespace": "lum::fmt::detail",
     "parse_fn_signature": "Parse{ClassName}( std::vector<FToken>& tokens, int32& i, FParseContext& ctx )",

@@ -115,7 +115,7 @@ namespace lum {
     /* @brief Manages loading, storing and switching between scenes.
     *  Scenes are keyed by a 64-bit hash derived from their file path.
     */
-    class MSceneManager {
+    class SceneManager {
     public:
 
         /* @brief Initializes the manager with all required resource managers and renderer.

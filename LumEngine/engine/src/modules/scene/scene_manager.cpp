@@ -18,13 +18,13 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MSceneManager::Initialize( SceneManagerContext& ctx ) {
+	void SceneManager::Initialize( SceneManagerContext& ctx ) {
 
 		mContext = ctx;
 
 	}
 
-	void MSceneManager::SetScene( StringView scenePath ) {
+	void SceneManager::SetScene( StringView scenePath ) {
 
 		uint64 hash = HashString( scenePath );
 
@@ -38,7 +38,7 @@ namespace lum {
 
 	}
 
-	void MSceneManager::LoadScene( StringView scenePath ) {
+	void SceneManager::LoadScene( StringView scenePath ) {
 
 		uint64 hash = HashString( scenePath );
 
@@ -71,7 +71,7 @@ namespace lum {
 
 	}
 
-	Scene* MSceneManager::GetCurrentScene( ) {
+	Scene* SceneManager::GetCurrentScene( ) {
 		if (mCurrentScene != nullptr)
 			return mCurrentScene;
 		LUM_LOG_ERROR( "No scene set" );

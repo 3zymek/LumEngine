@@ -19,7 +19,7 @@ namespace lum {
 	class MMaterialManager;
 	class MShaderManager;
 	class MMeshManager;
-	class MSceneManager;
+	class SceneManager;
 	struct CStaticMesh;
 	///////////////////////
 

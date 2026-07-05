@@ -19,7 +19,7 @@ namespace lum {
 	class MSceneModule {
 	public:
 
-		MSceneManager mSceneMgr;
+		SceneManager mSceneMgr;
 
 		void Initialize( MResourceModule& res, MRenderModule& render, MAudioModule& audio, ev::EventBus& bus );
 
