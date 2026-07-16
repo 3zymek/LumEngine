@@ -1,0 +1,63 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: OpenGL samplers operations creation, binding
+//
+//=============================================================================//
+
+#include "Modules/Rhi/Backend/GlDevice.hpp"
+
+namespace lum::rhi::gl {
+
+	SamplerHandle GLDevice::CreateSampler( const SamplerCreateInfo& desc ) {
+
+		LUM_ASSERT( mSamplers.DenseSize( ) <= skMaxSamplers, "Max samplers reached" );
+
+		Sampler sampler;
+
+		glCreateSamplers( 1, &sampler.mHandle );
+		glSamplerParameteri( sampler.mHandle, GL_TEXTURE_MAG_FILTER, (desc.mMagFilter == SamplerMagFilter::Nearest) ? GL_NEAREST : GL_LINEAR );
+		glSamplerParameteri( sampler.mHandle, GL_TEXTURE_MIN_FILTER, skTextureMinFilterLookup[ LookupCast( desc.mMinFilter ) ] );
+
+		glSamplerParameteri( sampler.mHandle, GL_TEXTURE_WRAP_S, skSamplerWrapLookup[ LookupCast( desc.mWrapS ) ] );
+		glSamplerParameteri( sampler.mHandle, GL_TEXTURE_WRAP_T, skSamplerWrapLookup[ LookupCast( desc.mWrapT ) ] );
+
+
+		GLfloat maxAnisotropy = 1.0f;
+		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAnisotropy );
+
+		GLfloat finalAnisotropy = std::clamp( ( float32 ) desc.mAnisotropy, 1.0f, ( float32 ) maxAnisotropy );
+		glSamplerParameterf( sampler.mHandle, GL_TEXTURE_MAX_ANISOTROPY, finalAnisotropy );
+
+		SamplerHandle samplerHandle = mSamplers.Append( std::move( sampler ) );
+
+		return samplerHandle;
+	}
+
+	void GLDevice::BindSampler( SamplerHandle sampler, uint16 binding ) {
+
+		LUM_ASSERT( binding < skMaxSamplerUnits, "Sampler binding out of range" );
+		if (!IsValid( sampler )) return;
+
+		if (mCurrentSamplers[ binding ] == sampler) {
+			LUM_PROFILER_CACHE_HIT( );
+			return;
+		}
+
+		mCurrentSamplers[ binding ] = sampler;
+
+		glBindSampler( binding, mSamplers[ sampler ].mHandle );
+
+		LUM_PROFILER_CACHE_MISS( );
+
+	}
+
+	void GLDevice::Delete( SamplerHandle sampler ) {
+
+		LUM_RETURN_IF( !IsValid( sampler ), LUM_SEV_WARN, "Invalid sampler" );
+
+		glDeleteSamplers( 1, &mSamplers[ sampler ].mHandle );
+		mSamplers.Remove( sampler );
+
+	}
+
+}

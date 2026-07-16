@@ -1,0 +1,17 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Window and input events.
+//
+//=============================================================================//
+#pragma once
+#include "Event/EventCommon.hpp"
+#include "Platform/InputCommon.hpp"
+
+namespace lum {
+
+	struct EWindowResized	: public Event { uint32 mWidth; uint32 mHeight; };
+	struct EWindowClosed	: public Event { };
+	struct EKeyPressed		: public Event { input::Key mKey; };
+	struct EKeyReleased		: public Event { input::Key mKey; };
+
+} // namespace lum

@@ -1,0 +1,46 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Defines audio emitter properties for an entity.
+//          Consumed by AudioManager to sync state with AHI.
+//
+//=============================================================================//
+#pragma once
+#include "Entity/EcsCommon.hpp"
+#include "Ahi/AhiCommon.hpp"
+
+namespace lum {
+
+	/* @brief ECS component storing audio emitter properties for an entity. */
+	LCLASS( ) struct CAudioEmitter : public ComponentBase {
+
+		/* @brief Handle to loaded sound */
+		ahi::SoundHandle mSound;
+
+		ahi::ChannelGroupHandle mGroup;
+
+		/* @brief Playback volume. Range [0, 1]. */
+		float32 mVolume = 1.0f;
+
+		/* @brief Playback pitch multiplier. 1.0 = normal speed. */
+		float32 mPitch = 1.0f;
+
+		/* @brief Distance at which the sound starts attenuating. */
+		float32 mMinDistance = 10.0f;
+
+		/* @brief Distance at which the sound is fully attenuated. */
+		float32 mMaxDistance = 50.0f;
+
+		/* @brief Whether playback is currently paused. */
+		bool mPaused = false;
+
+		/* @brief Whether the emitter is in an active playing state (true even if paused). */
+		bool mPlaying = false;
+		bool mStop = false;
+		bool mPlay = false;
+
+		/* @brief Whether playback should loop. */
+		bool mLooped = false;
+
+	};
+
+} // namespace lum

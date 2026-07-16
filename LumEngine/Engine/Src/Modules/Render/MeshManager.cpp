@@ -1,0 +1,222 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Loads and manages static mesh resources using RHI.
+//
+//=============================================================================//
+
+#include "Render/MeshManager.hpp"
+#include "Core/Utils/ResourceLoader.hpp"
+#include "Render/Mesh.hpp"
+#include "Event/EventBus.hpp"
+#include "Event/Events/EntityEvents.hpp"
+#include "Entity/Components/Mesh.hpp"
+
+namespace lum {
+
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
+
+	void MMeshManager::Initialize( render::RendererContext* ctx ) {
+
+		render::ValidateRendererContext( *ctx );
+
+		mContext = ctx;
+		init( );
+
+	}
+
+	const FStaticMeshResource& MMeshManager::GetStatic( StaticMeshHandle handle ) {
+		if (mStaticMeshes.Contains( handle ))
+			return mStaticMeshes[ handle ];
+		else
+			return mStaticMeshes[ mDefaultMesh ];
+	}
+
+	StaticMeshHandle MMeshManager::CreateStatic( StringView path, ResourceRoot root ) {
+
+		uint64 hash = HashString( path );
+
+		if (mStaticMeshCache.contains( hash ))
+			return mStaticMeshCache[ hash ];
+
+		std::optional<MeshGeometry> data = ResourceLoader::LoadMeshFromFile( root, path );
+
+		if (!data) {
+			LUM_LOG_ERROR( "Failed to load model %s: %s", path.data(), ResourceLoader::GetErrorMessage( ) );
+			return mErrorMesh;
+		}
+
+		detail::FRenderResources res = upload_gpu( detail::MeshType::Static, data.value( ) );
+
+		FStaticMeshResource meshResource;
+		meshResource.mVbo = res.mVbo;
+		meshResource.mEbo = res.mEbo;
+		meshResource.mVao = res.mVao;
+		meshResource.mNumIndices = data.value( ).mIndices.size( );
+
+		StaticMeshHandle meshHandle = mStaticMeshes.Append( std::move( meshResource ) );
+
+		mStaticMeshCache[ hash ] = meshHandle;
+
+		return meshHandle;
+	}
+
+	FDynamicMeshInstance MMeshManager::CreateDynamic( StringView path, ResourceRoot root ) {
+
+		std::optional<MeshGeometry> data = ResourceLoader::LoadMeshFromFile( root, path );
+
+		if (!data) {
+			LUM_LOG_ERROR( "Failed to load model %s: %s", path, ResourceLoader::GetErrorMessage( ) );
+			MeshGeometry fallback;
+			fallback.mVertices = mDefaultVertices;
+			fallback.mIndices = mDefaultIndices;
+			data = fallback;
+		}
+
+		detail::FRenderResources res = upload_gpu( detail::MeshType::Dynamic, data.value( ) );
+
+		FDynamicMeshInstance meshInstance;
+		meshInstance.mData = data.value( );
+		meshInstance.mVbo = res.mVbo;
+		meshInstance.mEbo = res.mEbo;
+		meshInstance.mVao = res.mVao;
+
+		return meshInstance;
+	}
+
+
+
+
+	//---------------------------------------------------------
+	// Private
+	//---------------------------------------------------------
+
+	void MMeshManager::init( ) {
+
+		mContext->mEvBus->SubscribePermanently<EComponentAdded<CStaticMesh>>(
+			[&]( const EComponentAdded<CStaticMesh>& mesh ) {
+				
+				if(!mesh.mComponent->mPath.empty())
+					mesh.mComponent->mHandle = CreateStatic( mesh.mComponent->mPath );
+
+			}
+		);
+
+		create_meshes( );
+
+	}
+
+	detail::FRenderResources MMeshManager::upload_gpu( detail::MeshType type, const MeshGeometry& data ) {
+
+		Flags<rhi::MapFlag> mapFlag{};
+		rhi::BufferUsage usage{};
+
+		if (type == detail::MeshType::Static) {
+
+			mapFlag = rhi::MapFlag::None;
+			usage = rhi::BufferUsage::Static;
+
+		}
+		else if (type == detail::MeshType::Dynamic) {
+
+			mapFlag = rhi::MapFlag::Read | rhi::MapFlag::Write;
+			usage = rhi::BufferUsage::Dynamic;
+
+		}
+
+		detail::FRenderResources res;
+
+		rhi::BufferCreateInfo vboDesc;
+		vboDesc.mBufferUsage = usage;
+		vboDesc.mData = data.mVertices.data( );
+		vboDesc.mMapFlags = mapFlag;
+		vboDesc.mSize = ComputeByteSize( data.mVertices );
+		vboDesc.mBufferType = rhi::BufferType::Vertex;
+		res.mVbo = mContext->mRenderDev->CreateBuffer( vboDesc );
+
+		rhi::BufferCreateInfo eboDesc;
+		eboDesc.mBufferUsage = usage;
+		eboDesc.mData = data.mIndices.data( );
+		eboDesc.mMapFlags = mapFlag;
+		eboDesc.mSize = ComputeByteSize( data.mIndices );
+		eboDesc.mBufferType = rhi::BufferType::Element;
+		res.mEbo = mContext->mRenderDev->CreateBuffer( eboDesc );
+
+		rhi::VertexAttribute vaoAttrib[ 5 ];
+
+		auto& position = vaoAttrib[ 0 ];
+		position.mFormat = rhi::DataFormat::Vec3;
+		position.mRelativeOffset = offsetof( Vertex, mPosition );
+		position.mShaderLocation = LUM_LAYOUT_POSITION;
+
+		auto& normal = vaoAttrib[ 1 ];
+		normal.mFormat = rhi::DataFormat::Vec3;
+		normal.mRelativeOffset = offsetof( Vertex, mNormal );
+		normal.mShaderLocation = LUM_LAYOUT_NORMAL;
+
+		auto& uv = vaoAttrib[ 2 ];
+		uv.mFormat = rhi::DataFormat::Vec2;
+		uv.mRelativeOffset = offsetof( Vertex, mUv );
+		uv.mShaderLocation = LUM_LAYOUT_UV;
+
+		auto& tg = vaoAttrib[ 3 ];
+		tg.mFormat = rhi::DataFormat::Vec3;
+		tg.mRelativeOffset = offsetof( Vertex, mTangent );
+		tg.mShaderLocation = LUM_LAYOUT_TANGENT;
+
+		auto& btg = vaoAttrib[ 4 ];
+		btg.mFormat = rhi::DataFormat::Vec3;
+		btg.mRelativeOffset = offsetof( Vertex, mBitangent );
+		btg.mShaderLocation = LUM_LAYOUT_BITANGENT;
+
+		rhi::VertexLayoutCreateInfo vaoDesc;
+		vaoDesc.mAttributes = vaoAttrib;
+		vaoDesc.mStride = sizeof( Vertex );
+		res.mVao = mContext->mRenderDev->CreateVertexLayout( vaoDesc, res.mVbo );
+
+		mContext->mRenderDev->AttachElementBufferToLayout( res.mEbo, res.mVao );
+
+		return res;
+	}
+
+	void MMeshManager::create_meshes( ) {
+		{ // Default mesh
+
+			MeshGeometry data;
+			data.mVertices = mDefaultVertices;
+			data.mIndices = mDefaultIndices;
+
+			detail::FRenderResources res = upload_gpu( detail::MeshType::Static, data );
+
+			FStaticMeshResource staticMesh;
+			staticMesh.mVbo = res.mVbo;
+			staticMesh.mEbo = res.mEbo;
+			staticMesh.mVao = res.mVao;
+			staticMesh.mNumIndices = data.mIndices.size( );
+
+			mDefaultMesh = mStaticMeshes.Append( std::move( staticMesh ) );
+
+		}
+		{ // Error mesh
+			std::optional<MeshGeometry> data = ResourceLoader::LoadMeshFromFile( ResourceRoot::Internal, "models/ERRORText.fbx" );
+			if (!data) {
+				LUM_LOG_ERROR( "Failed to load fallback error model: %s", ResourceLoader::GetErrorMessage( ) );
+				mErrorMesh = mDefaultMesh;
+				return;
+			}
+			detail::FRenderResources res = upload_gpu( detail::MeshType::Static, data.value( ) );
+
+			FStaticMeshResource staticMesh;
+			staticMesh.mVbo = res.mVbo;
+			staticMesh.mEbo = res.mEbo;
+			staticMesh.mVao = res.mVao;
+			staticMesh.mNumIndices = data.value( ).mIndices.size( );
+
+			mErrorMesh = mStaticMeshes.Append( std::move( staticMesh ) );
+
+		}
+
+	}
+
+} // namespace lum
