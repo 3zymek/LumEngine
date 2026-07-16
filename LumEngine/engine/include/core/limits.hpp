@@ -4,8 +4,8 @@
 //
 //=============================================================================//
 #pragma once
-#include "core/types.hpp"
-#include "render/shaders_define.h"
+#include "Core/Types.hpp"
+#include "Render/ShadersDefine.h"
 
 /* @brief Contains compile-time constants that define hard upper limits
 *  for all engine subsystems. Adjust these to tune memory reservation.

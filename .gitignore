@@ -24,7 +24,7 @@ bin/
 Debug/
 Release/
 build/
-lumengine/external
+Lumengine/External
 
 !tools/*.dll
 !tools/*.json

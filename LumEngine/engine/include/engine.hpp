@@ -5,15 +5,15 @@
 //=============================================================================//
 #pragma once
 
-#include "core/utils/logger.hpp"
+#include "Core/Utils/Logger.hpp"
 
-#include "event/event_bus.hpp"
+#include "Event/EventBus.hpp"
 
-#include "platform_module.hpp"
-#include "audio_module.hpp"
-#include "render_module.hpp"
-#include "res_module.hpp"
-#include "scene_module.hpp"
+#include "PlatformModule.hpp"
+#include "AudioModule.hpp"
+#include "RenderModule.hpp"
+#include "ResModule.hpp"
+#include "SceneModule.hpp"
 
 namespace lum {
 	

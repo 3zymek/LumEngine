@@ -5,7 +5,7 @@
 //
 //=============================================================================//
 #pragma once
-#include "core/core_common.hpp"
+#include "Core/CoreCommon.hpp"
 
 namespace lum {
 

@@ -4,7 +4,7 @@
 //
 //=============================================================================//
 #pragma once
-#include "scene/format/common.hpp"
+#include "Scene/Format/Common.hpp"
 
 namespace lum::fmt {
 

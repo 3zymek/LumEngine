@@ -1,0 +1,35 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Resource module — GPU-side asset manager lifecycle.
+//
+//=============================================================================//
+#pragma once
+
+#include "Render/TextureManager.hpp"
+#include "Render/MeshManager.hpp"
+#include "Render/ShaderManager.hpp"
+#include "Render/MaterialManager.hpp"
+
+namespace lum {
+
+	class MPlatformModule;
+
+	// Owns all GPU-side resource managers (textures, meshes, shaders, materials).
+	// Must be initialized after MPlatformModule, before MRenderModule.
+	class MResourceModule {
+	public:
+
+		MTextureManager		mTextureMgr;
+		MMaterialManager	mMaterialMgr;
+		MMeshManager		mMeshMgr;
+		MShaderManager		mShaderMgr;
+
+		void Initialize( MPlatformModule& platform,  ev::EventBus& bus );
+
+	private:
+
+		render::RendererContext mCtx;
+
+	};
+
+} // namespace lum

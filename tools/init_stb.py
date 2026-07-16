@@ -8,7 +8,8 @@ from pathlib import Path
 def setup_stb():
     scriptDir = Path(__file__).parent
     rootDir = scriptDir.parent
-    stbDir = rootDir / "LumEngine" / "external" / "stb"
+    
+    stbDir = rootDir / "LumEngine" / "External" / "Stb"
     stbZip = stbDir / "stb.zip"
 
     stbDir.mkdir(parents=True, exist_ok=True)
@@ -24,3 +25,6 @@ def setup_stb():
     print("Cleaning up...")
     if stbZip.exists():
         stbZip.unlink()
+
+if __name__ == "__main__":
+    setup_stb()

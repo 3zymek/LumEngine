@@ -1,11 +1,11 @@
 #pragma once
-#include "core/editor_common.hpp"
-#include "core/editor_console.hpp"
-#include "core/file_explorer.hpp"
-#include "core/scene_inspector.hpp"
-#include "core/entity_inspector.hpp"
-#include "core/viewport.hpp"
-#include "core/utils/shortcuts.hpp"
+#include "Core/EditorCommon.hpp"
+#include "Core/EditorConsole.hpp"
+#include "Core/FileExplorer.hpp"
+#include "Core/SceneInspector.hpp"
+#include "Core/EntityInspector.hpp"
+#include "Core/Viewport.hpp"
+#include "Core/Utils/Shortcuts.hpp"
 
 namespace lum::editor {
 

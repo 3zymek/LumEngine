@@ -4,11 +4,11 @@
 //
 //=============================================================================//
 
-#include "platform/window.hpp"
-#include "event/event_bus.hpp"
-#include "core/utils/lum_assert.hpp"
-#include "event/events/window_events.hpp"
-#include "platform/input_common.hpp"
+#include "Platform/Window.hpp"
+#include "Event/EventBus.hpp"
+#include "Core/Utils/LumAssert.hpp"
+#include "Event/Events/WindowEvents.hpp"
+#include "Platform/InputCommon.hpp"
 
 namespace lum {
 

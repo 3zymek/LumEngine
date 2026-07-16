@@ -1,5 +1,5 @@
 #pragma once
-#include "core/editor_common.hpp"
+#include "Core/EditorCommon.hpp"
 
 namespace lum::editor::style {
 

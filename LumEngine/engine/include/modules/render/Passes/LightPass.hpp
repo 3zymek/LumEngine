@@ -1,0 +1,128 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Light render pass — handles point and directional light
+//          submission, uniform uploads and lighting pipeline management.
+//
+//=============================================================================//
+#pragma once
+#include "Render/RenderCommon.hpp"
+
+namespace lum::render {
+
+	namespace detail { class DeferredBuffer; }
+	using PointLightsArr = std::array<PointLight, LUM_MAX_LIGHTS>;
+	using SpotLightsArr = std::array<SpotLight, LUM_MAX_LIGHTS>;
+
+	/* @brief Descriptor passed to Execute() containing IBL and shadow map handles
+	*  required for the deferred lighting calculation.
+	*/
+	struct LightPassExectueContext {
+
+		rhi::TextureHandle mIrradianceMap;     /* @brief Precomputed irradiance cubemap for diffuse IBL. */
+		rhi::TextureHandle mPrefilteredEnvMap; /* @brief Prefiltered environment cubemap for specular IBL. */
+		rhi::TextureHandle mShadowMap;         /* @brief Depth map from the shadow pass. */
+
+	};
+
+	/* @brief Manages light data submission and GPU uploads for the deferred lighting pass.
+	*  Collects point lights and directional light each frame, uploads them to GPU
+	*  buffers and binds the light pass shader for the fullscreen quad draw call.
+	*/
+	class LightPass {
+	public:
+
+		LightPass( ) = default;
+
+		/* @brief Initializes the pass, allocates GPU buffers and compiles shaders.
+		*  @param ctx Context struct containing valid pointers to all subsystem managers.
+		*/
+		void Initialize( const RendererContext& ctx );
+
+		/* @brief Submits a point light to be included in the current frame's lighting.
+		*  @param light Point light to add. Ignored if LUM_MAX_LIGHTS is reached.
+		*/
+		void AddPointLight( const PointLight& light );
+
+		/* @brief Submits a spot light to be included in the current frame's lighting.
+		*  @param light Spot light to add. Ignored if LUM_MAX_LIGHTS is reached.
+		*/
+		void AddSpotLight( const SpotLight& light );
+
+		/* @brief Sets the active directional light for the current frame.
+		*  @param light Directional light to set.
+		*/
+		void SetDirectionalLight( const DirectionalLight& light );
+
+		/* @brief Returns the currently active directional light. */
+		DirectionalLight GetDirectionalLight( );
+		DirectionalLight GetDirectionalLight( ) const;
+
+		const std::pair<PointLightsArr, uint32>& GetPointLights( ) const { return { mPointLights, mActivePointLights }; }
+		const std::pair<SpotLightsArr, uint32>& GetSpotLights( ) const { return { mSpotLights, mActiveSpotLights }; }
+
+		/* @brief Clears all point and spot lights submitted in the previous frame.
+		*  Should be called at the start of each frame before submitting new lights.
+		*/
+		LUM_FORCEINLINE
+		void ClearLights( ) { mActivePointLights = 0; mActiveSpotLights = 0; }
+
+		/* @brief Binds GBuffer textures, shadow map and light uniforms, then issues the fullscreen quad draw call.
+		*  @param gbuffer GBuffer containing geometry data from the geometry pass.
+		*  @param quad    Fullscreen quad VAO to draw the lighting onto.
+		*  @param desc    IBL and shadow map handles required for lighting.
+		*/
+		void Execute( const detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad, const LightPassExectueContext& desc );
+
+	private:
+
+		/* @brief Byte offsets into the light SSBO for each data section. */
+		static constexpr usize skOffsetPointLights = 0;
+		static constexpr usize skOffsetSpotLights = sizeof( PointLight ) * LUM_MAX_LIGHTS;
+		static constexpr usize skOffsetActivePoint = skOffsetSpotLights + sizeof( SpotLight ) * LUM_MAX_LIGHTS;
+		static constexpr usize skOffsetActiveSpot = skOffsetActivePoint + sizeof( int32 );
+
+		/* @brief Cached context holding all subsystem manager references. */
+		RendererContext mCtx;
+
+		/* @brief Array of active point lights for this frame. */
+		PointLightsArr mPointLights{};
+
+		/* @brief Array of active spot lights for this frame. */
+		SpotLightsArr mSpotLights{};
+
+		/* @brief Number of currently active point lights. */
+		uint32 mActivePointLights = 0;
+
+		/* @brief Number of currently active spot lights. */
+		uint32 mActiveSpotLights = 0;
+
+		/* @brief GPU-ready uniform buffer representation of the active directional light. */
+		detail::DirectionalLightGPU mDirectionalLightData{};
+
+		/* @brief Shader storage buffer holding all active point and spot lights. */
+		rhi::BufferHandle mLightsUBO;
+
+		/* @brief Uniform buffer holding the active directional light data. */
+		rhi::BufferHandle mDirectionalLightUBO;
+
+		/* @brief Pipeline state for the light pass. */
+		rhi::PipelineHandle mPipeline;
+
+		/* @brief Shader program used for the light pass. */
+		rhi::ShaderHandle mShader;
+
+		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
+		void init( );
+
+		/* @brief Uploads all active point lights to the GPU shader storage buffer. */
+		void upload_point_lights( );
+
+		/* @brief Uploads all active spot lights to the GPU shader storage buffer. */
+		void upload_spot_lights( );
+
+		/* @brief Uploads the active directional light to its GPU uniform buffer. */
+		void upload_directional_light( );
+
+	};
+
+} // namespace lum::render

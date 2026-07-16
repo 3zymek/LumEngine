@@ -8,7 +8,8 @@ from pathlib import Path
 def setup_assimp():
     scriptDir = Path(__file__).parent
     rootDir = scriptDir.parent
-    assimpDir = rootDir / "LumEngine" / "external" / "assimp"
+    
+    assimpDir = rootDir / "LumEngine" / "External" / "Assimp"
     assimpZip = assimpDir / "assimp.zip"
     debugDir = rootDir / "build" / "Debug"
     releaseDir = rootDir / "build" / "Release"
@@ -27,15 +28,15 @@ def setup_assimp():
     debugDir.mkdir(parents=True, exist_ok=True)
     releaseDir.mkdir(parents=True, exist_ok=True)
 
-    dllDir = assimpDir / "dll"
+    # Poprawione na "Dll" zgodnie z PascalCase
+    dllDir = assimpDir / "Dll"
     if dllDir.exists():
         for dllFile in dllDir.glob("*.dll"):
             shutil.copy2(dllFile, debugDir)
             shutil.copy2(dllFile, releaseDir)
 
+    print("Cleaning up...")
     if assimpZip.exists():
         assimpZip.unlink()
     if dllDir.exists():
         shutil.rmtree(dllDir)
-
-

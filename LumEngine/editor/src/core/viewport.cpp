@@ -4,8 +4,8 @@
 //
 //=============================================================================//
 
-#include "core/viewport.hpp"
-#include "core/editor_camera.hpp"
+#include "Core/Viewport.hpp"
+#include "Core/EditorCamera.hpp"
 
 namespace lum::editor {
 

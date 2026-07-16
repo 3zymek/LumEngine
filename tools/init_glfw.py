@@ -8,8 +8,10 @@ from pathlib import Path
 def setup_glfw():
     scriptDir = Path(__file__).parent
     rootDir = scriptDir.parent
-    glfwDir = rootDir / "LumEngine" / "external" / "glfw"
+    
+    glfwDir = rootDir / "LumEngine" / "External" / "Glfw"
     glfwZip = glfwDir / "glfw.zip"
+    
     debugDir = rootDir / "build" / "Debug"
     releaseDir = rootDir / "build" / "Release"
 
@@ -27,14 +29,15 @@ def setup_glfw():
     debugDir.mkdir(parents=True, exist_ok=True)
     releaseDir.mkdir(parents=True, exist_ok=True)
 
-    dllDir = glfwDir / "dll"
+    # Zmienione na "Dll" (zgodnie z PascalCase)
+    dllDir = glfwDir / "Dll"
     if dllDir.exists():
         for dllFile in dllDir.glob("*.dll"):
             shutil.copy2(dllFile, debugDir)
             shutil.copy2(dllFile, releaseDir)
 
     print("Cleaning up...")
-    if glfwDir.exists():
+    if glfwZip.exists():
         glfwZip.unlink()
     if dllDir.exists():
         shutil.rmtree(dllDir)

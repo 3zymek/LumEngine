@@ -4,7 +4,7 @@
 //
 //=============================================================================//
 
-#include "scene/format/tokenizer.hpp"
+#include "Scene/Format/Tokenizer.hpp"
 
 namespace lum::fmt {
 

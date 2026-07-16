@@ -4,8 +4,8 @@
 //
 //=============================================================================//
 #pragma once
-#include "core/types.hpp"
-#include "core/utils/flags.hpp"
+#include "Core/Types.hpp"
+#include "Core/Utils/Flags.hpp"
 
 namespace lum {
 

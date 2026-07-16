@@ -4,8 +4,8 @@
 //
 //=============================================================================//
 #pragma once
-#include "rhi/rhi_common.hpp"
-#include "rhi/core/rhi_sampler.hpp"
+#include "Rhi/RhiCommon.hpp"
+#include "Rhi/Core/RhiSampler.hpp"
 
 namespace lum {
 

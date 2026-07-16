@@ -4,8 +4,8 @@
 //
 //=============================================================================//
 #pragma once
-#include "entity/ecs_common.hpp"
-#include "render/material.hpp"
+#include "Entity/EcsCommon.hpp"
+#include "Render/Material.hpp"
 
 namespace lum {
 

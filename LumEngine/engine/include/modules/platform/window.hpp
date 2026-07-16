@@ -4,10 +4,10 @@
 //
 //=============================================================================//
 #pragma once
-#include "core/types.hpp"
-#include "core/utils/flags.hpp"
-#include "rhi/rhi_pch.hpp"
-#include "core/utils/resource_loader.hpp"
+#include "Core/Types.hpp"
+#include "Core/Utils/Flags.hpp"
+#include "Rhi/RhiPch.hpp"
+#include "Core/Utils/ResourceLoader.hpp"
 
 namespace lum {
 	

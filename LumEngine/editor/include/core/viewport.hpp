@@ -5,8 +5,8 @@
 //=============================================================================//
 #pragma once
 
-#include "core/editor_common.hpp"
-#include "core/editor_camera.hpp"
+#include "Core/EditorCommon.hpp"
+#include "Core/EditorCamera.hpp"
 
 namespace lum::editor {
 

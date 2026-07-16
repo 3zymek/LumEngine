@@ -4,7 +4,7 @@
 // 
 //=============================================================================//
 
-#include "core/utils/logger.hpp"
+#include "Core/Utils/Logger.hpp"
 
 namespace lum {
 

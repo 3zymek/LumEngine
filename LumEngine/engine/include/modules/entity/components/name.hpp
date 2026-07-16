@@ -4,8 +4,8 @@
 //
 //=============================================================================//
 #pragma once
-#include "core/utils/fixed_string.hpp"
-#include "entity/ecs_common.hpp"
+#include "Core/Utils/FixedString.hpp"
+#include "Entity/EcsCommon.hpp"
 
 namespace lum {
 

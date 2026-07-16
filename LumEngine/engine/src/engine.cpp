@@ -4,8 +4,8 @@
 //
 //=============================================================================//
 
-#include "engine.hpp"
-#include "core/transform_system.hpp"
+#include "Engine.hpp"
+#include "Core/TransformSystem.hpp"
 
 namespace lum {
 

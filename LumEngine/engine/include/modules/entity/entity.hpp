@@ -6,7 +6,7 @@
 //
 //=============================================================================//
 #pragma once
-#include "entity/ecs_common.hpp"
+#include "Entity/EcsCommon.hpp"
 
 namespace lum {
 
@@ -92,4 +92,4 @@ namespace lum {
 	};
 
 }
-#include "entity/entity.ipp"
+#include "Entity/Entity.ipp"

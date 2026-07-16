@@ -1,6 +1,6 @@
 #pragma once
-#include "core/utils/resource_loader.hpp"
-#include "core/utils/icons_font_awesome.h"
+#include "Core/Utils/ResourceLoader.hpp"
+#include "Core/Utils/IconsFontAwesome.h"
 
 namespace lum::editor {
 	struct Fonts {
@@ -23,14 +23,14 @@ namespace lum::editor {
 
             auto path = []( StringView name ) {
                 return ResourceLoader::ResolvePath( ResourceRoot::Internal, name );
-                };
+            };
 
-            load_font( sDefaultSuperSmall, path( "fonts/Inter.ttf"), 12.0f, &faConfig, faRanges );
-            load_font( sDefaultSmall, path( "fonts/Inter.ttf" ), 16.0f, &faConfig, faRanges );
-            load_font( sDefaultMedium, path( "fonts/Inter.ttf" ), 20.0f, &faConfig, faRanges );
-            load_font( sDefaultBig, path( "fonts/Inter.ttf" ), 23.0f, &faConfig, faRanges );
+            load_font( sDefaultSuperSmall, path( "Fonts/Inter.ttf"), 12.0f, &faConfig, faRanges );
+            load_font( sDefaultSmall, path( "Fonts/Inter.ttf" ), 16.0f, &faConfig, faRanges );
+            load_font( sDefaultMedium, path( "Fonts/Inter.ttf" ), 20.0f, &faConfig, faRanges );
+            load_font( sDefaultBig, path( "Fonts/Inter.ttf" ), 23.0f, &faConfig, faRanges );
 
-            sConsole = io.Fonts->AddFontFromFileTTF( path( "fonts/JetBrainsMono.ttf" ).data( ), 18.0f );
+            sConsole = io.Fonts->AddFontFromFileTTF( path( "Fonts/JetBrainsMono.ttf" ).data( ), 18.0f );
 
             io.Fonts->Build( );
 

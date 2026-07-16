@@ -1,9 +1,9 @@
 {
   "paths": {
-    "scene_dep_manager_path": "engine/include/modules/scene/format/scene_dep_manager.hpp",
-    "scene_dep_manager_include": "modules/scene/format/scene_dep_manager.hpp",
-    "editor_dep_manager_path": "editor/include/editor_dep_manager.hpp",
-    "editor_dep_manager_include": "editor_dep_manager.hpp"
+    "scene_dep_manager_path": "Engine/Include/Modules/Scene/Format/SceneDepManager.hpp",
+    "scene_dep_manager_include": "Modules/Scene/Format/SceneDepManager.hpp",
+    "editor_dep_manager_path": "Editor/Include/EditorDepManager.hpp",
+    "editor_dep_manager_include": "EditorDepManager.hpp"
   },
   "category_colors": {
     "GENERAL":   "#C8C8C8",
@@ -42,7 +42,7 @@
     "editor_fn_getter_check": "if(!{Var}) return;",
     "editor_fn_registry": "RegisterEditorComponents( std::unordered_map<uint64, EditorComponentMetadata>& {Param} )",
     "editor_fn_registry_add_fn": "[]( ecs::EntityManager& mgr, EntityID id ) { mgr.AddComponent<{ClassName}>( id ); }",
-    "editor_fn_registry_typeid": "TypeRegistry::Get<{ClassName}>()",
+    "editor_fn_registry_typeid": "TypeRegistry::GetTypeId<{ClassName}>()",
     "editor_fn_registry_remove_fn": "[]( ecs::EntityManager& mgr, EntityID id ) { mgr.RemoveComponent<{ClassName}>( id ); }",
 
     "get_parse_name_namespace": "lum::ecs::detail",

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "render/render_common.hpp"
+#include "Render/RenderCommon.hpp"
 
 namespace lum::render {
 

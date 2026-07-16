@@ -4,7 +4,7 @@
 //
 //=============================================================================//
 #pragma once
-#include "rhi/core/rhi_device.hpp"
+#include "Rhi/Core/RhiDevice.hpp"
 
 namespace lum {
 

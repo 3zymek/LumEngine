@@ -5,9 +5,9 @@
 //=============================================================================//
 #pragma once
 
-#include "platform/input_common.hpp"
-#include "event/event_bus.hpp"
-#include "event/events/window_events.hpp"
+#include "Platform/InputCommon.hpp"
+#include "Event/EventBus.hpp"
+#include "Event/Events/WindowEvents.hpp"
 
 namespace lum::editor {
 

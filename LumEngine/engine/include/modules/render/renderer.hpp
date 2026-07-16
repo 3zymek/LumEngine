@@ -4,14 +4,14 @@
 //
 //=============================================================================//
 #pragma once
-#include "render/render_common.hpp"
-#include "render/passes/geometry_pass.hpp"
-#include "render/passes/light_pass.hpp"
-#include "render/passes/environment_pass.hpp"
-#include "render/shadow_system.hpp"
-#include "render/passes/postprocess_pass.hpp"
-#include "render/postprocess/antialiasing/taa.hpp"
-#include "render/deferred_buffer.hpp"
+#include "Render/RenderCommon.hpp"
+#include "Render/Passes/GeometryPass.hpp"
+#include "Render/Passes/LightPass.hpp"
+#include "Render/Passes/EnvironmentPass.hpp"
+#include "Render/ShadowSystem.hpp"
+#include "Render/Passes/PostprocessPass.hpp"
+#include "Render/Postprocess/Antialiasing/Taa.hpp"
+#include "Render/DeferredBuffer.hpp"
 
 namespace lum::render {
 

@@ -1,8 +1,8 @@
-#include "editor.hpp"
-#include "editor_dep_manager.generated.hpp"
-#include "core/utils/fonts.hpp"
-#include "core/utils/shortcuts.hpp"
-#include "core/utils/style.hpp"
+#include "Editor.hpp"
+#include "EditorDepManager.generated.hpp"
+#include "Core/Utils/Fonts.hpp"
+#include "Core/Utils/Shortcuts.hpp"
+#include "Core/Utils/Style.hpp"
 
 namespace lum::editor {
 

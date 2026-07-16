@@ -6,7 +6,7 @@
 //
 //=============================================================================//
 #pragma once
-#include "entity/entity_manager.hpp"
+#include "Entity/EntityManager.hpp"
 
 namespace lum {
 

@@ -8,7 +8,8 @@ from pathlib import Path
 def setup_fmod():
     scriptDir = Path(__file__).parent
     rootDir = scriptDir.parent
-    fmodDir = rootDir / "LumEngine" / "external" / "fmod"
+    
+    fmodDir = rootDir / "LumEngine" / "External" / "Fmod"
     fmodZip = fmodDir / "fmod.zip"
     debugDir = rootDir / "build" / "Debug"
     releaseDir = rootDir / "build" / "Release"
@@ -27,7 +28,8 @@ def setup_fmod():
     debugDir.mkdir(parents=True, exist_ok=True)
     releaseDir.mkdir(parents=True, exist_ok=True)
 
-    dllDir = fmodDir / "dll"
+    # Poprawione na "Dll" zgodnie z PascalCase
+    dllDir = fmodDir / "Dll"
     if dllDir.exists():
         for dllFile in dllDir.glob("*.dll"):
             shutil.copy2(dllFile, debugDir)

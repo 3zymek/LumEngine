@@ -4,12 +4,12 @@
 //
 //=============================================================================//
 
-#include "core/core_common.hpp"
+#include "Core/CoreCommon.hpp"
 
-#include "render/renderer.hpp"
+#include "Render/Renderer.hpp"
 
-#include "event/event_bus.hpp"
-#include "event/events/window_events.hpp"
+#include "Event/EventBus.hpp"
+#include "Event/Events/WindowEvents.hpp"
 
 namespace lum::render {
 

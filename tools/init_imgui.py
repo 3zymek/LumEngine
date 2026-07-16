@@ -8,7 +8,8 @@ from pathlib import Path
 def setup_imgui():
     scriptDir = Path(__file__).parent
     rootDir = scriptDir.parent
-    imguiDir = rootDir / "LumEngine" / "external" / "imgui"
+    
+    imguiDir = rootDir / "LumEngine" / "External" / "Imgui"
     imguiZip = imguiDir / "imgui.zip"
 
     imguiDir.mkdir(parents=True, exist_ok=True)
