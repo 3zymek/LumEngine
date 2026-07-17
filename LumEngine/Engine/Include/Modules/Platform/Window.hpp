@@ -116,7 +116,7 @@ namespace lum {
 			[]( GLFWwindow* w, int32 v ) { v ? glfwShowWindow( w ) : glfwHideWindow( w ); },
 			[]( GLFWwindow* w, int32 v ) { v ? glfwMaximizeWindow( w ) : glfwRestoreWindow( w ); },
 			[]( GLFWwindow* w, int32 v ) { if (v) glfwFocusWindow( w ); },
-			[]( GLFWwindow* w, int32 v ) { glfwSetInputMode( w, GLFW_CURSOR, v ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN ); },
+			[]( GLFWwindow* w, int32 v ) { glfwSetInputMode( w, GLFW_CURSOR, v ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED ); },
 		};
 		static constexpr uint32 skWindowStateHandlersSize = ArraySize( skWindowStateHandlers );
 
