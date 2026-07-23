@@ -4,13 +4,17 @@
 //
 //=============================================================================//
 #pragma once
-#include "Entity/EcsCommon.hpp"
 #include "Render/Material.hpp"
+#include "Entity/EcsCommon.hpp"
+#include "Entity/Components/Material.gen.hpp"
 
 namespace lum {
 
 	/* @brief ECS component holding a PBR material instance for an entity. */
-	LCLASS( Category = "RENDERING" ) struct CMaterialInstance : public ComponentBase {
+	LCLASS( Category = "RENDERING" ) 
+	struct CMaterialInstance : public ComponentBase {
+
+		LUM_GENERATED_BODY()
 
 		/* @brief Path to the .lmt file. */
 		LPROPERTY( ) String mBasePath;
@@ -31,5 +35,7 @@ namespace lum {
 		rhi::TextureHandle mAmbientTex; /* @brief Ambient occlusion texture map. */
 
 	};
+	
+	LUM_CLASS_EXTENSIONS( )
 
 } // namespace lum

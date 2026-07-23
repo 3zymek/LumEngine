@@ -6,7 +6,7 @@
 
 #include "Core/EntityEditor.hpp"
 #include "Editor.hpp"
-#include "EditorDepManager.generated.hpp"
+#include "EditorTraits.gen.hpp"
 
 namespace lum::editor {
 
@@ -25,7 +25,7 @@ namespace lum::editor {
 				[&]( int32 typeID, ecs::ComponentBasePool* pool ) {
 					for (auto& [category, entries] : Editor::GetComponentsByCategory( )) {
 						for (auto& entry : entries) {
-							if (entry->mTypeID == typeID)
+							if (entry->mTypeId == typeID)
 								mEntityComponents.push_back( { entry, skOldComponent } );
 						}
 					}

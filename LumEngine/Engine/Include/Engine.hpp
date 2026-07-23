@@ -17,7 +17,7 @@
 
 namespace lum {
 	
-	class Engine {
+	class LUM_API Engine {
 	public:
 
 		Engine( ) = default;

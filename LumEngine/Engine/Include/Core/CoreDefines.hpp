@@ -6,7 +6,22 @@
 #pragma once
 
 #define LPROPERTY(...)
+#define LFUNCTION(...)
 #define LCLASS(...)
+#define LUM_GENERATED_BODY( )
+#define LUM_CLASS_EXTENSIONS( )
+
+#if defined(_WIN32)
+#   if defined(LUM_ENGINE_BUILD)
+#       define LUM_API __declspec(dllexport)
+#   elif defined(LUM_DYNAMIC_LIBRARIES)
+#       define LUM_API __declspec(dllimport)
+#   else
+#       define LUM_API
+#   endif
+#else
+#   define LUM_API
+#endif
 
 #if defined(_MSC_VER)
 #define LUM_FORCEINLINE __forceinline

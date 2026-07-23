@@ -6,8 +6,9 @@
 
 #include "Core/EntityCreator.hpp"
 #include "Editor.hpp"
-#include "EditorDepManager.generated.hpp"
+#include "EditorTraits.gen.hpp"
 #include "Core/Utils/Style.hpp"
+#include "Entity/Components/Name.hpp"
 
 namespace lum::editor {
 

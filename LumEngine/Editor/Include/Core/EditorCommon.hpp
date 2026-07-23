@@ -24,7 +24,7 @@ namespace lum::editor {
 		detail::EditorFn mDeleteFn = {};
 		StringView       mDisplayName = {};
 		StringView       mCategoryName = {};
-		ComponentTypeID  mTypeID = 0;
+		ComponentTypeID  mTypeId = 0;
 	};
 
 	/* @brief Finds a registered component entry by display name. */

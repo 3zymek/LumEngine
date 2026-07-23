@@ -16,7 +16,7 @@ namespace lum {
 
 	// Owns the renderer and render system.
 	// Must be initialized after MPlatformModule and MResourceModule.
-	class MRenderModule {
+	class LUM_API MRenderModule {
 	public:
 
 		render::Renderer	 mRenderer;

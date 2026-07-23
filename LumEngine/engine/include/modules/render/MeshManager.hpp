@@ -11,7 +11,7 @@ namespace lum {
 
 	namespace detail {
 
-		enum class MeshType : byte {
+		enum class LUM_API MeshType : byte {
 			Static,
 			Dynamic
 		};
@@ -31,7 +31,7 @@ namespace lum {
 	* Meshes are cached by path hash to avoid duplicate uploads.
 	* Provides built-in default and error meshes as fallbacks.
 	*/
-	class MMeshManager {
+	class LUM_API MMeshManager {
 	public:
 
 		MMeshManager() {}

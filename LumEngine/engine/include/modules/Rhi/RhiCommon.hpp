@@ -14,7 +14,7 @@ namespace lum {
 	/* @brief Interleaved vertex structure passed to the GPU per draw call.
 	* Aligned to 16 bytes for optimal GPU memory access.
 	*/
-	struct alignas(16) Vertex {
+	struct alignas(16) LUM_API Vertex {
 
 		/* @brief Vertex position in 3D space. */
 		Vector3 mPosition;

@@ -6,6 +6,7 @@
 #pragma once
 #include "Core/Utils/FixedString.hpp"
 #include "Entity/EcsCommon.hpp"
+#include "Entity/Components/Name.gen.hpp"
 
 namespace lum {
 
@@ -15,9 +16,13 @@ namespace lum {
 	*/
 	LCLASS( ) struct CName : public ComponentBase {
 
+		LUM_GENERATED_BODY( )
+
 		/* @brief Null-terminated fixed-size name string. Max 31 usable characters. */
 		LPROPERTY( ) FixedString<32> mName;
 
 	};
+
+	LUM_CLASS_EXTENSIONS( )
 
 } // namespace lum

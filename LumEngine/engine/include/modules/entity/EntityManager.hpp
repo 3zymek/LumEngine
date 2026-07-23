@@ -26,7 +26,7 @@ namespace lum {
 		* of component pools, adding/removing components per entity, and
 		* iterating over entities that share a set of component types.
 		*/
-		class EntityManager {
+		class LUM_API EntityManager {
 		public:
 
 			EntityManager( ) { initialize_pools( ); }

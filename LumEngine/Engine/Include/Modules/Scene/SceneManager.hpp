@@ -6,23 +6,14 @@
 #pragma once
 #include "Core/CorePch.hpp"
 #include "Entity/EntityManager.hpp"
+#include "Format/FormatCommon.hpp"
 
 namespace lum {
-
-    //// Forward Declare ////
-    class MTextureManager;
-    class MMaterialManager;
-    class MMeshManager;
-    class MShaderManager;
-    class AudioManager;
-    namespace render { class Renderer; }
-    ////////////////////////
-
 
     /* @brief Represents a single scene — holds a list of active entities
     *  and their corresponding ECS manager.
     */
-    class Scene {
+    class LUM_API Scene {
     public:
 
         /* @brief List of all entity IDs belonging to this scene. */
@@ -68,7 +59,7 @@ namespace lum {
             return mEntities.emplace( id, Entity( id ) ).first->second;
         }
         void DeleteEntity( EntityID entity ) {
-            
+
             auto it = mEntities.find( entity );
             if (it != mEntities.end( )) {
                 for (EntityID child : mChildren[ entity ]) {
@@ -80,42 +71,15 @@ namespace lum {
             DetachChild( entity );
             mEntities.erase( entity );
             mEntityMgr.DestroyEntity( entity );
-            
+
         }
-
-    };
-
-    /* @brief Aggregates all resource manager pointers required by the SceneManager
-    *  to load and initialize scene assets.
-    */
-    struct SceneManagerContext {
-
-        /* @brief Pointer to the active texture manager. */
-        MTextureManager* mTextureMgr = nullptr;
-
-        /* @brief Pointer to the active material manager. */
-        MMaterialManager* mMaterialMgr = nullptr;
-
-        /* @brief Pointer to the active mesh manager. */
-        MMeshManager* mMeshMgr = nullptr;
-
-        /* @brief Pointer to the active shader manager. */
-        MShaderManager* mShaderMgr = nullptr;
-
-        /* @brief Pointer to the active audio manager. */
-        AudioManager* mAudioMgr = nullptr;
-
-        ev::EventBus* mEventBus = nullptr;
-
-        /* @brief Pointer to the active renderer. */
-        render::Renderer* mRenderer = nullptr;
 
     };
 
     /* @brief Manages loading, storing and switching between scenes.
     *  Scenes are keyed by a 64-bit hash derived from their file path.
     */
-    class SceneManager {
+    class LUM_API SceneManager {
     public:
 
         /* @brief Initializes the manager with all required resource managers and renderer.

@@ -5,26 +5,18 @@
 //=============================================================================//
 #pragma once
 #include "Entity/EcsCommon.hpp"
+#include "Entity/Components/SpotLight.gen.hpp"
 
 namespace lum {
 
-	/* @brief Point light component — emits light in all directions from a single position.
-	* Attenuates linearly based on distance and radius.
-	*/
-	LCLASS( Category = "LIGHTNING" ) struct CPointLight : public ComponentBase {
-
-		LPROPERTY( ) float32 mIntensity = 1.0f; // Light intensity in linear space
-
-		LPROPERTY( ) float32 mRadius = 10.0f; // Maximum range of the light
-
-		LPROPERTY( ) Vector3 mColor = Vector3( 1.0f ); // Light color in linear RGB
-
-	};
-
 	/* @brief Spot light component — emits light in a cone shape from a single position. */
-	LCLASS( Category = "LIGHTNING" ) struct CSpotLight : public ComponentBase {
+	LCLASS( Category = "LIGHTNING" ) 
+	struct CSpotLight : public ComponentBase {
 
-		LPROPERTY( ) float32 mIntensity = 100.f;
+		LUM_GENERATED_BODY( )
+
+		LPROPERTY( ) 
+		float32 mIntensity = 100.f;
 
 		LPROPERTY( DragSpeed = 0.2f, MinVal = 0.1f ) 
 		float32 mRadius = 10.f; // Maximum range of the light
@@ -42,5 +34,7 @@ namespace lum {
 		Vector3 mColor = Vector3( 1.f ); // Light color in linear RGB
 
 	};
+
+	LUM_CLASS_EXTENSIONS( )
 
 } // namespace lum

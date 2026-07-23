@@ -6,6 +6,7 @@
 #pragma once
 #include "Entity/EcsCommon.hpp"
 #include "Render/RenderCommon.hpp"
+#include "Entity/Components/Mesh.gen.hpp"
 
 namespace lum {
 
@@ -13,7 +14,10 @@ namespace lum {
 	*  Does not own the mesh data — lifetime is managed by MMeshManager.
 	*  Use StaticMeshHandle to reference geometry uploaded to the GPU.
 	*/
-	LCLASS( Category = "RENDERING" ) struct CStaticMesh : public ComponentBase {
+	LCLASS( Category = "RENDERING" ) 
+	struct CStaticMesh : public ComponentBase {
+
+		LUM_GENERATED_BODY( )
 
 		LPROPERTY( Droppable = "FILE" )
 		String mPath;
@@ -24,5 +28,7 @@ namespace lum {
 		StaticMeshHandle mHandle;
 
 	};
+
+	LUM_CLASS_EXTENSIONS( )
 
 } // namespace lum

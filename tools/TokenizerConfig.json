@@ -1,0 +1,22 @@
+{
+
+    "macros": {
+        "class_macro": "LCLASS",
+        "property_macro": "LPROPERTY",
+        "function_macro": "LFUNCTION",
+        "generated_body_macro": "LUM_GENERATED_BODY",
+        "class_extensions_macro": "LUM_CLASS_EXTENSIONS"
+    },
+
+    "tokens_to_ignore": [
+        "LUM_FORCEINLINE",
+        "LUM_NODISCARD"
+    ],
+    "ends_with_to_ignore": [
+        "_API"
+    ],
+    "starts_with_to_ignore": [
+        "__"
+    ]
+
+}

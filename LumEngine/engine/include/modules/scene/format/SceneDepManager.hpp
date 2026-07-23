@@ -14,25 +14,6 @@ namespace lum::fmt {
 	struct Tokenizer;
 	struct FToken;
 
-	/* @brief Context passed through the scene parsing pipeline.
-	* Holds references to the active scene, current entity and all resource managers.
-	*/
-	struct FParseContext {
-
-		/* @brief Reference to the scene being populated. */
-		Scene& mScene;
-
-		/* @brief Entity currently being parsed and populated with components. */
-		EntityID mEntity;
-
-		/* @brief Resource manager context used to load and resolve assets. */
-		SceneManagerContext mContext;
-
-	};
-
-	/* @brief Function pointer type for parse dispatch functions. */
-	using ParseFn = void(*)(std::vector<FToken>&, int32&, FParseContext&);
-
 	/* @brief Parses a tokenized .lsc scene file and populates a Scene.
 	* Dispatches identifiers and component blocks to their respective parse functions
 	* via hash-keyed lookup tables for efficient routing.
@@ -74,7 +55,7 @@ namespace lum::fmt {
 		/* @brief Lookup table mapping hashed component keywords to their parse functions.
 		* Used to dispatch component blocks within an entity definition.
 		*/
-		static inline std::unordered_map<uint64, ParseFn> sComponentsParseFunctions;
+		static inline std::unordered_map<uint64, SceneComponentInfo> sComponentsInfos;
 
 	};
 

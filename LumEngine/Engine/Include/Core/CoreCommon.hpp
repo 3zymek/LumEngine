@@ -37,10 +37,12 @@ namespace lum {
 
 	};
 
+
+
 	/* @brief Generates a unique compile-time stable ID per type.
 	* Each distinct type receives a single ID assigned on first call.
 	*/
-	struct TypeRegistry {
+	struct LUM_API TypeRegistry {
 
 		/* @brief Returns the unique ID assigned to tType.
 		* @tparam tType Type to retrieve the ID for.
@@ -58,6 +60,7 @@ namespace lum {
 		inline static std::atomic<uint32> sId = 0;
 
 	};
+
 
 	/* @brief Converts any arithmetic type to float32 at compile-time.
 	* @param value The numeric value to cast.

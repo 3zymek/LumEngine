@@ -83,9 +83,9 @@ namespace lum::ecs {
 				return mComponents.Contains( entityId );
 			}
 
-			StringView GetParseName( ) override { return GetComponentParseName<tType>( ); }
-			StringView GetDisplayName( ) override { return GetComponentDisplayName<tType>( ); }
-			StringView GetCategoryName( ) override { return GetComponentCategoryName<tType>( ); }
+			StringView GetParseName( ) override { return tType::sSerializationName; }
+			StringView GetDisplayName( ) override { return tType::sDisplayName; }
+			StringView GetCategoryName( ) override { return tType::sCategoryName; }
 
 
 		protected:

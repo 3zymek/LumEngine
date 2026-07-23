@@ -1,0 +1,46 @@
+{
+    "property_args": [
+        {
+            "name": "displayname",
+            "assignment_operator": "=",
+            "expected_token": "String"
+        },
+        {
+            "name": "minval",
+            "assignment_operator": "=",
+            "expected_token": "Number"
+        },
+        {
+            "name": "maxval",
+            "assignment_operator": "=",
+            "expected_token": "Number"
+        },
+        {
+            "name": "dragspeed",
+            "assignment_operator": "=",
+            "expected_token": "Number"
+        },
+        {
+            "name": "droppable",
+            "assignment_operator": "=",
+            "expected_token": "String"
+        }
+    ],
+    "class_args": [
+        {
+            "name": "displayname",
+            "assignment_operator": "=",
+            "expected_token": "String"
+        },
+        {
+            "name": "parsename",
+            "assignment_operator": "=",
+            "expected_token": "String"
+        },
+        {
+            "name": "category",
+            "assignment_operator": "=",
+            "expected_token": "String"
+        }
+    ]
+}

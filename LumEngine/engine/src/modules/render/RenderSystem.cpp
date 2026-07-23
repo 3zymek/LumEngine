@@ -14,7 +14,8 @@
 #include "Entity/Components/Transform.hpp"
 #include "Entity/Components/Material.hpp"
 #include "Entity/Components/Mesh.hpp"
-#include "Entity/Components/Light.hpp"
+#include "Entity/Components/PointLight.hpp"
+#include "Entity/Components/SpotLight.hpp"
 
 #include "Platform/Window.hpp"
 

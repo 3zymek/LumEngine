@@ -52,7 +52,7 @@ namespace lum {
 
 	// Singleton logger with severity filtering and formatted output.
 	// Access via Logger::Get().
-	class Logger {
+	class LUM_API Logger {
 	public:
 
 		static Logger& Get( ) {

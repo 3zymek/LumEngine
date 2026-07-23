@@ -7,7 +7,7 @@
 #pragma once
 #include "Rhi/Core/RhiDevice.hpp"
 #include "Core/Utils/HandlePool.hpp"
-#include "Entity/Components/Transform.hpp"
+//#include "Entity/Components/Transform.hpp"
 #include "Entity/Components/Material.hpp"
 
 namespace lum {
@@ -21,6 +21,7 @@ namespace lum {
 	class MMeshManager;
 	class SceneManager;
 	struct CStaticMesh;
+	struct CTransform;
 	///////////////////////
 
 	struct StaticMeshHandle : cstd::BaseHandle<uint32> { };

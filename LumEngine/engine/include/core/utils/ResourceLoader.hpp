@@ -17,13 +17,13 @@ namespace lum {
 	} // namespace lum::detail
 
 	/* @brief Identifies the root directory used for asset path resolution. */
-	enum class ResourceRoot : byte {
+	enum class LUM_API ResourceRoot : byte {
 		Internal, // Engine internal assets directory.
 		External  // Project root directory set by the user.
 	};
 
 	/* @brief Raw texture data loaded from disk. */
-	struct ImageData {
+	struct LUM_API ImageData {
 
 		/* @brief Texture width in pixels. */
 		int32 mWidth = 0;
@@ -45,7 +45,7 @@ namespace lum {
 	};
 
 	/* @brief Raw mesh data loaded from disk. */
-	struct MeshGeometry {
+	struct LUM_API MeshGeometry {
 
 		/* @brief List of vertices. */
 		std::vector<Vertex> mVertices;
@@ -64,7 +64,7 @@ namespace lum {
 	*
 	* @note Non-constructible and non-copyable — use static methods only.
 	*/
-	class ResourceLoader {
+	class LUM_API ResourceLoader {
 
 		using FilePath = detail::fs::path;
 

@@ -6,8 +6,48 @@
 //=============================================================================//
 #pragma once
 #include "Core/CoreCommon.hpp"
+#include "Entity/EcsCommon.hpp"
 
 namespace lum {
+
+	//// Forward Declare ////
+	class MTextureManager;
+	class MMaterialManager;
+	class MMeshManager;
+	class MShaderManager;
+	class AudioManager;
+	struct Scene;
+	namespace render { class Renderer; }
+	namespace ev { class EventBus; }
+	////////////////////////
+
+
+	/* @brief Aggregates all resource manager pointers required by the SceneManager
+	*  to load and initialize scene assets.
+	*/
+	struct SceneManagerContext {
+
+		/* @brief Pointer to the active texture manager. */
+		MTextureManager* mTextureMgr = nullptr;
+
+		/* @brief Pointer to the active material manager. */
+		MMaterialManager* mMaterialMgr = nullptr;
+
+		/* @brief Pointer to the active mesh manager. */
+		MMeshManager* mMeshMgr = nullptr;
+
+		/* @brief Pointer to the active shader manager. */
+		MShaderManager* mShaderMgr = nullptr;
+
+		/* @brief Pointer to the active audio manager. */
+		AudioManager* mAudioMgr = nullptr;
+
+		ev::EventBus* mEventBus = nullptr;
+
+		/* @brief Pointer to the active renderer. */
+		render::Renderer* mRenderer = nullptr;
+
+	};
 
 	/* @brief Scene and material file format parsing utilities.
 	* Handles tokenization and parsing of .lsc (scene) and .lmt (material) files.
@@ -39,6 +79,33 @@ namespace lum {
 			TokenType mType;  // Token type
 			String mValue;     // Raw string value of the token
 		};
+
+		/* @brief Context passed through the scene parsing pipeline.
+		* Holds references to the active scene, current entity and all resource managers.
+		*/
+		struct FParseContext {
+
+			/* @brief Reference to the scene being populated. */
+			Scene& mScene;
+
+			/* @brief Entity currently being parsed and populated with components. */
+			EntityID mEntity;
+
+			/* @brief Resource manager context used to load and resolve assets. */
+			SceneManagerContext mContext;
+
+		};
+
+		/* @brief Function pointer type for parse dispatch functions. */
+		using ParseFn = void(*)(std::vector<FToken>&, int32&, FParseContext&);
+
+		struct SceneComponentInfo {
+
+			ParseFn mDeserializeFn = nullptr;
+
+		};
+
+		void RegisterSceneComponents( std::unordered_map<uint64, SceneComponentInfo>& map );
 
 		/* @brief Validates whether a file path matches the expected format extension.
 		* @param str File path to validate.

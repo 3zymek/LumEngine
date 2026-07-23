@@ -1,0 +1,246 @@
+{
+    "types": {
+    "float": {
+      "reader": "detail::ReadFloatParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragFloat( \"##{FieldName}##lhc\", &{Var}->{FieldName}, {Speed}, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "float32": {
+      "reader": "detail::ReadFloatParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragFloat( \"##{FieldName}##lhc\", &{Var}->{FieldName}, {Speed}, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "double": {
+      "reader": "detail::ReadFloatParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragFloat( \"##{FieldName}##lhc\", &{Var}->{FieldName}, {Speed}, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "float64": {
+      "reader": "detail::ReadFloatParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragFloat( \"##{FieldName}##lhc\", &{Var}->{FieldName}, {Speed}, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "Vector2": {
+      "reader": "detail::ReadVec2Parameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragFloat2( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), {Speed}, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "Vector3": {
+      "reader": "detail::ReadVec3Parameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragFloat3( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), {Speed}, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "Vector4": {
+      "reader": "detail::ReadVec4Parameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragFloat4( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), {Speed}, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "bool": {
+      "reader": "detail::ReadBoolParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::Checkbox( \"##{FieldName}##lhc\", &{Var}->{FieldName} );"
+      ]
+    },
+    "int": {
+      "reader": "detail::ReadIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "int8": {
+      "reader": "detail::ReadIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "int16": {
+      "reader": "detail::ReadIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "int32": {
+      "reader": "detail::ReadIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "int64": {
+      "reader": "detail::ReadIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "unsigned int": {
+      "reader": "detail::ReadUIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "uint8": {
+      "reader": "detail::ReadUIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "uint16": {
+      "reader": "detail::ReadUIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "uint32": {
+      "reader": "detail::ReadUIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "uint64": {
+      "reader": "detail::ReadUIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "usize": {
+      "reader": "detail::ReadUIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "isize": {
+      "reader": "detail::ReadIntParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::DragInt( \"##{FieldName}##lhc\", &{Var}->{FieldName}, 1, {MinVal}, {MaxVal} );"
+      ]
+    },
+    "String": {
+      "reader": "detail::ReadStringParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} );"
+      ],
+      "droppable_inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} );",
+        "if( ImGui::BeginDragDropTarget() ) {",
+        "    if( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( \"{Droppable}\" ) ) {",
+        "        {Var}->{FieldName} = (const char*)payload->Data;",
+        "    }",
+        "    ImGui::EndDragDropTarget();",
+        "}"
+      ]
+    },
+    "string": {
+      "reader": "detail::ReadStringParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} );"
+      ],
+      "droppable_inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::InputText( \"##{FieldName}##lhc\", &{Var}->{FieldName} );",
+        "if( ImGui::BeginDragDropTarget() ) {",
+        "    if( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( \"{Droppable}\" ) ) {",
+        "        {Var}->{FieldName} = (const char*)payload->Data;",
+        "    }",
+        "    ImGui::EndDragDropTarget();",
+        "}"
+      ]
+    },
+    "FixedString": {
+      "reader": "detail::ReadStringParameter",
+      "inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::InputText( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), std::max( {Var}->{FieldName}.MaxSize(), (usize)2 ) );"
+      ],
+      "droppable_inspector": [
+        "ImGui::Text( \"{DisplayName}\" );",
+        "ImGui::SameLine( 120.0f );",
+        "ImGui::SetNextItemWidth( -1.0f );",
+        "ImGui::InputText( \"##{FieldName}##lhc\", {Var}->{FieldName}.Data(), std::max( {Var}->{FieldName}.MaxSize(), (usize)2 ) );",
+        "if( ImGui::BeginDragDropTarget() ) {",
+        "    if( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( \"{Droppable}\" ) ) {",
+        "        {Var}->{FieldName} = (const char*)payload->Data;",
+        "    }",
+        "    ImGui::EndDragDropTarget();",
+        "}"
+      ]
+    }
+  }
+}

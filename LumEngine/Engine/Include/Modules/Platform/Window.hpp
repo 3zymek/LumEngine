@@ -14,7 +14,7 @@ namespace lum {
 	namespace ev { class EventBus; }
 
 	// Flags controlling window initialization behavior.
-	enum class WindowInitFlags : bitfield {
+	enum class LUM_API WindowInitFlags : bitfield {
 		NoDecoration	= 1 << 0, // Removes the native OS title bar and border.
 		NoResize		= 1 << 1, // Prevents the user from resizing the window.
 		Invisible		= 1 << 2, // Window is hidden on creation, show manually later.
@@ -29,7 +29,7 @@ namespace lum {
 	/* @brief Bitmask flags representing toggleable runtime states of a window.
 	*  Use with Window::ToggleState() to enable or disable individual states.
 	*/
-	enum class WindowStateFlags : bitfield {
+	enum class LUM_API WindowStateFlags : bitfield {
 		Decoration	= 1 << 0, // Native OS title bar and border are visible.
 		Resizable	= 1 << 1, // Window can be resized by the user.
 		Floating	= 1 << 2, // Window stays always on top of other windows.
@@ -41,7 +41,7 @@ namespace lum {
 	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::WindowStateFlags );
 
 	/* @brief Descriptor used to configure a window on creation. */
-	struct WindowCreateInfo {
+	struct LUM_API WindowCreateInfo {
 		Flags<WindowInitFlags>		mFlags = {};
 		String						mTitle = "LumEngine";		/* @brief Window title bar text. */
 		std::optional<ImageData>	mIconData = std::nullopt;	/* @brief Optional loaded icon texture data. */
@@ -54,7 +54,7 @@ namespace lum {
 	*  Responsible for window creation, size tracking and emitting
 	*  window events (resize, close) through the EventBus.
 	*/
-	class Window {
+	class LUM_API Window {
 	public:
 
 		/* @brief Initializes the window with the given descriptor.

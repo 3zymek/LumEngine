@@ -20,6 +20,9 @@
 *.pdb
 *.lib
 *.generated.hpp
+*.generated.cpp
+*.gen.hpp
+*.gen.cpp
 bin/
 Debug/
 Release/

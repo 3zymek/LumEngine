@@ -14,6 +14,7 @@
 #include "Rhi/Core/RhiDevice.hpp"
 
 #include "Entity/Components/Mesh.hpp"
+#include "Entity/Components/Transform.hpp"
 
 namespace lum::render {
 

@@ -5,11 +5,15 @@
 //=============================================================================//
 #pragma once
 #include "Entity/EcsCommon.hpp"
+#include "Entity/Components/Transform.gen.hpp"
 
 namespace lum {
 
 	/* @brief ECS component storing the 3D transform of an entity. */
-	LCLASS( Category = "TRANSFORM" ) struct CTransform : public ComponentBase {
+    LCLASS( Category = "TRANSFORM" )
+    struct CTransform : public ComponentBase {
+
+        LUM_GENERATED_BODY( )
 
         /* @brief Local position relative to parent. */
         LPROPERTY( ) Vector3 mPosition = Vector3( 0.0f );
@@ -24,5 +28,7 @@ namespace lum {
         Matrix4 mWorldMatrix = Matrix4( 1.0f );
 
 	};
+
+    LUM_CLASS_EXTENSIONS( )
 
 } // namespace lum

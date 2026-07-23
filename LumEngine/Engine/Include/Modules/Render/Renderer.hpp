@@ -18,7 +18,7 @@ namespace lum::render {
 	/* @brief High-level renderer — accepts per-frame draw calls, lights and camera data,
 	*  and drives the underlying RHI passes to produce a final image.
 	*/
-	class Renderer {
+	class LUM_API Renderer {
 	public:
 
 		Renderer( ) = default;

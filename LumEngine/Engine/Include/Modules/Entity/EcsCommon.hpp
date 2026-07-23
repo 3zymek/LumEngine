@@ -28,9 +28,6 @@ namespace lum {
 	*/
 	namespace ecs {
 
-		/* @brief Means that entity doesn't exists. */
-		inline constexpr EntityID kNullEntity = MaxValue<EntityID>( );
-
 		/* @brief Internal implementation details for the ECS.
 		*  Not intended for direct use outside of the ECS subsystem.
 		*/
@@ -43,21 +40,13 @@ namespace lum {
 			template<typename tType>
 			concept cComponent = std::is_base_of_v<lum::ComponentBase, tType>;
 
-			/* @brief Returns the serialization name of the component type.
-			*  Used for reading and writing component data to scene files.
-			*/
-			template<cComponent tType>
-			StringView GetComponentParseName( );
-
-			/* @brief Returns the human-readable display name shown in the editor. */
-			template<cComponent tType>
-			StringView GetComponentDisplayName( );
-
-			/* @brief Returns the editor category this component belongs to (e.g. "Rendering", "Physics"). */
-			template<cComponent tType>
-			StringView GetComponentCategoryName( );
-
 		} // namespace lum::ecs::detail
+
+		/* @brief Means that entity doesn't exists. */
+		inline constexpr EntityID kNullEntity = MaxValue<EntityID>( );
+
+		template<detail::cComponent tType>
+		struct EcsTraits;
 
 	} // namespace lum::ecs
 

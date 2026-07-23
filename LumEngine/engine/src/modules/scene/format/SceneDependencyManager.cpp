@@ -6,7 +6,6 @@
 #pragma once
 
 #include "Scene/Format/SceneDepManager.hpp"
-#include "Scene/Format/SceneDepManager.generated.hpp"
 #include "Scene/Format/Tokenizer.hpp"
 #include "Scene/SceneManager.hpp"
 
@@ -15,6 +14,8 @@
 
 #include "Render/TextureManager.hpp"
 #include "Render/Renderer.hpp"
+
+#include "Scene/Format/DeserializeFunctions.gen.hpp"
 
 namespace lum::fmt {
 
@@ -27,7 +28,7 @@ namespace lum::fmt {
 		mTokenizer = &tokenizer;
 		mContext = &ctx;
 
-		detail::RegisterComponents( sComponentsParseFunctions );
+		RegisterSceneComponents( sComponentsInfos );
 
 	}
 
@@ -114,9 +115,9 @@ namespace lum::fmt {
 		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Component) {
-				auto it = sComponentsParseFunctions.find( HashString( ToLower( tokens[ i ].mValue ) ) );
-				if (it != sComponentsParseFunctions.end( )) {
-					it->second( tokens, i, ctx );
+				auto it = sComponentsInfos.find( HashString( ToLower( tokens[ i ].mValue ) ) );
+				if (it != sComponentsInfos.end( )) {
+					it->second.mDeserializeFn( tokens, i, ctx );
 				}
 
 			}
