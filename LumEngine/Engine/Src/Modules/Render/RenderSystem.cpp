@@ -43,7 +43,8 @@ namespace lum {
 					inst.mMaterial = &material;
 					inst.mStaticMesh = &mesh;
 					inst.mTransform = &transform;
-
+					
+					
 					mRenderer->Submit( inst );
 
 				}

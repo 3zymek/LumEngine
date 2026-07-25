@@ -17,12 +17,22 @@ vec3 GammaCorrection22( vec3 color ) {
 void main( ) {
     
     vec2 stabilizedUV = fUV - uJitterOffset;
-    vec3 currentHDR = texture(uScreen, stabilizedUV).rgb;
+    vec3 current = texture(uScreen, stabilizedUV).rgb;
 
-    vec3 rawHistory = texture(uHistory, fUV).rgb;
+    vec3 exposed = current * 0.5;
+    vec3 tonemapped = TonemapACES( exposed );
+    vec3 gammaCorrected = GammaCorrection22( tonemapped );
+
+    oColor = vec4(gammaCorrected, 1.0);
+
+
+    //vec2 stabilizedUV = fUV - uJitterOffset;
+    //vec3 currentHDR = texture(uScreen, stabilizedUV).rgb;
+
+    //vec3 rawHistory = texture(uHistory, fUV).rgb;
     
-    vec3 blendHDR = mix(rawHistory, currentHDR, 0.1);
+    //vec3 blendHDR = mix(rawHistory, currentHDR, 0.1);
     
-    oColor = vec4(blendHDR, 1.0);
+    //oColor = vec4(blendHDR, 1.0);
 
 }
