@@ -26,7 +26,7 @@ namespace lum::fmt {
 		/* @brief Parses the token stream and populates the given scene.
 		* @param scene Scene to populate with entities and components.
 		*/
-		void Parse( Scene& scene );
+		void Deserialize( Scene& scene );
 
 		void Serialize( Scene& scene, StringView path );
 

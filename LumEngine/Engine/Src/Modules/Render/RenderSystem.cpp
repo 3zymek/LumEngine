@@ -33,7 +33,7 @@ namespace lum {
 		void RenderSystem::Update( Scene* scene, Window* window ) {
 
 			auto isVisible = [&]( EntityID id ) { Entity* e = scene->GetEntity( id ); return e && e->IsVisible( ); };
-		
+			
 			scene->mEntityMgr.EachWithID<CTransform, CMaterialInstance, CStaticMesh>(
 				[&]( EntityID id, CTransform& transform, CMaterialInstance& material, CStaticMesh& mesh ) {
 

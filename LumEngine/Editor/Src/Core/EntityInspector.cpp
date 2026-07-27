@@ -34,13 +34,13 @@ namespace lum::editor {
 					bool opened = true;
 
 					args.mFont = Fonts::sDefaultMedium;
-					args.mID = HashString( pool->GetParseName( ) );
+					args.mId = pool->GetTypeId( );
 					args.mLabel = pool->GetDisplayName( );
 					CollapsingHeaderCustom( args, opened );
 
 					if (opened) {
 						const ComponentsEntriesMap& map = Editor::GetComponentsEntries( );
-						auto it = map.find( HashString( pool->GetParseName( ) ) );
+						auto it = map.find( pool->GetTypeId() );
 						if (it != map.end( )) {
 							it->second.mDisplayFn( scene->mEntityMgr, selectedEntity );
 						}

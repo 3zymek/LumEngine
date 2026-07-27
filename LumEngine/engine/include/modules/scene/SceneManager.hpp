@@ -4,7 +4,6 @@
 //
 //=============================================================================//
 #pragma once
-#include "Core/CorePch.hpp"
 #include "Entity/EntityManager.hpp"
 #include "Format/FormatCommon.hpp"
 

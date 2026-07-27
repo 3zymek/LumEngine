@@ -16,11 +16,7 @@ namespace lum {
 	LCLASS( Category = "AUDIO" )
 	struct CAudioEmitter : public ComponentBase {
 
-		//LUM_GENERATED_BODY( )
-
-		inline static StringView sCategoryName = "AUDIO";
-		inline static StringView sSerializationName = "audio_emitter";
-		inline static StringView sDisplayName = "Audio Emitter";
+		LUM_GENERATED_BODY( )
 
 		/* @brief Handle to loaded sound */
 		ahi::SoundHandle mSound;

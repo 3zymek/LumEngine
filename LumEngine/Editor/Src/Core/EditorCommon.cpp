@@ -21,7 +21,7 @@ namespace lum::editor {
 		ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 0, 0, 0, 0 ) );
 
 		ImGui::SetNextItemOpen( true, ImGuiCond_Once );
-		ImGui::PushID( args.mID );
+		ImGui::PushID( args.mId );
 		opened = ImGui::CollapsingHeader( "##hidden" );
 		ImGui::PopID( );
 		ImGui::PopStyleColor( 4 );

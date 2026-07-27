@@ -33,7 +33,7 @@ namespace lum::fmt {
 	}
 
 
-	void SceneDependencyManager::Parse( Scene& scene ) {
+	void SceneDependencyManager::Deserialize( Scene& scene ) {
 
 		FParseContext ctx{ scene };
 		ctx.mContext = *mContext;
@@ -57,7 +57,7 @@ namespace lum::fmt {
 		ctx.mContext = *mContext;
 
 		for (auto& [entityID, entity] : scene.mEntities) {
-			
+
 		}
 
 	}

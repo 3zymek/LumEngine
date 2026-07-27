@@ -24,6 +24,7 @@ namespace lum::ecs {
 		virtual StringView GetParseName( ) = 0;              /* @brief Returns the serialization name of the component type. */
 		virtual StringView GetDisplayName( ) = 0;            /* @brief Returns the editor display name of the component type. */
 		virtual StringView GetCategoryName( ) = 0;           /* @brief Returns the editor category name of the component type. */
+		virtual uint64 GetTypeId( ) = 0;
 		virtual ~ComponentBasePool( ) { }
 	};
 
@@ -86,6 +87,7 @@ namespace lum::ecs {
 			StringView GetParseName( ) override { return tType::sSerializationName; }
 			StringView GetDisplayName( ) override { return tType::sDisplayName; }
 			StringView GetCategoryName( ) override { return tType::sCategoryName; }
+			uint64 GetTypeId( ) override { return tType::GetTypeId( ); }
 
 
 		protected:

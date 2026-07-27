@@ -116,7 +116,7 @@ namespace lum::editor {
 
 			bool bTreeOpened = false;
 			CollapsingHeaderArgs args{
-				.mID = HashString( displayLabel ),
+				.mId = HashString( displayLabel ),
 				.mLabel = displayLabel,
 				.mIconOpened = ICON_FA_CHEVRON_DOWN,
 				.mIconClosed = ICON_FA_CHEVRON_RIGHT,

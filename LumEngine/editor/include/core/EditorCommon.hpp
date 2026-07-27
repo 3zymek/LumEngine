@@ -36,7 +36,7 @@ namespace lum::editor {
 
 	/* @brief Arguments for custom collapsing header and tree node widgets. */
 	struct CollapsingHeaderArgs {
-		HashedString	mID = {};
+		HashedString	mId = {};
 		StringView		mLabel = {};
 		StringView		mIconOpened = ICON_FA_ANGLE_DOWN;
 		StringView		mIconClosed = ICON_FA_ANGLE_RIGHT;
@@ -68,7 +68,7 @@ namespace lum::editor {
 
 		ImGui::PushStyleVar( ImGuiStyleVar_IndentSpacing, 12.0f );
 
-		ImGui::PushID( args.mID );
+		ImGui::PushID( args.mId );
 
 		ImGuiTreeNodeFlags flags =
 			ImGuiTreeNodeFlags_OpenOnArrow |
