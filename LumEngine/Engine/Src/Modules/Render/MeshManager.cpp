@@ -17,23 +17,23 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MMeshManager::Initialize( render::RendererContext* ctx ) {
+	void MeshManager::Initialize( render::RendererContext* ctx ) {
 
 		render::ValidateRendererContext( *ctx );
 
-		mContext = ctx;
+		mCtx = ctx;
 		init( );
 
 	}
 
-	const FStaticMeshResource& MMeshManager::GetStatic( StaticMeshHandle handle ) {
+	const StaticMeshResource& MeshManager::GetStatic( StaticMeshHandle handle ) {
 		if (mStaticMeshes.Contains( handle ))
 			return mStaticMeshes[ handle ];
 		else
 			return mStaticMeshes[ mDefaultMesh ];
 	}
 
-	StaticMeshHandle MMeshManager::CreateStatic( StringView path, ResourceRoot root ) {
+	StaticMeshHandle MeshManager::CreateStatic( StringView path, ResourceRoot root ) {
 
 		uint64 hash = HashString( path );
 
@@ -47,9 +47,9 @@ namespace lum {
 			return mErrorMesh;
 		}
 
-		detail::FRenderResources res = upload_gpu( detail::MeshType::Static, data.value( ) );
+		detail::RenderResources res = upload_gpu( detail::MeshType::Static, data.value( ) );
 
-		FStaticMeshResource meshResource;
+		StaticMeshResource meshResource;
 		meshResource.mVbo = res.mVbo;
 		meshResource.mEbo = res.mEbo;
 		meshResource.mVao = res.mVao;
@@ -62,7 +62,7 @@ namespace lum {
 		return meshHandle;
 	}
 
-	FDynamicMeshInstance MMeshManager::CreateDynamic( StringView path, ResourceRoot root ) {
+	DynamicMeshInstance MeshManager::CreateDynamic( StringView path, ResourceRoot root ) {
 
 		std::optional<MeshGeometry> data = ResourceLoader::LoadMeshFromFile( root, path );
 
@@ -74,9 +74,9 @@ namespace lum {
 			data = fallback;
 		}
 
-		detail::FRenderResources res = upload_gpu( detail::MeshType::Dynamic, data.value( ) );
+		detail::RenderResources res = upload_gpu( detail::MeshType::Dynamic, data.value( ) );
 
-		FDynamicMeshInstance meshInstance;
+		DynamicMeshInstance meshInstance;
 		meshInstance.mData = data.value( );
 		meshInstance.mVbo = res.mVbo;
 		meshInstance.mEbo = res.mEbo;
@@ -92,9 +92,9 @@ namespace lum {
 	// Private
 	//---------------------------------------------------------
 
-	void MMeshManager::init( ) {
+	void MeshManager::init( ) {
 
-		mContext->mEvBus->SubscribePermanently<EComponentAdded<CStaticMesh>>(
+		mCtx->mEvBus->SubscribePermanently<EComponentAdded<CStaticMesh>>(
 			[&]( const EComponentAdded<CStaticMesh>& mesh ) {
 				
 				if(!mesh.mComponent->mPath.empty())
@@ -107,7 +107,7 @@ namespace lum {
 
 	}
 
-	detail::FRenderResources MMeshManager::upload_gpu( detail::MeshType type, const MeshGeometry& data ) {
+	detail::RenderResources MeshManager::upload_gpu( detail::MeshType type, const MeshGeometry& data ) {
 
 		Flags<rhi::MapFlag> mapFlag{};
 		rhi::BufferUsage usage{};
@@ -125,7 +125,7 @@ namespace lum {
 
 		}
 
-		detail::FRenderResources res;
+		detail::RenderResources res;
 
 		rhi::BufferCreateInfo vboDesc;
 		vboDesc.mBufferUsage = usage;
@@ -133,7 +133,7 @@ namespace lum {
 		vboDesc.mMapFlags = mapFlag;
 		vboDesc.mSize = ComputeByteSize( data.mVertices );
 		vboDesc.mBufferType = rhi::BufferType::Vertex;
-		res.mVbo = mContext->mRenderDev->CreateBuffer( vboDesc );
+		res.mVbo = mCtx->mRenderDev->CreateBuffer( vboDesc );
 
 		rhi::BufferCreateInfo eboDesc;
 		eboDesc.mBufferUsage = usage;
@@ -141,7 +141,7 @@ namespace lum {
 		eboDesc.mMapFlags = mapFlag;
 		eboDesc.mSize = ComputeByteSize( data.mIndices );
 		eboDesc.mBufferType = rhi::BufferType::Element;
-		res.mEbo = mContext->mRenderDev->CreateBuffer( eboDesc );
+		res.mEbo = mCtx->mRenderDev->CreateBuffer( eboDesc );
 
 		rhi::VertexAttribute vaoAttrib[ 5 ];
 
@@ -173,23 +173,23 @@ namespace lum {
 		rhi::VertexLayoutCreateInfo vaoDesc;
 		vaoDesc.mAttributes = vaoAttrib;
 		vaoDesc.mStride = sizeof( Vertex );
-		res.mVao = mContext->mRenderDev->CreateVertexLayout( vaoDesc, res.mVbo );
+		res.mVao = mCtx->mRenderDev->CreateVertexLayout( vaoDesc, res.mVbo );
 
-		mContext->mRenderDev->AttachElementBufferToLayout( res.mEbo, res.mVao );
+		mCtx->mRenderDev->AttachElementBufferToLayout( res.mEbo, res.mVao );
 
 		return res;
 	}
 
-	void MMeshManager::create_meshes( ) {
+	void MeshManager::create_meshes( ) {
 		{ // Default mesh
 
 			MeshGeometry data;
 			data.mVertices = mDefaultVertices;
 			data.mIndices = mDefaultIndices;
 
-			detail::FRenderResources res = upload_gpu( detail::MeshType::Static, data );
+			detail::RenderResources res = upload_gpu( detail::MeshType::Static, data );
 
-			FStaticMeshResource staticMesh;
+			StaticMeshResource staticMesh;
 			staticMesh.mVbo = res.mVbo;
 			staticMesh.mEbo = res.mEbo;
 			staticMesh.mVao = res.mVao;
@@ -205,9 +205,9 @@ namespace lum {
 				mErrorMesh = mDefaultMesh;
 				return;
 			}
-			detail::FRenderResources res = upload_gpu( detail::MeshType::Static, data.value( ) );
+			detail::RenderResources res = upload_gpu( detail::MeshType::Static, data.value( ) );
 
-			FStaticMeshResource staticMesh;
+			StaticMeshResource staticMesh;
 			staticMesh.mVbo = res.mVbo;
 			staticMesh.mEbo = res.mEbo;
 			staticMesh.mVao = res.mVao;

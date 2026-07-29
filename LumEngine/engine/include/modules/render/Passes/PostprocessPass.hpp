@@ -27,7 +27,7 @@ namespace lum::render {
 
 	private:
 
-		RendererContext mContext;
+		RendererContext mCtx;
 
 		/* @brief Shader used for the final post-process blit to the default framebuffer. */
 		rhi::ShaderHandle mShader;

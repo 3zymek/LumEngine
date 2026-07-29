@@ -96,21 +96,21 @@ namespace lum::render {
 		desc.mMapFlags = rhi::MapFlag::Write;
 
 		// Point Lights SSBO
-		if (!mCtx.mRenderDev->IsValid( mLightsUBO )) {
+		if (!mCtx.mRenderDev->IsValid( mLightsUbo )) {
 
 			desc.mSize = (sizeof( PointLight ) * LUM_MAX_LIGHTS + sizeof( int32 )) + (sizeof( SpotLight ) * LUM_MAX_LIGHTS + sizeof( int32 ));
 			desc.mBufferType = rhi::BufferType::ShaderStorage;
-			mLightsUBO = mCtx.mRenderDev->CreateBuffer( desc );
-			mCtx.mRenderDev->SetShaderStorageBinding( mLightsUBO, LUM_SSBO_LIGHTS_BINDING );
+			mLightsUbo = mCtx.mRenderDev->CreateBuffer( desc );
+			mCtx.mRenderDev->SetShaderStorageBinding( mLightsUbo, LUM_SSBO_LIGHTS_BINDING );
 
 		}
 		// Directional Light UBO
-		if (!mCtx.mRenderDev->IsValid( mDirectionalLightUBO )) {
+		if (!mCtx.mRenderDev->IsValid( mDirectionalLightUbo )) {
 
 			desc.mSize = sizeof( mDirectionalLightData );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mDirectionalLightUBO = mCtx.mRenderDev->CreateBuffer( desc );
-			mCtx.mRenderDev->SetUniformBufferBinding( mDirectionalLightUBO, LUM_UBO_DIRECTIONAL_LIGHT );
+			mDirectionalLightUbo = mCtx.mRenderDev->CreateBuffer( desc );
+			mCtx.mRenderDev->SetUniformBufferBinding( mDirectionalLightUbo, LUM_UBO_DIRECTIONAL_LIGHT );
 
 		}
 
@@ -135,12 +135,12 @@ namespace lum::render {
 	void LightPass::upload_point_lights( ) {
 
 		mCtx.mRenderDev->UpdateBuffer(
-			mLightsUBO, &mActivePointLights,
+			mLightsUbo, &mActivePointLights,
 			skOffsetActivePoint, sizeof( int32 )
 		);
 
 		mCtx.mRenderDev->UpdateBuffer(
-			mLightsUBO, mPointLights.data( ),
+			mLightsUbo, mPointLights.data( ),
 			skOffsetPointLights, sizeof( PointLight ) * LUM_MAX_LIGHTS
 		);
 
@@ -148,12 +148,12 @@ namespace lum::render {
 	void LightPass::upload_spot_lights( ) {
 
 		mCtx.mRenderDev->UpdateBuffer(
-			mLightsUBO, &mActiveSpotLights,
+			mLightsUbo, &mActiveSpotLights,
 			skOffsetActiveSpot, sizeof( int32 )
 		);
 
 		mCtx.mRenderDev->UpdateBuffer(
-			mLightsUBO, mSpotLights.data( ),
+			mLightsUbo, mSpotLights.data( ),
 			skOffsetSpotLights, sizeof( SpotLight ) * LUM_MAX_LIGHTS
 		);
 
@@ -161,7 +161,7 @@ namespace lum::render {
 	void LightPass::upload_directional_light( ) {
 
 		mCtx.mRenderDev->UpdateBuffer(
-			mDirectionalLightUBO,
+			mDirectionalLightUbo,
 			&mDirectionalLightData
 		);
 

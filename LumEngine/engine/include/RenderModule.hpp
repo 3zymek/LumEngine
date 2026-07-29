@@ -10,19 +10,19 @@
 
 namespace lum {
 
-	class MPlatformModule;
-	class MResourceModule;
+	class PlatformModule;
+	class ResourceModule;
 	namespace ev { class EventBus; }
 
 	// Owns the renderer and render system.
-	// Must be initialized after MPlatformModule and MResourceModule.
-	class LUM_API MRenderModule {
+	// Must be initialized after PlatformModule and ResourceModule.
+	class LUM_API RenderModule {
 	public:
 
 		render::Renderer	 mRenderer;
 		render::RenderSystem mRenderSys;
 
-		void Initialize( MPlatformModule& platform, MResourceModule& res, ev::EventBus& bus );
+		void Initialize( PlatformModule& platform, ResourceModule& res, ev::EventBus& bus );
 
 	};
 

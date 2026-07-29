@@ -26,7 +26,7 @@ namespace lum::render {
 
 		ValidateRendererContext( ctx );
 
-		mContext = ctx;
+		mCtx = ctx;
 
 		mInstances.reserve( limits::kMaxDrawCallsPerFrame );
 		mTempInstances.reserve( mTempSize );
@@ -48,9 +48,9 @@ namespace lum::render {
 
 	void GeometryPass::Execute( const detail::DeferredBuffer& defferedBuff ) {
 
-		mContext.mRenderDev->BindShader( mShader );
+		mCtx.mRenderDev->BindShader( mShader );
 
-		mContext.mRenderDev->BindPipeline( mPipeline );
+		mCtx.mRenderDev->BindPipeline( mPipeline );
 		for (auto& instance : mInstances)
 			draw_instance( instance );
 
@@ -83,14 +83,14 @@ namespace lum::render {
 		{ // Model Uniform
 			desc.mSize = sizeof( detail::ModelGPU );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mModelUniform = mContext.mRenderDev->CreateBuffer( desc );
-			mContext.mRenderDev->SetUniformBufferBinding( mModelUniform, LUM_UBO_MODEL_BINDING );
+			mModelUniform = mCtx.mRenderDev->CreateBuffer( desc );
+			mCtx.mRenderDev->SetUniformBufferBinding( mModelUniform, LUM_UBO_MODEL_BINDING );
 		}
 		{ // Material Uniform
 			desc.mSize = sizeof( detail::MaterialGPU );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mMaterialUniform = mContext.mRenderDev->CreateBuffer( desc );
-			mContext.mRenderDev->SetUniformBufferBinding( mMaterialUniform, LUM_UBO_MATERIAL_BINDING );
+			mMaterialUniform = mCtx.mRenderDev->CreateBuffer( desc );
+			mCtx.mRenderDev->SetUniformBufferBinding( mMaterialUniform, LUM_UBO_MATERIAL_BINDING );
 		}
 		{ // Geometry pipeline
 			rhi::PipelineCreateInfo desc;
@@ -99,8 +99,8 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::Less;
 			desc.mCull.bEnabled = true;
 			desc.mCull.mFace = rhi::Face::Back;
-			mPipeline = mContext.mRenderDev->CreatePipeline( desc );
-			mShader = mContext.mShaderMgr->LoadShader( "shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ResourceRoot::Internal );
+			mPipeline = mCtx.mRenderDev->CreatePipeline( desc );
+			mShader = mCtx.mShaderMgr->LoadShader( "shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ResourceRoot::Internal );
 		}
 
 	}
@@ -111,10 +111,10 @@ namespace lum::render {
 
 		upload_material( *mat );
 
-		mContext.mRenderDev->BindTexture( mat->mAlbedoTex, LUM_TEX_ALBEDO );
-		mContext.mRenderDev->BindTexture( mat->mNormalTex, LUM_TEX_NORMAL );
-		mContext.mRenderDev->BindTexture( mat->mRoughnessTex, LUM_TEX_ROUGHNESS );
-		mContext.mRenderDev->BindTexture( mat->mMetallicTex, LUM_TEX_METALNESS );
+		mCtx.mRenderDev->BindTexture( mat->mAlbedoTex, LUM_TEX_ALBEDO );
+		mCtx.mRenderDev->BindTexture( mat->mNormalTex, LUM_TEX_NORMAL );
+		mCtx.mRenderDev->BindTexture( mat->mRoughnessTex, LUM_TEX_ROUGHNESS );
+		mCtx.mRenderDev->BindTexture( mat->mMetallicTex, LUM_TEX_METALNESS );
 
 		draw_mesh( instance );
 
@@ -122,25 +122,25 @@ namespace lum::render {
 
 	void GeometryPass::draw_mesh( const RenderInstance& instance ) {
 
-		const FStaticMeshResource& res = mContext.mMeshMgr->GetStatic( instance.mStaticMesh->mHandle );
+		const StaticMeshResource& res = mCtx.mMeshMgr->GetStatic( instance.mStaticMesh->mHandle );
 
 		upload_model_matrix( instance );
-		mContext.mRenderDev->DrawElements( res.mVao, res.mNumIndices );
+		mCtx.mRenderDev->DrawElements( res.mVao, res.mNumIndices );
 
 	}
 
 	void GeometryPass::upload_model_matrix( const RenderInstance& instance ) {
 
-		mContext.mRenderDev->UpdateBuffer( mModelUniform, instance.mTransform->mWorldMatrix.Data(), 0, 0 );
+		mCtx.mRenderDev->UpdateBuffer( mModelUniform, instance.mTransform->mWorldMatrix.Data(), 0, 0 );
 
 	}
 	void GeometryPass::upload_material( const CMaterialInstance& mat ) {
 
-		mMaterialUBO.mBaseColor = Vector4( mat.mBaseColor, 1.0f );
-		mMaterialUBO.mRoughness = mat.mRoughnessValue;
-		mMaterialUBO.mMetallic = mat.mMetallicValue;
+		mMaterialUbo.mBaseColor = Vector4( mat.mBaseColor, 1.0f );
+		mMaterialUbo.mRoughness = mat.mRoughnessValue;
+		mMaterialUbo.mMetallic = mat.mMetallicValue;
 
-		mContext.mRenderDev->UpdateBuffer( mMaterialUniform, &mMaterialUBO );
+		mCtx.mRenderDev->UpdateBuffer( mMaterialUniform, &mMaterialUbo );
 
 	}
 

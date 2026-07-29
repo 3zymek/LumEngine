@@ -4,24 +4,15 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Rhi/RhiCommon.hpp"
-#include "Rhi/Core/RhiSampler.hpp"
 
 namespace lum {
-
-	struct FMaterialTexture {
-
-		rhi::TextureHandle mTexture;
-
-		float32 mTextureScale = 1.0f;
-		rhi::SamplerWrap mWrap = rhi::SamplerWrap::Repeat;
-
-	};
 
 	/* @brief Shared PBR material definition used as a base template.
 	* Defines default texture maps and parameters inherited by material instances.
 	*/
-	struct FMaterialBase {
+	struct MaterialBase {
 
 		/* @brief Albedo (base color) texture map. */
 		rhi::TextureHandle mAlbedoTex;
@@ -53,7 +44,7 @@ namespace lum {
 	* All fields are optional — unset fields resolve to engine defaults at upload time.
 	* Textures are specified as asset paths and resolved by the texture manager.
 	*/
-	struct FMaterialDescriptor {
+	struct MaterialDescriptor {
 
 		std::optional<String> mAlbedoTex;      // Path to albedo texture
 		std::optional<String> mNormalTex;      // Path to normal map

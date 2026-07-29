@@ -10,11 +10,11 @@
 
 namespace lum {
 
-	//// Forward Declare ////
-	class MTextureManager;
-	class MMaterialManager;
-	class MMeshManager;
-	class MShaderManager;
+	// Forward Declare
+	class TextureManager;
+	class MaterialManager;
+	class MeshManager;
+	class ShaderManager;
 	class AudioManager;
 	struct Scene;
 	namespace render { class Renderer; }
@@ -28,16 +28,16 @@ namespace lum {
 	struct SceneManagerContext {
 
 		/* @brief Pointer to the active texture manager. */
-		MTextureManager* mTextureMgr = nullptr;
+		TextureManager* mTextureMgr = nullptr;
 
 		/* @brief Pointer to the active material manager. */
-		MMaterialManager* mMaterialMgr = nullptr;
+		MaterialManager* mMaterialMgr = nullptr;
 
 		/* @brief Pointer to the active mesh manager. */
-		MMeshManager* mMeshMgr = nullptr;
+		MeshManager* mMeshMgr = nullptr;
 
 		/* @brief Pointer to the active shader manager. */
-		MShaderManager* mShaderMgr = nullptr;
+		ShaderManager* mShaderMgr = nullptr;
 
 		/* @brief Pointer to the active audio manager. */
 		AudioManager* mAudioMgr = nullptr;
@@ -75,7 +75,7 @@ namespace lum {
 		};
 
 		/* @brief A single token produced by the lexer. */
-		struct FToken {
+		struct Token {
 			TokenType mType;  // Token type
 			String mValue;     // Raw string value of the token
 		};
@@ -83,7 +83,7 @@ namespace lum {
 		/* @brief Context passed through the scene parsing pipeline.
 		* Holds references to the active scene, current entity and all resource managers.
 		*/
-		struct FParseContext {
+		struct ParseContext {
 
 			/* @brief Reference to the scene being populated. */
 			Scene& mScene;
@@ -92,12 +92,12 @@ namespace lum {
 			EntityID mEntity;
 
 			/* @brief Resource manager context used to load and resolve assets. */
-			SceneManagerContext mContext;
+			SceneManagerContext mCtx;
 
 		};
 
 		/* @brief Function pointer type for parse dispatch functions. */
-		using ParseFn = void(*)(std::vector<FToken>&, int32&, FParseContext&);
+		using ParseFn = void(*)(std::vector<Token>&, int32&, ParseContext&);
 
 		struct SceneComponentInfo {
 
@@ -131,30 +131,30 @@ namespace lum {
 		/* @brief Internal parsing helpers — not intended for direct use. */
 		namespace detail {
 
-			inline bool InBlock( std::vector<FToken>& tokens, int32 i ) {
+			inline bool InBlock( std::vector<Token>& tokens, int32 i ) {
 				return i < tokens.size( ) && tokens[ i ].mType != TokenType::RBracket;
 			}
 
-			inline bool IsString( std::vector<FToken>& tokens, int32& i, StringView str ) {
+			inline bool IsString( std::vector<Token>& tokens, int32& i, StringView str ) {
 				return tokens[ i ].mValue == ToLower( str );
 			}
 
 			/* @brief Advances index and asserts the next token is an opening bracket. */
-			inline void ExpectOpeningBracket( std::vector<FToken>& tokens, int32& i ) {
+			inline void ExpectOpeningBracket( std::vector<Token>& tokens, int32& i ) {
 				++i;
 				LUM_ASSERT( tokens[ i ].mType == TokenType::LBracket, "Opening bracket expected" );
 				++i;
 			}
 
 			/* @brief Advances index and asserts the next token is a colon. */
-			inline void ExpectColon( std::vector<FToken>& tokens, int32& i ) {
+			inline void ExpectColon( std::vector<Token>& tokens, int32& i ) {
 				++i;
 				LUM_ASSERT( tokens[ i ].mType == TokenType::Colon, "Colon expected" );
 				++i;
 			}
 
 			/* @brief Reads a string value after a colon separator. */
-			inline String ReadStringParameter( std::vector<FToken>& tokens, int32& i ) {
+			inline String ReadStringParameter( std::vector<Token>& tokens, int32& i ) {
 				ExpectColon( tokens, i );
 				String value = tokens[ i ].mValue;
 				LUM_ASSERT( i + 1 >= tokens.size( ) || tokens[ i + 1 ].mType != TokenType::String, "String expected" );
@@ -162,7 +162,7 @@ namespace lum {
 			}
 
 			/* @brief Reads a boolean value (> 0 = true) after a colon separator. */
-			inline bool ReadBoolParameter( std::vector<FToken>& tokens, int32& i ) {
+			inline bool ReadBoolParameter( std::vector<Token>& tokens, int32& i ) {
 				ExpectColon( tokens, i );
 				bool value = std::stof( tokens[ i ].mValue ) > 0;
 				LUM_ASSERT( i + 1 >= tokens.size( ) || tokens[ i + 1 ].mType != TokenType::Number, "Boolean expected" );
@@ -170,14 +170,14 @@ namespace lum {
 			}
 
 			/* @brief Reads a float value after a colon separator. */
-			inline float32 ReadFloatParameter( std::vector<FToken>& tokens, int32& i ) {
+			inline float32 ReadFloatParameter( std::vector<Token>& tokens, int32& i ) {
 				ExpectColon( tokens, i );
 				float32 value = std::stof( tokens[ i ].mValue );
 				LUM_ASSERT( i + 1 >= tokens.size( ) || tokens[ i + 1 ].mType != TokenType::Number, "Float expected" );
 				return value;
 			}
 
-			inline int64 ReadIntParameter( std::vector<FToken>& tokens, int32& i ) {
+			inline int64 ReadIntParameter( std::vector<Token>& tokens, int32& i ) {
 				ExpectColon( tokens, i );
 				int64 value = std::stoi( tokens[ i ].mValue );
 				LUM_ASSERT( i + 1 >= tokens.size( ) || tokens[ i + 1 ].mType != TokenType::Number, "Integer expected" );
@@ -185,7 +185,7 @@ namespace lum {
 			}
 
 			/* @brief Reads three consecutive float values as a vec3 after a colon separator. */
-			inline Vector3 ReadVec3Parameter( std::vector<FToken>& tokens, int32& i ) {
+			inline Vector3 ReadVec3Parameter( std::vector<Token>& tokens, int32& i ) {
 				ExpectColon( tokens, i );
 				float32 x = std::stof( tokens[ i++ ].mValue );
 				float32 y = std::stof( tokens[ i++ ].mValue );
@@ -195,7 +195,7 @@ namespace lum {
 			}
 
 			/* @brief Reads two consecutive float values as a vec2 after a colon separator. */
-			inline Vector2 ReadVec2Parameter( std::vector<FToken>& tokens, int32& i ) {
+			inline Vector2 ReadVec2Parameter( std::vector<Token>& tokens, int32& i ) {
 				LUM_ASSERT( tokens[ i ].mType == TokenType::Colon, "Colon expected" );
 				++i;
 				float32 x = std::stof( tokens[ i++ ].mValue );

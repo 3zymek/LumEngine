@@ -1,11 +1,10 @@
 //========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
 // Purpose: Represents a unique entity in the scene.
-//          Entity stores only an ID. ManagedEntity extends it
-//          with component add/remove/get operations via EntityManager.
 //
 //=============================================================================//
 #pragma once
+
 #include "Entity/EcsCommon.hpp"
 
 namespace lum {
@@ -18,7 +17,7 @@ namespace lum {
 	* Can be used as a lightweight handle to identify entities
 	* without access to the ECS manager.
 	*/
-	class Entity {
+	class LUM_API Entity {
 	public:
 
 		friend class ecs::EntityManager;
@@ -30,7 +29,7 @@ namespace lum {
 
 	private:
 
-		EntityID mId;
+		EntityID mId {};
 		bool mVisible = true;
 
 	};
@@ -43,7 +42,7 @@ namespace lum {
 	*
 	* @note Requires a valid MEntityManager reference for the lifetime of this object.
 	*/
-	class ManagedEntity : public Entity {
+	class LUM_API ManagedEntity : public Entity {
 	public:
 
 		friend class ecs::EntityManager;

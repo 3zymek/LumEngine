@@ -4,6 +4,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Core/Types.hpp"
 #include "Render/ShadersDefine.h"
 
@@ -18,7 +19,7 @@ namespace lum::limits {
 	inline constexpr usize kMaxEcsPoolCapacity = 1024;
 
 	/* @brief Maximum number of entities that can exist simultaneously. */
-	inline constexpr usize kMaxEntity = 1024;
+	inline constexpr usize kMaxEntities = 1024;
 
 	/* @brief Maximum number of distinct component types registered in the engine. */
 	inline constexpr usize kMaxComponentTypes = 128;

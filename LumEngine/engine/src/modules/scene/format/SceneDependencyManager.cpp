@@ -26,7 +26,7 @@ namespace lum::fmt {
 	void SceneDependencyManager::Initialize( Tokenizer& tokenizer, SceneManagerContext& ctx ) {
 
 		mTokenizer = &tokenizer;
-		mContext = &ctx;
+		mCtx = &ctx;
 
 		RegisterSceneComponents( sComponentsInfos );
 
@@ -35,8 +35,8 @@ namespace lum::fmt {
 
 	void SceneDependencyManager::Deserialize( Scene& scene ) {
 
-		FParseContext ctx{ scene };
-		ctx.mContext = *mContext;
+		ParseContext ctx{ scene };
+		ctx.mCtx = *mCtx;
 
 		auto tokens = mTokenizer->GetTokens( );
 
@@ -53,8 +53,8 @@ namespace lum::fmt {
 
 	void SceneDependencyManager::Serialize( Scene& scene, StringView path ) {
 
-		FParseContext ctx{ scene };
-		ctx.mContext = *mContext;
+		ParseContext ctx{ scene };
+		ctx.mCtx = *mCtx;
 
 		for (auto& [entityID, entity] : scene.mEntities) {
 
@@ -69,7 +69,7 @@ namespace lum::fmt {
 	// Private
 	//---------------------------------------------------------
 
-	void SceneDependencyManager::parse_world( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_world( std::vector<Token>& tokens, int32& i, ParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 
@@ -85,8 +85,8 @@ namespace lum::fmt {
 
 						if (detail::IsString( tokens, i, "path" )) {
 							detail::ExpectColon( tokens, i );
-							ctx.mContext.mRenderer->SetEnvironmentTexture(
-								ctx.mContext.mTextureMgr->LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ) )
+							ctx.mCtx.mRenderer->SetEnvironmentTexture(
+								ctx.mCtx.mTextureMgr->LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ) )
 							);
 						}
 
@@ -104,7 +104,7 @@ namespace lum::fmt {
 
 
 
-	void SceneDependencyManager::parse_entity( std::vector<FToken>& tokens, int32& i, FParseContext& ctx ) {
+	void SceneDependencyManager::parse_entity( std::vector<Token>& tokens, int32& i, ParseContext& ctx ) {
 
 		Entity entity = ctx.mScene.CreateEntity( );
 		EntityID id = entity.GetID( );

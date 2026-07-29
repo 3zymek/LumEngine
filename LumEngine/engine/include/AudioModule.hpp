@@ -11,7 +11,7 @@ namespace lum {
 
 	// Owns the AHI audio device and the high-level audio manager.
 	// Must be initialized before any scene or gameplay systems that use audio.
-	class MAudioModule {
+	class AudioModule {
 	public:
 
 		ahi::AudioDevice* mAudioDevice = nullptr;

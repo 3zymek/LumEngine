@@ -5,9 +5,11 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Rhi/Core/RhiDevice.hpp"
+
 #include "Core/Utils/HandlePool.hpp"
-//#include "Entity/Components/Transform.hpp"
+
 #include "Entity/Components/Material.hpp"
 
 namespace lum {
@@ -15,10 +17,10 @@ namespace lum {
 	namespace ev { class EventBus; }
 
 	/// Forward declare ///
-	class MTextureManager;
-	class MMaterialManager;
-	class MShaderManager;
-	class MMeshManager;
+	class TextureManager;
+	class MaterialManager;
+	class ShaderManager;
+	class MeshManager;
 	class SceneManager;
 	struct CStaticMesh;
 	struct CTransform;
@@ -37,16 +39,11 @@ namespace lum::render {
 	struct RendererContext {
 
 		rhi::RenderDevice*	mRenderDev = nullptr;
-		MTextureManager*	mTextureMgr = nullptr;
-		MMaterialManager*	mMaterialMgr = nullptr;
-		MMeshManager*		mMeshMgr = nullptr;
-		MShaderManager*		mShaderMgr = nullptr;
+		TextureManager*		mTextureMgr = nullptr;
+		MaterialManager*	mMaterialMgr = nullptr;
+		MeshManager*		mMeshMgr = nullptr;
+		ShaderManager*		mShaderMgr = nullptr;
 		ev::EventBus*		mEvBus = nullptr;
-	};
-
-	struct PostprocessExecutables {
-		
-
 	};
 
 	constexpr void ValidateRendererContext( const RendererContext& ctx ) {
@@ -111,11 +108,9 @@ namespace lum::render {
 	/* @brief Represents a single renderable object submitted to the renderer per frame. */
 	struct RenderInstance {
 
-		CTransform* mTransform = nullptr;
-
-		CStaticMesh* mStaticMesh = nullptr;
-
-		CMaterialInstance* mMaterial = nullptr;
+		CTransform*			mTransform = nullptr;
+		CStaticMesh*		mStaticMesh = nullptr;
+		CMaterialInstance*	mMaterial = nullptr;
 
 	};
 
@@ -207,12 +202,13 @@ namespace lum::render {
 
 		/* @brief GPU-side material uniform buffer layout. Aligned to std140. */
 		struct LUM_UBO_ALIGNMENT MaterialGPU {
+
 			Vector4 mBaseColor = Vector4( 1.0f );
 			float32 mRoughness = 0.5f;
 			float32 mMetallic = 0.0f;
 
 			float32 mPad[ 2 ]{};
-			
+
 		};
 
 		struct LUM_UBO_ALIGNMENT DirectionalLightGPU {

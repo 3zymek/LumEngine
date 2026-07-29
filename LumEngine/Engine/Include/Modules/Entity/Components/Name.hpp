@@ -14,12 +14,12 @@ namespace lum {
 	*  Used primarily for debugging, editor display, and logging.
 	*  Zero heap allocations — name is stored inline as a FixedString<32>.
 	*/
-	LCLASS( ) struct CName : public ComponentBase {
+	LUM_CLASS( ) struct CName : public ComponentBase {
 
 		LUM_GENERATED_BODY( )
 
 		/* @brief Null-terminated fixed-size name string. Max 31 usable characters. */
-		LPROPERTY( ) FixedString<32> mName;
+		LUM_PROPERTY( ) FixedString<32> mName;
 
 	};
 

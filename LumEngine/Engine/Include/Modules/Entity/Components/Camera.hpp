@@ -12,37 +12,36 @@ namespace lum {
 	/* @brief ECS component representing a camera.
 	* Stores projection and view parameters used for rendering.
 	*/
-	LCLASS( ) 
-	struct CCamera : public ComponentBase {
+	LUM_CLASS( ) struct CCamera : public ComponentBase {
 
 		LUM_GENERATED_BODY( )
 
 		/* @brief Vertical field of view in degrees. */
-		LPROPERTY( ) 
+		LUM_PROPERTY( ) 
 		float32 mFov = 0;
 
 		/* @brief Near clipping plane distance. */
-		LPROPERTY( ) 
+		LUM_PROPERTY( ) 
 		float32 mNear = 0;
 
 		/* @brief Far clipping plane distance. */
-		LPROPERTY( ) 
+		LUM_PROPERTY( ) 
 		float32 mFar = 0;
 
 		/* @brief Yaw angle in degrees, represents horizontal rotation. */
-		LPROPERTY( ) 
+		LUM_PROPERTY( ) 
 		float32 mYaw = -90.0f;
 
 		/* @brief Pitch angle in degrees, represents vertical rotation. */
-		LPROPERTY( ) 
+		LUM_PROPERTY( ) 
 		float32 mPitch = 0.0f;
 
 		/* @brief Point in world space the camera looks at. */
-		LPROPERTY( ) 
+		LUM_PROPERTY( ) 
 		Vector3 mTarget;
 
 		/* @brief Up vector defining camera orientation. */
-		LPROPERTY( ) 
+		LUM_PROPERTY( ) 
 		Vector3 mUp = Vector3( 0.0f, 1.0f, 0.0f );
 
 	};

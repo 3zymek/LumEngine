@@ -45,7 +45,7 @@ namespace lum {
 					inst.mTransform = &transform;
 					
 					
-					mRenderer->Submit( inst );
+					mRenderer->SubmitInstance( inst );
 
 				}
 			);

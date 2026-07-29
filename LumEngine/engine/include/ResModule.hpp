@@ -12,19 +12,19 @@
 
 namespace lum {
 
-	class MPlatformModule;
+	class PlatformModule;
 
 	// Owns all GPU-side resource managers (textures, meshes, shaders, materials).
-	// Must be initialized after MPlatformModule, before MRenderModule.
-	class MResourceModule {
+	// Must be initialized after PlatformModule, before RenderModule.
+	class ResourceModule {
 	public:
 
-		MTextureManager		mTextureMgr;
-		MMaterialManager	mMaterialMgr;
-		MMeshManager		mMeshMgr;
-		MShaderManager		mShaderMgr;
+		TextureManager		mTextureMgr;
+		MaterialManager	mMaterialMgr;
+		MeshManager		mMeshMgr;
+		ShaderManager		mShaderMgr;
 
-		void Initialize( MPlatformModule& platform,  ev::EventBus& bus );
+		void Initialize( PlatformModule& platform,  ev::EventBus& bus );
 
 	private:
 

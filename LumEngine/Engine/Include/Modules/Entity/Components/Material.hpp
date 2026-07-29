@@ -11,22 +11,22 @@
 namespace lum {
 
 	/* @brief ECS component holding a PBR material instance for an entity. */
-	LCLASS( Category = "RENDERING" ) 
+	LUM_CLASS( Category = "RENDERING" ) 
 	struct CMaterialInstance : public ComponentBase {
 
 		LUM_GENERATED_BODY()
 
 		/* @brief Path to the .lmt file. */
-		LPROPERTY( ) String mBasePath;
+		LUM_PROPERTY( ) String mBasePath;
 
 		/* @brief Base color multiplier. */
-		LPROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) Vector3 mBaseColor = Vector3( 1.0f );
+		LUM_PROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) Vector3 mBaseColor = Vector3( 1.0f );
 
 		/* @brief Roughness scalar fallback when no map is bound. */
-		LPROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) float32 mRoughnessValue = 0.5f;
+		LUM_PROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) float32 mRoughnessValue = 0.5f;
 
 		/* @brief Metallic scalar fallback when no map is bound. */
-		LPROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) float32 mMetallicValue = 0.0f;
+		LUM_PROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) float32 mMetallicValue = 0.0f;
 
 		rhi::TextureHandle mAlbedoTex; /* @brief Albedo (base color) texture map. */
 		rhi::TextureHandle mNormalTex; /* @brief Normal map for surface detail. */

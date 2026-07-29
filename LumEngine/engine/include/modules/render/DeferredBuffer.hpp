@@ -5,6 +5,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Render/RenderCommon.hpp"
 
 namespace lum::render::detail {
@@ -39,11 +40,13 @@ namespace lum::render::detail {
 		*/
 		void BindTextures( ) const;
 
-		LUM_FORCEINLINE
-		void BindFramebuffer( ) const { mCtx.mRenderDev->BindFramebuffer( mFramebuffer ); }
+		LUM_FORCEINLINE void BindFramebuffer( ) const { 
+			mCtx.mRenderDev->BindFramebuffer( mFramebuffer ); 
+		}
 
-		LUM_FORCEINLINE
-		void UnbindFramebuffer( ) const { mCtx.mRenderDev->BindFramebuffer( rhi::kDefaultFramebuffer ); }
+		LUM_FORCEINLINE void UnbindFramebuffer( ) const { 
+			mCtx.mRenderDev->BindFramebuffer( rhi::kDefaultFramebuffer ); 
+		}
 
 		void Clear( ) {
 			BindFramebuffer( );
@@ -57,9 +60,9 @@ namespace lum::render::detail {
 		RendererContext mCtx;
 
 		rhi::FramebufferHandle mFramebuffer;	/* @brief Framebuffer with albedo and normal attachments. */
-		rhi::TextureHandle mAlbedo;				/* @brief Albedo + roughness texture (SRGB8_Alpha8). */
-		rhi::TextureHandle mNormal;				/* @brief World space normal + metallic texture (RGBA16F). */
-		rhi::TextureHandle mDepth;				/* @brief Depth texture for position reconstruction (Depth32F). */
+		rhi::TextureHandle mAlbedoTex;
+		rhi::TextureHandle mNormalTex;
+		rhi::TextureHandle mDepthTex;
 
 		void create_textures( uint32 width, uint32 height );
 		void create_framebuffer( );

@@ -5,7 +5,6 @@
 //=============================================================================//
 
 #include "Engine.hpp"
-#include "Core/TransformSystem.hpp"
 
 namespace lum {
 
@@ -51,6 +50,16 @@ namespace lum {
 	void Engine::Finalize( ) {
 
 		mPlatform.Finalize( );
+
+	}
+
+	float64 Engine::GetDeltaTime( ) {
+
+		static float64 sLastTime = 0;
+		float64 currentTime = mPlatform.mWindow.GetTime( );
+		float64 delta = currentTime - sLastTime;
+		sLastTime = mPlatform.mWindow.GetTime( );
+		return delta;
 
 	}
 

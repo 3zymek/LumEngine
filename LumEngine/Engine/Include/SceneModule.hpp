@@ -6,22 +6,23 @@
 #pragma once
 
 #include "Scene/SceneManager.hpp"
+#include "Entity/TransformSystem.hpp"
 
 namespace lum {
 
-	class MRenderModule;
-	class MResourceModule;
-	class MAudioModule;
+	class RenderModule;
+	class ResourceModule;
+	class AudioModule;
 	namespace ev { class EventBus; }
 
 	// Owns the scene manager and wires it up with all engine subsystems.
 	// Must be initialized last — depends on platform, resources, render and audio.
-	class MSceneModule {
+	class SceneModule {
 	public:
 
 		SceneManager mSceneMgr;
 
-		void Initialize( MResourceModule& res, MRenderModule& render, MAudioModule& audio, ev::EventBus& bus );
+		void Initialize( ResourceModule& res, RenderModule& render, AudioModule& audio, ev::EventBus& bus );
 
 	};
 

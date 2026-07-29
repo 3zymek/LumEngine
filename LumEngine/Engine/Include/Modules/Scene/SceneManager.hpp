@@ -108,7 +108,7 @@ namespace lum {
     private:
         
         /* @brief Cached context holding all resource manager references. */
-        SceneManagerContext mContext;
+        SceneManagerContext mCtx;
 
         /* @brief Pointer to the currently active scene. */
         Scene* mCurrentScene = nullptr;

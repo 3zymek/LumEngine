@@ -1,6 +1,6 @@
 //========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
-// Purpose: LumEngine setup defines.
+// Purpose: Setup defines.
 // 
 //=============================================================================//
 #pragma once
@@ -18,13 +18,7 @@
 #endif
 
 // Defines if render hardware interface profile is enabled
-#define LUM_ENABLE_RENDER_PROFILER 1
+#define LUM_ENABLE_RENDER_PROFILER 0
 #ifndef LUM_ENABLE_RENDER_PROFILER
 #	error "LUM_ENABLE_RENDER_PROFILER should be defined"
-#endif
-
-// Defines if validation statements are used in hotpath ( render, ecs, etc... )
-#define LUM_ENABLE_HOTPATH_VALIDATION 1
-#ifndef LUM_ENABLE_HOTPATH_VALIDATION
-#	error "LUM_ENABLE_HOTPATH_VALIDATION should be defined"
 #endif

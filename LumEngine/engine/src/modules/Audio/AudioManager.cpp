@@ -221,6 +221,7 @@ namespace lum {
 		mgr->EachWithID<CTransform, CAudioEmitter>(
 			[&]( EntityID id, CTransform& transf, CAudioEmitter& emitter ) {
 
+				/*
 				if (emitter.mMarked) {
 
 					auto& inst = mInstances[ id ];
@@ -244,6 +245,7 @@ namespace lum {
 				}
 
 				emitter.mMarked = false;
+				*/
 
 			} );
 

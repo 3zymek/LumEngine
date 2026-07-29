@@ -24,7 +24,7 @@ namespace lum::fmt {
        /* @brief Parses the token stream and fills the material descriptor.
         * @param material Output descriptor to fill with parsed material data.
         */
-        void Parse( FMaterialDescriptor& material );
+        void Parse( MaterialDescriptor& material );
 
     private:
 

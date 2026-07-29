@@ -4,6 +4,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Core/CoreCommon.hpp"
 #include "Core/Limits.hpp"
 #include "Core/Types.hpp"
@@ -13,7 +14,7 @@ namespace lum {
 	/* @brief Base tag struct for all engine events.
 	*  Inherit from this to mark a struct as a valid event type.
 	*/
-	struct Event { };
+	struct LUM_API Event { };
 
 	/* @brief Internal implementation details for the event system.
 	*  Not intended for direct use outside of the event subsystem.

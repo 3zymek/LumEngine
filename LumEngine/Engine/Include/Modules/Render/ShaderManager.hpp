@@ -21,12 +21,12 @@ namespace lum {
 	* Shaders are identified by a hash of their file paths to avoid redundant
 	* loading and compilation.
 	*/
-	class MShaderManager {
+	class ShaderManager {
 	public:
 
 		/* @brief Default constructor.
 		*/
-		MShaderManager( ) {}
+		ShaderManager( ) {}
 
 		/* @brief Initializes the shader manager with a render device.
 		* @param device Pointer to the RHI render device used for shader creation.

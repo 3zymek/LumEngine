@@ -5,9 +5,9 @@
 //=============================================================================//
 #pragma once
 
-#define LPROPERTY(...)
-#define LFUNCTION(...)
-#define LCLASS(...)
+#define LUM_PROPERTY(...)
+#define LUM_FUNCTION(...)
+#define LUM_CLASS(...)
 #define LUM_GENERATED_BODY( )
 #define LUM_CLASS_EXTENSIONS( )
 

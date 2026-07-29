@@ -1,12 +1,26 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Defines a lightweight 4x4 matrix type with arithmetic,
+//          scalar operations, comparison operators and raw data access.
+//
+//=============================================================================//
 #pragma once
 
 #include "Core/Types.hpp"
 
 namespace lum {
 
-	struct Matrix4 {
+	/* @brief Represents a 4x4 matrix stored in column-major order.
+	* Provides arithmetic, scalar and comparison operations.
+	*/
+	struct LUM_API Matrix4 {
 
-		constexpr Matrix4() { }
+		/* @brief Constructs a zero-initialized matrix. */
+		constexpr Matrix4( ) { }
+
+		/* @brief Constructs a diagonal matrix initialized with the given scalar.
+		* @param scalar Value assigned to all diagonal elements.
+		*/
 		constexpr explicit Matrix4( float32 scalar ) {
 			mData[ 0 ] = scalar;
 			mData[ 5 ] = scalar;
@@ -14,21 +28,37 @@ namespace lum {
 			mData[ 15 ] = scalar;
 		}
 
+		/* @brief Raw matrix data stored in column-major order. */
 		float32 mData[ 16 ]{};
 
 		// Arithmetic
+
+		/* @brief Adds two matrices element-wise.
+		* @param rhs Matrix to add.
+		* @return Resulting summed matrix.
+		*/
 		Matrix4 operator+( const Matrix4& rhs ) const {
 			Matrix4 result;
 			for (uint32 i = 0; i < 16; i++)
 				result.mData[ i ] = mData[ i ] + rhs.mData[ i ];
 			return result;
-	   }
+		}
+
+		/* @brief Subtracts two matrices element-wise.
+		* @param rhs Matrix to subtract.
+		* @return Resulting difference matrix.
+		*/
 		Matrix4 operator-( const Matrix4& rhs ) const {
 			Matrix4 result;
 			for (uint32 i = 0; i < 16; i++)
 				result.mData[ i ] = mData[ i ] - rhs.mData[ i ];
 			return result;
 		}
+
+		/* @brief Multiplies two matrices.
+		* @param rhs Matrix to multiply by.
+		* @return Resulting product matrix.
+		*/
 		Matrix4 operator*( const Matrix4& rhs ) const {
 			Matrix4 result;
 			for (uint32 col = 0; col < 4; col++)
@@ -37,6 +67,11 @@ namespace lum {
 						result.mData[ col * 4 + row ] += mData[ k * 4 + row ] * rhs.mData[ col * 4 + k ];
 			return result;
 		}
+
+		/* @brief Divides two matrices element-wise.
+		* @param rhs Matrix to divide by.
+		* @return Resulting quotient matrix.
+		*/
 		Matrix4 operator/( const Matrix4& rhs ) const {
 			Matrix4 result;
 			for (uint32 i = 0; i < 16; i++)
@@ -45,19 +80,37 @@ namespace lum {
 		}
 
 		// Scalar
+
+		/* @brief Multiplies every matrix element by a scalar.
+		* @tparam tType Arithmetic scalar type.
+		* @param scalar Scalar multiplier.
+		* @return Scaled matrix.
+		*/
 		template<cArithmetic tType>
 		Matrix4 operator*( tType scalar ) {
 			Matrix4 result;
 			for (uint32 i = 0; i < 16; i++)
-				result.mData[ i ] = mData[i] * scalar;
+				result.mData[ i ] = mData[ i ] * scalar;
 			return result;
 		}
+
+		/* @brief Multiplies every matrix element by a scalar in-place.
+		* @tparam tType Arithmetic scalar type.
+		* @param scalar Scalar multiplier.
+		* @return Reference to this matrix.
+		*/
 		template<cArithmetic tType>
 		Matrix4& operator*=( tType scalar ) {
 			for (uint32 i = 0; i < 16; i++)
 				mData[ i ] *= scalar;
 			return *this;
 		}
+
+		/* @brief Divides every matrix element by a scalar.
+		* @tparam tType Arithmetic scalar type.
+		* @param scalar Scalar divisor.
+		* @return Scaled matrix.
+		*/
 		template<cArithmetic tType>
 		Matrix4 operator/( tType scalar ) {
 			Matrix4 result;
@@ -66,6 +119,12 @@ namespace lum {
 				result.mData[ i ] = mData[ i ] * inv;
 			return result;
 		}
+
+		/* @brief Divides every matrix element by a scalar in-place.
+		* @tparam tType Arithmetic scalar type.
+		* @param scalar Scalar divisor.
+		* @return Reference to this matrix.
+		*/
 		template<cArithmetic tType>
 		Matrix4& operator/=( tType scalar ) {
 			tType inv = 1.0 / scalar;
@@ -75,27 +134,51 @@ namespace lum {
 		}
 
 		// Assignment
+
+		/* @brief Adds another matrix to this matrix element-wise.
+		* @param rhs Matrix to add.
+		* @return Reference to this matrix.
+		*/
 		Matrix4& operator+=( const Matrix4& rhs ) {
 			for (uint32 i = 0; i < 16; i++)
 				mData[ i ] += rhs.mData[ i ];
 			return *this;
 		}
+
+		/* @brief Subtracts another matrix from this matrix element-wise.
+		* @param rhs Matrix to subtract.
+		* @return Reference to this matrix.
+		*/
 		Matrix4& operator-=( const Matrix4& rhs ) {
 			for (uint32 i = 0; i < 16; i++)
 				mData[ i ] -= rhs.mData[ i ];
 			return *this;
 		}
+
+		/* @brief Multiplies this matrix by another matrix.
+		* @param rhs Matrix to multiply by.
+		* @return Reference to this matrix.
+		*/
 		Matrix4& operator*=( const Matrix4& rhs ) {
 			*this = *this * rhs;
 			return *this;
 		}
+
+		/* @brief Divides this matrix element-wise by another matrix.
+		* @param rhs Matrix to divide by.
+		* @return Reference to this matrix.
+		*/
 		Matrix4& operator/=( const Matrix4& rhs ) {
 			for (uint32 i = 0; i < 16; i++)
 				mData[ i ] /= rhs.mData[ i ];
 			return *this;
 		}
-	    
+
 		// Unary
+
+		/* @brief Negates every matrix element.
+		* @return Negated matrix.
+		*/
 		Matrix4 operator-( ) const {
 			Matrix4 result;
 			for (uint32 i = 0; i < 16; i++)
@@ -104,19 +187,41 @@ namespace lum {
 		}
 
 		// Comparison
+
+		/* @brief Compares two matrices for equality.
+		* @param rhs Matrix to compare against.
+		* @return True if all elements are equal.
+		*/
 		bool operator==( const Matrix4& rhs ) const {
 			for (uint32 i = 0; i < 16; i++) {
 				if (mData[ i ] != rhs.mData[ i ]) return false;
 			}
 			return true;
 		}
+
+		/* @brief Compares two matrices for inequality.
+		* @param rhs Matrix to compare against.
+		* @return True if at least one element differs.
+		*/
 		bool operator!=( const Matrix4& rhs ) const { return !(*this == rhs); }
 
+		/* @brief Returns a pointer to the underlying matrix data.
+		* @return Pointer to the first matrix element.
+		*/
 		const float32* Data( ) const { return &mData[ 0 ]; }
 
+		/* @brief Returns a pointer to the first element of the specified column.
+		* @param col Column index.
+		* @return Pointer to the first element of the column.
+		*/
 		float32* operator[]( uint32 col ) { return &mData[ col * 4 ]; }
+
+		/* @brief Returns a read-only pointer to the first element of the specified column.
+		* @param col Column index.
+		* @return Const pointer to the first element of the column.
+		*/
 		const float32* operator[]( uint32 col ) const { return &mData[ col * 4 ]; }
 
 	};
 
-}
+} // namespace lum

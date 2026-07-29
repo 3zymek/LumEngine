@@ -17,11 +17,11 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MShaderManager::Initialize( rhi::RenderDevice* device ) {
+	void ShaderManager::Initialize( rhi::RenderDevice* device ) {
 		mRenderDevice = device;
 	}
 
-	rhi::ShaderHandle MShaderManager::LoadShader( ccharptr vertexPath, ccharptr fragmentPath, ResourceRoot root ) {
+	rhi::ShaderHandle ShaderManager::LoadShader( ccharptr vertexPath, ccharptr fragmentPath, ResourceRoot root ) {
 
 		uint64 hash = HashString(vertexPath) ^ HashString(fragmentPath);
 		if (mShaders.contains(hash))

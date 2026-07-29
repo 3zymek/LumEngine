@@ -4,6 +4,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Render/RenderCommon.hpp"
 #include "Render/Mesh.hpp"
 
@@ -11,13 +12,13 @@ namespace lum {
 
 	namespace detail {
 
-		enum class LUM_API MeshType : byte {
+		enum class MeshType : byte {
 			Static,
 			Dynamic
 		};
 
 		/* @brief Stores raw GPU buffer handles for a mesh (VBO, EBO, VAO). */
-		struct FRenderResources {
+		struct RenderResources {
 			rhi::BufferHandle			mVbo;
 			rhi::BufferHandle			mEbo;
 			rhi::VertexLayoutHandle	mVao;
@@ -31,10 +32,10 @@ namespace lum {
 	* Meshes are cached by path hash to avoid duplicate uploads.
 	* Provides built-in default and error meshes as fallbacks.
 	*/
-	class LUM_API MMeshManager {
+	class LUM_API MeshManager {
 	public:
 
-		MMeshManager() {}
+		MeshManager() {}
 
 		void Initialize( render::RendererContext* ctx );
 
@@ -42,7 +43,7 @@ namespace lum {
 		* @param handle Handle to the static mesh.
 		* @return Reference to the mesh resource containing VAO and index count.
 		*/
-		const FStaticMeshResource& GetStatic( StaticMeshHandle handle );
+		const StaticMeshResource& GetStatic( StaticMeshHandle handle );
 
 		/* @brief Loads a static mesh from disk and uploads it to the GPU.
 		* Returns a cached handle if the mesh was already loaded.
@@ -57,17 +58,19 @@ namespace lum {
 		* @param root Root directory identifier.
 		* @return Dynamic mesh instance.
 		*/
-		FDynamicMeshInstance CreateDynamic( StringView path, ResourceRoot root = ResourceRoot::External );
+		DynamicMeshInstance CreateDynamic( StringView path, ResourceRoot root = ResourceRoot::External );
 
 	private:
 
-		render::RendererContext* mContext = nullptr;
+		render::RendererContext* mCtx = nullptr;
 
-		StaticMeshHandle mDefaultMesh; // Fallback mesh used when no mesh is assigned.
-		StaticMeshHandle mErrorMesh;   // Fallback mesh used when loading fails.
+		std::unordered_map<uint64, StaticMeshHandle>			mStaticMeshCache; // Path hash -> handle cache.
+		cstd::HandlePool<StaticMeshHandle, StaticMeshResource>	mStaticMeshes{ limits::kMaxModels };
 
-		std::unordered_map<uint64, StaticMeshHandle> mStaticMeshCache; // Path hash -> handle cache.
-		cstd::HandlePool<StaticMeshHandle, FStaticMeshResource> mStaticMeshes{ limits::kMaxModels };
+		// Fallback mesh used when no mesh is assigned.
+		StaticMeshHandle mDefaultMesh;
+		// Fallback mesh used when loading fails.
+		StaticMeshHandle mErrorMesh;
 
 		std::vector<Vertex> mDefaultVertices = {
 			// position                normal               uv
@@ -87,7 +90,7 @@ namespace lum {
 		* @param data   CPU-side mesh data to upload.
 		* @return Render resources containing VBO, EBO, and VAO handles.
 		*/
-		detail::FRenderResources upload_gpu( detail::MeshType type, const MeshGeometry& data );
+		detail::RenderResources upload_gpu( detail::MeshType type, const MeshGeometry& data );
 
 		/* @brief Creates and uploads built-in meshes (default, error). */
 		void create_meshes( );

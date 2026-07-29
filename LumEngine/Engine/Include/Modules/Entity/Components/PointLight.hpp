@@ -12,18 +12,18 @@ namespace lum {
 	/* @brief Point light component — emits light in all directions from a single position.
 	* Attenuates linearly based on distance and radius.
 	*/
-	LCLASS( Category = "LIGHTNING" )
+	LUM_CLASS( Category = "LIGHTNING" )
 	struct CPointLight : public ComponentBase {
 
 		LUM_GENERATED_BODY( )
 
-		LPROPERTY( )
+		LUM_PROPERTY( )
 		float32 mIntensity = 1.0f; // Light intensity in linear space
 
-		LPROPERTY( )
+		LUM_PROPERTY( )
 		float32 mRadius = 10.0f; // Maximum range of the light
 
-		LPROPERTY( )
+		LUM_PROPERTY( )
 		Vector3 mColor = Vector3( 1.0f ); // Light color in linear RGB
 
 	};

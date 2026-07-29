@@ -15,7 +15,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MRenderModule::Initialize( MPlatformModule& platform, MResourceModule& res, ev::EventBus& bus ) {
+	void RenderModule::Initialize( PlatformModule& platform, ResourceModule& res, ev::EventBus& bus ) {
 
 		render::RendererContext ctx;
 		ctx.mMaterialMgr = &res.mMaterialMgr;

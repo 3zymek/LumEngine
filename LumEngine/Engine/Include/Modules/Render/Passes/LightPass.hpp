@@ -5,6 +5,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Render/RenderCommon.hpp"
 
 namespace lum::render {
@@ -53,18 +54,14 @@ namespace lum::render {
 		*/
 		void SetDirectionalLight( const DirectionalLight& light );
 
-		/* @brief Returns the currently active directional light. */
 		DirectionalLight GetDirectionalLight( );
 		DirectionalLight GetDirectionalLight( ) const;
 
 		const std::pair<PointLightsArr, uint32>& GetPointLights( ) const { return { mPointLights, mActivePointLights }; }
 		const std::pair<SpotLightsArr, uint32>& GetSpotLights( ) const { return { mSpotLights, mActiveSpotLights }; }
 
-		/* @brief Clears all point and spot lights submitted in the previous frame.
-		*  Should be called at the start of each frame before submitting new lights.
-		*/
-		LUM_FORCEINLINE
-		void ClearLights( ) { mActivePointLights = 0; mActiveSpotLights = 0; }
+		/* @brief Should be called at the start of each frame before submitting new lights. */
+		LUM_FORCEINLINE void ClearLights( ) { mActivePointLights = 0; mActiveSpotLights = 0; }
 
 		/* @brief Binds GBuffer textures, shadow map and light uniforms, then issues the fullscreen quad draw call.
 		*  @param gbuffer GBuffer containing geometry data from the geometry pass.
@@ -100,27 +97,18 @@ namespace lum::render {
 		detail::DirectionalLightGPU mDirectionalLightData{};
 
 		/* @brief Shader storage buffer holding all active point and spot lights. */
-		rhi::BufferHandle mLightsUBO;
+		rhi::BufferHandle mLightsUbo;
 
 		/* @brief Uniform buffer holding the active directional light data. */
-		rhi::BufferHandle mDirectionalLightUBO;
+		rhi::BufferHandle mDirectionalLightUbo;
 
-		/* @brief Pipeline state for the light pass. */
 		rhi::PipelineHandle mPipeline;
-
-		/* @brief Shader program used for the light pass. */
 		rhi::ShaderHandle mShader;
 
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
 		void init( );
-
-		/* @brief Uploads all active point lights to the GPU shader storage buffer. */
 		void upload_point_lights( );
-
-		/* @brief Uploads all active spot lights to the GPU shader storage buffer. */
 		void upload_spot_lights( );
-
-		/* @brief Uploads the active directional light to its GPU uniform buffer. */
 		void upload_directional_light( );
 
 	};

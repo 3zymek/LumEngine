@@ -1,11 +1,10 @@
 //========= Copyright (C) 2025-present 3zymek, MIT License ============//
 //
-// Purpose: Represents a unique entity in the scene.
-//          Entity stores only an ID. ManagedEntity extends it
-//          with component add/remove/get operations via MEntityManager.
+// Puprose: Per-component type pool for storing components.
 //
 //=============================================================================//
 #pragma once
+
 #include "Entity/EcsCommon.hpp"
 #include "Core/Utils/SparseSet.hpp"
 
@@ -15,7 +14,7 @@ namespace lum::ecs {
 
 	/* @brief Type-erased base for all component pools.
 	*
-	* Allows MEntityManager to store pools of different types
+	* Allows EntityManager to store pools of different types
 	* in a single array and call Remove without knowing the component type.
 	*/
 	struct ComponentBasePool {
@@ -92,7 +91,7 @@ namespace lum::ecs {
 
 		protected:
 
-			cstd::SparseSet<EntityID, tType> mComponents{ limits::kMaxEntity };
+			cstd::SparseSet<EntityID, tType> mComponents{ limits::kMaxEntities };
 
 		};
 

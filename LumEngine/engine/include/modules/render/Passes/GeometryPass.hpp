@@ -5,6 +5,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Render/RenderCommon.hpp"
 
 namespace lum::render {
@@ -29,8 +30,8 @@ namespace lum::render {
 		*/
 		void Submit( const RenderInstance& instance );
 
-		/* @brief Binds the GBuffer, pipeline and shader, then issues all queued draw calls.
-		*  @param gbuffer GBuffer to render geometry into.
+		/* @brief Binds the DefferedBuffer, pipeline and shader, then issues all queued draw calls.
+		*  @param gbuffer DefferedBuffer to render geometry into.
 		*/
 		void Execute( const detail::DeferredBuffer& gbuffer );
 
@@ -48,10 +49,10 @@ namespace lum::render {
 		std::vector<RenderInstance> mTempInstances;
 
 		/* @brief Cached context holding all subsystem manager references. */
-		RendererContext mContext;
+		RendererContext mCtx;
 
 		/* @brief CPU-side material uniform buffer, uploaded per draw call. */
-		detail::MaterialGPU mMaterialUBO{};
+		detail::MaterialGPU mMaterialUbo{};
 
 		/* @brief GPU buffer holding the per-draw model matrix uniform. */
 		rhi::BufferHandle mModelUniform;
@@ -59,29 +60,14 @@ namespace lum::render {
 		/* @brief GPU buffer holding the per-draw material uniform. */
 		rhi::BufferHandle mMaterialUniform;
 
-		/* @brief Pipeline state for geometry rendering. */
 		rhi::PipelineHandle mPipeline;
-
-		/* @brief Shader program used for geometry rendering. */
 		rhi::ShaderHandle mShader;
 
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
 		void init( );
-
-		/* @brief Uploads material uniforms, binds textures and issues a draw call for the given instance. */
 		void draw_instance( const RenderInstance& instance );
-
-		/* @brief Uploads the model matrix and issues a draw call without binding any material state. */
 		void draw_mesh( const RenderInstance& instance );
-
-		/* @brief Computes and uploads the model matrix for the given instance.
-		*  @param instance Render instance to compute the model matrix from.
-		*/
 		void upload_model_matrix( const RenderInstance& instance );
-
-		/* @brief Uploads material parameters for the given material instance.
-		*  @param mat Material instance to upload.
-		*/
 		void upload_material( const CMaterialInstance& mat );
 
 	};

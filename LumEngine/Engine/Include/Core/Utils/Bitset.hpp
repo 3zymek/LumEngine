@@ -1,31 +1,51 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Defines a fixed-size bitset type with compile-time storage size
+//          and basic bit manipulation operations.
+//
+//=============================================================================//
 #pragma once
+
 #include "Core/Types.hpp"
 
 namespace lum {
 
-	// Fixed-size bitset backed by a uint64 array.
-	// tSize = number of bits to store.
+	/* @brief Fixed-size bitset stored as an array of 64-bit unsigned integers.
+	* Provides bit manipulation operations for compile-time defined bit counts.
+	* @tparam tSize Number of bits stored in the bitset.
+	*/
 	template<uint32 tSize>
 	struct Bitset {
 
+		/* @brief Internal storage containing packed bits. */
 		uint64 mBits[ (tSize + 63) / 64 ]{};
 
-		// Sets bit at given index.
+		/* @brief Sets a bit at the specified index.
+		* @param bit Index of the bit to set.
+		*/
 		void Set( uint32 bit ) {
+			LUM_ASSERT( bit < tSize, "%ul out of range of %ul Bitset", bit, tSize );
 			mBits[ bit / 64 ] |= (1ULL << (bit % 64));
 		}
 
-		// Clears bit at given index.
+		/* @brief Clears a bit at the specified index.
+		* @param bit Index of the bit to clear.
+		*/
 		void Reset( uint32 bit ) {
+			LUM_ASSERT( bit < tSize, "%ul out of range of %ul Bitset", bit, tSize );
 			mBits[ bit / 64 ] &= ~(1ULL << (bit % 64));
 		}
 
-		// Returns true if bit at given index is set.
+		/* @brief Checks whether a bit is set.
+		* @param bit Index of the bit to check.
+		* @return True if the bit is set, otherwise false.
+		*/
 		bool Has( uint32 bit ) const {
+			LUM_ASSERT( bit < tSize, "%ul out of range of %ul Bitset", bit, tSize );
 			return (mBits[ bit / 64 ] & (1ULL << (bit % 64))) != 0;
 		}
 
-		// Clears all bits.
+		/* @brief Clears all bits in the bitset. */
 		void Clear( ) {
 			std::memset( mBits, 0, sizeof( mBits ) );
 		}

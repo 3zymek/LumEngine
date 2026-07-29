@@ -11,20 +11,20 @@
 namespace lum {
 
 	/* @brief ECS component holding a handle to a static mesh asset.
-	*  Does not own the mesh data — lifetime is managed by MMeshManager.
+	*  Does not own the mesh data — lifetime is managed by MeshManager.
 	*  Use StaticMeshHandle to reference geometry uploaded to the GPU.
 	*/
-	LCLASS( Category = "RENDERING" ) 
+	LUM_CLASS( Category = "RENDERING" ) 
 	struct CStaticMesh : public ComponentBase {
 
 		LUM_GENERATED_BODY( )
 
-		LPROPERTY( Droppable = "FILE" )
+		LUM_PROPERTY( Droppable = "FILE" )
 		String mPath;
 
 		String mLastLoadedPath = "";
 
-		/* @brief Handle to the static mesh asset registered in MMeshManager. */
+		/* @brief Handle to the static mesh asset registered in MeshManager. */
 		StaticMeshHandle mHandle;
 
 	};

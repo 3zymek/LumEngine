@@ -10,19 +10,19 @@
 namespace lum {
 
 	/* @brief ECS component storing the 3D transform of an entity. */
-    LCLASS( Category = "TRANSFORM" )
+    LUM_CLASS( Category = "TRANSFORM" )
     struct CTransform : public ComponentBase {
 
         LUM_GENERATED_BODY( )
 
         /* @brief Local position relative to parent. */
-        LPROPERTY( ) Vector3 mPosition = Vector3( 0.0f );
+        LUM_PROPERTY( ) Vector3 mPosition = Vector3( 0.0f );
 
         /* @brief Local non-uniform scale relative to parent. */
-        LPROPERTY( ) Vector3 mScale = Vector3( 1.0f );
+        LUM_PROPERTY( ) Vector3 mScale = Vector3( 1.0f );
 
         /* @brief Local Euler rotation in degrees relative to parent. */
-        LPROPERTY( ) Vector3 mRotation = Vector3( 0.0f );
+        LUM_PROPERTY( ) Vector3 mRotation = Vector3( 0.0f );
 
         /* @brief World space transform matrix, computed by TransformSystem. */
         Matrix4 mWorldMatrix = Matrix4( 1.0f );

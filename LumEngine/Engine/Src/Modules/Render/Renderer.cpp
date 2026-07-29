@@ -36,7 +36,7 @@ namespace lum::render {
 
 	void Renderer::UpdateCamera( const RenderCamera& camera ) {
 
-		Matrix4 jittered = mTemporalAA.ApplyJitter( camera.mProjection );
+		Matrix4 jittered = mTemporalAa.ApplyJitter( camera.mProjection );
 
 		mCameraGpu.mPosition = Vector4( camera.mPosition, 0.0f );
 		mCameraGpu.mProjection = jittered;
@@ -90,7 +90,7 @@ namespace lum::render {
 
 	void Renderer::init( ) {
 
-		mTemporalAA.Initialize( mCtx.mRenderDev );
+		mTemporalAa.Initialize( mCtx.mRenderDev );
 
 		mCtx.mEvBus->SubscribePermanently<EWindowResized>(
 			[&]( const EWindowResized& e ) {
@@ -206,7 +206,7 @@ namespace lum::render {
 			desc.mWidth = w;
 			desc.mHeight = h;
 			mScreenQuad.mSceneTex = mCtx.mRenderDev->CreateTexture( desc );
-			mTemporalAA.EnsureFrameTex( desc );
+			mTemporalAa.EnsureFrameTex( desc );
 		}
 		{
 			rhi::TextureCreateInfo desc;

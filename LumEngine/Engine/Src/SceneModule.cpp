@@ -12,7 +12,7 @@
 
 namespace lum {
 
-	void MSceneModule::Initialize( MResourceModule& res, MRenderModule& render, MAudioModule& audio, ev::EventBus& bus ) {
+	void SceneModule::Initialize( ResourceModule& res, RenderModule& render, AudioModule& audio, ev::EventBus& bus ) {
 
 		SceneManagerContext ctx;
 		ctx.mAudioMgr = &audio.mAudioMgr;

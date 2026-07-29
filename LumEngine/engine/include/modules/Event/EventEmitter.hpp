@@ -30,7 +30,7 @@ namespace lum::ev {
 	*
 	* @note Requires a valid EventBus reference for the lifetime of this object.
 	*/
-	class EventListener {
+	class LUM_API EventListener {
 
 		using EventEmitterSlot = detail::EventEmitterSlot;
 		using SubscriptionID = detail::SubscriptionID;

@@ -14,7 +14,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MTextureManager::Initialize( rhi::RenderDevice* device ) {
+	void TextureManager::Initialize( rhi::RenderDevice* device ) {
 
 		mRenderDevice = device;
 
@@ -22,7 +22,7 @@ namespace lum {
 
 	}
 
-	rhi::TextureHandle MTextureManager::Get( StringView path, ResourceRoot id ) {
+	rhi::TextureHandle TextureManager::Get( StringView path, ResourceRoot id ) {
 
 		uint64 hash = HashString( path );
 
@@ -34,7 +34,7 @@ namespace lum {
 
 	}
 
-	rhi::TextureHandle MTextureManager::Load( StringView path, TexturePreset preset, ResourceRoot id ) {
+	rhi::TextureHandle TextureManager::Load( StringView path, TexturePreset preset, ResourceRoot id ) {
 
 		uint64 hash = HashString( path );
 
@@ -60,7 +60,7 @@ namespace lum {
 		return handle;
 	}
 
-	rhi::TexturePixelFormat MTextureManager::ChannelsToFormat( uint32 channels ) {
+	rhi::TexturePixelFormat TextureManager::ChannelsToFormat( uint32 channels ) {
 		switch (channels) {
 		case 1: { return rhi::TexturePixelFormat::R; }; break;
 		case 2: { return rhi::TexturePixelFormat::RG; }; break;
@@ -71,7 +71,7 @@ namespace lum {
 		return rhi::TexturePixelFormat::RGBA;
 	}
 
-	rhi::TextureHandle MTextureManager::LoadEquirectangularCubemap( StringView path, ResourceRoot root ) {
+	rhi::TextureHandle TextureManager::LoadEquirectangularCubemap( StringView path, ResourceRoot root ) {
 
 		uint64 hash = HashString( path );
 
@@ -102,7 +102,7 @@ namespace lum {
 		return handle;
 	}
 
-	rhi::TextureHandle MTextureManager::GetFallbackTexture( FallbackTexture fallback ) {
+	rhi::TextureHandle TextureManager::GetFallbackTexture( FallbackTexture fallback ) {
 		switch (fallback) {
 		case FallbackTexture::Missing: return mMissingTexture;
 		case FallbackTexture::DefaultNormal: return mDefaultNormalTexture;
@@ -120,13 +120,13 @@ namespace lum {
 	// Private
 	//---------------------------------------------------------
 
-	void MTextureManager::init( ) {
+	void TextureManager::init( ) {
 
 		create_defaults( );
 
 	}
 
-	void MTextureManager::create_defaults( ) {
+	void TextureManager::create_defaults( ) {
 		{ // Default albedo texture
 			ImageData data;
 			data.mPixels = { 255, 255, 255, 255 };
@@ -196,7 +196,7 @@ namespace lum {
 	}
 
 	std::array<ImageData, 6>
-	MTextureManager::convert_equirectangular_to_cubemap( const ImageData& equirect, int32 faceSize ) {
+	TextureManager::convert_equirectangular_to_cubemap( const ImageData& equirect, int32 faceSize ) {
 
 		std::array<ImageData, 6> faces;
 		for (int32 i = 0; i < 6; i++) {

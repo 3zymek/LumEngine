@@ -1,3 +1,9 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Defines the shadow rendering system responsible for generating
+//          shadow maps for supported light types.
+//
+//=============================================================================//
 #pragma once
 
 #include "Render/RenderCommon.hpp"
@@ -7,14 +13,25 @@ namespace lum::render {
 	class GeometryPass;
 	class LightPass;
 
-	class ShadowSystem {
+	class LUM_API ShadowSystem {
 	public:
+
 
 		ShadowSystem( ) = default;
 
+		/* @brief Initializes shadow rendering resources.
+		* @param ctx Renderer context containing subsystem references.
+		*/
 		void Initialize( const RendererContext& ctx );
 
+		/* @brief Executes all shadow rendering passes.
+		* @param geoPass Geometry pass providing visible geometry.
+		* @param lightPass Light pass providing active light sources.
+		*/
 		void Execute( GeometryPass& geoPass, const LightPass& lightPass );
+
+
+
 
 		// Shadow map generation pass for the directional light.
 		class DirectionalLight {
@@ -32,6 +49,9 @@ namespace lum::render {
 			*/
 			void Execute( GeometryPass& geoPass, const LightPass& lightPass, RendererContext& ctx );
 
+			/* @brief Returns the generated shadow map texture.
+			* @return Shadow map texture handle.
+			*/
 			rhi::TextureHandle GetShadowMap( ) const noexcept { return mShadowMap; }
 
 		private:
@@ -75,14 +95,28 @@ namespace lum::render {
 
 		} mDirectionalLight;
 
+
+
+
 		class SpotLight {
 		public:
 			
+			/* @brief Initializes GPU resources required for spot light shadow mapping.
+			* @param ctx Renderer context.
+			*/
 			void Initialize( RendererContext& ctx );
 
+			/* @brief Generates shadow maps for all visible spot lights.
+			* @param geoPass Geometry pass providing scene geometry.
+			* @param lightPass Light pass providing active spot lights.
+			* @param ctx Renderer context.
+			*/
 			void Execute( GeometryPass& geoPass, const LightPass& lightPass, RendererContext& ctx );
 			
-			rhi::TextureHandle GetShadowMaps( ) const noexcept { return mShadowMaps; }
+			/* @brief Returns the shadow map texture array.
+			* @return Shadow map texture handle.
+			*/
+			LUM_NODISCARD rhi::TextureHandle GetShadowMaps( ) const noexcept { return mShadowMaps; }
 			
 		private:
 			
@@ -107,16 +141,26 @@ namespace lum::render {
 			/* @brief Uniform buffer holding the light space transformation matrix. */
 			rhi::BufferHandle mLightSpaceUBO;
 			
+			/* @brief Computes the light space matrix for a spot light.
+			* @param dir Light direction.
+			* @param pos Light position.
+			* @param fov Spot light field of view.
+			*/
 			void calculate_lightspace_matrix( const Vector3& dir, const Vector3& pos, float32 fov, RendererContext& ctx );
 
+			/* @brief Uploads the light space matrix to the GPU.
+			* @param mat Light space transformation matrix.
+			*/
 			void upload_lightspace_matrix( const Matrix4& mat, RendererContext& ctx );
 			
 		} mSpotLight;
 
 
+
+
 	private:
 
-		RendererContext mContext;
+		RendererContext mCtx;
 
 		rhi::PipelineHandle mShadowMappingPipeline;
 

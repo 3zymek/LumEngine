@@ -12,7 +12,7 @@ namespace lum { struct Scene; }
 namespace lum::fmt {
 
 	struct Tokenizer;
-	struct FToken;
+	struct Token;
 
 	/* @brief Parses a tokenized .lsc scene file and populates a Scene.
 	* Dispatches identifiers and component blocks to their respective parse functions
@@ -33,16 +33,16 @@ namespace lum::fmt {
 	private:
 
 		/* @brief Parses the world block and applies global scene settings. */
-		static void parse_world( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
+		static void parse_world( std::vector<Token>& tokens, int32& i, ParseContext& ctx );
 
 		/* @brief Parses an entity block and creates a new entity in the scene. */
-		static void parse_entity( std::vector<FToken>& tokens, int32& i, FParseContext& ctx );
+		static void parse_entity( std::vector<Token>& tokens, int32& i, ParseContext& ctx );
 
 		/* @brief Reference to the tokenizer holding the pre-tokenized scene file. */
 		Tokenizer* mTokenizer = nullptr;
 
 		/* @brief Resource manager context used during parsing for asset resolution. */
-		SceneManagerContext* mContext = nullptr;
+		SceneManagerContext* mCtx = nullptr;
 
 		/* @brief Lookup table mapping hashed identifier keywords to their parse functions.
 		* Used to dispatch top-level scene constructs such as entity and world blocks.

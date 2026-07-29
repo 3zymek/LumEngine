@@ -6,12 +6,14 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Render/RenderCommon.hpp"
 
 namespace lum::render {
 
-	namespace detail { class DeferredBuffer; }
 	namespace detail {
+
+		class DeferredBuffer;
 
 		enum class IBLTexture : byte {
 			IrradianceMap,
@@ -54,18 +56,13 @@ namespace lum::render {
 	private:
 
 		/* @brief Cached context holding all subsystem manager references. */
-		RendererContext mContext;
+		RendererContext mCtx;
 
 		/* @brief Cubemap mesh, shader, pipeline and texture data. */
 		detail::Cubemap mCubemap;
 
-		/* @brief Pipeline state for skybox rendering. */
 		rhi::PipelineHandle mPipeline;
-
-		/* @brief Shader program for skybox rendering. */
 		rhi::ShaderHandle mShader;
-
-		/* @brief Sampler used for cubemap and IBL texture sampling. */
 		rhi::SamplerHandle mSampler;
 
 		/* @brief Contains all IBL precomputed textures and their generation shaders. */
@@ -74,7 +71,7 @@ namespace lum::render {
 			/* @brief Irradiance cubemap — encodes diffuse indirect lighting
 			*  by convolving the environment over the hemisphere. 32x32 is sufficient.
 			*/
-			struct FIrradianceMap {
+			struct IrradianceMap {
 
 				rhi::TextureHandle mTexture;
 				rhi::ShaderHandle  mShader;
@@ -84,7 +81,7 @@ namespace lum::render {
 			/* @brief Prefiltered environment cubemap — encodes specular indirect lighting
 			*  at varying roughness levels across mip chain (mip 0 = mirror, last mip = fully rough).
 			*/
-			struct FPrefilteredMap {
+			struct PrefilteredMap {
 
 				rhi::TextureHandle mTexture;
 				rhi::ShaderHandle  mShader;
@@ -109,10 +106,7 @@ namespace lum::render {
 
 		} mIBL;
 
-		/* @brief Convolves the HDR environment into a 32x32 irradiance cubemap. */
 		void generate_irradiance_map( );
-
-		/* @brief Prefilters the HDR environment into a mipmapped cubemap for specular IBL. */
 		void generate_prefiltered_map( );
 
 		/* @brief Allocates all GPU resources — buffers, textures, samplers, pipelines, shaders. */

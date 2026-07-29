@@ -4,6 +4,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Core/Limits.hpp"
 #include "Core/Utils/HandlePool.hpp"
 #include "Render/RenderCommon.hpp"
@@ -13,14 +14,14 @@ namespace lum {
 
 	/* @brief Manages material base assets and per-entity material instances. 
 	*
-	* Base materials (FMaterialBase) are shared and stored by handle.
+	* Base materials (MaterialBase) are shared and stored by handle.
 	* Instances (FMaterialInstance) are created from a base and resolve
 	* missing textures to fallbacks automatically.
 	*/
-	class MMaterialManager {
+	class LUM_API MaterialManager {
 	public:
 
-		MMaterialManager( ) = default;
+		MaterialManager( ) = default;
 
 		/* @brief Initializes the manager with the given device and texture manager.
 		* @param device  Pointer to the active render device.
@@ -32,16 +33,14 @@ namespace lum {
 		* @param base Material base data to upload.
 		* @return Handle to the uploaded base material.
 		*/
-		LUM_NODISCARD
-		MaterialBaseHandle UploadBase( const FMaterialBase& base ) { return mBaseMaterials.Append( base ); }
+		LUM_NODISCARD MaterialBaseHandle UploadBase( const MaterialBase& base ) { return mBaseMaterials.Append( base ); }
 
 		/* @brief Resolves a material descriptor and uploads it to the base material pool.
 		* Loads textures from provided paths and automatically applies fallbacks for unset fields.
 		* @param desc Descriptor containing optional texture paths and material parameters.
 		* @return Handle to the uploaded base material.
 		*/
-		LUM_NODISCARD
-		MaterialBaseHandle UploadBase( const FMaterialDescriptor& base );
+		LUM_NODISCARD MaterialBaseHandle UploadBase( const MaterialDescriptor& base );
 
 		/* @brief Creates a material instance from a base handle.
 		* Resolves invalid texture handles to fallback textures.
@@ -49,12 +48,10 @@ namespace lum {
 		* @param base Handle to the base material.
 		* @return Fully resolved material instance ready for rendering.
 		*/
-		LUM_NODISCARD
-		CMaterialInstance CreateInstance( MaterialBaseHandle base );
+		LUM_NODISCARD CMaterialInstance CreateInstance( MaterialBaseHandle base );
 
 		/* @brief Returns a material instance created from the built-in default material. */
-		LUM_NODISCARD
-		CMaterialInstance GetDefaultInstance( );
+		LUM_NODISCARD CMaterialInstance GetDefaultInstance( );
 
 		/* @brief Sets a specific texture map on a base material.
 		* @param material Handle to the base material to modify.
@@ -65,11 +62,11 @@ namespace lum {
 
 	private:
 
-		render::RendererContext* mContext = nullptr;
+		render::RendererContext* mCtx = nullptr;
 		MaterialBaseHandle mDefaultMaterial;
 
 		/* @brief Pool storing all uploaded base materials, indexed by MaterialBaseHandle. */
-		cstd::HandlePool<MaterialBaseHandle, FMaterialBase> mBaseMaterials{ limits::kMaxMaterials };
+		cstd::HandlePool<MaterialBaseHandle, MaterialBase> mBaseMaterials{ limits::kMaxMaterials };
 
 		void init();
 

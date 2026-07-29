@@ -13,7 +13,7 @@ namespace lum {
 
 	// Owns the OS window and the RHI render device.
 	// Must be initialized before any rendering or resource modules.
-	class MPlatformModule {
+	class PlatformModule {
 	public:
 
 		Window mWindow;

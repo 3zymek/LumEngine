@@ -12,7 +12,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MAudioModule::Initialize( ev::EventBus& bus ) {
+	void AudioModule::Initialize( ev::EventBus& bus ) {
 
 		mAudioDevice = ahi::CreateDevice( ahi::AudioBackend::Fmod );
 		mAudioDevice->Initialize( 512, ahi::InitFlag::RightHanded3D | ahi::InitFlag::DistanceFilter );
@@ -20,7 +20,7 @@ namespace lum {
 
 	}
 
-	void MAudioModule::Finalize( ) {
+	void AudioModule::Finalize( ) {
 
 		mAudioDevice->Finalize( );
 		delete mAudioDevice;

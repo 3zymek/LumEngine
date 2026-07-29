@@ -4,6 +4,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Rhi/Core/RhiDevice.hpp"
 
 namespace lum {
@@ -11,7 +12,7 @@ namespace lum {
 	/* @brief Immutable GPU-side mesh — uploaded once and never modified.
 	*  Holds vertex, index and layout handles for draw calls.
 	*/
-	struct FStaticMeshResource {
+	struct StaticMeshResource {
 
 		/* @brief Vertex buffer containing mesh geometry. */
 		rhi::BufferHandle mVbo;
@@ -31,7 +32,7 @@ namespace lum {
 	*  Keeps a CPU-side copy of the mesh data and tracks whether
 	*  the GPU buffers need to be re-uploaded.
 	*/
-	struct FDynamicMeshInstance {
+	struct DynamicMeshInstance {
 
 		/* @brief CPU-side mesh data used to re-upload when dirty. */
 		MeshGeometry mData;
@@ -46,7 +47,7 @@ namespace lum {
 		rhi::VertexLayoutHandle mVao;
 
 		/* @brief Whether the GPU buffers are out of sync with CPU data and need re-upload. */
-		bool bDirty = false;
+		bool mDirty = false;
 
 	};
 

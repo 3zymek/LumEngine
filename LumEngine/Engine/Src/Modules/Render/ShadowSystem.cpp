@@ -12,8 +12,8 @@ namespace lum::render {
 
 	void ShadowSystem::Initialize( const RendererContext& ctx ) {
 
-		mContext = ctx;
-		mDirectionalLight.Initialize( mContext );
+		mCtx = ctx;
+		mDirectionalLight.Initialize( mCtx );
 
 		{ // Shadow mapping pipeline
 
@@ -21,7 +21,7 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.bEnabled = true;
 			desc.mCull.bEnabled = true;
 			desc.mCull.mFace = rhi::Face::Back;
-			mShadowMappingPipeline = mContext.mRenderDev->CreatePipeline( desc );
+			mShadowMappingPipeline = mCtx.mRenderDev->CreatePipeline( desc );
 
 		}
 
@@ -29,9 +29,9 @@ namespace lum::render {
 
 	void ShadowSystem::Execute( GeometryPass& geoPass, const LightPass& lightPass ) {
 
-		mContext.mRenderDev->BindPipeline( mShadowMappingPipeline );
-		mDirectionalLight.Execute( geoPass, lightPass, mContext );
-		//mSpotLight.Execute( geoPass, lightPass, mContext );
+		mCtx.mRenderDev->BindPipeline( mShadowMappingPipeline );
+		mDirectionalLight.Execute( geoPass, lightPass, mCtx );
+		//mSpotLight.Execute( geoPass, lightPass, mCtx );
 
 	}
 

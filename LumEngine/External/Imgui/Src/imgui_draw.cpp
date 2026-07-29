@@ -2736,7 +2736,7 @@ void ImFontAtlas::ClearFonts()
         }
 }
 
-static void ImFontAtlasBuildUpdateRendererHasTexturesFromContext(ImFontAtlas* atlas)
+static void ImFontAtlasBuildUpdateRendererHasTexturesFromCtx(ImFontAtlas* atlas)
 {
     // [LEGACY] Copy back the ImGuiBackendFlags_RendererHasTextures flag from ImGui context.
     // - This is the 1% exceptional case where that dependency if useful, to bypass an issue where otherwise at the
@@ -3443,7 +3443,7 @@ void ImFontAtlasBuildMain(ImFontAtlas* atlas)
         atlas->AddFontDefault();
 
     // [LEGACY] For backends not supporting RendererHasTextures: preload all glyphs
-    ImFontAtlasBuildUpdateRendererHasTexturesFromContext(atlas);
+    ImFontAtlasBuildUpdateRendererHasTexturesFromCtx(atlas);
     if (atlas->RendererHasTextures == false) // ~ImGuiBackendFlags_RendererHasTextures
         ImFontAtlasBuildLegacyPreloadAllGlyphRanges(atlas);
     atlas->TexIsBuilt = true;
@@ -4285,7 +4285,7 @@ void ImFontAtlasBuildInit(ImFontAtlas* atlas)
     if (atlas->FontLoader->LoaderInit)
         atlas->FontLoader->LoaderInit(atlas);
 
-    ImFontAtlasBuildUpdateRendererHasTexturesFromContext(atlas);
+    ImFontAtlasBuildUpdateRendererHasTexturesFromCtx(atlas);
 
     ImFontAtlasPackInit(atlas);
 

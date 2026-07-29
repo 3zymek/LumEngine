@@ -4,6 +4,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Render/RenderCommon.hpp"
 #include "Render/Passes/GeometryPass.hpp"
 #include "Render/Passes/LightPass.hpp"
@@ -84,7 +85,7 @@ namespace lum::render {
 		/* @brief Submits a render instance for drawing in the current frame.
 		*  @param instance Render instance containing transform, mesh and material.
 		*/
-		void Submit( const RenderInstance& instance ) { mGeometryPass.Submit( instance ); }
+		void SubmitInstance( const RenderInstance& instance ) { mGeometryPass.Submit( instance ); }
 
 
 
@@ -103,11 +104,7 @@ namespace lum::render {
 
 		/* @brief Cached context holding all subsystem manager references. */
 		RendererContext mCtx;
-
-		/* @brief GBuffer holding geometry pass output textures — albedo, normal and depth. */
 		detail::DeferredBuffer mDefferedBuffer;
-
-		/* @brief Fullscreen quad used for deferred lighting and post-process passes. */
 		detail::ScreenQuad mScreenQuad;
 
 
@@ -116,21 +113,11 @@ namespace lum::render {
 		// Passes
 		//---------------------------------------------------------
 
-		/* @brief Geometry pass — renders all submitted instances into the G-Buffer. */
 		GeometryPass mGeometryPass;
-
-		/* @brief Light pass — evaluates PBR lighting using G-Buffer and IBL data. */
 		LightPass mLightPass;
-
-		/* @brief Descriptor passed to the light pass each frame with IBL and shadow map handles. */
-		LightPassExectueContext mLightPassExecuteCtx;
-
-		/* @brief Environment pass — renders the HDR skybox and precomputes IBL maps. */
+		LightPassExectueContext mLightPassExecuteCtx; // Descriptor passed to the light pass each frame
 		EnvironmentPass mEnvironmentPass;
-
 		PostprocessPass mPostprocessPass;
-
-
 		ShadowSystem mShadowSys;
 
 		//---------------------------------------------------------
@@ -144,7 +131,7 @@ namespace lum::render {
 		detail::CameraGPU mCameraGpu{};
 
 
-		TemporalAntiAliasing mTemporalAA{ };
+		TemporalAntiAliasing mTemporalAa{ };
 
 
 		//---------------------------------------------------------

@@ -14,7 +14,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MPlatformModule::Initialize( ev::EventBus& bus ) {
+	void PlatformModule::Initialize( ev::EventBus& bus ) {
 
 		WindowCreateInfo desc;
 		desc.mEventBus = &bus;
@@ -28,7 +28,7 @@ namespace lum {
 
 	}
 
-	void MPlatformModule::Finalize( ) {
+	void PlatformModule::Finalize( ) {
 		mRenderDevice->Finalize( );
 		delete mRenderDevice;
 	}

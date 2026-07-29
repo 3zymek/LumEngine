@@ -6,6 +6,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Entity/Entity.hpp"
 #include "Entity/EntityManager.hpp"
 

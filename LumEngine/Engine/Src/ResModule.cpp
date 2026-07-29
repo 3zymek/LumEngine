@@ -13,7 +13,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MResourceModule::Initialize( MPlatformModule& platform, ev::EventBus& bus ) {
+	void ResourceModule::Initialize( PlatformModule& platform, ev::EventBus& bus ) {
 
 		mCtx.mEvBus = &bus;
 		mCtx.mMaterialMgr = &mMaterialMgr;

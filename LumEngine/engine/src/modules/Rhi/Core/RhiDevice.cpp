@@ -29,19 +29,17 @@ namespace lum::rhi {
 
 	bool RenderDevice::validate_texture_descriptor( const TextureCreateInfo& desc ) const noexcept {
 
-		LUM_HOTCHK_RETURN_CUSTOM(
-			mTextures.DenseSize( ) <= skMaxTextures,
-			LUM_SEV_WARN,
-			false,
-			"Max textures reached"
-		);
+		if (mTextures.DenseSize( ) >= skMaxTextures) {
 
-		LUM_HOTCHK_RETURN_CUSTOM(
-			desc.mData.mPixels.data( ) != nullptr,
-			LUM_SEV_WARN,
-			false,
-			"Texture pixel data is null"
-		);
+			LUM_LOG_WARN( "Max textures reached" );
+			return false;
+
+		}		
+
+		if (desc.mData.mPixels.data( ) == nullptr) {
+			LUM_LOG_WARN( "Texture pixel data is null" );
+			return false;
+		}
 
 		return true;
 
@@ -69,12 +67,10 @@ namespace lum::rhi {
 			);
 		}
 
-		LUM_HOTCHK_RETURN_CUSTOM(
-			mBuffers.DenseSize( ) < skMaxBuffers,
-			LUM_SEV_ERROR,
-			false,
-			"Max buffers reached"
-		);
+		if (mBuffers.DenseSize( ) >= skMaxBuffers) {
+			LUM_LOG_WARN( "Max buffers reached" );
+			return false;
+		}
 
 		LUM_ASSERT( desc.mSize > 0, "Invalid buffer size" );
 		LUM_ASSERT( desc.mBufferType != BufferType::None, "No buffer type given" );

@@ -4,6 +4,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Core/CoreCommon.hpp"
 
 namespace lum {
@@ -11,10 +12,7 @@ namespace lum {
 	/* @brief Base tag struct for all ECS components.
 	* Inherit from this to mark a struct as a valid component.
 	*/
-	struct ComponentBase {
-		/* @brief Defines if component was changed. */
-		bool mMarked = true;
-	};
+	struct LUM_API ComponentBase {};
 
 	/* @brief Unique identifier for an entity. */
 	using EntityID = uint64;

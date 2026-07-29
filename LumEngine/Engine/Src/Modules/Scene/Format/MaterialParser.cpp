@@ -13,7 +13,7 @@ namespace lum::fmt {
 	// Public
 	//---------------------------------------------------------
 
-	void MaterialParser::Parse( FMaterialDescriptor& material ) {
+	void MaterialParser::Parse( MaterialDescriptor& material ) {
 
 		auto& tokens = mTokenizer.GetTokens();
 

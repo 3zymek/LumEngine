@@ -6,6 +6,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Core/Limits.hpp"
 
 #include "Entity/EcsCommon.hpp"
@@ -15,7 +16,6 @@ namespace lum {
 
 	class Entity;
 	class ManagedEntity;
-
 	namespace ev { class EventBus; }
 
 	namespace ecs {

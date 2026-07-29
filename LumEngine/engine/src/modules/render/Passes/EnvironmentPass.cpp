@@ -23,7 +23,7 @@ namespace lum::render {
 
 		ValidateRendererContext( ctx );
 
-		mContext = ctx;
+		mCtx = ctx;
 
 		init( );
 
@@ -37,13 +37,13 @@ namespace lum::render {
 
 	void EnvironmentPass::Execute( detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad ) {
 
-		mContext.mRenderDev->BindFramebuffer( quad.mSceneFbo ); // Render skybox to screenquad
-		mContext.mRenderDev->BindPipeline( mCubemap.mPipeline );
-		mContext.mRenderDev->BindShader( mCubemap.mShader );
-		mContext.mRenderDev->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
-		mContext.mRenderDev->BindSampler( mSampler, LUM_TEX_CUBEMAP );
+		mCtx.mRenderDev->BindFramebuffer( quad.mSceneFbo ); // Render skybox to screenquad
+		mCtx.mRenderDev->BindPipeline( mCubemap.mPipeline );
+		mCtx.mRenderDev->BindShader( mCubemap.mShader );
+		mCtx.mRenderDev->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
+		mCtx.mRenderDev->BindSampler( mSampler, LUM_TEX_CUBEMAP );
 
-		mContext.mRenderDev->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
+		mCtx.mRenderDev->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
 
 	}
 
@@ -74,42 +74,42 @@ namespace lum::render {
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
 			desc.mSize = sizeof( Matrix4 ) * 2;
-			captureUBO = mContext.mRenderDev->CreateBuffer( desc );
-			mContext.mRenderDev->SetUniformBufferBinding( captureUBO, LUM_UBO_IRRADIANCE );
+			captureUBO = mCtx.mRenderDev->CreateBuffer( desc );
+			mCtx.mRenderDev->SetUniformBufferBinding( captureUBO, LUM_UBO_IRRADIANCE );
 
 		}
 
-		rhi::FramebufferHandle		captureFBO = mContext.mRenderDev->CreateFramebuffer( { } );
+		rhi::FramebufferHandle		captureFBO = mCtx.mRenderDev->CreateFramebuffer( { } );
 		Matrix4						captureProjection = IBL::GetCaptureProjection( );
 		std::array<Matrix4, 6>		captureViews = IBL::GetCaptureViews( );
-		rhi::ViewportState			viewport = mContext.mRenderDev->GetViewport( );
+		rhi::ViewportState			viewport = mCtx.mRenderDev->GetViewport( );
 
-		mContext.mRenderDev->SetViewport( 0, 0, 32, 32 );
-		mContext.mRenderDev->BindFramebuffer( captureFBO );
-		mContext.mRenderDev->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
-		mContext.mRenderDev->BindSampler( mSampler, LUM_TEX_CUBEMAP );
-		mContext.mRenderDev->BindPipeline( mCubemap.mPipeline );
-		mContext.mRenderDev->BindShader( mIBL.mIrradiance.mShader );
+		mCtx.mRenderDev->SetViewport( 0, 0, 32, 32 );
+		mCtx.mRenderDev->BindFramebuffer( captureFBO );
+		mCtx.mRenderDev->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
+		mCtx.mRenderDev->BindSampler( mSampler, LUM_TEX_CUBEMAP );
+		mCtx.mRenderDev->BindPipeline( mCubemap.mPipeline );
+		mCtx.mRenderDev->BindShader( mIBL.mIrradiance.mShader );
 
 		for (int32 i = 0; i < 6; i++) {
 
 			Matrix4 matrices[ ] = { captureProjection, captureViews[ i ] };
-			mContext.mRenderDev->UpdateBuffer( captureUBO, matrices );
+			mCtx.mRenderDev->UpdateBuffer( captureUBO, matrices );
 
 			rhi::TextureLayerAttachment attach;
 			attach.mAttachment = rhi::BufferBit::Color;
 			attach.mMip = 1;
 			attach.mLayer = i;
 			attach.mSlot = 0;
-			mContext.mRenderDev->AttachTextureLayer( captureFBO, mIBL.mIrradiance.mTexture, attach );
-			mContext.mRenderDev->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
+			mCtx.mRenderDev->AttachTextureLayer( captureFBO, mIBL.mIrradiance.mTexture, attach );
+			mCtx.mRenderDev->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
 
 		}
 
-		mContext.mRenderDev->Delete( captureFBO );
-		mContext.mRenderDev->Delete( captureUBO );
+		mCtx.mRenderDev->Delete( captureFBO );
+		mCtx.mRenderDev->Delete( captureUBO );
 
-		mContext.mRenderDev->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
+		mCtx.mRenderDev->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
 
 	}
 
@@ -125,21 +125,21 @@ namespace lum::render {
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
 			desc.mSize = sizeof( Matrix4 ) * 2 + sizeof( float32 );
-			captureUBO = mContext.mRenderDev->CreateBuffer( desc );
-			mContext.mRenderDev->SetUniformBufferBinding( captureUBO, LUM_UBO_PREFILTERED_MAP );
+			captureUBO = mCtx.mRenderDev->CreateBuffer( desc );
+			mCtx.mRenderDev->SetUniformBufferBinding( captureUBO, LUM_UBO_PREFILTERED_MAP );
 
 		}
 
-		rhi::FramebufferHandle		captureFBO = mContext.mRenderDev->CreateFramebuffer( { } );
+		rhi::FramebufferHandle		captureFBO = mCtx.mRenderDev->CreateFramebuffer( { } );
 		Matrix4						captureProjection = IBL::GetCaptureProjection( );
 		std::array<Matrix4, 6>		captureViews = IBL::GetCaptureViews( );
-		rhi::ViewportState			viewport = mContext.mRenderDev->GetViewport( );
+		rhi::ViewportState			viewport = mCtx.mRenderDev->GetViewport( );
 
-		mContext.mRenderDev->BindFramebuffer( captureFBO );
-		mContext.mRenderDev->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
-		mContext.mRenderDev->BindSampler( mSampler, LUM_TEX_CUBEMAP );
-		mContext.mRenderDev->BindPipeline( mCubemap.mPipeline );
-		mContext.mRenderDev->BindShader( mIBL.mPrefiltered.mShader );
+		mCtx.mRenderDev->BindFramebuffer( captureFBO );
+		mCtx.mRenderDev->BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
+		mCtx.mRenderDev->BindSampler( mSampler, LUM_TEX_CUBEMAP );
+		mCtx.mRenderDev->BindPipeline( mCubemap.mPipeline );
+		mCtx.mRenderDev->BindShader( mIBL.mPrefiltered.mShader );
 
 		struct LUM_UBO_ALIGNMENT UniformData {
 			Matrix4 mProjection = Matrix4( 1.0f );
@@ -153,7 +153,7 @@ namespace lum::render {
 			float32 roughness = ToFloat32( mip ) / ToFloat32( (mIBL.mPrefiltered.skMipmapLevels - 1) );
 
 			uint32 mipSize = 128 >> mip;
-			mContext.mRenderDev->SetViewport( 0, 0, mipSize, mipSize );
+			mCtx.mRenderDev->SetViewport( 0, 0, mipSize, mipSize );
 
 			for (int32 i = 0; i < 6; i++) {
 
@@ -162,24 +162,24 @@ namespace lum::render {
 				data.mView = captureViews[ i ];
 				data.mRoughness = roughness;
 
-				mContext.mRenderDev->UpdateBuffer( captureUBO, &data );
+				mCtx.mRenderDev->UpdateBuffer( captureUBO, &data );
 
 				rhi::TextureLayerAttachment attach;
 				attach.mAttachment = rhi::BufferBit::Color;
 				attach.mMip = mip;
 				attach.mLayer = i;
 				attach.mSlot = 0;
-				mContext.mRenderDev->AttachTextureLayer( captureFBO, mIBL.mPrefiltered.mTexture, attach );
-				mContext.mRenderDev->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
+				mCtx.mRenderDev->AttachTextureLayer( captureFBO, mIBL.mPrefiltered.mTexture, attach );
+				mCtx.mRenderDev->DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
 
 			}
 
 		}
 
-		mContext.mRenderDev->Delete( captureFBO );
-		mContext.mRenderDev->Delete( captureUBO );
+		mCtx.mRenderDev->Delete( captureFBO );
+		mCtx.mRenderDev->Delete( captureUBO );
 
-		mContext.mRenderDev->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
+		mCtx.mRenderDev->SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
 
 	}
 
@@ -205,7 +205,7 @@ namespace lum::render {
 
 
 		// Cubemap VBO
-		if (!mContext.mRenderDev->IsValid( mCubemap.mVbo )) {
+		if (!mCtx.mRenderDev->IsValid( mCubemap.mVbo )) {
 
 			rhi::BufferCreateInfo desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
@@ -213,12 +213,12 @@ namespace lum::render {
 			desc.mSize = ComputeByteSize( cubemapVertices );
 			desc.mData = cubemapVertices;
 			desc.mBufferType = rhi::BufferType::Vertex;
-			mCubemap.mVbo = mContext.mRenderDev->CreateBuffer( desc );
+			mCubemap.mVbo = mCtx.mRenderDev->CreateBuffer( desc );
 
 		}
 
 		// Cubemap EBO
-		if (!mContext.mRenderDev->IsValid( mCubemap.mEbo )) {
+		if (!mCtx.mRenderDev->IsValid( mCubemap.mEbo )) {
 
 			rhi::BufferCreateInfo desc;
 			desc.mBufferUsage = rhi::BufferUsage::Static;
@@ -226,12 +226,12 @@ namespace lum::render {
 			desc.mSize = ComputeByteSize( cubemapIndices );
 			desc.mData = cubemapIndices;
 			desc.mBufferType = rhi::BufferType::Element;
-			mCubemap.mEbo = mContext.mRenderDev->CreateBuffer( desc );
+			mCubemap.mEbo = mCtx.mRenderDev->CreateBuffer( desc );
 
 		}
 
 		// Cubemap VAO
-		if (!mContext.mRenderDev->IsValid( mCubemap.mVao )) {
+		if (!mCtx.mRenderDev->IsValid( mCubemap.mVao )) {
 
 			rhi::VertexAttribute attrs[ ]{
 				{
@@ -243,13 +243,13 @@ namespace lum::render {
 			rhi::VertexLayoutCreateInfo desc;
 			desc.mStride = 3 * sizeof( float32 );
 			desc.mAttributes = attrs;
-			mCubemap.mVao = mContext.mRenderDev->CreateVertexLayout( desc, mCubemap.mVbo );
-			mContext.mRenderDev->AttachElementBufferToLayout( mCubemap.mEbo, mCubemap.mVao );
+			mCubemap.mVao = mCtx.mRenderDev->CreateVertexLayout( desc, mCubemap.mVbo );
+			mCtx.mRenderDev->AttachElementBufferToLayout( mCubemap.mEbo, mCubemap.mVao );
 
 		}
 
 		// Cubemap sampler
-		if (!mContext.mRenderDev->IsValid( mSampler )) {
+		if (!mCtx.mRenderDev->IsValid( mSampler )) {
 
 			rhi::SamplerCreateInfo desc;
 			desc.mMinFilter = rhi::SamplerMinFilter::LinearMipmapLinear;
@@ -257,12 +257,12 @@ namespace lum::render {
 			desc.mWrapR = rhi::SamplerWrap::ClampEdge;
 			desc.mWrapS = rhi::SamplerWrap::ClampEdge;
 			desc.mWrapT = rhi::SamplerWrap::ClampEdge;
-			mSampler = mContext.mRenderDev->CreateSampler( desc );
+			mSampler = mCtx.mRenderDev->CreateSampler( desc );
 
 		}
 
 		// Cubemap Pipeline
-		if (!mContext.mRenderDev->IsValid( mCubemap.mPipeline )) {
+		if (!mCtx.mRenderDev->IsValid( mCubemap.mPipeline )) {
 
 			rhi::PipelineCreateInfo desc;
 			desc.mDepthStencil.mDepth.bEnabled = true;
@@ -270,12 +270,12 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::LessEqual;
 			desc.mCull.bEnabled = false;
 			desc.mCull.mFace = rhi::Face::Back;
-			mCubemap.mPipeline = mContext.mRenderDev->CreatePipeline( desc );
+			mCubemap.mPipeline = mCtx.mRenderDev->CreatePipeline( desc );
 
 		}
 
 		// Irradiance map (IBL)
-		if (!mContext.mRenderDev->IsValid( mIBL.mIrradiance.mTexture )) {
+		if (!mCtx.mRenderDev->IsValid( mIBL.mIrradiance.mTexture )) {
 
 			rhi::TextureCreateInfo desc;
 			desc.mTextureType = rhi::TextureType::Cubemap;
@@ -284,12 +284,12 @@ namespace lum::render {
 			desc.mDataType = rhi::TextureDataType::Float;
 			desc.mWidth = 32;
 			desc.mHeight = 32;
-			mIBL.mIrradiance.mTexture = mContext.mRenderDev->CreateTexture( desc );
+			mIBL.mIrradiance.mTexture = mCtx.mRenderDev->CreateTexture( desc );
 
 		}
 
 		// Prefiltered environment map (IBL)
-		if (!mContext.mRenderDev->IsValid( mIBL.mPrefiltered.mTexture )) {
+		if (!mCtx.mRenderDev->IsValid( mIBL.mPrefiltered.mTexture )) {
 
 			rhi::TextureCreateInfo desc;
 			desc.mTextureType = rhi::TextureType::Cubemap;
@@ -298,15 +298,15 @@ namespace lum::render {
 			desc.mWidth = 128;
 			desc.mHeight = 128;
 			desc.mMipmapLevels = 5;
-			mIBL.mPrefiltered.mTexture = mContext.mRenderDev->CreateTexture( desc );
+			mIBL.mPrefiltered.mTexture = mCtx.mRenderDev->CreateTexture( desc );
 
 		}
 		{ // Shaders
 
-			mCubemap.mShader = mContext.mShaderMgr->LoadShader( "shaders/skybox_pass.vert", "shaders/skybox_pass.frag", ResourceRoot::Internal );
+			mCubemap.mShader = mCtx.mShaderMgr->LoadShader( "shaders/skybox_pass.vert", "shaders/skybox_pass.frag", ResourceRoot::Internal );
 
-			mIBL.mIrradiance.mShader = mContext.mShaderMgr->LoadShader( "shaders/irradiance.vert", "shaders/irradiance.frag", ResourceRoot::Internal );
-			mIBL.mPrefiltered.mShader = mContext.mShaderMgr->LoadShader( "shaders/prefiltered_env.vert", "shaders/prefiltered_env.frag", ResourceRoot::Internal );
+			mIBL.mIrradiance.mShader = mCtx.mShaderMgr->LoadShader( "shaders/irradiance.vert", "shaders/irradiance.frag", ResourceRoot::Internal );
+			mIBL.mPrefiltered.mShader = mCtx.mShaderMgr->LoadShader( "shaders/prefiltered_env.vert", "shaders/prefiltered_env.frag", ResourceRoot::Internal );
 
 		}
 

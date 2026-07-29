@@ -22,7 +22,7 @@ namespace lum {
 
 	void SceneManager::Initialize( SceneManagerContext& ctx ) {
 
-		mContext = ctx;
+		mCtx = ctx;
 
 	}
 
@@ -60,9 +60,9 @@ namespace lum {
 		tokenizer.Tokenize( content.value( ) );
 
 		fmt::SceneDependencyManager parser;
-		parser.Initialize( tokenizer, mContext );
+		parser.Initialize( tokenizer, mCtx );
 		Scene scene;
-		scene.mEntityMgr.Initialize( mContext.mEventBus );
+		scene.mEntityMgr.Initialize( mCtx.mEventBus );
 		parser.Deserialize( scene );
 		mScenes.emplace( hash, std::move( scene ) );
 

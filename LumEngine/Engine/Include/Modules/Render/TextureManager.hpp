@@ -8,11 +8,8 @@
 
 namespace lum {
 
-	///Forward Declare///
+	// Forward declare
 	struct ImageData;
-
-	/////////////////////
-
 
 	/* @brief Defines texture type presets used to configure format and sampling. */
 	enum class TexturePreset : uint8 {
@@ -32,7 +29,7 @@ namespace lum {
 	};
 
 	/* @brief Descriptor for loading a cubemap from 6 individual face textures. */
-	struct FCubemapDescriptor {
+	struct CubemapDescriptor {
 		/* @brief Paths to the 6 cubemap faces in order: +X, -X, +Y, -Y, +Z, -Z */
 		ccharptr mFaces[6];
 	};
@@ -46,10 +43,10 @@ namespace lum {
 	*
 	* @note Must be initialized with a valid RDevice before use.
 	*/
-	class MTextureManager {
+	class TextureManager {
 	public:
 		
-		MTextureManager( ) = default;
+		TextureManager( ) = default;
 
 		/* @brief Initializes the texture manager with a render device.
 		* Automatically creates default and missing fallback textures.

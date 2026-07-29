@@ -5,6 +5,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Core/CoreCommon.hpp"
 
 namespace lum::cstd {
