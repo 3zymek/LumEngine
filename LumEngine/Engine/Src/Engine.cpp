@@ -12,23 +12,23 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void Engine::Initialize( StringView projectDir ) {
+	void Engine::Initialize( EngineCreateInfo info ) {
 	    
-		ResourceLoader::SetProjectRoot( projectDir );
+		
 
-		mAudio.Initialize( mEvBus );
-		mPlatform.Initialize( mEvBus );
-		mRes.Initialize( mPlatform, mEvBus );
-		mRender.Initialize( mPlatform,  mRes, mEvBus );
-		mScene.Initialize( mRes, mRender, mAudio, mEvBus );
+		ResourceLoader::SetProjectRoot( info.mProjectDirectory );
+
+		mAudio.Initialize( mEventBus );
+		mPlatform.Initialize( info, mEventBus );
+		mRes.Initialize( mPlatform, mEventBus );
+		mRender.Initialize( mPlatform,  mRes, mEventBus );
+		mScene.Initialize( mRes, mRender, mAudio, mEventBus );
 
 	}
 	void Engine::BeginFrame( ) {
 
 		mPlatform.mWindow.Update( );
-
-		mEvBus.FlushEvents( );
-
+		mEventBus.FlushEvents( );
 		mRender.mRenderer.BeginFrame( );
 		
 	}

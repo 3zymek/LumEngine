@@ -9,7 +9,8 @@ namespace lum::editor {
 
 	void Editor::Initialize( ) {
 
-		mEngine.Initialize( "C:/Users/szymek/Desktop/lumen_assets" ); mEngine.SetScene( "scene.lsc" );
+		mEngine.Initialize( "C:/Users/szymek/Desktop/lumen_assets" ); 
+		mEngine.SetScene( "scene.lsc" );
 
 		init_imgui( &mEngine.GetModulePlatform( ).mWindow );
 

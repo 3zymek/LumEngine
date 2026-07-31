@@ -24,7 +24,7 @@ namespace lum {
 		ctx.mRenderDev = platform.mRenderDevice;
 		ctx.mShaderMgr = &res.mShaderMgr;
 		ctx.mEvBus = &bus;
-		mRenderer.Initialize( ctx );
+		mRenderer.Initialize( ctx, platform.mWindow.GetWidth(), platform.mWindow.GetHeight() );
 
 		mRenderSys.Initialize( &mRenderer );
 

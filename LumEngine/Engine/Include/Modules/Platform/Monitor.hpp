@@ -17,9 +17,7 @@ namespace lum {
 	class Monitor {
 	public:
 
-		/* @brief Queries the primary monitor and caches its video mode.
-		*  Must be called after glfwInit().
-		*/
+		/* @brief Queries the primary monitor and caches its video mode. */
 		void Initialize( ) {
 			mMonitor = glfwGetPrimaryMonitor( );
 			mVideoMode = glfwGetVideoMode( mMonitor );

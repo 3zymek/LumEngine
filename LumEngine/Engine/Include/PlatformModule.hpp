@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Platform/Window.hpp"
+#include "CreateInfo.hpp"
 
 namespace lum {
 
@@ -19,7 +20,7 @@ namespace lum {
 		Window mWindow;
 		rhi::RenderDevice* mRenderDevice = nullptr;
 
-		void Initialize( ev::EventBus& bus );
+		void Initialize( EngineCreateInfo info, ev::EventBus& bus );
 		void Finalize( );
 
 	};

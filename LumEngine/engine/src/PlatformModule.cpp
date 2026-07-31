@@ -14,16 +14,12 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void PlatformModule::Initialize( ev::EventBus& bus ) {
+	void PlatformModule::Initialize( EngineCreateInfo info, ev::EventBus& bus ) {
 
-		WindowCreateInfo desc;
-		desc.mEventBus = &bus;
-		desc.mIconData = ResourceLoader::LoadImageFromFile( ResourceRoot::Internal, "branding/lumengine-icon.png", 4 );
-
-		mWindow.Initialize( desc );
+		mWindow.Initialize( info.mWindow, bus );
 		input::SetActiveWindow( static_cast< GLFWwindow* >(mWindow.GetNativeWindow( )) );
 
-		mRenderDevice = rhi::CreateDevice( rhi::RenderBackend::OpenGL );
+		mRenderDevice = rhi::CreateDevice( info.mRenderingBackend );
 		mRenderDevice->Initialize( &mWindow );
 
 	}

@@ -56,6 +56,14 @@ namespace lum {
 
 	};
 
+	enum class LUM_API ImageFormat : uint8 {
+		Native	= 0,
+		R		= 1,
+		RG		= 2,
+		RGB		= 3,
+		RGBA	= 4
+	};
+
 
 	/* @brief Static utility class for loading engine assets from disk.
 	*
@@ -82,10 +90,10 @@ namespace lum {
 		/* @brief Loads a texture from disk.
 		* @param root           Root directory identifier.
 		* @param filepath       Path relative to the selected root.
-		* @param expectedFormat Number of channels to force (1-4). 0 = use native format from file.
+		* @param expectedFormat Number of channels to force (1-4).
 		* @return TextureData on success, or empty on failure.
 		*/
-		LUM_NODISCARD static std::optional<ImageData> LoadImageFromFile( ResourceRoot root, StringView filepath, uint8 expectedFormat = 0 );
+		LUM_NODISCARD static std::optional<ImageData> LoadImageFromFile( ResourceRoot root, StringView filepath, ImageFormat expectedFormat = ImageFormat::Native );
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.

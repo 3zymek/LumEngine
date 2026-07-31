@@ -17,10 +17,10 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void Renderer::Initialize( const RendererContext& ctx ) {
+	void Renderer::Initialize( const RendererContext& ctx, uint32 w, uint32 h ) {
 
 		ValidateRendererContext( ctx );
-
+		
 		mCtx = ctx;
 
 		mGeometryPass.Initialize( mCtx );
@@ -30,7 +30,7 @@ namespace lum::render {
 		mPostprocessPass.Initialize( mCtx );
 		mDefferedBuffer.Initialize( mCtx, 500, 500 );
 
-		init( );
+		init( w, h );
 
 	}
 
@@ -88,7 +88,7 @@ namespace lum::render {
 	// Private
 	//---------------------------------------------------------
 
-	void Renderer::init( ) {
+	void Renderer::init( uint32 w, uint32 h ) {
 
 		mTemporalAa.Initialize( mCtx.mRenderDev );
 

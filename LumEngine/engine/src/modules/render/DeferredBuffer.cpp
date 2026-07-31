@@ -90,7 +90,8 @@ namespace lum::render::detail {
 
 	void DeferredBuffer::create_framebuffer( ) {
 
-		if (mCtx.mRenderDev->IsValid( mFramebuffer )) mCtx.mRenderDev->Delete( mFramebuffer );
+		if (mCtx.mRenderDev->IsValid( mFramebuffer )) 
+			mCtx.mRenderDev->Delete( mFramebuffer );
 
 		{
 			rhi::FramebufferCreateInfo desc;

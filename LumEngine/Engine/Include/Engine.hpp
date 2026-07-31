@@ -20,7 +20,7 @@ namespace lum {
 	class LUM_API Engine {
 	public:
 
-		void Initialize( StringView projectDir );
+		void Initialize( EngineCreateInfo info );
 		void SetScene( StringView path ) { mScene.mSceneMgr.SetScene( path ); }
 		void BeginFrame( );
 		void EndFrame( );
@@ -30,7 +30,7 @@ namespace lum {
 		float64 GetDeltaTime( );
 		bool IsRunning( ) { return mPlatform.mWindow.IsOpen( ); }
 
-		ev::EventBus&		GetEventBus( ) { return mEvBus; }
+		ev::EventBus&		GetEventBus( ) { return mEventBus; }
 		AudioModule&		GetModuleAudio( ) { return mAudio; }
 		PlatformModule&		GetModulePlatform( ) { return mPlatform; }
 		ResourceModule&		GetModuleResource( ) { return mRes; }
@@ -40,12 +40,12 @@ namespace lum {
 	private:
 
 		// Initialization order
-		ev::EventBus	mEvBus;
+		ev::EventBus	mEventBus;
 		AudioModule		mAudio;
 		PlatformModule	mPlatform;
 		ResourceModule	mRes;
 		RenderModule	mRender;
-		SceneModule	mScene;
+		SceneModule		mScene;
 
 	};
 

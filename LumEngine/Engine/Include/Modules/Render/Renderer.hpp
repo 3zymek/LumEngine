@@ -27,7 +27,7 @@ namespace lum::render {
 		/* @brief Initializes the renderer and allocates all GPU resources.
 		*  @param ctx Context struct containing valid pointers to all subsystem managers.
 		*/
-		void Initialize( const RendererContext& ctx );
+		void Initialize( const RendererContext& ctx, uint32 w, uint32 h );
 
 		rhi::TextureHandle GetFrameTexture( ) { return mScreenQuad.mPostprocessTex; }
 
@@ -139,7 +139,7 @@ namespace lum::render {
 		//---------------------------------------------------------
 
 		/* @brief Allocates GPU buffers and initializes all render passes. */
-		void init( );
+		void init( uint32 w, uint32 h );
 
 		/* @brief Allocates the screen quad FBO used for deferred and post-process passes. */
 		void ensure_screenquad_fbo( );

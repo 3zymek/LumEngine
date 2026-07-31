@@ -30,10 +30,10 @@ namespace lum::editor {
 
 		Engine mEngine;
 
-		Window* mWindow;
-		rhi::RenderDevice* mRenderDevice;
-		render::Renderer* mRenderer;
-		Scene* mCurrentScene;
+		Window* mWindow = nullptr;
+		rhi::RenderDevice* mRenderDevice = nullptr;
+		render::Renderer* mRenderer = nullptr;
+		Scene* mCurrentScene = nullptr;
 
 		Console mConsole;
 		Viewport mViewport;

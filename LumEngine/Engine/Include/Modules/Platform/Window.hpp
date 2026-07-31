@@ -39,15 +39,14 @@ namespace lum {
 		Cursor		= 1 << 6, // Cursor is visible inside the window.
 	};
 	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::WindowStateFlags );
-
+	
 	/* @brief Descriptor used to configure a window on creation. */
 	struct LUM_API WindowCreateInfo {
 		Flags<WindowInitFlags>		mFlags = {};
 		String						mTitle = "LumEngine";		/* @brief Window title bar text. */
 		std::optional<ImageData>	mIconData = std::nullopt;	/* @brief Optional loaded icon texture data. */
-		uint32						mHeight = 500;				/* @brief Initial window height in pixels. */
-		uint32						mWidth = 500;				/* @brief Initial window width in pixels. */
-		ev::EventBus*				mEventBus = nullptr;		/* @brief Event bus to emit window events to. */
+		uint32						mHeight = 720;				/* @brief Initial window height in pixels. */
+		uint32						mWidth = 1280;				/* @brief Initial window width in pixels. */
 	};
 
 	/* @brief Platform window wrapping a GLFW window.
@@ -61,7 +60,7 @@ namespace lum {
 		*  Creates the underlying GLFW window and registers it with the event bus.
 		*  @param desc Configuration for the window.
 		*/
-		void Initialize( const WindowCreateInfo& desc );
+		void Initialize( const WindowCreateInfo& desc, ev::EventBus& bus );
 
 		/* @brief Sets the window width in pixels. */
 		void SetWidth( uint32 width );
@@ -83,9 +82,7 @@ namespace lum {
 
 		void ToggleState( Flags<WindowStateFlags> flag, bool value );
 
-		/* @brief Polls window events and emits EWindowResized if size changed.
-		*  Call once per frame from the main loop.
-		*/
+		/* @brief Polls window events and emits Events */
 		void Update( ) noexcept;
 
 		/* @brief Returns true if the window is still open. */

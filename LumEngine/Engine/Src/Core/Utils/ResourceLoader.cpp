@@ -21,9 +21,10 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	std::optional<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, StringView filepath, uint8 expectedFormat ) {
+	std::optional<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, StringView filepath, ImageFormat expectedFormat ) {
 
 		String path = get_full_path( root, filepath );
+		uint8 formatCast = ToUnderlyingEnum( expectedFormat );
 
 		if (!detail::fs::exists( path )) {
 			set_error_msg( "File doesn't exist" );
@@ -37,24 +38,24 @@ namespace lum {
 
 		if (texture.mIsHdr) {
 
-			float32* data = stbi_loadf( path.c_str( ), &texture.mWidth, &texture.mHeight, &format, expectedFormat );
+			float32* data = stbi_loadf( path.c_str( ), &texture.mWidth, &texture.mHeight, &format, formatCast );
 			if (!data) {
 				set_error_msg( stbi_failure_reason( ) );
 				return std::nullopt;
 			}
-			texture.mChannels = (expectedFormat != 0) ? expectedFormat : format;
+			texture.mChannels = (formatCast != 0) ? formatCast : format;
 			texture.mFloatPixels.assign( data, data + texture.mWidth * texture.mHeight * texture.mChannels );
 			stbi_image_free( data );
 
 		}
 		else {
 
-			ucharptr data = stbi_load( path.c_str( ), &texture.mWidth, &texture.mHeight, &format, expectedFormat );
+			ucharptr data = stbi_load( path.c_str( ), &texture.mWidth, &texture.mHeight, &format, formatCast );
 			if (!data) {
 				set_error_msg( stbi_failure_reason( ) );
 				return std::nullopt;
 			}
-			texture.mChannels = (expectedFormat != 0) ? expectedFormat : format;
+			texture.mChannels = (formatCast != 0) ? formatCast : format;
 			texture.mPixels.assign( data, data + texture.mWidth * texture.mHeight * texture.mChannels );
 			stbi_image_free( data );
 

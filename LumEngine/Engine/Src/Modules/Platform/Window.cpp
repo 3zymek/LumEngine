@@ -12,9 +12,9 @@
 
 namespace lum {
 
-	void Window::Initialize( const WindowCreateInfo& desc ) {
+	void Window::Initialize( const WindowCreateInfo& desc, ev::EventBus& bus ) {
 
-		mEventBus = desc.mEventBus;
+		mEventBus = &bus;
 		init( desc );
 
 	}
