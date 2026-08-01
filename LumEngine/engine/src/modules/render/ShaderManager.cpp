@@ -23,29 +23,29 @@ namespace lum {
 
 	rhi::ShaderHandle ShaderManager::LoadShader( ccharptr vertexPath, ccharptr fragmentPath, ResourceRoot root ) {
 
-		uint64 hash = HashString(vertexPath) ^ HashString(fragmentPath);
-		if (mShaders.contains(hash))
-			return mShaders[hash];
+		uint64 hash = HashString( vertexPath ) ^ HashString( fragmentPath );
+		if (mShaders.contains( hash ))
+			return mShaders[ hash ];
 
-		std::optional<String> vertexData = ResourceLoader::BuildShaderSource(root, vertexPath);
-		if (!vertexData.has_value()) {
-			LUM_LOG_ERROR("Failed to load shader %s: %s", vertexPath, ResourceLoader::GetErrorMessage());
+		auto vertexData = ResourceLoader::BuildShaderSource( root, vertexPath );
+		if (!vertexData) {
+			LUM_LOG_ERROR( "Failed to load shader %s: %s", vertexPath, vertexData.Error( ) );
 			return {};
 		}
 
-		std::optional<String> fragmentData = ResourceLoader::BuildShaderSource(root, fragmentPath);
-		if (!fragmentData.has_value()) {
-			LUM_LOG_ERROR("Failed to load shader %s: %s", vertexPath, ResourceLoader::GetErrorMessage());
+		auto fragmentData = ResourceLoader::BuildShaderSource( root, fragmentPath );
+		if (!fragmentData) {
+			LUM_LOG_ERROR( "Failed to load shader %s: %s", vertexPath, fragmentData.Error( ) );
 			return {};
 		}
 
 		rhi::ShaderCreateInfo desc{};
-		desc.mVertexContent = vertexData.value();
-		desc.mFragmentContent = fragmentData.value();
+		desc.mVertexContent = vertexData.ValueRef( );
+		desc.mFragmentContent = fragmentData.ValueRef( );
 
-		rhi::ShaderHandle shader = mRenderDevice->CreateShader(desc);
+		rhi::ShaderHandle shader = mRenderDevice->CreateShader( desc );
 
-		mShaders[hash] = shader;
+		mShaders[ hash ] = shader;
 
 		return shader;
 

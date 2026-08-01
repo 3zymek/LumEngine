@@ -41,18 +41,18 @@ namespace lum {
 		if (mTextures.contains( hash ))
 			return mTextures[ hash ];
 
-		std::optional<ImageData> data = ResourceLoader::LoadImageFromFile( id, path );
+		auto data = ResourceLoader::LoadImageFromFile( id, path );
 
 		if (!data) {
-			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), ResourceLoader::GetErrorMessage( ) );
+			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), data.Error() );
 			return mMissingTexture;
 		}
 
 		rhi::TextureCreateInfo desc = sTexturePresetsLookup[ ToUnderlyingEnum( preset ) ];
 
-		desc.mData = data.value( );
+		desc.mData = data.ValueRef( );
 		desc.mTextureType = rhi::TextureType::Texture2D;
-		desc.mPixelFormat = ChannelsToFormat( data.value( ).mChannels );
+		desc.mPixelFormat = ChannelsToFormat( data->mChannels );
 		rhi::TextureHandle handle = mRenderDevice->CreateTexture( desc );
 
 		mTextures[ hash ] = handle;
@@ -78,15 +78,15 @@ namespace lum {
 		if (mTextures.contains( hash ))
 			return mTextures[ hash ];
 
-		std::optional<ImageData> data = ResourceLoader::LoadImageFromFile( root, path );
+		auto data = ResourceLoader::LoadImageFromFile( root, path );
 		if (!data) {
-			LUM_LOG_ERROR( "Failed to load texture %s", path.data( ) );
+			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), data.Error( ) );
 			return mMissingTexture;
 		}
 
-		uint32 faceSize = std::min(data.value().mWidth / 4, data.value().mHeight / 2);
+		uint32 faceSize = std::min(data->mWidth / 4, data->mHeight / 2);
 
-		std::array<ImageData, 6> convertedData = convert_equirectangular_to_cubemap( data.value( ), faceSize );
+		std::array<ImageData, 6> convertedData = convert_equirectangular_to_cubemap( data.ValueRef( ), faceSize );
 
 		rhi::TextureCreateInfo desc;
 		for (int32 i = 0; i < 6; i++) {
@@ -180,14 +180,14 @@ namespace lum {
 			mDefaultMetallicTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Missing texture
-			std::optional<ImageData> data = ResourceLoader::LoadImageFromFile( ResourceRoot::Internal, "textures/missingTex.png" );
+			auto data = ResourceLoader::LoadImageFromFile( ResourceRoot::Internal, "textures/missingTex.png" );
 			if (!data) {
-				LUM_LOG_ERROR( "Failed to load missing texture fallback" );
+				LUM_LOG_ERROR( "Failed to load missing texture fallback: %s", data.Error() );
 				mMissingTexture = mDefaultAlbedoTexture;
 				return;
 			}
 			rhi::TextureCreateInfo desc;
-			desc.mData = data.value( );
+			desc.mData = data.ValueRef( );
 			desc.mInternalFormat = rhi::TextureInternalFormat::RGB8;
 			desc.mPixelFormat = rhi::TexturePixelFormat::RGB;
 			desc.mTextureType = rhi::TextureType::Texture2D;

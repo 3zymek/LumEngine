@@ -5,6 +5,7 @@
 //=============================================================================//
 
 #include "Ahi/Backend/FmodDevice.hpp"
+#include "Platform/Filesystem.hpp"
 
 namespace lum::ahi::fmod {
 
@@ -27,12 +28,12 @@ namespace lum::ahi::fmod {
 
 	}
 
-	SoundHandle FMODDevice::LoadSound( StringView path, Flags<SoundFlag> flags ) {
+	SoundHandle FMODDevice::LoadSound( Path path, Flags<SoundFlag> flags ) {
 
 		FMOD::Sound* sound = nullptr;
 		FMOD_MODE fmodFlags = translate_sound_flags( flags );
 
-		mSystem->createSound( path.data( ), fmodFlags, nullptr, &sound );
+		mSystem->createSound( path.ToString().data( ), fmodFlags, nullptr, &sound );
 
 		return mSounds.Append( std::move( sound ) );
 

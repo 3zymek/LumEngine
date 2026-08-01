@@ -5,8 +5,10 @@
 //=============================================================================//
 #pragma once
 
+#include "Core/Utils/Result.hpp"
 #include "Core/CoreCommon.hpp"
 #include "Core/Limits.hpp"
+#include "Platform/FileSystem.hpp"
 
 namespace lum {
 
@@ -74,9 +76,6 @@ namespace lum {
 	* Non-constructible and non-copyable — use static methods only.
 	*/
 	class LUM_API ResourceLoader {
-
-		using Path = detail::fs::path;
-
 	public:
 
 		/* @brief Sets the project root directory for external asset resolution.
@@ -85,7 +84,7 @@ namespace lum {
 		static void SetProjectRoot( Path path ) { sProjectRoot = path; }
 
 		/* @brief Returns the current project root path as a string. */
-		LUM_NODISCARD static String GetProjectRoot( ) { return sProjectRoot.string( ); }
+		LUM_NODISCARD static String GetProjectRoot( ) { return sProjectRoot.ToString( ); }
 
 		/* @brief Loads a texture from disk.
 		* @param root           Root directory identifier.
@@ -93,21 +92,14 @@ namespace lum {
 		* @param expectedFormat Number of channels to force (1-4).
 		* @return TextureData on success, or empty on failure.
 		*/
-		LUM_NODISCARD static std::optional<ImageData> LoadImageFromFile( ResourceRoot root, StringView filepath, ImageFormat expectedFormat = ImageFormat::Native );
+		LUM_NODISCARD static Result<ImageData> LoadImageFromFile( ResourceRoot root, StringView filepath, ImageFormat expectedFormat = ImageFormat::Native );
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.
 		* @param filepath Path relative to the selected root.
 		* @return Populated MeshData or empty on failure.
 		*/
-		LUM_NODISCARD static std::optional<MeshGeometry> LoadMeshFromFile( ResourceRoot root, StringView filepath );
-
-		/* @brief Resolves an absolute path from a root directory and a relative filepath.
-		* @param root     Root directory identifier.
-		* @param filepath Path relative to the selected root.
-		* @return Resolved absolute path, or empty if the file does not exist.
-		*/
-		LUM_NODISCARD static String ResolvePath( ResourceRoot root, StringView filepath );
+		LUM_NODISCARD static Result<MeshGeometry> LoadMeshFromFile( ResourceRoot root, StringView filepath );
 
 		/* @brief Loads a shader source file from disk.
 		* Prepends the engine shader define header automatically.
@@ -115,60 +107,25 @@ namespace lum {
 		* @param filepath Path relative to the selected root.
 		* @return Shader source as String or empty on failure.
 		*/
-		LUM_NODISCARD static String BuildShaderSource( ResourceRoot root, StringView filepath );
+		LUM_NODISCARD static Result<String> BuildShaderSource( ResourceRoot root, StringView filepath );
 
-		/* @brief Writes text content to a file at the given path.
-		* Creates the file if it does not exist, overwrites if it does.
-		* @param root Root directory identifier.
+		/* @brief Resolves an absolute path from a root directory and a relative filepath.
+		* @param root     Root directory identifier.
 		* @param filepath Path relative to the selected root.
-		* @param content Text content to write.
-		* @return True if operation completed successfully.
+		* @return Resolved absolute path, or empty if the file does not exist.
 		*/
-		static bool WriteTextFile( ResourceRoot root, StringView filepath, const String& content );
-
-		/* @brief Reads raw text content from a file.
-		* @param root Root directory identifier.
-		* @param filepath Path relative to the selected root.
-		* @return File contents as String or empty String on failure.
-		*/
-		LUM_NODISCARD static String ReadTextFile( ResourceRoot root, StringView filepath );
-
-		/* @brief Returns the last error message set by a failed load operation. */
-		LUM_NODISCARD static ccharptr GetErrorMessage( ) { return sLastErrorMessage; }
+		static Path ResolveResourcePath( ResourceRoot root, StringView filepath );
 
 	private:
 
 		/* @brief Absolute path to the project root (external assets). */
-		static inline Path sProjectRoot = "";
+		static inline Path sProjectRoot{ "" };
 
 		/* @brief Absolute path to the engine internal assets directory. */
-		static inline Path sInternalAssetsRoot = detail::fs::current_path( ).parent_path( ) / "LumEngine" / "InternalAssets";
+		static inline Path sInternalAssetsRoot = FileSystem::CurrentPath().ParentPath( ) / "LumEngine" / "InternalAssets";
 
 		/* @brief Path to the shared shader define header prepended to all shaders. */
-		static inline Path sShaderDefineFile = detail::fs::current_path( ).parent_path( ) / "LumEngine" / "Engine" / "Include" / "Modules" / "Render" / "ShadersDefine.h";
-
-		/* @brief Buffer storing the last asset load error message. */
-		static inline char sLastErrorMessage[ limits::kMaxErrorAssetLoadLength ]{};
-
-		/* @brief Sets the error message from a string literal. */
-		template<usize tLength>
-		static void set_error_msg( const char( &msg )[ tLength ] ) {
-			usize length = (tLength < limits::kMaxErrorAssetLoadLength) ? tLength : limits::kMaxErrorAssetLoadLength;
-			std::strncpy( sLastErrorMessage, msg, length );
-		}
-
-		/* @brief Sets the error message from a runtime string. */
-		static void set_error_msg( const String& msg ) {
-			std::strncpy( sLastErrorMessage, msg.data( ), sizeof( sLastErrorMessage ) );
-		}
-
-		static String get_full_path( ResourceRoot root, StringView filepath ) {
-			if (root == ResourceRoot::External)
-				return (sProjectRoot / filepath).lexically_normal( ).string( );
-			else if (root == ResourceRoot::Internal)
-				return (sInternalAssetsRoot / filepath).lexically_normal( ).string( );
-			return "";
-		}
+		static inline Path sShaderDefineFile = FileSystem::CurrentPath( ).ParentPath( ) / "LumEngine" / "Engine" / "Include" / "Modules" / "Render" / "ShadersDefine.h";
 
 		ResourceLoader( const ResourceLoader& ) = delete;
 		ResourceLoader( ResourceLoader&& ) = delete;

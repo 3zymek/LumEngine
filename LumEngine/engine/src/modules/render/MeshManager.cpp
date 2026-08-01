@@ -40,20 +40,20 @@ namespace lum {
 		if (mStaticMeshCache.contains( hash ))
 			return mStaticMeshCache[ hash ];
 
-		std::optional<MeshGeometry> data = ResourceLoader::LoadMeshFromFile( root, path );
+		auto meshGeometry = ResourceLoader::LoadMeshFromFile( root, path );
 
-		if (!data) {
-			LUM_LOG_ERROR( "Failed to load model %s: %s", path.data(), ResourceLoader::GetErrorMessage( ) );
+		if (!meshGeometry) {
+			LUM_LOG_ERROR( "Failed to load model %s: %s", path.data(), meshGeometry.Error() );
 			return mErrorMesh;
 		}
 
-		detail::RenderResources res = upload_gpu( detail::MeshType::Static, data.value( ) );
+		detail::RenderResources res = upload_gpu( detail::MeshType::Static, meshGeometry.ValueRef( ) );
 
 		StaticMeshResource meshResource;
 		meshResource.mVbo = res.mVbo;
 		meshResource.mEbo = res.mEbo;
 		meshResource.mVao = res.mVao;
-		meshResource.mNumIndices = data.value( ).mIndices.size( );
+		meshResource.mNumIndices = meshGeometry.ValueRef( ).mIndices.size( );
 
 		StaticMeshHandle meshHandle = mStaticMeshes.Append( std::move( meshResource ) );
 
@@ -64,20 +64,20 @@ namespace lum {
 
 	DynamicMeshInstance MeshManager::CreateDynamic( StringView path, ResourceRoot root ) {
 
-		std::optional<MeshGeometry> data = ResourceLoader::LoadMeshFromFile( root, path );
+		auto meshGeometry = ResourceLoader::LoadMeshFromFile( root, path );
 
-		if (!data) {
-			LUM_LOG_ERROR( "Failed to load model %s: %s", path, ResourceLoader::GetErrorMessage( ) );
+		if (!meshGeometry) {
+			LUM_LOG_ERROR( "Failed to load model %s: %s", path, meshGeometry.Error() );
 			MeshGeometry fallback;
 			fallback.mVertices = mDefaultVertices;
 			fallback.mIndices = mDefaultIndices;
-			data = fallback;
+			meshGeometry = fallback;
 		}
 
-		detail::RenderResources res = upload_gpu( detail::MeshType::Dynamic, data.value( ) );
+		detail::RenderResources res = upload_gpu( detail::MeshType::Dynamic, meshGeometry.ValueRef( ) );
 
 		DynamicMeshInstance meshInstance;
-		meshInstance.mData = data.value( );
+		meshInstance.mData = meshGeometry.ValueRef( );
 		meshInstance.mVbo = res.mVbo;
 		meshInstance.mEbo = res.mEbo;
 		meshInstance.mVao = res.mVao;
@@ -199,19 +199,19 @@ namespace lum {
 
 		}
 		{ // Error mesh
-			std::optional<MeshGeometry> data = ResourceLoader::LoadMeshFromFile( ResourceRoot::Internal, "models/ERRORText.fbx" );
-			if (!data) {
-				LUM_LOG_ERROR( "Failed to load fallback error model: %s", ResourceLoader::GetErrorMessage( ) );
+			auto meshGeometry = ResourceLoader::LoadMeshFromFile( ResourceRoot::Internal, "models/ERRORText.fbx" );
+			if (!meshGeometry) {
+				LUM_LOG_ERROR( "Failed to load fallback error model: %s", meshGeometry.Error() );
 				mErrorMesh = mDefaultMesh;
 				return;
 			}
-			detail::RenderResources res = upload_gpu( detail::MeshType::Static, data.value( ) );
+			detail::RenderResources res = upload_gpu( detail::MeshType::Static, meshGeometry.ValueRef( ) );
 
 			StaticMeshResource staticMesh;
 			staticMesh.mVbo = res.mVbo;
 			staticMesh.mEbo = res.mEbo;
 			staticMesh.mVao = res.mVao;
-			staticMesh.mNumIndices = data.value( ).mIndices.size( );
+			staticMesh.mNumIndices = meshGeometry.ValueRef( ).mIndices.size( );
 
 			mErrorMesh = mStaticMeshes.Append( std::move( staticMesh ) );
 

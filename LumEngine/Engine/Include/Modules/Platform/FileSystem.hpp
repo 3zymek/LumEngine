@@ -1,24 +1,28 @@
 #pragma once
 
 #include "Core/CoreCommon.hpp"
+#include "Core/Utils/Result.hpp"
+
 #include "Platform/Path.hpp"
 
 namespace lum {
-	
+
 	class LUM_API FileSystem {
-		
+	public:
+
 		static bool Exists( const Path& path ) {
 
-			return std::filesystem::exists( path.String( ) );
+			return std::filesystem::exists( path.ToString( ) );
 
 		}
 
-		static std::optional<String> Read( const Path& path ) {
+		static Result<String> ReadAllText( const Path& path ) {
 
-			std::ifstream file( path.String( ) );
+			std::ifstream file( path.Native( ) );
 			if (!file.is_open( )) {
-				LUM_LOG_ERROR( "Failed to read file '%s': '%s'", path.String( ).c_str( ), strerror( errno ) );
-				return std::nullopt;
+				char buff[ 512 ]{};
+				FormatString( buff, "Failed to read file '%s': '%s'", path.ToString( ).c_str( ), strerror( errno ) );
+				return Result<String>::Failure( buff );
 			}
 
 			std::ostringstream ss;
@@ -29,9 +33,29 @@ namespace lum {
 			return ss.str( );
 
 		}
-			
-		
-		
+
+		static Result<bool> WriteAllText( const Path& path, const String& content ) {
+
+			std::ofstream file( path.Native( ) );
+			if (!file.is_open( )) {
+				char buff[ 512 ]{};
+				FormatString( buff, "Failed to write file '%s': '%s'", path.ToString( ).c_str( ), strerror( errno ) );
+				return Result<bool>::Failure( buff );
+			}
+
+			file << content;
+			file.close( );
+
+			return true;
+
+		}
+
+		static Path CurrentPath( ) {
+			return std::filesystem::current_path( );
+		}
+
+
+
 	};
 
 }

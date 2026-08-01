@@ -5,6 +5,7 @@
 //=============================================================================//
 #pragma once
 #include "Ahi/Core/AhiDevice.hpp"
+#include "Platform/FileSystem.hpp"
 
 namespace lum::ahi::fmod {
 
@@ -16,7 +17,7 @@ namespace lum::ahi::fmod {
 		void Finalize( ) override;
 
 		// Sound loading
-		SoundHandle LoadSound( StringView path, Flags<SoundFlag> flags ) override;
+		SoundHandle LoadSound( Path path, Flags<SoundFlag> flags ) override;
 		void        UnloadSound( SoundHandle& sound ) override;
 
 		// Effects

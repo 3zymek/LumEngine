@@ -22,7 +22,7 @@ namespace lum::editor {
             faConfig.GlyphMinAdvanceX = 16.0f;
 
             auto path = []( StringView name ) {
-                return ResourceLoader::ResolvePath( ResourceRoot::Internal, name );
+                return ResourceLoader::ResolveResourcePath( ResourceRoot::Internal, name );
             };
 
             load_font( sDefaultSuperSmall, path( "Fonts/Inter.ttf"), 12.0f, &faConfig, faRanges );
@@ -30,7 +30,7 @@ namespace lum::editor {
             load_font( sDefaultMedium, path( "Fonts/Inter.ttf" ), 20.0f, &faConfig, faRanges );
             load_font( sDefaultBig, path( "Fonts/Inter.ttf" ), 23.0f, &faConfig, faRanges );
 
-            sConsole = io.Fonts->AddFontFromFileTTF( path( "Fonts/JetBrainsMono.ttf" ).data( ), 18.0f );
+            sConsole = io.Fonts->AddFontFromFileTTF( path( "Fonts/JetBrainsMono.ttf" ).ToString().data( ), 18.0f );
 
             io.Fonts->Build( );
 
@@ -38,13 +38,13 @@ namespace lum::editor {
 
     private:
 
-        static void load_font( ImFont*& font, StringView path, usize size, const ImFontConfig* cfg, const ImWchar* ranges ) {
+        static void load_font( ImFont*& font, Path path, usize size, const ImFontConfig* cfg, const ImWchar* ranges ) {
 
             ImGuiIO& io = ImGui::GetIO( );
 
-            font = io.Fonts->AddFontFromFileTTF( path.data(), size );
+            font = io.Fonts->AddFontFromFileTTF( path.ToString().data(), size );
             io.Fonts->AddFontFromFileTTF(
-                ResourceLoader::ResolvePath( ResourceRoot::Internal, "fonts/FontAwesome.ttf" ).data( ),
+                ResourceLoader::ResolveResourcePath( ResourceRoot::Internal, "fonts/FontAwesome.ttf" ).ToString().data( ),
                 size,
                 cfg,
                 ranges

@@ -9,7 +9,16 @@ namespace lum::editor {
 
 	void Editor::Initialize( ) {
 
-		mEngine.Initialize( "C:/Users/szymek/Desktop/lumen_assets" ); 
+		auto iconData = ResourceLoader::LoadImageFromFile(
+			ResourceRoot::Internal, "branding/lumengine-icon.png", ImageFormat::RGBA
+		);
+
+		EngineCreateInfo desc{};
+		desc.mRenderingBackend = rhi::RenderBackend::OpenGL;
+		desc.mProjectDir = "C:/Users/szymek/Desktop/lumen_assets";
+		desc.mWindow.mIconData = iconData.HasValue( ) ? iconData.ValueRef( ) : cNullOptional;
+
+		mEngine.Initialize(  ); 
 		mEngine.SetScene( "scene.lsc" );
 
 		init_imgui( &mEngine.GetModulePlatform( ).mWindow );

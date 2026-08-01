@@ -8,7 +8,7 @@ namespace lum {
 
 	struct EngineCreateInfo {
 
-		StringView projectDir = "";
+		StringView mProjectDir = "";
 
 		WindowCreateInfo mWindow;
 		

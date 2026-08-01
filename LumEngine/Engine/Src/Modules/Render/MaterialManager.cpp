@@ -111,15 +111,17 @@ namespace lum {
 		mCtx->mEvBus->SubscribePermanently<EComponentAdded<CMaterialInstance>>(
 			[&]( const EComponentAdded<CMaterialInstance>& mat ) {
 
-				std::optional<String> content = ResourceLoader::ReadTextFile( ResourceRoot::External, mat.mComponent->mBasePath );
+				auto content = FileSystem::ReadAllText( 
+					ResourceLoader::ResolveResourcePath( ResourceRoot::External, mat.mComponent->mBasePath )
+				);
 				if (!content) {
-					LUM_LOG_ERROR( "Failed to load material %s: %s", mat.mComponent->mBasePath.data(), ResourceLoader::GetErrorMessage( ) );
+					LUM_LOG_ERROR( "Failed to load material %s: %s", mat.mComponent->mBasePath.data(), content.Error() );
 					*mat.mComponent = GetDefaultInstance();
 					return;
 				}
 
 				fmt::Tokenizer tokenizer;
-				tokenizer.Tokenize( content.value( ) );
+				tokenizer.Tokenize( content.ValueRef( ) );
 				fmt::MaterialParser parser( tokenizer );
 				MaterialDescriptor data;
 				parser.Parse( data );

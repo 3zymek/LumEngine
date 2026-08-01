@@ -44,11 +44,7 @@ namespace lum {
 		HashedString hash = HashString( relativePath );
 		if (mSounds.contains( hash )) return mSounds[ hash ];
 
-		String fullPath = ResourceLoader::ResolvePath( ResourceRoot::External, relativePath );
-		if (fullPath.empty( )) {
-			LUM_LOG_ERROR( "Couldn't load audio file: %s", ResourceLoader::GetErrorMessage( ) );
-			return {};
-		}
+		Path fullPath = ResourceLoader::ResolveResourcePath( ResourceRoot::External, relativePath );
 
 		ahi::SoundHandle handle = mDevice->LoadSound( fullPath, ahi::detail::GetSoundFlags( cat ) );
 		mSounds.insert( { hash, handle } );

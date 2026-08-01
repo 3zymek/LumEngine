@@ -6,7 +6,10 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Core/Limits.hpp"
+
+#include "Platform/FileSystem.hpp"
 
 #include "Ahi/AhiCommon.hpp"
 #include "Ahi/Core/AhiSound.hpp"
@@ -38,7 +41,7 @@ namespace lum::ahi {
 		* @param flags  Loading and playback flags (stream, sample, 3D, loop etc.)
 		* @return Handle to the loaded sound.
 		*/
-		virtual SoundHandle LoadSound( StringView path, Flags<SoundFlag> flags ) = 0;
+		virtual SoundHandle LoadSound( Path path, Flags<SoundFlag> flags ) = 0;
 
 		/* @brief Unloads a sound and invalidates its handle.
 		* @param sound Handle to the sound to unload.

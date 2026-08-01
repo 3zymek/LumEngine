@@ -21,27 +21,26 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	std::optional<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, StringView filepath, ImageFormat expectedFormat ) {
+	Result<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, StringView filepath, ImageFormat expectedFormat ) {
 
-		String path = get_full_path( root, filepath );
+		Path path = ResolveResourcePath( root, filepath );
+		String strPath = path.ToString( );
 		uint8 formatCast = ToUnderlyingEnum( expectedFormat );
 
-		if (!detail::fs::exists( path )) {
-			set_error_msg( "File doesn't exist" );
-			return std::nullopt;
+		if (!FileSystem::Exists( path )) {
+			return Result<ImageData>::Failure( "File doesn't exist" );
 		}
 
 		ImageData texture;
-		texture.mIsHdr = path.ends_with( ".hdr" );
+		texture.mIsHdr = path.EndsWith( ".hdr" );
 
 		int32 format{};
 
 		if (texture.mIsHdr) {
 
-			float32* data = stbi_loadf( path.c_str( ), &texture.mWidth, &texture.mHeight, &format, formatCast );
+			float32* data = stbi_loadf( strPath.c_str(), &texture.mWidth, &texture.mHeight, &format, formatCast );
 			if (!data) {
-				set_error_msg( stbi_failure_reason( ) );
-				return std::nullopt;
+				return Result<ImageData>::Failure( stbi_failure_reason( ) );
 			}
 			texture.mChannels = (formatCast != 0) ? formatCast : format;
 			texture.mFloatPixels.assign( data, data + texture.mWidth * texture.mHeight * texture.mChannels );
@@ -50,10 +49,9 @@ namespace lum {
 		}
 		else {
 
-			ucharptr data = stbi_load( path.c_str( ), &texture.mWidth, &texture.mHeight, &format, formatCast );
+			ucharptr data = stbi_load( strPath.c_str( ), &texture.mWidth, &texture.mHeight, &format, formatCast );
 			if (!data) {
-				set_error_msg( stbi_failure_reason( ) );
-				return std::nullopt;
+				return Result<ImageData>::Failure( stbi_failure_reason( ) );
 			}
 			texture.mChannels = (formatCast != 0) ? formatCast : format;
 			texture.mPixels.assign( data, data + texture.mWidth * texture.mHeight * texture.mChannels );
@@ -64,13 +62,12 @@ namespace lum {
 		return texture;
 	}
 
-	std::optional<MeshGeometry> ResourceLoader::LoadMeshFromFile( ResourceRoot root, StringView filepath ) {
+	Result<MeshGeometry> ResourceLoader::LoadMeshFromFile( ResourceRoot root, StringView filepath ) {
 
-		String path = get_full_path( root, filepath );
+		Path path = ResolveResourcePath( root, filepath );
 
-		if (!detail::fs::exists( path )) {
-			set_error_msg( "File doesn't exist" );
-			return std::nullopt;
+		if (!FileSystem::Exists( path )) {
+			return Result<MeshGeometry>::Failure( "File doesn't exist" );
 		}
 
 		Assimp::Importer importer;
@@ -78,11 +75,10 @@ namespace lum {
 		flags |= aiProcess_FlipUVs;
 		flags |= aiProcess_Triangulate;
 		flags |= aiProcess_CalcTangentSpace;
-		const aiScene* scene = importer.ReadFile( path.c_str( ), flags );
+		const aiScene* scene = importer.ReadFile( path.ToString( ), flags );
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-			set_error_msg( importer.GetErrorString( ) );
-			return std::nullopt;
+			return Result<MeshGeometry>::Failure( importer.GetErrorString( ) );
 		}
 
 		MeshGeometry finalData;
@@ -158,78 +154,39 @@ namespace lum {
 	}
 
 
-	String ResourceLoader::ResolvePath( ResourceRoot root, StringView filepath ) {
+	Result<String> ResourceLoader::BuildShaderSource( ResourceRoot root, StringView filepath ) {
 
-		String path = get_full_path( root, filepath );
+		Path path = ResolveResourcePath( root, filepath );
 
-		if (!detail::fs::exists( path )) {
-			set_error_msg( "File doesn't exist" );
-			return "";
+		auto shaderSource = FileSystem::ReadAllText( path );
+		if (!shaderSource) {
+			return shaderSource;
 		}
 
-		return path;
-	}
-
-
-	String ResourceLoader::BuildShaderSource( ResourceRoot root, StringView filepath ) {
-
-		String path = get_full_path( root, filepath );
-
-		std::ifstream loadedFile( path );
-		if (!loadedFile.is_open( )) {
-			set_error_msg( strerror( errno ) );
-			return "";
+		auto defines = FileSystem::ReadAllText( sShaderDefineFile );
+		if (!defines) {
+			return defines;
 		}
 
-		std::ifstream defines( sShaderDefineFile );
-		if (!defines.is_open( )) {
-			set_error_msg( strerror( errno ) );
-			return "";
-		}
+		std::istringstream stream( shaderSource.ValueRef( ) );
 
-		String version;
-		std::getline( loadedFile, version );
+		String version{};
+		std::getline( stream, version );
 
 		std::stringstream ss;
 		ss << version << '\n';
-		ss << defines.rdbuf( ) << '\n';
-		ss << loadedFile.rdbuf( );
+		ss << defines.ValueRef( ) << '\n';
+		ss << shaderSource.ValueRef( );
 
 		return ss.str( );
 	}
 
-	bool ResourceLoader::WriteTextFile( ResourceRoot root, StringView filepath, const String& content ) {
-
-		String path = get_full_path( root, filepath );
-
-		std::ofstream file( path );
-		if (!file.is_open( )) {
-			set_error_msg( strerror( errno ) );
-			return false;
-		}
-		file << content;
-		file.close( );
-
-		return true;
-	}
-	String ResourceLoader::ReadTextFile( ResourceRoot root, StringView filepath ) {
-
-		String path = get_full_path( root, filepath );
-
-		std::ifstream file( path );
-		if (!file.is_open( )) {
-			set_error_msg( strerror( errno ) );
-			return "";
-		}
-
-		std::ostringstream ss;
-		ss << file.rdbuf( );
-
-		String content = ss.str( );
-
-		file.close( );
-
-		return content;
+	Path ResourceLoader::ResolveResourcePath( ResourceRoot root, StringView filepath ) {
+		if (root == ResourceRoot::External)
+			return (sProjectRoot / filepath).LexicallyNormal( );
+		else if (root == ResourceRoot::Internal)
+			return (sInternalAssetsRoot / filepath).LexicallyNormal( );
+		return Path( );
 	}
 
 }

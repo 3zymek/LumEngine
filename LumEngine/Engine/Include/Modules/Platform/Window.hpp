@@ -43,10 +43,10 @@ namespace lum {
 	/* @brief Descriptor used to configure a window on creation. */
 	struct LUM_API WindowCreateInfo {
 		Flags<WindowInitFlags>		mFlags = {};
-		String						mTitle = "LumEngine";		/* @brief Window title bar text. */
-		std::optional<ImageData>	mIconData = std::nullopt;	/* @brief Optional loaded icon texture data. */
-		uint32						mHeight = 720;				/* @brief Initial window height in pixels. */
-		uint32						mWidth = 1280;				/* @brief Initial window width in pixels. */
+		String						mTitle = "MyGame";		/* @brief Window title bar text. */
+		Optional<ImageData>			mIconData{};			/* @brief Optional loaded icon texture data. */
+		uint32						mHeight = 720;			/* @brief Initial window height in pixels. */
+		uint32						mWidth = 1280;			/* @brief Initial window width in pixels. */
 	};
 
 	/* @brief Platform window wrapping a GLFW window.

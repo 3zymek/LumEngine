@@ -45,10 +45,10 @@ namespace lum {
 
 		uint64 hash = HashString( scenePath );
 
-		std::optional<String> content = ResourceLoader::ReadTextFile( ResourceRoot::External, scenePath );
+		auto content = FileSystem::ReadAllText( ResourceLoader::ResolveResourcePath( ResourceRoot::External, scenePath ) );
 
 		if (!content) {
-			LUM_LOG_ERROR( "Failed to load scene %s: %s", scenePath.data( ), ResourceLoader::GetErrorMessage( ) );
+			LUM_LOG_ERROR( "Failed to load scene %s: %s", scenePath.data( ), content.Error() );
 			return;
 		}
 		if (!fmt::IsValidFormat( scenePath, fmt::Format::Scene )) {
@@ -57,7 +57,7 @@ namespace lum {
 		}
 
 		fmt::Tokenizer tokenizer;
-		tokenizer.Tokenize( content.value( ) );
+		tokenizer.Tokenize( content.ValueRef( ) );
 
 		fmt::SceneDependencyManager parser;
 		parser.Initialize( tokenizer, mCtx );
