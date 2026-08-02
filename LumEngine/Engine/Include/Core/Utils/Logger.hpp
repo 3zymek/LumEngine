@@ -162,7 +162,7 @@ namespace lum {
 			const char( &file )[ tFileL ],
 			const char( &func )[ tFuncL ],
 			int32 line,
-			StringView msg,
+			const String& msg,
 			tArgs&&... args
 		) {
 
@@ -188,7 +188,7 @@ namespace lum {
 	private:
 
 		/* @brief Maximum formatted message length. */
-		inline static constexpr uint32 skMaxLogMessageLength = 128;
+		inline static constexpr uint32 skMaxLogMessageLength = 1024;
 
 		/* @brief Internal log storage. */
 		LogBuffer mLogs{ LUM_MAX_LOGS };

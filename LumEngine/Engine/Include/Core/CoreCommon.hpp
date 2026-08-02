@@ -12,6 +12,7 @@
 #include "Core/Utils/Logger.hpp"
 #include "Core/Utils/LumAssert.hpp"
 #include "Core/Math/MathCommon.hpp"
+#include "Core/Limits.hpp"
 
 namespace lum {
 

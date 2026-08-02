@@ -4,16 +4,11 @@
 
 namespace lum {
 
-	struct NullOptional { };
-
-	constexpr NullOptional cNullOptional{};
-
 	template<typename tType>
 	class LUM_API Optional {
 	public:
 
 		Optional( ) : mValue( std::nullopt ) { }
-		Optional( NullOptional ) : mValue( std::nullopt ) { }
 
 		Optional( const tType& value ) : mValue( value ) { }
 		Optional( tType&& value ) : mValue( std::move( value ) ) { }
@@ -22,6 +17,10 @@ namespace lum {
 		Optional( Optional&& ) = default;
 		Optional& operator=( const Optional& ) = default;
 		Optional& operator=( Optional&& ) = default;
+
+		static Optional Empty( ) {
+			return Optional( );
+		}
 
 		LUM_FORCEINLINE bool HasValue( ) const {
 

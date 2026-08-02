@@ -14,9 +14,7 @@ namespace lum {
 
 	void Engine::Initialize( EngineCreateInfo info ) {
 	    
-		
-
-		ResourceLoader::SetProjectRoot( info.mProjectDirectory );
+		ResourceLoader::SetProjectRoot( info.mProjectDir );
 
 		mAudio.Initialize( mEventBus );
 		mPlatform.Initialize( info, mEventBus );

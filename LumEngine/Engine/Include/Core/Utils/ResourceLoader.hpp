@@ -7,7 +7,6 @@
 
 #include "Core/Utils/Result.hpp"
 #include "Core/CoreCommon.hpp"
-#include "Core/Limits.hpp"
 #include "Platform/FileSystem.hpp"
 
 namespace lum {
@@ -92,14 +91,14 @@ namespace lum {
 		* @param expectedFormat Number of channels to force (1-4).
 		* @return TextureData on success, or empty on failure.
 		*/
-		LUM_NODISCARD static Result<ImageData> LoadImageFromFile( ResourceRoot root, StringView filepath, ImageFormat expectedFormat = ImageFormat::Native );
+		LUM_NODISCARD static Result<ImageData> LoadImageFromFile( ResourceRoot root, const Path& filepath, ImageFormat expectedFormat = ImageFormat::Native );
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.
 		* @param filepath Path relative to the selected root.
 		* @return Populated MeshData or empty on failure.
 		*/
-		LUM_NODISCARD static Result<MeshGeometry> LoadMeshFromFile( ResourceRoot root, StringView filepath );
+		LUM_NODISCARD static Result<MeshGeometry> LoadMeshFromFile( ResourceRoot root, const Path& filepath );
 
 		/* @brief Loads a shader source file from disk.
 		* Prepends the engine shader define header automatically.
@@ -107,14 +106,14 @@ namespace lum {
 		* @param filepath Path relative to the selected root.
 		* @return Shader source as String or empty on failure.
 		*/
-		LUM_NODISCARD static Result<String> BuildShaderSource( ResourceRoot root, StringView filepath );
+		LUM_NODISCARD static Result<String> BuildShaderSource( ResourceRoot root, const Path& filepath );
 
 		/* @brief Resolves an absolute path from a root directory and a relative filepath.
 		* @param root     Root directory identifier.
 		* @param filepath Path relative to the selected root.
 		* @return Resolved absolute path, or empty if the file does not exist.
 		*/
-		static Path ResolveResourcePath( ResourceRoot root, StringView filepath );
+		static Path ResolveResourcePath( ResourceRoot root, const Path& filepath );
 
 	private:
 
@@ -132,4 +131,5 @@ namespace lum {
 		ResourceLoader( ) = default;
 
 	};
+
 } // namespace lum

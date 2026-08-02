@@ -18,7 +18,7 @@ namespace lum {
 
 		static Result<String> ReadAllText( const Path& path ) {
 
-			std::ifstream file( path.Native( ) );
+			std::ifstream file( path.mPath );
 			if (!file.is_open( )) {
 				char buff[ 512 ]{};
 				FormatString( buff, "Failed to read file '%s': '%s'", path.ToString( ).c_str( ), strerror( errno ) );
@@ -36,7 +36,7 @@ namespace lum {
 
 		static Result<bool> WriteAllText( const Path& path, const String& content ) {
 
-			std::ofstream file( path.Native( ) );
+			std::ofstream file( path.mPath );
 			if (!file.is_open( )) {
 				char buff[ 512 ]{};
 				FormatString( buff, "Failed to write file '%s': '%s'", path.ToString( ).c_str( ), strerror( errno ) );

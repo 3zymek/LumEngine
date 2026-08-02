@@ -21,7 +21,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	Result<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, StringView filepath, ImageFormat expectedFormat ) {
+	Result<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, const Path& filepath, ImageFormat expectedFormat ) {
 
 		Path path = ResolveResourcePath( root, filepath );
 		String strPath = path.ToString( );
@@ -62,7 +62,7 @@ namespace lum {
 		return texture;
 	}
 
-	Result<MeshGeometry> ResourceLoader::LoadMeshFromFile( ResourceRoot root, StringView filepath ) {
+	Result<MeshGeometry> ResourceLoader::LoadMeshFromFile( ResourceRoot root, const Path& filepath ) {
 
 		Path path = ResolveResourcePath( root, filepath );
 
@@ -154,7 +154,7 @@ namespace lum {
 	}
 
 
-	Result<String> ResourceLoader::BuildShaderSource( ResourceRoot root, StringView filepath ) {
+	Result<String> ResourceLoader::BuildShaderSource( ResourceRoot root, const Path& filepath ) {
 
 		Path path = ResolveResourcePath( root, filepath );
 
@@ -168,20 +168,28 @@ namespace lum {
 			return defines;
 		}
 
-		std::istringstream stream( shaderSource.ValueRef( ) );
-
 		String version{};
-		std::getline( stream, version );
+		String clippedSource{};
+		usize versionIdx = shaderSource->find( "#version" );
+		if (versionIdx != String::npos) {
+
+			usize end = shaderSource->find( '\n', versionIdx );
+			version = shaderSource->substr( versionIdx, end - versionIdx );
+			clippedSource = shaderSource->substr( end );
+		
+		}
 
 		std::stringstream ss;
 		ss << version << '\n';
-		ss << defines.ValueRef( ) << '\n';
-		ss << shaderSource.ValueRef( );
+		ss << defines.ValueRef() << '\n';
+		ss << clippedSource;
+
+		LUM_LOG_INFO( ss.str( ) );
 
 		return ss.str( );
 	}
 
-	Path ResourceLoader::ResolveResourcePath( ResourceRoot root, StringView filepath ) {
+	Path ResourceLoader::ResolveResourcePath( ResourceRoot root, const Path& filepath ) {
 		if (root == ResourceRoot::External)
 			return (sProjectRoot / filepath).LexicallyNormal( );
 		else if (root == ResourceRoot::Internal)

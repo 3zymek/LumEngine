@@ -44,7 +44,7 @@ namespace lum {
 		* @param root         Root directory identifier for asset resolution. Defaults to EResourceRoot::External.
 		* @return             Handle to the loaded (or cached) shader program.
 		*/
-		rhi::ShaderHandle LoadShader( ccharptr vertexPath, ccharptr fragmentPath, ResourceRoot root = ResourceRoot::External );
+		rhi::ShaderHandle LoadShader( Path vertexPath, Path fragmentPath, ResourceRoot root = ResourceRoot::External );
 
 	private:
 

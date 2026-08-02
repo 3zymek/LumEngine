@@ -16,6 +16,8 @@ namespace lum {
 
 	void PlatformModule::Initialize( EngineCreateInfo info, ev::EventBus& bus ) {
 
+		info.mWindow.mTitle = info.mApplicationName;
+
 		mWindow.Initialize( info.mWindow, bus );
 		input::SetActiveWindow( static_cast< GLFWwindow* >(mWindow.GetNativeWindow( )) );
 

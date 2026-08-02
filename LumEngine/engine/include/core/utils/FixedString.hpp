@@ -11,8 +11,6 @@
 
 namespace lum {
 
-	constexpr usize kStrNpos = usize( -1 );
-
 	/* @brief Stack-allocated string with a compile-time maximum length.
 	*  Never allocates heap memory — all storage lives in a fixed-size character buffer.
 	*  Provides assignment, concatenation, comparison, searching and raw buffer access.
@@ -20,6 +18,8 @@ namespace lum {
 	*/
 	template<usize tLength>
 	struct FixedString {
+
+		static constexpr usize skNpos = usize( -1 );
 
 		/* @brief Constructs a FixedString from a string literal.
 		*  @tparam tNewLength Length of the source literal including null terminator.
@@ -144,29 +144,29 @@ namespace lum {
 
 		/* @brief Finds the first occurrence of a character.
 		*  @param c Character to search for.
-		*  @return Index of the character or kStrNpos if not found.
+		*  @return Index of the character or FixedString::skNpos if not found.
 		*/
 		usize Find( char c ) const {
 			for (usize i = 0; i < strlen( mData ); i++) {
 				if (mData[ i ] == c) return i;
 			}
-			return kStrNpos;
+			return skNpos;
 		}
 
 		/* @brief Finds the first occurrence of a string view.
 		*  @param sv String view to search for.
-		*  @return Index of the substring or kStrNpos if not found.
+		*  @return Index of the substring or FixedString::skNpos if not found.
 		*/
 		usize Find( StringView sv ) const {
 			usize size = strlen( mData );
-			if (sv.size( ) > size) return kStrNpos;
+			if (sv.size( ) > size) return skNpos;
 
 			for (usize i = 0; i <= size - sv.size( ); i++) {
 				if (memcmp( mData + i, sv.data( ), sv.size( ) ) == 0)
 					return i;
 			}
 
-			return kStrNpos;
+			return skNpos;
 		}
 
 		/* @brief Compares this string against a string literal using hash comparison.

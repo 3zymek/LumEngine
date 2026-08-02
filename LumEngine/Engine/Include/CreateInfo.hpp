@@ -8,7 +8,9 @@ namespace lum {
 
 	struct EngineCreateInfo {
 
-		StringView mProjectDir = "";
+		Path mProjectDir{};
+		String mProjectName = "MyLumenProject";
+		String mApplicationName = "MyLumenApp";
 
 		WindowCreateInfo mWindow;
 		

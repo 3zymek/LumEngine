@@ -9,10 +9,10 @@ namespace lum {
 	public:
 
 		template<usize tL>
-		explicit Path( FixedString<tL> path ) : mPath( path.Data() ) { }
-		explicit Path( const char* path ) : mPath( path ) { }
-		explicit Path( const StringView& path ) : mPath( path ) { }
-		explicit Path( const String& path ) : mPath( path ) { }
+		Path( FixedString<tL> path ) : mPath( path.Data() ) { }
+		Path( const char* path ) : mPath( path ) { }
+		Path( const StringView& path ) : mPath( path ) { }
+		Path( const String& path ) : mPath( path ) { }
 		Path( const std::filesystem::path& path ) : mPath( path ) { }
 		Path() { }
 
@@ -27,13 +27,12 @@ namespace lum {
 		LUM_FORCEINLINE bool HasExtension( ) const { return mPath.has_extension( ); }
 		LUM_FORCEINLINE bool Empty( ) const { return mPath.empty( ); }
 		LUM_FORCEINLINE bool EndsWith( const StringView& str ) const { return mPath.string( ).ends_with( str ); }
+		LUM_FORCEINLINE uint64 Hash( ) const { return HashString( ToString( ) ); }
 
 		LUM_FORCEINLINE Path& ReplaceExtension( const StringView& extension ) {
 			mPath.replace_extension( extension ); 
 			return *this; 
 		}
-
-		LUM_FORCEINLINE const std::filesystem::path& Native( ) const { return mPath; }
 
 		Path operator/( const Path& other ) const {
 			return mPath / other.mPath;
@@ -76,6 +75,10 @@ namespace lum {
 		Path& operator=( const char* other ) {
 			mPath = other;
 			return *this;
+		}
+
+		bool operator==( const Path& other ) const {
+			return mPath == other.mPath;
 		}
 
 	private:

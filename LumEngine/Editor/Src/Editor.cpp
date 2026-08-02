@@ -14,11 +14,13 @@ namespace lum::editor {
 		);
 
 		EngineCreateInfo desc{};
+		desc.mProjectName = "LumEngineEditor";
+		desc.mApplicationName = "LumEngineEditor";
 		desc.mRenderingBackend = rhi::RenderBackend::OpenGL;
 		desc.mProjectDir = "C:/Users/szymek/Desktop/lumen_assets";
-		desc.mWindow.mIconData = iconData.HasValue( ) ? iconData.ValueRef( ) : cNullOptional;
+		desc.mWindow.mIconData = iconData.HasValue( ) ? iconData.ValueRef( ) : Optional<ImageData>::Empty();
 
-		mEngine.Initialize(  ); 
+		mEngine.Initialize( desc ); 
 		mEngine.SetScene( "scene.lsc" );
 
 		init_imgui( &mEngine.GetModulePlatform( ).mWindow );

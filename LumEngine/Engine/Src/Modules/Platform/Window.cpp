@@ -119,9 +119,9 @@ namespace lum {
 
 		mWindow = glfwCreateWindow( desc.mWidth, desc.mHeight, desc.mTitle.c_str( ), nullptr, nullptr );
 
-		if (desc.mIconData.has_value( )) {
+		if (desc.mIconData) {
 
-			const auto& icon = desc.mIconData.value( );
+			const auto& icon = desc.mIconData.Value( );
 
 			GLFWimage image;
 			image.pixels = const_cast< unsigned char* >(icon.mPixels.data( ));
