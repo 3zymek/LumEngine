@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Rhi/RhiCommon.hpp"
+#include "Core/Utils/Optional.hpp"
 
 namespace lum {
 
@@ -46,15 +47,15 @@ namespace lum {
 	*/
 	struct MaterialDescriptor {
 
-		std::optional<String> mAlbedoTex;      // Path to albedo texture
-		std::optional<String> mNormalTex;      // Path to normal map
-		std::optional<String> mRoughnessTex;   // Path to roughness map
-		std::optional<String> mMetallicTex;    // Path to metallic map
+		Optional<String> mAlbedoTex;      // Path to albedo texture
+		Optional<String> mNormalTex;      // Path to normal map
+		Optional<String> mRoughnessTex;   // Path to roughness map
+		Optional<String> mMetallicTex;    // Path to metallic map
 
-		std::optional<Vector3> mBaseColor;   // Base color multiplier, defaults to (1, 1, 1)
+		Optional<Vector3> mBaseColor;   // Base color multiplier, defaults to (1, 1, 1)
 
-		std::optional<float32> mRoughnessValue = 0.5f; // Roughness multiplier, defaults to 0.5
-		std::optional<float32> mMetallicValue = 0.0f;  // Metallic multiplier, defaults to 0.0
+		Optional<float32> mRoughnessValue = 0.5f; // Roughness multiplier, defaults to 0.5
+		Optional<float32> mMetallicValue = 0.0f;  // Metallic multiplier, defaults to 0.0
 
 	};
 

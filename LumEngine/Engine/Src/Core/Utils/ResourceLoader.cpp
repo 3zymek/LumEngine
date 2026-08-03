@@ -184,8 +184,6 @@ namespace lum {
 		ss << defines.ValueRef() << '\n';
 		ss << clippedSource;
 
-		LUM_LOG_INFO( ss.str( ) );
-
 		return ss.str( );
 	}
 

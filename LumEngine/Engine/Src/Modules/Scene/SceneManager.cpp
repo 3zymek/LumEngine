@@ -26,9 +26,9 @@ namespace lum {
 
 	}
 
-	void SceneManager::SetScene( StringView scenePath ) {
+	void SceneManager::SetScene( const Path& scenePath ) {
 
-		uint64 hash = HashString( scenePath );
+		uint64 hash = scenePath.Hash();
 
 		if (!mScenes.contains( hash )) {
 
@@ -37,22 +37,23 @@ namespace lum {
 		}
 
 		mCurrentScene = &mScenes[ hash ];
-		LUM_LOG_INFO( "Set current scene: %s", scenePath.data() );
+		LUM_LOG_INFO( "Set current scene: %s", scenePath.ToString( ) );
 
 	}
 
-	void SceneManager::LoadScene( StringView scenePath ) {
+	void SceneManager::LoadScene( const Path& scenePath ) {
 
-		uint64 hash = HashString( scenePath );
+		uint64 hash = scenePath.Hash();
 
 		auto content = FileSystem::ReadAllText( ResourceLoader::ResolveResourcePath( ResourceRoot::External, scenePath ) );
 
 		if (!content) {
-			LUM_LOG_ERROR( "Failed to load scene %s: %s", scenePath.data( ), content.Error() );
+			LUM_LOG_ERROR( "Failed to load scene %s: %s", scenePath.ToString( ), content.Error() );
 			return;
 		}
-		if (!fmt::IsValidFormat( scenePath, fmt::Format::Scene )) {
-			LUM_LOG_ERROR( "Invalid scene format: %s", scenePath.data( ) );
+		if (!fmt::IsValidFormat( scenePath, fmt::FileFormat::Scene )) {
+			String str = scenePath.ToString();
+			LUM_LOG_ERROR("Invalid scene format: %s", str);
 			return;
 		}
 
@@ -66,7 +67,7 @@ namespace lum {
 		parser.Deserialize( scene );
 		mScenes.emplace( hash, std::move( scene ) );
 
-		LUM_LOG_INFO( "Loaded scene: %s", scenePath.data( ) );
+		LUM_LOG_INFO( "Loaded scene: %s", scenePath.ToString( ) );
 
 	}
 

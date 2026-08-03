@@ -64,11 +64,21 @@ namespace lum {
 			return mValue.Value( );
 		
 		}
+		const tType& operator*( ) const {
+
+			return mValue.Value( );
+
+		}
 
 		tType* operator->( ) {
 		
 			return &mValue.Value( );
 		
+		}
+		const tType* operator->( ) const {
+
+			return &mValue.Value( );
+
 		}
 
 		explicit operator bool( ) const {

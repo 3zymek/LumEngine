@@ -52,7 +52,7 @@ namespace lum {
 
 		/* @brief Returns a material instance created from the built-in default material. */
 		LUM_NODISCARD CMaterialInstance GetDefaultInstance( );
-
+	    
 		/* @brief Sets a specific texture map on a base material.
 		* @param material Handle to the base material to modify.
 		* @param mem      Which map to set (Albedo, Normal, Metallic, Roughness).

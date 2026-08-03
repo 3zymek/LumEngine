@@ -5,8 +5,10 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Core/CoreCommon.hpp"
 #include "Entity/EcsCommon.hpp"
+#include "Platform/FileSystem.hpp"
 
 namespace lum {
 
@@ -54,6 +56,7 @@ namespace lum {
 	*/
 	namespace fmt {
 
+
 		/* @brief Token types produced by the lexer. */
 		enum class TokenType : byte {
 			Identifier, // Named keyword or symbol
@@ -69,7 +72,7 @@ namespace lum {
 		};
 
 		/* @brief Supported file format types. */
-		enum class Format : byte {
+		enum class FileFormat : byte {
 			Scene,    // .lsc scene file
 			Material  // .lmt material file
 		};
@@ -108,24 +111,20 @@ namespace lum {
 		void RegisterSceneComponents( std::unordered_map<uint64, SceneComponentInfo>& map );
 
 		/* @brief Validates whether a file path matches the expected format extension.
-		* @param str File path to validate.
+		* @param file File path to validate.
 		* @param format Expected format type.
-		* @return True if extension matches the format (.lsc or .lmt).
+		* @return True if extension matches the format.
 		*/
-		inline bool IsValidFormat( StringView str, Format format ) {
+		inline bool IsValidFormat( const Path& file, FileFormat format ) {
 
-			usize dot = str.find_last_of( '.' );
-			if (dot == StringView::npos)
-				return false;
-
-			StringView result = str.substr( dot + 1 );
-
-			if (result == "lsc" && format == Format::Scene)
+			String ext = file.Extension( );
+			if (ext == ".lsc" && format == FileFormat::Scene)
 				return true;
-			if (result == "lmt" && format == Format::Material)
+			else if (ext == ".lmt" && format == FileFormat::Material)
 				return true;
 
 			return false;
+
 		}
 
 		/* @brief Internal parsing helpers — not intended for direct use. */

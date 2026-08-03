@@ -31,33 +31,33 @@ namespace lum {
 		MaterialBase base;
 
 		if (desc.mAlbedoTex) {
-			base.mAlbedoTex = mCtx->mTextureMgr->Load( desc.mAlbedoTex.value( ), TexturePreset::Albedo );
+			base.mAlbedoTex = mCtx->mTextureMgr->Load( desc.mAlbedoTex.Value( ), TexturePreset::Albedo );
 		}
 		else base.mAlbedoTex = mCtx->mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultAlbedo );
 
 		if (desc.mNormalTex) {
-			base.mNormalTex = mCtx->mTextureMgr->Load( desc.mNormalTex.value( ), TexturePreset::Normal );
+			base.mNormalTex = mCtx->mTextureMgr->Load( desc.mNormalTex.Value( ), TexturePreset::Normal );
 		}
 		else base.mNormalTex = mCtx->mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultNormal );
 
 		if (desc.mRoughnessTex) {
-			base.mRoughnessTex = mCtx->mTextureMgr->Load( desc.mRoughnessTex.value( ), TexturePreset::Roughness );
+			base.mRoughnessTex = mCtx->mTextureMgr->Load( desc.mRoughnessTex.Value( ), TexturePreset::Roughness );
 		}
 		else base.mRoughnessTex = mCtx->mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultRoughness );
 
 		if (desc.mMetallicTex) {
-			base.mMetallicTex = mCtx->mTextureMgr->Load( desc.mMetallicTex.value( ), TexturePreset::Metallic );
+			base.mMetallicTex = mCtx->mTextureMgr->Load( desc.mMetallicTex.Value( ), TexturePreset::Metallic );
 		}
 		else base.mMetallicTex = mCtx->mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultMetallic );
 
 		if (desc.mBaseColor) {
-			base.mBaseColor = desc.mBaseColor.value( );
+			base.mBaseColor = desc.mBaseColor.Value( );
 		}
 		if (desc.mRoughnessValue) {
-			base.mRoughnessValue = desc.mRoughnessValue.value( );
+			base.mRoughnessValue = desc.mRoughnessValue.Value( );
 		}
 		if (desc.mMetallicValue) {
-			base.mMetallicValue = desc.mMetallicValue.value( );
+			base.mMetallicValue = desc.mMetallicValue.Value( );
 		}
 
 		return mBaseMaterials.Append( base );

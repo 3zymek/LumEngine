@@ -12,7 +12,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void Engine::Initialize( EngineCreateInfo info ) {
+	void Engine::Initialize( const EngineCreateInfo& info ) {
 	    
 		ResourceLoader::SetProjectRoot( info.mProjectDir );
 

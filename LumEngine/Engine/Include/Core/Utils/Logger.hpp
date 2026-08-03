@@ -172,7 +172,7 @@ namespace lum {
 				formatMsg,
 				sizeof( formatMsg ),
 				msg.data( ),
-				std::forward<tArgs>( args )...
+				format_args( std::forward<tArgs>( args ) )...
 			);
 
 			LogEntry entry;
@@ -182,6 +182,8 @@ namespace lum {
 			entry.mTime = get_time( );
 
 			mLogs.Push( entry );
+			mTempStrings.clear( );
+
 		}
 
 
@@ -189,12 +191,18 @@ namespace lum {
 
 		/* @brief Maximum formatted message length. */
 		inline static constexpr uint32 skMaxLogMessageLength = 1024;
+		inline static constexpr uint32 mMaxTempStrings = 10;
 
 		/* @brief Internal log storage. */
 		LogBuffer mLogs{ LUM_MAX_LOGS };
 
+		/* @brief Temporary strings to secure dangling pointers. */
+		std::vector<String> mTempStrings{ };
+
 		/* @brief Private constructor for singleton pattern. */
-		Logger( ) = default;
+		Logger( ) {
+			mTempStrings.reserve( mMaxTempStrings );
+		}
 
 		/* @brief Returns current Unix timestamp in milliseconds.
 		* @return Current timestamp.
@@ -216,6 +224,25 @@ namespace lum {
 					lastSlash = &path[ i ];
 
 			return lastSlash ? lastSlash + 1 : path;
+		}
+
+		ccharptr format_args( const String& str ) {
+			return str.c_str( );
+		}
+		ccharptr format_args( StringView str ) {
+			return str.data( );
+		}
+		ccharptr format_args( String&& val ) {
+
+			if (mTempStrings.size( ) <= mMaxTempStrings)
+				mTempStrings.push_back( std::move( val ) );
+			return mTempStrings.back( ).c_str( );
+
+		}
+
+		template<typename tType>
+		tType&& format_args( tType&& val ) {
+			return std::forward<tType>( val );
 		}
 
 	};

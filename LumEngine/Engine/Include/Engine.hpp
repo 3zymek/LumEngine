@@ -20,8 +20,8 @@ namespace lum {
 	class LUM_API Engine {
 	public:
 
-		void Initialize( EngineCreateInfo info );
-		void SetScene( StringView path ) { mScene.mSceneMgr.SetScene( path ); }
+		void Initialize( const EngineCreateInfo& info );
+		void SetScene( const Path& path ) { mScene.mSceneMgr.SetScene( path ); }
 		void BeginFrame( );
 		void EndFrame( );
 		void Tick( );

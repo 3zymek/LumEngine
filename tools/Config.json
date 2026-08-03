@@ -251,8 +251,8 @@
     "ecs_traits_forward_declare_namespace": "lum",
 
     "editor_fn_var": "component",
-    "editor_fn_name": "DrawInspector{ClassName}",
-    "editor_fn_signature": "void DrawInspector{ClassName}( ecs::EntityManager& mgr, lum::EntityID entity )",
+    "editor_fn_name": "LGEN_DrawInspector{ClassName}",
+    "editor_fn_signature": "void LGEN_DrawInspector{ClassName}( ecs::EntityManager& mgr, lum::EntityID entity )",
     "editor_namespace": "lum::editor",
     "editor_registry_fn_signature": "void RegisterEditorComponents( std::unordered_map<uint64, EditorComponentMetadata>& map )",
 

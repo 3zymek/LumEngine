@@ -50,6 +50,29 @@ namespace lum {
 
 		}
 
+
+		tType& operator*( ) {
+
+			return Value();
+
+		}
+		const tType& operator*( ) const {
+
+			return Value( );
+
+		}
+
+		tType* operator->( ) {
+
+			return &Value( );
+
+		}
+		const tType* operator->( ) const {
+
+			return &Value( );
+
+		}
+
 	private:
 
 		std::optional<tType> mValue;

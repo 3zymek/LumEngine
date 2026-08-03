@@ -69,8 +69,7 @@ namespace lum {
 	/* @brief Static utility class for loading engine assets from disk.
 	*
 	* Resolves asset paths relative to either the internal engine root
-	* or the user-defined project root. All load methods return std::optional
-	* and set an error message on failure, retrievable via GetErrorMessage().
+	* or the user-defined project root.
 	*
 	* Non-constructible and non-copyable — use static methods only.
 	*/

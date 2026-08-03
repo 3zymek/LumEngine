@@ -102,8 +102,8 @@ namespace lum::editor {
 			}
 			};
 
-		Entity* e = scene->GetEntity( entity );
-		bool    bVisible = e && e->IsVisible( );
+		auto e = scene->GetEntity( entity );
+		bool bVisible = e && e->IsVisible( );
 
 		float32 eyeWidth = ImGui::CalcTextSize( ICON_FA_EYE ).x + ImGui::GetStyle( ).FramePadding.x * 2.0f;
 		float32 availWidth = ImGui::GetContentRegionAvail( ).x - eyeWidth - ImGui::GetStyle( ).ItemSpacing.x;
