@@ -128,10 +128,10 @@ namespace lum::ev::detail {
 
 			new (&callback.mStorage) tLambda( std::forward<tLambda>( lambda ) );
 
-			callback.mInvoke = []( vptr userParam, cvptr event ) {
+			callback.mInvoke = []( void* userParam, const void* event ) {
 				(*reinterpret_cast< tLambda* >(userParam))(*reinterpret_cast< const tType* >(event));
 				};
-			callback.mDestroy = []( vptr userParam ) {
+			callback.mDestroy = []( void* userParam ) {
 				reinterpret_cast< tLambda* >(userParam)->~tLambda( );
 				};
 			callback.mActive = true;

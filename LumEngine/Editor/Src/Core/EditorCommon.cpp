@@ -30,7 +30,7 @@ namespace lum::editor {
 		ImVec2 min = ImGui::GetItemRectMin( );
 		ImVec2 textPos = ImVec2( min.x + 5.0f, min.y );
 
-		ccharptr chevron = opened ? args.mIconOpened.data( ) : args.mIconClosed.data( );
+		const char* chevron = opened ? args.mIconOpened.data( ) : args.mIconClosed.data( );
 
 		float32 chevronWidth = ImGui::CalcTextSize( args.mIconOpened.data( ) ).x;
 		chevronWidth = std::max( chevronWidth, ImGui::CalcTextSize( args.mIconClosed.data( ) ).x );
@@ -62,7 +62,7 @@ namespace lum::editor {
 		);
 	}
 
-	bool SearchField( ccharptr id, ccharptr hint, charptr buffer, usize bufferSize ) {
+	bool SearchField( const char* id, const char* hint, char* buffer, usize bufferSize ) {
 		ImGui::PushID( id );
 
 		bool changed = ImGui::InputTextWithHint( "##input", hint, buffer, bufferSize );

@@ -23,7 +23,7 @@ namespace lum::rhi {
 		Flags<MapFlag> mMapFlags{};
 
 		// Pointer to data.
-		cvptr mData = nullptr;
+		const void* mData = nullptr;
 	};
 
 	struct Buffer {

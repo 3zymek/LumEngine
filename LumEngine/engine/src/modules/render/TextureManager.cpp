@@ -44,7 +44,7 @@ namespace lum {
 		auto data = ResourceLoader::LoadImageFromFile( id, path );
 
 		if (!data) {
-			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), data.Error() );
+			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), data.GetError() );
 			return mMissingTexture;
 		}
 
@@ -80,7 +80,7 @@ namespace lum {
 
 		auto data = ResourceLoader::LoadImageFromFile( root, path );
 		if (!data) {
-			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), data.Error( ) );
+			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), data.GetError( ) );
 			return mMissingTexture;
 		}
 
@@ -182,7 +182,7 @@ namespace lum {
 		{ // Missing texture
 			auto data = ResourceLoader::LoadImageFromFile( ResourceRoot::Internal, "textures/missingTex.png" );
 			if (!data) {
-				LUM_LOG_ERROR( "Failed to load missing texture fallback: %s", data.Error() );
+				LUM_LOG_ERROR( "Failed to load missing texture fallback: %s", data.GetError() );
 				mMissingTexture = mDefaultAlbedoTexture;
 				return;
 			}

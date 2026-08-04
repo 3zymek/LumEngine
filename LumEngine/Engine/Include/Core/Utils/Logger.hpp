@@ -39,10 +39,10 @@ namespace lum {
 		String mMessage = "";
 
 		/* @brief Function where the log was generated. */
-		ccharptr mFunction = "";
+		const char* mFunction = "";
 
 		/* @brief File where the log was generated. */
-		ccharptr mFile = "";
+		const char* mFile = "";
 
 		/* @brief Line number where the log was generated. */
 		uint32 mLine = 0;
@@ -138,7 +138,7 @@ namespace lum {
 		* @param timestamp Unix timestamp in milliseconds.
 		* @param out Output character buffer.
 		*/
-		static void FormatTime( uint64 timestamp, charptr out );
+		static void FormatTime( uint64 timestamp, char* out );
 
 		/* @brief Formats and stores a log message.
 		*
@@ -215,9 +215,9 @@ namespace lum {
 		* @return Pointer to filename portion.
 		*/
 		template<usize tLength>
-		ccharptr extract_filename( const char( &path )[ tLength ] ) {
+		const char* extract_filename( const char( &path )[ tLength ] ) {
 
-			ccharptr lastSlash = nullptr;
+			const char* lastSlash = nullptr;
 
 			for (usize i = 0; i < tLength - 1; ++i)
 				if (path[ i ] == '/' || path[ i ] == '\\')
@@ -226,13 +226,13 @@ namespace lum {
 			return lastSlash ? lastSlash + 1 : path;
 		}
 
-		ccharptr format_args( const String& str ) {
+		const char* format_args( const String& str ) {
 			return str.c_str( );
 		}
-		ccharptr format_args( StringView str ) {
+		const char* format_args( StringView str ) {
 			return str.data( );
 		}
-		ccharptr format_args( String&& val ) {
+		const char* format_args( String&& val ) {
 
 			if (mTempStrings.size( ) <= mMaxTempStrings)
 				mTempStrings.push_back( std::move( val ) );

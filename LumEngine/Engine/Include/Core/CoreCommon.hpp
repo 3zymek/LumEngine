@@ -252,7 +252,7 @@ namespace lum {
 	*  @param args    Variadic arguments matching the format specifiers.
 	*/
 	template<usize tL, typename... tArgs>
-	inline void FormatString( char( &buff )[ tL ], ccharptr format, tArgs&&... args ) {
+	inline void FormatString( char( &buff )[ tL ], const char* format, tArgs&&... args ) {
 		snprintf( buff, tL, format, std::forward<tArgs>( args )... );
 	} 
 

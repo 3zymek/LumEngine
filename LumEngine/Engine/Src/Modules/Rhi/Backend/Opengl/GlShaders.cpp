@@ -17,10 +17,10 @@ namespace lum::rhi::gl {
 		GLuint vshader = glCreateShader( GL_VERTEX_SHADER );
 		GLuint fshader = glCreateShader( GL_FRAGMENT_SHADER );
 
-		ccharptr vertexContent = desc.mVertexContent.c_str( );
+		const char* vertexContent = desc.mVertexContent.c_str( );
 		glShaderSource( vshader, 1, &vertexContent, nullptr );
 
-		ccharptr fragmentContent = desc.mFragmentContent.c_str( );
+		const char* fragmentContent = desc.mFragmentContent.c_str( );
 		glShaderSource( fshader, 1, &fragmentContent, nullptr );
 
 		if (!compile_shader( vshader ))

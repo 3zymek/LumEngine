@@ -29,13 +29,13 @@ namespace lum {
 
 		auto vertexData = ResourceLoader::BuildShaderSource( root, vertexPath );
 		if (!vertexData) {
-			LUM_LOG_ERROR( "Failed to load shader %s: %s", vertexPath.ToString( ), vertexData.Error( ) );
+			LUM_LOG_ERROR( "Failed to load shader %s: %s", vertexPath.ToString( ), vertexData.GetError( ) );
 			return {};
 		}
 
 		auto fragmentData = ResourceLoader::BuildShaderSource( root, fragmentPath );
 		if (!fragmentData) {
-			LUM_LOG_ERROR( "Failed to load shader %s: %s", fragmentPath.ToString( ), fragmentData.Error( ) );
+			LUM_LOG_ERROR( "Failed to load shader %s: %s", fragmentPath.ToString( ), fragmentData.GetError( ) );
 			return {};
 		}
 		

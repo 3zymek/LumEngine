@@ -146,14 +146,14 @@ namespace lum::ahi {
 
 	protected:
 
-		cstd::HandlePool<SoundHandle, vptr>	mSounds{ limits::kMaxAudioSounds };
-		cstd::HandlePool<ChannelGroupHandle, vptr> mChannelGroups{ limits::kMaxChannelsGroup };
+		cstd::HandlePool<SoundHandle, void*>	mSounds{ limits::kMaxAudioSounds };
+		cstd::HandlePool<ChannelGroupHandle, void*> mChannelGroups{ limits::kMaxChannelsGroup };
 		cstd::HandlePool<AudioEffectHandle, AudioEffect> mEffects{ limits::kMaxAudioEffects };
 		
 		/* @brief Maps active sound instance IDs to their backend channel pointers.
 		*  Entries are inserted on Play() and removed when playback ends or StopAll() is called.
 		*/
-		std::unordered_map<SoundInstanceID, vptr> mChannels;
+		std::unordered_map<SoundInstanceID, void*> mChannels;
 
 	};
 

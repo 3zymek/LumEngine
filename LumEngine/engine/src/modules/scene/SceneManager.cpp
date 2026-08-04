@@ -48,7 +48,7 @@ namespace lum {
 		auto content = FileSystem::ReadAllText( ResourceLoader::ResolveResourcePath( ResourceRoot::External, scenePath ) );
 
 		if (!content) {
-			LUM_LOG_ERROR( "Failed to load scene %s: %s", scenePath.ToString( ), content.Error() );
+			LUM_LOG_ERROR( "Failed to load scene %s: %s", scenePath.ToString( ), content.GetError() );
 			return;
 		}
 		if (!fmt::IsValidFormat( scenePath, fmt::FileFormat::Scene )) {
@@ -74,7 +74,7 @@ namespace lum {
 	void SaveScene( StringView scenePath ) {
 
 		
-
+	   
 	}
 
 	Scene* SceneManager::GetCurrentScene( ) {

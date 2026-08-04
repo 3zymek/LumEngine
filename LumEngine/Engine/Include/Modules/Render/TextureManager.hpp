@@ -31,7 +31,7 @@ namespace lum {
 	/* @brief Descriptor for loading a cubemap from 6 individual face textures. */
 	struct CubemapDescriptor {
 		/* @brief Paths to the 6 cubemap faces in order: +X, -X, +Y, -Y, +Z, -Z */
-		ccharptr mFaces[6];
+		const char* mFaces[6];
 	};
 
 	/* @brief Manages GPU texture resources and their lifecycle.

@@ -56,7 +56,6 @@ namespace lum {
 	*/
 	namespace fmt {
 
-
 		/* @brief Token types produced by the lexer. */
 		enum class TokenType : byte {
 			Identifier, // Named keyword or symbol
@@ -80,7 +79,7 @@ namespace lum {
 		/* @brief A single token produced by the lexer. */
 		struct Token {
 			TokenType mType;  // Token type
-			String mValue;     // Raw string value of the token
+			String mValue;    // Raw string value of the token
 		};
 
 		/* @brief Context passed through the scene parsing pipeline.
@@ -99,16 +98,32 @@ namespace lum {
 
 		};
 
-		/* @brief Function pointer type for parse dispatch functions. */
-		using ParseFn = void(*)(std::vector<Token>&, int32&, ParseContext&);
+		/* @brief Function pointer type for deserialize dispatch functions. */
+		using DeserializeFn = void(*)(std::vector<Token>&, int32&, ParseContext&);
+		using SerializeFn = void(*)();
 
 		struct SceneComponentInfo {
 
-			ParseFn mDeserializeFn = nullptr;
-
+			String			mSerializationName{};
+			uint64			mTypeId{};
+			DeserializeFn	mDeserializeFn = nullptr;
+			SerializeFn		mSerializeFn = nullptr;
+			
 		};
 
-		void RegisterSceneComponents( std::unordered_map<uint64, SceneComponentInfo>& map );
+		/*
+		struct FieldTypeInfo {
+
+			String mName{};
+			String mTypeName{};
+
+			usize mByteSize = 0;
+			usize mByteOffset = 0;
+
+		};
+		*/
+
+		void RegisterSceneComponents( std::vector<SceneComponentInfo>& infos );
 
 		/* @brief Validates whether a file path matches the expected format extension.
 		* @param file File path to validate.

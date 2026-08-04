@@ -76,7 +76,7 @@ namespace lum::rhi {
 		* @param offset Byte offset from the start of the buffer (default 0).
 		* @param size   Byte count to copy; 0 means whole buffer (default 0).
 		*/
-		virtual void UpdateBuffer( BufferHandle buff, cvptr data, usize offset = 0, usize size = 0 ) = 0;
+		virtual void UpdateBuffer( BufferHandle buff, const void* data, usize offset = 0, usize size = 0 ) = 0;
 
 		/* @brief Frees the GPU memory associated with the given buffer.
 		* @param buff Handle to delete. Becomes invalid after this call.
@@ -92,7 +92,7 @@ namespace lum::rhi {
 		* @note Must be followed by UnmapBuffer() when done.
 		*/
 		LUM_NODISCARD
-			virtual vptr MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset = 0, usize size = 0 ) = 0;
+			virtual void* MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset = 0, usize size = 0 ) = 0;
 
 		/* @brief Unmaps a previously mapped buffer and synchronizes with the GPU.
 		* @param buff Handle of the buffer to unmap.

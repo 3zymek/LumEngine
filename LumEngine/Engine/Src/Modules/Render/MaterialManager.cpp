@@ -115,7 +115,7 @@ namespace lum {
 					ResourceLoader::ResolveResourcePath( ResourceRoot::External, mat.mComponent->mBasePath )
 				);
 				if (!content) {
-					LUM_LOG_ERROR( "Failed to load material %s: %s", mat.mComponent->mBasePath.data(), content.Error() );
+					LUM_LOG_ERROR( "Failed to load material %s: %s", mat.mComponent->mBasePath.data(), content.GetError() );
 					*mat.mComponent = GetDefaultInstance();
 					return;
 				}

@@ -49,7 +49,7 @@ namespace lum {
 		}
 		else {
 
-			ucharptr data = stbi_load( strPath.c_str( ), &texture.mWidth, &texture.mHeight, &format, formatCast );
+			unsigned char* data = stbi_load( strPath.c_str( ), &texture.mWidth, &texture.mHeight, &format, formatCast );
 			if (!data) {
 				return Result<ImageData>::Failure( stbi_failure_reason( ) );
 			}

@@ -214,19 +214,20 @@
 
     "scene_registry_fn": [
       "{Signature} {",
-      "\tstatic const std::unordered_map<uint64, SceneComponentInfo> sMap = {",
       "",
       "\t{Fields}",
       "",
-      "\t};",
-      "",
-      "\tmap = sMap;",
       "}"
     ],
     "scene_registry_fn_field": [
-      "{ HashString( \"{SerializationName}\" ), SceneComponentInfo {",
-      "\t&{DeserializeFn},",
-      "} },"
+      "infos.push_back(",
+      "\t{",
+      "\t\t\"{SerializationName}\",",
+      "\t\tTypeRegistry::GetTypeId<{ClassName}>( ),",
+      "\t\t&{DeserializeFn},",
+      "\t\tnullptr",
+      "\t}",
+      ");"
     ],
     "scene_registry_basefile": [
       "#include \"Scene/Format/FormatCommon.hpp\"",
@@ -258,7 +259,7 @@
 
     "serialize_fn_name": "Serialize{ClassName}",
 
-    "scene_registry_fn_signature": "void RegisterSceneComponents( std::unordered_map<uint64, SceneComponentInfo>& map )"
+    "scene_registry_fn_signature": "void RegisterSceneComponents( std::vector<SceneComponentInfo>& infos )"
     
   },
   "defaults": {

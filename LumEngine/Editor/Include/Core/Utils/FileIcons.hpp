@@ -19,7 +19,7 @@ namespace lum::editor {
 	static const ImVec4 skFileColorError	= { 0.89f, 0.29f, 0.29f, 1.f };
 
 	struct FileIconInfo {
-		ccharptr mIcon = ICON_FA_CUBE;
+		const char* mIcon = ICON_FA_CUBE;
 		ImVec4 mColor = skFileColorDefault;
 	};
 

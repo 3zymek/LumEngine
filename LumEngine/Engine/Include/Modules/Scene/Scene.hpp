@@ -18,7 +18,6 @@ namespace lum {
 
         /* @brief List of all entity IDs belonging to this scene. */
         std::unordered_map<EntityID, Entity> mEntities;
-
         std::unordered_map<EntityID, EntityID> mParents;
         std::unordered_map<EntityID, std::vector<EntityID>> mChildren;
 

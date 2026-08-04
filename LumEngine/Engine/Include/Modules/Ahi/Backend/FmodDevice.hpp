@@ -51,10 +51,10 @@ namespace lum::ahi::fmod {
 		FMOD::System* mSystem = nullptr;
 
 		// Handle casts
-		FMOD::Sound* to_fmod_sound( vptr ptr ) const noexcept { return static_cast< FMOD::Sound* >(ptr); }
-		FMOD::Channel* to_fmod_channel( vptr ptr ) const noexcept { return static_cast< FMOD::Channel* >(ptr); }
-		FMOD::ChannelGroup* to_fmod_channel_group( vptr ptr )  const noexcept { return static_cast< FMOD::ChannelGroup* >(ptr); }
-		FMOD::DSP* to_fmod_dsp( vptr ptr ) const noexcept { return static_cast< FMOD::DSP* >(ptr); }
+		FMOD::Sound* to_fmod_sound( void* ptr ) const noexcept { return static_cast< FMOD::Sound* >(ptr); }
+		FMOD::Channel* to_fmod_channel( void* ptr ) const noexcept { return static_cast< FMOD::Channel* >(ptr); }
+		FMOD::ChannelGroup* to_fmod_channel_group( void* ptr )  const noexcept { return static_cast< FMOD::ChannelGroup* >(ptr); }
+		FMOD::DSP* to_fmod_dsp( void* ptr ) const noexcept { return static_cast< FMOD::DSP* >(ptr); }
 
 		// Flag translation
 		static FMOD_MODE      translate_sound_flags( Flags<SoundFlag> flags );

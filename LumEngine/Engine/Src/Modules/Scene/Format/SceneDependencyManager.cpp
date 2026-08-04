@@ -9,11 +9,10 @@
 #include "Scene/Format/Tokenizer.hpp"
 #include "Scene/SceneManager.hpp"
 
-#include "Audio/AudioManager.hpp"
-#include "Entity/Components/AudioEmitter.hpp"
-
 #include "Render/TextureManager.hpp"
 #include "Render/Renderer.hpp"
+
+#include "Core/Utils/StringBuilder.hpp"
 
 #include "Scene/Format/DeserializeFunctions.gen.hpp"
 
@@ -28,7 +27,8 @@ namespace lum::fmt {
 		mTokenizer = &tokenizer;
 		mCtx = &ctx;
 
-		RegisterSceneComponents( sComponentsInfos );
+		RegisterSceneComponents( mComponentsInfos );
+		categorize_component_infos( );
 
 	}
 
@@ -42,8 +42,8 @@ namespace lum::fmt {
 
 		for (int32 i = 0; i < tokens.size( ); i++) {
 			if (tokens[ i ].mType == TokenType::Identifier) {
-				auto it = sIdentifiersParseFunctions.find( HashString( ToLower( tokens[ i ].mValue ) ) );
-				if (it != sIdentifiersParseFunctions.end( )) {
+				auto it = sIdentifiersDeserializeFunctions.find( HashString( ToLower( tokens[ i ].mValue ) ) );
+				if (it != sIdentifiersDeserializeFunctions.end( )) {
 					it->second( tokens, i, ctx );
 				}
 			}
@@ -51,12 +51,23 @@ namespace lum::fmt {
 
 	}
 
-	void SceneDependencyManager::Serialize( Scene& scene, StringView path ) {
+	void SceneDependencyManager::Serialize( Scene& scene, const Path& finalizePath ) {
 
-		ParseContext ctx{ scene };
-		ctx.mCtx = *mCtx;
+		StringBuilder sb{};
 
-		for (auto& [entityID, entity] : scene.mEntities) {
+		for (auto& [entityId, entity] : scene.mEntities) {
+
+			sb.AppendLine( "entity {" );
+
+			scene.mEntityMgr.ForEachComponent(
+				entityId,
+				[&]( int32 typeIndex, ecs::ComponentBasePool* pool ) {
+
+					mTypeIdInfoLookup[ pool->GetTypeId( ) ]->mSerializeFn( );
+
+				}
+			);
+
 
 		}
 
@@ -69,7 +80,7 @@ namespace lum::fmt {
 	// Private
 	//---------------------------------------------------------
 
-	void SceneDependencyManager::parse_world( std::vector<Token>& tokens, int32& i, ParseContext& ctx ) {
+	void SceneDependencyManager::deserialize_world( std::vector<Token>& tokens, int32& i, ParseContext& ctx ) {
 
 		detail::ExpectOpeningBracket( tokens, i );
 
@@ -104,7 +115,7 @@ namespace lum::fmt {
 
 
 
-	void SceneDependencyManager::parse_entity( std::vector<Token>& tokens, int32& i, ParseContext& ctx ) {
+	void SceneDependencyManager::deserialize_entity( std::vector<Token>& tokens, int32& i, ParseContext& ctx ) {
 
 		Entity entity = ctx.mScene.CreateEntity( );
 		EntityID id = entity.GetID( );
@@ -115,15 +126,24 @@ namespace lum::fmt {
 		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Component) {
-				auto it = sComponentsInfos.find( HashString( ToLower( tokens[ i ].mValue ) ) );
-				if (it != sComponentsInfos.end( )) {
-					it->second.mDeserializeFn( tokens, i, ctx );
+				auto it = mNameInfoLookup.find( HashString( ToLower( tokens[ i ].mValue ) ) );
+				if (it != mNameInfoLookup.end( )) {
+					it->second->mDeserializeFn( tokens, i, ctx );
 				}
 
 			}
 
 			i++;
 
+		}
+
+	}
+
+	void SceneDependencyManager::categorize_component_infos( ) {
+
+		for (auto& info : mComponentsInfos) {
+			mNameInfoLookup.emplace( HashString( info.mSerializationName ), &info );
+			mTypeIdInfoLookup.emplace( info.mTypeId, &info );
 		}
 
 	}

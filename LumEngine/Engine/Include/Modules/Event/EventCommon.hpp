@@ -35,10 +35,10 @@ namespace lum {
 		using EventTypeID = uint32;
 
 		/* @brief Function pointer type for invoking a stored callback. */
-		using InvokeFunction = void(*)(vptr userParam, cvptr event);
+		using InvokeFunction = void(*)(void* userParam, const void* event);
 
 		/* @brief Function pointer type for destroying a stored callback. */
-		using DestroyFunction = void(*)(vptr userParam);
+		using DestroyFunction = void(*)(void* userParam);
 
 		/* @brief Aligned storage buffer for type-erased lambda storage.
 		*  Sized to 256 bytes with maximum natural alignment.

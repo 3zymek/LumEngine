@@ -28,15 +28,17 @@ namespace lum::fmt {
 		*/
 		void Deserialize( Scene& scene );
 
-		void Serialize( Scene& scene, StringView path );
+		void Serialize( Scene& scene, const Path& finalizePath );
 
 	private:
 
 		/* @brief Parses the world block and applies global scene settings. */
-		static void parse_world( std::vector<Token>& tokens, int32& i, ParseContext& ctx );
+		static void deserialize_world( std::vector<Token>& tokens, int32& i, ParseContext& ctx );
 
 		/* @brief Parses an entity block and creates a new entity in the scene. */
-		static void parse_entity( std::vector<Token>& tokens, int32& i, ParseContext& ctx );
+		static void deserialize_entity( std::vector<Token>& tokens, int32& i, ParseContext& ctx );
+
+		static void categorize_component_infos( );
 
 		/* @brief Reference to the tokenizer holding the pre-tokenized scene file. */
 		Tokenizer* mTokenizer = nullptr;
@@ -47,15 +49,15 @@ namespace lum::fmt {
 		/* @brief Lookup table mapping hashed identifier keywords to their parse functions.
 		* Used to dispatch top-level scene constructs such as entity and world blocks.
 		*/
-		static inline std::unordered_map<uint64, ParseFn> sIdentifiersParseFunctions = {
-			{ HashString( "entity" ), parse_entity },
-			{ HashString( "world" ),  parse_world  }
+		static inline std::unordered_map<uint64, DeserializeFn> sIdentifiersDeserializeFunctions = {
+			{ HashString( "entity" ), deserialize_entity },
+			{ HashString( "world" ),  deserialize_world  }
 		};
 
-		/* @brief Lookup table mapping hashed component keywords to their parse functions.
-		* Used to dispatch component blocks within an entity definition.
-		*/
-		static inline std::unordered_map<uint64, SceneComponentInfo> sComponentsInfos;
+		static inline std::unordered_map<uint64, SceneComponentInfo*> mNameInfoLookup{};
+		static inline std::unordered_map<uint64, SceneComponentInfo*> mTypeIdInfoLookup{};
+
+		static inline std::vector<SceneComponentInfo> mComponentsInfos{};
 
 	};
 

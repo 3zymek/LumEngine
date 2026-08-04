@@ -128,7 +128,7 @@ namespace lum::ahi {
 		/* @brief Opaque DSP node handles owned by the audio backend (e.g. FMOD::DSP*).
 		*  Cast to the backend-specific type inside the implementation.
 		*/
-		std::vector<vptr> mDsps;
+		std::vector<void*> mDsps;
 
 	};
 

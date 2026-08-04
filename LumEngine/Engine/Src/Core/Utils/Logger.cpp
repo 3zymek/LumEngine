@@ -8,7 +8,7 @@
 
 namespace lum {
 
-	void Logger::FormatTime( uint64 timestamp, charptr out ) {
+	void Logger::FormatTime( uint64 timestamp, char* out ) {
 		std::time_t t = timestamp / 1000;
 		std::tm tm{};
 

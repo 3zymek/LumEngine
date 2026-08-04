@@ -16,7 +16,7 @@ namespace lum::rhi::gl {
 	/* @brief Resolves a pointer to raw pixel data from a TextureData descriptor.
 	*  Returns nullptr if the appropriate pixel buffer is empty.
 	*/
-	LUM_FORCEINLINE static cvptr resolve_pixel_data( const ImageData& data ) noexcept {
+	LUM_FORCEINLINE static const void* resolve_pixel_data( const ImageData& data ) noexcept {
 		if (data.mIsHdr)
 			return data.mFloatPixels.empty( ) ? nullptr : data.mFloatPixels.data( );
 		return data.mPixels.empty( ) ? nullptr : data.mPixels.data( );
@@ -154,7 +154,7 @@ namespace lum::rhi::gl {
 
 		if (desc.mTextureType == TextureType::Texture2D) {
 
-			cvptr data = resolve_pixel_data( desc.mData );
+			const void* data = resolve_pixel_data( desc.mData );
 
 			glCreateTextures( GL_TEXTURE_2D, 1, &texture.mHandle );
 			glTextureStorage2D(
@@ -257,7 +257,7 @@ namespace lum::rhi::gl {
 			for (usize i = 0; i < 6; i++) {
 
 				const ImageData& face = desc.mCubemap.mFaces[ i ];
-				cvptr data = resolve_pixel_data( face );
+				const void* data = resolve_pixel_data( face );
 
 				LUM_ASSERT(
 					static_cast< uint32 >( face.mWidth ) == width &&

@@ -75,7 +75,7 @@ namespace lum {
 		uint32 GetHeight( ) const noexcept;
 
 		/* @brief Returns the underlying native GLFW window pointer. */
-		vptr GetNativeWindow( ) const noexcept { return mWindow; }
+		void* GetNativeWindow( ) const noexcept { return mWindow; }
 
 		/* @brief Returns the time in seconds since GLFW was initialized. */
 		float64 GetTime( ) const noexcept { return glfwGetTime( ); }

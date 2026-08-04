@@ -43,7 +43,7 @@ namespace lum {
 		auto meshGeometry = ResourceLoader::LoadMeshFromFile( root, path );
 
 		if (!meshGeometry) {
-			LUM_LOG_ERROR( "Failed to load model %s: %s", path.data(), meshGeometry.Error() );
+			LUM_LOG_ERROR( "Failed to load model %s: %s", path.data(), meshGeometry.GetError() );
 			return mErrorMesh;
 		}
 
@@ -67,7 +67,7 @@ namespace lum {
 		auto meshGeometry = ResourceLoader::LoadMeshFromFile( root, path );
 
 		if (!meshGeometry) {
-			LUM_LOG_ERROR( "Failed to load model %s: %s", path, meshGeometry.Error() );
+			LUM_LOG_ERROR( "Failed to load model %s: %s", path, meshGeometry.GetError() );
 			MeshGeometry fallback;
 			fallback.mVertices = mDefaultVertices;
 			fallback.mIndices = mDefaultIndices;
@@ -201,7 +201,7 @@ namespace lum {
 		{ // Error mesh
 			auto meshGeometry = ResourceLoader::LoadMeshFromFile( ResourceRoot::Internal, "models/ERRORText.fbx" );
 			if (!meshGeometry) {
-				LUM_LOG_ERROR( "Failed to load fallback error model: %s", meshGeometry.Error() );
+				LUM_LOG_ERROR( "Failed to load fallback error model: %s", meshGeometry.GetError() );
 				mErrorMesh = mDefaultMesh;
 				return;
 			}

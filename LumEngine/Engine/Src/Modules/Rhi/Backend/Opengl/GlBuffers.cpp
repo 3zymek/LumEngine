@@ -37,7 +37,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	void GLDevice::UpdateBuffer( BufferHandle buff, cvptr data, usize offset, usize size ) {
+	void GLDevice::UpdateBuffer( BufferHandle buff, const void* data, usize offset, usize size ) {
 
 		LUM_ASSERT( IsValid( buff ), "Invalid buffer" );
 
@@ -66,7 +66,7 @@ namespace lum::rhi::gl {
 
 	}
 
-	vptr GLDevice::MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset, usize size ) {
+	void* GLDevice::MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset, usize size ) {
 
 		LUM_RETURN_DEF_IF( !IsValid( buff ), LUM_SEV_WARN, "Invalid buffer" );
 
@@ -75,7 +75,7 @@ namespace lum::rhi::gl {
 		LUM_ASSERT( offset + size <= buffer.mSize || size < buffer.mSize, "Invalid offset or size" );
 		if (size == 0) size = buffer.mSize;
 
-		vptr ptr = glMapNamedBufferRange( buffer.mHandle, offset, size, translate_mapping_flags( flags ) );
+		void* ptr = glMapNamedBufferRange( buffer.mHandle, offset, size, translate_mapping_flags( flags ) );
 
 		LUM_ASSERT( ptr, "Failed to map buffer" );
 		buffer.mMapped = true;

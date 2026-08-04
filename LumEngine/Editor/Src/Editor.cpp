@@ -18,7 +18,7 @@ namespace lum::editor {
 		desc.mApplicationName = "LumEngineEditor";
 		desc.mRenderingBackend = rhi::RenderBackend::OpenGL;
 		desc.mProjectDir = "C:/Users/szymek/Desktop/lumen_assets";
-		desc.mWindow.mIconData = iconData.HasValue( ) ? iconData.ValueRef( ) : Optional<ImageData>::Empty();
+		desc.mWindow.mIconData = iconData ? iconData.ValueRef( ) : Optional<ImageData>::Empty();
 
 		mEngine.Initialize( desc ); 
 		mEngine.SetScene( "scene.lsc" );

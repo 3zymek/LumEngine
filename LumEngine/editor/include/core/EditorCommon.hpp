@@ -101,7 +101,7 @@ namespace lum::editor {
 
 		// draw chevron and label
 		ImVec2   textPos = ImVec2( itemMin.x + 5.0f, itemMin.y );
-		ccharptr chevron = opened ? args.mIconOpened.data( ) : args.mIconClosed.data( );
+		const char* chevron = opened ? args.mIconOpened.data( ) : args.mIconClosed.data( );
 		float32  chevronWidth = ImGui::CalcTextSize( args.mIconOpened.data( ) ).x;
 		chevronWidth = std::max( chevronWidth, ImGui::CalcTextSize( args.mIconClosed.data( ) ).x );
 		ImU32    color = ImGui::GetColorU32( args.mColor );
@@ -149,7 +149,7 @@ namespace lum::editor {
 	/* @brief Draws a search input field with a placeholder hint.
 	*  @return True if the content changed this frame.
 	*/
-	bool SearchField( ccharptr id, ccharptr hint, charptr buffer, usize bufferSize );
+	bool SearchField( const char* id, const char* hint, char* buffer, usize bufferSize );
 
 	/* @brief Shows a tooltip when the last item is hovered. */
 	void TooltipOnHover( const char* text );
@@ -173,18 +173,18 @@ namespace lum::editor {
 			mShortcut( shortcut ) {
 			LUM_SASSERT( sizeof( tLambda ) <= sizeof( mStorage ) && "Lambda's too big" );
 			new (&mStorage) tLambda( std::forward<tLambda>( lambda ) );
-			mInvoke = []( vptr buf ) {
+			mInvoke = []( void* buf ) {
 				(*reinterpret_cast< tLambda* >(buf))();
 				};
 		}
 
-		void Invoke( ) const { if (mInvoke) mInvoke( ( vptr ) &mStorage ); }
+		void Invoke( ) const { if (mInvoke) mInvoke( ( void* ) &mStorage ); }
 
 		StringView mIcon = {};
 		StringView mLabel = {};
 		StringView mShortcut = {};
 		std::aligned_storage_t<256, alignof(std::max_align_t)> mStorage;
-		void(*mInvoke)(vptr) = nullptr;
+		void(*mInvoke)(void*) = nullptr;
 
 	};
 

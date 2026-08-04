@@ -19,9 +19,9 @@ namespace lum::rhi::gl {
 		//=================================================
 
 		BufferHandle CreateBuffer( const BufferCreateInfo& desc ) override;
-		void UpdateBuffer( BufferHandle buff, cvptr data, usize offset, usize size ) override;
+		void UpdateBuffer( BufferHandle buff, const void* data, usize offset, usize size ) override;
 		void Delete( BufferHandle& buff ) override;
-		vptr MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset, usize size ) override;
+		void* MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset, usize size ) override;
 		void UnmapBuffer( BufferHandle buff ) override;
 		void SetShaderStorageBinding( BufferHandle ssbo, uint32 binding ) override;
 		void AttachElementBufferToLayout( BufferHandle ebo, VertexLayoutHandle vao ) override;

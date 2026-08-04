@@ -35,7 +35,7 @@ namespace lum {
 		/* @brief Constructs a FixedString from a null-terminated character string.
 		*  @param src Source character string.
 		*/
-		FixedString( ccharptr src ) noexcept {
+		FixedString( const char* src ) noexcept {
 			usize len = strlen( src );
 			if (len > tLength - 1) len = tLength - 1;
 			std::memcpy( mData, src, len );
@@ -65,7 +65,7 @@ namespace lum {
 		*  @param src Source character string.
 		*  @return Reference to this string.
 		*/
-		FixedString& operator=( ccharptr src ) noexcept {
+		FixedString& operator=( const char* src ) noexcept {
 			usize len = strlen( src );
 			if (len > tLength) len = tLength - 1;
 			std::memcpy( mData, src, len );
@@ -89,7 +89,7 @@ namespace lum {
 		*  @param src String to append.
 		*  @return Reference to this string.
 		*/
-		FixedString& operator+=( ccharptr src ) noexcept {
+		FixedString& operator+=( const char* src ) noexcept {
 			usize curLen = strlen( mData );
 			usize srcLen = strlen( src );
 			usize copyLen = std::min( srcLen, tLength - curLen - 1 );
@@ -211,21 +211,21 @@ namespace lum {
 		/* @brief Returns a pointer to the internal character buffer.
 		*  @return Const pointer to null-terminated data.
 		*/
-		LUM_FORCEINLINE constexpr ccharptr Data( ) const {
+		LUM_FORCEINLINE constexpr const char* Data( ) const {
 			return mData;
 		}
 
 		/* @brief Returns a writable pointer to the internal character buffer.
 		*  @return Pointer to modifiable data.
 		*/
-		LUM_FORCEINLINE constexpr charptr Data( ) {
+		LUM_FORCEINLINE constexpr char* Data( ) {
 			return mData;
 		}
 
-		charptr begin( ) { return mData; }
-		charptr end( ) { return mData + strlen( mData ); }
-		ccharptr begin( ) const { return mData; }
-		ccharptr end( ) const { return mData + strlen( mData ); }
+		char* begin( ) { return mData; }
+		char* end( ) { return mData + strlen( mData ); }
+		const char* begin( ) const { return mData; }
+		const char* end( ) const { return mData + strlen( mData ); }
 
 	private:
 
