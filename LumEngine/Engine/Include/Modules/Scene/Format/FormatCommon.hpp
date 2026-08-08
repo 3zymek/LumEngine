@@ -9,6 +9,7 @@
 #include "Core/CoreCommon.hpp"
 #include "Entity/EcsCommon.hpp"
 #include "Platform/FileSystem.hpp"
+#include "Core/Utils/StringBuilder.hpp"
 
 namespace lum {
 
@@ -216,6 +217,51 @@ namespace lum {
 				float32 y = std::stof( tokens[ i ].mValue );
 				LUM_ASSERT( tokens[ i + 1 ].mType != TokenType::Number, "Vec2 expected" );
 				return Vector2( x, y );
+			}
+
+			inline void WriteStringParameter( const String& val, StringBuilder& sb ) {
+
+				sb.Append( "\"" );
+				sb.Append( val );
+				sb.AppendLine( "\"" );
+
+			}
+
+			inline void WriteBoolParameter( const bool val, StringBuilder& sb ) {
+				
+				sb.AppendLine( val ? "1" : "0" );
+				
+			}
+
+			inline void WriteFloatParameter( const float32 val, StringBuilder& sb ) {
+
+				sb.AppendLine( val );
+
+			}
+
+			inline void WriteIntParameter( const int64 val, StringBuilder& sb ) {
+
+				sb.AppendLine( val );
+
+			}
+
+			inline Vector3 WriteVec3Parameter( const Vector3& val, StringBuilder& sb ) {
+				
+				sb.Append( val.mX );
+				sb.Append( " " );
+				sb.Append( val.mY );
+				sb.Append( " " );
+				sb.AppendLine( val.mZ );
+
+			}
+
+			inline Vector2 WriteVec2Parameter( const Vector2& val, StringBuilder& sb ) {
+				
+				sb.Append( val.mX );
+				sb.Append( " " );
+				sb.AppendLine( val.mY );
+				
+
 			}
 
 		} // namespace lum::fmt::detail

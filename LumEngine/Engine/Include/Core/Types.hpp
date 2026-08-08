@@ -42,7 +42,7 @@ namespace lum {
 
 	/* @brief Constrains tType to arithmetic types (integral or floating point). */
 	template<typename tType>
-	concept cArithmetic = std::is_arithmetic_v<tType>;
+	concept cArithmetic = std::is_arithmetic_v<std::remove_cvref_t<tType>>;
 
 	/* @brief Constrains tType to types representable as a C string (char or string-like objects). */
 	template<typename tType>

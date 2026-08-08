@@ -6,7 +6,7 @@
 namespace lum {
 
 	class StringBuilder {
-	public:
+		public:
 
 		void Append( StringView str ) {
 			mBuffer.append( str );
@@ -14,9 +14,9 @@ namespace lum {
 		void Append( const char* str ) {
 			mBuffer.append( str );
 		}
-		template<typename tType>
-		void Append( tType&& value ) {
-			mBuffer.append( std::forward<tType>( ToString( value ) ) );
+		template<cArithmetic tType>
+		void Append( tType value ) {
+			mBuffer.append( lum::ToString( value ) );
 		}
 
 		void AppendLine( StringView str ) {
@@ -27,9 +27,9 @@ namespace lum {
 			mBuffer.append( str );
 			mBuffer.push_back( '\n' );
 		}
-		template<typename tType>
-		void AppendLine( tType&& value ) {
-			mBuffer.append( std::forward<tType>( ToString( value ) ) );
+		template<cArithmetic tType>
+		void AppendLine( tType value ) {
+			mBuffer.append( lum::ToString( value ) );
 			mBuffer.push_back( '\n' );
 		}
 
@@ -48,7 +48,7 @@ namespace lum {
 			return mBuffer;
 		}
 
-	private:
+		private:
 
 		String mBuffer{};
 
