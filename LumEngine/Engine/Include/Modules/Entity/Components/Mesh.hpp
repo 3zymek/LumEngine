@@ -20,7 +20,7 @@ namespace lum {
 		LUM_GENERATED_BODY( )
 
 		LUM_PROPERTY( Droppable = "FILE" )
-		String mPath;
+		String mPath{};
 
 		String mLastLoadedPath = "";
 

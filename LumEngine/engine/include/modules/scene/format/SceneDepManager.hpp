@@ -6,7 +6,6 @@
 #pragma once
 #include "Scene/Format/FormatCommon.hpp"
 #include "Entity/EntityManager.hpp"
-#include "Scene/SceneManager.hpp"
 
 namespace lum { struct Scene; }
 namespace lum::fmt {
@@ -21,14 +20,14 @@ namespace lum::fmt {
 	class SceneDependencyManager {
 	public:
 
-		void Initialize( Tokenizer& tokenizer, SceneManagerContext& ctx );
+		void Initialize( SceneManagerContext& ctx );
 
 		/* @brief Parses the token stream and populates the given scene.
 		* @param scene Scene to populate with entities and components.
 		*/
-		void Deserialize( Scene& scene );
+		void Deserialize( Scene& scene, Tokenizer& tokenizer );
 
-		void Serialize( Scene& scene, const Path& finalizePath );
+		void Serialize( Scene& scene );
 
 	private:
 
@@ -39,9 +38,6 @@ namespace lum::fmt {
 		static void deserialize_entity( std::vector<Token>& tokens, int32& i, ParseContext& ctx );
 
 		static void categorize_component_infos( );
-
-		/* @brief Reference to the tokenizer holding the pre-tokenized scene file. */
-		Tokenizer* mTokenizer = nullptr;
 
 		/* @brief Resource manager context used during parsing for asset resolution. */
 		SceneManagerContext* mCtx = nullptr;

@@ -7,6 +7,7 @@
 
 #include "Entity/EntityManager.hpp"
 #include "Core/Utils/Optional.hpp"
+#include "Platform/Path.hpp"
 
 namespace lum {
 
@@ -17,12 +18,15 @@ namespace lum {
     public:
 
         /* @brief List of all entity IDs belonging to this scene. */
-        std::unordered_map<EntityID, Entity> mEntities;
-        std::unordered_map<EntityID, EntityID> mParents;
-        std::unordered_map<EntityID, std::vector<EntityID>> mChildren;
+        std::unordered_map<EntityID, Entity> mEntities{};
+        std::unordered_map<EntityID, EntityID> mParents{};
+        std::unordered_map<EntityID, std::vector<EntityID>> mChildren{};
 
         /* @brief ECS manager owning and managing components for this scene. */
-        ecs::EntityManager mEntityMgr;
+        ecs::EntityManager mEntityMgr{};
+
+        /* @brief Path of this scene. */
+        Path mScenePath{};
 
         void AttachChild( EntityID parent, EntityID child );
         void DetachChild( EntityID child );

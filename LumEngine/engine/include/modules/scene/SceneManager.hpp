@@ -6,6 +6,7 @@
 #pragma once
 #include "Scene/Scene.hpp"
 #include "Format/FormatCommon.hpp"
+#include "Scene/Format/SceneDepManager.hpp"
 
 namespace lum {
 
@@ -32,7 +33,7 @@ namespace lum {
          */
         void LoadScene( const Path& scenePath );
 
-        void SaveScene( const Path& scenePath );
+        void SaveScene( Scene& scene );
 
         /* @brief Returns a pointer to the currently active scene.
          *  @return Pointer to the active Scene, or nullptr if none is set.
@@ -43,6 +44,8 @@ namespace lum {
         
         /* @brief Cached context holding all resource manager references. */
         SceneManagerContext mCtx;
+
+        fmt::SceneDependencyManager mSceneDependencyMgr{};
 
         /* @brief Pointer to the currently active scene. */
         Scene* mCurrentScene = nullptr;

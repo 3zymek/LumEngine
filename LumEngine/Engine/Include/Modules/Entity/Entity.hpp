@@ -23,7 +23,7 @@ namespace lum {
 		friend class ecs::EntityManager;
 		Entity( EntityID id ) : mId( id ) { }
 
-		EntityID GetID( ) const noexcept { return mId; }
+		EntityID GetId( ) const noexcept { return mId; }
 		bool IsVisible( ) const noexcept { return mVisible; }
 		void SetVisible( bool visible ) { mVisible = visible; }
 

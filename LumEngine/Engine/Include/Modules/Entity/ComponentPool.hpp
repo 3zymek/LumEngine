@@ -18,11 +18,11 @@ namespace lum::ecs {
 	* in a single array and call Remove without knowing the component type.
 	*/
 	struct ComponentBasePool {
-		virtual bool Contains( EntityID entityID ) = 0;      /* @brief Returns true if the entity has this component. */
-		virtual void Remove( EntityID& entityID ) = 0;       /* @brief Removes the component from the entity. */
-		virtual StringView GetParseName( ) = 0;              /* @brief Returns the serialization name of the component type. */
-		virtual StringView GetDisplayName( ) = 0;            /* @brief Returns the editor display name of the component type. */
-		virtual StringView GetCategoryName( ) = 0;           /* @brief Returns the editor category name of the component type. */
+		virtual bool Contains( EntityID entityId ) = 0;      /* @brief Returns true if the entity has this component. */
+		virtual void Remove( EntityID& entityId ) = 0;       /* @brief Removes the component from the entity. */
+		virtual ComponentBase* GetBase( EntityID entityId ) = 0;
+		virtual StringView GetCategoryName( ) = 0;
+		virtual StringView GetDisplayName( ) = 0;
 		virtual uint64 GetTypeId( ) = 0;
 		virtual ~ComponentBasePool( ) { }
 	};
@@ -62,6 +62,9 @@ namespace lum::ecs {
 			tType* Get( EntityID entityId ) {
 				return mComponents.Get( entityId );
 			}
+			ComponentBase* GetBase( EntityID entityId ) {
+				return mComponents.Get( entityId );
+			}
 
 			/* @brief Removes the component from the given entity.
 			* @param entityID Target entity ID. Set to kNullEntity after removal.
@@ -83,10 +86,14 @@ namespace lum::ecs {
 				return mComponents.Contains( entityId );
 			}
 
-			StringView GetParseName( ) override { return tType::sSerializationName; }
-			StringView GetDisplayName( ) override { return tType::sDisplayName; }
-			StringView GetCategoryName( ) override { return tType::sCategoryName; }
 			uint64 GetTypeId( ) override { return tType::GetTypeId( ); }
+
+			StringView GetCategoryName( ) override {
+				return EcsTraits<tType>::skCategoryName;
+			}
+			StringView GetDisplayName( ) override {
+				return EcsTraits<tType>::skDisplayName;
+			}
 
 
 		protected:

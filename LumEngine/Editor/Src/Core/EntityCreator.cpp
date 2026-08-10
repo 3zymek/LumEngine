@@ -230,9 +230,9 @@ namespace lum::editor {
 			mAddedComponents.erase( it );
 		}
 		for (auto& comp : mAddedComponents) {
-			comp->mCreateFn( scene->mEntityMgr, newEntity.GetID( ) );
+			comp->mCreateFn( scene->mEntityMgr, newEntity.GetId( ) );
 		}
-		scene->mEntities.emplace( newEntity.GetID( ), newEntity );
+		scene->mEntities.emplace( newEntity.GetId( ), newEntity );
 		bOpened = false;
 		mAddedComponents.clear( );
 

@@ -27,7 +27,7 @@ namespace lum {
 		* iterating over entities that share a set of component types.
 		*/
 		class LUM_API EntityManager {
-		public:
+			public:
 
 			EntityManager( ) { initialize_pools( ); }
 
@@ -173,13 +173,13 @@ namespace lum {
 
 			/* @brief Iterates over all component pools that contain the given entity.
 			* @param entityId Target entity ID.
-			* @param callback Callable with signature (int32 typeIndex, ecs::ComponentBasePool* pool).
+			* @param callback Callable with signature (ComponentBase* base, ecs::ComponentBasePool* pool).
 			*/
 			template<typename tCallback>
 			void ForEachComponent( EntityID entityId, tCallback&& callback ) {
 				for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
 					if (mComponentPools[ i ] && mComponentPools[ i ]->Contains( entityId ))
-						callback( i, mComponentPools[ i ] );
+						callback( mComponentPools[ i ]->GetBase( entityId ), mComponentPools[ i ] );
 				}
 			}
 
@@ -193,7 +193,7 @@ namespace lum {
 			template<detail::cComponent tType>
 			detail::ComponentPool<tType>& GetPool( );
 
-		private:
+			private:
 
 			/* @brief Array of component pools indexed by component type ID. */
 			ComponentBasePool* mComponentPools[ limits::kMaxComponentTypes ];

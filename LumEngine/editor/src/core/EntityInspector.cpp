@@ -29,7 +29,7 @@ namespace lum::editor {
 			CollapsingHeaderArgs args;
 			scene->mEntityMgr.ForEachComponent(
 				selectedEntity,
-				[&]( int32 typeID, ecs::ComponentBasePool* pool ) {
+				[&]( ComponentBase* comp, ecs::ComponentBasePool* pool ) {
 
 					bool opened = true;
 

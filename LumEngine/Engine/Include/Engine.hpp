@@ -35,7 +35,7 @@ namespace lum {
 		PlatformModule&		GetModulePlatform( ) { return mPlatform; }
 		ResourceModule&		GetModuleResource( ) { return mRes; }
 		RenderModule&		GetModuleRender( ) { return mRender; }
-		SceneModule&		GeModuleScene( ) { return mScene; }
+		SceneModule&		GetModuleScene( ) { return mScene; }
 
 	private:
 

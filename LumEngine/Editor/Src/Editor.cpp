@@ -56,7 +56,7 @@ namespace lum::editor {
 			Update( delta );
 
 			auto& meshMgr = mEngine.GetModuleResource( ).mMeshMgr;
-			mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( )->mEntityMgr.Each<CStaticMesh>(
+			mEngine.GetModuleScene( ).mSceneMgr.GetCurrentScene( )->mEntityMgr.Each<CStaticMesh>(
 				[&]( CStaticMesh& mesh ) {
 					if (mesh.mPath != mesh.mLastLoadedPath) {
 						mesh.mHandle = meshMgr.CreateStatic( mesh.mPath );
@@ -74,7 +74,7 @@ namespace lum::editor {
 	}
 	void Editor::Update( float64 delta ) {
 
-		mCurrentScene = mEngine.GeModuleScene( ).mSceneMgr.GetCurrentScene( );
+		mCurrentScene = mEngine.GetModuleScene( ).mSceneMgr.GetCurrentScene( );
 
 		draw_layout( );
 		draw_menu_bar( );
@@ -99,6 +99,14 @@ namespace lum::editor {
 			if (ImGui::BeginMenu( "Scene" )) {
 				ImGui::MenuItem( "New Scene", "Ctrl + N" );
 				ImGui::MenuItem( "Open scene", "Ctrl + O" );
+				
+				if (ImGui::MenuItem( "Save scene", "Ctrl + S" )) {
+					auto& sceneModule = mEngine.GetModuleScene( );
+					Scene* currentScene = sceneModule.mSceneMgr.GetCurrentScene( );
+					if(currentScene) 
+						sceneModule.mSceneMgr.SaveScene( *currentScene );
+				}
+
 				ImGui::Separator( );
 				if (ImGui::MenuItem( "Quit", "Ctrl + Q" )) {
 					mEngine.GetModulePlatform( ).mWindow.Close( );

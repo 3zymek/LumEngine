@@ -23,6 +23,7 @@ namespace lum {
 	void SceneManager::Initialize( SceneManagerContext& ctx ) {
 
 		mCtx = ctx;
+		mSceneDependencyMgr.Initialize( mCtx );
 
 	}
 
@@ -45,7 +46,8 @@ namespace lum {
 
 		uint64 hash = scenePath.Hash();
 
-		auto content = FileSystem::ReadAllText( ResourceLoader::ResolveResourcePath( ResourceRoot::External, scenePath ) );
+		Path fullPath = ResourceLoader::ResolveResourcePath( ResourceRoot::External, scenePath );
+		auto content = FileSystem::ReadAllText( fullPath );
 
 		if (!content) {
 			LUM_LOG_ERROR( "Failed to load scene %s: %s", scenePath.ToString( ), content.GetError() );
@@ -60,20 +62,21 @@ namespace lum {
 		fmt::Tokenizer tokenizer;
 		tokenizer.Tokenize( content.ValueRef( ) );
 
-		fmt::SceneDependencyManager parser;
-		parser.Initialize( tokenizer, mCtx );
-		Scene scene;
+		Scene scene{};
 		scene.mEntityMgr.Initialize( mCtx.mEventBus );
-		parser.Deserialize( scene );
+		scene.mScenePath = fullPath;
+
+		mSceneDependencyMgr.Deserialize( scene, tokenizer );
 		mScenes.emplace( hash, std::move( scene ) );
 
 		LUM_LOG_INFO( "Loaded scene: %s", scenePath.ToString( ) );
 
 	}
 
-	void SaveScene( StringView scenePath ) {
+	void SceneManager::SaveScene( Scene& scene ) {
 
-		
+		mSceneDependencyMgr.Serialize( scene );
+		LUM_LOG_INFO( "Saved scene: %s", scene.mScenePath.ToString() );
 	   
 	}
 

@@ -48,7 +48,7 @@ namespace lum {
 		* @param base Handle to the base material.
 		* @return Fully resolved material instance ready for rendering.
 		*/
-		LUM_NODISCARD CMaterialInstance CreateInstance( MaterialBaseHandle base );
+		void ApplyInstance( CMaterialInstance& instance, MaterialBaseHandle base );
 
 		/* @brief Returns a material instance created from the built-in default material. */
 		LUM_NODISCARD CMaterialInstance GetDefaultInstance( );

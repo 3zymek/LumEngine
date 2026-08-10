@@ -30,15 +30,6 @@ namespace lum {
 		/* @brief Ambient occlusion texture map. */
 		rhi::TextureHandle mAmbientTex;
 
-		/* @brief Base color multiplier. */
-		Vector3 mBaseColor = Vector3( 1.0f );
-
-		/* @brief Roughness scalar fallback when no map is bound. */
-		float32 mRoughnessValue = 0.5f;
-
-		/* @brief Metallic scalar fallback when no map is bound. */
-		float32 mMetallicValue = 0.0f;
-
 	};
 
 	/* @brief Descriptor for creating a material base.
@@ -51,11 +42,6 @@ namespace lum {
 		Optional<String> mNormalTex;      // Path to normal map
 		Optional<String> mRoughnessTex;   // Path to roughness map
 		Optional<String> mMetallicTex;    // Path to metallic map
-
-		Optional<Vector3> mBaseColor;   // Base color multiplier, defaults to (1, 1, 1)
-
-		Optional<float32> mRoughnessValue = 0.5f; // Roughness multiplier, defaults to 0.5
-		Optional<float32> mMetallicValue = 0.0f;  // Metallic multiplier, defaults to 0.0
 
 	};
 

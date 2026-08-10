@@ -101,7 +101,7 @@ namespace lum {
 
 		/* @brief Function pointer type for deserialize dispatch functions. */
 		using DeserializeFn = void(*)(std::vector<Token>&, int32&, ParseContext&);
-		using SerializeFn = void(*)();
+		using SerializeFn = void(*)(StringBuilder&, ComponentBase*);
 
 		struct SceneComponentInfo {
 
@@ -221,32 +221,47 @@ namespace lum {
 
 			inline void WriteStringParameter( const String& val, StringBuilder& sb ) {
 
+				sb.Append( "\t\t\t" );
 				sb.Append( "\"" );
 				sb.Append( val );
 				sb.AppendLine( "\"" );
 
 			}
 
+			template<usize tSize>
+			inline void WriteStringParameter( const FixedString<tSize>& val, StringBuilder& sb ) {
+
+				sb.Append( "\t\t\t" );
+				sb.Append( "\"" );
+				sb.Append( val.Data() );
+				sb.AppendLine( "\"" );
+
+			}
+
 			inline void WriteBoolParameter( const bool val, StringBuilder& sb ) {
 				
+				sb.Append( "\t\t\t" );
 				sb.AppendLine( val ? "1" : "0" );
 				
 			}
 
 			inline void WriteFloatParameter( const float32 val, StringBuilder& sb ) {
 
+				sb.Append( "\t\t\t" );
 				sb.AppendLine( val );
 
 			}
 
 			inline void WriteIntParameter( const int64 val, StringBuilder& sb ) {
 
+				sb.Append( "\t\t\t" );
 				sb.AppendLine( val );
 
 			}
 
-			inline Vector3 WriteVec3Parameter( const Vector3& val, StringBuilder& sb ) {
+			inline void WriteVec3Parameter( const Vector3& val, StringBuilder& sb ) {
 				
+				sb.Append( "\t\t\t" );
 				sb.Append( val.mX );
 				sb.Append( " " );
 				sb.Append( val.mY );
@@ -255,8 +270,9 @@ namespace lum {
 
 			}
 
-			inline Vector2 WriteVec2Parameter( const Vector2& val, StringBuilder& sb ) {
+			inline void WriteVec2Parameter( const Vector2& val, StringBuilder& sb ) {
 				
+				sb.Append( "\t\t\t" );
 				sb.Append( val.mX );
 				sb.Append( " " );
 				sb.AppendLine( val.mY );

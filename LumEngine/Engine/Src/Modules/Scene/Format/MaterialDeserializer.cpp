@@ -4,7 +4,7 @@
 //
 //=============================================================================//
 
-#include "Scene/Format/MaterialParser.hpp"
+#include "Scene/Format/MaterialDeserializer.hpp"
 #include "Scene/Format/Tokenizer.hpp"
 
 namespace lum::fmt {
@@ -13,9 +13,9 @@ namespace lum::fmt {
 	// Public
 	//---------------------------------------------------------
 
-	void MaterialParser::Parse( MaterialDescriptor& material ) {
+	void MaterialDeserializer::Deserialize( MaterialDescriptor& material, Tokenizer& tokenizer ) {
 
-		auto& tokens = mTokenizer.GetTokens();
+		auto& tokens = tokenizer.GetTokens();
 
 		for (int32 i = 0; i < tokens.size(); i++) {
 
@@ -49,27 +49,6 @@ namespace lum::fmt {
 					material.mMetallicTex = path;
 
 					
-				}
-				else if (tokens[i].mValue == "base_color") {
-					
-					Vector3 value = detail::ReadVec3Parameter(tokens, i);
-
-					material.mBaseColor = value;
-
-				}
-				else if (tokens[i].mValue == "roughness_value") {
-
-					float32 value = detail::ReadFloatParameter(tokens, i);
-
-					material.mRoughnessValue = value;
-					
-				}
-				else if (tokens[i].mValue == "metallic_value") {
-					
-					float32 value = detail::ReadFloatParameter(tokens, i);
-
-					material.mMetallicValue = value;
-
 				}
 
 			}

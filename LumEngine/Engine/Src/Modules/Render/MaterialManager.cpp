@@ -10,7 +10,7 @@
 #include "Render/TextureManager.hpp"
 #include "Event/EventBus.hpp"
 #include "Event/Events/EntityEvents.hpp"
-#include "Scene/Format/MaterialParser.hpp"
+#include "Scene/Format/MaterialDeserializer.hpp"
 #include "Scene/Format/Tokenizer.hpp"
 
 namespace lum {
@@ -28,7 +28,7 @@ namespace lum {
 
 	MaterialBaseHandle MaterialManager::UploadBase( const MaterialDescriptor& desc ) {
 
-		MaterialBase base;
+		MaterialBase base{};
 
 		if (desc.mAlbedoTex) {
 			base.mAlbedoTex = mCtx->mTextureMgr->Load( desc.mAlbedoTex.Value( ), TexturePreset::Albedo );
@@ -50,44 +50,30 @@ namespace lum {
 		}
 		else base.mMetallicTex = mCtx->mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultMetallic );
 
-		if (desc.mBaseColor) {
-			base.mBaseColor = desc.mBaseColor.Value( );
-		}
-		if (desc.mRoughnessValue) {
-			base.mRoughnessValue = desc.mRoughnessValue.Value( );
-		}
-		if (desc.mMetallicValue) {
-			base.mMetallicValue = desc.mMetallicValue.Value( );
-		}
-
 		return mBaseMaterials.Append( base );
 
 	}
 
 
-	CMaterialInstance MaterialManager::CreateInstance( MaterialBaseHandle base ) {
+	void MaterialManager::ApplyInstance( CMaterialInstance& instance, MaterialBaseHandle base ) {
 
 		if (!mBaseMaterials.Contains( base ))
 			base = mDefaultMaterial;
 
-		CMaterialInstance instance;
 		MaterialBase& matBase = mBaseMaterials[ base ];
 
 		instance.mAlbedoTex = matBase.mAlbedoTex;
 		instance.mAmbientTex = matBase.mAmbientTex;
-		instance.mBaseColor = matBase.mBaseColor;
 		instance.mMetallicTex = matBase.mMetallicTex;
-		instance.mMetallicValue = matBase.mMetallicValue;
 		instance.mNormalTex = matBase.mNormalTex;
 		instance.mRoughnessTex = matBase.mRoughnessTex;
-		instance.mRoughnessValue = matBase.mRoughnessValue;
-
-		return instance;
 
 	}
 
 	CMaterialInstance MaterialManager::GetDefaultInstance( ) {
-		return CreateInstance( mDefaultMaterial );
+		static CMaterialInstance inst{};
+		ApplyInstance( inst, mDefaultMaterial );
+		return inst;
 	}
 
 	void MaterialManager::SetBaseMap( MaterialBaseHandle material, MaterialMember mem, rhi::TextureHandle tex ) {
@@ -122,11 +108,15 @@ namespace lum {
 
 				fmt::Tokenizer tokenizer;
 				tokenizer.Tokenize( content.ValueRef( ) );
-				fmt::MaterialParser parser( tokenizer );
-				MaterialDescriptor data;
-				parser.Parse( data );
+
+				MaterialDescriptor data{};
+				fmt::MaterialDeserializer::Deserialize( data, tokenizer );
+				
 				MaterialBaseHandle baseHandle = UploadBase( data );
-				*mat.mComponent = CreateInstance( baseHandle );
+				
+				String basePath = mat.mComponent->mBasePath;
+				ApplyInstance( *mat.mComponent, baseHandle );
+				mat.mComponent->mBasePath = basePath;
 
 			}
 		);
@@ -157,7 +147,6 @@ namespace lum {
 			base.mAmbientTex = mCtx->mTextureMgr->GetFallbackTexture( FallbackTexture::DefaultAlbedo );
 
 			mDefaultMaterial = UploadBase( base );
-
 		}
 
 	}

@@ -22,9 +22,7 @@ namespace lum::fmt {
 	// Public
 	//---------------------------------------------------------
 
-	void SceneDependencyManager::Initialize( Tokenizer& tokenizer, SceneManagerContext& ctx ) {
-
-		mTokenizer = &tokenizer;
+	void SceneDependencyManager::Initialize( SceneManagerContext& ctx ) {
 		mCtx = &ctx;
 
 		RegisterSceneComponents( mComponentsInfos );
@@ -33,12 +31,12 @@ namespace lum::fmt {
 	}
 
 
-	void SceneDependencyManager::Deserialize( Scene& scene ) {
+	void SceneDependencyManager::Deserialize( Scene& scene, Tokenizer& tokenizer ) {
 
 		ParseContext ctx{ scene };
 		ctx.mCtx = *mCtx;
 
-		auto tokens = mTokenizer->GetTokens( );
+		auto tokens = tokenizer.GetTokens( );
 
 		for (int32 i = 0; i < tokens.size( ); i++) {
 			if (tokens[ i ].mType == TokenType::Identifier) {
@@ -51,7 +49,7 @@ namespace lum::fmt {
 
 	}
 
-	void SceneDependencyManager::Serialize( Scene& scene, const Path& finalizePath ) {
+	void SceneDependencyManager::Serialize( Scene& scene ) {
 
 		StringBuilder sb{};
 
@@ -61,15 +59,18 @@ namespace lum::fmt {
 
 			scene.mEntityMgr.ForEachComponent(
 				entityId,
-				[&]( int32 typeIndex, ecs::ComponentBasePool* pool ) {
+				[&]( ComponentBase* comp, ecs::ComponentBasePool* pool ) {
+					auto it = mTypeIdInfoLookup.find( pool->GetTypeId( ) );
+					if (it != mTypeIdInfoLookup.end( ) && (it->second && it->second->mSerializeFn)) {
+						it->second->mSerializeFn( sb, comp );
+					}
+				});
 
-					mTypeIdInfoLookup[ pool->GetTypeId( ) ]->mSerializeFn( );
-
-				}
-			);
-
+			sb.AppendLine( "}" );
 
 		}
+
+		FileSystem::WriteAllText( scene.mScenePath, sb.ToString( ) );
 
 	}
 
@@ -118,7 +119,7 @@ namespace lum::fmt {
 	void SceneDependencyManager::deserialize_entity( std::vector<Token>& tokens, int32& i, ParseContext& ctx ) {
 
 		Entity entity = ctx.mScene.CreateEntity( );
-		EntityID id = entity.GetID( );
+		EntityID id = entity.GetId( );
 		ctx.mEntity = id;
 
 		detail::ExpectOpeningBracket( tokens, i );
