@@ -77,7 +77,7 @@
     ],
     "deserialize_fn_body": [
       "{Signature} {",
-      "\tdetail::ExpectOpeningBracket( tokens, i );",
+      "\tdetail::ExpectOpeningBracketNext( tokens, i );",
       "\t{ClassName} {Var}{};",
       "\twhile( InBlock( tokens, i ) ) {",
       "\t\tif( tokens[i].mType == TokenType::Parameter ) {\n",
@@ -85,7 +85,7 @@
       "\t\t}",
       "\t\ti++;",
       "\t}",
-      "\tctx.mScene.mEntityMgr.AddComponent( ctx.mEntity, {Var} );",
+      "\tctx.mScene.mEntityMgr.AddComponent( ctx.mCurrentEntity, {Var} );",
       "}"
     ],
     "deserialize_fn_field_first": [
@@ -272,7 +272,7 @@
 
     "deserialize_fn_var": "component",
     "deserialize_fn_name": "LGEN_Deserialize{ClassName}",
-    "deserialize_fn_signature": "void LGEN_Deserialize{ClassName}( std::vector<lum::fmt::Token>& tokens, lum::int32& i, lum::fmt::ParseContext& ctx )",
+    "deserialize_fn_signature": "void LGEN_Deserialize{ClassName}( std::vector<lum::fmt::Token>& tokens, lum::int32& i, lum::fmt::DeserializeContext& ctx )",
     "deserialize_namespace": "lum::fmt::detail",
 
     "serialize_fn_var": "component", 

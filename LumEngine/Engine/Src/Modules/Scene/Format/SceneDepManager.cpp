@@ -33,18 +33,23 @@ namespace lum::fmt {
 
 	void SceneDependencyManager::Deserialize( Scene& scene, Tokenizer& tokenizer ) {
 
-		ParseContext ctx{ scene };
+		DeserializeContext ctx{ scene };
 		ctx.mCtx = *mCtx;
 
 		auto tokens = tokenizer.GetTokens( );
 
-		for (int32 i = 0; i < tokens.size( ); i++) {
-			if (tokens[ i ].mType == TokenType::Identifier) {
-				auto it = sIdentifiersDeserializeFunctions.find( HashString( ToLower( tokens[ i ].mValue ) ) );
-				if (it != sIdentifiersDeserializeFunctions.end( )) {
-					it->second( tokens, i, ctx );
+		try {
+			for (int32 i = 0; i < tokens.size( ); i++) {
+				if (tokens[ i ].mType == TokenType::Identifier) {
+					auto it = sIdentifiersDeserializeFunctions.find( HashString( ToLower( tokens[ i ].mValue ) ) );
+					if (it != sIdentifiersDeserializeFunctions.end( )) {
+						it->second( tokens, i, ctx );
+					}
 				}
 			}
+		}
+		catch (const fmt::DeserializeException& e) {
+			LUM_LOG_ERROR( e.what( ) );
 		}
 
 	}
@@ -55,7 +60,9 @@ namespace lum::fmt {
 
 		for (auto& [entityId, entity] : scene.mEntities) {
 
-			sb.AppendLine( "entity {" );
+			sb.Append( "entity " );
+			sb.Append( entityId );
+			sb.AppendLine( " {" );
 
 			scene.mEntityMgr.ForEachComponent(
 				entityId,
@@ -81,22 +88,22 @@ namespace lum::fmt {
 	// Private
 	//---------------------------------------------------------
 
-	void SceneDependencyManager::deserialize_world( std::vector<Token>& tokens, int32& i, ParseContext& ctx ) {
+	void SceneDependencyManager::deserialize_world( std::vector<Token>& tokens, int32& i, DeserializeContext& ctx ) {
 
-		detail::ExpectOpeningBracket( tokens, i );
+		detail::ExpectOpeningBracketNext( tokens, i );
 
 		while (detail::InBlock( tokens, i )) {
 
 			if (tokens[ i ].mType == TokenType::Component) {
 
-				detail::ExpectOpeningBracket( tokens, i );
+				detail::ExpectOpeningBracketNext( tokens, i );
 
 				while (detail::InBlock( tokens, i )) {
 
 					if (tokens[ i ].mType == TokenType::Parameter) {
 
 						if (detail::IsString( tokens, i, "path" )) {
-							detail::ExpectColon( tokens, i );
+							detail::ExceptColonNext( tokens, i );
 							ctx.mCtx.mRenderer->SetEnvironmentTexture(
 								ctx.mCtx.mTextureMgr->LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ) )
 							);
@@ -116,13 +123,16 @@ namespace lum::fmt {
 
 
 
-	void SceneDependencyManager::deserialize_entity( std::vector<Token>& tokens, int32& i, ParseContext& ctx ) {
+	void SceneDependencyManager::deserialize_entity( std::vector<Token>& tokens, int32& i, DeserializeContext& ctx ) {
 
 		Entity entity = ctx.mScene.CreateEntity( );
 		EntityID id = entity.GetId( );
-		ctx.mEntity = id;
+		ctx.mCurrentEntity = id;
 
-		detail::ExpectOpeningBracket( tokens, i );
+		++i;
+		EntityID persistentId = detail::ReadInt( tokens, i );
+
+		detail::ExpectOpeningBracketNext( tokens, i );
 
 		while (detail::InBlock( tokens, i )) {
 

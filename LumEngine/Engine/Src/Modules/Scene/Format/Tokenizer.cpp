@@ -8,120 +8,287 @@
 
 namespace lum::fmt {
 
-	void Tokenizer::Tokenize( StringView str ) {
+	void Tokenizer::Tokenize( StringView content, const Path& filePath ) {
 
 		mTokens.clear( );
 
 		usize pos = 0;
+		uint32 line = 1;
 
-		while (pos < str.size( )) {
+		while (pos < content.size( )) {
 
-			const char& c = str[ pos ];
+			const char c = content[ pos ];
 
+			//=====================================================
+			// Whitespace
+			//=====================================================
+
+			if (c == '\n') {
+				++line;
+				++pos;
+				continue;
+			}
+
+			if (isspace( static_cast<unsigned char>(c) )) {
+				++pos;
+				continue;
+			}
+
+			//=====================================================
 			// Comment
-			if (c == '/' && pos + 1 < str.size( ) && str[ pos + 1 ] == '/') {
-				while (pos < str.size( ) && str[ pos ] != '\n') {
-					pos++;
-				}
+			//=====================================================
+
+			if (c == '/' &&
+				pos + 1 < content.size( ) &&
+				content[ pos + 1 ] == '/') {
+
+				pos += 2;
+
+				while (pos < content.size( ) && content[ pos ] != '\n')
+					++pos;
+
+				continue;
 			}
 
+			//=====================================================
 			// String
-			else if (c == '"') {
+			//=====================================================
+
+			if (c == '"') {
 
 				++pos;
 
 				String value;
+				const uint32 tokenLine = line;
 
-				while (pos < str.size( ) && str[ pos ] != '"') {
-					value += str[ pos++ ];
-				}
+				while (pos < content.size( ) && content[ pos ] != '"') {
 
-				mTokens.push_back( { TokenType::String, value } );
-
-			}
-
-			// Component
-			else if (c == '@') {
-
-				++pos;
-
-				String value;
-
-				while (pos < str.size( ) && (isalpha( str[ pos ] ) || str[ pos ] == '_')) {
-					value += str[ pos++ ];
-				}
-
-				mTokens.push_back( { TokenType::Component, value } );
-
-			}
-
-			// Identifier / Parameter
-			else if (isalpha( c )) {
-
-				String value;
-
-				while (pos < str.size( ) && (isalpha( str[ pos ] ) || str[ pos ] == '_'))
-					value += str[ pos++ ];
-
-				bool isParameter = false;
-				usize npos = pos;
-				while (npos < str.size( ) && str[ npos ] != '\n') {
-					if (str[ npos ] == ':') {
-						isParameter = true;
-						pos = npos;
-						break;
+					if (content[ pos ] == '\n') {
+						LUM_LOG_ERROR(
+							"Unterminated string at line %llu in file %s",
+							tokenLine,
+							filePath.ToString( ).c_str( )
+						);
+						return;
 					}
-					npos++;
+
+					value += content[ pos++ ];
 				}
 
-				if (isParameter)
-					mTokens.push_back( { TokenType::Parameter, value } );
-				else
-					mTokens.push_back( { TokenType::Identifier, value } );
+				if (pos >= content.size( )) {
+					LUM_LOG_ERROR(
+						"Unterminated string at line %llu in file %s",
+						tokenLine,
+						filePath.ToString( ).c_str( )
+					);
+					return;
+				}
 
-				if (str[ npos ] == ':')
-					mTokens.push_back( { TokenType::Colon, ":" } );
+				++pos;
 
+				mTokens.push_back(
+					{ tokenLine, TokenType::String, value, filePath }
+				);
+
+				continue;
 			}
 
-			// Number
-			else if (isdigit( c ) || c == '-') {
+			//=====================================================
+			// Component
+			//=====================================================
+
+			if (c == '@') {
+
+				++pos;
 
 				String value;
-				while (pos < str.size( ) && (isdigit( str[ pos ] ) || (str[ pos ] == '.' || str[ pos ] == '-'))) {
-					value += str[ pos++ ];
+
+				while (pos < content.size( ) &&
+					(isalpha( static_cast<unsigned char>( content[ pos ] ) ) ||
+					  content[ pos ] == '_')) {
+
+					value += content[ pos++ ];
 				}
-				if (pos < str.size( ) && isalpha( str[ pos ] )) {
-					LUM_LOG_ERROR( "Invalid number token: %s", value.c_str( ) );
+
+				if (value.empty( )) {
+					LUM_LOG_ERROR(
+						"Component name expected at line %llu in file %s",
+						line,
+						filePath.ToString( ).c_str( )
+					);
+					return;
+				}
+
+				mTokens.push_back(
+					{ line, TokenType::Component, value, filePath }
+				);
+
+				continue;
+			}
+
+			//=====================================================
+			// Identifier / Parameter
+			//=====================================================
+
+			if (isalpha( static_cast<unsigned char>(c) )) {
+
+				String value;
+
+				while (pos < content.size( ) &&
+					(isalpha( static_cast<unsigned char>( content[ pos ] ) ) ||
+					  content[ pos ] == '_')) {
+
+					value += content[ pos++ ];
+				}
+
+				if (pos < content.size( ) && content[ pos ] == ':') {
+
+					mTokens.push_back(
+						{ line, TokenType::Parameter, value, filePath }
+					);
+
+					mTokens.push_back(
+						{ line, TokenType::Colon, ":", filePath }
+					);
+
+					++pos;
+
 				}
 				else {
-					mTokens.push_back( { TokenType::Number, value } );
+
+					mTokens.push_back(
+						{ line, TokenType::Identifier, value, filePath }
+					);
 				}
 
+				continue;
 			}
 
-			// Left Bracket
-			else if (c == '{') {
+			//=====================================================
+			// Number
+			//=====================================================
 
+			if (isdigit( static_cast<unsigned char>(c) ) || c == '-') {
+
+				const usize start = pos;
+
+				if (content[ pos ] == '-')
+					++pos;
+
+				bool hasDigits = false;
+				bool hasDecimalPoint = false;
+
+				while (pos < content.size( )) {
+
+					const char numberChar = content[ pos ];
+
+					if (isdigit( static_cast<unsigned char>( numberChar ) )) {
+						hasDigits = true;
+						++pos;
+						continue;
+					}
+
+					if (numberChar == '.' && !hasDecimalPoint) {
+						hasDecimalPoint = true;
+						++pos;
+						continue;
+					}
+
+					break;
+				}
+
+				if (!hasDigits) {
+
+					LUM_LOG_ERROR(
+						"Invalid number at line %llu in file %s",
+						line,
+						filePath.ToString( ).c_str( )
+					);
+
+					return;
+				}
+
+				if (pos < content.size( ) &&
+					(isalpha( static_cast<unsigned char>( content[ pos ] ) ) ||
+					  content[ pos ] == '.')) {
+
+					LUM_LOG_ERROR(
+						"Invalid number token '%s' at line %llu in file %s",
+						String( content.substr( start, pos - start ) ).c_str( ),
+						line,
+						filePath.ToString( ).c_str( )
+					);
+
+					return;
+				}
+
+				mTokens.push_back(
+					{
+						line,
+						TokenType::Number,
+						String( content.substr( start, pos - start ) ),
+						filePath
+					}
+				);
+
+				continue;
+			}
+
+			//=====================================================
+			// Single-character tokens
+			//=====================================================
+
+			switch (c) {
+
+				case '{':
+				mTokens.push_back(
+					{ line, TokenType::LBracket, "{", filePath }
+				);
+				break;
+
+				case '}':
+				mTokens.push_back(
+					{ line, TokenType::RBracket, "}", filePath }
+				);
+				break;
+
+				case '[':
+				mTokens.push_back(
+					{ line, TokenType::LSquareBracket, "[", filePath }
+				);
+				break;
+
+				case ']':
+				mTokens.push_back(
+					{ line, TokenType::RSquareBracket, "]", filePath }
+				);
+				break;
+
+				case ':':
+				mTokens.push_back(
+					{ line, TokenType::Colon, ":", filePath }
+				);
+				break;
+
+				case ',':
+				// Commas are ignored.
 				++pos;
+				continue;
 
-				mTokens.push_back( { TokenType::LBracket, "{" } );
+				default:
 
+				LUM_LOG_ERROR(
+					"Unknown character '%c' at line %llu in file %s",
+					c,
+					line,
+					filePath.ToString( ).c_str( )
+				);
+
+				return;
 			}
 
-			// Right Bracket
-			else if (c == '}') {
-
-				++pos;
-
-				mTokens.push_back( { TokenType::RBracket, "}" } );
-
-			}
-
-			pos++;
-
+			++pos;
 		}
-
 	}
 
 } // namespace lum::fmt

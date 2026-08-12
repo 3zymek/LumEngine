@@ -107,7 +107,7 @@ namespace lum {
 				}
 
 				fmt::Tokenizer tokenizer;
-				tokenizer.Tokenize( content.ValueRef( ) );
+				tokenizer.Tokenize( content.ValueRef( ), mat.mComponent->mBasePath );
 
 				MaterialDescriptor data{};
 				fmt::MaterialDeserializer::Deserialize( data, tokenizer );

@@ -10,6 +10,7 @@
 #include "Entity/EcsCommon.hpp"
 #include "Platform/FileSystem.hpp"
 #include "Core/Utils/StringBuilder.hpp"
+#include "Scene/Format/DeserializeException.hpp"
 
 namespace lum {
 
@@ -60,12 +61,14 @@ namespace lum {
 		/* @brief Token types produced by the lexer. */
 		enum class TokenType : byte {
 			Identifier, // Named keyword or symbol
-			LBracket,   // Opening bracket '{'
-			RBracket,   // Closing bracket '}'
+			LBracket,   // {
+			RBracket,   // }
+			LSquareBracket, // [
+			RSquareBracket, // ]
 			Parameter,  // Parameter keyword
 			Component,  // Component keyword
-			Colon,      // Colon separator ':'
-			Dollar,     // Dollar sign '$'
+			Colon,      // :
+			Dollar,     // $
 			String,     // String value
 			Number,     // Numeric value
 			EndOfLine   // End of line marker
@@ -79,20 +82,22 @@ namespace lum {
 
 		/* @brief A single token produced by the lexer. */
 		struct Token {
-			TokenType mType;  // Token type
-			String mValue;    // Raw string value of the token
+			uint32		mLine{};	// Token line in text file
+			TokenType	mType{};	// Token type
+			String		mValue{};   // Raw string value of the token
+			Path		mFilePath{};
 		};
 
 		/* @brief Context passed through the scene parsing pipeline.
 		* Holds references to the active scene, current entity and all resource managers.
 		*/
-		struct ParseContext {
+		struct DeserializeContext {
 
 			/* @brief Reference to the scene being populated. */
 			Scene& mScene;
 
 			/* @brief Entity currently being parsed and populated with components. */
-			EntityID mEntity;
+			EntityID mCurrentEntity;
 
 			/* @brief Resource manager context used to load and resolve assets. */
 			SceneManagerContext mCtx;
@@ -100,7 +105,7 @@ namespace lum {
 		};
 
 		/* @brief Function pointer type for deserialize dispatch functions. */
-		using DeserializeFn = void(*)(std::vector<Token>&, int32&, ParseContext&);
+		using DeserializeFn = void(*)(std::vector<Token>&, int32&, DeserializeContext&);
 		using SerializeFn = void(*)(StringBuilder&, ComponentBase*);
 
 		struct SceneComponentInfo {
@@ -109,7 +114,7 @@ namespace lum {
 			uint64			mTypeId{};
 			DeserializeFn	mDeserializeFn = nullptr;
 			SerializeFn		mSerializeFn = nullptr;
-			
+
 		};
 
 		/*
@@ -146,6 +151,9 @@ namespace lum {
 		/* @brief Internal parsing helpers — not intended for direct use. */
 		namespace detail {
 
+
+
+
 			inline bool InBlock( std::vector<Token>& tokens, int32 i ) {
 				return i < tokens.size( ) && tokens[ i ].mType != TokenType::RBracket;
 			}
@@ -154,70 +162,162 @@ namespace lum {
 				return tokens[ i ].mValue == ToLower( str );
 			}
 
-			/* @brief Advances index and asserts the next token is an opening bracket. */
-			inline void ExpectOpeningBracket( std::vector<Token>& tokens, int32& i ) {
+			inline bool IsToken( std::vector<Token>& tokens, int32 i, TokenType type ) {
+				return (i < tokens.size( ) && tokens[ i ].mType == type);
+			}
+
+			inline void ExceptOpeningBracketInPlace( std::vector<Token>& tokens, int32 i ) {
+				if (!IsToken( tokens, i, TokenType::LBracket )) {
+					throw DeserializeException( 
+						"Opening bracket expected at line %llu in file %s",
+						tokens[ i ].mLine,
+						tokens[ i ].mFilePath.ToString( ).c_str( )
+					);
+				}
+			}
+			inline void ExpectOpeningBracketNext( std::vector<Token>& tokens, int32& i ) {
 				++i;
-				LUM_ASSERT( tokens[ i ].mType == TokenType::LBracket, "Opening bracket expected" );
+				ExceptOpeningBracketInPlace( tokens, i );
 				++i;
 			}
 
-			/* @brief Advances index and asserts the next token is a colon. */
-			inline void ExpectColon( std::vector<Token>& tokens, int32& i ) {
+
+
+			inline void ExceptColonInPlace( std::vector<Token>& tokens, int32 i ) {
+				if (!IsToken( tokens, i, TokenType::Colon )) {
+					throw DeserializeException(
+						"Colon expected at line %llu in file %s",
+						tokens[ i ].mLine,
+						tokens[ i ].mFilePath.ToString( ).c_str( )
+					);
+				}
+			}
+			inline void ExceptColonNext( std::vector<Token>& tokens, int32& i ) {
 				++i;
-				LUM_ASSERT( tokens[ i ].mType == TokenType::Colon, "Colon expected" );
+				ExceptColonInPlace( tokens, i );
 				++i;
 			}
 
-			/* @brief Reads a string value after a colon separator. */
+
+
+			inline String ReadString( std::vector<Token>& tokens, int32 i ) {
+				if (!IsToken( tokens, i, TokenType::String )) {
+					throw DeserializeException(
+						"String expected at line %llu in file %s",
+						tokens[ i ].mLine,
+						tokens[ i ].mFilePath.ToString( ).c_str( )
+					);
+				}
+				return tokens[ i ].mValue;
+			}
 			inline String ReadStringParameter( std::vector<Token>& tokens, int32& i ) {
-				ExpectColon( tokens, i );
-				String value = tokens[ i ].mValue;
-				LUM_ASSERT( i + 1 >= tokens.size( ) || tokens[ i + 1 ].mType != TokenType::String, "String expected" );
-				return value;
+				ExceptColonNext( tokens, i );
+				return ReadString( tokens, i );
 			}
 
-			/* @brief Reads a boolean value (> 0 = true) after a colon separator. */
+
+
+
+			inline bool ReadBool( std::vector<Token>& tokens, int32 i ) {
+				if (!IsToken( tokens, i, TokenType::Number )) {
+					throw DeserializeException(
+						"Bool expected at line %llu in file %s",
+						tokens[ i ].mLine,
+						tokens[ i ].mFilePath.ToString( ).c_str( )
+					);
+				}
+				return std::stof( tokens[ i ].mValue ) > 0;
+			}
 			inline bool ReadBoolParameter( std::vector<Token>& tokens, int32& i ) {
-				ExpectColon( tokens, i );
-				bool value = std::stof( tokens[ i ].mValue ) > 0;
-				LUM_ASSERT( i + 1 >= tokens.size( ) || tokens[ i + 1 ].mType != TokenType::Number, "Boolean expected" );
-				return value;
+				ExceptColonNext( tokens, i );
+				return ReadBool( tokens, i );
 			}
 
-			/* @brief Reads a float value after a colon separator. */
+
+
+
+			inline float32 ReadFloat( std::vector<Token>& tokens, int32 i ) {
+				if (!IsToken( tokens, i, TokenType::Number )) {
+					throw DeserializeException(
+						"Float expected at line %llu in file %s",
+						tokens[ i ].mLine,
+						tokens[ i ].mFilePath.ToString( ).c_str( )
+					);
+					return 0;
+				}
+				return std::stof( tokens[ i ].mValue );
+			}
 			inline float32 ReadFloatParameter( std::vector<Token>& tokens, int32& i ) {
-				ExpectColon( tokens, i );
-				float32 value = std::stof( tokens[ i ].mValue );
-				LUM_ASSERT( i + 1 >= tokens.size( ) || tokens[ i + 1 ].mType != TokenType::Number, "Float expected" );
-				return value;
+				ExceptColonNext( tokens, i );
+				return ReadFloat( tokens, i );
+			}
+
+
+
+
+			inline int64 ReadInt( std::vector<Token>& tokens, int32 i ) {
+				if (!IsToken( tokens, i, TokenType::Number )) {
+					throw DeserializeException(
+						"Integer expected at line %llu in file %s",
+						tokens[ i ].mLine,
+						tokens[ i ].mFilePath.ToString( ).c_str( )
+					);
+				}
+				return std::stoll( tokens[ i ].mValue );
 			}
 
 			inline int64 ReadIntParameter( std::vector<Token>& tokens, int32& i ) {
-				ExpectColon( tokens, i );
-				int64 value = std::stoi( tokens[ i ].mValue );
-				LUM_ASSERT( i + 1 >= tokens.size( ) || tokens[ i + 1 ].mType != TokenType::Number, "Integer expected" );
-				return value;
+				ExceptColonNext( tokens, i );
+				return ReadInt( tokens, i );
 			}
 
-			/* @brief Reads three consecutive float values as a vec3 after a colon separator. */
+
+
+			inline Vector3 ReadVec3( std::vector<Token>& tokens, int32 i ) {
+				float32 vec[ 3 ]{};
+				for (int32 it = 0; it < 3; it++) {
+					int32 tokenIndex = i + it;
+					if (!IsToken( tokens, tokenIndex, TokenType::Number )) {
+						throw DeserializeException(
+							"Vector3 expected at line %llu in file %s",
+							tokens[ tokenIndex ].mLine,
+							tokens[ tokenIndex ].mFilePath.ToString( ).c_str( )
+						);
+					}
+					vec[ it ] = std::stof( tokens[ tokenIndex ].mValue );
+				}
+				return Vector3( vec[ 0 ], vec[ 1 ], vec[ 2 ] );
+			}
 			inline Vector3 ReadVec3Parameter( std::vector<Token>& tokens, int32& i ) {
-				ExpectColon( tokens, i );
-				float32 x = std::stof( tokens[ i++ ].mValue );
-				float32 y = std::stof( tokens[ i++ ].mValue );
-				float32 z = std::stof( tokens[ i ].mValue );
-				LUM_ASSERT( i + 1 >= tokens.size( ) || tokens[ i + 1 ].mType != TokenType::Number, "Vec3 expected" );
-				return Vector3( x, y, z );
+				ExceptColonNext( tokens, i );
+				return ReadVec3( tokens, i );
 			}
 
-			/* @brief Reads two consecutive float values as a vec2 after a colon separator. */
-			inline Vector2 ReadVec2Parameter( std::vector<Token>& tokens, int32& i ) {
-				LUM_ASSERT( tokens[ i ].mType == TokenType::Colon, "Colon expected" );
-				++i;
-				float32 x = std::stof( tokens[ i++ ].mValue );
-				float32 y = std::stof( tokens[ i ].mValue );
-				LUM_ASSERT( tokens[ i + 1 ].mType != TokenType::Number, "Vec2 expected" );
-				return Vector2( x, y );
+
+
+
+			inline Vector2 ReadVec2( std::vector<Token>& tokens, int32 i ) {
+				float32 vec[ 2 ]{};
+				for (int32 it = 0; it < 2; it++) {
+					int32 tokenIndex = i + it;
+					if (!IsToken( tokens, tokenIndex, TokenType::Number )) {
+						throw DeserializeException(
+							"Vector2 expected at line %llu in file %s",
+							tokens[ tokenIndex ].mLine,
+							tokens[ tokenIndex ].mFilePath.ToString( ).c_str( )
+						);
+					}
+					vec[ it ] = std::stof( tokens[ tokenIndex ].mValue );
+				}
+				return Vector2( vec[ 0 ], vec[ 1 ] );
 			}
+			inline Vector2 ReadVec2Parameter( std::vector<Token>& tokens, int32& i ) {
+				ExceptColonNext( tokens, i );
+				return ReadVec2( tokens, i );
+			}
+
+
+
 
 			inline void WriteStringParameter( const String& val, StringBuilder& sb ) {
 
@@ -227,23 +327,26 @@ namespace lum {
 				sb.AppendLine( "\"" );
 
 			}
-
 			template<usize tSize>
 			inline void WriteStringParameter( const FixedString<tSize>& val, StringBuilder& sb ) {
 
 				sb.Append( "\t\t\t" );
 				sb.Append( "\"" );
-				sb.Append( val.Data() );
+				sb.Append( val.Data( ) );
 				sb.AppendLine( "\"" );
 
 			}
 
+
+
 			inline void WriteBoolParameter( const bool val, StringBuilder& sb ) {
-				
+
 				sb.Append( "\t\t\t" );
 				sb.AppendLine( val ? "1" : "0" );
-				
+
 			}
+
+
 
 			inline void WriteFloatParameter( const float32 val, StringBuilder& sb ) {
 
@@ -252,6 +355,8 @@ namespace lum {
 
 			}
 
+
+
 			inline void WriteIntParameter( const int64 val, StringBuilder& sb ) {
 
 				sb.Append( "\t\t\t" );
@@ -259,8 +364,10 @@ namespace lum {
 
 			}
 
+
+
 			inline void WriteVec3Parameter( const Vector3& val, StringBuilder& sb ) {
-				
+
 				sb.Append( "\t\t\t" );
 				sb.Append( val.mX );
 				sb.Append( " " );
@@ -270,15 +377,19 @@ namespace lum {
 
 			}
 
+
+
 			inline void WriteVec2Parameter( const Vector2& val, StringBuilder& sb ) {
-				
+
 				sb.Append( "\t\t\t" );
 				sb.Append( val.mX );
 				sb.Append( " " );
 				sb.AppendLine( val.mY );
-				
+
 
 			}
+
+
 
 		} // namespace lum::fmt::detail
 

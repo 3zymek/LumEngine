@@ -32,10 +32,10 @@ namespace lum::fmt {
 	private:
 
 		/* @brief Parses the world block and applies global scene settings. */
-		static void deserialize_world( std::vector<Token>& tokens, int32& i, ParseContext& ctx );
+		static void deserialize_world( std::vector<Token>& tokens, int32& i, DeserializeContext& ctx );
 
 		/* @brief Parses an entity block and creates a new entity in the scene. */
-		static void deserialize_entity( std::vector<Token>& tokens, int32& i, ParseContext& ctx );
+		static void deserialize_entity( std::vector<Token>& tokens, int32& i, DeserializeContext& ctx );
 
 		static void categorize_component_infos( );
 

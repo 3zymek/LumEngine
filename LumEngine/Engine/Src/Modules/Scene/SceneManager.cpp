@@ -60,7 +60,7 @@ namespace lum {
 		}
 
 		fmt::Tokenizer tokenizer;
-		tokenizer.Tokenize( content.ValueRef( ) );
+		tokenizer.Tokenize( content.ValueRef( ), scenePath );
 
 		Scene scene{};
 		scene.mEntityMgr.Initialize( mCtx.mEventBus );
