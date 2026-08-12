@@ -37,6 +37,9 @@ namespace lum::fmt {
 		/* @brief Parses an entity block and creates a new entity in the scene. */
 		static void deserialize_entity( std::vector<Token>& tokens, int32& i, DeserializeContext& ctx );
 
+		static void read_children( std::vector<Token>& tokens, int32& i, DeserializeContext& ctx );
+		static void write_children( StringBuilder& sb, Scene& scene, EntityID entity );
+
 		static void categorize_component_infos( );
 
 		/* @brief Resource manager context used during parsing for asset resolution. */
@@ -45,14 +48,17 @@ namespace lum::fmt {
 		/* @brief Lookup table mapping hashed identifier keywords to their parse functions.
 		* Used to dispatch top-level scene constructs such as entity and world blocks.
 		*/
-		static inline std::unordered_map<uint64, DeserializeFn> sIdentifiersDeserializeFunctions = {
+		static inline std::unordered_map<HashedString, DeserializeFn> sIdentifiersDeserializeFunctions = {
 			{ HashString( "entity" ), deserialize_entity },
 			{ HashString( "world" ),  deserialize_world  }
 		};
 
-		static inline std::unordered_map<uint64, SceneComponentInfo*> mNameInfoLookup{};
-		static inline std::unordered_map<uint64, SceneComponentInfo*> mTypeIdInfoLookup{};
+		static inline std::unordered_map<HashedString, DeserializeFn> sEntityProperyHandlers = {
+			{ HashString( "children" ), read_children }
+		};
 
+		static inline std::unordered_map<HashedString, SceneComponentInfo*> sNameInfoLookup{};
+		static inline std::unordered_map<HashedString, SceneComponentInfo*> sTypeIdInfoLookup{};
 		static inline std::vector<SceneComponentInfo> mComponentsInfos{};
 
 	};

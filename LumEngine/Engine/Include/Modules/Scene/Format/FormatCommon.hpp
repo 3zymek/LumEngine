@@ -96,6 +96,9 @@ namespace lum {
 			/* @brief Reference to the scene being populated. */
 			Scene& mScene;
 
+			std::unordered_map<uint64, EntityID> mPersistentToEntity{};
+			std::unordered_map<EntityID, std::vector<EntityID>> mPersistentChildren{};
+
 			/* @brief Entity currently being parsed and populated with components. */
 			EntityID mCurrentEntity;
 
@@ -157,6 +160,9 @@ namespace lum {
 			inline bool InBlock( std::vector<Token>& tokens, int32 i ) {
 				return i < tokens.size( ) && tokens[ i ].mType != TokenType::RBracket;
 			}
+			inline bool InSquareBlock( std::vector<Token>& tokens, int32 i ) {
+				return i < tokens.size( ) && tokens[ i ].mType != TokenType::RSquareBracket;
+			}
 
 			inline bool IsString( std::vector<Token>& tokens, int32& i, StringView str ) {
 				return tokens[ i ].mValue == ToLower( str );
@@ -180,6 +186,25 @@ namespace lum {
 				ExceptOpeningBracketInPlace( tokens, i );
 				++i;
 			}
+
+
+
+
+			inline void ExceptOpeningSquareBracketInPlace( std::vector<Token>& tokens, int32 i ) {
+				if (!IsToken( tokens, i, TokenType::LSquareBracket )) {
+					throw DeserializeException(
+						"Opening square bracket expected at line %llu in file %s",
+						tokens[ i ].mLine,
+						tokens[ i ].mFilePath.ToString( ).c_str( )
+					);
+				}
+			}
+			inline void ExpectOpeningSquareBracketNext( std::vector<Token>& tokens, int32& i ) {
+				++i;
+				ExceptOpeningSquareBracketInPlace( tokens, i );
+				++i;
+			}
+
 
 
 
