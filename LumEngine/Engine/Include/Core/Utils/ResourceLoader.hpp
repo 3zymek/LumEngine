@@ -7,7 +7,7 @@
 
 #include "Core/Utils/Result.hpp"
 #include "Core/CoreCommon.hpp"
-#include "Platform/FileSystem.hpp"
+#include "Platform/FileSystem/FileSystem.hpp"
 
 namespace lum {
 

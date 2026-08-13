@@ -16,14 +16,14 @@ namespace lum::editor {
 		static EntityID GetSelectedEntity( ) noexcept { return mEntity; }
 		static void SetSelectedEntity( EntityID id ) noexcept { mEntity = id; }
 
-		static std::filesystem::path GetSelectedFilepath( ) { return mFilepath; }
-		static void SetSelectedFilepath( const std::filesystem::path& path ) { mFilepath = path; }
+		static Path GetSelectedFilepath( ) { return mFilepath; }
+		static void SetSelectedFilepath( const Path& path ) { mFilepath = path; }
 
 		static void SelectEntity( EntityID id ) {
 			mType = SelectionType::Entity;
 			mEntity = id;
 		}
-		static void SelectFile( const std::filesystem::path& path ) {
+		static void SelectFile( const Path& path ) {
 			mType = SelectionType::File;
 			mFilepath = path;
 		}
@@ -35,7 +35,7 @@ namespace lum::editor {
 
 		inline static SelectionType mType = SelectionType::None;
 		inline static EntityID mEntity = ecs::kNullEntity;
-		inline static std::filesystem::path mFilepath;
+		inline static Path mFilepath;
 
 	};
 

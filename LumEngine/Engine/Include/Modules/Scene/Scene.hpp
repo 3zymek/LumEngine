@@ -7,7 +7,7 @@
 
 #include "Entity/EntityManager.hpp"
 #include "Core/Utils/Optional.hpp"
-#include "Platform/Path.hpp"
+#include "Platform/FileSystem/Path.hpp"
 
 namespace lum {
 

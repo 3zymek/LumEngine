@@ -26,9 +26,9 @@ namespace lum::editor {
 	private:
 
 		FixedString<64> mFileFilter;
-		std::filesystem::path mSelectedPath{};
+		Path mSelectedPath{};
 
-		void draw_directory( const std::filesystem::path& path );
+		void draw_directory( const Path& path );
 
 	};
 

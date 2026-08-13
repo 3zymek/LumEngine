@@ -8,7 +8,7 @@
 
 #include "Core/CoreCommon.hpp"
 #include "Entity/EcsCommon.hpp"
-#include "Platform/FileSystem.hpp"
+#include "Platform/FileSystem/FileSystem.hpp"
 #include "Core/Utils/StringBuilder.hpp"
 #include "Scene/Format/DeserializeException.hpp"
 
@@ -154,40 +154,50 @@ namespace lum {
 		/* @brief Internal parsing helpers — not intended for direct use. */
 		namespace detail {
 
+			// -------------------------------------------------------------------------
+			// Token checks
+			// -------------------------------------------------------------------------
 
-
-
+			/* @brief Checks whether the token stream is still inside a curly bracket block. */
 			inline bool InBlock( std::vector<Token>& tokens, int32 i ) {
 				return i < tokens.size( ) && tokens[ i ].mType != TokenType::RBracket;
 			}
+
+			/* @brief Checks whether the token stream is still inside a square bracket block. */
 			inline bool InSquareBlock( std::vector<Token>& tokens, int32 i ) {
 				return i < tokens.size( ) && tokens[ i ].mType != TokenType::RSquareBracket;
 			}
 
+			/* @brief Checks whether the current token matches the given string. */
 			inline bool IsString( std::vector<Token>& tokens, int32& i, StringView str ) {
 				return tokens[ i ].mValue == ToLower( str );
 			}
 
+			/* @brief Checks whether the current token has the given type. */
 			inline bool IsToken( std::vector<Token>& tokens, int32 i, TokenType type ) {
 				return (i < tokens.size( ) && tokens[ i ].mType == type);
 			}
 
+
+			// -------------------------------------------------------------------------
+			// Token expectations
+			// -------------------------------------------------------------------------
+
 			inline void ExceptOpeningBracketInPlace( std::vector<Token>& tokens, int32 i ) {
 				if (!IsToken( tokens, i, TokenType::LBracket )) {
-					throw DeserializeException( 
+					throw DeserializeException(
 						"Opening bracket expected at line %llu in file %s",
 						tokens[ i ].mLine,
 						tokens[ i ].mFilePath.ToString( ).c_str( )
 					);
 				}
 			}
+
 			inline void ExpectOpeningBracketNext( std::vector<Token>& tokens, int32& i ) {
 				++i;
 				ExceptOpeningBracketInPlace( tokens, i );
 				++i;
 			}
-
-
 
 
 			inline void ExceptOpeningSquareBracketInPlace( std::vector<Token>& tokens, int32 i ) {
@@ -199,13 +209,12 @@ namespace lum {
 					);
 				}
 			}
+
 			inline void ExpectOpeningSquareBracketNext( std::vector<Token>& tokens, int32& i ) {
 				++i;
 				ExceptOpeningSquareBracketInPlace( tokens, i );
 				++i;
 			}
-
-
 
 
 			inline void ExceptColonInPlace( std::vector<Token>& tokens, int32 i ) {
@@ -217,6 +226,7 @@ namespace lum {
 					);
 				}
 			}
+
 			inline void ExceptColonNext( std::vector<Token>& tokens, int32& i ) {
 				++i;
 				ExceptColonInPlace( tokens, i );
@@ -224,6 +234,9 @@ namespace lum {
 			}
 
 
+			// -------------------------------------------------------------------------
+			// Value readers
+			// -------------------------------------------------------------------------
 
 			inline String ReadString( std::vector<Token>& tokens, int32 i ) {
 				if (!IsToken( tokens, i, TokenType::String )) {
@@ -235,12 +248,11 @@ namespace lum {
 				}
 				return tokens[ i ].mValue;
 			}
+
 			inline String ReadStringParameter( std::vector<Token>& tokens, int32& i ) {
 				ExceptColonNext( tokens, i );
 				return ReadString( tokens, i );
 			}
-
-
 
 
 			inline bool ReadBool( std::vector<Token>& tokens, int32 i ) {
@@ -253,12 +265,11 @@ namespace lum {
 				}
 				return std::stof( tokens[ i ].mValue ) > 0;
 			}
+
 			inline bool ReadBoolParameter( std::vector<Token>& tokens, int32& i ) {
 				ExceptColonNext( tokens, i );
 				return ReadBool( tokens, i );
 			}
-
-
 
 
 			inline float32 ReadFloat( std::vector<Token>& tokens, int32 i ) {
@@ -272,12 +283,11 @@ namespace lum {
 				}
 				return std::stof( tokens[ i ].mValue );
 			}
+
 			inline float32 ReadFloatParameter( std::vector<Token>& tokens, int32& i ) {
 				ExceptColonNext( tokens, i );
 				return ReadFloat( tokens, i );
 			}
-
-
 
 
 			inline int64 ReadInt( std::vector<Token>& tokens, int32 i ) {
@@ -297,11 +307,12 @@ namespace lum {
 			}
 
 
-
 			inline Vector3 ReadVec3( std::vector<Token>& tokens, int32 i ) {
 				float32 vec[ 3 ]{};
+
 				for (int32 it = 0; it < 3; it++) {
 					int32 tokenIndex = i + it;
+
 					if (!IsToken( tokens, tokenIndex, TokenType::Number )) {
 						throw DeserializeException(
 							"Vector3 expected at line %llu in file %s",
@@ -309,22 +320,25 @@ namespace lum {
 							tokens[ tokenIndex ].mFilePath.ToString( ).c_str( )
 						);
 					}
+
 					vec[ it ] = std::stof( tokens[ tokenIndex ].mValue );
 				}
+
 				return Vector3( vec[ 0 ], vec[ 1 ], vec[ 2 ] );
 			}
+
 			inline Vector3 ReadVec3Parameter( std::vector<Token>& tokens, int32& i ) {
 				ExceptColonNext( tokens, i );
 				return ReadVec3( tokens, i );
 			}
 
 
-
-
 			inline Vector2 ReadVec2( std::vector<Token>& tokens, int32 i ) {
 				float32 vec[ 2 ]{};
+
 				for (int32 it = 0; it < 2; it++) {
 					int32 tokenIndex = i + it;
+
 					if (!IsToken( tokens, tokenIndex, TokenType::Number )) {
 						throw DeserializeException(
 							"Vector2 expected at line %llu in file %s",
@@ -332,89 +346,73 @@ namespace lum {
 							tokens[ tokenIndex ].mFilePath.ToString( ).c_str( )
 						);
 					}
+
 					vec[ it ] = std::stof( tokens[ tokenIndex ].mValue );
 				}
+
 				return Vector2( vec[ 0 ], vec[ 1 ] );
 			}
+
 			inline Vector2 ReadVec2Parameter( std::vector<Token>& tokens, int32& i ) {
 				ExceptColonNext( tokens, i );
 				return ReadVec2( tokens, i );
 			}
 
 
-
+			// -------------------------------------------------------------------------
+			// Value writers
+			// -------------------------------------------------------------------------
 
 			inline void WriteStringParameter( const String& val, StringBuilder& sb ) {
-
 				sb.Append( "\t\t\t" );
 				sb.Append( "\"" );
 				sb.Append( val );
 				sb.AppendLine( "\"" );
-
 			}
+
 			template<usize tSize>
 			inline void WriteStringParameter( const FixedString<tSize>& val, StringBuilder& sb ) {
-
 				sb.Append( "\t\t\t" );
 				sb.Append( "\"" );
 				sb.Append( val.Data( ) );
 				sb.AppendLine( "\"" );
-
 			}
-
 
 
 			inline void WriteBoolParameter( const bool val, StringBuilder& sb ) {
-
 				sb.Append( "\t\t\t" );
 				sb.AppendLine( val ? "1" : "0" );
-
 			}
-
 
 
 			inline void WriteFloatParameter( const float32 val, StringBuilder& sb ) {
-
 				sb.Append( "\t\t\t" );
 				sb.AppendLine( val );
-
 			}
-
 
 
 			inline void WriteIntParameter( const int64 val, StringBuilder& sb ) {
-
 				sb.Append( "\t\t\t" );
 				sb.AppendLine( val );
-
 			}
 
 
-
 			inline void WriteVec3Parameter( const Vector3& val, StringBuilder& sb ) {
-
 				sb.Append( "\t\t\t" );
 				sb.Append( val.mX );
 				sb.Append( " " );
 				sb.Append( val.mY );
 				sb.Append( " " );
 				sb.AppendLine( val.mZ );
-
 			}
 
 
-
 			inline void WriteVec2Parameter( const Vector2& val, StringBuilder& sb ) {
-
 				sb.Append( "\t\t\t" );
 				sb.Append( val.mX );
 				sb.Append( " " );
 				sb.AppendLine( val.mY );
-
-
 			}
-
-
 
 		} // namespace lum::fmt::detail
 

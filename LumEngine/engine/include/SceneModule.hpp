@@ -17,10 +17,10 @@ namespace lum {
 
 	// Owns the scene manager and wires it up with all engine subsystems.
 	// Must be initialized last — depends on platform, resources, render and audio.
-	class SceneModule {
+	class LUM_API SceneModule {
 	public:
 
-		SceneManager mSceneMgr;
+		SceneManager mSceneMgr{};
 
 		void Initialize( ResourceModule& res, RenderModule& render, AudioModule& audio, ev::EventBus& bus );
 

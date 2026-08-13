@@ -14,10 +14,10 @@ namespace lum {
 
 	// Owns the OS window and the RHI render device.
 	// Must be initialized before any rendering or resource modules.
-	class PlatformModule {
+	class LUM_API PlatformModule {
 	public:
 
-		Window mWindow;
+		Window mWindow{};
 		rhi::RenderDevice* mRenderDevice = nullptr;
 
 		void Initialize( EngineCreateInfo info, ev::EventBus& bus );

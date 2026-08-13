@@ -1,6 +1,7 @@
 #include "Core/FileExplorer.hpp"
 #include "Core/Utils/Style.hpp"
 #include "Core/EditorSelection.hpp"
+#include "Platform/FileSystem/Directory.hpp"
 
 namespace lum::editor {
 
@@ -25,22 +26,21 @@ namespace lum::editor {
 	// Private
 	//---------------------------------------------------------sa
 
-	void FileExplorer::draw_directory( const std::filesystem::path& path ) {
+	void FileExplorer::draw_directory( const Path& path ) {
 
 		ImDrawList* dl = ImGui::GetWindowDrawList( );
 
 		int32 iteration = 0;
 		char buffer[ 256 ];
-		for (const auto& entry : std::filesystem::directory_iterator( path )) {
+		for (auto entry : Directory( path )) {
 
-			const std::filesystem::path entryPath = entry.path( );
-			const bool isDir = entry.is_directory( );
-			FileIconInfo iconInfo = GetFileIcon( entryPath, isDir );
+			const bool isDir = entry.IsDirectory( );
+			FileIconInfo iconInfo = GetFileIcon( entry );
 
-			FormatString( buffer, "%s %s", iconInfo.mIcon, entryPath.filename( ).string( ).c_str( ) );
+			FormatString( buffer, "%s %s", iconInfo.mIcon, entry.Filename( ).ToString().c_str() );
 			if (isDir) {
 
-				const bool selected = mSelectedPath == entryPath;
+				const bool selected = mSelectedPath == entry;
 				const ImVec2 pos = ImGui::GetCursorScreenPos( );
 				const float32 width = ImGui::GetContentRegionAvail( ).x;
 				const float32 height = ImGui::GetTextLineHeightWithSpacing( );
@@ -60,14 +60,14 @@ namespace lum::editor {
 				bool open = ImGui::TreeNodeEx( buffer, ImGuiTreeNodeFlags_SpanFullWidth );
 
 				if (ImGui::IsItemClicked( ) && !ImGui::IsItemToggledOpen( )) {
-					mSelectedPath = entryPath;
+					mSelectedPath = entry;
 					EditorSelection::SelectFile( mSelectedPath );
 				}
 
 				ImGui::PopStyleColor( 3 );
 
 				if (open) {
-					draw_directory( entryPath );
+					draw_directory( entry );
 					ImGui::TreePop( );
 				}
 
@@ -77,7 +77,7 @@ namespace lum::editor {
 				float32 indent = ImGui::GetTreeNodeToLabelSpacing( );
 				ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) + indent );
 
-				const bool selected = mSelectedPath == entryPath ? true : false;
+				const bool selected = mSelectedPath == entry ? true : false;
 				const ImVec2 pos = ImGui::GetCursorScreenPos( );
 				const float32 width = ImGui::GetContentRegionAvail( ).x;
 				const float32 height = ImGui::GetTextLineHeightWithSpacing( );
@@ -98,14 +98,14 @@ namespace lum::editor {
 				ImGui::SetCursorPosY( ImGui::GetCursorPosY( ) + (height - ImGui::GetTextLineHeight( )) * 0.5f );
 
 				if (ImGui::Selectable( buffer, selected )) {
-					mSelectedPath = entryPath;
+					mSelectedPath = entry;
 					EditorSelection::SelectFile( mSelectedPath );
 				}
 				if (ImGui::BeginDragDropSource( )) {
 
-					const String& path = entryPath.string( );
+					const String& path = entry.ToString( );
 					ImGui::SetDragDropPayload( "FILE", path.data(), path.size() + 1 );
-					ImGui::Text( entryPath.filename( ).string().c_str( ) );
+					ImGui::Text( entry.Filename( ).ToString().c_str() );
 					ImGui::EndDragDropSource( );
 
 				}

@@ -23,9 +23,9 @@ namespace lum::editor {
 		ImVec4 mColor = skFileColorDefault;
 	};
 
-	inline FileIconInfo GetFileIcon( const std::filesystem::path& path, bool isDir = false ) {
+	inline FileIconInfo GetFileIcon( const Path& path ) {
 
-		if (isDir)
+		if (path.IsDirectory())
 			return { ICON_FA_FOLDER, skFileColorFolder };
 
         static const std::unordered_map<HashedString, FileIconInfo> skIconsMap = {
@@ -63,7 +63,7 @@ namespace lum::editor {
             { HashString( ".dll" ),      { ICON_FA_PUZZLE_PIECE,      skFileColorError    }},
         };
 
-		HashedString hash = HashString( path.extension( ).string( ).c_str( ) );
+		HashedString hash = HashString( path.Extension( ) );
 		auto it = skIconsMap.find( hash );
 		if (it != skIconsMap.end( ))
 			return it->second;

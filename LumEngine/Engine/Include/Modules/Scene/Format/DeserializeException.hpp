@@ -1,9 +1,15 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Exception for deserialization process.
+//
+//=============================================================================//
 #pragma once
 
 #include "Core/CoreCommon.hpp"
 
 namespace lum::fmt {
 
+	/* @brief Exception thrown when scene deserialization fails. */
 	class DeserializeException : public std::exception {
 	public:
 
@@ -20,6 +26,7 @@ namespace lum::fmt {
 
 			mMessage = buffer;
 		}
+
 		explicit DeserializeException( const char* message ) : mMessage( message ) {}
 
 		const char* what( ) const noexcept override {
@@ -29,7 +36,6 @@ namespace lum::fmt {
 	private:
 
 		String mMessage{};
-
 
 	};
 

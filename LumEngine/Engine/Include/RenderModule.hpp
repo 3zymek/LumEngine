@@ -19,8 +19,8 @@ namespace lum {
 	class LUM_API RenderModule {
 	public:
 
-		render::Renderer	 mRenderer;
-		render::RenderSystem mRenderSys;
+		render::Renderer	 mRenderer{};
+		render::RenderSystem mRenderSys{};
 
 		void Initialize( PlatformModule& platform, ResourceModule& res, ev::EventBus& bus );
 

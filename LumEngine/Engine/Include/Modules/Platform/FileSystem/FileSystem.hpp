@@ -1,21 +1,29 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Provides filesystem utilities and abstractions.
+//
+//=============================================================================//
 #pragma once
 
 #include "Core/CoreCommon.hpp"
 #include "Core/Utils/Result.hpp"
 
-#include "Platform/Path.hpp"
+#include "Platform/FileSystem/Path.hpp"
 
 namespace lum {
 
+	/* @brief Provides utilities for filesystem operations. */
 	class LUM_API FileSystem {
 	public:
 
+		/* @brief Checks whether the specified path exists. */
 		static bool Exists( const Path& path ) {
 
 			return std::filesystem::exists( path.ToString( ) );
 
 		}
 
+		/* @brief Reads the entire contents of a text file. */
 		static Result<String> ReadAllText( const Path& path ) {
 
 			std::ifstream file( path.mPath );
@@ -34,6 +42,7 @@ namespace lum {
 
 		}
 
+		/* @brief Writes the specified content to a text file. */
 		static Result<bool> WriteAllText( const Path& path, const String& content ) {
 
 			std::ofstream file( path.mPath );
@@ -50,11 +59,10 @@ namespace lum {
 
 		}
 
+		/* @brief Returns the current working directory. */
 		static Path CurrentPath( ) {
 			return std::filesystem::current_path( );
 		}
-
-
 
 	};
 
