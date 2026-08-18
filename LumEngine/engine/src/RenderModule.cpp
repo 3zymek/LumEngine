@@ -15,16 +15,16 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void RenderModule::Initialize( PlatformModule& platform, ResourceModule& res, ev::EventBus& bus ) {
+	void RenderModule::Initialize( const RenderModuleCreateInfo& info ) {
 
 		render::RendererContext ctx;
-		ctx.mMaterialMgr = &res.mMaterialMgr;
-		ctx.mMeshMgr = &res.mMeshMgr;
-		ctx.mTextureMgr = &res.mTextureMgr;
-		ctx.mRenderDev = platform.mRenderDevice;
-		ctx.mShaderMgr = &res.mShaderMgr;
-		ctx.mEvBus = &bus;
-		mRenderer.Initialize( ctx, platform.mWindow.GetWidth(), platform.mWindow.GetHeight() );
+		ctx.mMaterialMgr = &info.mResourceModule->mMaterialMgr;
+		ctx.mMeshMgr = &info.mResourceModule->mMeshMgr;
+		ctx.mTextureMgr = &info.mResourceModule->mTextureMgr;
+		ctx.mRenderDev = info.mRenderDev;
+		ctx.mShaderMgr = &info.mResourceModule->mShaderMgr;
+		ctx.mEvBus = info.mEventBus;
+		mRenderer.Initialize( ctx, info.mViewportWidth, info.mViewportHeight );
 
 		mRenderSys.Initialize( &mRenderer );
 

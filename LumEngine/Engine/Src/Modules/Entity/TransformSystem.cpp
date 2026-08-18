@@ -11,14 +11,15 @@
 
 namespace lum {
 
-	void TransformSystem::Update( Scene* scene ) {
+	void TransformSystem::Update( Scene& scene ) {
 
-		ecs::EntityManager& mgr = scene->mEntityMgr;
+
+		ecs::EntityManager& mgr = scene.mEntityMgr;
 
 		mgr.EachWithID<CTransform>(
-			[&]( EntityID id, CTransform& transform ) {
+			[ & ]( EntityID id, CTransform& transform ) {
 
-				if (scene->mParents.contains( id )) return;
+				if (scene.mParents.contains( id )) return;
 
 				transform.mWorldMatrix = Matrix4( 1.0f );
 				transform.mWorldMatrix = Translate( transform.mWorldMatrix, transform.mPosition );
@@ -28,7 +29,7 @@ namespace lum {
 			}
 		);
 
-		for (auto& [parent, children] : scene->mChildren) {
+		for (auto& [parent, children] : scene.mChildren) {
 			for (EntityID child : children)
 				update_entity_recursive( scene, child );
 		}
@@ -36,9 +37,9 @@ namespace lum {
 
 	}
 
-	void TransformSystem::update_entity_recursive( Scene* scene, EntityID id ) {
+	void TransformSystem::update_entity_recursive( Scene& scene, EntityID id ) {
 
-		ecs::EntityManager& mgr = scene->mEntityMgr;
+		ecs::EntityManager& mgr = scene.mEntityMgr;
 
 		CTransform* transform = mgr.GetComponent<CTransform>( id );
 
@@ -47,11 +48,11 @@ namespace lum {
 		transform->mWorldMatrix = Rotate( transform->mWorldMatrix, transform->mRotation );
 		transform->mWorldMatrix = Scale( transform->mWorldMatrix, transform->mScale );
 
-		if (CTransform* parentTransform = mgr.GetComponent<CTransform>( scene->mParents[ id ] ))
+		if (CTransform* parentTransform = mgr.GetComponent<CTransform>( scene.mParents[ id ] ))
 			transform->mWorldMatrix = parentTransform->mWorldMatrix * transform->mWorldMatrix;
 
-		if (scene->mChildren.contains( id )) {
-			for (EntityID child : scene->mChildren[ id ])
+		if (scene.mChildren.contains( id )) {
+			for (EntityID child : scene.mChildren[ id ])
 				update_entity_recursive( scene, child );
 		}
 

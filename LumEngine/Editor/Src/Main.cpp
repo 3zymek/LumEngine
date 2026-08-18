@@ -1,12 +1,11 @@
 #include "Editor.hpp"
 
-int main( ) {
+int main( int argc, char* argv[ ] ) {
+    lum::editor::Editor editor( argc, argv );
 
-	//lum::render::detail::LightSpaceMatricesGPU
+    editor.Initialize( );
+    editor.Run( );
+    editor.Finalize( );
 
-	lum::editor::Editor editor;
-	editor.Initialize( );
-	editor.Run( );
-	editor.Finalize( );
-
+    return 0;
 }

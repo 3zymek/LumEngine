@@ -1,57 +1,88 @@
 #pragma once
-#include "Core/EditorCommon.hpp"
-#include "Core/EditorConsole.hpp"
-#include "Core/FileExplorer.hpp"
-#include "Core/SceneInspector.hpp"
-#include "Core/EntityInspector.hpp"
-#include "Core/Viewport.hpp"
-#include "Core/Utils/Shortcuts.hpp"
+
+#include <glad/glad.h>
+
+#include <QApplication>
+#include <QOpenGLContext>
+#include <QOffscreenSurface>
+#include <QSurface>
+#include <QSurfaceFormat>
+#include <QMainWindow>
+#include <QLabel>
+
+#include "CreateInfo.hpp"
+#include "Engine.hpp"
+#include "Rhi/GLContext.hpp"
+
+namespace lum {
+
+    class QtContext : public GLContext {
+    public:
+
+        QtContext( QOpenGLContext& context, QSurface& surface )
+            : mContext( &context ),
+            mSurface( &surface ) {
+        }
+
+        void MakeCurrent( ) override {
+            mContext->makeCurrent( mSurface );
+        }
+
+        bool LoadGLFunctions( ) override {
+            sContext = mContext;
+
+            const bool result = gladLoadGLLoader(
+                []( const char* name ) -> void* {
+                    return reinterpret_cast<void*>(
+                        sContext->getProcAddress( name )
+                    );
+                }
+            );
+
+            sContext = nullptr;
+
+            return result;
+        }
+
+        void SwapBuffers( ) override {
+            mContext->swapBuffers( mSurface );
+        }
+
+    private:
+
+        QOpenGLContext* mContext = nullptr;
+        QSurface* mSurface = nullptr;
+
+        inline static QOpenGLContext* sContext = nullptr;
+    };
+
+}
 
 namespace lum::editor {
 
-	using ComponentsEntriesMap = std::unordered_map<HashedString, EditorComponentMetadata>;
-	using ComponentsByCategoryMap = std::unordered_map<StringView, std::vector<EditorComponentMetadata*>>;
+    class Editor {
+    public:
 
-	class Editor {
-	public:
+        Editor( int argc, char* argv[ ] )
+            : mQtApp( argc, argv ) {
+        }
 
-		void Initialize( );
-		void Finalize( );
-		void Run( ) ;
-		void Update( float64 delta ) ;
+        void Initialize( );
+        void Run( );
+        void Finalize( );
 
-		inline static const
-			ComponentsEntriesMap& GetComponentsEntries( ) { return skComponentsEntries; }
+    private:
 
-		inline static const
-			ComponentsByCategoryMap& GetComponentsByCategory( ) { return skComponentsByCategory; }
+        QApplication mQtApp;
+        Engine mEngine{};
 
-	private:
+        QOffscreenSurface* mSurface = nullptr;
+        QOpenGLContext* mContext = nullptr;
+        QtContext* mRenderContext = nullptr;
 
-		Engine mEngine;
+        QMainWindow* mWindow = nullptr;
+        QLabel* mLabel = nullptr;
 
-		Window* mWindow = nullptr;
-		rhi::RenderDevice* mRenderDevice = nullptr;
-		render::Renderer* mRenderer = nullptr;
-		Scene* mCurrentScene = nullptr;
-
-		Console mConsole;
-		Viewport mViewport;
-		FileExplorer mExplorer;
-		SceneInspector mSceneInspector;
-		EntityInspector mEntityInspector;
-
-		inline static ComponentsEntriesMap skComponentsEntries;
-		inline static ComponentsByCategoryMap skComponentsByCategory;
-
-		void draw_menu_bar( );
-		void draw_layout( );
-
-		void init_imgui( Window* window );
-		void set_flags_recursive( ImGuiDockNode* node, ImGuiDockNodeFlags flags );
-		void begin_imgui( );
-		void end_imgui( );
-
-	};
+    };
 
 }

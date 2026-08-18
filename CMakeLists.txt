@@ -1,8 +1,17 @@
 cmake_minimum_required(VERSION 3.20)
 project(LumEngine)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL")
+
+# ── QT CONFIGURATION ──────────────────────────────────────────────────────────
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/LumEngine/External/Qt/6.6.3/msvc2019_64/lib/cmake/Qt6")
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
 
 # ── LHC ──────────────────────────────────────────────────────────────────────
 set(LHC_ROOT_DIR "${CMAKE_SOURCE_DIR}/LumEngine")
@@ -19,21 +28,20 @@ if(MSVC)
     add_compile_options(/Bt)
 endif()
 
-# ── ENGINE ────────────────────────────────────────
-file(GLOB_RECURSE ENGINE_CPP     "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Src/*.cpp")
-file(GLOB_RECURSE ENGINE_HEADERS "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/*.hpp"
-                                 "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/*.h"
-                                 "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/*.ipp"
-                                 "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/*.cpp"
-                                 "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/*.c")
-file(GLOB_RECURSE EXTERNAL_C     "${CMAKE_SOURCE_DIR}/LumEngine/External/*.c")
+# ── ENGINE ───────────────────────────────────────────────────────────────────
+file(GLOB_RECURSE ENGINE_CPP        "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Src/*.cpp")
+file(GLOB_RECURSE ENGINE_HEADERS    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/*.hpp"
+                                    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/*.h"
+                                    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/*.ipp"
+                                    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/*.cpp"
+                                    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/*.c")
+file(GLOB_RECURSE EXTERNAL_C        "${CMAKE_SOURCE_DIR}/LumEngine/External/*.c")
 file(GLOB_RECURSE EXTERNAL_CPP_IMPL "${CMAKE_SOURCE_DIR}/LumEngine/External/Stb/Src/*.cpp")
-file(GLOB_RECURSE ENGINE_C       "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Src/*.c")
-file(GLOB_RECURSE ENGINE_IPP     "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Src/*.ipp")
-file(GLOB_RECURSE ENGINE_SHADERS "${CMAKE_SOURCE_DIR}/LumEngine/Engine/*.vert"
-                                 "${CMAKE_SOURCE_DIR}/LumEngine/Engine/*.frag")
+file(GLOB_RECURSE ENGINE_C          "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Src/*.c")
+file(GLOB_RECURSE ENGINE_IPP        "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Src/*.ipp")
+file(GLOB_RECURSE ENGINE_SHADERS    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/*.vert"
+                                    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/*.frag")
 
-# --- BIBLIOTEKA STATYCZNA (.lib) ---
 add_library(LumEngine STATIC
     ${ENGINE_CPP}
     ${ENGINE_HEADERS}
@@ -44,22 +52,9 @@ add_library(LumEngine STATIC
     ${EXTERNAL_CPP_IMPL}
 )
 
-# === WERSJA Z DLL (ZAKOMENTOWANA NA PRZYSŁOŚĆ) ===
-# add_library(LumEngine SHARED
-#     ${ENGINE_CPP}
-#     ${ENGINE_HEADERS}
-#     ${ENGINE_C}
-#     ${ENGINE_IPP}
-#     ${ENGINE_SHADERS}
-#     ${EXTERNAL_C}
-#     ${EXTERNAL_CPP_IMPL}
-# )
-# target_compile_definitions(LumEngine PRIVATE LUM_DYNAMIC_LIBRARIES LUM_ENGINE_BUILD)
-# =================================================
-
 add_dependencies(LumEngine RunLHC)
-set_source_files_properties(${ENGINE_C}        PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
-set_source_files_properties(${EXTERNAL_C}      PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+set_source_files_properties(${ENGINE_C}         PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+set_source_files_properties(${EXTERNAL_C}       PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 set_source_files_properties(${EXTERNAL_CPP_IMPL} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
 source_group(TREE "${CMAKE_SOURCE_DIR}/LumEngine/Engine" FILES
@@ -93,25 +88,21 @@ target_link_libraries(LumEngine PRIVATE
 
 # ── EDITOR ────────────────────────────────────────────────────────────────────
 file(GLOB_RECURSE EDITOR_CPP     "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Src/*.cpp")
-file(GLOB_RECURSE EXTERNAL_IMGUI_SRC "${CMAKE_SOURCE_DIR}/LumEngine/External/Imgui/Src/*.cpp")
 file(GLOB_RECURSE EDITOR_HEADERS "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/*.hpp"
                                  "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/*.h"
-                                 "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/*.cpp"
-                                 "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/*.c")
+                                 "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/*.ipp")
+file(GLOB_RECURSE EDITOR_UI      "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/*.ui"
+                                 "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Src/*.ui")
 
 add_executable(LumEngineEditor
     ${EDITOR_CPP}
     ${EDITOR_HEADERS}
-    ${EXTERNAL_IMGUI_SRC}
-)
-
-target_compile_definitions(LumEngineEditor PRIVATE
-    IMGUI_DEFINE_MATH_OPERATORS
+    ${EDITOR_UI}
 )
 
 add_dependencies(LumEngineEditor LumEngine)
 source_group(TREE "${CMAKE_SOURCE_DIR}/LumEngine/Editor" FILES
-    ${EDITOR_CPP} ${EDITOR_HEADERS}
+    ${EDITOR_CPP} ${EDITOR_HEADERS} ${EDITOR_UI}
 )
 
 # ── HIDE CONSOLE ──────────────────────────────────────────────
@@ -132,17 +123,19 @@ target_include_directories(LumEngineEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Glm"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Fmod/Inc"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Inc"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Imgui/Inc"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Assimp/Inc"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Stb/Inc"
 )
 
-target_precompile_headers(LumEngineEditor PRIVATE
-    "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/Core/EditorPch.hpp"
-)
+#target_precompile_headers(LumEngineEditor PRIVATE
+#    "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/Core/EditorPch.hpp"
+#)
 
 target_link_libraries(LumEngineEditor PRIVATE
     LumEngine
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Fmod/Lib/fmod_vc.lib"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Lib/glfw3.lib"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Lib/glfw3_mt.lib"
@@ -150,3 +143,23 @@ target_link_libraries(LumEngineEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Assimp/Lib/assimp-vc143-mt.lib"
     opengl32.lib
 )
+
+# ── POST-BUILD COPY QT DLLs ──────────────────────────────────────────────────
+if(WIN32)
+    get_target_property(QT_WIDGETS_LIB Qt6::Widgets LOCATION)
+    get_filename_component(QT_BIN_DIR "${QT_WIDGETS_LIB}" DIRECTORY)
+    get_filename_component(QT_PLUGINS_DIR "${QT_BIN_DIR}/../plugins" ABSOLUTE)
+
+    add_custom_command(TARGET LumEngineEditor POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${QT_PLUGINS_DIR}/platforms"
+            "$<TARGET_FILE_DIR:LumEngineEditor>/platforms"
+
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:Qt6::Core>
+            $<TARGET_FILE:Qt6::Gui>
+            $<TARGET_FILE:Qt6::Widgets>
+            $<TARGET_FILE_DIR:LumEngineEditor>
+        COMMENT "Copying Qt binaries and platform plugins to output directory..."
+    )
+endif()

@@ -11,24 +11,23 @@
 
 namespace lum::rhi::gl {
 
-	void GLDevice::Initialize( Window* window ) {
+	void GLDevice::Initialize( RenderContext* ctx ) {
 
-		GLFWwindow* w = static_cast< GLFWwindow* >(window->GetNativeWindow( ));
+		auto* glContext = static_cast<GLContext*>(ctx);
 
-		glfwMakeContextCurrent( w );
+		glContext->MakeCurrent( );
 
-		if (!gladLoadGLLoader( ( GLADloadproc ) glfwGetProcAddress )) {
-			glfwTerminate( );
+		if (!glContext->LoadGLFunctions( )) {
 			return;
 		}
 
 #		if LUM_ENABLE_DEBUG_RENDER == 1
-			glEnable( GL_DEBUG_OUTPUT );
-			glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-			glDebugMessageCallback( rhi::detail::GLDebugCallback, nullptr );
+		glEnable( GL_DEBUG_OUTPUT );
+		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+		glDebugMessageCallback( rhi::detail::GLDebugCallback, nullptr );
 #		endif
 
-		mWindow = window;
+		mRenderContext = glContext;
 
 		glEnable( GL_TEXTURE_CUBE_MAP_SEAMLESS );
 
@@ -72,7 +71,7 @@ namespace lum::rhi::gl {
 		LUM_ASSERT( mBuffers.Contains( mLayouts[ layout ].mElementBuff ), "Layout doesn't have attached any element buffers" );
 
 		glBindVertexArray( mLayouts[ layout ].mHandle );
-		glDrawElements( GL_TRIANGLES, static_cast< GLsizei >(numIndices), GL_UNSIGNED_INT, nullptr );
+		glDrawElements( GL_TRIANGLES, static_cast<GLsizei>(numIndices), GL_UNSIGNED_INT, nullptr );
 
 		LUM_PROFILER_DRAW_CALL( );
 
@@ -103,7 +102,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SwapBuffers( ) {
 
-		glfwSwapBuffers( static_cast< GLFWwindow* >(mWindow->GetNativeWindow( )) );
+		mRenderContext->SwapBuffers( );
 
 	}
 

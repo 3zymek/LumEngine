@@ -6,13 +6,14 @@
 #pragma once
 #include "Rhi/Core/RhiDevice.hpp"
 #include "Core/CoreDefines.hpp"
+#include "Rhi/GLContext.hpp"
 
 namespace lum::rhi::gl {
 
 	class GLDevice : public RenderDevice {
 	public:
 
-		void Initialize( Window* window ) override;
+		void Initialize( RenderContext* ctx ) override;
 
 		//=================================================
 		// Buffers
@@ -370,8 +371,7 @@ namespace lum::rhi::gl {
 			GL_FLOAT_32_UNSIGNED_INT_24_8_REV
 		};
 
-		/* @brief Pointer to the engine window this device renders into. */
-		Window* mWindow = nullptr;
+		GLContext* mRenderContext = nullptr;
 
 		//=================================================
 		// Private helpers

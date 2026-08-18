@@ -20,11 +20,11 @@ namespace lum {
 		/* @brief Updates the world matrix of every entity with a CTransform component.
 		* Propagates parent transforms down the hierarchy using CChild relationships.
 		*/
-		static void Update( Scene* scene );
+		static void Update( Scene& scene );
 
 	private:
 
-		static void update_entity_recursive( Scene* scene, EntityID id );
+		static void update_entity_recursive( Scene& scene, EntityID id );
 
 	};
 

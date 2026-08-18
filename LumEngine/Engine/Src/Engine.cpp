@@ -13,13 +13,21 @@ namespace lum {
 	//---------------------------------------------------------
 
 	void Engine::Initialize( const EngineCreateInfo& info ) {
-	    
+
 		ResourceLoader::SetProjectRoot( info.mProjectDir );
 
 		mAudio.Initialize( mEventBus );
 		mPlatform.Initialize( info, mEventBus );
 		mRes.Initialize( mPlatform, mEventBus );
-		mRender.Initialize( mPlatform,  mRes, mEventBus );
+
+		{
+			RenderModuleCreateInfo desc{};
+			desc.mEventBus = &mEventBus;
+			desc.mRenderDev = mPlatform.mRenderDevice;
+			desc.mResourceModule = &mRes;
+			mRender.Initialize( desc );
+		}
+
 		mScene.Initialize( mRes, mRender, mAudio, mEventBus );
 
 	}
@@ -28,20 +36,23 @@ namespace lum {
 		mPlatform.mWindow.Update( );
 		mEventBus.FlushEvents( );
 		mRender.mRenderer.BeginFrame( );
-		
+
 	}
 	void Engine::EndFrame( ) {
-		
+
 		mRender.mRenderer.EndFrame( );
 
 	}
 	void Engine::Tick( ) {
 
-		TransformSystem::Update( mScene.mSceneMgr.GetCurrentScene( ) );
+		Scene* scene = mScene.mSceneMgr.GetCurrentScene( );
 
-		mRender.mRenderSys.Update( mScene.mSceneMgr.GetCurrentScene( ), &mPlatform.mWindow );
+		if (scene) {
+			TransformSystem::Update( *scene );
+			mAudio.mAudioMgr.UpdateInstances( &scene->mEntityMgr );
+			mRender.mRenderSys.Update( *scene, &mPlatform.mWindow );
+		}
 
-		mAudio.mAudioMgr.UpdateInstances( &mScene.mSceneMgr.GetCurrentScene( )->mEntityMgr );
 		mAudio.mAudioDevice->SubmitFrame( );
 
 	}

@@ -1,3 +1,8 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Provides directory traversal utilities.
+//
+//=============================================================================//
 #pragma once
 
 #include "Platform/FileSystem/Path.hpp"

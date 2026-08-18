@@ -7,6 +7,7 @@
 
 #include "Platform/Window.hpp"
 #include "CreateInfo.hpp"
+#include "Rhi/GLFWContext.hpp"
 
 namespace lum {
 
@@ -19,6 +20,9 @@ namespace lum {
 
 		Window mWindow{};
 		rhi::RenderDevice* mRenderDevice = nullptr;
+
+		RenderContext* mRenderContext = nullptr;
+		GLFWContext* mDefaultContext = nullptr;
 
 		void Initialize( EngineCreateInfo info, ev::EventBus& bus );
 		void Finalize( );

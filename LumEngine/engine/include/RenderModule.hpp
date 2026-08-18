@@ -14,6 +14,16 @@ namespace lum {
 	class ResourceModule;
 	namespace ev { class EventBus; }
 
+	struct RenderModuleCreateInfo {
+
+		rhi::RenderDevice* mRenderDev = nullptr;
+		ResourceModule* mResourceModule = nullptr;
+		ev::EventBus* mEventBus = nullptr;
+		uint32 mViewportWidth = 1280;
+		uint32 mViewportHeight = 720;
+
+	};
+
 	// Owns the renderer and render system.
 	// Must be initialized after PlatformModule and ResourceModule.
 	class LUM_API RenderModule {
@@ -22,7 +32,7 @@ namespace lum {
 		render::Renderer	 mRenderer{};
 		render::RenderSystem mRenderSys{};
 
-		void Initialize( PlatformModule& platform, ResourceModule& res, ev::EventBus& bus );
+		void Initialize( const RenderModuleCreateInfo& info );
 
 	};
 

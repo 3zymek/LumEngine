@@ -10,25 +10,47 @@
 
 namespace lum {
 
-	//---------------------------------------------------------
-	// Public
-	//---------------------------------------------------------
+    //---------------------------------------------------------
+    // Public
+    //---------------------------------------------------------
 
-	void PlatformModule::Initialize( EngineCreateInfo info, ev::EventBus& bus ) {
+    void PlatformModule::Initialize( EngineCreateInfo info, ev::EventBus& bus ) {
 
-		info.mWindow.mTitle = info.mApplicationName;
+        info.mWindow.mTitle = info.mApplicationName;
 
-		mWindow.Initialize( info.mWindow, bus );
-		input::SetActiveWindow( static_cast< GLFWwindow* >(mWindow.GetNativeWindow( )) );
+        if (info.mRenderContext == nullptr) {
 
-		mRenderDevice = rhi::CreateDevice( info.mRenderingBackend );
-		mRenderDevice->Initialize( &mWindow );
+            mWindow.Initialize( info.mWindow, bus );
 
-	}
+            input::SetActiveWindow(
+                static_cast<GLFWwindow*>(
+                    mWindow.GetNativeWindow( )
+                    )
+            );
 
-	void PlatformModule::Finalize( ) {
-		mRenderDevice->Finalize( );
-		delete mRenderDevice;
-	}
+            mDefaultContext = new GLFWContext(
+                *static_cast<GLFWwindow*>(
+                    mWindow.GetNativeWindow( )
+                    )
+            );
+
+            mRenderContext = mDefaultContext;
+        }
+        else {
+            mRenderContext = info.mRenderContext;
+        }
+
+        mRenderDevice = rhi::CreateDevice( info.mRenderingBackend );
+
+        mRenderDevice->Initialize( mRenderContext );
+    }
+
+    void PlatformModule::Finalize( ) {
+        mRenderDevice->Finalize( );
+        delete mRenderDevice;
+
+        delete mDefaultContext;
+        mDefaultContext = nullptr;
+    }
 
 } // namespace lum

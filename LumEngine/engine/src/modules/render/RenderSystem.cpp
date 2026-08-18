@@ -30,12 +30,12 @@ namespace lum {
 
 		}
 
-		void RenderSystem::Update( Scene* scene, Window* window ) {
+		void RenderSystem::Update( Scene& scene, Window* window ) {
 
-			auto isVisible = [&]( EntityID id ) { auto e = scene->GetEntity( id ); return e && e->IsVisible( ); };
-			
-			scene->mEntityMgr.EachWithID<CTransform, CMaterialInstance, CStaticMesh>(
-				[&]( EntityID id, CTransform& transform, CMaterialInstance& material, CStaticMesh& mesh ) {
+			auto isVisible = [ & ]( EntityID id ) { auto e = scene.GetEntity( id ); return e && e->IsVisible( ); };
+
+			scene.mEntityMgr.EachWithID<CTransform, CMaterialInstance, CStaticMesh>(
+				[ & ]( EntityID id, CTransform& transform, CMaterialInstance& material, CStaticMesh& mesh ) {
 
 					if (!isVisible( id )) return;
 
@@ -43,15 +43,15 @@ namespace lum {
 					inst.mMaterial = &material;
 					inst.mStaticMesh = &mesh;
 					inst.mTransform = &transform;
-					
-					
+
+
 					mRenderer->SubmitInstance( inst );
 
 				}
 			);
 
-			scene->mEntityMgr.EachWithID<CTransform, CPointLight>(
-				[&]( EntityID id, CTransform& transform, CPointLight& light ) {
+			scene.mEntityMgr.EachWithID<CTransform, CPointLight>(
+				[ & ]( EntityID id, CTransform& transform, CPointLight& light ) {
 
 					if (!isVisible( id )) return;
 
@@ -67,8 +67,8 @@ namespace lum {
 				}
 			);
 
-			scene->mEntityMgr.EachWithID<CTransform, CSpotLight>(
-				[&]( EntityID id, CTransform& transform, CSpotLight& light ) {
+			scene.mEntityMgr.EachWithID<CTransform, CSpotLight>(
+				[ & ]( EntityID id, CTransform& transform, CSpotLight& light ) {
 
 					if (!isVisible( id )) return;
 
