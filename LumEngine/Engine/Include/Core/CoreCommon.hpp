@@ -13,6 +13,7 @@
 #include "Core/Utils/LumAssert.hpp"
 #include "Core/Math/MathCommon.hpp"
 #include "Core/Limits.hpp"
+#include "Core/Utils/FormatString.hpp"
 
 namespace lum {
 
@@ -244,16 +245,5 @@ namespace lum {
 		std::transform( result.begin( ), result.end( ), result.begin( ), ::toupper );
 		return result;
 	}
-
-	/* @brief Formats a string into a fixed-size stack buffer using printf-style syntax.
-	*  @tparam tL     Size of the destination buffer in bytes.
-	*  @param buff    Destination character buffer to write into.
-	*  @param format  printf-style format string.
-	*  @param args    Variadic arguments matching the format specifiers.
-	*/
-	template<usize tL, typename... tArgs>
-	inline void FormatString( char( &buff )[ tL ], const char* format, tArgs&&... args ) {
-		snprintf( buff, tL, format, std::forward<tArgs>( args )... );
-	} 
 
 } // namespace lum

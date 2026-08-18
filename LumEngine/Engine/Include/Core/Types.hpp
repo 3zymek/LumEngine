@@ -59,5 +59,8 @@ namespace lum {
 	template<typename tType>
 	concept cFloating = std::is_floating_point_v<tType>;
 
+	template<typename tType>
+	concept cNonPointer = (!std::is_pointer_v<tType>);
+
 
 } // namespace lum

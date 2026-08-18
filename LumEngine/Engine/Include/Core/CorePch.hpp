@@ -24,5 +24,7 @@
 #include <sstream>
 #include <cmath>
 #include <deque>
+#include <source_location>
+#include <charconv>
 
 #include "Core/CoreDefines.hpp"

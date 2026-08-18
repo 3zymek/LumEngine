@@ -22,19 +22,12 @@ namespace lum {
 
             mWindow.Initialize( info.mWindow, bus );
 
-            input::SetActiveWindow(
-                static_cast<GLFWwindow*>(
-                    mWindow.GetNativeWindow( )
-                    )
-            );
+            auto* glfwWindow = static_cast<GLFWwindow*>(mWindow.GetNativeWindow( ));
 
-            mDefaultContext = new GLFWContext(
-                *static_cast<GLFWwindow*>(
-                    mWindow.GetNativeWindow( )
-                    )
-            );
+            input::SetActiveWindow( glfwWindow );
 
-            mRenderContext = mDefaultContext;
+            mDefaultContext = std::make_unique<GLFWContext>( *glfwWindow );
+            mRenderContext = mDefaultContext.get();
         }
         else {
             mRenderContext = info.mRenderContext;
@@ -43,14 +36,11 @@ namespace lum {
         mRenderDevice = rhi::CreateDevice( info.mRenderingBackend );
 
         mRenderDevice->Initialize( mRenderContext );
+
     }
 
     void PlatformModule::Finalize( ) {
         mRenderDevice->Finalize( );
-        delete mRenderDevice;
-
-        delete mDefaultContext;
-        mDefaultContext = nullptr;
     }
 
 } // namespace lum

@@ -9,7 +9,7 @@ namespace lum::render {
 
 	void PostprocessPass::Initialize( const RendererContext& ctx ) {
 
-		ValidateRendererContext( ctx );
+		ctx.Validate( );
 
 		mCtx = ctx;
 

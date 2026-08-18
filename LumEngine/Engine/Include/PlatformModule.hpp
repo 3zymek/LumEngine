@@ -19,10 +19,10 @@ namespace lum {
 	public:
 
 		Window mWindow{};
-		rhi::RenderDevice* mRenderDevice = nullptr;
+		std::unique_ptr<rhi::RenderDevice> mRenderDevice = nullptr;
 
 		RenderContext* mRenderContext = nullptr;
-		GLFWContext* mDefaultContext = nullptr;
+		std::unique_ptr<GLFWContext> mDefaultContext = nullptr;
 
 		void Initialize( EngineCreateInfo info, ev::EventBus& bus );
 		void Finalize( );

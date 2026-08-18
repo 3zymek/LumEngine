@@ -9,6 +9,7 @@
 #include "Core/Utils/HandlePool.hpp"
 #include "Render/RenderCommon.hpp"
 #include "Render/Material.hpp"
+#include "Core/Utils/SafePtr.hpp"
 
 namespace lum {
 
@@ -27,7 +28,7 @@ namespace lum {
 		* @param device  Pointer to the active render device.
 		* @param texMgr  Pointer to the texture manager for fallback resolution.
 		*/
-		void Initialize( render::RendererContext* ctx );
+		void Initialize( render::RendererContext& ctx );
 
 		/* @brief Uploads a material base to the pool and returns its handle.
 		* @param base Material base data to upload.
@@ -62,8 +63,8 @@ namespace lum {
 
 	private:
 
-		render::RendererContext* mCtx = nullptr;
-		MaterialBaseHandle mDefaultMaterial;
+		SafePtr<render::RendererContext> mCtx = nullptr;
+		MaterialBaseHandle mDefaultMaterial{};
 
 		/* @brief Pool storing all uploaded base materials, indexed by MaterialBaseHandle. */
 		cstd::HandlePool<MaterialBaseHandle, MaterialBase> mBaseMaterials{ limits::kMaxMaterials };

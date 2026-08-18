@@ -18,16 +18,16 @@ namespace lum {
 		mCtx.mEvBus = &bus;
 		mCtx.mMaterialMgr = &mMaterialMgr;
 		mCtx.mMeshMgr = &mMeshMgr;
-		mCtx.mRenderDev = platform.mRenderDevice;
+		mCtx.mRenderDev = platform.mRenderDevice.get();
 		mCtx.mShaderMgr = &mShaderMgr;
 		mCtx.mTextureMgr = &mTextureMgr;
 		
-		render::ValidateRendererContext( mCtx );
+		mCtx.Validate( );
 
-		mTextureMgr.Initialize( platform.mRenderDevice );
-		mMeshMgr.Initialize( &mCtx );
-		mShaderMgr.Initialize( platform.mRenderDevice );
-		mMaterialMgr.Initialize( &mCtx );
+		mTextureMgr.Initialize( *platform.mRenderDevice.get() );
+		mMeshMgr.Initialize( mCtx );
+		mShaderMgr.Initialize( *platform.mRenderDevice.get() );
+		mMaterialMgr.Initialize( mCtx );
 
 	}
 

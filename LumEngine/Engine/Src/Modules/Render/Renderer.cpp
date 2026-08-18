@@ -19,7 +19,7 @@ namespace lum::render {
 
 	void Renderer::Initialize( const RendererContext& ctx, uint32 w, uint32 h ) {
 
-		ValidateRendererContext( ctx );
+		ctx.Validate( );
 		
 		mCtx = ctx;
 

@@ -21,7 +21,7 @@ namespace lum {
 		struct RenderResources {
 			rhi::BufferHandle			mVbo;
 			rhi::BufferHandle			mEbo;
-			rhi::VertexLayoutHandle	mVao;
+			rhi::VertexLayoutHandle		mVao;
 		};
 
 	} // namespace lum::detail
@@ -37,7 +37,7 @@ namespace lum {
 
 		MeshManager() {}
 
-		void Initialize( render::RendererContext* ctx );
+		void Initialize( render::RendererContext& ctx );
 
 		/* @brief Returns the static mesh resource for the given handle.
 		* @param handle Handle to the static mesh.

@@ -23,7 +23,7 @@ namespace lum {
 		{
 			RenderModuleCreateInfo desc{};
 			desc.mEventBus = &mEventBus;
-			desc.mRenderDev = mPlatform.mRenderDevice;
+			desc.mRenderDev = mPlatform.mRenderDevice.get();
 			desc.mResourceModule = &mRes;
 			mRender.Initialize( desc );
 		}

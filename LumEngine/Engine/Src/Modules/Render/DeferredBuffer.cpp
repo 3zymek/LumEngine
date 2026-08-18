@@ -17,7 +17,7 @@ namespace lum::render::detail {
 
 	void DeferredBuffer::Initialize( const RendererContext& ctx, uint32 w, uint32 h ) {
 
-		ValidateRendererContext( ctx );
+		ctx.Validate( );
 
 		mCtx = ctx;
 

@@ -44,18 +44,17 @@ namespace lum::render {
 		MeshManager*		mMeshMgr = nullptr;
 		ShaderManager*		mShaderMgr = nullptr;
 		ev::EventBus*		mEvBus = nullptr;
+		
+		void Validate( ) const {
+			LUM_ASSERT( mRenderDev, "RendererContext: RenderDevice is nullptr!" );
+			LUM_ASSERT( mTextureMgr, "RendererContext: TextureManager is nullptr!" );
+			LUM_ASSERT( mMaterialMgr, "RendererContext: MaterialManager is nullptr!" );
+			LUM_ASSERT( mMeshMgr, "RendererContext: MeshManager is nullptr!" );
+			LUM_ASSERT( mShaderMgr, "RendererContext: ShaderManager is nullptr!" );
+			LUM_ASSERT( mEvBus, "RendererContext: EventBus is nullptr!" );
+		}
+
 	};
-
-	constexpr void ValidateRendererContext( const RendererContext& ctx ) {
-
-		LUM_ASSERT( ctx.mRenderDev != nullptr, "RenderDevice is null" );
-		LUM_ASSERT( ctx.mTextureMgr != nullptr, "TextureManager is null" );
-		LUM_ASSERT( ctx.mMaterialMgr != nullptr, "MaterialManager is null" );
-		LUM_ASSERT( ctx.mMeshMgr != nullptr, "MeshManager is null" );
-		LUM_ASSERT( ctx.mShaderMgr != nullptr, "ShaderManager is null" );
-		LUM_ASSERT( ctx.mEvBus != nullptr, "EventBus is null" );
-
-	}
 
 	/* @brief Directional light source — infinite distance, uniform direction.
 	*  Aligned to 16 bytes for std140 uniform buffer compatibility.

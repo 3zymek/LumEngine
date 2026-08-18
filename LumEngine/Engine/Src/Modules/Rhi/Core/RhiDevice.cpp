@@ -34,7 +34,7 @@ namespace lum::rhi {
 			LUM_LOG_WARN( "Max textures reached" );
 			return false;
 
-		}		
+		}
 
 		if (desc.mData.mPixels.data( ) == nullptr) {
 			LUM_LOG_WARN( "Texture pixel data is null" );
@@ -102,15 +102,15 @@ namespace lum::rhi {
 
 	}
 
-	RenderDevice* CreateDevice( RenderBackend backend ) {
+	std::unique_ptr<RenderDevice> CreateDevice( RenderBackend backend ) {
 
-		rhi::RenderDevice* device = nullptr;
+		std::unique_ptr<RenderDevice> dev = nullptr;
 
 		switch (backend) {
-		case RenderBackend::OpenGL: device = new gl::GLDevice( );
+			case RenderBackend::OpenGL: dev = std::make_unique<gl::GLDevice>( );
 		}
 
-		return device;
+		return std::move( dev );
 	}
 
 }

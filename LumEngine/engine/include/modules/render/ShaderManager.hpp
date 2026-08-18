@@ -31,7 +31,7 @@ namespace lum {
 		/* @brief Initializes the shader manager with a render device.
 		* @param device Pointer to the RHI render device used for shader creation.
 		*/
-		void Initialize( rhi::RenderDevice* device );
+		void Initialize( rhi::RenderDevice& device );
 
 		/* @brief Loads a shader program from vertex and fragment source files.
 		*

@@ -24,7 +24,7 @@ namespace lum::render {
 
 	void GeometryPass::Initialize( const RendererContext& ctx ) {
 
-		ValidateRendererContext( ctx );
+		ctx.Validate( );
 
 		mCtx = ctx;
 

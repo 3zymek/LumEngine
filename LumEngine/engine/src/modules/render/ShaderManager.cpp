@@ -17,8 +17,8 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void ShaderManager::Initialize( rhi::RenderDevice* device ) {
-		mRenderDevice = device;
+	void ShaderManager::Initialize( rhi::RenderDevice& device ) {
+		mRenderDevice = &device;
 	}
 
 	rhi::ShaderHandle ShaderManager::LoadShader( Path vertexPath, Path fragmentPath, ResourceRoot root ) {

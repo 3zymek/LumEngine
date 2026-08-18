@@ -21,7 +21,7 @@ namespace lum::render {
 
 	void EnvironmentPass::Initialize( const RendererContext& ctx ) {
 
-		ValidateRendererContext( ctx );
+		ctx.Validate( );
 
 		mCtx = ctx;
 

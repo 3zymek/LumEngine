@@ -17,11 +17,11 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void MeshManager::Initialize( render::RendererContext* ctx ) {
+	void MeshManager::Initialize( render::RendererContext& ctx ) {
 
-		render::ValidateRendererContext( *ctx );
+		ctx.Validate( );
 
-		mCtx = ctx;
+		mCtx = &ctx;
 		init( );
 
 	}

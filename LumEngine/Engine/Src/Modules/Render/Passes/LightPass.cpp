@@ -17,7 +17,7 @@ namespace lum::render {
 
 	void LightPass::Initialize( const RendererContext& ctx ) {
 
-		ValidateRendererContext( ctx );
+		ctx.Validate( );
 
 		mCtx = ctx;
 
