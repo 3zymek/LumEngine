@@ -106,14 +106,14 @@ source_group(TREE "${CMAKE_SOURCE_DIR}/LumEngine/Editor" FILES
 )
 
 # ── HIDE CONSOLE ──────────────────────────────────────────────
-if(WIN32)
-    set_target_properties(LumEngineEditor PROPERTIES
-        WIN32_EXECUTABLE TRUE
-    )
-    target_link_options(LumEngineEditor PRIVATE
-        /ENTRY:mainCRTStartup
-    )
-endif()
+#if(WIN32)
+#    set_target_properties(LumEngineEditor PROPERTIES
+#        WIN32_EXECUTABLE TRUE
+#    )
+#    target_link_options(LumEngineEditor PRIVATE
+#        /ENTRY:mainCRTStartup
+#    )
+#endif()
 
 target_include_directories(LumEngineEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine"

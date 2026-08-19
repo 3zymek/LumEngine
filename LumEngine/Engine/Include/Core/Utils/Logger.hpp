@@ -8,13 +8,13 @@
 
 #include "Core/Types.hpp"
 #include "Core/Utils/Flags.hpp"
+#include "Core/Utils/FormatString.hpp"
 
 namespace lum {
 
 #	define LUM_MAX_LOGS 128
 
 	/* @brief Defines available log severity levels.
-	*
 	* Controls the importance level of logged messages.
 	*/
 	enum class LogSeverityLevel : uint8 {
@@ -27,22 +27,21 @@ namespace lum {
 
 
 	/* @brief Stores a single log message entry.
-	*
 	* Contains message text, source location and severity information.
 	*/
 	struct LogEntry {
 
 		/* @brief Timestamp of the log entry in milliseconds. */
-		uint64 mTime = 0;
+		String mTime = "";
 
 		/* @brief Formatted log message text. */
 		String mMessage = "";
 
 		/* @brief Function where the log was generated. */
-		const char* mFunction = "";
+		String mFunction = "";
 
 		/* @brief File where the log was generated. */
-		const char* mFile = "";
+		String mFile = "";
 
 		/* @brief Line number where the log was generated. */
 		uint32 mLine = 0;
@@ -63,7 +62,7 @@ namespace lum {
 		/* @brief Creates a log buffer with a maximum entry count.
 		* @param maxLogs Maximum number of stored logs.
 		*/
-		LogBuffer( uint32 maxLogs ) : mMaxLogs( maxLogs ) { }
+		LogBuffer( uint32 maxLogs ) : mMaxLogs( maxLogs ) {}
 
 		/* @brief Returns all stored log entries.
 		* @return Constant reference to the internal log container.
@@ -73,9 +72,7 @@ namespace lum {
 		}
 
 		/* @brief Adds a new log entry.
-		*
 		* Removes the oldest entry if the buffer is full.
-		*
 		* @param entry Log entry to store.
 		*/
 		void Push( const LogEntry& entry ) {
@@ -133,53 +130,47 @@ namespace lum {
 			mLogs.Clear( );
 		}
 
-		/* @brief Converts timestamp into readable time format.
-		*
-		* @param timestamp Unix timestamp in milliseconds.
-		* @param out Output character buffer.
-		*/
-		static void FormatTime( uint64 timestamp, char* out );
-
 		/* @brief Formats and stores a log message.
 		*
-		* Uses printf-style formatting and stores the generated entry
-		* inside the internal log buffer.
+		* Formats string arguments into an internal buffer and constructs
+		* a LogEntry with calling site context from source_location.
 		*
-		* @tparam tFileL Length of the source file string.
-		* @tparam tFuncL Length of the source function string.
-		* @tparam tArgs Additional formatting arguments.
+		* @tparam tArgs Variadic formatting arguments.
 		*
 		* @param sev Severity level of the message.
-		* @param file Source file name.
-		* @param func Function name.
-		* @param line Source code line.
+		* @param loc Automatic source location context (file, function, line).
 		* @param msg Message format string.
-		* @param args Formatting arguments.
+		* @param args Formatting arguments passed to FormatString.
 		*/
-		template<usize tFileL, usize tFuncL, typename... tArgs>
+		template<typename... tArgs>
 		void LogCmd(
 			LogSeverityLevel sev,
-			const char( &file )[ tFileL ],
-			const char( &func )[ tFuncL ],
-			int32 line,
+			std::source_location loc,
 			const String& msg,
 			tArgs&&... args
 		) {
 
 			char formatMsg[ skMaxLogMessageLength ]{};
 
-			std::snprintf(
+			FormatString(
 				formatMsg,
-				sizeof( formatMsg ),
 				msg.data( ),
-				format_args( std::forward<tArgs>( args ) )...
+				std::forward<tArgs>( args )...
 			);
 
-			LogEntry entry;
+			LogEntry entry{};
+
+			char time[ 16 ]{};
+			get_time( time );
 
 			entry.mMessage = String( formatMsg );
 			entry.mSeverity = sev;
-			entry.mTime = get_time( );
+			entry.mTime = time;
+			entry.mFile = loc.file_name( );
+			entry.mFunction = loc.function_name( );
+			entry.mLine = loc.line( );
+
+			entry.mFunction = clean_function_name( entry.mFunction );
 
 			mLogs.Push( entry );
 			mTempStrings.clear( );
@@ -204,45 +195,40 @@ namespace lum {
 			mTempStrings.reserve( mMaxTempStrings );
 		}
 
-		/* @brief Returns current Unix timestamp in milliseconds.
-		* @return Current timestamp.
+		/* @brief Returns current time formatted as HH:MM:SS.
+		* @param out Pointer to the destination buffer (at least 16 bytes).
 		*/
-		static uint64 get_time( );
+		static void get_time( char* out ) {
+			using namespace std::chrono;
 
-		/* @brief Extracts filename from full path.
-		*
-		* @param path File path string.
-		* @return Pointer to filename portion.
-		*/
-		template<usize tLength>
-		const char* extract_filename( const char( &path )[ tLength ] ) {
+			uint64 time = duration_cast<milliseconds>(system_clock::now( ).time_since_epoch( )).count( );
+			std::time_t t = time / 1000;
+			std::tm tm{};
 
-			const char* lastSlash = nullptr;
+			localtime_s( &tm, &t );
 
-			for (usize i = 0; i < tLength - 1; ++i)
-				if (path[ i ] == '/' || path[ i ] == '\\')
-					lastSlash = &path[ i ];
-
-			return lastSlash ? lastSlash + 1 : path;
+			std::strftime( out, 16, "%H:%M:%S", &tm );
 		}
 
-		const char* format_args( const String& str ) {
-			return str.c_str( );
-		}
-		const char* format_args( StringView str ) {
-			return str.data( );
-		}
-		const char* format_args( String&& val ) {
+		/* @brief Strips return types, calling conventions and argument lists from raw function signatures. */
+		constexpr StringView clean_function_name( StringView sig ) {
 
-			if (mTempStrings.size( ) <= mMaxTempStrings)
-				mTempStrings.push_back( std::move( val ) );
-			return mTempStrings.back( ).c_str( );
+			usize callConv = sig.find( "__cdecl " );
+			if (callConv != StringView::npos) {
+				sig.remove_prefix( callConv + 8 );
+			}
 
-		}
+			usize paren = sig.find( '(' );
+			if (paren != StringView::npos) {
+				sig = sig.substr( 0, paren );
+			}
 
-		template<typename tType>
-		tType&& format_args( tType&& val ) {
-			return std::forward<tType>( val );
+			usize lastSpace = sig.rfind( ' ' );
+			if (lastSpace != StringView::npos) {
+				sig.remove_prefix( lastSpace + 1 );
+			}
+
+			return sig;
 		}
 
 	};

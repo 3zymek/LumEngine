@@ -16,44 +16,52 @@ namespace lum {
 
 		ResourceLoader::SetProjectRoot( info.mProjectDir );
 
-		mAudio.Initialize( mEventBus );
+		mAudioModule.Initialize( mEventBus );
 		mPlatform.Initialize( info, mEventBus );
-		mRes.Initialize( mPlatform, mEventBus );
+		mResourceModule.Initialize( mPlatform, mEventBus );
 
 		{
 			RenderModuleCreateInfo desc{};
-			desc.mEventBus = &mEventBus;
+			desc.mEventBus = mEventBus;
 			desc.mRenderDev = mPlatform.mRenderDevice.get();
-			desc.mResourceModule = &mRes;
-			mRender.Initialize( desc );
+			desc.mResourceModule = &mResourceModule;
+			mRenderModule.Initialize( desc );
 		}
 
-		mScene.Initialize( mRes, mRender, mAudio, mEventBus );
+		{
+			SceneModuleCreateInfo desc{};
+			desc.mAudioModule = mAudioModule;
+			desc.mResourceModule = mResourceModule;
+			desc.mRenderModule = mRenderModule;
+			desc.mEventBus = mEventBus;
+			mSceneModule.Initialize( desc );
+		}
 
 	}
 	void Engine::BeginFrame( ) {
 
-		mPlatform.mWindow.Update( );
+		if(mPlatform.mWindow.HasValue())
+			mPlatform.mWindow.Value().Update( );
 		mEventBus.FlushEvents( );
-		mRender.mRenderer.BeginFrame( );
+		mRenderModule.mRenderer.BeginFrame( );
 
 	}
 	void Engine::EndFrame( ) {
 
-		mRender.mRenderer.EndFrame( );
+		mRenderModule.mRenderer.EndFrame( );
 
 	}
 	void Engine::Tick( ) {
 
-		Scene* scene = mScene.mSceneMgr.GetCurrentScene( );
+		Scene* scene = mSceneModule.mSceneMgr.GetCurrentScene( );
 
 		if (scene) {
 			TransformSystem::Update( *scene );
-			mAudio.mAudioMgr.UpdateInstances( &scene->mEntityMgr );
-			mRender.mRenderSys.Update( *scene, &mPlatform.mWindow );
+			mAudioModule.mAudioMgr.UpdateInstances( &scene->mEntityMgr );
+			mRenderModule.mRenderSys.Update( *scene );
 		}
 
-		mAudio.mAudioDevice->SubmitFrame( );
+		mAudioModule.mAudioDevice->SubmitFrame( );
 
 	}
 	void Engine::Finalize( ) {
@@ -63,13 +71,15 @@ namespace lum {
 	}
 
 	float64 Engine::GetDeltaTime( ) {
+		using clock = std::chrono::high_resolution_clock;
 
-		static float64 sLastTime = 0;
-		float64 currentTime = mPlatform.mWindow.GetTime( );
-		float64 delta = currentTime - sLastTime;
-		sLastTime = mPlatform.mWindow.GetTime( );
-		return delta;
+		static auto sLastTime = clock::now( );
+		auto currentTime = clock::now( );
 
+		std::chrono::duration<float64> delta = currentTime - sLastTime;
+		sLastTime = currentTime;
+
+		return delta.count( );
 	}
 
 }

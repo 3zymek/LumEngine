@@ -122,8 +122,8 @@ namespace lum::fmt {
 
 						if (detail::IsString( tokens, i, "path" )) {
 							detail::ExceptColonNext( tokens, i );
-							ctx.mCtx.mRenderer->SetEnvironmentTexture(
-								ctx.mCtx.mTextureMgr->LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ) )
+							ctx.mCtx.mRenderer().SetEnvironmentTexture(
+								ctx.mCtx.mTextureMgr().LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ) )
 							);
 						}
 

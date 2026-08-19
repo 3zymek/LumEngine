@@ -20,9 +20,10 @@ namespace lum {
 
         if (info.mRenderContext == nullptr) {
 
-            mWindow.Initialize( info.mWindow, bus );
+            mWindow = Window{};
+            mWindow.Value().Initialize( info.mWindow, bus );
 
-            auto* glfwWindow = static_cast<GLFWwindow*>(mWindow.GetNativeWindow( ));
+            auto* glfwWindow = static_cast<GLFWwindow*>(mWindow.Value( ).GetNativeWindow( ));
 
             input::SetActiveWindow( glfwWindow );
 
@@ -35,7 +36,7 @@ namespace lum {
 
         mRenderDevice = rhi::CreateDevice( info.mRenderingBackend );
 
-        mRenderDevice->Initialize( mRenderContext );
+        mRenderDevice->Initialize( mRenderContext() );
 
     }
 

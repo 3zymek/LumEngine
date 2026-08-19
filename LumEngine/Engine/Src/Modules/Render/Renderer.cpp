@@ -50,15 +50,15 @@ namespace lum::render {
 	void Renderer::BeginFrame( ) {
 
 		mLightPass.ClearLights( ); // clear added lights from previous frame
-		mCtx.mRenderDev->BindFramebuffer( rhi::kDefaultFramebuffer ); // bind default framebuffer
-		mCtx.mRenderDev->Clear( rhi::BufferBit::Color | rhi::BufferBit::Depth | rhi::BufferBit::Stencil ); // clear default framebuffer
+		mCtx.mRenderDev().BindFramebuffer( rhi::kDefaultFramebuffer ); // bind default framebuffer
+		mCtx.mRenderDev().Clear( rhi::BufferBit::Color | rhi::BufferBit::Depth | rhi::BufferBit::Stencil ); // clear default framebuffer
 
 	}
 
 	void Renderer::EndFrame( ) {
 
-		mCtx.mRenderDev->BindFramebuffer( mScreenQuad.mSceneFbo );
-		mCtx.mRenderDev->Clear( rhi::BufferBit::Color | rhi::BufferBit::Depth | rhi::BufferBit::Stencil ); // clear scene framebuffer
+		mCtx.mRenderDev().BindFramebuffer( mScreenQuad.mSceneFbo );
+		mCtx.mRenderDev().Clear( rhi::BufferBit::Color | rhi::BufferBit::Depth | rhi::BufferBit::Stencil ); // clear scene framebuffer
 
 		mShadowSys.Execute( mGeometryPass, mLightPass ); // calculate shadows
 		mDefferedBuffer.Clear( );
@@ -68,7 +68,7 @@ namespace lum::render {
 		mLightPassExecuteCtx.mPrefilteredEnvMap = mEnvironmentPass.GetTexture( detail::IBLTexture::PrefilteredMap );
 		mLightPassExecuteCtx.mShadowMap = mShadowSys.mDirectionalLight.GetShadowMap( );
 
-		mCtx.mRenderDev->BindFramebuffer( mScreenQuad.mSceneFbo );
+		mCtx.mRenderDev().BindFramebuffer( mScreenQuad.mSceneFbo );
 		mLightPass.Execute( mDefferedBuffer, mScreenQuad, mLightPassExecuteCtx ); // apply lightning
 		
 		mEnvironmentPass.Execute( mDefferedBuffer, mScreenQuad ); // apply skybox
@@ -90,32 +90,32 @@ namespace lum::render {
 
 	void Renderer::init( uint32 w, uint32 h ) {
 
-		mTemporalAa.Initialize( mCtx.mRenderDev );
+		mTemporalAa.Initialize( mCtx.mRenderDev() );
 
-		mCtx.mEvBus->SubscribePermanently<EWindowResized>(
+		mCtx.mEventBus( ).SubscribePermanently<EWindowResized>(
 			[&]( const EWindowResized& e ) {
 				if (e.mWidth <= 0 || e.mHeight <= 0) return;
-				mCtx.mRenderDev->SetViewport( 0, 0, e.mWidth, e.mHeight );
+				mCtx.mRenderDev().SetViewport( 0, 0, e.mWidth, e.mHeight );
 				ensure_screenquad_texture( e.mWidth, e.mHeight );
 				ensure_screenquad_fbo( );
 			}
 		);
 
 		// Camera Uniform
-		if (!mCtx.mRenderDev->IsValid( mCameraUbo )) {
+		if (!mCtx.mRenderDev().IsValid( mCameraUbo )) {
 
 			rhi::BufferCreateInfo desc;
 			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
 			desc.mMapFlags = rhi::MapFlag::Write;
 			desc.mSize = sizeof( detail::CameraGPU );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mCameraUbo = mCtx.mRenderDev->CreateBuffer( desc );
-			mCtx.mRenderDev->SetUniformBufferBinding( mCameraUbo, LUM_UBO_CAMERA_BINDING );
+			mCameraUbo = mCtx.mRenderDev().CreateBuffer( desc );
+			mCtx.mRenderDev().SetUniformBufferBinding( mCameraUbo, LUM_UBO_CAMERA_BINDING );
 
 		}
 
 		// Screen quad VBO
-		if (!mCtx.mRenderDev->IsValid( mScreenQuad.mVbo )) {
+		if (!mCtx.mRenderDev().IsValid( mScreenQuad.mVbo )) {
 
 			std::vector<Vertex> vertices = {
 				{ {-1.f, -1.f, 0.f}, {}, {0.f, 0.f}, {}, {} },
@@ -129,11 +129,11 @@ namespace lum::render {
 			desc.mSize = ComputeByteSize( vertices );
 			desc.mBufferType = rhi::BufferType::Vertex;
 			desc.mData = vertices.data( );
-			mScreenQuad.mVbo = mCtx.mRenderDev->CreateBuffer( desc );
+			mScreenQuad.mVbo = mCtx.mRenderDev( ).CreateBuffer( desc );
 		}
 
 		// Screen quad EBO
-		if (!mCtx.mRenderDev->IsValid( mScreenQuad.mEbo )) {
+		if (!mCtx.mRenderDev( ).IsValid( mScreenQuad.mEbo )) {
 
 			std::vector<uint32> indices = {
 				0, 1, 2,
@@ -145,12 +145,12 @@ namespace lum::render {
 			desc.mSize = ComputeByteSize( indices );
 			desc.mBufferType = rhi::BufferType::Element;
 			desc.mData = indices.data( );
-			mScreenQuad.mEbo = mCtx.mRenderDev->CreateBuffer( desc );
+			mScreenQuad.mEbo = mCtx.mRenderDev( ).CreateBuffer( desc );
 
 		}
 
 		// Screen quad VAO
-		if (!mCtx.mRenderDev->IsValid( mScreenQuad.mVao )) {
+		if (!mCtx.mRenderDev().IsValid( mScreenQuad.mVao )) {
 
 			std::vector<rhi::VertexAttribute> attrs( 2 );
 			attrs[ 0 ].mFormat = rhi::DataFormat::Vec3;
@@ -164,9 +164,9 @@ namespace lum::render {
 			rhi::VertexLayoutCreateInfo desc;
 			desc.mAttributes = attrs;
 			desc.mStride = sizeof( Vertex );
-			mScreenQuad.mVao = mCtx.mRenderDev->CreateVertexLayout( desc, mScreenQuad.mVbo );
+			mScreenQuad.mVao = mCtx.mRenderDev().CreateVertexLayout( desc, mScreenQuad.mVbo );
 
-			mCtx.mRenderDev->AttachElementBufferToLayout( mScreenQuad.mEbo, mScreenQuad.mVao );
+			mCtx.mRenderDev().AttachElementBufferToLayout( mScreenQuad.mEbo, mScreenQuad.mVao );
 
 		}
 
@@ -176,27 +176,27 @@ namespace lum::render {
 
 	void Renderer::ensure_screenquad_fbo( ) {
 
-		mCtx.mRenderDev->Delete( mScreenQuad.mSceneFbo );
-		mCtx.mRenderDev->Delete( mScreenQuad.mPostprocessFbo );
+		mCtx.mRenderDev().Delete( mScreenQuad.mSceneFbo );
+		mCtx.mRenderDev().Delete( mScreenQuad.mPostprocessFbo );
 
 		{
 			rhi::FramebufferCreateInfo desc;
 			desc.mColorTex.push_back( { 0, mScreenQuad.mSceneTex } );
 			desc.mDepthTex = mDefferedBuffer.GetAttachment( detail::DeferredBufferAttachment::Depth );
-			mScreenQuad.mSceneFbo = mCtx.mRenderDev->CreateFramebuffer( desc );
+			mScreenQuad.mSceneFbo = mCtx.mRenderDev().CreateFramebuffer( desc );
 		}
 		{
 			rhi::FramebufferCreateInfo desc;
 			desc.mColorTex.push_back( { 0, mScreenQuad.mPostprocessTex } );
 			desc.mDepthTex = mDefferedBuffer.GetAttachment( detail::DeferredBufferAttachment::Depth );
-			mScreenQuad.mPostprocessFbo = mCtx.mRenderDev->CreateFramebuffer( desc );
+			mScreenQuad.mPostprocessFbo = mCtx.mRenderDev().CreateFramebuffer( desc );
 		}
 
 	}
 	void Renderer::ensure_screenquad_texture( uint32 w, uint32 h ) {
 
-		mCtx.mRenderDev->Delete( mScreenQuad.mSceneTex );
-		mCtx.mRenderDev->Delete( mScreenQuad.mPostprocessTex );
+		mCtx.mRenderDev().Delete( mScreenQuad.mSceneTex );
+		mCtx.mRenderDev().Delete( mScreenQuad.mPostprocessTex );
 
 		{
 			rhi::TextureCreateInfo desc;
@@ -205,7 +205,7 @@ namespace lum::render {
 			desc.mTextureType = rhi::TextureType::Texture2D;
 			desc.mWidth = w;
 			desc.mHeight = h;
-			mScreenQuad.mSceneTex = mCtx.mRenderDev->CreateTexture( desc );
+			mScreenQuad.mSceneTex = mCtx.mRenderDev().CreateTexture( desc );
 			mTemporalAa.EnsureFrameTex( desc );
 		}
 		{
@@ -215,14 +215,14 @@ namespace lum::render {
 			desc.mTextureType = rhi::TextureType::Texture2D;
 			desc.mWidth = w;
 			desc.mHeight = h;
-			mScreenQuad.mPostprocessTex = mCtx.mRenderDev->CreateTexture( desc );
+			mScreenQuad.mPostprocessTex = mCtx.mRenderDev().CreateTexture( desc );
 		}
 
 	}
 
 	void Renderer::upload_camera_uniform( ) {
 
-		mCtx.mRenderDev->UpdateBuffer( mCameraUbo, &mCameraGpu );
+		mCtx.mRenderDev().UpdateBuffer( mCameraUbo, &mCameraGpu );
 
 	}
 

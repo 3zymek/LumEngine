@@ -50,9 +50,9 @@ namespace lum {
 	}
 
 	template<usize tL, typename... tArgs>
-	void FormatString( char( &buff )[ tL ], const char* fmt, tArgs&&... args ) {
-		char* current = buff;
-		const char* end = buff + tL - 1;
+	void FormatString( char( &output )[ tL ], const char* fmt, tArgs&&... args ) {
+		char* current = output;
+		const char* end = output + tL - 1;
 
 		detail::FormatImpl( current, end, fmt, std::forward<tArgs>(args )...);
 		*current = '\0';

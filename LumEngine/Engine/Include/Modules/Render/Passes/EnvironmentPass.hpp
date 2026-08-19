@@ -34,7 +34,7 @@ namespace lum::render {
 		/* @brief Initializes the pass, allocates GPU resources and compiles shaders.
 		*  @param ctx Context struct containing valid pointers to all subsystem managers.
 		*/
-		void Initialize( const RendererContext& ctx );
+		void Initialize( RendererContext& ctx );
 
 		/* @brief Sets the HDR cubemap texture and triggers IBL precomputation.
 		*  Must be called before Execute() for IBL to work correctly.
@@ -56,7 +56,7 @@ namespace lum::render {
 	private:
 
 		/* @brief Cached context holding all subsystem manager references. */
-		RendererContext mCtx;
+		SafePtr<RendererContext> mCtx = nullptr;
 
 		/* @brief Cubemap mesh, shader, pipeline and texture data. */
 		detail::Cubemap mCubemap;

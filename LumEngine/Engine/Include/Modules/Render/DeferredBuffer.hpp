@@ -33,7 +33,7 @@ namespace lum::render::detail {
 		*  @param w Initial width in pixels.
 		*  @param h Initial height in pixels.
 		*/
-		void Initialize( const RendererContext& ctx, uint32 w, uint32 h );
+		void Initialize( RendererContext& ctx, uint32 w, uint32 h );
 
 		/* @brief Binds all DefferedBuffer textures to their respective sampler slots.
 		*  Call before the light pass draw call.
@@ -41,28 +41,28 @@ namespace lum::render::detail {
 		void BindTextures( ) const;
 
 		LUM_FORCEINLINE void BindFramebuffer( ) const { 
-			mCtx.mRenderDev->BindFramebuffer( mFramebuffer ); 
+			mCtx( ).mRenderDev( ).BindFramebuffer( mFramebuffer );
 		}
 
 		LUM_FORCEINLINE void UnbindFramebuffer( ) const { 
-			mCtx.mRenderDev->BindFramebuffer( rhi::kDefaultFramebuffer ); 
+			mCtx( ).mRenderDev( ).BindFramebuffer( rhi::kDefaultFramebuffer );
 		}
 
 		void Clear( ) {
 			BindFramebuffer( );
-			mCtx.mRenderDev->Clear( rhi::BufferBit::Color | rhi::BufferBit::Depth | rhi::BufferBit::Stencil );
+			mCtx( ).mRenderDev( ).Clear( rhi::BufferBit::Color | rhi::BufferBit::Depth | rhi::BufferBit::Stencil );
 		}
 
 		rhi::TextureHandle GetAttachment( DeferredBufferAttachment tex );
 
 	private:
 
-		RendererContext mCtx;
+		SafePtr<RendererContext> mCtx = nullptr;
 
-		rhi::FramebufferHandle mFramebuffer;	/* @brief Framebuffer with albedo and normal attachments. */
-		rhi::TextureHandle mAlbedoTex;
-		rhi::TextureHandle mNormalTex;
-		rhi::TextureHandle mDepthTex;
+		rhi::FramebufferHandle mFramebuffer{};	/* @brief Framebuffer with albedo and normal attachments. */
+		rhi::TextureHandle mAlbedoTex{};
+		rhi::TextureHandle mNormalTex{};
+		rhi::TextureHandle mDepthTex{};
 
 		void create_textures( uint32 width, uint32 height );
 		void create_framebuffer( );

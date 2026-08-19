@@ -1,88 +1,87 @@
 #include "Editor.hpp"
 #include <QTimer>
+#include <QTextEdit>
 
 namespace lum::editor {
 
-    void Editor::Initialize( ) {
+	void Editor::Initialize( ) {
 
-        mWindow = new QMainWindow( );
-        mWindow->setWindowTitle( "LumEngine Editor" );
-        mWindow->resize( 1280, 720 );
+		mWindow = new QMainWindow( );
+		mWindow->setWindowTitle( "LumEngine Editor" );
+		mWindow->resize( 1280, 720 );
 
-        mLabel = new QLabel( "LumEngine Editor - Smoke Test", mWindow );
-        mLabel->setAlignment( Qt::AlignCenter );
+		QSurfaceFormat format;
+		format.setRenderableType( QSurfaceFormat::OpenGL );
+		format.setVersion( 4, 5 );
+		format.setProfile( QSurfaceFormat::CoreProfile );
 
-        mWindow->setCentralWidget( mLabel );
-        mWindow->show( );
+		mSurface = new QOffscreenSurface( );
+		mSurface->setFormat( format );
+		mSurface->create( );
 
-        QTimer timer{};
-        QObject::connect(
-            &timer,
-            &QTimer::timeout,
-            [ & ]( ) {
-                mEngine.BeginFrame( );
-                mEngine.Tick( );
-                mEngine.EndFrame( );
-            }
-        );
+		if (!mSurface->isValid( )) {
+			qFatal( "Failed to create QOffscreenSurface" );
+		}
 
+		mContext = new QOpenGLContext( );
+		mContext->setFormat( format );
 
-        QSurfaceFormat format;
-        format.setRenderableType( QSurfaceFormat::OpenGL );
-        format.setVersion( 4, 5 );
-        format.setProfile( QSurfaceFormat::CoreProfile );
+		if (!mContext->create( )) {
+			qFatal( "Failed to create QOpenGLContext" );
+		}
 
-        mSurface = new QOffscreenSurface( );
+		if (!mContext->makeCurrent( mSurface )) {
+			qFatal( "Failed to make QOpenGLContext current" );
+		}
 
-        mSurface->setFormat( format );
-        mSurface->create( );
+		mRenderContext = new QtContext( *mContext, *mSurface );
 
-        if (!mSurface->isValid( )) {
-            qFatal( "Failed to create QOffscreenSurface" );
-        }
+		EngineCreateInfo info{};
+		info.mRenderContext = mRenderContext;
+		mEngine.Initialize( info );
 
-        mContext = new QOpenGLContext( );
+		mWindow->show( );
 
-        mContext->setFormat( format );
+		char buff[ 100 ]{};
+		FormatString(
+			buff,
+			"TestFormat {}: {}",
+			1, "test"
+		);
 
-        if (!mContext->create( )) {
-            qFatal( "Failed to create QOpenGLContext" );
-        }
+		static auto* label = new QLabel( QString( buff ), mWindow );
+		mWindow->setCentralWidget( label );
 
-        if (!mContext->makeCurrent( mSurface )) {
-            qFatal( "Failed to make QOpenGLContext current" );
-        }
-
-
-        mRenderContext = new QtContext(
-            *mContext,
-            *mSurface
-        );
-
-        EngineCreateInfo info{};
-
-        info.mRenderContext = mRenderContext;
-
-        mEngine.Initialize( info );
-    }
+		QTimer* timer = new QTimer( mWindow );
+		QObject::connect(
+			timer,
+			&QTimer::timeout,
+			[ & ]( ) {
+				mEngine.BeginFrame( );
+				mEngine.Tick( );
+				mEngine.EndFrame( );
+			}
+		);
+		timer->start( 16 );
+	}
 
 
-    void Editor::Run( ) {
-        mQtApp.exec( );
-    }
+	void Editor::Run( ) {
+		mQtApp.exec( );
+	}
 
 
-    void Editor::Finalize( ) {
+	void Editor::Finalize( ) {
 
-        mEngine.Finalize( );
+		mEngine.Finalize( );
 
-        delete mRenderContext;
-        delete mContext;
-        delete mSurface;
+		delete mRenderContext;
+		delete mContext;
+		delete mSurface;
 
-        mRenderContext = nullptr;
-        mContext = nullptr;
-        mSurface = nullptr;
-    }
+		mRenderContext = nullptr;
+		mContext = nullptr;
+		mSurface = nullptr;
+	}
 
 }

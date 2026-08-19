@@ -2,7 +2,7 @@
 
 namespace lum::render {
 
-	void TemporalAntiAliasing::Initialize( rhi::RenderDevice* dev ) {
+	void TemporalAntiAliasing::Initialize( rhi::RenderDevice& dev ) {
 
 		mRenderDev = dev;
 
@@ -15,11 +15,11 @@ namespace lum::render {
 		}
 
 		if(mPreviousFrameTex != 0)
-			mRenderDev->Delete( mPreviousFrameTex );
+			mRenderDev( ).Delete( mPreviousFrameTex );
 
 		mWidth = desc.mWidth;
 		mHeight = desc.mHeight;
-		mPreviousFrameTex = mRenderDev->CreateTexture( desc );
+		mPreviousFrameTex = mRenderDev( ).CreateTexture( desc );
 
 	}
 

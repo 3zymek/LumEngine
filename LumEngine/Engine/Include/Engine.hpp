@@ -21,31 +21,29 @@ namespace lum {
 	public:
 
 		void Initialize( const EngineCreateInfo& info );
-		void SetScene( const Path& path ) { mScene.mSceneMgr.SetScene( path ); }
+		void SetScene( const Path& path ) { mSceneModule.mSceneMgr.SetScene( path ); }
 		void BeginFrame( );
 		void EndFrame( );
 		void Tick( );
 		void Finalize( );
-
 		float64 GetDeltaTime( );
-		bool IsRunning( ) { return mPlatform.mWindow.IsOpen( ); }
 
 		ev::EventBus&		GetEventBus( ) { return mEventBus; }
-		AudioModule&		GetModuleAudio( ) { return mAudio; }
+		AudioModule&		GetModuleAudio( ) { return mAudioModule; }
 		PlatformModule&		GetModulePlatform( ) { return mPlatform; }
-		ResourceModule&		GetModuleResource( ) { return mRes; }
-		RenderModule&		GetModuleRender( ) { return mRender; }
-		SceneModule&		GetModuleScene( ) { return mScene; }
+		ResourceModule&		GetModuleResource( ) { return mResourceModule; }
+		RenderModule&		GetModuleRender( ) { return mRenderModule; }
+		SceneModule&		GetModuleScene( ) { return mSceneModule; }
 
 	private:
 
 		// Initialization order
 		ev::EventBus	mEventBus;
-		AudioModule		mAudio;
+		AudioModule		mAudioModule;
 		PlatformModule	mPlatform;
-		ResourceModule	mRes;
-		RenderModule	mRender;
-		SceneModule		mScene;
+		ResourceModule	mResourceModule;
+		RenderModule	mRenderModule;
+		SceneModule		mSceneModule;
 
 	};
 

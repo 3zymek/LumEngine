@@ -38,7 +38,7 @@ namespace lum {
 		}
 
 		mCurrentScene = &mScenes[ hash ];
-		LUM_LOG_INFO( "Set current scene: %s", scenePath.ToString( ) );
+		LUM_LOG_INFO( "Set current scene: {}", scenePath.ToString( ) );
 
 	}
 
@@ -50,12 +50,12 @@ namespace lum {
 		auto content = FileSystem::ReadAllText( fullPath );
 
 		if (!content) {
-			LUM_LOG_ERROR( "Failed to load scene %s: %s", scenePath.ToString( ), content.GetError() );
+			LUM_LOG_ERROR( "Failed to load scene {}: {}", scenePath.ToString( ), content.GetError() );
 			return;
 		}
 		if (!fmt::IsValidFormat( scenePath, fmt::FileFormat::Scene )) {
 			String str = scenePath.ToString();
-			LUM_LOG_ERROR("Invalid scene format: %s", str);
+			LUM_LOG_ERROR("Invalid scene format: {}", str);
 			return;
 		}
 
@@ -63,20 +63,20 @@ namespace lum {
 		tokenizer.Tokenize( content.ValueRef( ), scenePath );
 
 		Scene scene{};
-		scene.mEntityMgr.Initialize( mCtx.mEventBus );
+		scene.mEntityMgr.Initialize( mCtx.mEventBus() );
 		scene.mScenePath = fullPath;
 
 		mSceneDependencyMgr.Deserialize( scene, tokenizer );
 		mScenes.emplace( hash, std::move( scene ) );
 
-		LUM_LOG_INFO( "Loaded scene: %s", scenePath.ToString( ) );
+		LUM_LOG_INFO( "Loaded scene: {}", scenePath.ToString( ) );
 
 	}
 
 	void SceneManager::SaveScene( Scene& scene ) {
 
 		mSceneDependencyMgr.Serialize( scene );
-		LUM_LOG_INFO( "Saved scene: %s", scene.mScenePath.ToString() );
+		LUM_LOG_INFO( "Saved scene: {}", scene.mScenePath.ToString() );
 	   
 	}
 

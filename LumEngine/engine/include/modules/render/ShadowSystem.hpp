@@ -22,7 +22,7 @@ namespace lum::render {
 		/* @brief Initializes shadow rendering resources.
 		* @param ctx Renderer context containing subsystem references.
 		*/
-		void Initialize( const RendererContext& ctx );
+		void Initialize( RendererContext& ctx );
 
 		/* @brief Executes all shadow rendering passes.
 		* @param geoPass Geometry pass providing visible geometry.
@@ -160,7 +160,7 @@ namespace lum::render {
 
 	private:
 
-		RendererContext mCtx;
+		SafePtr<RendererContext> mCtx = nullptr;
 
 		rhi::PipelineHandle mShadowMappingPipeline;
 

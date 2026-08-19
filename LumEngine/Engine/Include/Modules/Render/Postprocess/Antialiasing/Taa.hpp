@@ -7,7 +7,7 @@ namespace lum::render {
 	class TemporalAntiAliasing {
 	public:
 
-		void Initialize( rhi::RenderDevice* dev );
+		void Initialize( rhi::RenderDevice& dev );
 		void EnsureFrameTex( const rhi::TextureCreateInfo& desc );
 		rhi::TextureHandle GetPreviousFrameTex( ) const noexcept { return mPreviousFrameTex; }
 		Matrix4 ApplyJitter( const Matrix4& projection );
@@ -16,7 +16,7 @@ namespace lum::render {
 
 	private:
 
-		rhi::RenderDevice* mRenderDev = nullptr;
+		SafePtr<rhi::RenderDevice> mRenderDev = nullptr;
 
 		uint32 mFrameIndex = 0;
 		rhi::TextureHandle mPreviousFrameTex;

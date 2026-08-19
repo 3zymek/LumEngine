@@ -11,9 +11,9 @@
 
 namespace lum::rhi::gl {
 
-	void GLDevice::Initialize( RenderContext* ctx ) {
+	void GLDevice::Initialize( RenderContext& ctx ) {
 
-		auto* glContext = static_cast<GLContext*>(ctx);
+		auto* glContext = static_cast<GLContext*>(&ctx);
 
 		glContext->MakeCurrent( );
 

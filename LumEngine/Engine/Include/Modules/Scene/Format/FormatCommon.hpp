@@ -32,24 +32,25 @@ namespace lum {
 	struct SceneManagerContext {
 
 		/* @brief Pointer to the active texture manager. */
-		TextureManager* mTextureMgr = nullptr;
+		SafePtr<TextureManager> mTextureMgr = nullptr;
 
 		/* @brief Pointer to the active material manager. */
-		MaterialManager* mMaterialMgr = nullptr;
+		SafePtr<MaterialManager> mMaterialMgr = nullptr;
 
 		/* @brief Pointer to the active mesh manager. */
-		MeshManager* mMeshMgr = nullptr;
+		SafePtr<MeshManager> mMeshMgr = nullptr;
 
 		/* @brief Pointer to the active shader manager. */
-		ShaderManager* mShaderMgr = nullptr;
+		SafePtr<ShaderManager> mShaderMgr = nullptr;
 
 		/* @brief Pointer to the active audio manager. */
-		AudioManager* mAudioMgr = nullptr;
+		SafePtr<AudioManager> mAudioMgr = nullptr;
 
-		ev::EventBus* mEventBus = nullptr;
+		/* @brief Pointer to the active event bus. */
+		SafePtr<ev::EventBus> mEventBus = nullptr;
 
 		/* @brief Pointer to the active renderer. */
-		render::Renderer* mRenderer = nullptr;
+		SafePtr<render::Renderer> mRenderer = nullptr;
 
 	};
 

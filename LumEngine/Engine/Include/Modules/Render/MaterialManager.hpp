@@ -9,7 +9,6 @@
 #include "Core/Utils/HandlePool.hpp"
 #include "Render/RenderCommon.hpp"
 #include "Render/Material.hpp"
-#include "Core/Utils/SafePtr.hpp"
 
 namespace lum {
 

@@ -7,31 +7,32 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void PostprocessPass::Initialize( const RendererContext& ctx ) {
+	void PostprocessPass::Initialize( RendererContext& ctx ) {
 
 		ctx.Validate( );
 
 		mCtx = ctx;
 
-		mShader = mCtx.mShaderMgr->LoadShader( "shaders/postprocess_pass.vert", "shaders/postprocess_pass.frag", ResourceRoot::Internal );
+		mShader = mCtx().mShaderMgr( ).LoadShader( "shaders/postprocess_pass.vert", "shaders/postprocess_pass.frag", ResourceRoot::Internal );
 
 	}
 
 	void PostprocessPass::Execute( const detail::ScreenQuad& quad, const PostprocessPassExecute& exe ) {
 		
-		mCtx.mRenderDev->BindFramebuffer( quad.mPostprocessFbo );
-		mCtx.mRenderDev->BindShader( mShader );
-		mCtx.mRenderDev->SetUniform( mShader, 0, exe.mJitterOffset );
-		mCtx.mRenderDev->BindTexture( quad.mSceneTex, LUM_TEX_FRAME );
+		auto& device = mCtx( ).mRenderDev( );
+		device.BindFramebuffer( quad.mPostprocessFbo );
+		device.BindShader( mShader );
+		device.SetUniform( mShader, 0, exe.mJitterOffset );
+		device.BindTexture( quad.mSceneTex, LUM_TEX_FRAME );
 		if(exe.mTAAEnabled)
-			mCtx.mRenderDev->BindTexture( exe.mPreviousFrameTex, LUM_TEX_FRAME_HISTORY );
+			device.BindTexture( exe.mPreviousFrameTex, LUM_TEX_FRAME_HISTORY );
 
-		mCtx.mRenderDev->DrawElements( quad.mVao, 6 );
+		device.DrawElements( quad.mVao, 6 );
 
 		if (exe.mTAAEnabled)
-			mCtx.mRenderDev->Copy( quad.mPostprocessTex, exe.mPreviousFrameTex );
+			device.Copy( quad.mPostprocessTex, exe.mPreviousFrameTex );
 
-		mCtx.mRenderDev->BindFramebuffer( rhi::kDefaultFramebuffer );
+		device.BindFramebuffer( rhi::kDefaultFramebuffer );
 
 
 	}

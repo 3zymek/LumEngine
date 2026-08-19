@@ -62,7 +62,7 @@ namespace lum {
 
 	private:
 
-		render::RendererContext* mCtx = nullptr;
+		SafePtr<render::RendererContext> mCtx = nullptr;
 
 		std::unordered_map<uint64, StaticMeshHandle>			mStaticMeshCache; // Path hash -> handle cache.
 		cstd::HandlePool<StaticMeshHandle, StaticMeshResource>	mStaticMeshes{ limits::kMaxModels };

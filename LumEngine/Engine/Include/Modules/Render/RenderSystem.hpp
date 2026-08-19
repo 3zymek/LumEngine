@@ -34,7 +34,7 @@ namespace lum {
 			* @param entityMgr Active entity manager to query components from.
 			* @param window    Window used to compute the current aspect ratio.
 			*/
-			void Update( Scene& scene, Window* window );
+			void Update( Scene& scene );
 
 		private:
 

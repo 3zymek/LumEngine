@@ -37,7 +37,7 @@ namespace lum::render {
 		/* @brief Initializes the pass, allocates GPU buffers and compiles shaders.
 		*  @param ctx Context struct containing valid pointers to all subsystem managers.
 		*/
-		void Initialize( const RendererContext& ctx );
+		void Initialize( RendererContext& ctx );
 
 		/* @brief Submits a point light to be included in the current frame's lighting.
 		*  @param light Point light to add. Ignored if LUM_MAX_LIGHTS is reached.
@@ -79,7 +79,7 @@ namespace lum::render {
 		static constexpr usize skOffsetActiveSpot = skOffsetActivePoint + sizeof( int32 );
 
 		/* @brief Cached context holding all subsystem manager references. */
-		RendererContext mCtx;
+		SafePtr<RendererContext> mCtx = nullptr;
 
 		/* @brief Array of active point lights for this frame. */
 		PointLightsArr mPointLights{};

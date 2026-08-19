@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Core/CoreCommon.hpp"
+#include "Core/Utils/LumAssert.hpp"
+#include "Core/CoreDefines.hpp"
+#include "Core/Types.hpp"
 
 namespace lum {
 
@@ -93,7 +95,7 @@ namespace lum {
 		}
 
 		void PrintDebug( ) const {
-			std::cout << mValue << "\n";
+			LUM_LOG_DEBUG( mValue );
 		}
 
 	private:

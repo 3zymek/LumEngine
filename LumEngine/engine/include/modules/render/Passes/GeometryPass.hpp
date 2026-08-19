@@ -23,7 +23,7 @@ namespace lum::render {
 		/* @brief Initializes the pass, allocates GPU buffers and compiles shaders.
 		*  @param ctx Context struct containing valid pointers to all subsystem managers.
 		*/
-		void Initialize( const RendererContext& ctx );
+		void Initialize( RendererContext& ctx );
 
 		/* @brief Enqueues a render instance for drawing in the current frame.
 		*  @param instance Render instance containing transform, mesh and material.
@@ -49,7 +49,7 @@ namespace lum::render {
 		std::vector<RenderInstance> mTempInstances;
 
 		/* @brief Cached context holding all subsystem manager references. */
-		RendererContext mCtx;
+		SafePtr<RendererContext> mCtx = nullptr;
 
 		/* @brief CPU-side material uniform buffer, uploaded per draw call. */
 		detail::MaterialGPU mMaterialUbo{};

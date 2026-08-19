@@ -94,7 +94,7 @@ namespace lum {
 
 	void MeshManager::init( ) {
 
-		mCtx->mEvBus->SubscribePermanently<EComponentAdded<CStaticMesh>>(
+		mCtx( ).mEventBus( ).SubscribePermanently<EComponentAdded<CStaticMesh>>(
 			[&]( const EComponentAdded<CStaticMesh>& mesh ) {
 				
 				if(!mesh.mComponent->mPath.empty())
@@ -133,7 +133,7 @@ namespace lum {
 		vboDesc.mMapFlags = mapFlag;
 		vboDesc.mSize = ComputeByteSize( data.mVertices );
 		vboDesc.mBufferType = rhi::BufferType::Vertex;
-		res.mVbo = mCtx->mRenderDev->CreateBuffer( vboDesc );
+		res.mVbo = mCtx().mRenderDev().CreateBuffer( vboDesc );
 
 		rhi::BufferCreateInfo eboDesc;
 		eboDesc.mBufferUsage = usage;
@@ -141,7 +141,7 @@ namespace lum {
 		eboDesc.mMapFlags = mapFlag;
 		eboDesc.mSize = ComputeByteSize( data.mIndices );
 		eboDesc.mBufferType = rhi::BufferType::Element;
-		res.mEbo = mCtx->mRenderDev->CreateBuffer( eboDesc );
+		res.mEbo = mCtx().mRenderDev().CreateBuffer( eboDesc );
 
 		rhi::VertexAttribute vaoAttrib[ 5 ];
 
@@ -173,9 +173,9 @@ namespace lum {
 		rhi::VertexLayoutCreateInfo vaoDesc;
 		vaoDesc.mAttributes = vaoAttrib;
 		vaoDesc.mStride = sizeof( Vertex );
-		res.mVao = mCtx->mRenderDev->CreateVertexLayout( vaoDesc, res.mVbo );
+		res.mVao = mCtx( ).mRenderDev( ).CreateVertexLayout( vaoDesc, res.mVbo );
 
-		mCtx->mRenderDev->AttachElementBufferToLayout( res.mEbo, res.mVao );
+		mCtx( ).mRenderDev( ).AttachElementBufferToLayout( res.mEbo, res.mVao );
 
 		return res;
 	}

@@ -8,12 +8,15 @@
 #include "Core/CorePch.hpp"
 #include "Core/CoreDefines.hpp"
 #include "Core/Types.hpp"
+#include "Core/Limits.hpp"
+
+#include "Core/Math/MathCommon.hpp"
+
 #include "Core/Utils/StringHasher.hpp"
 #include "Core/Utils/Logger.hpp"
 #include "Core/Utils/LumAssert.hpp"
-#include "Core/Math/MathCommon.hpp"
-#include "Core/Limits.hpp"
 #include "Core/Utils/FormatString.hpp"
+#include "Core/Utils/SafePtr.hpp"
 
 namespace lum {
 
@@ -23,19 +26,19 @@ namespace lum {
 	* @tparam tNullVal Sentinel null value; the counter starts one above this.
 	*/
 	template<typename tType, std::integral tIntegral = usize, tIntegral tNullVal = 0>
-	struct UniqueID {
+	struct LUM_API UniqueID {
 
 		/* @brief Returns the next available unique ID.
 		* @return Atomically incremented uint32 identifier.
 		*/
 		static tIntegral Get( ) {
-			return sID.fetch_add( 1, std::memory_order_relaxed );
+			return sId.fetch_add( 1, std::memory_order_relaxed );
 		}
 
 	private:
 
 		/* @brief Shared atomic counter for this type instantiation. */
-		inline static std::atomic<tIntegral> sID = tNullVal + 1;
+		inline static std::atomic<tIntegral> sId = tNullVal + 1;
 
 	};
 

@@ -15,6 +15,15 @@ namespace lum {
 	class AudioModule;
 	namespace ev { class EventBus; }
 
+	struct LUM_API SceneModuleCreateInfo {
+
+		SafePtr<ResourceModule> mResourceModule = nullptr;
+		SafePtr<RenderModule> mRenderModule = nullptr;
+		SafePtr<AudioModule> mAudioModule = nullptr;
+		SafePtr<ev::EventBus> mEventBus = nullptr;
+
+	};
+
 	// Owns the scene manager and wires it up with all engine subsystems.
 	// Must be initialized last — depends on platform, resources, render and audio.
 	class LUM_API SceneModule {
@@ -22,7 +31,7 @@ namespace lum {
 
 		SceneManager mSceneMgr{};
 
-		void Initialize( ResourceModule& res, RenderModule& render, AudioModule& audio, ev::EventBus& bus );
+		void Initialize( const SceneModuleCreateInfo& info );
 
 	};
 

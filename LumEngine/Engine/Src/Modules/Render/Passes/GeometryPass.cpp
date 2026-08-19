@@ -22,7 +22,7 @@ namespace lum::render {
 	// Public
 	//---------------------------------------------------------
 
-	void GeometryPass::Initialize( const RendererContext& ctx ) {
+	void GeometryPass::Initialize( RendererContext& ctx ) {
 
 		ctx.Validate( );
 
@@ -48,9 +48,9 @@ namespace lum::render {
 
 	void GeometryPass::Execute( const detail::DeferredBuffer& defferedBuff ) {
 
-		mCtx.mRenderDev->BindShader( mShader );
+		mCtx( ).mRenderDev( ).BindShader( mShader );
 
-		mCtx.mRenderDev->BindPipeline( mPipeline );
+		mCtx( ).mRenderDev( ).BindPipeline( mPipeline );
 		for (auto& instance : mInstances)
 			draw_instance( instance );
 
@@ -83,14 +83,14 @@ namespace lum::render {
 		{ // Model Uniform
 			desc.mSize = sizeof( detail::ModelGPU );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mModelUniform = mCtx.mRenderDev->CreateBuffer( desc );
-			mCtx.mRenderDev->SetUniformBufferBinding( mModelUniform, LUM_UBO_MODEL_BINDING );
+			mModelUniform = mCtx( ).mRenderDev( ).CreateBuffer( desc );
+			mCtx( ).mRenderDev( ).SetUniformBufferBinding( mModelUniform, LUM_UBO_MODEL_BINDING );
 		}
 		{ // Material Uniform
 			desc.mSize = sizeof( detail::MaterialGPU );
 			desc.mBufferType = rhi::BufferType::Uniform;
-			mMaterialUniform = mCtx.mRenderDev->CreateBuffer( desc );
-			mCtx.mRenderDev->SetUniformBufferBinding( mMaterialUniform, LUM_UBO_MATERIAL_BINDING );
+			mMaterialUniform = mCtx( ).mRenderDev( ).CreateBuffer( desc );
+			mCtx( ).mRenderDev( ).SetUniformBufferBinding( mMaterialUniform, LUM_UBO_MATERIAL_BINDING );
 		}
 		{ // Geometry pipeline
 			rhi::PipelineCreateInfo desc;
@@ -99,8 +99,8 @@ namespace lum::render {
 			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::Less;
 			desc.mCull.bEnabled = true;
 			desc.mCull.mFace = rhi::Face::Back;
-			mPipeline = mCtx.mRenderDev->CreatePipeline( desc );
-			mShader = mCtx.mShaderMgr->LoadShader( "shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ResourceRoot::Internal );
+			mPipeline = mCtx( ).mRenderDev( ).CreatePipeline( desc );
+			mShader = mCtx( ).mShaderMgr( ).LoadShader( "shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ResourceRoot::Internal );
 		}
 
 	}
@@ -111,10 +111,10 @@ namespace lum::render {
 
 		upload_material( *mat );
 
-		mCtx.mRenderDev->BindTexture( mat->mAlbedoTex, LUM_TEX_ALBEDO );
-		mCtx.mRenderDev->BindTexture( mat->mNormalTex, LUM_TEX_NORMAL );
-		mCtx.mRenderDev->BindTexture( mat->mRoughnessTex, LUM_TEX_ROUGHNESS );
-		mCtx.mRenderDev->BindTexture( mat->mMetallicTex, LUM_TEX_METALNESS );
+		mCtx( ).mRenderDev( ).BindTexture( mat->mAlbedoTex, LUM_TEX_ALBEDO );
+		mCtx( ).mRenderDev( ).BindTexture( mat->mNormalTex, LUM_TEX_NORMAL );
+		mCtx( ).mRenderDev( ).BindTexture( mat->mRoughnessTex, LUM_TEX_ROUGHNESS );
+		mCtx( ).mRenderDev( ).BindTexture( mat->mMetallicTex, LUM_TEX_METALNESS );
 
 		draw_mesh( instance );
 
@@ -122,16 +122,16 @@ namespace lum::render {
 
 	void GeometryPass::draw_mesh( const RenderInstance& instance ) {
 
-		const StaticMeshResource& res = mCtx.mMeshMgr->GetStatic( instance.mStaticMesh->mHandle );
+		const StaticMeshResource& res = mCtx( ).mMeshMgr( ).GetStatic( instance.mStaticMesh->mHandle );
 
 		upload_model_matrix( instance );
-		mCtx.mRenderDev->DrawElements( res.mVao, res.mNumIndices );
+		mCtx( ).mRenderDev( ).DrawElements( res.mVao, res.mNumIndices );
 
 	}
 
 	void GeometryPass::upload_model_matrix( const RenderInstance& instance ) {
 
-		mCtx.mRenderDev->UpdateBuffer( mModelUniform, instance.mTransform->mWorldMatrix.Data(), 0, 0 );
+		mCtx( ).mRenderDev( ).UpdateBuffer( mModelUniform, instance.mTransform->mWorldMatrix.Data(), 0, 0 );
 
 	}
 	void GeometryPass::upload_material( const CMaterialInstance& mat ) {
@@ -140,7 +140,7 @@ namespace lum::render {
 		mMaterialUbo.mRoughness = mat.mRoughnessValue;
 		mMaterialUbo.mMetallic = mat.mMetallicValue;
 
-		mCtx.mRenderDev->UpdateBuffer( mMaterialUniform, &mMaterialUbo );
+		mCtx( ).mRenderDev( ).UpdateBuffer( mMaterialUniform, &mMaterialUbo );
 
 	}
 

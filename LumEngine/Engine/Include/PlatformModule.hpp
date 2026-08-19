@@ -8,6 +8,7 @@
 #include "Platform/Window.hpp"
 #include "CreateInfo.hpp"
 #include "Rhi/GLFWContext.hpp"
+#include "Core/Utils/SafePtr.hpp"
 
 namespace lum {
 
@@ -18,10 +19,10 @@ namespace lum {
 	class LUM_API PlatformModule {
 	public:
 
-		Window mWindow{};
+		Optional<Window> mWindow = Optional<Window>::Empty();
 		std::unique_ptr<rhi::RenderDevice> mRenderDevice = nullptr;
 
-		RenderContext* mRenderContext = nullptr;
+		SafePtr<RenderContext> mRenderContext = nullptr;
 		std::unique_ptr<GLFWContext> mDefaultContext = nullptr;
 
 		void Initialize( EngineCreateInfo info, ev::EventBus& bus );

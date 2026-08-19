@@ -44,7 +44,9 @@ namespace lum {
 			~EntityManager( ) { destroy_pools( ); }
 
 			/* @brief Binds the entity manager to an event bus for component lifecycle events. */
-			void Initialize( ev::EventBus* bus ) { mEventBus = bus; }
+			void Initialize( ev::EventBus& bus ) { 
+				mEventBus = bus; 
+			}
 
 			//=========================================================================
 			// Entity creation / destruction
@@ -198,7 +200,7 @@ namespace lum {
 			/* @brief Array of component pools indexed by component type ID. */
 			ComponentBasePool* mComponentPools[ limits::kMaxComponentTypes ];
 
-			ev::EventBus* mEventBus = nullptr;
+			SafePtr<ev::EventBus> mEventBus = nullptr;
 
 			/* @brief Initializes all pool slots to nullptr. */
 			void initialize_pools( );
