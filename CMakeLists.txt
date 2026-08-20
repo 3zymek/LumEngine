@@ -127,9 +127,9 @@ target_include_directories(LumEngineEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Stb/Inc"
 )
 
-#target_precompile_headers(LumEngineEditor PRIVATE
-#    "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/Core/EditorPch.hpp"
-#)
+target_precompile_headers(LumEngineEditor PRIVATE
+    "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/EditorPch.hpp"
+)
 
 target_link_libraries(LumEngineEditor PRIVATE
     LumEngine

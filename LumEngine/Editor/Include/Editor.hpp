@@ -1,14 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
-
-#include <QApplication>
-#include <QOpenGLContext>
-#include <QOffscreenSurface>
-#include <QSurface>
-#include <QSurfaceFormat>
-#include <QMainWindow>
-#include <QLabel>
+#include "EditorPch.hpp"
 
 #include "CreateInfo.hpp"
 #include "Engine.hpp"
@@ -76,9 +68,9 @@ namespace lum::editor {
         QApplication mQtApp;
         Engine mEngine{};
 
-        QOffscreenSurface* mSurface = nullptr; // Ofscreen surface czyli surface ktorego nie widac (nie wiem czemu akurat to pewnie dlatego ze mam juz QMainWindow)?
-        QOpenGLContext* mContext = nullptr; // Kontekst opengl (po co tutja opengl kontekst skoro nize namm QtContext
-        QtContext* mRenderContext = nullptr; // 
+        QOffscreenSurface* mSurface = nullptr;
+        QOpenGLContext* mContext = nullptr;
+        QtContext* mRenderContext = nullptr;
 
         QMainWindow* mWindow = nullptr;
         QLabel* mLabel = nullptr;
