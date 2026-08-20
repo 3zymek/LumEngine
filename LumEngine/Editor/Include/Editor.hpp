@@ -12,11 +12,11 @@
 
 #include "CreateInfo.hpp"
 #include "Engine.hpp"
-#include "Rhi/GLContext.hpp"
+#include "Platform/OpenGLContext.hpp"
 
 namespace lum {
 
-    class QtContext : public GLContext {
+    class QtContext : public OpenGLContext {
     public:
 
         QtContext( QOpenGLContext& context, QSurface& surface )
@@ -28,7 +28,7 @@ namespace lum {
             mContext->makeCurrent( mSurface );
         }
 
-        bool LoadGLFunctions( ) override {
+        bool Initialize( ) override {
             sContext = mContext;
 
             const bool result = gladLoadGLLoader(
@@ -76,9 +76,9 @@ namespace lum::editor {
         QApplication mQtApp;
         Engine mEngine{};
 
-        QOffscreenSurface* mSurface = nullptr;
-        QOpenGLContext* mContext = nullptr;
-        QtContext* mRenderContext = nullptr;
+        QOffscreenSurface* mSurface = nullptr; // Ofscreen surface czyli surface ktorego nie widac (nie wiem czemu akurat to pewnie dlatego ze mam juz QMainWindow)?
+        QOpenGLContext* mContext = nullptr; // Kontekst opengl (po co tutja opengl kontekst skoro nize namm QtContext
+        QtContext* mRenderContext = nullptr; // 
 
         QMainWindow* mWindow = nullptr;
         QLabel* mLabel = nullptr;

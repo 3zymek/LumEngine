@@ -5,9 +5,10 @@
 //=============================================================================//
 #pragma once
 
+#include "Platform/RenderContext.hpp"
+#include "Platform/GLFWOpenGLContext.hpp"
 #include "Platform/Window.hpp"
 #include "CreateInfo.hpp"
-#include "Rhi/GLFWContext.hpp"
 #include "Core/Utils/SafePtr.hpp"
 
 namespace lum {
@@ -23,7 +24,7 @@ namespace lum {
 		std::unique_ptr<rhi::RenderDevice> mRenderDevice = nullptr;
 
 		SafePtr<RenderContext> mRenderContext = nullptr;
-		std::unique_ptr<GLFWContext> mDefaultContext = nullptr;
+		std::unique_ptr<GLFWOpenGLContext> mDefaultContext = nullptr;
 
 		void Initialize( EngineCreateInfo info, ev::EventBus& bus );
 		void Finalize( );

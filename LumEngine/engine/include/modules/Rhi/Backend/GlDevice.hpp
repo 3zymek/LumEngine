@@ -6,7 +6,7 @@
 #pragma once
 #include "Rhi/Core/RhiDevice.hpp"
 #include "Core/CoreDefines.hpp"
-#include "Rhi/GLContext.hpp"
+#include "Platform/OpenGLContext.hpp"
 
 namespace lum::rhi::gl {
 
@@ -371,7 +371,7 @@ namespace lum::rhi::gl {
 			GL_FLOAT_32_UNSIGNED_INT_24_8_REV
 		};
 
-		GLContext* mRenderContext = nullptr;
+		OpenGLContext* mRenderContext = nullptr;
 
 		//=================================================
 		// Private helpers

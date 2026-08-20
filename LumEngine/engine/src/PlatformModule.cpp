@@ -27,7 +27,7 @@ namespace lum {
 
             input::SetActiveWindow( glfwWindow );
 
-            mDefaultContext = std::make_unique<GLFWContext>( *glfwWindow );
+            mDefaultContext = std::make_unique<GLFWOpenGLContext>( glfwWindow );
             mRenderContext = mDefaultContext.get();
         }
         else {

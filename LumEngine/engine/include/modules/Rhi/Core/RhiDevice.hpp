@@ -22,7 +22,8 @@
 #include "Rhi/Core/RhiSampler.hpp"
 #include "Rhi/Core/RhiFramebuffer.hpp"
 #include "Rhi/Core/RhiPipeline.hpp"
-#include "Rhi/GLContext.hpp"
+
+#include "Platform/RenderContext.hpp"
 
 #if LUM_ENABLE_RENDER_PROFILER == 1
 #	include "Rhi/RhiProfiler.hpp"

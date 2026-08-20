@@ -11,7 +11,7 @@ namespace lum::editor {
 		mWindow->resize( 1280, 720 );
 
 		QSurfaceFormat format;
-		format.setRenderableType( QSurfaceFormat::OpenGL );
+		format.setRenderableType( QSurfaceFormat::RenderableType::OpenGL );
 		format.setVersion( 4, 5 );
 		format.setProfile( QSurfaceFormat::CoreProfile );
 

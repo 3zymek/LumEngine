@@ -8,23 +8,25 @@
 
 #include "Rhi/Backend/GlDevice.hpp"
 #include "Platform/Window.hpp"
+#include "Platform/OpenGLContext.hpp"
 
 namespace lum::rhi::gl {
 
 	void GLDevice::Initialize( RenderContext& ctx ) {
 
-		auto* glContext = static_cast<GLContext*>(&ctx);
+		auto* glContext = static_cast<OpenGLContext*>(&ctx);
 
 		glContext->MakeCurrent( );
 
-		if (!glContext->LoadGLFunctions( )) {
+		if (!glContext->Initialize( )) 
 			return;
-		}
 
 #		if LUM_ENABLE_DEBUG_RENDER == 1
-		glEnable( GL_DEBUG_OUTPUT );
-		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-		glDebugMessageCallback( rhi::detail::GLDebugCallback, nullptr );
+
+			glEnable( GL_DEBUG_OUTPUT );
+			glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+			glDebugMessageCallback( rhi::detail::GLDebugCallback, nullptr );
+
 #		endif
 
 		mRenderContext = glContext;
