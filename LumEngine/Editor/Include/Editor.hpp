@@ -6,49 +6,8 @@
 #include "Engine.hpp"
 #include "Platform/OpenGLContext.hpp"
 
-namespace lum {
-
-    class QtContext : public OpenGLContext {
-    public:
-
-        QtContext( QOpenGLContext& context, QSurface& surface )
-            : mContext( &context ),
-            mSurface( &surface ) {
-        }
-
-        void MakeCurrent( ) override {
-            mContext->makeCurrent( mSurface );
-        }
-
-        bool Initialize( ) override {
-            sContext = mContext;
-
-            const bool result = gladLoadGLLoader(
-                []( const char* name ) -> void* {
-                    return reinterpret_cast<void*>(
-                        sContext->getProcAddress( name )
-                    );
-                }
-            );
-
-            sContext = nullptr;
-
-            return result;
-        }
-
-        void SwapBuffers( ) override {
-            mContext->swapBuffers( mSurface );
-        }
-
-    private:
-
-        QOpenGLContext* mContext = nullptr;
-        QSurface* mSurface = nullptr;
-
-        inline static QOpenGLContext* sContext = nullptr;
-    };
-
-}
+#include "Core/Utils/Logger.hpp"
+#include "Core/Utils/LumAssert.hpp"
 
 namespace lum::editor {
 
@@ -68,9 +27,7 @@ namespace lum::editor {
         QApplication mQtApp;
         Engine mEngine{};
 
-        QOffscreenSurface* mSurface = nullptr;
-        QOpenGLContext* mContext = nullptr;
-        QtContext* mRenderContext = nullptr;
+        std::unique_ptr<RenderContext> mRenderContext = nullptr;
 
         QMainWindow* mWindow = nullptr;
         QLabel* mLabel = nullptr;

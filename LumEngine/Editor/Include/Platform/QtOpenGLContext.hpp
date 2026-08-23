@@ -1,28 +1,36 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License  ============//
+//
+// Purpose: Qt offscreen surface OpenGL rendering context implementation.
+//
+//=============================================================================//
 #pragma once
 
 #include "Platform/OpenGLContext.hpp"
-#include "Core/Utils/SafePtr.hpp"
 
+class QOffscreenSurface;
 class QOpenGLContext;
-class QSurface;
 
 namespace lum::editor {
 
+	/* @brief OpenGL rendering context backed by Qt QOffscreenSurface. */
 	class QtOpenGLContext : public OpenGLContext {
 	public:
 
-		QtOpenGLContext( QOpenGLContext& context, QSurface& surface) {}
+		void Initialize( ) override;
 
-		void MakeCurrent( ) override;
-		bool Initialize( ) override;
+		/* @brief Presents the rendered frame using Qt. */
 		void SwapBuffers( ) override;
-		
+
+		/* @brief Makes the Qt OpenGL context current on the offscreen surface. */
+		void MakeCurrent( ) override;
+
+		void* GetProcAddress( const char* functionName ) override;
 
 	private:
 
-		SafePtr<QOpenGLContext> mContext = nullptr;
-		SafePtr<QSurface> mSurface = nullptr;
+		QOffscreenSurface* mSurface = nullptr; //< Owning pointer to the Qt offscreen surface.
+		QOpenGLContext* mContext = nullptr;   //< Owning pointer to the Qt OpenGL context.
 
 	};
 
-}
+} // namespace lum::editor

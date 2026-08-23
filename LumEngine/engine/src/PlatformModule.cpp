@@ -35,7 +35,6 @@ namespace lum {
         }
 
         mRenderDevice = rhi::CreateDevice( info.mRenderingBackend );
-
         mRenderDevice->Initialize( mRenderContext() );
 
     }

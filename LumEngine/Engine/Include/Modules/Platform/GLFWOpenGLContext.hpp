@@ -3,7 +3,6 @@
 // Purpose: GLFW-based OpenGL rendering context implementation.
 //
 //=============================================================================//
-
 #pragma once
 
 #include "Core/Utils/SafePtr.hpp"
@@ -25,21 +24,15 @@ namespace lum {
 		*/
 		GLFWOpenGLContext( GLFWwindow* window ) : mWindow( window ) {}
 
-		/*
-		* @brief Makes the GLFW OpenGL context current.
-		*/
+		void Initialize( ) override;
+
+		/* @brief Makes the GLFW OpenGL context current. */
 		void MakeCurrent( ) override;
 
-		/*
-		* @brief Presents the rendered frame using GLFW.
-		*/
+		/* @brief Presents the rendered frame using GLFW. */
 		void SwapBuffers( ) override;
 
-		/*
-		* @brief Initializes the GLFW OpenGL context.
-		* @return true if initialization succeeded, false otherwise.
-		*/
-		bool Initialize( ) override;
+		void* GetProcAddress( const char* functionName ) override;
 
 	private:
 

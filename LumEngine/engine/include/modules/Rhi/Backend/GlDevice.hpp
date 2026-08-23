@@ -201,6 +201,8 @@ namespace lum::rhi::gl {
 
 	protected:
 
+		static inline SafePtr<OpenGLContext> sLoadingContext = nullptr;
+
 		//=================================================
 		// Lookup tables
 		//=================================================

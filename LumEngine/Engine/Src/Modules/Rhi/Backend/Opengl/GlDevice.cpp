@@ -18,14 +18,25 @@ namespace lum::rhi::gl {
 
 		glContext->MakeCurrent( );
 
-		if (!glContext->Initialize( )) 
+		static SafePtr<OpenGLContext> sContext = nullptr;
+		sContext = glContext;
+
+		bool result = gladLoadGLLoader(
+			reinterpret_cast<GLADloadproc>(
+				+[]( const char* functionName ) -> void* {
+					return sContext( ).GetProcAddress( functionName );
+				}
+			)
+		);
+
+		if (!result)
 			return;
 
 #		if LUM_ENABLE_DEBUG_RENDER == 1
 
-			glEnable( GL_DEBUG_OUTPUT );
-			glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-			glDebugMessageCallback( rhi::detail::GLDebugCallback, nullptr );
+		glEnable( GL_DEBUG_OUTPUT );
+		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+		glDebugMessageCallback( rhi::detail::GLDebugCallback, nullptr );
 
 #		endif
 

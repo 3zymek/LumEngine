@@ -104,13 +104,12 @@ namespace lum::rhi {
 
 	std::unique_ptr<RenderDevice> CreateDevice( RenderBackend backend ) {
 
-		std::unique_ptr<RenderDevice> dev = nullptr;
-
 		switch (backend) {
-			case RenderBackend::OpenGL: dev = std::make_unique<gl::GLDevice>( );
+			case RenderBackend::OpenGL:
+				return std::move( std::make_unique<gl::GLDevice>( ) );
+			default:
+				return nullptr;
 		}
-
-		return std::move( dev );
 	}
 
 }

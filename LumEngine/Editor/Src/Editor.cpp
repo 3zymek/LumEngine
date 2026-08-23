@@ -1,6 +1,7 @@
 #include "Editor.hpp"
 #include <QTimer>
 #include <QTextEdit>
+#include "Platform/QtContextCreator.hpp"
 
 namespace lum::editor {
 
@@ -10,34 +11,11 @@ namespace lum::editor {
 		mWindow->setWindowTitle( "LumEngine Editor" );
 		mWindow->resize( 1280, 720 );
 
-		QSurfaceFormat format;
-		format.setRenderableType( QSurfaceFormat::RenderableType::OpenGL );
-		format.setVersion( 4, 5 );
-		format.setProfile( QSurfaceFormat::CoreProfile );
-
-		mSurface = new QOffscreenSurface( );
-		mSurface->setFormat( format );
-		mSurface->create( );
-
-		if (!mSurface->isValid( )) {
-			qFatal( "Failed to create QOffscreenSurface" );
-		}
-
-		mContext = new QOpenGLContext( );
-		mContext->setFormat( format );
-
-		if (!mContext->create( )) {
-			qFatal( "Failed to create QOpenGLContext" );
-		}
-
-		if (!mContext->makeCurrent( mSurface )) {
-			qFatal( "Failed to make QOpenGLContext current" );
-		}
-
-		mRenderContext = new QtContext( *mContext, *mSurface );
+		mRenderContext = QtContextCreator::Create( QtContextCreator::Api::OpenGL );
+		mRenderContext->Initialize( );
 
 		EngineCreateInfo info{};
-		info.mRenderContext = mRenderContext;
+		info.mRenderContext = mRenderContext.get();
 		mEngine.Initialize( info );
 
 		mWindow->show( );
@@ -63,6 +41,7 @@ namespace lum::editor {
 			}
 		);
 		timer->start( 16 );
+
 	}
 
 
@@ -75,13 +54,6 @@ namespace lum::editor {
 
 		mEngine.Finalize( );
 
-		delete mRenderContext;
-		delete mContext;
-		delete mSurface;
-
-		mRenderContext = nullptr;
-		mContext = nullptr;
-		mSurface = nullptr;
 	}
 
 }

@@ -18,17 +18,15 @@ namespace lum {
 
 		virtual ~RenderContext( ) = default;
 
+		/* @brief Initializes (or not) context and it's parameters. */
+		virtual void Initialize( ) = 0;
+
 		/* @brief Presents the rendered frame. */
 		virtual void SwapBuffers( ) = 0;
 
 		/* @brief Makes this context the current graphics context. */
 		virtual void MakeCurrent( ) = 0;
 
-		/*
-		* @brief Initializes the rendering context.
-		* @return true if initialization succeeded, false otherwise.
-		*/
-		virtual bool Initialize( ) = 0;
 	};
 
 } // namespace lum

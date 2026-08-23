@@ -19,17 +19,15 @@ namespace lum {
 		/* @brief Destroys the OpenGL rendering context. */
 		virtual ~OpenGLContext( ) = default;
 
+		virtual void Initialize( ) = 0;
+
 		/* @brief Makes this OpenGL context the current context. */
 		virtual void MakeCurrent( ) = 0;
 
 		/* @brief Presents the rendered OpenGL frame. */
 		virtual void SwapBuffers( ) = 0;
 
-		/*
-		* @brief Loads OpenGL function using GLAD.
-		* @return true if initialization succeeded, false otherwise.
-		*/
-		virtual bool Initialize( ) = 0;
+		virtual void* GetProcAddress( const char* functionName ) = 0;
 
 	};
 

@@ -7,6 +7,10 @@
 
 namespace lum {
 
+	void GLFWOpenGLContext::Initialize( ) {
+		// blank
+	}
+
 	void GLFWOpenGLContext::SwapBuffers( ) {
 		glfwSwapBuffers( &mWindow( ) );
 	}
@@ -15,10 +19,8 @@ namespace lum {
 		glfwMakeContextCurrent( &mWindow( ) );
 	}
 
-	bool GLFWOpenGLContext::Initialize( ) {
-		return gladLoadGLLoader(
-				reinterpret_cast<GLADloadproc>(glfwGetProcAddress)
-		);
+	void* GLFWOpenGLContext::GetProcAddress( const char* functionName ) {
+		return reinterpret_cast<void*>(glfwGetProcAddress( functionName ));
 	}
 
 }
