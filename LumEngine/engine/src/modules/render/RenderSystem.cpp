@@ -30,7 +30,7 @@ namespace lum {
 
 		}
 
-		void RenderSystem::Update( Scene& scene ) {
+		void RenderSystem::Update( SceneInstance& scene ) {
 
 			auto isVisible = [ & ]( EntityID id ) { auto e = scene.GetEntity( id ); return e && e->IsVisible( ); };
 

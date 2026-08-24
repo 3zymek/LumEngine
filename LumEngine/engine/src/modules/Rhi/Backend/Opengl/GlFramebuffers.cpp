@@ -13,7 +13,7 @@ namespace lum::rhi::gl {
 
 		LUM_ASSERT( mFramebuffers.DenseSize( ) <= skMaxFramebuffers, "Max framebuffers reached" );
 
-		FFramebuffer fbo;
+		Framebuffer fbo;
 		glCreateFramebuffers( 1, &fbo.mHandle );
 
 		std::vector<GLenum> drawBuffers;
@@ -24,9 +24,9 @@ namespace lum::rhi::gl {
 			const Texture* tex = mTextures.Get( texHandle );
 
 			if (samples == 0)
-				samples = tex->mSamples;
+				samples = tex->mSampleCount;
 			else
-				LUM_ASSERT( tex->mSamples == samples, "Sample count mismatch" );
+				LUM_ASSERT( tex->mSampleCount == samples, "Sample count mismatch" );
 
 			glNamedFramebufferTexture(
 				fbo.mHandle,
@@ -52,8 +52,8 @@ namespace lum::rhi::gl {
 
 			const Texture* tex = mTextures.Get( desc.mDepthTex );
 
-			LUM_ASSERT( is_depth_format( tex->mInternalFormat ), "Invalid framebuffer depth texture format" );
-			LUM_ASSERT( tex->mSamples == samples, "Depth sample mismatch" );
+			LUM_ASSERT( is_depth_format( tex->mFormat ), "Invalid framebuffer depth texture format" );
+			LUM_ASSERT( tex->mSampleCount == samples, "Depth sample mismatch" );
 			glNamedFramebufferTexture( fbo.mHandle, GL_DEPTH_ATTACHMENT, mTextures.Get( desc.mDepthTex )->mHandle, 0 );
 		}
 
@@ -61,7 +61,7 @@ namespace lum::rhi::gl {
 
 			const Texture* tex = mTextures.Get( desc.mStencilTex );
 
-			LUM_ASSERT( is_stencil_format( tex->mInternalFormat ), "Invalid framebuffer stencil texture format" );
+			LUM_ASSERT( is_stencil_format( tex->mFormat ), "Invalid framebuffer stencil texture format" );
 			glNamedFramebufferTexture( fbo.mHandle, GL_STENCIL_ATTACHMENT, mTextures.Get( desc.mStencilTex )->mHandle, 0 );
 
 		}
@@ -150,7 +150,7 @@ namespace lum::rhi::gl {
 
 		if (!IsValid( buff )) return;
 
-		FFramebuffer& fbo = mFramebuffers[ buff ];
+		Framebuffer& fbo = mFramebuffers[ buff ];
 		glDeleteFramebuffers( 1, &fbo.mHandle );
 
 		mFramebuffers.Remove( buff );

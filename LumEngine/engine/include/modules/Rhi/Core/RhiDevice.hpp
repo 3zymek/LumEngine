@@ -245,6 +245,12 @@ namespace lum::rhi {
 		*/
 		virtual void BindTexture( TextureHandle texture, uint16 binding ) = 0;
 
+		/* @brief Reads back raw pixel data from a texture into system memory.
+		* @param texture Handle of the texture to read from.
+		* @param pixels Pointer to the destination buffer receiving the pixel data.
+		*/
+		virtual void GetTextureImage( TextureHandle texture, void* pixels ) = 0;
+
 
 		///////////////////////////////////////////////////
 		/// Samplers
@@ -741,11 +747,46 @@ namespace lum::rhi {
 		/* @brief Ends the current frame and presents the result. */
 		virtual void SwapBuffers( ) = 0;
 
+		Optional<Sampler> Get( SamplerHandle sampler ) {
+			if (!mSamplers.Contains( sampler ))
+				return Optional<Sampler>::Empty( );
+			return mSamplers[ sampler ];
+		}
+		Optional<Shader> Get( ShaderHandle shader ) {
+			if (!mShaders.Contains( shader ))
+				return Optional<Shader>::Empty( );
+			return mShaders[ shader ];
+		}
+		Optional<Buffer> Get( BufferHandle buffer ) {
+			if (!mBuffers.Contains( buffer ))
+				return Optional<Buffer>::Empty( );
+			return mBuffers[ buffer ];
+		}
+		Optional<VertexLayout> Get( VertexLayoutHandle layout ) {
+			if (!mLayouts.Contains( layout ))
+				return Optional<VertexLayout>::Empty( );
+			return mLayouts[ layout ];
+		}
+		Optional<Texture> Get( TextureHandle texture ) {
+			if (!mTextures.Contains( texture ))
+				return Optional<Texture>::Empty( );
+			return mTextures[ texture ];
+		}
+		Optional<Framebuffer> Get( FramebufferHandle fbo ) {
+			if (!mFramebuffers.Contains( fbo ))
+				return Optional<Framebuffer>::Empty( );
+			return mFramebuffers[ fbo ];
+		}
+		Optional<Pipeline> Get( PipelineHandle pipeline ) {
+			if (!mPipelines.Contains( pipeline ))
+				return Optional<Pipeline>::Empty( );
+			return mPipelines[ pipeline ];
+		}
 
 #		if LUM_ENABLE_RENDER_PROFILER == 1
-		inline void GetProfilerInfo( ) {
-			LUM_LOG_INFO( "Cache hit rate: %f", mProfiler.GetCacheHitRate( ) );
-		}
+			inline void GetProfilerInfo( ) {
+				LUM_LOG_INFO( "Cache hit rate: %f", mProfiler.GetCacheHitRate( ) );
+			}
 #		endif
 
 	protected:
@@ -796,13 +837,40 @@ namespace lum::rhi {
 		inline constexpr static uint32 skMaxFramebuffers = 100;
 		inline constexpr static uint32 skMaxPipelines = 100;
 
-		cstd::HandlePool<SamplerHandle, Sampler, SamplerID>				mSamplers{ skMaxSamplers };
-		cstd::HandlePool<ShaderHandle, Shader, ShaderID>					mShaders{ skMaxShaders };
-		cstd::HandlePool<BufferHandle, Buffer, BufferID>					mBuffers{ skMaxBuffers };
-		cstd::HandlePool<VertexLayoutHandle, VertexLayout, LayoutID>		mLayouts{ skMaxLayouts };
-		cstd::HandlePool<TextureHandle, Texture, TextureID>				mTextures{ skMaxTextures };
-		cstd::HandlePool<FramebufferHandle, FFramebuffer, FramebufferID>	mFramebuffers{ skMaxFramebuffers };
-		cstd::HandlePool<PipelineHandle, Pipeline, PipelineID>			mPipelines{ skMaxPipelines };
+		cstd::HandlePool<
+			SamplerHandle, 
+			Sampler, 
+			SamplerID> mSamplers{ skMaxSamplers };
+
+		cstd::HandlePool<
+			ShaderHandle, 
+			Shader, 
+			ShaderID> mShaders{ skMaxShaders };
+		
+		cstd::HandlePool<
+			BufferHandle, 
+			Buffer, 
+			BufferID> mBuffers{ skMaxBuffers };
+		
+		cstd::HandlePool<
+			VertexLayoutHandle, 
+			VertexLayout, 
+			LayoutID> mLayouts{ skMaxLayouts };
+		
+		cstd::HandlePool<
+			TextureHandle, 
+			Texture, 
+			TextureID> mTextures{ skMaxTextures };
+		
+		cstd::HandlePool<
+			FramebufferHandle, 
+			Framebuffer, 
+			FramebufferID> mFramebuffers{ skMaxFramebuffers };
+		
+		cstd::HandlePool<
+			PipelineHandle, 
+			Pipeline, 
+			PipelineID>	mPipelines{ skMaxPipelines };
 
 
 		bool validate_framebuffer_handle( FramebufferHandle buff ) const noexcept { return IsValid( buff ) || (buff == kDefaultFramebuffer); }
@@ -820,13 +888,13 @@ namespace lum::rhi {
 		bool validate_buffer_descriptor( const BufferCreateInfo& ) const noexcept;
 
 		/* @brief Returns true if the given image layout is a depth format. */
-		bool is_depth_format( TextureInternalFormat fmt ) const noexcept;
+		bool is_depth_format( TextureFormat fmt ) const noexcept;
 
 		/* @brief Returns true if the given image layout is a stencil format. */
-		bool is_stencil_format( TextureInternalFormat fmt ) const noexcept;
+		bool is_stencil_format( TextureFormat fmt ) const noexcept;
 
 		/* @brief Returns true if the given image layout is a color format. */
-		bool is_color_format( TextureInternalFormat fmt ) const noexcept;
+		bool is_color_format( TextureFormat fmt ) const noexcept;
 
 	};
 

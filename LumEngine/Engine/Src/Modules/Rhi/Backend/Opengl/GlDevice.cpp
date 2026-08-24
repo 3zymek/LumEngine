@@ -34,9 +34,9 @@ namespace lum::rhi::gl {
 
 #		if LUM_ENABLE_DEBUG_RENDER == 1
 
-		glEnable( GL_DEBUG_OUTPUT );
-		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-		glDebugMessageCallback( rhi::detail::GLDebugCallback, nullptr );
+			glEnable( GL_DEBUG_OUTPUT );
+			glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+			glDebugMessageCallback( rhi::detail::GLDebugCallback, nullptr );
 
 #		endif
 

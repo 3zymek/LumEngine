@@ -34,7 +34,7 @@ namespace lum::rhi {
 	};
 
 	/* @brief Dimensionality and type of a GPU texture resource. */
-	enum class TextureType : byte {
+	enum class TextureKind : byte {
 		None,
 		Texture2D,				/* Standard 2D texture (render target, GBuffer attachment). */
 		Texture2DArray,			/* Array with multiple texture 2D layers. */
@@ -46,7 +46,7 @@ namespace lum::rhi {
 	/* @brief GPU-side internal storage format for a texture.
 	* Determines how pixel data is stored and sampled on the GPU.
 	*/
-	enum class TextureInternalFormat : byte {
+	enum class TextureFormat : byte {
 		
 		// 8-bit normalized
 		RGBA8,
@@ -85,7 +85,7 @@ namespace lum::rhi {
 	/* @brief CPU-side pixel channel layout of the source texture data.
 	* Describes how channels are ordered in the raw pixel buffer passed to the GPU.
 	*/
-	enum class TexturePixelFormat : byte {
+	enum class PixelLayout : byte {
 		RGBA,
 		RGB,
 		RG,
@@ -96,7 +96,7 @@ namespace lum::rhi {
 	};
 
 	/* @brief Data type of each pixel channel in the CPU-side pixel buffer. */
-	enum class TextureDataType : byte {
+	enum class PixelDataType : byte {
 		UnsignedByte,
 		Byte,
 		UnsignedShort,
@@ -124,13 +124,13 @@ namespace lum::rhi {
 		ImageData mData;
 
 		/* @brief GPU-side storage format for the texture. */
-		TextureInternalFormat mInternalFormat = TextureInternalFormat::RGBA8;
+		TextureFormat mInternalFormat = TextureFormat::RGBA8;
 
 		/* @brief CPU-side pixel channel layout of the source data. */
-		TexturePixelFormat mPixelFormat = TexturePixelFormat::RGBA;
+		PixelLayout mPixelFormat = PixelLayout::RGBA;
 
 		/* @brief Data type of each pixel channel in the source buffer. */
-		TextureDataType mDataType = TextureDataType::UnsignedByte;
+		PixelDataType mDataType = PixelDataType::UnsignedByte;
 
 		/* @brief Whether to automatically generate mipmaps after upload. */
 		bool bGenerateMipmaps = false;
@@ -142,7 +142,7 @@ namespace lum::rhi {
 		uint32 mSamples = 0;
 
 		/* @brief Dimensionality and type of the texture. */
-		TextureType mTextureType = TextureType::None;
+		TextureKind mTextureType = TextureKind::None;
 
 		/* @brief Texture width in pixels. 0 = infer from mData. */
 		uint32 mWidth = 0;
@@ -186,25 +186,25 @@ namespace lum::rhi {
 	struct Texture {
 
 		/* @brief Region and dimensions of the texture. */
-		TextureRect mRect;
+		TextureRect mRect{};
 
 		/* @brief Dimensionality and type of the texture. */
-		TextureType mType = TextureType::None;
+		TextureKind mKind = TextureKind::None;
 
 		/* @brief GPU-side internal storage format. */
-		TextureInternalFormat mInternalFormat = TextureInternalFormat::RGBA8;
+		TextureFormat mFormat = TextureFormat::RGBA8;
 
 		/* @brief CPU-side pixel channel layout used during upload. */
-		TexturePixelFormat mDataFormat = TexturePixelFormat::RGBA;
+		PixelLayout mPixelLayout = PixelLayout::RGBA;
 
 		/* @brief Data type of each pixel channel used during upload. */
-		TextureDataType mDataType = TextureDataType::UnsignedByte;
+		PixelDataType mPixelDataType = PixelDataType::UnsignedByte;
 
 		/* @brief Number of mip levels generated for this texture. */
 		uint32 mMipmapLevels = 0;
 
 		/* @brief Number of samples for multisampled textures. 0 = not multisampled. */
-		uint32 mSamples = 0;
+		uint32 mSampleCount = 0;
 
 		/* @brief Underlying GPU texture handle. */
 		TextureID mHandle = 0;

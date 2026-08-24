@@ -56,7 +56,7 @@ namespace lum::rhi {
     };
 
     /* @brief Internal GPU-side framebuffer resource. */
-    struct FFramebuffer {
+    struct Framebuffer {
 
         /* @brief Framebuffer object handle. */
         FramebufferID mHandle = 0;

@@ -74,7 +74,7 @@ namespace lum {
 		* @param channels Number of color channels (1 = R, 2 = RG, 3 = RGB, 4 = RGBA).
 		* @return Matching RImageFormat. Defaults to RGBA for unknown values.
 		*/
-		rhi::TexturePixelFormat ChannelsToFormat( uint32 channels );
+		rhi::PixelLayout ChannelsToFormat( uint32 channels );
 
 		/* @brief Loads an equirectangular HDR image and converts it to a cubemap.
 		* @param path Path to the equirectangular texture asset.
@@ -129,27 +129,27 @@ namespace lum {
 		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
 		static inline rhi::TextureCreateInfo sTexturePresetsLookup[] = {
 			{ // ALBEDO
-				.mInternalFormat = rhi::TextureInternalFormat::SRGB8_Alpha8,
-				.mPixelFormat = rhi::TexturePixelFormat::RGBA,
-				.mDataType = rhi::TextureDataType::UnsignedByte,
+				.mInternalFormat = rhi::TextureFormat::SRGB8_Alpha8,
+				.mPixelFormat = rhi::PixelLayout::RGBA,
+				.mDataType = rhi::PixelDataType::UnsignedByte,
 				.bGenerateMipmaps = true,
 			},
 			{ // NORMAL
-				.mInternalFormat = rhi::TextureInternalFormat::RGB8,
-				.mPixelFormat = rhi::TexturePixelFormat::RGB,
-				.mDataType = rhi::TextureDataType::UnsignedByte,
+				.mInternalFormat = rhi::TextureFormat::RGB8,
+				.mPixelFormat = rhi::PixelLayout::RGB,
+				.mDataType = rhi::PixelDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // METALNESS
-				.mInternalFormat = rhi::TextureInternalFormat::R8,
-				.mPixelFormat = rhi::TexturePixelFormat::R,
-				.mDataType = rhi::TextureDataType::UnsignedByte,
+				.mInternalFormat = rhi::TextureFormat::R8,
+				.mPixelFormat = rhi::PixelLayout::R,
+				.mDataType = rhi::PixelDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // ROUGHNESS
-				.mInternalFormat = rhi::TextureInternalFormat::R8,
-				.mPixelFormat = rhi::TexturePixelFormat::R,
-				.mDataType = rhi::TextureDataType::UnsignedByte,
+				.mInternalFormat = rhi::TextureFormat::R8,
+				.mPixelFormat = rhi::PixelLayout::R,
+				.mDataType = rhi::PixelDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 		};

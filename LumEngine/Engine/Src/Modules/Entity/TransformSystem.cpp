@@ -11,7 +11,7 @@
 
 namespace lum {
 
-	void TransformSystem::Update( Scene& scene ) {
+	void TransformSystem::Update( SceneInstance& scene ) {
 
 
 		ecs::EntityManager& mgr = scene.mEntityMgr;
@@ -37,7 +37,7 @@ namespace lum {
 
 	}
 
-	void TransformSystem::update_entity_recursive( Scene& scene, EntityID id ) {
+	void TransformSystem::update_entity_recursive( SceneInstance& scene, EntityID id ) {
 
 		ecs::EntityManager& mgr = scene.mEntityMgr;
 

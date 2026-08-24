@@ -62,27 +62,27 @@ namespace lum::render::detail {
 
 		rhi::TextureCreateInfo desc;
 		{ // Albedo
-			desc.mPixelFormat = rhi::TexturePixelFormat::RGBA;
-			desc.mInternalFormat = rhi::TextureInternalFormat::RGBA16F;
+			desc.mPixelFormat = rhi::PixelLayout::RGBA;
+			desc.mInternalFormat = rhi::TextureFormat::RGBA16F;
 			desc.mWidth = width;
 			desc.mHeight = height;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mTextureType = rhi::TextureKind::Texture2D;
 			mAlbedoTex = mCtx( ).mRenderDev( ).CreateTexture( desc );
 		}
 		{ // Normal
-			desc.mPixelFormat = rhi::TexturePixelFormat::RGBA;
-			desc.mInternalFormat = rhi::TextureInternalFormat::RGBA16F;
+			desc.mPixelFormat = rhi::PixelLayout::RGBA;
+			desc.mInternalFormat = rhi::TextureFormat::RGBA16F;
 			desc.mWidth = width;
 			desc.mHeight = height;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mTextureType = rhi::TextureKind::Texture2D;
 			mNormalTex = mCtx( ).mRenderDev( ).CreateTexture( desc );
 		}
 		{ // Depth
-			desc.mPixelFormat = rhi::TexturePixelFormat::DepthComponent;
-			desc.mInternalFormat = rhi::TextureInternalFormat::Depth32F;
+			desc.mPixelFormat = rhi::PixelLayout::DepthComponent;
+			desc.mInternalFormat = rhi::TextureFormat::Depth32F;
 			desc.mWidth = width;
 			desc.mHeight = height;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mTextureType = rhi::TextureKind::Texture2D;
 			mDepthTex = mCtx( ).mRenderDev( ).CreateTexture( desc );
 		}
 

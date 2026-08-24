@@ -7,7 +7,7 @@
 #include "Scene/Format/FormatCommon.hpp"
 #include "Entity/EntityManager.hpp"
 
-namespace lum { struct Scene; }
+namespace lum { struct SceneInstance; }
 namespace lum::fmt {
 
 	struct Tokenizer;
@@ -25,9 +25,9 @@ namespace lum::fmt {
 		/* @brief Parses the token stream and populates the given scene.
 		* @param scene Scene to populate with entities and components.
 		*/
-		void Deserialize( Scene& scene, Tokenizer& tokenizer );
+		void Deserialize( SceneInstance& scene, Tokenizer& tokenizer );
 
-		void Serialize( Scene& scene );
+		void Serialize( SceneInstance& scene );
 
 	private:
 
@@ -38,7 +38,7 @@ namespace lum::fmt {
 		static void deserialize_entity( std::vector<Token>& tokens, int32& i, DeserializeContext& ctx );
 
 		static void read_children( std::vector<Token>& tokens, int32& i, DeserializeContext& ctx );
-		static void write_children( StringBuilder& sb, Scene& scene, EntityID entity );
+		static void write_children( StringBuilder& sb, SceneInstance& scene, EntityID entity );
 
 		static void categorize_component_infos( );
 

@@ -175,6 +175,8 @@ namespace lum {
 			mLogs.Push( entry );
 			mTempStrings.clear( );
 
+			std::cout << formatMsg << "\n";
+
 		}
 
 

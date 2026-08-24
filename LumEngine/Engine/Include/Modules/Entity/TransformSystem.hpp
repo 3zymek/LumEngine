@@ -9,7 +9,7 @@
 
 namespace lum {
 
-	struct Scene;
+	struct SceneInstance;
 
 	/* @brief Computes world space transform matrices for all entities.
 	 * Must be called every frame before rendering.
@@ -20,11 +20,11 @@ namespace lum {
 		/* @brief Updates the world matrix of every entity with a CTransform component.
 		* Propagates parent transforms down the hierarchy using CChild relationships.
 		*/
-		static void Update( Scene& scene );
+		static void Update( SceneInstance& scene );
 
 	private:
 
-		static void update_entity_recursive( Scene& scene, EntityID id );
+		static void update_entity_recursive( SceneInstance& scene, EntityID id );
 
 	};
 

@@ -32,7 +32,7 @@ namespace lum::fmt {
 	}
 
 
-	void SceneDependencyManager::Deserialize( Scene& scene, Tokenizer& tokenizer ) {
+	void SceneDependencyManager::Deserialize( SceneInstance& scene, Tokenizer& tokenizer ) {
 
 		DeserializeContext ctx{
 			.mScene = scene,
@@ -70,7 +70,7 @@ namespace lum::fmt {
 
 	}
 
-	void SceneDependencyManager::Serialize( Scene& scene ) {
+	void SceneDependencyManager::Serialize( SceneInstance& scene ) {
 
 		StringBuilder sb{};
 
@@ -208,7 +208,7 @@ namespace lum::fmt {
 
 	}
 
-	void SceneDependencyManager::write_children( StringBuilder& sb, Scene& scene, EntityID entity ) {
+	void SceneDependencyManager::write_children( StringBuilder& sb, SceneInstance& scene, EntityID entity ) {
 
 		auto it = scene.mChildren.find( entity );
 		if (it == scene.mChildren.end( )) 

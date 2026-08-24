@@ -14,7 +14,7 @@ namespace lum {
     /* @brief Represents a single scene — holds a list of active entities
     *  and their corresponding ECS manager.
     */
-    class LUM_API Scene {
+    class LUM_API SceneInstance {
     public:
 
         /* @brief List of all entity IDs belonging to this scene. */

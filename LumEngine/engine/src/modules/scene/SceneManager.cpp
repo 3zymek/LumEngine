@@ -62,7 +62,7 @@ namespace lum {
 		fmt::Tokenizer tokenizer;
 		tokenizer.Tokenize( content.ValueRef( ), scenePath );
 
-		Scene scene{};
+		SceneInstance scene{};
 		scene.mEntityMgr.Initialize( mCtx.mEventBus() );
 		scene.mScenePath = fullPath;
 
@@ -73,17 +73,16 @@ namespace lum {
 
 	}
 
-	void SceneManager::SaveScene( Scene& scene ) {
+	void SceneManager::SaveScene( SceneInstance& scene ) {
 
 		mSceneDependencyMgr.Serialize( scene );
 		LUM_LOG_INFO( "Saved scene: {}", scene.mScenePath.ToString() );
 	   
 	}
 
-	Scene* SceneManager::GetCurrentScene( ) {
+	SceneInstance* SceneManager::GetCurrentScene( ) {
 		if (mCurrentScene != nullptr)
 			return mCurrentScene;
-		LUM_LOG_ERROR( "No scene set" );
 		return nullptr;
 	}
 

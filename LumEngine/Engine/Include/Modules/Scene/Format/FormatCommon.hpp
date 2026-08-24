@@ -20,7 +20,7 @@ namespace lum {
 	class MeshManager;
 	class ShaderManager;
 	class AudioManager;
-	struct Scene;
+	struct SceneInstance;
 	namespace render { class Renderer; }
 	namespace ev { class EventBus; }
 	////////////////////////
@@ -95,7 +95,7 @@ namespace lum {
 		struct DeserializeContext {
 
 			/* @brief Reference to the scene being populated. */
-			Scene& mScene;
+			SceneInstance& mScene;
 
 			std::unordered_map<uint64, EntityID> mPersistentToEntity{};
 			std::unordered_map<EntityID, std::vector<EntityID>> mPersistentChildren{};

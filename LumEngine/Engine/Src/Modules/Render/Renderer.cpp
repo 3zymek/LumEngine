@@ -200,9 +200,9 @@ namespace lum::render {
 
 		{
 			rhi::TextureCreateInfo desc;
-			desc.mPixelFormat = rhi::TexturePixelFormat::RGBA;
-			desc.mInternalFormat = rhi::TextureInternalFormat::RGBA16F;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mPixelFormat = rhi::PixelLayout::RGBA;
+			desc.mInternalFormat = rhi::TextureFormat::RGBA16F;
+			desc.mTextureType = rhi::TextureKind::Texture2D;
 			desc.mWidth = w;
 			desc.mHeight = h;
 			mScreenQuad.mSceneTex = mCtx.mRenderDev().CreateTexture( desc );
@@ -210,9 +210,9 @@ namespace lum::render {
 		}
 		{
 			rhi::TextureCreateInfo desc;
-			desc.mPixelFormat = rhi::TexturePixelFormat::RGBA;
-			desc.mInternalFormat = rhi::TextureInternalFormat::RGBA16F;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mPixelFormat = rhi::PixelLayout::RGBA;
+			desc.mInternalFormat = rhi::TextureFormat::RGBA16F;
+			desc.mTextureType = rhi::TextureKind::Texture2D;
 			desc.mWidth = w;
 			desc.mHeight = h;
 			mScreenQuad.mPostprocessTex = mCtx.mRenderDev().CreateTexture( desc );

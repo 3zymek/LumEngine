@@ -28,12 +28,12 @@ namespace lum {
 		void Finalize( );
 		float64 GetDeltaTime( );
 
-		ev::EventBus&		GetEventBus( ) { return mEventBus; }
-		AudioModule&		GetModuleAudio( ) { return mAudioModule; }
-		PlatformModule&		GetModulePlatform( ) { return mPlatform; }
-		ResourceModule&		GetModuleResource( ) { return mResourceModule; }
-		RenderModule&		GetModuleRender( ) { return mRenderModule; }
-		SceneModule&		GetModuleScene( ) { return mSceneModule; }
+		ev::EventBus&		EventBus( ) { return mEventBus; }
+		AudioModule&		Audio( ) { return mAudioModule; }
+		PlatformModule&		Platform( ) { return mPlatform; }
+		ResourceModule&		Resource( ) { return mResourceModule; }
+		RenderModule&		Render( ) { return mRenderModule; }
+		SceneModule&		Scene( ) { return mSceneModule; }
 
 	private:
 

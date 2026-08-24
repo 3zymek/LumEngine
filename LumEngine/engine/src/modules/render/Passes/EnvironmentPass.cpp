@@ -286,10 +286,10 @@ namespace lum::render {
 		if (!device.IsValid( mIBL.mIrradiance.mTexture )) {
 
 			rhi::TextureCreateInfo desc;
-			desc.mTextureType = rhi::TextureType::Cubemap;
-			desc.mInternalFormat = rhi::TextureInternalFormat::RGB16F;
-			desc.mPixelFormat = rhi::TexturePixelFormat::RGB;
-			desc.mDataType = rhi::TextureDataType::Float;
+			desc.mTextureType = rhi::TextureKind::Cubemap;
+			desc.mInternalFormat = rhi::TextureFormat::RGB16F;
+			desc.mPixelFormat = rhi::PixelLayout::RGB;
+			desc.mDataType = rhi::PixelDataType::Float;
 			desc.mWidth = 32;
 			desc.mHeight = 32;
 			mIBL.mIrradiance.mTexture = device.CreateTexture( desc );
@@ -300,9 +300,9 @@ namespace lum::render {
 		if (!device.IsValid( mIBL.mPrefiltered.mTexture )) {
 
 			rhi::TextureCreateInfo desc;
-			desc.mTextureType = rhi::TextureType::Cubemap;
-			desc.mPixelFormat = rhi::TexturePixelFormat::RGB;
-			desc.mInternalFormat = rhi::TextureInternalFormat::RGB16F;
+			desc.mTextureType = rhi::TextureKind::Cubemap;
+			desc.mPixelFormat = rhi::PixelLayout::RGB;
+			desc.mInternalFormat = rhi::TextureFormat::RGB16F;
 			desc.mWidth = 128;
 			desc.mHeight = 128;
 			desc.mMipmapLevels = 5;

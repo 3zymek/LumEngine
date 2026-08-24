@@ -80,7 +80,7 @@ namespace lum::rhi::gl {
 		void UpdateTexture( TextureHandle tex, const TextureUpdateDescription& desc ) override;
 		void Delete( TextureHandle& tex ) override;
 		void BindTexture( TextureHandle tex, uint16 binding ) override;
-
+		void GetTextureImage( TextureHandle texture, void* pixels ) override;
 
 
 		//=================================================

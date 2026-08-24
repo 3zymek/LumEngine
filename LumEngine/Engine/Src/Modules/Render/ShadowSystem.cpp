@@ -41,9 +41,9 @@ namespace lum::render {
 			rhi::TextureCreateInfo desc;
 			desc.mWidth = mShadowMapTexSize.mX;
 			desc.mHeight = mShadowMapTexSize.mY;
-			desc.mPixelFormat = rhi::TexturePixelFormat::DepthComponent;
-			desc.mInternalFormat = rhi::TextureInternalFormat::Depth32F;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mPixelFormat = rhi::PixelLayout::DepthComponent;
+			desc.mInternalFormat = rhi::TextureFormat::Depth32F;
+			desc.mTextureType = rhi::TextureKind::Texture2D;
 			mShadowMap = ctx.mRenderDev( ).CreateTexture( desc );
 		}
 		{ // Shadow FBO
@@ -70,7 +70,7 @@ namespace lum::render {
 
 		{ // Shadow maps texture
 			rhi::TextureCreateInfo desc;
-			desc.mTextureType = rhi::TextureType::Texture2DArray;
+			desc.mTextureType = rhi::TextureKind::Texture2DArray;
 			desc.mDepth = limits::kMaxShadowCastingSpotLights;
 			desc.mWidth = mShadowMapTexSize.mX;
 			desc.mHeight = mShadowMapTexSize.mY;

@@ -9,14 +9,14 @@
 #include "Core/Utils/Logger.hpp"
 #include "Core/Utils/LumAssert.hpp"
 
+#include "Core/ViewportWidget.hpp"
+
 namespace lum::editor {
 
     class Editor {
     public:
 
-        Editor( int argc, char* argv[ ] )
-            : mQtApp( argc, argv ) {
-        }
+        Editor( int argc, char* argv[ ] ) : mQtApp( argc, argv ) {}
 
         void Initialize( );
         void Run( );
@@ -26,6 +26,8 @@ namespace lum::editor {
 
         QApplication mQtApp;
         Engine mEngine{};
+
+        ViewportWidget mViewport{};
 
         std::unique_ptr<RenderContext> mRenderContext = nullptr;
 

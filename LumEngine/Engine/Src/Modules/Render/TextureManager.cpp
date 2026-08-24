@@ -51,7 +51,7 @@ namespace lum {
 		rhi::TextureCreateInfo desc = sTexturePresetsLookup[ ToUnderlyingEnum( preset ) ];
 
 		desc.mData = data.ValueRef( );
-		desc.mTextureType = rhi::TextureType::Texture2D;
+		desc.mTextureType = rhi::TextureKind::Texture2D;
 		desc.mPixelFormat = ChannelsToFormat( data->mChannels );
 		rhi::TextureHandle handle = mRenderDevice->CreateTexture( desc );
 
@@ -60,15 +60,15 @@ namespace lum {
 		return handle;
 	}
 
-	rhi::TexturePixelFormat TextureManager::ChannelsToFormat( uint32 channels ) {
+	rhi::PixelLayout TextureManager::ChannelsToFormat( uint32 channels ) {
 		switch (channels) {
-		case 1: { return rhi::TexturePixelFormat::R; }; break;
-		case 2: { return rhi::TexturePixelFormat::RG; }; break;
-		case 3: { return rhi::TexturePixelFormat::RGB; }; break;
-		case 4: { return rhi::TexturePixelFormat::RGBA; }; break;
-		default: { return rhi::TexturePixelFormat::RGBA; }; break;
+		case 1: { return rhi::PixelLayout::R; }; break;
+		case 2: { return rhi::PixelLayout::RG; }; break;
+		case 3: { return rhi::PixelLayout::RGB; }; break;
+		case 4: { return rhi::PixelLayout::RGBA; }; break;
+		default: { return rhi::PixelLayout::RGBA; }; break;
 		}
-		return rhi::TexturePixelFormat::RGBA;
+		return rhi::PixelLayout::RGBA;
 	}
 
 	rhi::TextureHandle TextureManager::LoadEquirectangularCubemap( StringView path, ResourceRoot root ) {
@@ -93,9 +93,9 @@ namespace lum {
 			desc.mCubemap.mFaces[ i ] = convertedData[ i ];
 		}
 
-		desc.mInternalFormat = rhi::TextureInternalFormat::RGB16F;
-		desc.mPixelFormat = rhi::TexturePixelFormat::RGB;
-		desc.mTextureType = rhi::TextureType::Cubemap;
+		desc.mInternalFormat = rhi::TextureFormat::RGB16F;
+		desc.mPixelFormat = rhi::PixelLayout::RGB;
+		desc.mTextureType = rhi::TextureKind::Cubemap;
 
 		rhi::TextureHandle handle = mRenderDevice->CreateTexture( desc );
 		mTextures[ hash ] = handle;
@@ -135,9 +135,9 @@ namespace lum {
 			data.mChannels = 4;
 			rhi::TextureCreateInfo desc;
 			desc.mData = data;
-			desc.mInternalFormat = rhi::TextureInternalFormat::SRGB8_Alpha8;
-			desc.mPixelFormat = rhi::TexturePixelFormat::RGBA;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mInternalFormat = rhi::TextureFormat::SRGB8_Alpha8;
+			desc.mPixelFormat = rhi::PixelLayout::RGBA;
+			desc.mTextureType = rhi::TextureKind::Texture2D;
 			mDefaultAlbedoTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Default normal texture
@@ -148,9 +148,9 @@ namespace lum {
 			data.mChannels = 3;
 			rhi::TextureCreateInfo desc;
 			desc.mData = data;
-			desc.mInternalFormat = rhi::TextureInternalFormat::RGBA16F;
-			desc.mPixelFormat = rhi::TexturePixelFormat::RGBA;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mInternalFormat = rhi::TextureFormat::RGBA16F;
+			desc.mPixelFormat = rhi::PixelLayout::RGBA;
+			desc.mTextureType = rhi::TextureKind::Texture2D;
 			mDefaultNormalTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Default roughness texture
@@ -161,9 +161,9 @@ namespace lum {
 			data.mChannels = 1;
 			rhi::TextureCreateInfo desc;
 			desc.mData = data;
-			desc.mInternalFormat = rhi::TextureInternalFormat::R8;
-			desc.mPixelFormat = rhi::TexturePixelFormat::R;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mInternalFormat = rhi::TextureFormat::R8;
+			desc.mPixelFormat = rhi::PixelLayout::R;
+			desc.mTextureType = rhi::TextureKind::Texture2D;
 			mDefaultRoughnessTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Default metallic texture
@@ -174,9 +174,9 @@ namespace lum {
 			data.mChannels = 1;
 			rhi::TextureCreateInfo desc;
 			desc.mData = data;
-			desc.mInternalFormat = rhi::TextureInternalFormat::R8;
-			desc.mPixelFormat = rhi::TexturePixelFormat::R;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mInternalFormat = rhi::TextureFormat::R8;
+			desc.mPixelFormat = rhi::PixelLayout::R;
+			desc.mTextureType = rhi::TextureKind::Texture2D;
 			mDefaultMetallicTexture = mRenderDevice->CreateTexture( desc );
 		}
 		{ // Missing texture
@@ -188,9 +188,9 @@ namespace lum {
 			}
 			rhi::TextureCreateInfo desc;
 			desc.mData = data.ValueRef( );
-			desc.mInternalFormat = rhi::TextureInternalFormat::RGB8;
-			desc.mPixelFormat = rhi::TexturePixelFormat::RGB;
-			desc.mTextureType = rhi::TextureType::Texture2D;
+			desc.mInternalFormat = rhi::TextureFormat::RGB8;
+			desc.mPixelFormat = rhi::PixelLayout::RGB;
+			desc.mTextureType = rhi::TextureKind::Texture2D;
 			mMissingTexture = mRenderDevice->CreateTexture( desc );
 		}
 	}

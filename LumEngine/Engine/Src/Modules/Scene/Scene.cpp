@@ -8,7 +8,7 @@
 
 namespace lum {
 
-	void Scene::AttachChild( EntityID parent, EntityID child ) {
+	void SceneInstance::AttachChild( EntityID parent, EntityID child ) {
 
 		if (parent == child) return;
 		if (mParents.contains( child )) return;
@@ -22,7 +22,7 @@ namespace lum {
 
 	}
 
-	void Scene::DetachChild( EntityID child ) {
+	void SceneInstance::DetachChild( EntityID child ) {
 
 		if (!mParents.contains( child )) return;
 
@@ -39,21 +39,21 @@ namespace lum {
 
 	}
 
-	Optional<Entity> Scene::GetEntity( EntityID entity ) {
+	Optional<Entity> SceneInstance::GetEntity( EntityID entity ) {
 
 		auto it = mEntities.find( entity );
 		return (it != mEntities.end( )) ? it->second : Optional<Entity>::Empty( );
 
 	}
 
-	Entity& Scene::CreateEntity( ) {
+	Entity& SceneInstance::CreateEntity( ) {
 
 		EntityID id = UniqueID<Entity>::Get( );
 		return mEntities.emplace( id, Entity( id ) ).first->second;
 
 	}
 
-	void Scene::DeleteEntity( EntityID entity ) {
+	void SceneInstance::DeleteEntity( EntityID entity ) {
 
 		auto it = mEntities.find( entity );
 		if (it != mEntities.end( )) {

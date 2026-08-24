@@ -11,6 +11,11 @@
 #include <QWidget>
 #include <QTimer>
 #include <QLabel>
+#include <QEvent>
+#include <QPaintEvent>
+#include <QResizeEvent>
+#include <QPainter>
+#include <QImage>
 
 #include <QOpenGLContext>
 #include <QOffscreenSurface>

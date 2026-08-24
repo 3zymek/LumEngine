@@ -33,12 +33,12 @@ namespace lum {
          */
         void LoadScene( const Path& scenePath );
 
-        void SaveScene( Scene& scene );
+        void SaveScene( SceneInstance& scene );
 
         /* @brief Returns a pointer to the currently active scene.
          *  @return Pointer to the active Scene, or nullptr if none is set.
          */
-        Scene* GetCurrentScene( );
+        SceneInstance* GetCurrentScene( );
 
     private:
         
@@ -48,10 +48,10 @@ namespace lum {
         fmt::SceneDependencyManager mSceneDependencyMgr{};
 
         /* @brief Pointer to the currently active scene. */
-        Scene* mCurrentScene = nullptr;
+        SceneInstance* mCurrentScene = nullptr;
         
         /* @brief Map of all loaded scenes, keyed by hashed scene path. */
-        std::unordered_map<uint64, Scene> mScenes;
+        std::unordered_map<uint64, SceneInstance> mScenes;
 
     };
 

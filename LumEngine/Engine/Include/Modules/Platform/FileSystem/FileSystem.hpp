@@ -29,7 +29,7 @@ namespace lum {
 			std::ifstream file( path.mPath );
 			if (!file.is_open( )) {
 				char buff[ 512 ]{};
-				FormatString( buff, "Failed to read file '%s': '%s'", path.ToString( ).c_str( ), strerror( errno ) );
+				FormatString( buff, "Failed to read file '{}': '{}'", path.ToString( ), strerror( errno ) );
 				return Result<String>::Failure( buff );
 			}
 

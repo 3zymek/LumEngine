@@ -79,24 +79,24 @@ namespace lum::rhi {
 
 	}
 
-	bool RenderDevice::is_depth_format( TextureInternalFormat fmt ) const noexcept {
+	bool RenderDevice::is_depth_format( TextureFormat fmt ) const noexcept {
 
-		return fmt == TextureInternalFormat::Depth16 ||
-			fmt == TextureInternalFormat::Depth24 ||
-			fmt == TextureInternalFormat::Depth32 ||
-			fmt == TextureInternalFormat::Depth32F ||
-			fmt == TextureInternalFormat::Depth24Stencil8 ||
-			fmt == TextureInternalFormat::Depth32FStencil8;
-
-	}
-	bool RenderDevice::is_stencil_format( TextureInternalFormat fmt ) const noexcept {
-
-		return fmt == TextureInternalFormat::StencilIndex8 ||
-			fmt == TextureInternalFormat::Depth24Stencil8 ||
-			fmt == TextureInternalFormat::Depth32FStencil8;
+		return fmt == TextureFormat::Depth16 ||
+			fmt == TextureFormat::Depth24 ||
+			fmt == TextureFormat::Depth32 ||
+			fmt == TextureFormat::Depth32F ||
+			fmt == TextureFormat::Depth24Stencil8 ||
+			fmt == TextureFormat::Depth32FStencil8;
 
 	}
-	bool RenderDevice::is_color_format( TextureInternalFormat fmt ) const noexcept {
+	bool RenderDevice::is_stencil_format( TextureFormat fmt ) const noexcept {
+
+		return fmt == TextureFormat::StencilIndex8 ||
+			fmt == TextureFormat::Depth24Stencil8 ||
+			fmt == TextureFormat::Depth32FStencil8;
+
+	}
+	bool RenderDevice::is_color_format( TextureFormat fmt ) const noexcept {
 
 		return !is_depth_format( fmt ) && !is_stencil_format( fmt );
 
