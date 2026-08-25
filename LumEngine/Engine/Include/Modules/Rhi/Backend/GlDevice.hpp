@@ -10,10 +10,10 @@
 
 namespace lum::rhi::gl {
 
-	class GLDevice : public RenderDevice {
+	class GLDevice : public IRenderDevice {
 	public:
 
-		void Initialize( RenderContext& ctx ) override;
+		void Initialize( IRenderContext& ctx ) override;
 
 		//=================================================
 		// Buffers

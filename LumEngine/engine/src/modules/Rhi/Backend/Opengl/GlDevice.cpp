@@ -12,7 +12,7 @@
 
 namespace lum::rhi::gl {
 
-	void GLDevice::Initialize( RenderContext& ctx ) {
+	void GLDevice::Initialize( IRenderContext& ctx ) {
 
 		auto* glContext = static_cast<OpenGLContext*>(&ctx);
 

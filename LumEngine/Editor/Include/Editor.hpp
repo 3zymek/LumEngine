@@ -29,7 +29,7 @@ namespace lum::editor {
 
         ViewportWidget mViewport{};
 
-        std::unique_ptr<RenderContext> mRenderContext = nullptr;
+        std::unique_ptr<IRenderContext> mRenderContext = nullptr;
 
         QMainWindow* mWindow = nullptr;
         QLabel* mLabel = nullptr;

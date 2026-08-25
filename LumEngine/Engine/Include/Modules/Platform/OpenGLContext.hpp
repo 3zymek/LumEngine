@@ -11,9 +11,9 @@ namespace lum {
 
 	/*
 	* @brief Abstract rendering context interface for OpenGL.
-	* Extends RenderContext with OpenGL-specific context management.
+	* Extends IRenderContext with OpenGL-specific context management.
 	*/
-	class OpenGLContext : public RenderContext {
+	class OpenGLContext : public IRenderContext {
 	public:
 
 		/* @brief Destroys the OpenGL rendering context. */

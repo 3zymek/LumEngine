@@ -38,7 +38,7 @@ namespace lum::render {
 	/* @brief Aggregates all external subsystem pointers required to initialize the renderer. */
 	struct RendererContext {
 
-		SafePtr<rhi::RenderDevice>	mRenderDev = nullptr;
+		SafePtr<rhi::IRenderDevice>	mRenderDev = nullptr;
 		SafePtr<TextureManager>		mTextureMgr = nullptr;
 		SafePtr<MaterialManager>	mMaterialMgr = nullptr;
 		SafePtr<MeshManager>		mMeshMgr = nullptr;
@@ -46,7 +46,7 @@ namespace lum::render {
 		SafePtr<ev::EventBus>		mEventBus = nullptr;
 		
 		void Validate( ) const {
-			LUM_ASSERT( mRenderDev, "RendererContext: RenderDevice is nullptr!" );
+			LUM_ASSERT( mRenderDev, "RendererContext: IRenderDevice is nullptr!" );
 			LUM_ASSERT( mTextureMgr, "RendererContext: TextureManager is nullptr!" );
 			LUM_ASSERT( mMaterialMgr, "RendererContext: MaterialManager is nullptr!" );
 			LUM_ASSERT( mMeshMgr, "RendererContext: MeshManager is nullptr!" );

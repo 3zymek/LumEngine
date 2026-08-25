@@ -9,7 +9,7 @@
 
 namespace lum::editor {
 
-	std::unique_ptr<RenderContext> QtContextCreator::Create( Api api ) {
+	std::unique_ptr<IRenderContext> QtContextCreator::Create( Api api ) {
 		switch (api) {
 			case Api::OpenGL:
 				return std::move( std::make_unique<QtOpenGLContext>( ) );

@@ -17,7 +17,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void ShaderManager::Initialize( rhi::RenderDevice& device ) {
+	void ShaderManager::Initialize( rhi::IRenderDevice& device ) {
 		mRenderDevice = &device;
 	}
 

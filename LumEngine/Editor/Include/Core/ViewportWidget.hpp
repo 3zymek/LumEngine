@@ -5,17 +5,17 @@
 
 namespace lum {
 
-	namespace rhi { class RenderDevice; }
+	namespace rhi { class IRenderDevice; }
 	namespace ev { class EventBus; }
-	class RenderContext;
+	class IRenderContext;
 
 }
 
 namespace lum::editor {
 	
 	struct ViewportCreateInfo {
-		SafePtr<rhi::RenderDevice> mRenderDevice = nullptr;
-		SafePtr<RenderContext> mRenderContext = nullptr;
+		SafePtr<rhi::IRenderDevice> mRenderDevice = nullptr;
+		SafePtr<IRenderContext> mRenderContext = nullptr;
 		SafePtr<ev::EventBus> mEventBus = nullptr;
 	};
 
@@ -47,6 +47,8 @@ namespace lum::editor {
 		QTimer mResizeTimer{};
 		QSize mPendingSize{};
 		const uint32 mResizeFreshrate = 50; // in ms
+
+		bool mControlsUnlocked = false;
 
 		ViewportCreateInfo mInfo{};
 		rhi::TextureHandle mTextureId{};

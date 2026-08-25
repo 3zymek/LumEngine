@@ -5,7 +5,7 @@
 //=============================================================================//
 
 #include "PlatformModule.hpp"
-#include "Platform/InputCommon.hpp"
+#include "Platform/Input/Input.hpp"
 #include "Rhi/Core/RhiDevice.hpp"
 
 namespace lum {
@@ -18,14 +18,14 @@ namespace lum {
 
         info.mWindow.mTitle = info.mApplicationName;
 
-        if (info.mRenderContext == nullptr) {
+        if (!info.mRenderContext) {
 
             mWindow = Window{};
             mWindow.Value().Initialize( info.mWindow, bus );
 
             auto* glfwWindow = static_cast<GLFWwindow*>(mWindow.Value( ).GetNativeWindow( ));
 
-            input::SetActiveWindow( glfwWindow );
+            //input::SetActiveWindow( glfwWindow );
 
             mDefaultContext = std::make_unique<GLFWOpenGLContext>( glfwWindow );
             mRenderContext = mDefaultContext.get();

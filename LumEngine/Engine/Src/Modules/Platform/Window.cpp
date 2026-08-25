@@ -8,7 +8,7 @@
 #include "Event/EventBus.hpp"
 #include "Core/Utils/LumAssert.hpp"
 #include "Event/Events/WindowEvents.hpp"
-#include "Platform/InputCommon.hpp"
+#include "Platform/Input/Input.hpp"
 
 namespace lum {
 
@@ -75,6 +75,7 @@ namespace lum {
 			mEventBus->Emit( ev );
 		}
 
+		/*
 		for (uint32 i = 0; i < ArraySize( input::detail::kKeyMap ); i++) {
 
 			bool keyPressed = glfwGetKey( static_cast< GLFWwindow* >( mWindow ), input::GetGLFWKey( input::Key( i ) ) ) == GLFW_PRESS;
@@ -84,6 +85,7 @@ namespace lum {
 
 			input::detail::keyIsPressed[ i ] = keyPressed;
 		}
+		*/
 
 		glfwPollEvents( );
 

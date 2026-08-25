@@ -13,7 +13,12 @@
 
 namespace lum {
 
-	namespace rhi { class RenderDevice; }
+	namespace rhi { class IRenderDevice; }
+
+	struct PlatformModuleCreateInfo {
+		SafePtr<IRenderContext> mRenderContext = nullptr;
+		SafePtr<input::IInputProvider> mInputProvider = nullptr;
+	};
 
 	// Owns the OS window and the RHI render device.
 	// Must be initialized before any rendering or resource modules.
@@ -21,9 +26,9 @@ namespace lum {
 	public:
 
 		Optional<Window> mWindow = Optional<Window>::Empty();
-		std::unique_ptr<rhi::RenderDevice> mRenderDevice = nullptr;
+		std::unique_ptr<rhi::IRenderDevice> mRenderDevice = nullptr;
 
-		SafePtr<RenderContext> mRenderContext = nullptr;
+		SafePtr<IRenderContext> mRenderContext = nullptr;
 		std::unique_ptr<GLFWOpenGLContext> mDefaultContext = nullptr;
 
 		void Initialize( EngineCreateInfo info, ev::EventBus& bus );

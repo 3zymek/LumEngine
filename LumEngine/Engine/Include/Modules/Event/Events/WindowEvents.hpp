@@ -5,7 +5,7 @@
 //=============================================================================//
 #pragma once
 #include "Event/EventCommon.hpp"
-#include "Platform/InputCommon.hpp"
+#include "Platform/Input/Input.hpp"
 
 namespace lum {
 

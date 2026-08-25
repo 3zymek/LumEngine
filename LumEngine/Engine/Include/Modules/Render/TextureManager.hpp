@@ -52,7 +52,7 @@ namespace lum {
 		* Automatically creates default and missing fallback textures.
 		* @param device Valid pointer to an RDevice instance.
 		*/
-		void Initialize( rhi::RenderDevice& device );
+		void Initialize( rhi::IRenderDevice& device );
 
 		/* @brief Retrieves a cached texture by path.
 		* Returns missing texture fallback if not found in cache.
@@ -91,7 +91,7 @@ namespace lum {
 
 	private:
 
-		rhi::RenderDevice* mRenderDevice = nullptr;
+		rhi::IRenderDevice* mRenderDevice = nullptr;
 
 		/* @brief Fallback texture displayed when a requested asset cannot be found. */
 		rhi::TextureHandle mMissingTexture;

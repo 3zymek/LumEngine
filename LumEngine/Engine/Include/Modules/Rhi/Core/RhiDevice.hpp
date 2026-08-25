@@ -46,7 +46,7 @@ namespace lum::rhi {
 	*
 	* @note Use CreateDevice() to obtain an instance tied to a window.
 	*/
-	class RenderDevice {
+	class IRenderDevice {
 	public:
 
 		/* @brief Initializes the rendering device and binds it to the given window.
@@ -54,7 +54,7 @@ namespace lum::rhi {
 		*  Must be called before any rendering operations.
 		*  @param window Pointer to the engine window to render into.
 		*/
-		virtual void Initialize( RenderContext& ctx ) = 0;
+		virtual void Initialize( IRenderContext& ctx ) = 0;
 
 		/* @brief Destroys all active RHI resources and shuts down the rendering device.
 		* Must be called before the window is destroyed.
@@ -903,6 +903,6 @@ namespace lum::rhi {
 	* @param backend Backend used.
 	* @return Unique pointer to the created device.
 	*/
-	std::unique_ptr<RenderDevice> CreateDevice( RenderBackend backend );
+	std::unique_ptr<IRenderDevice> CreateDevice( RenderBackend backend );
 
 } // namespace lum::rhi

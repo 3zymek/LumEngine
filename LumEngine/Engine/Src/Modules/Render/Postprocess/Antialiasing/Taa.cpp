@@ -2,7 +2,7 @@
 
 namespace lum::render {
 
-	void TemporalAntiAliasing::Initialize( rhi::RenderDevice& dev ) {
+	void TemporalAntiAliasing::Initialize( rhi::IRenderDevice& dev ) {
 
 		mRenderDev = dev;
 

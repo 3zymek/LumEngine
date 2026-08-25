@@ -16,7 +16,7 @@ namespace lum {
 
 	struct RenderModuleCreateInfo {
 
-		SafePtr<rhi::RenderDevice> mRenderDev = nullptr;
+		SafePtr<rhi::IRenderDevice> mRenderDev = nullptr;
 		SafePtr<ResourceModule> mResourceModule = nullptr;
 		SafePtr<ev::EventBus> mEventBus = nullptr;
 		uint32 mViewportWidth = 1280;

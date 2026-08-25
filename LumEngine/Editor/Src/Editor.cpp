@@ -49,7 +49,7 @@ namespace lum::editor {
 			timer,
 			&QTimer::timeout,
 			[ & ]( ) {
-
+				
 				mRenderContext->MakeCurrent( );
 
 				mEngine.BeginFrame( );

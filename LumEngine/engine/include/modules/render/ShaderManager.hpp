@@ -11,7 +11,7 @@
 namespace lum {
 
 	namespace rhi {
-		class RenderDevice;
+		class IRenderDevice;
 		struct ShaderHandle;
 	} // lum::rhi
 
@@ -31,7 +31,7 @@ namespace lum {
 		/* @brief Initializes the shader manager with a render device.
 		* @param device Pointer to the RHI render device used for shader creation.
 		*/
-		void Initialize( rhi::RenderDevice& device );
+		void Initialize( rhi::IRenderDevice& device );
 
 		/* @brief Loads a shader program from vertex and fragment source files.
 		*
@@ -49,7 +49,7 @@ namespace lum {
 	private:
 
 		/* @brief Pointer to the RHI device used for shader creation. */
-		rhi::RenderDevice* mRenderDevice = nullptr;
+		rhi::IRenderDevice* mRenderDevice = nullptr;
 
 		/* @brief Cache mapping shader path hashes to their corresponding shader handles. */
 		std::unordered_map<uint64, rhi::ShaderHandle> mShaders;

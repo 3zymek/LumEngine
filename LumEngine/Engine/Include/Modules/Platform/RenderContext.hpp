@@ -13,10 +13,10 @@ namespace lum {
 	* Provides a platform-independent interface for managing the
 	* graphics context and its associated surface.
 	*/
-	class RenderContext {
+	class IRenderContext {
 	public:
 
-		virtual ~RenderContext( ) = default;
+		virtual ~IRenderContext( ) = default;
 
 		/* @brief Initializes (or not) context and it's parameters. */
 		virtual void Initialize( ) = 0;

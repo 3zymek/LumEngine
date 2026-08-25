@@ -11,7 +11,7 @@
 
 namespace lum::rhi {
 
-	void RenderDevice::Finalize( ) {
+	void IRenderDevice::Finalize( ) {
 
 		for (auto [handle, p] : mPipelines.Each( ))    Delete( handle );
 		for (auto [handle, f] : mFramebuffers.Each( )) Delete( handle );
@@ -27,7 +27,7 @@ namespace lum::rhi {
 	// Private
 	//---------------------------------------------------------
 
-	bool RenderDevice::validate_texture_descriptor( const TextureCreateInfo& desc ) const noexcept {
+	bool IRenderDevice::validate_texture_descriptor( const TextureCreateInfo& desc ) const noexcept {
 
 		if (mTextures.DenseSize( ) >= skMaxTextures) {
 
@@ -44,7 +44,7 @@ namespace lum::rhi {
 		return true;
 
 	}
-	bool RenderDevice::validate_buffer_descriptor( const BufferCreateInfo& desc ) const noexcept {
+	bool IRenderDevice::validate_buffer_descriptor( const BufferCreateInfo& desc ) const noexcept {
 
 		if (desc.mBufferUsage == BufferUsage::Static) {
 			LUM_ASSERT(
@@ -79,7 +79,7 @@ namespace lum::rhi {
 
 	}
 
-	bool RenderDevice::is_depth_format( TextureFormat fmt ) const noexcept {
+	bool IRenderDevice::is_depth_format( TextureFormat fmt ) const noexcept {
 
 		return fmt == TextureFormat::Depth16 ||
 			fmt == TextureFormat::Depth24 ||
@@ -89,20 +89,20 @@ namespace lum::rhi {
 			fmt == TextureFormat::Depth32FStencil8;
 
 	}
-	bool RenderDevice::is_stencil_format( TextureFormat fmt ) const noexcept {
+	bool IRenderDevice::is_stencil_format( TextureFormat fmt ) const noexcept {
 
 		return fmt == TextureFormat::StencilIndex8 ||
 			fmt == TextureFormat::Depth24Stencil8 ||
 			fmt == TextureFormat::Depth32FStencil8;
 
 	}
-	bool RenderDevice::is_color_format( TextureFormat fmt ) const noexcept {
+	bool IRenderDevice::is_color_format( TextureFormat fmt ) const noexcept {
 
 		return !is_depth_format( fmt ) && !is_stencil_format( fmt );
 
 	}
 
-	std::unique_ptr<RenderDevice> CreateDevice( RenderBackend backend ) {
+	std::unique_ptr<IRenderDevice> CreateDevice( RenderBackend backend ) {
 
 		switch (backend) {
 			case RenderBackend::OpenGL:

@@ -16,6 +16,7 @@
 #include <QResizeEvent>
 #include <QPainter>
 #include <QImage>
+#include <QCursor>
 
 #include <QOpenGLContext>
 #include <QOffscreenSurface>

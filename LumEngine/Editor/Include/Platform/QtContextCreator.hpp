@@ -21,9 +21,9 @@ namespace lum::editor {
 		/*
 		* @brief Creates a rendering context for the specified graphics API.
 		* @param api Target graphics API.
-		* @return Unique pointer to the created RenderContext instance.
+		* @return Unique pointer to the created IRenderContext instance.
 		*/
-		static std::unique_ptr<RenderContext> Create( Api api );
+		static std::unique_ptr<IRenderContext> Create( Api api );
 
 	};
 

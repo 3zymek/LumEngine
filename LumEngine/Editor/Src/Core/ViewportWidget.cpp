@@ -11,10 +11,10 @@ namespace lum::editor {
 	void ViewportWidget::Initialize( const ViewportCreateInfo& info ) {
 		mInfo = info;
 
-		connect( 
-			&mResizeTimer, 
-			&QTimer::timeout, 
-			this, 
+		connect(
+			&mResizeTimer,
+			&QTimer::timeout,
+			this,
 			[ this ]( ) {
 
 				if (mPendingSize.width( ) <= 0 || mPendingSize.height( ) <= 0) return;
@@ -31,8 +31,8 @@ namespace lum::editor {
 
 	}
 
-    void ViewportWidget::paintEvent( QPaintEvent* event ) {
-        Q_UNUSED( event );
+	void ViewportWidget::paintEvent( QPaintEvent* event ) {
+		Q_UNUSED( event );
 
 		QPainter painter( this );
 
@@ -62,7 +62,7 @@ namespace lum::editor {
 		frameImage.setDevicePixelRatio( dpr );
 		painter.drawImage( rect( ), flippedImage );
 
-    }
+	}
 
 	void ViewportWidget::resizeEvent( QResizeEvent* event ) {
 
@@ -73,11 +73,21 @@ namespace lum::editor {
 	}
 
 	void ViewportWidget::mousePressEvent( QMouseEvent* event ) {
+
+		if (event->button( ) == Qt::MouseButton::RightButton)
+			mControlsUnlocked = true;
+
 		QWidget::mousePressEvent( event );
+
 	}
 
 	void ViewportWidget::mouseReleaseEvent( QMouseEvent* event ) {
+
+		if (event->button( ) == Qt::MouseButton::RightButton)
+			mControlsUnlocked = false;
+
 		QWidget::mouseReleaseEvent( event );
+
 	}
 
 	void ViewportWidget::mouseMoveEvent( QMouseEvent* event ) {
