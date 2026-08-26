@@ -43,15 +43,15 @@ namespace lum {
     private:
         
         /* @brief Cached context holding all resource manager references. */
-        SceneManagerContext mCtx;
+        SceneManagerContext m_Ctx;
 
-        fmt::SceneDependencyManager mSceneDependencyMgr{};
+        fmt::SceneDependencyManager m_SceneDependencyMgr{};
 
         /* @brief Pointer to the currently active scene. */
-        SceneInstance* mCurrentScene = nullptr;
+        SceneInstance* m_CurrentScene = nullptr;
         
         /* @brief Map of all loaded scenes, keyed by hashed scene path. */
-        std::unordered_map<uint64, SceneInstance> mScenes;
+        std::unordered_map<uint64, SceneInstance> m_Scenes;
 
     };
 

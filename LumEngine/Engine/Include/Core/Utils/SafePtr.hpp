@@ -35,28 +35,28 @@ namespace lum {
 		/*
 		* @brief Constructs an empty SafePtr.
 		*/
-		SafePtr( ) : mValue( nullptr ) {}
+		SafePtr( ) : m_Value( nullptr ) {}
 
 		/*
 		* @brief Constructs a SafePtr from a raw pointer.
 		*
 		* @param val Pointer to the object to reference.
 		*/
-		SafePtr( tType* val ) : mValue( val ) {}
+		SafePtr( tType* val ) : m_Value( val ) {}
 
 		/*
 		* @brief Constructs a SafePtr from an object reference.
 		*
 		* @param val Object to reference.
 		*/
-		SafePtr( tType& val ) : mValue( &val ) {}
+		SafePtr( tType& val ) : m_Value( &val ) {}
 
 		/*
 		* @brief Constructs a SafePtr by copying another SafePtr.
 		* 
 		* @param val SafePtr whose referenced object will be copied.
 		*/
-		SafePtr( const SafePtr<tType>& val ) : mValue( val.mValue ) {}
+		SafePtr( const SafePtr<tType>& val ) : m_Value( val.m_Value ) {}
 
 		/*
 		* @brief Constructs a SafePtr from a convertible pointer type.
@@ -66,7 +66,7 @@ namespace lum {
 		*/
 		template<cNonPointer tOther>
 			requires(std::is_convertible_v<tOther*, tType*>)
-		SafePtr( tOther* val ) : mValue( val ) {}
+		SafePtr( tOther* val ) : m_Value( val ) {}
 
 		/*
 		* @brief Constructs a SafePtr from another convertible SafePtr type.
@@ -76,7 +76,7 @@ namespace lum {
 		*/
 		template<cNonPointer tOther>
 			requires(std::is_convertible_v<tOther*, tType*>)
-		SafePtr( const SafePtr<tOther>& val ) : mValue( val.mValue ) {}
+		SafePtr( const SafePtr<tOther>& val ) : m_Value( val.m_Value ) {}
 
 		~SafePtr( ) = default;
 
@@ -95,14 +95,14 @@ namespace lum {
 		tType& operator()( std::source_location loc = std::source_location::current( ) ) const {
 
 			LUM_ASSERT(
-				mValue != nullptr,
+				m_Value != nullptr,
 				"Attempted to access unitialized SafePtr at %s: %u (%s)",
 				loc.file_name( ),
 				loc.line( ),
 				loc.function_name( )
 			);
 
-			return *mValue;
+			return *m_Value;
 		}
 
 		// =========================================================================
@@ -111,19 +111,19 @@ namespace lum {
 
 		SafePtr& operator=( tType* other ) {
 
-			mValue = other;
+			m_Value = other;
 			return *this;
 		}
 
 		SafePtr& operator=( tType& other ) {
 
-			mValue = &other;
+			m_Value = &other;
 			return *this;
 		}
 
 		SafePtr& operator=( const SafePtr<tType>& other ) {
 
-			mValue = other.mValue;
+			m_Value = other.m_Value;
 			return *this;
 		}
 
@@ -137,7 +137,7 @@ namespace lum {
 			requires(std::is_convertible_v<tOther*, tType*>)
 		SafePtr& operator=( tOther* other ) {
 
-			mValue = other;
+			m_Value = other;
 			return *this;
 		}
 
@@ -151,7 +151,7 @@ namespace lum {
 			requires(std::is_convertible_v<tOther*, tType*>)
 		SafePtr& operator=( const SafePtr<tOther>& other ) {
 
-			mValue = other.mValue;
+			m_Value = other.m_Value;
 			return *this;
 		}
 
@@ -164,7 +164,7 @@ namespace lum {
 		* @return Pointer to the referenced object, or nullptr if empty.
 		*/
 		LUM_NODISCARD tType* Ptr( ) const {
-			return mValue;
+			return m_Value;
 		}
 
 		/* 
@@ -178,7 +178,7 @@ namespace lum {
 
 		/* @brief Returns if Ptr != nullptr */
 		explicit operator bool( ) const {
-			return mValue != nullptr;
+			return m_Value != nullptr;
 		}
 
 		/* 
@@ -186,17 +186,17 @@ namespace lum {
 		* After calling Clear(), the SafePtr no longer references an object.
 		*/
 		void Clear( ) {
-			mValue = nullptr;
+			m_Value = nullptr;
 		}
 
 		/* @brief Logs the underlying pointer for debugging purposes. */
 		void PrintDebug( ) const {
-			LUM_LOG_DEBUG( mValue );
+			LUM_LOG_DEBUG( m_Value );
 		}
 
 	private:
 
-		tType* mValue{ nullptr }; // < Non-owning pointer to the referenced object.
+		tType* m_Value{ nullptr }; // < Non-owning pointer to the referenced object.
 
 	};
 

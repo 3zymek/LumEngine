@@ -32,13 +32,13 @@ namespace lum {
 		* @return Atomically incremented uint32 identifier.
 		*/
 		static tIntegral Get( ) {
-			return sId.fetch_add( 1, std::memory_order_relaxed );
+			return s_Id.fetch_add( 1, std::memory_order_relaxed );
 		}
 
 	private:
 
 		/* @brief Shared atomic counter for this type instantiation. */
-		inline static std::atomic<tIntegral> sId = tNullVal + 1;
+		inline static std::atomic<tIntegral> s_Id = tNullVal + 1;
 
 	};
 
@@ -55,108 +55,43 @@ namespace lum {
 		*/
 		template<typename tType>
 		static uint32 GetTypeId( ) {
-			static uint32 id = sId.fetch_add( 1, std::memory_order_relaxed );
+			static uint32 id = s_Id.fetch_add( 1, std::memory_order_relaxed );
 			return id;
 		}
 
 	private:
 
 		/* @brief Global atomic counter shared across all type ID assignments. */
-		inline static std::atomic<uint32> sId = 0;
+		inline static std::atomic<uint32> s_Id = 0;
 
 	};
-
-
-	/* @brief Converts any arithmetic type to float32 at compile-time.
-	* @param value The numeric value to cast.
-	* @return The value casted to float32.
-	*/
-	template<cArithmetic tType>
-	inline constexpr float32 ToFloat32( tType value ) { return static_cast< float32 >(value); }
-
-	/* @brief Converts any arithmetic type to uint8 at compile-time.
-	* @param value The numeric value to cast.
-	* @return The value casted to uint8.
-	*/
-	template<cArithmetic tType>
-	inline constexpr uint8 ToUint8( tType value ) { return static_cast< uint8 >(value); }
-
-	/* @brief Converts any arithmetic type to int8 at compile-time.
-	* @param value The numeric value to cast.
-	* @return The value casted to int8.
-	*/
-	template<cArithmetic tType>
-	inline constexpr int8 ToInt8( tType value ) { return static_cast< int8 >(value); }
-
-	/* @brief Converts any arithmetic type to uint16 at compile-time.
-	* @param value The numeric value to cast.
-	* @return The value casted to uint16.
-	*/
-	template<cArithmetic tType>
-	inline constexpr uint16 ToUint16( tType value ) { return static_cast< uint16 >(value); }
-
-	/* @brief Converts any arithmetic type to int16 at compile-time.
-	* @param value The numeric value to cast.
-	* @return The value casted to int16.
-	*/
-	template<cArithmetic tType>
-	inline constexpr int16 ToInt16( tType value ) { return static_cast< int16 >(value); }
-
-	/* @brief Converts any arithmetic type to uint32 at compile-time.
-	* @param value The numeric value to cast.
-	* @return The value casted to uint32.
-	*/
-	template<cArithmetic tType>
-	inline constexpr uint32 ToUint32( tType value ) { return static_cast< uint32 >(value); }
-
-	/* @brief Converts any arithmetic type to int32 at compile-time.
-	* @param value The numeric value to cast.
-	* @return The value casted to int32.
-	*/
-	template<cArithmetic tType>
-	inline constexpr int32 ToInt32( tType value ) { return static_cast< int32 >(value); }
-
-	/* @brief Converts any arithmetic type to uint64 at compile-time.
-	* @param value The numeric value to cast.
-	* @return The value casted to uint64.
-	*/
-	template<cArithmetic tType>
-	inline constexpr uint64 ToUint64( tType value ) { return static_cast< uint64 >(value); }
-
-	/* @brief Converts any arithmetic type to int64 at compile-time.
-	* @param value The numeric value to cast.
-	* @return The value casted to int64.
-	*/
-	template<cArithmetic tType>
-	inline constexpr int64 ToInt64( tType value ) { return static_cast< int64 >(value); }
-
-	/* @brief Converts any arithmetic type to float64 at compile-time.
-	* @param value The numeric value to cast.
-	* @return The value casted to float64.
-	*/
-	template<cArithmetic tType>
-	inline constexpr float64 ToFloat64( tType value ) { return static_cast< float64 >(value); }
 
 	/* @brief Converts any arithmetic type to String at compile-time.
 	* @param value The numeric value to cast.
 	* @return The value casted to String.
 	*/
 	template<cArithmetic tType>
-	inline constexpr String ToString( tType value ) { return std::to_string( value ); }
+	inline constexpr String ToString( tType value ) { 
+		return std::to_string( value ); 
+	}
 
 	/* @brief Returns the maximum representable value for an arithmetic type.
 	* @tparam T Arithmetic type to query.
 	* @return std::numeric_limits<tType>::max().
 	*/
 	template<cArithmetic tType>
-	inline constexpr tType MaxValue( ) { return std::numeric_limits<tType>::max( ); }
+	inline constexpr tType MaxValue( ) { 
+		return std::numeric_limits<tType>::max( ); 
+	}
 
 	/* @brief Returns the minimum representable value for an arithmetic type.
 	* @tparam T Arithmetic type to query.
 	* @return std::numeric_limits<tType>::min().
 	*/
 	template<cArithmetic tType>
-	inline constexpr tType MinValue( ) { return std::numeric_limits<tType>::min( ); }
+	inline constexpr tType MinValue( ) { 
+		return std::numeric_limits<tType>::lowest( ); 
+	}
 
 	/* @brief Returns the total byte size of a std::vector's contents.
 	* @param vector Vector to calculate byte size for.
@@ -247,6 +182,43 @@ namespace lum {
 		String result = str.data( );
 		std::transform( result.begin( ), result.end( ), result.begin( ), ::toupper );
 		return result;
+	}
+
+	template<cArithmetic tTarget, cArithmetic tSource>
+	LUM_NODISCARD inline constexpr tTarget SafeCast( tSource value ) noexcept {
+#		if LUM_DEBUG
+			if constexpr (std::is_integral_v<tSource> && std::is_integral_v<tTarget>) {
+				LUM_ASSERT(
+					std::in_range<tTarget>( value ),
+					"SafeCast failed: Integer value out of range for target type!"
+				);
+			}
+			else if constexpr (std::is_floating_point_v<tSource> && std::is_integral_v<tTarget>) {
+				LUM_ASSERT(
+					std::isfinite( value ) &&
+					value >= static_cast<tSource>(std::numeric_limits<tTarget>::lowest( )) &&
+					value <= static_cast<tSource>(std::numeric_limits<tTarget>::max( )),
+					"SafeCast failed: Floating-point value out of range for target type."
+				);
+			}
+			else if constexpr (std::is_integral_v<tSource> && std::is_floating_point_v<tTarget>) {
+				LUM_ASSERT(
+					static_cast<long double>(value) >= std::numeric_limits<tTarget>::lowest( ) &&
+					static_cast<long double>(value) <= std::numeric_limits<tTarget>::max( ),
+					"SafeCast failed: Integer value out of range for target type."
+				);
+			}
+			else {
+				LUM_ASSERT(
+					std::isfinite( value ) &&
+					value >= std::numeric_limits<tTarget>::lowest( ) &&
+					value <= std::numeric_limits<tTarget>::max( ),
+					"SafeCast failed: Floating-point value out of range for target type."
+				);
+			}
+#		endif
+
+		return static_cast<tTarget>(value);
 	}
 
 } // namespace lum

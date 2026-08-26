@@ -39,7 +39,7 @@ namespace lum {
 		private:
 
 			/* @brief Pointer to the active renderer used for draw call submission. */
-			render::Renderer* mRenderer = nullptr;
+			render::Renderer* m_Renderer = nullptr;
 
 		};
 

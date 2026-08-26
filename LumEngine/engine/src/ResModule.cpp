@@ -15,19 +15,19 @@ namespace lum {
 
 	void ResourceModule::Initialize( PlatformModule& platform, ev::EventBus& bus ) {
 
-		mCtx.mEventBus			= bus;
-		mCtx.mMeshMgr		= mMeshMgr;
-		mCtx.mMaterialMgr	= mMaterialMgr;
-		mCtx.mShaderMgr		= mShaderMgr;
-		mCtx.mTextureMgr	= mTextureMgr;
-		mCtx.mRenderDev		= platform.mRenderDevice.get( );
+		m_Ctx.m_EventBus			= bus;
+		m_Ctx.m_MeshMgr		= m_MeshMgr;
+		m_Ctx.m_MaterialMgr	= m_MaterialMgr;
+		m_Ctx.m_ShaderMgr		= m_ShaderMgr;
+		m_Ctx.m_TextureMgr	= m_TextureMgr;
+		m_Ctx.m_RenderDev		= platform.m_RenderDevice.get( );
 		
-		mCtx.Validate( );
+		m_Ctx.Validate( );
 
-		mTextureMgr.Initialize( *platform.mRenderDevice.get() );
-		mMeshMgr.Initialize( mCtx );
-		mShaderMgr.Initialize( *platform.mRenderDevice.get() );
-		mMaterialMgr.Initialize( mCtx );
+		m_TextureMgr.Initialize( *platform.m_RenderDevice.get() );
+		m_MeshMgr.Initialize( m_Ctx );
+		m_ShaderMgr.Initialize( *platform.m_RenderDevice.get() );
+		m_MaterialMgr.Initialize( m_Ctx );
 
 	}
 

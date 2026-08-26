@@ -16,19 +16,19 @@ namespace lum {
 	struct MaterialBase {
 
 		/* @brief Albedo (base color) texture map. */
-		rhi::TextureHandle mAlbedoTex;
+		rhi::TextureHandle m_AlbedoTex;
 
 		/* @brief Normal map for surface detail. */
-		rhi::TextureHandle mNormalTex;
+		rhi::TextureHandle m_NormalTex;
 
 		/* @brief Roughness texture map. */
-		rhi::TextureHandle mRoughnessTex;
+		rhi::TextureHandle m_RoughnessTex;
 
 		/* @brief Metallic texture map. */
-		rhi::TextureHandle mMetallicTex;
+		rhi::TextureHandle m_MetallicTex;
 
 		/* @brief Ambient occlusion texture map. */
-		rhi::TextureHandle mAmbientTex;
+		rhi::TextureHandle m_AmbientTex;
 
 	};
 
@@ -38,10 +38,10 @@ namespace lum {
 	*/
 	struct MaterialDescriptor {
 
-		Optional<String> mAlbedoTex;      // Path to albedo texture
-		Optional<String> mNormalTex;      // Path to normal map
-		Optional<String> mRoughnessTex;   // Path to roughness map
-		Optional<String> mMetallicTex;    // Path to metallic map
+		Optional<String> m_AlbedoTex;      // Path to albedo texture
+		Optional<String> m_NormalTex;      // Path to normal map
+		Optional<String> m_RoughnessTex;   // Path to roughness map
+		Optional<String> m_MetallicTex;    // Path to metallic map
 
 	};
 

@@ -10,7 +10,7 @@ namespace lum::fmt {
 
 	void Tokenizer::Tokenize( StringView content, const Path& filePath ) {
 
-		mTokens.clear( );
+		m_Tokens.clear( );
 
 		usize pos = 0;
 		uint32 line = 1;
@@ -86,7 +86,7 @@ namespace lum::fmt {
 
 				++pos;
 
-				mTokens.push_back(
+				m_Tokens.push_back(
 					{ tokenLine, TokenType::String, value, filePath }
 				);
 
@@ -119,7 +119,7 @@ namespace lum::fmt {
 					return;
 				}
 
-				mTokens.push_back(
+				m_Tokens.push_back(
 					{ line, TokenType::Component, value, filePath }
 				);
 
@@ -143,11 +143,11 @@ namespace lum::fmt {
 
 				if (pos < content.size( ) && content[ pos ] == ':') {
 
-					mTokens.push_back(
+					m_Tokens.push_back(
 						{ line, TokenType::Parameter, value, filePath }
 					);
 
-					mTokens.push_back(
+					m_Tokens.push_back(
 						{ line, TokenType::Colon, ":", filePath }
 					);
 
@@ -156,7 +156,7 @@ namespace lum::fmt {
 				}
 				else {
 
-					mTokens.push_back(
+					m_Tokens.push_back(
 						{ line, TokenType::Identifier, value, filePath }
 					);
 				}
@@ -222,7 +222,7 @@ namespace lum::fmt {
 					return;
 				}
 
-				mTokens.push_back(
+				m_Tokens.push_back(
 					{
 						line,
 						TokenType::Number,
@@ -241,31 +241,31 @@ namespace lum::fmt {
 			switch (c) {
 
 				case '{':
-				mTokens.push_back(
+				m_Tokens.push_back(
 					{ line, TokenType::LBracket, "{", filePath }
 				);
 				break;
 
 				case '}':
-				mTokens.push_back(
+				m_Tokens.push_back(
 					{ line, TokenType::RBracket, "}", filePath }
 				);
 				break;
 
 				case '[':
-				mTokens.push_back(
+				m_Tokens.push_back(
 					{ line, TokenType::LSquareBracket, "[", filePath }
 				);
 				break;
 
 				case ']':
-				mTokens.push_back(
+				m_Tokens.push_back(
 					{ line, TokenType::RSquareBracket, "]", filePath }
 				);
 				break;
 
 				case ':':
-				mTokens.push_back(
+				m_Tokens.push_back(
 					{ line, TokenType::Colon, ":", filePath }
 				);
 				break;

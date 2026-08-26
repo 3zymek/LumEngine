@@ -19,9 +19,9 @@ namespace lum::render {
 	*/
 	struct LightPassExectueContext {
 
-		rhi::TextureHandle mIrradianceMap;     /* @brief Precomputed irradiance cubemap for diffuse IBL. */
-		rhi::TextureHandle mPrefilteredEnvMap; /* @brief Prefiltered environment cubemap for specular IBL. */
-		rhi::TextureHandle mShadowMap;         /* @brief Depth map from the shadow pass. */
+		rhi::TextureHandle m_IrradianceMap;     /* @brief Precomputed irradiance cubemap for diffuse IBL. */
+		rhi::TextureHandle m_PrefilteredEnvMap; /* @brief Prefiltered environment cubemap for specular IBL. */
+		rhi::TextureHandle m_ShadowMap;         /* @brief Depth map from the shadow pass. */
 
 	};
 
@@ -57,11 +57,11 @@ namespace lum::render {
 		DirectionalLight GetDirectionalLight( );
 		DirectionalLight GetDirectionalLight( ) const;
 
-		const std::pair<PointLightsArr, uint32>& GetPointLights( ) const { return { mPointLights, mActivePointLights }; }
-		const std::pair<SpotLightsArr, uint32>& GetSpotLights( ) const { return { mSpotLights, mActiveSpotLights }; }
+		const std::pair<PointLightsArr, uint32>& GetPointLights( ) const { return { m_PointLights, m_ActivePointLights }; }
+		const std::pair<SpotLightsArr, uint32>& GetSpotLights( ) const { return { m_SpotLights, m_ActiveSpotLights }; }
 
 		/* @brief Should be called at the start of each frame before submitting new lights. */
-		LUM_FORCEINLINE void ClearLights( ) { mActivePointLights = 0; mActiveSpotLights = 0; }
+		LUM_FORCEINLINE void ClearLights( ) { m_ActivePointLights = 0; m_ActiveSpotLights = 0; }
 
 		/* @brief Binds GBuffer textures, shadow map and light uniforms, then issues the fullscreen quad draw call.
 		*  @param gbuffer GBuffer containing geometry data from the geometry pass.
@@ -79,31 +79,31 @@ namespace lum::render {
 		static constexpr usize skOffsetActiveSpot = skOffsetActivePoint + sizeof( int32 );
 
 		/* @brief Cached context holding all subsystem manager references. */
-		SafePtr<RendererContext> mCtx = nullptr;
+		SafePtr<RendererContext> m_Ctx = nullptr;
 
 		/* @brief Array of active point lights for this frame. */
-		PointLightsArr mPointLights{};
+		PointLightsArr m_PointLights{};
 
 		/* @brief Array of active spot lights for this frame. */
-		SpotLightsArr mSpotLights{};
+		SpotLightsArr m_SpotLights{};
 
 		/* @brief Number of currently active point lights. */
-		uint32 mActivePointLights = 0;
+		uint32 m_ActivePointLights = 0;
 
 		/* @brief Number of currently active spot lights. */
-		uint32 mActiveSpotLights = 0;
+		uint32 m_ActiveSpotLights = 0;
 
 		/* @brief GPU-ready uniform buffer representation of the active directional light. */
-		detail::DirectionalLightGPU mDirectionalLightData{};
+		detail::DirectionalLightGPU m_DirectionalLightData{};
 
 		/* @brief Shader storage buffer holding all active point and spot lights. */
-		rhi::BufferHandle mLightsUbo;
+		rhi::BufferHandle m_LightsUbo;
 
 		/* @brief Uniform buffer holding the active directional light data. */
-		rhi::BufferHandle mDirectionalLightUbo;
+		rhi::BufferHandle m_DirectionalLightUbo;
 
-		rhi::PipelineHandle mPipeline;
-		rhi::ShaderHandle mShader;
+		rhi::PipelineHandle m_Pipeline;
+		rhi::ShaderHandle m_Shader;
 
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
 		void init( );

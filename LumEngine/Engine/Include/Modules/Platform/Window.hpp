@@ -42,11 +42,11 @@ namespace lum {
 	
 	/* @brief Descriptor used to configure a window on creation. */
 	struct LUM_API WindowCreateInfo {
-		Flags<WindowInitFlags>		mFlags = {};
-		String						mTitle = "MyGame";		/* @brief Window title bar text. */
-		Optional<ImageData>			mIconData{};			/* @brief Optional loaded icon texture data. */
-		uint32						mHeight = 720;			/* @brief Initial window height in pixels. */
-		uint32						mWidth = 1280;			/* @brief Initial window width in pixels. */
+		Flags<WindowInitFlags>		m_Flags = {};
+		String						m_Title = "m_YGame";		/* @brief Window title bar text. */
+		Optional<ImageData>			m_IconData{};			/* @brief Optional loaded icon texture data. */
+		uint32						m_Height = 720;			/* @brief Initial window height in pixels. */
+		uint32						m_Width = 1280;			/* @brief Initial window width in pixels. */
 	};
 
 	/* @brief Platform window wrapping a GLFW window.
@@ -75,7 +75,7 @@ namespace lum {
 		uint32 GetHeight( ) const noexcept;
 
 		/* @brief Returns the underlying native GLFW window pointer. */
-		void* GetNativeWindow( ) const noexcept { return mWindow; }
+		void* GetNativeWindow( ) const noexcept { return m_Window; }
 
 		/* @brief Returns the time in seconds since GLFW was initialized. */
 		float64 GetTime( ) const noexcept { return glfwGetTime( ); }
@@ -86,27 +86,27 @@ namespace lum {
 		void Update( ) noexcept;
 
 		/* @brief Returns true if the window is still open. */
-		bool IsOpen( ) const noexcept { return !glfwWindowShouldClose( mWindow ); }
+		bool IsOpen( ) const noexcept { return !glfwWindowShouldClose( m_Window ); }
 
 		/* @brief Signals the window to close on the next Update() call. */
-		void Close( ) const { glfwSetWindowShouldClose( mWindow, true ); }
+		void Close( ) const { glfwSetWindowShouldClose( m_Window, true ); }
 
 		/* @brief Minimizes the window to the taskbar. */
-		void Minimize( ) const { glfwIconifyWindow( mWindow ); }
+		void Minimize( ) const { glfwIconifyWindow( m_Window ); }
 
 
 	protected:
 
-		GLFWwindow* mWindow = nullptr; /* @brief Underlying GLFW window handle. */
-		ev::EventBus* mEventBus = nullptr; /* @brief Event bus for window events. */
+		GLFWwindow* m_Window = nullptr; /* @brief Underlying GLFW window handle. */
+		ev::EventBus* m_EventBus = nullptr; /* @brief Event bus for window events. */
 
-		uint32 mWidth = 0; /* @brief Current width of window. */
-		uint32 mHeight = 0; /* @brief Current height of window. */
+		uint32 m_Width = 0; /* @brief Current width of window. */
+		uint32 m_Height = 0; /* @brief Current height of window. */
 
-		Flags<WindowStateFlags> mState = {};
+		Flags<WindowStateFlags> m_State = {};
 
 		using WindowStateToggleFn = void(*)(GLFWwindow* window, int32 value);
-		static constexpr WindowStateToggleFn skWindowStateHandlers[ ] = {
+		static constexpr WindowStateToggleFn sk_WindowStateHandlers[ ] = {
 			[]( GLFWwindow* w, int32 v ) { glfwSetWindowAttrib( w, GLFW_DECORATED,  v ); },
 			[]( GLFWwindow* w, int32 v ) { glfwSetWindowAttrib( w, GLFW_RESIZABLE,  v ); },
 			[]( GLFWwindow* w, int32 v ) { glfwSetWindowAttrib( w, GLFW_FLOATING,   v ); },
@@ -115,7 +115,7 @@ namespace lum {
 			[]( GLFWwindow* w, int32 v ) { if (v) glfwFocusWindow( w ); },
 			[]( GLFWwindow* w, int32 v ) { glfwSetInputMode( w, GLFW_CURSOR, v ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED ); },
 		};
-		static constexpr uint32 skWindowStateHandlersSize = ArraySize( skWindowStateHandlers );
+		static constexpr uint32 sk_WindowStateHandlersSize = ArraySize( sk_WindowStateHandlers );
 
 		/* @brief Internal initialization called by Initialize().
 		*  @param desc Configuration descriptor forwarded from Initialize().

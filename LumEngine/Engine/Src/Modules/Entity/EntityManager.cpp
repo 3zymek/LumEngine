@@ -20,18 +20,18 @@ namespace lum::ecs {
 
 	void EntityManager::DestroyEntity( EntityID& entityID ) {
 
-		for (EntityID i = 0; i < limits::kMaxComponentTypes; i++) {
-			if (mComponentPools[ i ] != nullptr)
-				mComponentPools[ i ]->Remove( entityID );
+		for (EntityID i = 0; i < limits::k_MaxComponentTypes; i++) {
+			if (m_ComponentPools[ i ] != nullptr)
+				m_ComponentPools[ i ]->Remove( entityID );
 
 		}
 	}
 
 	void EntityManager::DestroyEntity( Entity& entity ) {
-		for (EntityID i = 0; i < limits::kMaxComponentTypes; i++) {
+		for (EntityID i = 0; i < limits::k_MaxComponentTypes; i++) {
 
-			if (mComponentPools[ i ] != nullptr)
-				mComponentPools[ i ]->Remove( entity.mId );
+			if (m_ComponentPools[ i ] != nullptr)
+				m_ComponentPools[ i ]->Remove( entity.m_Id );
 
 		}
 	}
@@ -43,16 +43,16 @@ namespace lum::ecs {
 	//---------------------------------------------------------
 
 	void EntityManager::initialize_pools( ) {
-		for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
-			mComponentPools[ i ] = nullptr;
+		for (int32 i = 0; i < limits::k_MaxComponentTypes; i++) {
+			m_ComponentPools[ i ] = nullptr;
 		}
 	}
 
 	void EntityManager::destroy_pools( ) {
-		for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
-			if (mComponentPools[ i ] != nullptr) {
-				delete mComponentPools[ i ];
-				mComponentPools[ i ] = nullptr;
+		for (int32 i = 0; i < limits::k_MaxComponentTypes; i++) {
+			if (m_ComponentPools[ i ] != nullptr) {
+				delete m_ComponentPools[ i ];
+				m_ComponentPools[ i ] = nullptr;
 			}
 		}
 	}

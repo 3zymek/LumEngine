@@ -16,22 +16,22 @@ namespace lum {
 		LUM_GENERATED_BODY( )
 
 		LUM_PROPERTY( ) 
-		float32 mIntensity = 100.f;
+		float32 m_Intensity = 100.f;
 
 		LUM_PROPERTY( DragSpeed = 0.2f, MinVal = 0.1f ) 
-		float32 mRadius = 10.f; // Maximum range of the light
+		float32 m_Radius = 10.f; // Maximum range of the light
 
 		LUM_PROPERTY( DragSpeed = 0.2f, MinVal = 0.1f ) 
-		float32 mInnerAngle = 15.f;
+		float32 m_InnerAngle = 15.f;
 
 		LUM_PROPERTY( DragSpeed = 0.2f, MinVal = 0.1f ) 
-		float32 mOuterCone = 30.f;
+		float32 m_OuterCone = 30.f;
 
 		LUM_PROPERTY( ) 
-		Vector3 mDirection = Vector3( 0.f, -1.f, 0.f );
+		Vector3 m_Direction = Vector3( 0.f, -1.f, 0.f );
 
 		LUM_PROPERTY( DragSpeed = 0.2f, MaxVal = 1.0f )
-		Vector3 mColor = Vector3( 1.f ); // Light color in linear RGB
+		Vector3 m_Color = Vector3( 1.f ); // Light color in linear RGB
 
 	};
 

@@ -42,26 +42,26 @@ namespace lum::render {
 
 	private:
 
-		std::vector<RenderInstance> mInstances;
+		std::vector<RenderInstance> m_Instances;
 
-		inline constexpr static uint32 mTempSize = 64;
+		inline constexpr static uint32 m_TempSize = 64;
 
-		std::vector<RenderInstance> mTempInstances;
+		std::vector<RenderInstance> m_TempInstances;
 
 		/* @brief Cached context holding all subsystem manager references. */
-		SafePtr<RendererContext> mCtx = nullptr;
+		SafePtr<RendererContext> m_Ctx = nullptr;
 
 		/* @brief CPU-side material uniform buffer, uploaded per draw call. */
-		detail::MaterialGPU mMaterialUbo{};
+		detail::MaterialGPU m_MaterialUbo{};
 
 		/* @brief GPU buffer holding the per-draw model matrix uniform. */
-		rhi::BufferHandle mModelUniform;
+		rhi::BufferHandle m_ModelUniform;
 
 		/* @brief GPU buffer holding the per-draw material uniform. */
-		rhi::BufferHandle mMaterialUniform;
+		rhi::BufferHandle m_MaterialUniform;
 
-		rhi::PipelineHandle mPipeline;
-		rhi::ShaderHandle mShader;
+		rhi::PipelineHandle m_Pipeline;
+		rhi::ShaderHandle m_Shader;
 
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
 		void init( );

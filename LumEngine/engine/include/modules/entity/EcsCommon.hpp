@@ -41,7 +41,7 @@ namespace lum {
 		} // namespace lum::ecs::detail
 
 		/* @brief Means that entity doesn't exists. */
-		inline constexpr EntityID kNullEntity = MaxValue<EntityID>( );
+		inline constexpr EntityID k_NullEntity = MaxValue<EntityID>( );
 
 		template<detail::cComponent tType>
 		struct EcsTraits;

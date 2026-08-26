@@ -11,16 +11,16 @@ namespace lum {
 
 	struct EngineCreateInfo {
 
-		Path mProjectDir{};
-		String mProjectName = "MyLumenProject";
-		String mApplicationName = "MyLumenApp";
+		Path m_ProjectDir{};
+		String m_ProjectName = "m_YLumenProject";
+		String m_ApplicationName = "m_YLumenApp";
 
-		WindowCreateInfo mWindow{};
+		WindowCreateInfo m_Window{};
 
-		SafePtr<IRenderContext> mRenderContext = nullptr;
-		SafePtr<input::IInputProvider> mInputProvider = nullptr;
+		SafePtr<IRenderContext> m_RenderContext = nullptr;
+		SafePtr<input::IInputProvider> m_InputProvider = nullptr;
 		
-		rhi::RenderBackend mRenderingBackend;
+		rhi::RenderBackend m_RenderingBackend;
 
 	};
 

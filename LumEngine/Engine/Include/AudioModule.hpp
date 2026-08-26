@@ -14,8 +14,8 @@ namespace lum {
 	class LUM_API AudioModule {
 	public:
 
-		ahi::AudioDevice* mAudioDevice = nullptr;
-		AudioManager mAudioMgr{};
+		ahi::IAudioDevice* m_AudioDevice = nullptr;
+		AudioManager m_AudioMgr{};
 
 		void Initialize( ev::EventBus& bus );
 		void Finalize( );

@@ -21,13 +21,13 @@ namespace lum {
 		* @brief Constructs a successful Result.
 		* @param value The successful value to copy into the result.
 		*/
-		Result( const tType& value ) : mValue( value ) { }
+		Result( const tType& value ) : m_Value( value ) { }
 
 		/*
 		* @brief Constructs a successful Result.
 		* @param value The successful value to move into the result.
 		*/
-		Result( tType&& value ) : mValue( std::move( value ) ) { }
+		Result( tType&& value ) : m_Value( std::move( value ) ) { }
 
 		/*
 		* @brief Constructs an empty Result instance (failed by default).
@@ -41,7 +41,7 @@ namespace lum {
 		*/
 		static Result Failure( const String& msg ) {
 			Result r;
-			r.mErrorMsg = msg;
+			r.m_ErrorMsg = msg;
 			return r;
 		}
 
@@ -60,7 +60,7 @@ namespace lum {
 		}
 
 		LUM_FORCEINLINE bool IsSuccess( ) const {
-			return mValue.HasValue( );
+			return m_Value.HasValue( );
 		}
 
 		/*
@@ -68,7 +68,7 @@ namespace lum {
 		* @return Const reference to the error message string.
 		*/
 		LUM_FORCEINLINE const String& GetError( ) const {
-			return mErrorMsg;
+			return m_ErrorMsg;
 		}
 
 		/////////////////////////////////
@@ -76,35 +76,35 @@ namespace lum {
 		///////////////////////////////// 
 
 		LUM_FORCEINLINE tType* ValuePtr( ) {
-			return mValue.HasValue( ) ? &mValue.Value( ) : nullptr;
+			return m_Value.HasValue( ) ? &m_Value.Value( ) : nullptr;
 		}
 
 		LUM_FORCEINLINE const tType* ValuePtr( ) const {
-			return mValue.HasValue( ) ? &mValue.Value( ) : nullptr;
+			return m_Value.HasValue( ) ? &m_Value.Value( ) : nullptr;
 		}
 
 		LUM_FORCEINLINE tType& ValueRef( ) {
-			return mValue.Value( );
+			return m_Value.Value( );
 		}
 
 		LUM_FORCEINLINE const tType& ValueRef( ) const {
-			return mValue.Value( );
+			return m_Value.Value( );
 		}
 
 		tType& operator*( ) {
-			return mValue.Value( );
+			return m_Value.Value( );
 		}
 
 		const tType& operator*( ) const {
-			return mValue.Value( );
+			return m_Value.Value( );
 		}
 
 		tType* operator->( ) {
-			return &mValue.Value( );
+			return &m_Value.Value( );
 		}
 
 		const tType* operator->( ) const {
-			return &mValue.Value( );
+			return &m_Value.Value( );
 		}
 
 		explicit operator bool( ) const {
@@ -113,8 +113,8 @@ namespace lum {
 
 	private:
 
-		Optional<tType> mValue{};  //< Optional container holding the resulting value on success.
-		String mErrorMsg = "";     //< Description of the failure if the operation failed.
+		Optional<tType> m_Value{};  //< Optional container holding the resulting value on success.
+		String m_ErrorMsg = "";     //< Description of the failure if the operation failed.
 
 	};
 

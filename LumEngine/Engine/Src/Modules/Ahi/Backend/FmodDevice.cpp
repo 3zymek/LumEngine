@@ -15,16 +15,16 @@ namespace lum::ahi::fmod {
 
 	void FMODDevice::Initialize( int32 maxChannels, Flags<InitFlag> flags ) {
 
-		FMOD::System_Create( &mSystem );
+		FMOD::System_Create( &m_System );
 		FMOD_INITFLAGS initFlags = translate_init_flags( flags );
-		FMOD_RESULT result = mSystem->init( maxChannels, initFlags, nullptr );
+		FMOD_RESULT result = m_System->init( maxChannels, initFlags, nullptr );
 		LUM_ASSERT( result == FMOD_OK, "FMOD init failed" );
 
 	}
 
 	void FMODDevice::Finalize( ) {
 
-		mSystem->release( );
+		m_System->release( );
 
 	}
 
@@ -33,17 +33,17 @@ namespace lum::ahi::fmod {
 		FMOD::Sound* sound = nullptr;
 		FMOD_MODE fmodFlags = translate_sound_flags( flags );
 
-		mSystem->createSound( path.ToString().data( ), fmodFlags, nullptr, &sound );
+		m_System->createSound( path.ToString().data( ), fmodFlags, nullptr, &sound );
 
-		return mSounds.Append( std::move( sound ) );
+		return m_Sounds.Append( std::move( sound ) );
 
 	}
 
 	void FMODDevice::UnloadSound( SoundHandle& sound ) {
 
-		FMOD::Sound* fmodSound = to_fmod_sound( mSounds[ sound ] );
+		FMOD::Sound* fmodSound = to_fmod_sound( m_Sounds[ sound ] );
 		fmodSound->release( );
-		mSounds.Remove( sound );
+		m_Sounds.Remove( sound );
 
 	}
 
@@ -51,35 +51,35 @@ namespace lum::ahi::fmod {
 
 		AudioEffect effect;
 
-		if (desc.mReverb.mEnabled)
-			effect.mDsps.push_back( create_reverb_effect( desc.mReverb ) );
+		if (desc.m_Reverb.m_Enabled)
+			effect.m_Dsps.push_back( create_reverb_effect( desc.m_Reverb ) );
 
-		if (desc.mFreqPass.mLow.mEnabled)
-			effect.mDsps.push_back( create_frequency_effect( desc.mFreqPass.mLow, detail::FrequencyType::Low ) );
+		if (desc.m_FreqPass.m_Low.m_Enabled)
+			effect.m_Dsps.push_back( create_frequency_effect( desc.m_FreqPass.m_Low, detail::FrequencyType::Low ) );
 
-		if (desc.mFreqPass.mHigh.mEnabled)
-			effect.mDsps.push_back( create_frequency_effect( desc.mFreqPass.mHigh, detail::FrequencyType::High ) );
+		if (desc.m_FreqPass.m_High.m_Enabled)
+			effect.m_Dsps.push_back( create_frequency_effect( desc.m_FreqPass.m_High, detail::FrequencyType::High ) );
 
-		if (desc.mEcho.mEnabled)
-			effect.mDsps.push_back( create_echo_effect( desc.mEcho ) );
+		if (desc.m_Echo.m_Enabled)
+			effect.m_Dsps.push_back( create_echo_effect( desc.m_Echo ) );
 
-		if (desc.mDistortion.mEnabled)
-			effect.mDsps.push_back( create_distortion_effect( desc.mDistortion ) );
+		if (desc.m_Distortion.m_Enabled)
+			effect.m_Dsps.push_back( create_distortion_effect( desc.m_Distortion ) );
 
-		if (desc.mChorus.mEnabled)
-			effect.mDsps.push_back( create_chorus_effect( desc.mChorus ) );
+		if (desc.m_Chorus.m_Enabled)
+			effect.m_Dsps.push_back( create_chorus_effect( desc.m_Chorus ) );
 
-		if (desc.mFlange.mEnabled)
-			effect.mDsps.push_back( create_flange_effect( desc.mFlange ) );
+		if (desc.m_Flange.m_Enabled)
+			effect.m_Dsps.push_back( create_flange_effect( desc.m_Flange ) );
 
-		if (desc.mCompressor.mEnabled)
-			effect.mDsps.push_back( create_compressor_effect( desc.mCompressor ) );
+		if (desc.m_Compressor.m_Enabled)
+			effect.m_Dsps.push_back( create_compressor_effect( desc.m_Compressor ) );
 
-		if (desc.mParamEQ.mEnabled)
-			effect.mDsps.push_back( create_parameq( desc.mParamEQ ) );
+		if (desc.m_ParamEQ.m_Enabled)
+			effect.m_Dsps.push_back( create_parameq( desc.m_ParamEQ ) );
 
 
-		return mEffects.Append( std::move( effect ) );
+		return m_Effects.Append( std::move( effect ) );
 
 	}
 
@@ -94,20 +94,20 @@ namespace lum::ahi::fmod {
 	void FMODDevice::DeleteEffect( AudioEffectHandle& effect ) {
 
 		LUM_RETURN_IF( !IsValid( effect ), LUM_SEV_WARN, "Invalid effect handle" );
-		AudioEffect& sfx = mEffects[ effect ];
+		AudioEffect& sfx = m_Effects[ effect ];
 
-		for (auto [slot, value] : mChannelGroups.Each( )) {
+		for (auto [slot, value] : m_ChannelGroups.Each( )) {
 
 			FMOD::ChannelGroup* group = to_fmod_channel_group( *value );
-			for (auto* dsp : sfx.mDsps) {
+			for (auto* dsp : sfx.m_Dsps) {
 				group->removeDSP( to_fmod_dsp( dsp ) );
 			}
 
 		}
 
-		for (auto* dsp : sfx.mDsps)
+		for (auto* dsp : sfx.m_Dsps)
 			to_fmod_dsp( dsp )->release( );
-		mEffects.Remove( effect );
+		m_Effects.Remove( effect );
 
 	}
 
@@ -116,24 +116,24 @@ namespace lum::ahi::fmod {
 		LUM_RETURN_IF( !IsValid( effect ), LUM_SEV_WARN, "Invalid effect handle" );
 		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group handle" );
 
-		FMOD::ChannelGroup* fmodGroup = to_fmod_channel_group( mChannelGroups[ group ] );
-		AudioEffect sfx = mEffects[ effect ];
+		FMOD::ChannelGroup* fmodGroup = to_fmod_channel_group( m_ChannelGroups[ group ] );
+		AudioEffect sfx = m_Effects[ effect ];
 
-		for (int32 i = 0; i < sfx.mDsps.size( ); i++) {
-			fmodGroup->addDSP( i, to_fmod_dsp( sfx.mDsps[ i ] ) );
+		for (int32 i = 0; i < sfx.m_Dsps.size( ); i++) {
+			fmodGroup->addDSP( i, to_fmod_dsp( sfx.m_Dsps[ i ] ) );
 		}
 
 	}
 	void FMODDevice::SetGroupVolume( ChannelGroupHandle group, float32 volume ) {
 
 		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group" );
-		to_fmod_channel_group( mChannelGroups[ group ] )->setVolume( std::clamp( volume, 0.0f, 1.0f ) );
+		to_fmod_channel_group( m_ChannelGroups[ group ] )->setVolume( std::clamp( volume, 0.0f, 1.0f ) );
 
 	}
 	void FMODDevice::SetGroupPitch( ChannelGroupHandle group, float32 pitch ) {
 
 		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group" );
-		to_fmod_channel_group( mChannelGroups[ group ] )->setPitch( std::clamp( pitch, 0.0f, 1.0f ) );
+		to_fmod_channel_group( m_ChannelGroups[ group ] )->setPitch( std::clamp( pitch, 0.0f, 1.0f ) );
 
 	}
 	void FMODDevice::RemoveGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) {
@@ -141,11 +141,11 @@ namespace lum::ahi::fmod {
 		LUM_RETURN_IF( !IsValid( effect ), LUM_SEV_WARN, "Invalid effect handle" );
 		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group handle" );
 
-		FMOD::ChannelGroup* fmodGroup = to_fmod_channel_group( mChannelGroups[ group ] );
-		AudioEffect sfx = mEffects[ effect ];
+		FMOD::ChannelGroup* fmodGroup = to_fmod_channel_group( m_ChannelGroups[ group ] );
+		AudioEffect sfx = m_Effects[ effect ];
 
-		for (int32 i = 0; i < sfx.mDsps.size( ); i++) {
-			fmodGroup->removeDSP( to_fmod_dsp( sfx.mDsps[ i ] ) );
+		for (int32 i = 0; i < sfx.m_Dsps.size( ); i++) {
+			fmodGroup->removeDSP( to_fmod_dsp( sfx.m_Dsps[ i ] ) );
 		}
 
 	}
@@ -153,51 +153,51 @@ namespace lum::ahi::fmod {
 	ChannelGroupHandle FMODDevice::CreateChannelGroup( StringView name ) {
 
 		FMOD::ChannelGroup* group;
-		mSystem->createChannelGroup( name.data( ), &group );
-		return mChannelGroups.Append( std::move( group ) );
+		m_System->createChannelGroup( name.data( ), &group );
+		return m_ChannelGroups.Append( std::move( group ) );
 
 	}
 
 	void FMODDevice::PlayOneShot( SoundHandle sound, const SoundPlaybackDescription& desc ) {
 
-		FMOD::Sound* fmodSound = static_cast< FMOD::Sound* >(mSounds[ sound ]);
+		FMOD::Sound* fmodSound = static_cast< FMOD::Sound* >(m_Sounds[ sound ]);
 		FMOD::Channel* channel = nullptr;
-		if (desc.mGroup == kDefaultGroup)
-			mSystem->playSound( fmodSound, nullptr, false, &channel );
+		if (desc.m_Group == k_DefaultGroup)
+			m_System->playSound( fmodSound, nullptr, false, &channel );
 		else
-			mSystem->playSound( fmodSound, to_fmod_channel_group( mChannelGroups[ desc.mGroup ] ), false, &channel );
-		channel->setVolume( desc.mVolume );
-		channel->setPitch( desc.mPitch );
+			m_System->playSound( fmodSound, to_fmod_channel_group( m_ChannelGroups[ desc.m_Group ] ), false, &channel );
+		channel->setVolume( desc.m_Volume );
+		channel->setPitch( desc.m_Pitch );
 
 	}
 
 	void FMODDevice::Play( SoundInstance& inst, ChannelGroupHandle group ) {
 
-		LUM_ASSERT( mSounds.Contains( inst.mSound ), "Invalid sound" );
+		LUM_ASSERT( m_Sounds.Contains( inst.m_Sound ), "Invalid sound" );
 
-		FMOD::Sound* fmodSound = static_cast< FMOD::Sound* >(mSounds[ inst.mSound.mId ]);
+		FMOD::Sound* fmodSound = static_cast< FMOD::Sound* >(m_Sounds[ inst.m_Sound.m_Id ]);
 		FMOD::Channel* channel = nullptr;
 
-		mSystem->playSound( fmodSound, nullptr, inst.mFlags.Has( SoundInstanceFlag::Paused ), &channel );
-		channel->setVolume( std::clamp( inst.mVolume, 0.0f, 1.0f ) );
-		channel->setPitch( std::clamp( inst.mPitch, 0.0f, 1.0f ) );
+		m_System->playSound( fmodSound, nullptr, inst.m_Flags.Has( SoundInstanceFlag::Paused ), &channel );
+		channel->setVolume( std::clamp( inst.m_Volume, 0.0f, 1.0f ) );
+		channel->setPitch( std::clamp( inst.m_Pitch, 0.0f, 1.0f ) );
 
-		if (group != kDefaultGroup) {
+		if (group != k_DefaultGroup) {
 
-			LUM_ASSERT( mChannelGroups.Contains( group ), "Invalid group" );
-			channel->setChannelGroup( to_fmod_channel_group( mChannelGroups[ group ] ) );
+			LUM_ASSERT( m_ChannelGroups.Contains( group ), "Invalid group" );
+			channel->setChannelGroup( to_fmod_channel_group( m_ChannelGroups[ group ] ) );
 
 		}
 
-		inst.mFlags.Set( SoundInstanceFlag::Playing );
-		mChannels.insert( { inst.mInstanceId, channel } );
+		inst.m_Flags.Set( SoundInstanceFlag::Playing );
+		m_Channels.insert( { inst.m_InstanceId, channel } );
 
 	}
 
 	void FMODDevice::StopAll( ) {
 
 		FMOD::ChannelGroup* master;
-		mSystem->getMasterChannelGroup( &master );
+		m_System->getMasterChannelGroup( &master );
 		master->stop( );
 
 	}
@@ -205,68 +205,68 @@ namespace lum::ahi::fmod {
 	void FMODDevice::SetMasterVolume( float32 volume ) {
 
 		FMOD::ChannelGroup* master;
-		mSystem->getMasterChannelGroup( &master );
+		m_System->getMasterChannelGroup( &master );
 		master->setVolume( std::clamp( volume, 0.0f, 1.0f ) );
 
 	}
 
 	void FMODDevice::Set3DListenerAttributes( const ahi::ListenerAttributes& attrs ) {
 
-		FMOD_VECTOR fmodPos = { attrs.mPosition.mX, attrs.mPosition.mY, attrs.mPosition.mZ };
-		FMOD_VECTOR fmodVel = { attrs.mVelocity.mX, attrs.mVelocity.mY, attrs.mVelocity.mZ };
-		FMOD_VECTOR fmodForward = { attrs.mForward.mX, attrs.mForward.mY, attrs.mForward.mZ };
-		FMOD_VECTOR fmodUp = { attrs.mUp.mX, attrs.mUp.mY, attrs.mUp.mZ };
+		FMOD_VECTOR fmodPos = { attrs.m_Position.m_X, attrs.m_Position.m_Y, attrs.m_Position.m_Z };
+		FMOD_VECTOR fmodVel = { attrs.m_Velocity.m_X, attrs.m_Velocity.m_Y, attrs.m_Velocity.m_Z };
+		FMOD_VECTOR fmodForward = { attrs.m_Forward.m_X, attrs.m_Forward.m_Y, attrs.m_Forward.m_Z };
+		FMOD_VECTOR fmodUp = { attrs.m_Up.m_X, attrs.m_Up.m_Y, attrs.m_Up.m_Z };
 
-		mSystem->set3DListenerAttributes( 0, &fmodPos, &fmodVel, &fmodForward, &fmodUp );
+		m_System->set3DListenerAttributes( 0, &fmodPos, &fmodVel, &fmodForward, &fmodUp );
 
 	}
 
 	void FMODDevice::Set3DSettings( float32 dopplerScale, float32 distanceFactor, float32 rolloffScale ) {
 
-		mSystem->set3DSettings( dopplerScale, distanceFactor, rolloffScale );
+		m_System->set3DSettings( dopplerScale, distanceFactor, rolloffScale );
 
 	}
 
 	void FMODDevice::UpdateInstance( SoundInstance& inst ) {
 
-		if (inst.mFlags.Has( SoundInstanceFlag::Play )) {
+		if (inst.m_Flags.Has( SoundInstanceFlag::Play )) {
 
-			Play( inst, inst.mGroup );
-			inst.mFlags.Unset( SoundInstanceFlag::Play );
+			Play( inst, inst.m_Group );
+			inst.m_Flags.Unset( SoundInstanceFlag::Play );
 
 		}
 
-		if (!mChannels.contains( inst.mInstanceId )) return;
+		if (!m_Channels.contains( inst.m_InstanceId )) return;
 
-		FMOD::Channel* channel = to_fmod_channel( mChannels[ inst.mInstanceId ] );
+		FMOD::Channel* channel = to_fmod_channel( m_Channels[ inst.m_InstanceId ] );
 
 		bool playing;
 		channel->isPlaying( &playing );
 
 		// End streaming
-		if (!playing) { mChannels.erase( inst.mInstanceId ); return; }
-		if (inst.mFlags.Has( SoundInstanceFlag::Stop )) {
+		if (!playing) { m_Channels.erase( inst.m_InstanceId ); return; }
+		if (inst.m_Flags.Has( SoundInstanceFlag::Stop )) {
 			channel->stop( );
-			mChannels.erase( inst.mInstanceId );
+			m_Channels.erase( inst.m_InstanceId );
 			return;
 		}
 
-		if (inst.mFlags.Has( SoundInstanceFlag::Kill )) {
+		if (inst.m_Flags.Has( SoundInstanceFlag::Kill )) {
 
 		}
 
-		channel->setPaused( inst.mFlags.Has( SoundInstanceFlag::Paused ) );
-		if (inst.mFlags.Has( SoundInstanceFlag::Paused )) return;
+		channel->setPaused( inst.m_Flags.Has( SoundInstanceFlag::Paused ) );
+		if (inst.m_Flags.Has( SoundInstanceFlag::Paused )) return;
 
-		Vector3 instPos = inst.mPosition;
-		FMOD_VECTOR pos = { instPos.mX, instPos.mY, instPos.mZ };
+		Vector3 instPos = inst.m_Position;
+		FMOD_VECTOR pos = { instPos.m_X, instPos.m_Y, instPos.m_Z };
 
-		channel->setVolume( std::clamp( inst.mVolume, 0.0f, 1.0f ) );
-		channel->setPitch( std::clamp( inst.mPitch, 0.0f, 1.0f ) );
+		channel->setVolume( std::clamp( inst.m_Volume, 0.0f, 1.0f ) );
+		channel->setPitch( std::clamp( inst.m_Pitch, 0.0f, 1.0f ) );
 		channel->set3DAttributes( &pos, nullptr );
-		channel->set3DMinMaxDistance( inst.mMinDistance, inst.mMaxDistance );
+		channel->set3DMinMaxDistance( inst.m_MinDistance, inst.m_MaxDistance );
 
-		if (inst.mFlags.Has( SoundInstanceFlag::Looped ))
+		if (inst.m_Flags.Has( SoundInstanceFlag::Looped ))
 			channel->setMode( FMOD_LOOP_NORMAL );
 		else
 			channel->setMode( FMOD_LOOP_OFF );
@@ -275,7 +275,7 @@ namespace lum::ahi::fmod {
 
 	void FMODDevice::SubmitFrame( ) {
 
-		mSystem->update( );
+		m_System->update( );
 
 	}
 
@@ -319,16 +319,16 @@ namespace lum::ahi::fmod {
 	FMOD::DSP* FMODDevice::create_reverb_effect( const AudioEffectCreateInfo::Reverb& desc ) {
 
 		FMOD::DSP* dsp = nullptr;
-		mSystem->createDSPByType( FMOD_DSP_TYPE_SFXREVERB, &dsp );
+		m_System->createDSPByType( FMOD_DSP_TYPE_SFXREVERB, &dsp );
 
-		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_DECAYTIME, desc.mDecayTime );
-		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_EARLYDELAY, desc.mEarlyDelay );
-		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_LATEDELAY, desc.mLateDelay );
-		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_HFREFERENCE, desc.mReferenceFreq );
-		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_DIFFUSION, desc.mDiffusion );
-		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_WETLEVEL, desc.mWetLevel );
-		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_DRYLEVEL, desc.mDryLevel );
-		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_DENSITY, desc.mDensity );
+		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_DECAYTIME, desc.m_DecayTime );
+		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_EARLYDELAY, desc.m_EarlyDelay );
+		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_LATEDELAY, desc.m_LateDelay );
+		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_HFREFERENCE, desc.m_ReferenceFreq );
+		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_DIFFUSION, desc.m_Diffusion );
+		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_WETLEVEL, desc.m_WetLevel );
+		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_DRYLEVEL, desc.m_DryLevel );
+		dsp->setParameterFloat( FMOD_DSP_SFXREVERB_DENSITY, desc.m_Density );
 
 		return dsp;
 	}
@@ -339,18 +339,18 @@ namespace lum::ahi::fmod {
 
 		if (type == detail::FrequencyType::Low) {
 
-			mSystem->createDSPByType( FMOD_DSP_TYPE_LOWPASS, &dsp );
+			m_System->createDSPByType( FMOD_DSP_TYPE_LOWPASS, &dsp );
 
-			dsp->setParameterFloat( FMOD_DSP_LOWPASS_CUTOFF, desc.mCutoff );
-			dsp->setParameterFloat( FMOD_DSP_LOWPASS_RESONANCE, desc.mResonance );
+			dsp->setParameterFloat( FMOD_DSP_LOWPASS_CUTOFF, desc.m_Cutoff );
+			dsp->setParameterFloat( FMOD_DSP_LOWPASS_RESONANCE, desc.m_Resonance );
 
 		}
 		else if (type == detail::FrequencyType::High) {
 
-			mSystem->createDSPByType( FMOD_DSP_TYPE_HIGHPASS, &dsp );
+			m_System->createDSPByType( FMOD_DSP_TYPE_HIGHPASS, &dsp );
 
-			dsp->setParameterFloat( FMOD_DSP_HIGHPASS_CUTOFF, desc.mCutoff );
-			dsp->setParameterFloat( FMOD_DSP_HIGHPASS_RESONANCE, desc.mResonance );
+			dsp->setParameterFloat( FMOD_DSP_HIGHPASS_CUTOFF, desc.m_Cutoff );
+			dsp->setParameterFloat( FMOD_DSP_HIGHPASS_RESONANCE, desc.m_Resonance );
 
 		}
 
@@ -362,12 +362,12 @@ namespace lum::ahi::fmod {
 
 		FMOD::DSP* dsp = nullptr;
 
-		mSystem->createDSPByType( FMOD_DSP_TYPE_ECHO, &dsp );
+		m_System->createDSPByType( FMOD_DSP_TYPE_ECHO, &dsp );
 
-		dsp->setParameterFloat( FMOD_DSP_ECHO_DELAY, desc.mDelay );
-		dsp->setParameterFloat( FMOD_DSP_ECHO_FEEDBACK, desc.mFeedback );
-		dsp->setParameterFloat( FMOD_DSP_ECHO_DRYLEVEL, desc.mDryLevel );
-		dsp->setParameterFloat( FMOD_DSP_ECHO_WETLEVEL, desc.mWetLevel );
+		dsp->setParameterFloat( FMOD_DSP_ECHO_DELAY, desc.m_Delay );
+		dsp->setParameterFloat( FMOD_DSP_ECHO_FEEDBACK, desc.m_Feedback );
+		dsp->setParameterFloat( FMOD_DSP_ECHO_DRYLEVEL, desc.m_DryLevel );
+		dsp->setParameterFloat( FMOD_DSP_ECHO_WETLEVEL, desc.m_WetLevel );
 
 		return dsp;
 	}
@@ -376,9 +376,9 @@ namespace lum::ahi::fmod {
 
 		FMOD::DSP* dsp = nullptr;
 
-		mSystem->createDSPByType( FMOD_DSP_TYPE_DISTORTION, &dsp );
+		m_System->createDSPByType( FMOD_DSP_TYPE_DISTORTION, &dsp );
 
-		dsp->setParameterFloat( FMOD_DSP_DISTORTION_LEVEL, desc.mLevel );
+		dsp->setParameterFloat( FMOD_DSP_DISTORTION_LEVEL, desc.m_Level );
 
 		return dsp;
 
@@ -388,11 +388,11 @@ namespace lum::ahi::fmod {
 
 		FMOD::DSP* dsp = nullptr;
 
-		mSystem->createDSPByType( FMOD_DSP_TYPE_CHORUS, &dsp );
+		m_System->createDSPByType( FMOD_DSP_TYPE_CHORUS, &dsp );
 
-		dsp->setParameterFloat( FMOD_DSP_CHORUS_RATE, desc.mRate );
-		dsp->setParameterFloat( FMOD_DSP_CHORUS_DEPTH, desc.mDepth );
-		dsp->setParameterFloat( FMOD_DSP_CHORUS_MIX, desc.mMix );
+		dsp->setParameterFloat( FMOD_DSP_CHORUS_RATE, desc.m_Rate );
+		dsp->setParameterFloat( FMOD_DSP_CHORUS_DEPTH, desc.m_Depth );
+		dsp->setParameterFloat( FMOD_DSP_CHORUS_MIX, desc.m_Mix );
 
 		return dsp;
 
@@ -402,11 +402,11 @@ namespace lum::ahi::fmod {
 
 		FMOD::DSP* dsp = nullptr;
 
-		mSystem->createDSPByType( FMOD_DSP_TYPE_FLANGE, &dsp );
+		m_System->createDSPByType( FMOD_DSP_TYPE_FLANGE, &dsp );
 
-		dsp->setParameterFloat( FMOD_DSP_FLANGE_RATE, desc.mRate );
-		dsp->setParameterFloat( FMOD_DSP_FLANGE_DEPTH, desc.mDepth );
-		dsp->setParameterFloat( FMOD_DSP_FLANGE_MIX, desc.mMix );
+		dsp->setParameterFloat( FMOD_DSP_FLANGE_RATE, desc.m_Rate );
+		dsp->setParameterFloat( FMOD_DSP_FLANGE_DEPTH, desc.m_Depth );
+		dsp->setParameterFloat( FMOD_DSP_FLANGE_MIX, desc.m_Mix );
 
 		return dsp;
 
@@ -416,13 +416,13 @@ namespace lum::ahi::fmod {
 
 		FMOD::DSP* dsp = nullptr;
 
-		mSystem->createDSPByType( FMOD_DSP_TYPE_COMPRESSOR, &dsp );
+		m_System->createDSPByType( FMOD_DSP_TYPE_COMPRESSOR, &dsp );
 
-		dsp->setParameterFloat( FMOD_DSP_COMPRESSOR_THRESHOLD, desc.mThreshold );
-		dsp->setParameterFloat( FMOD_DSP_COMPRESSOR_RATIO, desc.mRatio );
-		dsp->setParameterFloat( FMOD_DSP_COMPRESSOR_ATTACK, desc.mAttack );
-		dsp->setParameterFloat( FMOD_DSP_COMPRESSOR_RELEASE, desc.mRelease );
-		dsp->setParameterFloat( FMOD_DSP_COMPRESSOR_GAINMAKEUP, desc.mGainMakeup );
+		dsp->setParameterFloat( FMOD_DSP_COMPRESSOR_THRESHOLD, desc.m_Threshold );
+		dsp->setParameterFloat( FMOD_DSP_COMPRESSOR_RATIO, desc.m_Ratio );
+		dsp->setParameterFloat( FMOD_DSP_COMPRESSOR_ATTACK, desc.m_Attack );
+		dsp->setParameterFloat( FMOD_DSP_COMPRESSOR_RELEASE, desc.m_Release );
+		dsp->setParameterFloat( FMOD_DSP_COMPRESSOR_GAINMAKEUP, desc.m_GainMakeup );
 
 		return dsp;
 
@@ -432,11 +432,11 @@ namespace lum::ahi::fmod {
 
 		FMOD::DSP* dsp = nullptr;
 
-		mSystem->createDSPByType( FMOD_DSP_TYPE_PARAMEQ, &dsp );
+		m_System->createDSPByType( FMOD_DSP_TYPE_PARAMEQ, &dsp );
 
-		dsp->setParameterFloat( FMOD_DSP_PARAMEQ_CENTER, desc.mCenter );
-		dsp->setParameterFloat( FMOD_DSP_PARAMEQ_BANDWIDTH, desc.mBandwidth );
-		dsp->setParameterFloat( FMOD_DSP_PARAMEQ_GAIN, desc.mGain );
+		dsp->setParameterFloat( FMOD_DSP_PARAMEQ_CENTER, desc.m_Center );
+		dsp->setParameterFloat( FMOD_DSP_PARAMEQ_BANDWIDTH, desc.m_Bandwidth );
+		dsp->setParameterFloat( FMOD_DSP_PARAMEQ_GAIN, desc.m_Gain );
 
 		return dsp;
 

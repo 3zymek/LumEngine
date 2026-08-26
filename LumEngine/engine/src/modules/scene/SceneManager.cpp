@@ -22,8 +22,8 @@ namespace lum {
 
 	void SceneManager::Initialize( SceneManagerContext& ctx ) {
 
-		mCtx = ctx;
-		mSceneDependencyMgr.Initialize( mCtx );
+		m_Ctx = ctx;
+		m_SceneDependencyMgr.Initialize( m_Ctx );
 
 	}
 
@@ -31,13 +31,13 @@ namespace lum {
 
 		uint64 hash = scenePath.Hash();
 
-		if (!mScenes.contains( hash )) {
+		if (!m_Scenes.contains( hash )) {
 
 			LoadScene( scenePath );
 
 		}
 
-		mCurrentScene = &mScenes[ hash ];
+		m_CurrentScene = &m_Scenes[ hash ];
 		LUM_LOG_INFO( "Set current scene: {}", scenePath.ToString( ) );
 
 	}
@@ -63,11 +63,11 @@ namespace lum {
 		tokenizer.Tokenize( content.ValueRef( ), scenePath );
 
 		SceneInstance scene{};
-		scene.mEntityMgr.Initialize( mCtx.mEventBus() );
-		scene.mScenePath = fullPath;
+		scene.m_EntityMgr.Initialize( m_Ctx.m_EventBus() );
+		scene.m_ScenePath = fullPath;
 
-		mSceneDependencyMgr.Deserialize( scene, tokenizer );
-		mScenes.emplace( hash, std::move( scene ) );
+		m_SceneDependencyMgr.Deserialize( scene, tokenizer );
+		m_Scenes.emplace( hash, std::move( scene ) );
 
 		LUM_LOG_INFO( "Loaded scene: {}", scenePath.ToString( ) );
 
@@ -75,14 +75,14 @@ namespace lum {
 
 	void SceneManager::SaveScene( SceneInstance& scene ) {
 
-		mSceneDependencyMgr.Serialize( scene );
-		LUM_LOG_INFO( "Saved scene: {}", scene.mScenePath.ToString() );
+		m_SceneDependencyMgr.Serialize( scene );
+		LUM_LOG_INFO( "Saved scene: {}", scene.m_ScenePath.ToString() );
 	   
 	}
 
 	SceneInstance* SceneManager::GetCurrentScene( ) {
-		if (mCurrentScene != nullptr)
-			return mCurrentScene;
+		if (m_CurrentScene != nullptr)
+			return m_CurrentScene;
 		return nullptr;
 	}
 

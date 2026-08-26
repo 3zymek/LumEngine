@@ -18,30 +18,30 @@ namespace lum {
 			using Iterator = std::filesystem::directory_iterator;
 
 			/* @brief Creates an iterator starting at the given directory. */
-			DirectoryIterator( const Path& path ) : mIterator( path.ToString( ) ) {}
+			DirectoryIterator( const Path& path ) : m_Iterator( path.ToString( ) ) {}
 
 			/* @brief Creates an end iterator. */
 			DirectoryIterator( ) {}
 
 			/* @brief Advances the iterator to the next directory entry. */
 			DirectoryIterator& operator++( ) {
-				++mIterator;
+				++m_Iterator;
 				return *this;
 			}
 
 			/* @brief Checks whether two iterators point to different entries. */
 			bool operator!=( DirectoryIterator& other ) {
-				return mIterator != other.mIterator;
+				return m_Iterator != other.m_Iterator;
 			}
 
 			/* @brief Returns the path of the current directory entry. */
 			Path operator*( ) {
-				return Path( mIterator->path( ) );
+				return Path( m_Iterator->path( ) );
 			}
 
 		private:
 
-			Iterator mIterator{};
+			Iterator m_Iterator{};
 
 		};
 
@@ -52,11 +52,11 @@ namespace lum {
 	public:
 
 		/* @brief Creates a directory wrapper for the given path. */
-		Directory( const Path& path ) : mPath( path ) {}
+		Directory( const Path& path ) : m_Path( path ) {}
 
 		/* @brief Returns an iterator to the first directory entry. */
 		detail::DirectoryIterator begin( ) {
-			return detail::DirectoryIterator( mPath );
+			return detail::DirectoryIterator( m_Path );
 		}
 
 		/* @brief Returns an iterator representing the end of the directory. */
@@ -66,12 +66,12 @@ namespace lum {
 
 		/* @brief Returns the path represented by this directory. */
 		Path& GetPath( ) {
-			return mPath;
+			return m_Path;
 		}
 
 	private:
 
-		Path mPath{};
+		Path m_Path{};
 
 	};
 

@@ -12,49 +12,49 @@ namespace lum::rhi::gl {
 	VertexLayoutHandle GLDevice::CreateVertexLayout( const VertexLayoutCreateInfo& desc, BufferHandle vbo ) {
 
 		LUM_ASSERT( IsValid( vbo ), "Invalid buffer" );
-		LUM_ASSERT( desc.mAttributes.size( ) > 0, "Vertex layout has no attributes" );
+		LUM_ASSERT( desc.m_Attributes.size( ) > 0, "Vertex layout has no attributes" );
 
 		VertexLayout layout;
-		Buffer& buffer = mBuffers[ vbo ];
+		Buffer& buffer = m_Buffers[ vbo ];
 
-		glCreateVertexArrays( 1, &layout.mHandle );
+		glCreateVertexArrays( 1, &layout.m_Handle );
 		glVertexArrayVertexBuffer(
-			layout.mHandle,
-			desc.mBinding,
-			buffer.mHandle,
-			desc.mOffset,
-			desc.mStride
+			layout.m_Handle,
+			desc.m_Binding,
+			buffer.m_Handle,
+			desc.m_Offset,
+			desc.m_Stride
 		);
 
-		for (int32 i = 0; i < desc.mAttributes.size( ); i++) {
+		for (int32 i = 0; i < desc.m_Attributes.size( ); i++) {
 
 			glVertexArrayAttribFormat(
-				layout.mHandle,
-				desc.mAttributes[ i ].mShaderLocation,
-				detail::kDataFormatLookup[ LookupCast( desc.mAttributes[ i ].mFormat ) ],
+				layout.m_Handle,
+				desc.m_Attributes[ i ].m_ShaderLocation,
+				detail::kDataFormatLookup[ LookupCast( desc.m_Attributes[ i ].m_Format ) ],
 				GL_FLOAT,
 				GL_FALSE,
-				desc.mAttributes[ i ].mRelativeOffset
+				desc.m_Attributes[ i ].m_RelativeOffset
 			);
 
 			glVertexArrayAttribBinding(
-				layout.mHandle,
-				desc.mAttributes[ i ].mShaderLocation,
-				desc.mBinding
+				layout.m_Handle,
+				desc.m_Attributes[ i ].m_ShaderLocation,
+				desc.m_Binding
 			);
 
-			glEnableVertexArrayAttrib( layout.mHandle, desc.mAttributes[ i ].mShaderLocation );
+			glEnableVertexArrayAttrib( layout.m_Handle, desc.m_Attributes[ i ].m_ShaderLocation );
 
 		}
 
-		return mLayouts.Append( std::move( layout ) );
+		return m_Layouts.Append( std::move( layout ) );
 
 	}
 	void GLDevice::Delete( VertexLayoutHandle& layout ) {
 
 		LUM_RETURN_IF( !IsValid( layout ), LUM_SEV_WARN, "Invalid layout" );
-		glDeleteVertexArrays( 1, &mLayouts[ layout ].mHandle );
-		mLayouts.Remove( layout );
+		glDeleteVertexArrays( 1, &m_Layouts[ layout ].m_Handle );
+		m_Layouts.Remove( layout );
 
 	}
 }

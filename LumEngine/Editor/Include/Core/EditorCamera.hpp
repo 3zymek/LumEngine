@@ -45,7 +45,7 @@ namespace lum::editor {
 		float32 mMovementSpeed = 13.0f;
 		float32 mSensivity = 0.1f;
 
-		float32 mYaw = -90.0f;
+		float32 m_Yaw = -90.0f;
 		float32 mPitch = 0.0f;
 
 		float32 mAspectRatio = 16.0f / 9.0f;

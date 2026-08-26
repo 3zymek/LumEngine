@@ -19,7 +19,7 @@ namespace lum {
 		LUM_GENERATED_BODY( )
 
 		/* @brief Null-terminated fixed-size name string. Max 31 usable characters. */
-		LUM_PROPERTY( ) FixedString<32> mName;
+		LUM_PROPERTY( ) FixedString<32> m_Name;
 
 	};
 

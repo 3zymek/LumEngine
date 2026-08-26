@@ -97,15 +97,15 @@ namespace lum::ev {
 		*  @thread_safety Call from the main thread or the thread that owns the EventBus.
 		*/
 		void FlushEvents( ) {
-			for (usize i = 0; i < limits::kMaxEventTypes; i++) {
-				if (mPools[ i ])
-					mPools[ i ]->FlushEvents( );
+			for (usize i = 0; i < limits::k_MaxEventTypes; i++) {
+				if (m_Pools[ i ])
+					m_Pools[ i ]->FlushEvents( );
 			}
 		}
 
 	private:
 
-		detail::EventPoolBase* mPools[ limits::kMaxEventTypes ]{};
+		detail::EventPoolBase* m_Pools[ limits::k_MaxEventTypes ]{};
 
 		/* @brief Returns or creates the event pool for the given event type.
 		*  Allocates a new EventPool on first access for the given type.
@@ -117,9 +117,9 @@ namespace lum::ev {
 
 			auto typeId = TypeRegistry::GetTypeId<tType>( );
 
-			LUM_ASSERT( typeId < limits::kMaxEventTypes, "Max event types reached" );
+			LUM_ASSERT( typeId < limits::k_MaxEventTypes, "Max event types reached" );
 
-			auto& ptr = mPools[ typeId ];
+			auto& ptr = m_Pools[ typeId ];
 
 			if (!ptr) {
 				ptr = new detail::EventPool<tType>( );
@@ -130,17 +130,17 @@ namespace lum::ev {
 
 		/* @brief Initializes all pool slots to nullptr. */
 		void initialize_pools( ) {
-			for (usize i = 0; i < limits::kMaxEventTypes; i++) {
-				mPools[ i ] = nullptr;
+			for (usize i = 0; i < limits::k_MaxEventTypes; i++) {
+				m_Pools[ i ] = nullptr;
 			}
 		}
 
 		/* @brief Deletes all allocated event pools and resets slots to nullptr. */
 		void destroy_pools( ) {
-			for (usize i = 0; i < limits::kMaxEventTypes; i++) {
-				if (mPools[ i ] != nullptr) {
-					delete mPools[ i ];
-					mPools[ i ] = nullptr;
+			for (usize i = 0; i < limits::k_MaxEventTypes; i++) {
+				if (m_Pools[ i ] != nullptr) {
+					delete m_Pools[ i ];
+					m_Pools[ i ] = nullptr;
 				}
 			}
 		}

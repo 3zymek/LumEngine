@@ -9,13 +9,13 @@
 namespace lum::rhi {
 
 	struct ShaderCreateInfo {
-		String mVertexContent;
-		String mFragmentContent;
+		String m_VertexContent;
+		String m_FragmentContent;
 	};
 
 	struct Shader {
 
-		ShaderID mHandle = 0;
+		ShaderID m_Handle = 0;
 
 	};
 

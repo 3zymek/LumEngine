@@ -31,7 +31,7 @@ namespace lum {
 	/* @brief Descriptor for loading a cubemap from 6 individual face textures. */
 	struct CubemapDescriptor {
 		/* @brief Paths to the 6 cubemap faces in order: +X, -X, +Y, -Y, +Z, -Z */
-		const char* mFaces[6];
+		const char* m_Faces[6];
 	};
 
 	/* @brief Manages GPU texture resources and their lifecycle.
@@ -91,21 +91,21 @@ namespace lum {
 
 	private:
 
-		rhi::IRenderDevice* mRenderDevice = nullptr;
+		rhi::IRenderDevice* m_RenderDevice = nullptr;
 
 		/* @brief Fallback texture displayed when a requested asset cannot be found. */
-		rhi::TextureHandle mMissingTexture;
+		rhi::TextureHandle m_MissingTexture;
 
 		/* @brief Default 1x1 white texture used as a neutral fallback for albedo and non-color maps. */
-		rhi::TextureHandle mDefaultAlbedoTexture;
+		rhi::TextureHandle m_DefaultAlbedoTexture;
 
 		/* @brief Default 1x1 (128, 128, 255) texture representing a flat normal, used when no normal map is provided. */
-		rhi::TextureHandle mDefaultNormalTexture;
-		rhi::TextureHandle mDefaultRoughnessTexture;
-		rhi::TextureHandle mDefaultMetallicTexture;
+		rhi::TextureHandle m_DefaultNormalTexture;
+		rhi::TextureHandle m_DefaultRoughnessTexture;
+		rhi::TextureHandle m_DefaultMetallicTexture;
 
 		/* @brief Cache mapping texture path hashes to their GPU handles. */
-		std::unordered_map<uint64, rhi::TextureHandle> mTextures;
+		std::unordered_map<uint64, rhi::TextureHandle> m_Textures;
 
 
 		void init( );
@@ -129,27 +129,27 @@ namespace lum {
 		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
 		static inline rhi::TextureCreateInfo sTexturePresetsLookup[] = {
 			{ // ALBEDO
-				.mInternalFormat = rhi::TextureFormat::SRGB8_Alpha8,
-				.mPixelFormat = rhi::PixelLayout::RGBA,
-				.mDataType = rhi::PixelDataType::UnsignedByte,
+				.m_InternalFormat = rhi::TextureFormat::SRGB8_Alpha8,
+				.m_PixelFormat = rhi::PixelLayout::RGBA,
+				.m_DataType = rhi::PixelDataType::UnsignedByte,
 				.bGenerateMipmaps = true,
 			},
 			{ // NORMAL
-				.mInternalFormat = rhi::TextureFormat::RGB8,
-				.mPixelFormat = rhi::PixelLayout::RGB,
-				.mDataType = rhi::PixelDataType::UnsignedByte,
+				.m_InternalFormat = rhi::TextureFormat::RGB8,
+				.m_PixelFormat = rhi::PixelLayout::RGB,
+				.m_DataType = rhi::PixelDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // METALNESS
-				.mInternalFormat = rhi::TextureFormat::R8,
-				.mPixelFormat = rhi::PixelLayout::R,
-				.mDataType = rhi::PixelDataType::UnsignedByte,
+				.m_InternalFormat = rhi::TextureFormat::R8,
+				.m_PixelFormat = rhi::PixelLayout::R,
+				.m_DataType = rhi::PixelDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 			{ // ROUGHNESS
-				.mInternalFormat = rhi::TextureFormat::R8,
-				.mPixelFormat = rhi::PixelLayout::R,
-				.mDataType = rhi::PixelDataType::UnsignedByte,
+				.m_InternalFormat = rhi::TextureFormat::R8,
+				.m_PixelFormat = rhi::PixelLayout::R,
+				.m_DataType = rhi::PixelDataType::UnsignedByte,
 				.bGenerateMipmaps = true
 			},
 		};

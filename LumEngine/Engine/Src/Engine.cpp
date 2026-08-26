@@ -14,59 +14,59 @@ namespace lum {
 
 	void Engine::Initialize( const EngineCreateInfo& info ) {
 
-		ResourceLoader::SetProjectRoot( info.mProjectDir );
+		ResourceLoader::SetProjectRoot( info.m_ProjectDir );
 
-		mAudioModule.Initialize( mEventBus );
-		mPlatform.Initialize( info, mEventBus );
-		mResourceModule.Initialize( mPlatform, mEventBus );
+		m_AudioModule.Initialize( m_EventBus );
+		m_Platform.Initialize( info, m_EventBus );
+		m_ResourceModule.Initialize( m_Platform, m_EventBus );
 
 		{
 			RenderModuleCreateInfo desc{};
-			desc.mEventBus = mEventBus;
-			desc.mRenderDev = mPlatform.mRenderDevice.get();
-			desc.mResourceModule = &mResourceModule;
-			mRenderModule.Initialize( desc );
+			desc.m_EventBus = m_EventBus;
+			desc.m_RenderDev = m_Platform.m_RenderDevice.get();
+			desc.m_ResourceModule = &m_ResourceModule;
+			m_RenderModule.Initialize( desc );
 		}
 
 		{
 			SceneModuleCreateInfo desc{};
-			desc.mAudioModule = mAudioModule;
-			desc.mResourceModule = mResourceModule;
-			desc.mRenderModule = mRenderModule;
-			desc.mEventBus = mEventBus;
-			mSceneModule.Initialize( desc );
+			desc.m_AudioModule = m_AudioModule;
+			desc.m_ResourceModule = m_ResourceModule;
+			desc.m_RenderModule = m_RenderModule;
+			desc.m_EventBus = m_EventBus;
+			m_SceneModule.Initialize( desc );
 		}
 
 	}
 	void Engine::BeginFrame( ) {
 
-		if(mPlatform.mWindow.HasValue())
-			mPlatform.mWindow.Value().Update( );
-		mEventBus.FlushEvents( );
-		mRenderModule.mRenderer.BeginFrame( );
+		if(m_Platform.m_Window.HasValue())
+			m_Platform.m_Window.Value().Update( );
+		m_EventBus.FlushEvents( );
+		m_RenderModule.m_Renderer.BeginFrame( );
 
 	}
 	void Engine::EndFrame( ) {
 
-		mRenderModule.mRenderer.EndFrame( );
+		m_RenderModule.m_Renderer.EndFrame( );
 
 	}
 	void Engine::Tick( ) {
 
-		SceneInstance* scene = mSceneModule.mSceneMgr.GetCurrentScene( );
+		SceneInstance* scene = m_SceneModule.m_SceneMgr.GetCurrentScene( );
 
 		if (scene) {
 			TransformSystem::Update( *scene );
-			mAudioModule.mAudioMgr.UpdateInstances( &scene->mEntityMgr );
-			mRenderModule.mRenderSys.Update( *scene );
+			m_AudioModule.m_AudioMgr.UpdateInstances( &scene->m_EntityMgr );
+			m_RenderModule.m_RenderSys.Update( *scene );
 		}
 
-		mAudioModule.mAudioDevice->SubmitFrame( );
+		m_AudioModule.m_AudioDevice->SubmitFrame( );
 
 	}
 	void Engine::Finalize( ) {
 
-		mPlatform.Finalize( );
+		m_Platform.Finalize( );
 
 	}
 

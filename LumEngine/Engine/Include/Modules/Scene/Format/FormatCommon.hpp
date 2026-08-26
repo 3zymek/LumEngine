@@ -32,25 +32,25 @@ namespace lum {
 	struct SceneManagerContext {
 
 		/* @brief Pointer to the active texture manager. */
-		SafePtr<TextureManager> mTextureMgr = nullptr;
+		SafePtr<TextureManager> m_TextureMgr = nullptr;
 
 		/* @brief Pointer to the active material manager. */
-		SafePtr<MaterialManager> mMaterialMgr = nullptr;
+		SafePtr<MaterialManager> m_MaterialMgr = nullptr;
 
 		/* @brief Pointer to the active mesh manager. */
-		SafePtr<MeshManager> mMeshMgr = nullptr;
+		SafePtr<MeshManager> m_MeshMgr = nullptr;
 
 		/* @brief Pointer to the active shader manager. */
-		SafePtr<ShaderManager> mShaderMgr = nullptr;
+		SafePtr<ShaderManager> m_ShaderMgr = nullptr;
 
 		/* @brief Pointer to the active audio manager. */
-		SafePtr<AudioManager> mAudioMgr = nullptr;
+		SafePtr<AudioManager> m_AudioMgr = nullptr;
 
 		/* @brief Pointer to the active event bus. */
-		SafePtr<ev::EventBus> mEventBus = nullptr;
+		SafePtr<ev::EventBus> m_EventBus = nullptr;
 
 		/* @brief Pointer to the active renderer. */
-		SafePtr<render::Renderer> mRenderer = nullptr;
+		SafePtr<render::Renderer> m_Renderer = nullptr;
 
 	};
 
@@ -83,10 +83,10 @@ namespace lum {
 
 		/* @brief A single token produced by the lexer. */
 		struct Token {
-			uint32		mLine{};	// Token line in text file
-			TokenType	mType{};	// Token type
-			String		mValue{};   // Raw string value of the token
-			Path		mFilePath{};
+			uint32		m_Line{};	// Token line in text file
+			TokenType	m_Type{};	// Token type
+			String		m_Value{};   // Raw string value of the token
+			Path		m_FilePath{};
 		};
 
 		/* @brief Context passed through the scene parsing pipeline.
@@ -95,16 +95,16 @@ namespace lum {
 		struct DeserializeContext {
 
 			/* @brief Reference to the scene being populated. */
-			SceneInstance& mScene;
+			SceneInstance& m_Scene;
 
-			std::unordered_map<uint64, EntityID> mPersistentToEntity{};
-			std::unordered_map<EntityID, std::vector<EntityID>> mPersistentChildren{};
+			std::unordered_map<uint64, EntityID> m_PersistentToEntity{};
+			std::unordered_map<EntityID, std::vector<EntityID>> m_PersistentChildren{};
 
 			/* @brief Entity currently being parsed and populated with components. */
-			EntityID mCurrentEntity;
+			EntityID m_CurrentEntity;
 
 			/* @brief Resource manager context used to load and resolve assets. */
-			SceneManagerContext mCtx;
+			SceneManagerContext m_Ctx;
 
 		};
 
@@ -114,21 +114,21 @@ namespace lum {
 
 		struct SceneComponentInfo {
 
-			String			mSerializationName{};
-			uint64			mTypeId{};
-			DeserializeFn	mDeserializeFn = nullptr;
-			SerializeFn		mSerializeFn = nullptr;
+			String			m_SerializationName{};
+			uint64			m_TypeId{};
+			DeserializeFn	m_DeserializeFn = nullptr;
+			SerializeFn		m_SerializeFn = nullptr;
 
 		};
 
 		/*
 		struct FieldTypeInfo {
 
-			String mName{};
-			String mTypeName{};
+			String m_Name{};
+			String m_TypeName{};
 
-			usize mByteSize = 0;
-			usize mByteOffset = 0;
+			usize m_ByteSize = 0;
+			usize m_ByteOffset = 0;
 
 		};
 		*/
@@ -161,22 +161,22 @@ namespace lum {
 
 			/* @brief Checks whether the token stream is still inside a curly bracket block. */
 			inline bool InBlock( std::vector<Token>& tokens, int32 i ) {
-				return i < tokens.size( ) && tokens[ i ].mType != TokenType::RBracket;
+				return i < tokens.size( ) && tokens[ i ].m_Type != TokenType::RBracket;
 			}
 
 			/* @brief Checks whether the token stream is still inside a square bracket block. */
 			inline bool InSquareBlock( std::vector<Token>& tokens, int32 i ) {
-				return i < tokens.size( ) && tokens[ i ].mType != TokenType::RSquareBracket;
+				return i < tokens.size( ) && tokens[ i ].m_Type != TokenType::RSquareBracket;
 			}
 
 			/* @brief Checks whether the current token matches the given string. */
 			inline bool IsString( std::vector<Token>& tokens, int32& i, StringView str ) {
-				return tokens[ i ].mValue == ToLower( str );
+				return tokens[ i ].m_Value == ToLower( str );
 			}
 
 			/* @brief Checks whether the current token has the given type. */
 			inline bool IsToken( std::vector<Token>& tokens, int32 i, TokenType type ) {
-				return (i < tokens.size( ) && tokens[ i ].mType == type);
+				return (i < tokens.size( ) && tokens[ i ].m_Type == type);
 			}
 
 
@@ -188,8 +188,8 @@ namespace lum {
 				if (!IsToken( tokens, i, TokenType::LBracket )) {
 					throw DeserializeException(
 						"Opening bracket expected at line %llu in file %s",
-						tokens[ i ].mLine,
-						tokens[ i ].mFilePath.ToString( ).c_str( )
+						tokens[ i ].m_Line,
+						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
 				}
 			}
@@ -205,8 +205,8 @@ namespace lum {
 				if (!IsToken( tokens, i, TokenType::LSquareBracket )) {
 					throw DeserializeException(
 						"Opening square bracket expected at line %llu in file %s",
-						tokens[ i ].mLine,
-						tokens[ i ].mFilePath.ToString( ).c_str( )
+						tokens[ i ].m_Line,
+						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
 				}
 			}
@@ -222,8 +222,8 @@ namespace lum {
 				if (!IsToken( tokens, i, TokenType::Colon )) {
 					throw DeserializeException(
 						"Colon expected at line %llu in file %s",
-						tokens[ i ].mLine,
-						tokens[ i ].mFilePath.ToString( ).c_str( )
+						tokens[ i ].m_Line,
+						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
 				}
 			}
@@ -243,11 +243,11 @@ namespace lum {
 				if (!IsToken( tokens, i, TokenType::String )) {
 					throw DeserializeException(
 						"String expected at line %llu in file %s",
-						tokens[ i ].mLine,
-						tokens[ i ].mFilePath.ToString( ).c_str( )
+						tokens[ i ].m_Line,
+						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
 				}
-				return tokens[ i ].mValue;
+				return tokens[ i ].m_Value;
 			}
 
 			inline String ReadStringParameter( std::vector<Token>& tokens, int32& i ) {
@@ -260,11 +260,11 @@ namespace lum {
 				if (!IsToken( tokens, i, TokenType::Number )) {
 					throw DeserializeException(
 						"Bool expected at line %llu in file %s",
-						tokens[ i ].mLine,
-						tokens[ i ].mFilePath.ToString( ).c_str( )
+						tokens[ i ].m_Line,
+						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
 				}
-				return std::stof( tokens[ i ].mValue ) > 0;
+				return std::stof( tokens[ i ].m_Value ) > 0;
 			}
 
 			inline bool ReadBoolParameter( std::vector<Token>& tokens, int32& i ) {
@@ -277,12 +277,12 @@ namespace lum {
 				if (!IsToken( tokens, i, TokenType::Number )) {
 					throw DeserializeException(
 						"Float expected at line %llu in file %s",
-						tokens[ i ].mLine,
-						tokens[ i ].mFilePath.ToString( ).c_str( )
+						tokens[ i ].m_Line,
+						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
 					return 0;
 				}
-				return std::stof( tokens[ i ].mValue );
+				return std::stof( tokens[ i ].m_Value );
 			}
 
 			inline float32 ReadFloatParameter( std::vector<Token>& tokens, int32& i ) {
@@ -295,11 +295,11 @@ namespace lum {
 				if (!IsToken( tokens, i, TokenType::Number )) {
 					throw DeserializeException(
 						"Integer expected at line %llu in file %s",
-						tokens[ i ].mLine,
-						tokens[ i ].mFilePath.ToString( ).c_str( )
+						tokens[ i ].m_Line,
+						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
 				}
-				return std::stoll( tokens[ i ].mValue );
+				return std::stoll( tokens[ i ].m_Value );
 			}
 
 			inline int64 ReadIntParameter( std::vector<Token>& tokens, int32& i ) {
@@ -317,12 +317,12 @@ namespace lum {
 					if (!IsToken( tokens, tokenIndex, TokenType::Number )) {
 						throw DeserializeException(
 							"Vector3 expected at line %llu in file %s",
-							tokens[ tokenIndex ].mLine,
-							tokens[ tokenIndex ].mFilePath.ToString( ).c_str( )
+							tokens[ tokenIndex ].m_Line,
+							tokens[ tokenIndex ].m_FilePath.ToString( ).c_str( )
 						);
 					}
 
-					vec[ it ] = std::stof( tokens[ tokenIndex ].mValue );
+					vec[ it ] = std::stof( tokens[ tokenIndex ].m_Value );
 				}
 
 				return Vector3( vec[ 0 ], vec[ 1 ], vec[ 2 ] );
@@ -343,12 +343,12 @@ namespace lum {
 					if (!IsToken( tokens, tokenIndex, TokenType::Number )) {
 						throw DeserializeException(
 							"Vector2 expected at line %llu in file %s",
-							tokens[ tokenIndex ].mLine,
-							tokens[ tokenIndex ].mFilePath.ToString( ).c_str( )
+							tokens[ tokenIndex ].m_Line,
+							tokens[ tokenIndex ].m_FilePath.ToString( ).c_str( )
 						);
 					}
 
-					vec[ it ] = std::stof( tokens[ tokenIndex ].mValue );
+					vec[ it ] = std::stof( tokens[ tokenIndex ].m_Value );
 				}
 
 				return Vector2( vec[ 0 ], vec[ 1 ] );
@@ -400,19 +400,19 @@ namespace lum {
 
 			inline void WriteVec3Parameter( const Vector3& val, StringBuilder& sb ) {
 				sb.Append( "\t\t\t" );
-				sb.Append( val.mX );
+				sb.Append( val.m_X );
 				sb.Append( " " );
-				sb.Append( val.mY );
+				sb.Append( val.m_Y );
 				sb.Append( " " );
-				sb.AppendLine( val.mZ );
+				sb.AppendLine( val.m_Z );
 			}
 
 
 			inline void WriteVec2Parameter( const Vector2& val, StringBuilder& sb ) {
 				sb.Append( "\t\t\t" );
-				sb.Append( val.mX );
+				sb.Append( val.m_X );
 				sb.Append( " " );
-				sb.AppendLine( val.mY );
+				sb.AppendLine( val.m_Y );
 			}
 
 		} // namespace lum::fmt::detail

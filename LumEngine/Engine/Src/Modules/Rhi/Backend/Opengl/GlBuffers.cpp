@@ -15,25 +15,25 @@ namespace lum::rhi::gl {
 
 		Buffer buffer;
 
-		buffer.mSize = desc.mSize;
-		buffer.mType = desc.mBufferType;
-		buffer.mFlags = desc.mMapFlags;
-		buffer.mUsage = desc.mBufferUsage;
+		buffer.m_Size = desc.m_Size;
+		buffer.m_Type = desc.m_BufferType;
+		buffer.m_Flags = desc.m_MapFlags;
+		buffer.m_Usage = desc.m_BufferUsage;
 
 		GLbitfield initFlags =
-			((buffer.mUsage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
-			| translate_mapping_flags( buffer.mFlags );
+			((buffer.m_Usage == BufferUsage::Static) ? 0 : GL_DYNAMIC_STORAGE_BIT)
+			| translate_mapping_flags( buffer.m_Flags );
 
-		glCreateBuffers( 1, &buffer.mHandle );
+		glCreateBuffers( 1, &buffer.m_Handle );
 
 		glNamedBufferStorage(
-			buffer.mHandle,
-			buffer.mSize,
-			desc.mData,
+			buffer.m_Handle,
+			buffer.m_Size,
+			desc.m_Data,
 			initFlags
 		);
 
-		return mBuffers.Append( std::move( buffer ) );
+		return m_Buffers.Append( std::move( buffer ) );
 
 	}
 
@@ -41,15 +41,15 @@ namespace lum::rhi::gl {
 
 		LUM_ASSERT( IsValid( buff ), "Invalid buffer" );
 
-		Buffer& buffer = mBuffers[ buff ];
+		Buffer& buffer = m_Buffers[ buff ];
 
-		if (size == 0) size = buffer.mSize;
+		if (size == 0) size = buffer.m_Size;
 
-		LUM_ASSERT( offset + size <= buffer.mSize, "Invalid offset or size" );
-		LUM_ASSERT( buffer.mUsage != BufferUsage::Static, "Buffer %d is static, cannot be updated" );
-		LUM_ASSERT( buffer.mFlags.Has( MapFlag::Write ), "Buffer %d has no write flags enabled" );
+		LUM_ASSERT( offset + size <= buffer.m_Size, "Invalid offset or size" );
+		LUM_ASSERT( buffer.m_Usage != BufferUsage::Static, "Buffer %d is static, cannot be updated" );
+		LUM_ASSERT( buffer.m_Flags.Has( MapFlag::Write ), "Buffer %d has no write flags enabled" );
 
-		glNamedBufferSubData( buffer.mHandle, offset, size, data );
+		glNamedBufferSubData( buffer.m_Handle, offset, size, data );
 
 	}
 
@@ -57,12 +57,12 @@ namespace lum::rhi::gl {
 
 		LUM_RETURN_IF( !IsValid( buff ), LUM_SEV_DEBUG, "Invalid buffer" );
 
-		Buffer& buffer = mBuffers[ buff ];
+		Buffer& buffer = m_Buffers[ buff ];
 		UnmapBuffer( buff );
 
-		glDeleteBuffers( 1, &buffer.mHandle );
+		glDeleteBuffers( 1, &buffer.m_Handle );
 
-		mBuffers.Remove( buff );
+		m_Buffers.Remove( buff );
 
 	}
 
@@ -70,15 +70,15 @@ namespace lum::rhi::gl {
 
 		LUM_RETURN_DEF_IF( !IsValid( buff ), LUM_SEV_WARN, "Invalid buffer" );
 
-		Buffer& buffer = mBuffers[ buff ];
+		Buffer& buffer = m_Buffers[ buff ];
 
-		LUM_ASSERT( offset + size <= buffer.mSize || size < buffer.mSize, "Invalid offset or size" );
-		if (size == 0) size = buffer.mSize;
+		LUM_ASSERT( offset + size <= buffer.m_Size || size < buffer.m_Size, "Invalid offset or size" );
+		if (size == 0) size = buffer.m_Size;
 
-		void* ptr = glMapNamedBufferRange( buffer.mHandle, offset, size, translate_mapping_flags( flags ) );
+		void* ptr = glMapNamedBufferRange( buffer.m_Handle, offset, size, translate_mapping_flags( flags ) );
 
 		LUM_ASSERT( ptr, "Failed to map buffer" );
-		buffer.mMapped = true;
+		buffer.m_Mapped = true;
 
 		return ptr;
 	}
@@ -87,10 +87,10 @@ namespace lum::rhi::gl {
 
 		LUM_RETURN_IF( !IsValid( buff ), LUM_SEV_WARN, "Invalid buffer" );
 
-		Buffer& buffer = mBuffers[ buff ];
-		if (!buffer.mMapped) return;
+		Buffer& buffer = m_Buffers[ buff ];
+		if (!buffer.m_Mapped) return;
 
-		glUnmapNamedBuffer( buffer.mHandle );
+		glUnmapNamedBuffer( buffer.m_Handle );
 
 	}
 
@@ -98,19 +98,19 @@ namespace lum::rhi::gl {
 
 		LUM_ASSERT( IsValid( ssbo ), "Invalid buffer" );
 
-		const auto& buffer = mBuffers[ ssbo ];
+		const auto& buffer = m_Buffers[ ssbo ];
 
-		glBindBufferBase( GL_SHADER_STORAGE_BUFFER, binding, buffer.mHandle );
+		glBindBufferBase( GL_SHADER_STORAGE_BUFFER, binding, buffer.m_Handle );
 
 	}
 
 	void GLDevice::AttachElementBufferToLayout( BufferHandle ebo, VertexLayoutHandle vao ) {
 
-		LUM_ASSERT( mLayouts.Contains( vao ), "Invalid layout" );
-		LUM_ASSERT( mBuffers.Contains( ebo ), "Invalid buffer" );
+		LUM_ASSERT( m_Layouts.Contains( vao ), "Invalid layout" );
+		LUM_ASSERT( m_Buffers.Contains( ebo ), "Invalid buffer" );
 
-		glVertexArrayElementBuffer( mLayouts[ vao ].mHandle, mBuffers[ ebo ].mHandle );
-		mLayouts[ vao ].mElementBuff = ebo;
+		glVertexArrayElementBuffer( m_Layouts[ vao ].m_Handle, m_Buffers[ ebo ].m_Handle );
+		m_Layouts[ vao ].m_ElementBuff = ebo;
 
 	}
 
@@ -118,7 +118,7 @@ namespace lum::rhi::gl {
 
 		LUM_ASSERT( IsValid( ubo ), "Invalid buffer" );
 
-		glBindBufferBase( GL_UNIFORM_BUFFER, binding, mBuffers[ ubo ].mHandle );
+		glBindBufferBase( GL_UNIFORM_BUFFER, binding, m_Buffers[ ubo ].m_Handle );
 
 	}
 

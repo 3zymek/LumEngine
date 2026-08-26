@@ -12,11 +12,11 @@ namespace lum {
 	}
 
 	void GLFWOpenGLContext::SwapBuffers( ) {
-		glfwSwapBuffers( &mWindow( ) );
+		glfwSwapBuffers( &m_Window( ) );
 	}
 
 	void GLFWOpenGLContext::MakeCurrent( ) {
-		glfwMakeContextCurrent( &mWindow( ) );
+		glfwMakeContextCurrent( &m_Window( ) );
 	}
 
 	void* GLFWOpenGLContext::GetProcAddress( const char* functionName ) {

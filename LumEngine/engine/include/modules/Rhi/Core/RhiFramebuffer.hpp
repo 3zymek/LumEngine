@@ -12,13 +12,13 @@ namespace lum::rhi {
     struct FramebufferCreateInfo {
 
         /* @brief Color attachments — pairs of binding slot and texture handle. */
-        std::vector<std::pair<uint8, TextureHandle>> mColorTex;
+        std::vector<std::pair<uint8, TextureHandle>> m_ColorTex;
 
         /* @brief Optional depth attachment texture. */
-        TextureHandle mDepthTex;
+        TextureHandle m_DepthTex;
 
         /* @brief Optional stencil attachment texture. */
-        TextureHandle mStencilTex;
+        TextureHandle m_StencilTex;
 
     };
 
@@ -26,32 +26,32 @@ namespace lum::rhi {
     struct FramebufferBlitDescription {
 
         /* @brief Source framebuffer to read from. */
-        FramebufferHandle mSource;
+        FramebufferHandle m_Source;
 
         /* @brief Destination framebuffer to write to. */
-        FramebufferHandle mDestination;
+        FramebufferHandle m_Destination;
 
         /* @brief Bottom-left corner of the source rectangle. */
-        uint32 mSrcX0 = 0;
-        uint32 mSrcY0 = 0;
+        uint32 m_SrcX0 = 0;
+        uint32 m_SrcY0 = 0;
 
         /* @brief Top-right corner of the source rectangle. */
-        uint32 mSrcX1 = 0;
-        uint32 mSrcY1 = 0;
+        uint32 m_SrcX1 = 0;
+        uint32 m_SrcY1 = 0;
 
         /* @brief Bottom-left corner of the destination rectangle. */
-        uint32 mDstX0 = 0;
-        uint32 mDstY0 = 0;
+        uint32 m_DstX0 = 0;
+        uint32 m_DstY0 = 0;
 
         /* @brief Top-right corner of the destination rectangle. */
-        uint32 mDstX1 = 0;
-        uint32 mDstY1 = 0;
+        uint32 m_DstX1 = 0;
+        uint32 m_DstY1 = 0;
 
         /* @brief Buffers to copy — color, depth, stencil or a combination. */
-        Flags<BufferBit> mCopyMask;
+        Flags<BufferBit> m_CopyMask;
 
         /* @brief Filtering method applied when source and destination rectangles differ in size. Use Nearest for depth and stencil. */
-        SamplerMagFilter mFilter = SamplerMagFilter::Nearest;
+        SamplerMagFilter m_Filter = SamplerMagFilter::Nearest;
 
     };
 
@@ -59,7 +59,7 @@ namespace lum::rhi {
     struct Framebuffer {
 
         /* @brief Framebuffer object handle. */
-        FramebufferID mHandle = 0;
+        FramebufferID m_Handle = 0;
 
     };
 

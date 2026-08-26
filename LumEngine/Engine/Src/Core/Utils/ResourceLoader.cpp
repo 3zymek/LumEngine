@@ -32,29 +32,29 @@ namespace lum {
 		}
 
 		ImageData texture;
-		texture.mIsHdr = path.EndsWith( ".hdr" );
+		texture.m_IsHdr = path.EndsWith( ".hdr" );
 
 		int32 format{};
 
-		if (texture.mIsHdr) {
+		if (texture.m_IsHdr) {
 
-			float32* data = stbi_loadf( strPath.c_str(), &texture.mWidth, &texture.mHeight, &format, formatCast );
+			float32* data = stbi_loadf( strPath.c_str(), &texture.m_Width, &texture.m_Height, &format, formatCast );
 			if (!data) {
 				return Result<ImageData>::Failure( stbi_failure_reason( ) );
 			}
-			texture.mChannels = (formatCast != 0) ? formatCast : format;
-			texture.mFloatPixels.assign( data, data + texture.mWidth * texture.mHeight * texture.mChannels );
+			texture.m_Channels = (formatCast != 0) ? formatCast : format;
+			texture.m_FloatPixels.assign( data, data + texture.m_Width * texture.m_Height * texture.m_Channels );
 			stbi_image_free( data );
 
 		}
 		else {
 
-			unsigned char* data = stbi_load( strPath.c_str( ), &texture.mWidth, &texture.mHeight, &format, formatCast );
+			unsigned char* data = stbi_load( strPath.c_str( ), &texture.m_Width, &texture.m_Height, &format, formatCast );
 			if (!data) {
 				return Result<ImageData>::Failure( stbi_failure_reason( ) );
 			}
-			texture.mChannels = (formatCast != 0) ? formatCast : format;
-			texture.mPixels.assign( data, data + texture.mWidth * texture.mHeight * texture.mChannels );
+			texture.m_Channels = (formatCast != 0) ? formatCast : format;
+			texture.m_Pixels.assign( data, data + texture.m_Width * texture.m_Height * texture.m_Channels );
 			stbi_image_free( data );
 
 		}
@@ -92,48 +92,48 @@ namespace lum {
 			for (uint32 vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
 				Vertex vert;
 
-				vert.mPosition = {
+				vert.m_Position = {
 					mesh->mVertices[ vertexIndex ].x,
 					mesh->mVertices[ vertexIndex ].y,
 					mesh->mVertices[ vertexIndex ].z
 				};
 
 				if (mesh->HasNormals( )) {
-					vert.mNormal = {
+					vert.m_Normal = {
 						mesh->mNormals[ vertexIndex ].x,
 						mesh->mNormals[ vertexIndex ].y,
 						mesh->mNormals[ vertexIndex ].z
 					};
 				}
-				else vert.mNormal = { 0.0f, 0.0f, 0.0f };
+				else vert.m_Normal = { 0.0f, 0.0f, 0.0f };
 
 				if (mesh->HasTangentsAndBitangents( )) {
-					vert.mTangent = {
+					vert.m_Tangent = {
 						mesh->mTangents[ vertexIndex ].x,
 						mesh->mTangents[ vertexIndex ].y,
 						mesh->mTangents[ vertexIndex ].z
 					};
-					vert.mBitangent = {
+					vert.m_Bitangent = {
 						mesh->mBitangents[ vertexIndex ].x,
 						mesh->mBitangents[ vertexIndex ].y,
 						mesh->mBitangents[ vertexIndex ].z
 					};
 				}
 				else {
-					vert.mTangent = { 0.0f, 0.0f, 0.0f };
-					vert.mBitangent = { 0.0f, 0.0f, 0.0f };
+					vert.m_Tangent = { 0.0f, 0.0f, 0.0f };
+					vert.m_Bitangent = { 0.0f, 0.0f, 0.0f };
 				}
 
 				if (mesh->mTextureCoords[ 0 ]) {
-					vert.mUv = {
+					vert.m_Uv = {
 						mesh->mTextureCoords[ 0 ][ vertexIndex ].x,
 						mesh->mTextureCoords[ 0 ][ vertexIndex ].y
 					};
 
 				}
-				else vert.mUv = { 0.0f, 0.0f };
+				else vert.m_Uv = { 0.0f, 0.0f };
 
-				finalData.mVertices.push_back( vert );
+				finalData.m_Vertices.push_back( vert );
 
 			}
 
@@ -141,7 +141,7 @@ namespace lum {
 				aiFace face = mesh->mFaces[ faceIndex ];
 
 				for (uint32 elementIndex = 0; elementIndex < face.mNumIndices; ++elementIndex) {
-					finalData.mIndices.push_back( face.mIndices[ elementIndex ] + elementOffset );
+					finalData.m_Indices.push_back( face.mIndices[ elementIndex ] + elementOffset );
 				}
 
 
@@ -163,7 +163,7 @@ namespace lum {
 			return shaderSource;
 		}
 
-		auto defines = FileSystem::ReadAllText( sShaderDefineFile );
+		auto defines = FileSystem::ReadAllText( s_ShaderDefineFile );
 		if (!defines) {
 			return defines;
 		}
@@ -189,9 +189,9 @@ namespace lum {
 
 	Path ResourceLoader::ResolveResourcePath( ResourceRoot root, const Path& filepath ) {
 		if (root == ResourceRoot::External)
-			return (sProjectRoot / filepath).LexicallyNormal( );
+			return (s_ProjectRoot / filepath).LexicallyNormal( );
 		else if (root == ResourceRoot::Internal)
-			return (sInternalAssetsRoot / filepath).LexicallyNormal( );
+			return (s_InternalAssetsRoot / filepath).LexicallyNormal( );
 		return Path( );
 	}
 

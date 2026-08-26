@@ -19,18 +19,18 @@ namespace lum {
 
 		/* @brief Queries the primary monitor and caches its video mode. */
 		void Initialize( ) {
-			mMonitor = glfwGetPrimaryMonitor( );
-			mVideoMode = glfwGetVideoMode( mMonitor );
+			m_Monitor = glfwGetPrimaryMonitor( );
+			m_VideoMode = glfwGetVideoMode( m_Monitor );
 		}
 
 		/* @brief Returns the width of the primary monitor in screen coordinates. */
-		int32 GetWidth( ) const noexcept { return mVideoMode->width; }
+		int32 GetWidth( ) const noexcept { return m_VideoMode->width; }
 
 		/* @brief Returns the height of the primary monitor in screen coordinates. */
-		int32 GetHeight( ) const noexcept { return mVideoMode->height; }
+		int32 GetHeight( ) const noexcept { return m_VideoMode->height; }
 
 		/* @brief Returns the refresh rate of the primary monitor in Hz. */
-		int32 GetRefreshRate( ) const noexcept { return mVideoMode->refreshRate; }
+		int32 GetRefreshRate( ) const noexcept { return m_VideoMode->refreshRate; }
 
 		/* @brief Returns the usable work area of the primary monitor, excluding taskbars.
 		*  @param x Left edge of the work area in screen coordinates.
@@ -39,7 +39,7 @@ namespace lum {
 		*  @param h Height of the work area in screen coordinates.
 		*/
 		void GetWorkArea( int32& x, int32& y, int32& w, int32& h ) const noexcept {
-			glfwGetMonitorWorkarea( mMonitor, &x, &y, &w, &h );
+			glfwGetMonitorWorkarea( m_Monitor, &x, &y, &w, &h );
 		}
 
 		/* @brief Returns the monitor that contains the top-left corner of the given window.
@@ -56,10 +56,10 @@ namespace lum {
 			GLFWmonitor** monitors = glfwGetMonitors( &count );
 
 			for (int32 i = 0; i < count; i++) {
-				int32 mx, my, mw, mh;
-				glfwGetMonitorWorkarea( monitors[ i ], &mx, &my, &mw, &mh );
+				int32 m_X, m_Y, m_W, mh;
+				glfwGetMonitorWorkarea( monitors[ i ], &m_X, &m_Y, &m_W, &mh );
 
-				if (wx >= mx && wx < mx + mw && wy >= my && wy < my + mh)
+				if (wx >= m_X && wx < m_X + m_W && wy >= m_Y && wy < m_Y + mh)
 					return monitors[ i ];
 			}
 
@@ -69,10 +69,10 @@ namespace lum {
 	private:
 
 		/* @brief Handle to the primary GLFW monitor. */
-		GLFWmonitor* mMonitor = nullptr;
+		GLFWmonitor* m_Monitor = nullptr;
 
 		/* @brief Cached video mode for the primary monitor. */
-		const GLFWvidmode* mVideoMode = nullptr;
+		const GLFWvidmode* m_VideoMode = nullptr;
 
 	};
 

@@ -19,9 +19,9 @@ namespace lum {
 
 		/* @brief Stores raw GPU buffer handles for a mesh (VBO, EBO, VAO). */
 		struct RenderResources {
-			rhi::BufferHandle			mVbo;
-			rhi::BufferHandle			mEbo;
-			rhi::VertexLayoutHandle		mVao;
+			rhi::BufferHandle			m_Vbo;
+			rhi::BufferHandle			m_Ebo;
+			rhi::VertexLayoutHandle		m_Vao;
 		};
 
 	} // namespace lum::detail
@@ -62,17 +62,17 @@ namespace lum {
 
 	private:
 
-		SafePtr<render::RendererContext> mCtx = nullptr;
+		SafePtr<render::RendererContext> m_Ctx = nullptr;
 
-		std::unordered_map<uint64, StaticMeshHandle>			mStaticMeshCache; // Path hash -> handle cache.
-		cstd::HandlePool<StaticMeshHandle, StaticMeshResource>	mStaticMeshes{ limits::kMaxModels };
+		std::unordered_map<uint64, StaticMeshHandle>			m_StaticMeshCache; // Path hash -> handle cache.
+		cstd::HandlePool<StaticMeshHandle, StaticMeshResource>	m_StaticMeshes{ limits::k_MaxModels };
 
 		// Fallback mesh used when no mesh is assigned.
-		StaticMeshHandle mDefaultMesh;
+		StaticMeshHandle m_DefaultMesh;
 		// Fallback mesh used when loading fails.
-		StaticMeshHandle mErrorMesh;
+		StaticMeshHandle m_ErrorMesh;
 
-		std::vector<Vertex> mDefaultVertices = {
+		std::vector<Vertex> m_DefaultVertices = {
 			// position                normal               uv
 			{{ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }},
 			{{  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }},
@@ -80,7 +80,7 @@ namespace lum {
 			{{ -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }},
 		};
 
-		std::vector<uint32> mDefaultIndices = { 0, 1, 2, 2, 3, 0 };
+		std::vector<uint32> m_DefaultIndices = { 0, 1, 2, 2, 3, 0 };
 
 		/* @brief Initializes built-in default and error meshes. */
 		void init( );

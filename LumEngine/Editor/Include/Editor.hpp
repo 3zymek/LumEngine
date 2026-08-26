@@ -31,7 +31,7 @@ namespace lum::editor {
 
         std::unique_ptr<IRenderContext> mRenderContext = nullptr;
 
-        QMainWindow* mWindow = nullptr;
+        QMainWindow* m_Window = nullptr;
         QLabel* mLabel = nullptr;
 
     };

@@ -26,7 +26,7 @@ namespace lum {
 		/* @brief Reads the entire contents of a text file. */
 		static Result<String> ReadAllText( const Path& path ) {
 
-			std::ifstream file( path.mPath );
+			std::ifstream file( path.m_Path );
 			if (!file.is_open( )) {
 				char buff[ 512 ]{};
 				FormatString( buff, "Failed to read file '{}': '{}'", path.ToString( ), strerror( errno ) );
@@ -45,7 +45,7 @@ namespace lum {
 		/* @brief Writes the specified content to a text file. */
 		static Result<bool> WriteAllText( const Path& path, const String& content ) {
 
-			std::ofstream file( path.mPath );
+			std::ofstream file( path.m_Path );
 			if (!file.is_open( )) {
 				char buff[ 512 ]{};
 				FormatString( buff, "Failed to write file '%s': '%s'", path.ToString( ).c_str( ), strerror( errno ) );

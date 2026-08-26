@@ -18,15 +18,15 @@ namespace lum {
 	void RenderModule::Initialize( const RenderModuleCreateInfo& info ) {
 
 		render::RendererContext ctx{};
-		ctx.mMaterialMgr	= info.mResourceModule( ).mMaterialMgr;
-		ctx.mMeshMgr		= info.mResourceModule( ).mMeshMgr;
-		ctx.mTextureMgr		= info.mResourceModule( ).mTextureMgr;
-		ctx.mShaderMgr		= info.mResourceModule( ).mShaderMgr;
-		ctx.mRenderDev		= info.mRenderDev;
-		ctx.mEventBus		= info.mEventBus;
+		ctx.m_MaterialMgr	= info.m_ResourceModule( ).m_MaterialMgr;
+		ctx.m_MeshMgr		= info.m_ResourceModule( ).m_MeshMgr;
+		ctx.m_TextureMgr		= info.m_ResourceModule( ).m_TextureMgr;
+		ctx.m_ShaderMgr		= info.m_ResourceModule( ).m_ShaderMgr;
+		ctx.m_RenderDev		= info.m_RenderDev;
+		ctx.m_EventBus		= info.m_EventBus;
 
-		mRenderer.Initialize( ctx, info.mViewportWidth, info.mViewportHeight );
-		mRenderSys.Initialize( &mRenderer );
+		m_Renderer.Initialize( ctx, info.m_ViewportWidth, info.m_ViewportHeight );
+		m_RenderSys.Initialize( &m_Renderer );
 
 	}
 

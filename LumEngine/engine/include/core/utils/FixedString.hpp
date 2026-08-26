@@ -19,7 +19,7 @@ namespace lum {
 	template<usize tLength>
 	struct FixedString {
 
-		static constexpr usize skNpos = usize( -1 );
+		static constexpr usize sk_Npos = usize( -1 );
 
 		/* @brief Constructs a FixedString from a string literal.
 		*  @tparam tNewLength Length of the source literal including null terminator.
@@ -28,8 +28,8 @@ namespace lum {
 		template<usize tNewLength>
 		FixedString( const char( &src )[ tNewLength ] ) noexcept {
 			LUM_SASSERT( tNewLength <= tLength && "String is too big" );
-			std::memcpy( mData, src, tNewLength );
-			mData[ tNewLength - 1 ] = '\0';
+			std::memcpy( m_Data, src, tNewLength );
+			m_Data[ tNewLength - 1 ] = '\0';
 		}
 
 		/* @brief Constructs a FixedString from a null-terminated character string.
@@ -38,13 +38,13 @@ namespace lum {
 		FixedString( const char* src ) noexcept {
 			usize len = strlen( src );
 			if (len > tLength - 1) len = tLength - 1;
-			std::memcpy( mData, src, len );
-			mData[ len ] = '\0';
+			std::memcpy( m_Data, src, len );
+			m_Data[ len ] = '\0';
 		}
 
 		/* @brief Constructs an empty FixedString. */
 		FixedString( ) noexcept {
-			mData[ 0 ] = '\0';
+			m_Data[ 0 ] = '\0';
 		}
 
 		/* @brief Assigns contents from a string literal.
@@ -56,8 +56,8 @@ namespace lum {
 		FixedString& operator=( const char( &src )[ tNewLength ] ) noexcept {
 			usize len = tNewLength;
 			if (len > tLength) len = tLength - 1;
-			std::memcpy( mData, src, len );
-			mData[ len ] = '\0';
+			std::memcpy( m_Data, src, len );
+			m_Data[ len ] = '\0';
 			return *this;
 		}
 
@@ -68,8 +68,8 @@ namespace lum {
 		FixedString& operator=( const char* src ) noexcept {
 			usize len = strlen( src );
 			if (len > tLength) len = tLength - 1;
-			std::memcpy( mData, src, len );
-			mData[ len ] = '\0';
+			std::memcpy( m_Data, src, len );
+			m_Data[ len ] = '\0';
 			return *this;
 		}
 
@@ -80,8 +80,8 @@ namespace lum {
 		FixedString& operator=( const String& src ) noexcept {
 			usize len = src.length( );
 			if (len > tLength) len = tLength - 1;
-			std::memcpy( mData, src.data( ), len );
-			mData[ len ] = '\0';
+			std::memcpy( m_Data, src.data( ), len );
+			m_Data[ len ] = '\0';
 			return *this;
 		}
 
@@ -90,11 +90,11 @@ namespace lum {
 		*  @return Reference to this string.
 		*/
 		FixedString& operator+=( const char* src ) noexcept {
-			usize curLen = strlen( mData );
+			usize curLen = strlen( m_Data );
 			usize srcLen = strlen( src );
 			usize copyLen = std::min( srcLen, tLength - curLen - 1 );
-			std::memcpy( mData + curLen, src, copyLen );
-			mData[ curLen + copyLen ] = '\0';
+			std::memcpy( m_Data + curLen, src, copyLen );
+			m_Data[ curLen + copyLen ] = '\0';
 			return *this;
 		}
 
@@ -113,7 +113,7 @@ namespace lum {
 		*  @return Reference to the character.
 		*/
 		char& operator[]( usize index ) {
-			return mData[ index ];
+			return m_Data[ index ];
 		}
 
 		/* @brief Accesses a character by index.
@@ -121,7 +121,7 @@ namespace lum {
 		*  @return Const reference to the character.
 		*/
 		const char& operator[]( usize index ) const {
-			return mData[ index ];
+			return m_Data[ index ];
 		}
 
 		/* @brief Returns a character with bounds checking.
@@ -129,8 +129,8 @@ namespace lum {
 		*  @return Reference to the character.
 		*/
 		char& At( usize index ) {
-			LUM_ASSERT( index < strlen( mData ), "Index out of range" );
-			return mData[ index ];
+			LUM_ASSERT( index < strlen( m_Data ), "Index out of range" );
+			return m_Data[ index ];
 		}
 
 		/* @brief Returns a character with bounds checking.
@@ -138,8 +138,8 @@ namespace lum {
 		*  @return Const reference to the character.
 		*/
 		const char& At( usize index ) const {
-			LUM_ASSERT( index < strlen( mData ), "Index out of range" );
-			return mData[ index ];
+			LUM_ASSERT( index < strlen( m_Data ), "Index out of range" );
+			return m_Data[ index ];
 		}
 
 		/* @brief Finds the first occurrence of a character.
@@ -147,10 +147,10 @@ namespace lum {
 		*  @return Index of the character or FixedString::skNpos if not found.
 		*/
 		usize Find( char c ) const {
-			for (usize i = 0; i < strlen( mData ); i++) {
-				if (mData[ i ] == c) return i;
+			for (usize i = 0; i < strlen( m_Data ); i++) {
+				if (m_Data[ i ] == c) return i;
 			}
-			return skNpos;
+			return sk_Npos;
 		}
 
 		/* @brief Finds the first occurrence of a string view.
@@ -158,15 +158,15 @@ namespace lum {
 		*  @return Index of the substring or FixedString::skNpos if not found.
 		*/
 		usize Find( StringView sv ) const {
-			usize size = strlen( mData );
-			if (sv.size( ) > size) return skNpos;
+			usize size = strlen( m_Data );
+			if (sv.size( ) > size) return sk_Npos;
 
 			for (usize i = 0; i <= size - sv.size( ); i++) {
-				if (memcmp( mData + i, sv.data( ), sv.size( ) ) == 0)
+				if (memcmp( m_Data + i, sv.data( ), sv.size( ) ) == 0)
 					return i;
 			}
 
-			return skNpos;
+			return sk_Npos;
 		}
 
 		/* @brief Compares this string against a string literal using hash comparison.
@@ -176,7 +176,7 @@ namespace lum {
 		*/
 		template<usize tNewLength>
 		bool operator==( const char( &src )[ tNewLength ] ) const noexcept {
-			return HashString( src ) == HashString( mData );
+			return HashString( src ) == HashString( m_Data );
 		}
 
 		/* @brief Compares this string against another FixedString using hash comparison.
@@ -186,19 +186,19 @@ namespace lum {
 		*/
 		template<usize tNewLength>
 		bool operator==( const FixedString<tNewLength>& oth ) const noexcept {
-			return HashString( oth.mData ) == HashString( mData );
+			return HashString( oth.m_Data ) == HashString( m_Data );
 		}
 
 		/* @brief Clears the string contents. */
 		constexpr void Clear( ) noexcept {
-			mData[ 0 ] = '\0';
+			m_Data[ 0 ] = '\0';
 		}
 
 		/* @brief Returns current string length.
 		*  @return Number of characters excluding null terminator.
 		*/
 		LUM_FORCEINLINE constexpr usize Length( ) noexcept {
-			return strlen( mData );
+			return strlen( m_Data );
 		}
 
 		/* @brief Returns maximum string capacity.
@@ -212,30 +212,30 @@ namespace lum {
 		*  @return Const pointer to null-terminated data.
 		*/
 		LUM_FORCEINLINE constexpr const char* Data( ) const {
-			return mData;
+			return m_Data;
 		}
 
 		/* @brief Returns a writable pointer to the internal character buffer.
 		*  @return Pointer to modifiable data.
 		*/
 		LUM_FORCEINLINE constexpr char* Data( ) {
-			return mData;
+			return m_Data;
 		}
 
-		char* begin( ) { return mData; }
-		char* end( ) { return mData + strlen( mData ); }
-		const char* begin( ) const { return mData; }
-		const char* end( ) const { return mData + strlen( mData ); }
+		char* begin( ) { return m_Data; }
+		char* end( ) { return m_Data + strlen( m_Data ); }
+		const char* begin( ) const { return m_Data; }
+		const char* end( ) const { return m_Data + strlen( m_Data ); }
 
 	private:
 
 		/* @brief Internal fixed-size character storage. */
-		char mData[ tLength ]{};
+		char m_Data[ tLength ]{};
 
 	};
 
 
 	/* @brief Non-owning view into an existing fixed string buffer. */
-	struct FixedStringView { };
+	struct FixedStringView {};
 
 } // namespace lum

@@ -11,30 +11,30 @@ namespace lum::rhi {
 	struct BufferCreateInfo {
 
 		// Defines if buffer is static ( data cannot be changed in runtime ) or dynamic.
-		BufferUsage mBufferUsage = BufferUsage::Static;
+		BufferUsage m_BufferUsage = BufferUsage::Static;
 
 		// Defines type of buffer (VBO, EBO, UBO, SSBO)
-		BufferType mBufferType = BufferType::None;
+		BufferType m_BufferType = BufferType::None;
 
 		// Size of data that's assigned.
-		usize mSize = 0;
+		usize m_Size = 0;
 
 		// Flags defines what operations can be done on a buffer and which not.
-		Flags<MapFlag> mMapFlags{};
+		Flags<MapFlag> m_MapFlags{};
 
 		// Pointer to data.
-		const void* mData = nullptr;
+		const void* m_Data = nullptr;
 	};
 
 	struct Buffer {
 
-		BufferID		mHandle = 0;
+		BufferID		m_Handle = 0;
 
-		BufferType		mType	= BufferType::None;
-		BufferUsage		mUsage	= BufferUsage::Static;
-		Flags<MapFlag>	mFlags	{};
-		usize			mSize	= 0;
-		bool			mMapped	= false;
+		BufferType		m_Type	= BufferType::None;
+		BufferUsage		m_Usage	= BufferUsage::Static;
+		Flags<MapFlag>	m_Flags	{};
+		usize			m_Size	= 0;
+		bool			m_Mapped	= false;
 
 	};
 

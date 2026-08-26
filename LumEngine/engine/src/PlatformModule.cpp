@@ -16,31 +16,31 @@ namespace lum {
 
     void PlatformModule::Initialize( EngineCreateInfo info, ev::EventBus& bus ) {
 
-        info.mWindow.mTitle = info.mApplicationName;
+        info.m_Window.m_Title = info.m_ApplicationName;
 
-        if (!info.mRenderContext) {
+        if (!info.m_RenderContext) {
 
-            mWindow = Window{};
-            mWindow.Value().Initialize( info.mWindow, bus );
+            m_Window = Window{};
+            m_Window.Value().Initialize( info.m_Window, bus );
 
-            auto* glfwWindow = static_cast<GLFWwindow*>(mWindow.Value( ).GetNativeWindow( ));
+            auto* glfwWindow = static_cast<GLFWwindow*>(m_Window.Value( ).GetNativeWindow( ));
 
             //input::SetActiveWindow( glfwWindow );
 
-            mDefaultContext = std::make_unique<GLFWOpenGLContext>( glfwWindow );
-            mRenderContext = mDefaultContext.get();
+            m_DefaultContext = std::make_unique<GLFWOpenGLContext>( glfwWindow );
+            m_RenderContext = m_DefaultContext.get();
         }
         else {
-            mRenderContext = info.mRenderContext;
+            m_RenderContext = info.m_RenderContext;
         }
 
-        mRenderDevice = rhi::CreateDevice( info.mRenderingBackend );
-        mRenderDevice->Initialize( mRenderContext() );
+        m_RenderDevice = rhi::CreateDevice( info.m_RenderingBackend );
+        m_RenderDevice->Initialize( m_RenderContext() );
 
     }
 
     void PlatformModule::Finalize( ) {
-        mRenderDevice->Finalize( );
+        m_RenderDevice->Finalize( );
     }
 
 } // namespace lum

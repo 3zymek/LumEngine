@@ -4,27 +4,32 @@ namespace lum::render {
 
 	void TemporalAntiAliasing::Initialize( rhi::IRenderDevice& dev ) {
 
-		mRenderDev = dev;
+		m_RenderDev = dev;
 
 	}
 
 	void TemporalAntiAliasing::EnsureFrameTex( const rhi::TextureCreateInfo& desc ) {
 
-		if (mWidth == desc.mWidth && mHeight == desc.mHeight && mPreviousFrameTex != 0) {
+		if (m_Width == desc.m_Width && m_Height == desc.m_Height && m_PreviousFrameTex != 0) {
 			return;
 		}
 
-		if(mPreviousFrameTex != 0)
-			mRenderDev( ).Delete( mPreviousFrameTex );
+		if(m_PreviousFrameTex != 0)
+			m_RenderDev( ).Delete( m_PreviousFrameTex );
 
-		mWidth = desc.mWidth;
-		mHeight = desc.mHeight;
-		mPreviousFrameTex = mRenderDev( ).CreateTexture( desc );
+		m_Width = desc.m_Width;
+		m_Height = desc.m_Height;
+		m_PreviousFrameTex = m_RenderDev( ).CreateTexture( desc );
 
 	}
 
 	Matrix4 TemporalAntiAliasing::ApplyJitter( const Matrix4& projection ) {
 		
+		if (m_Width == 0 || m_Height == 0) {
+			m_CurrentJitter = Vector2( 0.0f, 0.0f );
+			return projection;
+		}
+
 		static const Vector2 skOffsets[ ] = {
 			{ 0.500000f,  0.333333f },
 			{ 0.250000f,  0.666667f },
@@ -36,15 +41,15 @@ namespace lum::render {
 			{ 0.125000f,  0.888889f },
 		};
 
-		uint32 index = mFrameIndex % 8;
+		uint32 index = m_FrameIndex % 8;
 		Vector2 rawJitter = skOffsets[ index ] - Vector2( 0.5f, 0.5f );
-		mCurrentJitter = rawJitter / Vector2( ToFloat32( mWidth ), ToFloat32( mHeight ) );
+		m_CurrentJitter = rawJitter / Vector2( SafeCast<float32>( m_Width ), SafeCast<float32>( m_Height ) );
 
 		Matrix4 jittered = projection;
-		jittered[ 3 ][ 0 ] += mCurrentJitter.mX * 2.0f;
-		jittered[ 3 ][ 1 ] += mCurrentJitter.mY * 2.0f;
+		jittered[ 3 ][ 0 ] += m_CurrentJitter.m_X * 2.0f;
+		jittered[ 3 ][ 1 ] += m_CurrentJitter.m_Y * 2.0f;
 
-		mFrameIndex++;
+		m_FrameIndex++;
 
 		return jittered;
 

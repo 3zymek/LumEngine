@@ -52,36 +52,36 @@ namespace lum::render {
 			/* @brief Returns the generated shadow map texture.
 			* @return Shadow map texture handle.
 			*/
-			rhi::TextureHandle GetShadowMap( ) const noexcept { return mShadowMap; }
+			rhi::TextureHandle GetShadowMap( ) const noexcept { return m_ShadowMap; }
 
 		private:
 
 			/* @brief Shadow map texture dimensions in pixels. */
-			Vector2u mShadowMapTexSize = { 4096, 4096 };
+			Vector2u m_ShadowMapTexSize = { 4096, 4096 };
 
 			/* @brief Distance from the scene origin used to position the light. */
-			float32 mShadowMapDistance = 50.f;
+			float32 m_ShadowMapDistance = 50.f;
 
 			/* @brief Half-size of the orthographic projection frustum. */
-			float32 mShadowMapSize = 100.f;
+			float32 m_ShadowMapSize = 100.f;
 
 			/* @brief Near plane of the light space orthographic projection. */
-			float32 mShadowMapNear = 0.1f;
+			float32 m_ShadowMapNear = 0.1f;
 
 			/* @brief Far plane of the light space orthographic projection. */
-			float32 mShadowMapFar = mShadowMapDistance * 2.0f;
+			float32 m_ShadowMapFar = m_ShadowMapDistance * 2.0f;
 
 			/* @brief Depth texture used as the shadow map attachment. */
-			rhi::TextureHandle mShadowMap;
+			rhi::TextureHandle m_ShadowMap;
 
 			/* @brief Framebuffer with the shadow map as its depth attachment. */
-			rhi::FramebufferHandle mFramebuffer;
+			rhi::FramebufferHandle m_Framebuffer;
 
 			/* @brief Shader program used during the shadow pass. */
-			rhi::ShaderHandle mShader;
+			rhi::ShaderHandle m_Shader;
 
 			/* @brief Uniform buffer holding the light space transformation matrix. */
-			rhi::BufferHandle mLightSpaceUBO;
+			rhi::BufferHandle m_LightSpaceUBO;
 
 			/* @brief Computes and uploads the light space matrix from the given light direction.
 			*  @param direction Normalized direction vector of the directional light.
@@ -93,7 +93,7 @@ namespace lum::render {
 			*/
 			void upload_lightspace_matrix( const Matrix4& mat, RendererContext& ctx );
 
-		} mDirectionalLight;
+		} m_DirectionalLight;
 
 
 
@@ -116,30 +116,30 @@ namespace lum::render {
 			/* @brief Returns the shadow map texture array.
 			* @return Shadow map texture handle.
 			*/
-			LUM_NODISCARD rhi::TextureHandle GetShadowMaps( ) const noexcept { return mShadowMaps; }
+			LUM_NODISCARD rhi::TextureHandle GetShadowMaps( ) const noexcept { return m_ShadowMaps; }
 			
 		private:
 			
 			/* @brief Shadow map texture dimensions in pixels. */
-			Vector2u mShadowMapTexSize = { 1024, 1024 };
+			Vector2u m_ShadowMapTexSize = { 1024, 1024 };
 
 			/* @brief Near plane of the light space projection. */
-			float32 mShadowMapNear = 0.1f;
+			float32 m_ShadowMapNear = 0.1f;
 
 			/* @brief Far plane of the light space projection. */
-			float32 mShadowMapFar = 100.0f;
+			float32 m_ShadowMapFar = 100.0f;
 
 			/* @brief Depth texture used as the shadow maps attachments. */
-			rhi::TextureHandle mShadowMaps;
+			rhi::TextureHandle m_ShadowMaps;
 
 			/* @brief Framebuffer with the shadow maps as its depth attachment. */
-			rhi::FramebufferHandle mFramebuffer;
+			rhi::FramebufferHandle m_Framebuffer;
 
 			/* @brief Shader program used during the shadow pass. */
-			rhi::ShaderHandle mShader;
+			rhi::ShaderHandle m_Shader;
 
 			/* @brief Uniform buffer holding the light space transformation matrix. */
-			rhi::BufferHandle mLightSpaceUBO;
+			rhi::BufferHandle m_LightSpaceUBO;
 			
 			/* @brief Computes the light space matrix for a spot light.
 			* @param dir Light direction.
@@ -153,16 +153,16 @@ namespace lum::render {
 			*/
 			void upload_lightspace_matrix( const Matrix4& mat, RendererContext& ctx );
 			
-		} mSpotLight;
+		} m_SpotLight;
 
 
 
 
 	private:
 
-		SafePtr<RendererContext> mCtx = nullptr;
+		SafePtr<RendererContext> m_Ctx = nullptr;
 
-		rhi::PipelineHandle mShadowMappingPipeline;
+		rhi::PipelineHandle m_ShadowMappingPipeline;
 
 	};
 

@@ -6,7 +6,7 @@ namespace lum::input {
 	class GLFWInputProvider : public IInputProvider {
 	public:
 
-		GLFWInputProvider( GLFWwindow& window ) : mNativeWindow( window ) {}
+		GLFWInputProvider( GLFWwindow& window ) : m_NativeWindow( window ) {}
 
 		bool KeyPressed( Key key ) override;
 		bool KeyPressedOnce( Key key ) override;
@@ -14,7 +14,7 @@ namespace lum::input {
 
 	private:
 
-		SafePtr<GLFWwindow> mNativeWindow = nullptr;
+		SafePtr<GLFWwindow> m_NativeWindow = nullptr;
 
 		static inline constexpr std::array<int32, LUM_MAX_KEYS> sKeyMap = {
 			GLFW_KEY_SPACE,

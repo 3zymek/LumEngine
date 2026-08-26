@@ -32,74 +32,77 @@ namespace lum {
 	struct LogEntry {
 
 		/* @brief Timestamp of the log entry in milliseconds. */
-		String mTime = "";
+		String m_Time = "";
 
 		/* @brief Formatted log message text. */
-		String mMessage = "";
+		String m_Message = "";
 
 		/* @brief Function where the log was generated. */
-		String mFunction = "";
+		String m_Function = "";
 
 		/* @brief File where the log was generated. */
-		String mFile = "";
+		String m_File = "";
 
 		/* @brief Line number where the log was generated. */
-		uint32 mLine = 0;
+		uint32 m_Line = 0;
 
 		/* @brief Severity level of this message. */
-		LogSeverityLevel mSeverity{};
+		LogSeverityLevel m_Severity{};
 
 	};
 
+	namespace detail {
 
-	/* @brief Fixed-size ring buffer storing log entries.
-	*
-	* Automatically removes the oldest entries when the maximum
-	* capacity is exceeded.
-	*/
-	struct LogBuffer {
-
-		/* @brief Creates a log buffer with a maximum entry count.
-		* @param maxLogs Maximum number of stored logs.
+		/* @brief Fixed-size ring buffer storing log entries.
+		*
+		* Automatically removes the oldest entries when the maximum
+		* capacity is exceeded.
 		*/
-		LogBuffer( uint32 maxLogs ) : mMaxLogs( maxLogs ) {}
+		struct LogBuffer {
 
-		/* @brief Returns all stored log entries.
-		* @return Constant reference to the internal log container.
-		*/
-		const std::deque<LogEntry>& GetLogs( ) const {
-			return mLogs;
-		}
+			/* @brief Creates a log buffer with a maximum entry count.
+			* @param maxLogs Maximum number of stored logs.
+			*/
+			LogBuffer( uint32 maxLogs ) : m_MaxLogs( maxLogs ) {}
 
-		/* @brief Adds a new log entry.
-		* Removes the oldest entry if the buffer is full.
-		* @param entry Log entry to store.
-		*/
-		void Push( const LogEntry& entry ) {
+			/* @brief Returns all stored log entries.
+			* @return Constant reference to the internal log container.
+			*/
+			const std::deque<LogEntry>& GetLogs( ) const {
+				return m_Logs;
+			}
 
-			if (mLogs.size( ) >= mMaxLogs)
-				mLogs.pop_front( );
+			/* @brief Adds a new log entry.
+			* Removes the oldest entry if the buffer is full.
+			* @param entry Log entry to store.
+			*/
+			void Push( const LogEntry& entry ) {
 
-			mLogs.push_back( entry );
-		}
+				if (m_Logs.size( ) >= m_MaxLogs)
+					m_Logs.pop_front( );
 
-		/* @brief Removes all stored log entries. */
-		void Clear( ) {
-			mLogs.clear( );
-		}
+				m_Logs.push_back( entry );
+			}
 
-
-	private:
-
-		/* @brief Maximum amount of stored logs. */
-		uint32 mMaxLogs = 0;
-
-		/* @brief Stored log entries. */
-		std::deque<LogEntry> mLogs;
-	};
+			/* @brief Removes all stored log entries. */
+			void Clear( ) {
+				m_Logs.clear( );
+			}
 
 
-	/* @brief Global engine logger.
+		private:
+
+			/* @brief Maximum amount of stored logs. */
+			uint32 m_MaxLogs = 0;
+
+			/* @brief Stored log entries. */
+			std::deque<LogEntry> m_Logs;
+		};
+
+	} // namespace lum::detail
+
+
+	/* @brief Global engine logger. (Singleton)
 	*
 	* Provides centralized logging functionality with message storage
 	* and formatted output support.
@@ -113,7 +116,6 @@ namespace lum {
 		* @return Reference to the singleton logger.
 		*/
 		static Logger& Get( ) {
-
 			static Logger log;
 			return log;
 		}
@@ -122,12 +124,12 @@ namespace lum {
 		* @return Constant reference to stored logs.
 		*/
 		const std::deque<LogEntry>& GetLogs( ) const {
-			return mLogs.GetLogs( );
+			return m_Logs.GetLogs( );
 		}
 
 		/* @brief Clears all stored log entries. */
 		void ClearLogs( ) {
-			mLogs.Clear( );
+			m_Logs.Clear( );
 		}
 
 		/* @brief Formats and stores a log message.
@@ -150,7 +152,7 @@ namespace lum {
 			tArgs&&... args
 		) {
 
-			char formatMsg[ skMaxLogMessageLength ]{};
+			char formatMsg[ k_MaxLogMessageLength ]{};
 
 			FormatString(
 				formatMsg,
@@ -163,17 +165,17 @@ namespace lum {
 			char time[ 16 ]{};
 			get_time( time );
 
-			entry.mMessage = String( formatMsg );
-			entry.mSeverity = sev;
-			entry.mTime = time;
-			entry.mFile = loc.file_name( );
-			entry.mFunction = loc.function_name( );
-			entry.mLine = loc.line( );
+			entry.m_Message = String( formatMsg );
+			entry.m_Severity = sev;
+			entry.m_Time = time;
+			entry.m_File = loc.file_name( );
+			entry.m_Function = loc.function_name( );
+			entry.m_Line = loc.line( );
 
-			entry.mFunction = clean_function_name( entry.mFunction );
+			entry.m_Function = clean_function_name( entry.m_Function );
 
-			mLogs.Push( entry );
-			mTempStrings.clear( );
+			m_Logs.Push( entry );
+			m_TempStrings.clear( );
 
 			std::cout << formatMsg << "\n";
 
@@ -183,24 +185,24 @@ namespace lum {
 	private:
 
 		/* @brief Maximum formatted message length. */
-		inline static constexpr uint32 skMaxLogMessageLength = 1024;
-		inline static constexpr uint32 mMaxTempStrings = 10;
+		static inline constexpr uint32 k_MaxLogMessageLength = 1024;
+		static inline constexpr uint32 k_MaxTempStrings = 10;
 
 		/* @brief Internal log storage. */
-		LogBuffer mLogs{ LUM_MAX_LOGS };
+		detail::LogBuffer m_Logs{ LUM_MAX_LOGS };
 
 		/* @brief Temporary strings to secure dangling pointers. */
-		std::vector<String> mTempStrings{ };
+		std::vector<String> m_TempStrings{ };
 
 		/* @brief Private constructor for singleton pattern. */
 		Logger( ) {
-			mTempStrings.reserve( mMaxTempStrings );
+			m_TempStrings.reserve( k_MaxTempStrings );
 		}
 
 		/* @brief Returns current time formatted as HH:MM:SS.
 		* @param out Pointer to the destination buffer (at least 16 bytes).
 		*/
-		static void get_time( char* out ) {
+		void get_time( char* out ) {
 			using namespace std::chrono;
 
 			uint64 time = duration_cast<milliseconds>(system_clock::now( ).time_since_epoch( )).count( );

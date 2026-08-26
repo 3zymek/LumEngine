@@ -21,16 +21,16 @@ namespace lum {
 	public:
 
 		friend class ecs::EntityManager;
-		Entity( EntityID id ) : mId( id ) { }
+		Entity( EntityID id ) : m_Id( id ) { }
 
-		EntityID GetId( ) const noexcept { return mId; }
-		bool IsVisible( ) const noexcept { return mVisible; }
-		void SetVisible( bool visible ) { mVisible = visible; }
+		EntityID GetId( ) const noexcept { return m_Id; }
+		bool IsVisible( ) const noexcept { return m_Visible; }
+		void SetVisible( bool visible ) { m_Visible = visible; }
 
 	private:
 
-		EntityID mId {};
-		bool mVisible = true;
+		EntityID m_Id {};
+		bool m_Visible = true;
 
 	};
 
@@ -50,7 +50,7 @@ namespace lum {
 		/* @brief Constructs a managed entity bound to the given entity manager.
 		* @param mgr Reference to the entity manager that owns this entity.
 		*/
-		ManagedEntity( ecs::EntityManager* mgr ) : Entity( UniqueID<Entity>::Get( ) ), mEntityManager( mgr ) { }
+		ManagedEntity( ecs::EntityManager* mgr ) : Entity( UniqueID<Entity>::Get( ) ), m_EntityManager( mgr ) { }
 
 		/* @brief Adds a component of type tType to this entity.
 		* @param component Component value to add (default constructed if not provided).
@@ -86,7 +86,7 @@ namespace lum {
 
 	protected:
 
-		ecs::EntityManager* mEntityManager;
+		SafePtr<ecs::EntityManager> m_EntityManager = nullptr;
 
 	};
 

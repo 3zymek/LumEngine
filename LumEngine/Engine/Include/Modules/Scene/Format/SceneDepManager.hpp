@@ -43,7 +43,7 @@ namespace lum::fmt {
 		static void categorize_component_infos( );
 
 		/* @brief Resource manager context used during parsing for asset resolution. */
-		SceneManagerContext* mCtx = nullptr;
+		SceneManagerContext* m_Ctx = nullptr;
 
 		/* @brief Lookup table mapping hashed identifier keywords to their parse functions.
 		* Used to dispatch top-level scene constructs such as entity and world blocks.
@@ -59,7 +59,7 @@ namespace lum::fmt {
 
 		static inline std::unordered_map<HashedString, SceneComponentInfo*> sNameInfoLookup{};
 		static inline std::unordered_map<HashedString, SceneComponentInfo*> sTypeIdInfoLookup{};
-		static inline std::vector<SceneComponentInfo> mComponentsInfos{};
+		static inline std::vector<SceneComponentInfo> m_ComponentsInfos{};
 
 	};
 

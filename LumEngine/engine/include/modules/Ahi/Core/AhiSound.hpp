@@ -12,7 +12,7 @@ namespace lum::ahi {
 
 	using SoundInstanceID = uint32;
 
-	enum class SoundInstanceFlag : uint32 {
+	enum class SoundInstanceFlag {
 
 		// State
 		Paused,
@@ -33,26 +33,26 @@ namespace lum::ahi {
 	*/
 	struct SoundInstance {
 
-		SoundInstance( ) : mInstanceId( UniqueID<SoundInstance, SoundInstanceID>::Get() ) { }
+		SoundInstance( ) : m_InstanceId( UniqueID<SoundInstance, SoundInstanceID>::Get() ) { }
 
-		SoundInstanceID		mInstanceId = 0;
-		SoundHandle			mSound;
-		ChannelGroupHandle	mGroup;
+		SoundInstanceID		m_InstanceId = 0;
+		SoundHandle			m_Sound;
+		ChannelGroupHandle	m_Group;
 		
-		float32		mVolume = 1.0f;
-		float32		mPitch = 1.0f;
-		Vector3		mPosition;
-		float32		mMinDistance = 10.0f;
-		float32		mMaxDistance = 50.0f;
+		float32		m_Volume = 1.0f;
+		float32		m_Pitch = 1.0f;
+		Vector3		m_Position;
+		float32		m_MinDistance = 10.0f;
+		float32		m_MaxDistance = 50.0f;
 
-		Flags<SoundInstanceFlag> mFlags;
+		Flags<SoundInstanceFlag> m_Flags;
 
 	};
 
 	/* @brief Lightweight handle to a loaded sound asset. */
 	struct SoundAsset {
 
-		uint32 mId = 0;
+		uint32 m_Id = 0;
 
 	};
 

@@ -334,7 +334,7 @@ namespace lum::rhi {
 		virtual void ToggleScissors( bool toggle ) = 0;
 
 		/* @brief Returns whether the scissor test is currently enabled. */
-		bool IsScissorEnabled( ) const noexcept { return mEnabledStates.Has( State::Scissor ); }
+		bool IsScissorEnabled( ) const noexcept { return m_EnabledStates.Has( State::Scissor ); }
 
 		/* @brief Sets the full scissor rectangle.
 		* @param x      Left coordinate in pixels.
@@ -369,7 +369,7 @@ namespace lum::rhi {
 		virtual void ToggleCull( bool toggle ) = 0;
 
 		/* @brief Returns whether face culling is currently enabled. */
-		bool IsCullEnabled( ) const noexcept { return mEnabledStates.Has( State::Cull ); }
+		bool IsCullEnabled( ) const noexcept { return m_EnabledStates.Has( State::Cull ); }
 
 		/* @brief Selects which polygon faces are culled.
 		* @param face Cull face selection (Front, Back, or FrontBack).
@@ -393,7 +393,7 @@ namespace lum::rhi {
 		virtual void ToggleBlend( bool toggle ) = 0;
 
 		/* @brief Returns whether color blending is currently enabled. */
-		bool IsBlendEnabled( ) const noexcept { return mEnabledStates.Has( State::Blend ); }
+		bool IsBlendEnabled( ) const noexcept { return m_EnabledStates.Has( State::Blend ); }
 
 		/* @brief Sets the constant RGBA color used in constant-factor blend modes. */
 		virtual void SetBlendConstantColor( Vector4 rgba ) = 0;
@@ -460,7 +460,7 @@ namespace lum::rhi {
 		virtual void ToggleDepthWrite( bool toggle ) = 0;
 
 		/* @brief Returns whether depth buffer writes are currently enabled. */
-		bool IsDepthWriteEnabled( ) const noexcept { return mEnabledStates.Has( State::DepthWrite ); }
+		bool IsDepthWriteEnabled( ) const noexcept { return m_EnabledStates.Has( State::DepthWrite ); }
 
 		/* @brief Enables or disables depth testing.
 		* Failing fragments are discarded before blending.
@@ -469,7 +469,7 @@ namespace lum::rhi {
 		virtual void ToggleDepthTest( bool enable ) = 0;
 
 		/* @brief Returns whether depth testing is currently enabled. */
-		bool IsDepthTestEnabled( ) const noexcept { return mEnabledStates.Has( State::DepthTest ); }
+		bool IsDepthTestEnabled( ) const noexcept { return m_EnabledStates.Has( State::DepthTest ); }
 
 		/* @brief Sets the depth comparison function.
 		* @param func Comparison function (e.g. Less, LessOrEqual, Always).
@@ -488,7 +488,7 @@ namespace lum::rhi {
 		virtual void ToggleStencilTest( bool toggle ) = 0;
 
 		/* @brief Returns whether stencil testing is currently enabled. */
-		bool IsStencilTestEnabled( ) const noexcept { return mEnabledStates.Has( State::StencilTest ); }
+		bool IsStencilTestEnabled( ) const noexcept { return m_EnabledStates.Has( State::StencilTest ); }
 
 		/* @brief Sets the reference value used in stencil comparisons.
 		* @param ref  Reference value (typically 0-255).
@@ -534,7 +534,7 @@ namespace lum::rhi {
 		virtual void ToggleDepthBias( bool toggle ) = 0;
 
 		/* @brief Returns whether depth bias is currently enabled. */
-		bool IsDepthBiasEnabled( ) const noexcept { return mEnabledStates.Has( State::DepthBias ); }
+		bool IsDepthBiasEnabled( ) const noexcept { return m_EnabledStates.Has( State::DepthBias ); }
 
 		/* @brief Sets depth bias scale factors. Offset = slope * dZ + constant.
 		* @param slope    Scale factor applied to the polygon's depth slope.
@@ -587,22 +587,22 @@ namespace lum::rhi {
 		///////////////////////////////////////////////////
 
 		/* @brief Returns the current blend state. */
-		const BlendState& GetBlendState( ) const noexcept { return mBlendState; }
+		const BlendState& GetBlendState( ) const noexcept { return m_BlendState; }
 
 		/* @brief Returns the current face culling state. */
-		const CullState& GetCullState( ) const noexcept { return mCullState; }
+		const CullState& GetCullState( ) const noexcept { return m_CullState; }
 
 		/* @brief Returns the current scissor state. */
-		const ScissorState& GetScissorState( ) const noexcept { return mScissorState; }
+		const ScissorState& GetScissorState( ) const noexcept { return m_ScissorState; }
 
 		/* @brief Returns the current depth and stencil state. */
-		const DepthStencilState& GetDepthStencilState( ) const noexcept { return mDepthStencilState; }
+		const DepthStencilState& GetDepthStencilState( ) const noexcept { return m_DepthStencilState; }
 
 		/* @brief Returns the current rasterizer state. */
-		const RasterizerState& GetRasterizerState( ) const noexcept { return mRasterizerState; }
+		const RasterizerState& GetRasterizerState( ) const noexcept { return m_RasterizerState; }
 
 		/* @brief Returns the current viewport state. */
-		const ViewportState& GetViewport( ) const noexcept { return mViewportState; }
+		const ViewportState& GetViewport( ) const noexcept { return m_ViewportState; }
 
 
 		///////////////////////////////////////////////////
@@ -610,55 +610,55 @@ namespace lum::rhi {
 		///////////////////////////////////////////////////
 
 		/* @brief Returns true if the buffer handle refers to a live resource. */
-		bool IsValid( BufferHandle handle ) const noexcept { return mBuffers.Contains( handle ); }
+		bool IsValid( BufferHandle handle ) const noexcept { return m_Buffers.Contains( handle ); }
 
 		/* @brief Returns true if the texture handle refers to a live resource. */
-		bool IsValid( TextureHandle handle ) const noexcept { return mTextures.Contains( handle ); }
+		bool IsValid( TextureHandle handle ) const noexcept { return m_Textures.Contains( handle ); }
 
 		/* @brief Returns true if the shader handle refers to a live resource. */
-		bool IsValid( ShaderHandle handle ) const noexcept { return mShaders.Contains( handle ); }
+		bool IsValid( ShaderHandle handle ) const noexcept { return m_Shaders.Contains( handle ); }
 
 		/* @brief Returns true if the framebuffer handle refers to a live resource. */
-		bool IsValid( FramebufferHandle handle ) const noexcept { return mFramebuffers.Contains( handle ); }
+		bool IsValid( FramebufferHandle handle ) const noexcept { return m_Framebuffers.Contains( handle ); }
 
 		/* @brief Returns true if the vertex layout handle refers to a live resource. */
-		bool IsValid( VertexLayoutHandle handle ) const noexcept { return mLayouts.Contains( handle ); }
+		bool IsValid( VertexLayoutHandle handle ) const noexcept { return m_Layouts.Contains( handle ); }
 
 		/* @brief Returns true if the pipeline handle refers to a live resource. */
-		bool IsValid( PipelineHandle handle ) const noexcept { return mPipelines.Contains( handle ); }
+		bool IsValid( PipelineHandle handle ) const noexcept { return m_Pipelines.Contains( handle ); }
 
 		/* @brief Returns true if the sampler handle refers to a live resource. */
-		bool IsValid( SamplerHandle handle ) const noexcept { return mSamplers.Contains( handle ); }
+		bool IsValid( SamplerHandle handle ) const noexcept { return m_Samplers.Contains( handle ); }
 
 
 		uint32 GetNativeHandle( BufferHandle handle ) noexcept {
-			if (mBuffers.Contains( handle ))
-				return mBuffers[ handle ].mHandle;
+			if (m_Buffers.Contains( handle ))
+				return m_Buffers[ handle ].m_Handle;
 			return {};
 		}
 		uint32 GetNativeHandle( TextureHandle handle ) noexcept {
-			if (mTextures.Contains( handle ))
-				return mTextures[ handle ].mHandle;
+			if (m_Textures.Contains( handle ))
+				return m_Textures[ handle ].m_Handle;
 			return {};
 		}
 		uint32 GetNativeHandle( ShaderHandle handle ) noexcept {
-			if (mShaders.Contains( handle ))
-				return mShaders[ handle ].mHandle;
+			if (m_Shaders.Contains( handle ))
+				return m_Shaders[ handle ].m_Handle;
 			return {};
 		}
 		uint32 GetNativeHandle( FramebufferHandle handle ) noexcept {
-			if (mFramebuffers.Contains( handle ))
-				return mFramebuffers[ handle ].mHandle;
+			if (m_Framebuffers.Contains( handle ))
+				return m_Framebuffers[ handle ].m_Handle;
 			return {};
 		}
 		uint32 GetNativeHandle( VertexLayoutHandle handle ) noexcept {
-			if (mLayouts.Contains( handle ))
-				return mLayouts[ handle ].mHandle;
+			if (m_Layouts.Contains( handle ))
+				return m_Layouts[ handle ].m_Handle;
 			return {};
 		}
 		uint32 GetNativeHandle( SamplerHandle handle ) noexcept {
-			if (mSamplers.Contains( handle ))
-				return mSamplers[ handle ].mHandle;
+			if (m_Samplers.Contains( handle ))
+				return m_Samplers[ handle ].m_Handle;
 			return {};
 		}
 
@@ -748,44 +748,44 @@ namespace lum::rhi {
 		virtual void SwapBuffers( ) = 0;
 
 		Optional<Sampler> Get( SamplerHandle sampler ) {
-			if (!mSamplers.Contains( sampler ))
+			if (!m_Samplers.Contains( sampler ))
 				return Optional<Sampler>::Empty( );
-			return mSamplers[ sampler ];
+			return m_Samplers[ sampler ];
 		}
 		Optional<Shader> Get( ShaderHandle shader ) {
-			if (!mShaders.Contains( shader ))
+			if (!m_Shaders.Contains( shader ))
 				return Optional<Shader>::Empty( );
-			return mShaders[ shader ];
+			return m_Shaders[ shader ];
 		}
 		Optional<Buffer> Get( BufferHandle buffer ) {
-			if (!mBuffers.Contains( buffer ))
+			if (!m_Buffers.Contains( buffer ))
 				return Optional<Buffer>::Empty( );
-			return mBuffers[ buffer ];
+			return m_Buffers[ buffer ];
 		}
 		Optional<VertexLayout> Get( VertexLayoutHandle layout ) {
-			if (!mLayouts.Contains( layout ))
+			if (!m_Layouts.Contains( layout ))
 				return Optional<VertexLayout>::Empty( );
-			return mLayouts[ layout ];
+			return m_Layouts[ layout ];
 		}
 		Optional<Texture> Get( TextureHandle texture ) {
-			if (!mTextures.Contains( texture ))
+			if (!m_Textures.Contains( texture ))
 				return Optional<Texture>::Empty( );
-			return mTextures[ texture ];
+			return m_Textures[ texture ];
 		}
 		Optional<Framebuffer> Get( FramebufferHandle fbo ) {
-			if (!mFramebuffers.Contains( fbo ))
+			if (!m_Framebuffers.Contains( fbo ))
 				return Optional<Framebuffer>::Empty( );
-			return mFramebuffers[ fbo ];
+			return m_Framebuffers[ fbo ];
 		}
 		Optional<Pipeline> Get( PipelineHandle pipeline ) {
-			if (!mPipelines.Contains( pipeline ))
+			if (!m_Pipelines.Contains( pipeline ))
 				return Optional<Pipeline>::Empty( );
-			return mPipelines[ pipeline ];
+			return m_Pipelines[ pipeline ];
 		}
 
 #		if LUM_ENABLE_RENDER_PROFILER == 1
 			inline void GetProfilerInfo( ) {
-				LUM_LOG_INFO( "Cache hit rate: %f", mProfiler.GetCacheHitRate( ) );
+				LUM_LOG_INFO( "Cache hit rate: %f", m_Profiler.GetCacheHitRate( ) );
 			}
 #		endif
 
@@ -794,30 +794,30 @@ namespace lum::rhi {
 		inline constexpr static uint32 skMaxTextureUnits = 32;
 		inline constexpr static uint32 skMaxSamplerUnits = 32;
 
-		std::array<TextureHandle, skMaxTextureUnits> mCurrentTextures{};
-		std::array<SamplerHandle, skMaxSamplerUnits> mCurrentSamplers{};
+		std::array<TextureHandle, skMaxTextureUnits> m_CurrentTextures{};
+		std::array<SamplerHandle, skMaxSamplerUnits> m_CurrentSamplers{};
 
-		ShaderHandle		mCurrentShader{};
-		FramebufferHandle	mCurrentFramebuffer{};
-		PipelineHandle		mCurrentPipeline{};
+		ShaderHandle		m_CurrentShader{};
+		FramebufferHandle	m_CurrentFramebuffer{};
+		PipelineHandle		m_CurrentPipeline{};
 
-		BlendState			mBlendState{};
-		CullState			mCullState{};
-		ScissorState		mScissorState{};
-		DepthStencilState	mDepthStencilState{};
-		RasterizerState		mRasterizerState{};
-		ViewportState		mViewportState{};
-		ColorMask			mColorMask{};
+		BlendState			m_BlendState{};
+		CullState			m_CullState{};
+		ScissorState		m_ScissorState{};
+		DepthStencilState	m_DepthStencilState{};
+		RasterizerState		m_RasterizerState{};
+		ViewportState		m_ViewportState{};
+		ColorMask			m_ColorMask{};
 
-		Flags<State>		mEnabledStates{};
-		Vector4			mClearColor{};
+		Flags<State>		m_EnabledStates{};
+		Vector4			m_ClearColor{};
 
 #		if LUM_ENABLE_RENDER_PROFILER == 1
-		performance::Profiler mProfiler{};
+		performance::Profiler m_Profiler{};
 
-#			define LUM_PROFILER_DRAW_CALL()		mProfiler.RegisterDrawCall()
-#			define LUM_PROFILER_CACHE_MISS()	mProfiler.RegisterCacheMiss()
-#			define LUM_PROFILER_CACHE_HIT()		mProfiler.RegisterCacheHit()
+#			define LUM_PROFILER_DRAW_CALL()		m_Profiler.RegisterDrawCall()
+#			define LUM_PROFILER_CACHE_MISS()	m_Profiler.RegisterCacheMiss()
+#			define LUM_PROFILER_CACHE_HIT()		m_Profiler.RegisterCacheHit()
 
 #		else
 
@@ -840,37 +840,37 @@ namespace lum::rhi {
 		cstd::HandlePool<
 			SamplerHandle, 
 			Sampler, 
-			SamplerID> mSamplers{ skMaxSamplers };
+			SamplerID> m_Samplers{ skMaxSamplers };
 
 		cstd::HandlePool<
 			ShaderHandle, 
 			Shader, 
-			ShaderID> mShaders{ skMaxShaders };
+			ShaderID> m_Shaders{ skMaxShaders };
 		
 		cstd::HandlePool<
 			BufferHandle, 
 			Buffer, 
-			BufferID> mBuffers{ skMaxBuffers };
+			BufferID> m_Buffers{ skMaxBuffers };
 		
 		cstd::HandlePool<
 			VertexLayoutHandle, 
 			VertexLayout, 
-			LayoutID> mLayouts{ skMaxLayouts };
+			LayoutID> m_Layouts{ skMaxLayouts };
 		
 		cstd::HandlePool<
 			TextureHandle, 
 			Texture, 
-			TextureID> mTextures{ skMaxTextures };
+			TextureID> m_Textures{ skMaxTextures };
 		
 		cstd::HandlePool<
 			FramebufferHandle, 
 			Framebuffer, 
-			FramebufferID> mFramebuffers{ skMaxFramebuffers };
+			FramebufferID> m_Framebuffers{ skMaxFramebuffers };
 		
 		cstd::HandlePool<
 			PipelineHandle, 
 			Pipeline, 
-			PipelineID>	mPipelines{ skMaxPipelines };
+			PipelineID>	m_Pipelines{ skMaxPipelines };
 
 
 		bool validate_framebuffer_handle( FramebufferHandle buff ) const noexcept { return IsValid( buff ) || (buff == kDefaultFramebuffer); }

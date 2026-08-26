@@ -14,16 +14,16 @@ namespace lum {
 
 	void AudioModule::Initialize( ev::EventBus& bus ) {
 
-		mAudioDevice = ahi::CreateDevice( ahi::AudioBackend::Fmod );
-		mAudioDevice->Initialize( 512, ahi::InitFlag::RightHanded3D | ahi::InitFlag::DistanceFilter );
-		mAudioMgr.Initialize( mAudioDevice, &bus );
+		m_AudioDevice = ahi::CreateDevice( ahi::AudioBackend::Fmod );
+		m_AudioDevice->Initialize( 512, ahi::InitFlag::RightHanded3D | ahi::InitFlag::DistanceFilter );
+		m_AudioMgr.Initialize( m_AudioDevice, &bus );
 
 	}
 
 	void AudioModule::Finalize( ) {
 
-		mAudioDevice->Finalize( );
-		delete mAudioDevice;
+		m_AudioDevice->Finalize( );
+		delete m_AudioDevice;
 
 	}
 

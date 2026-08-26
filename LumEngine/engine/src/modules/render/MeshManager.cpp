@@ -21,43 +21,43 @@ namespace lum {
 
 		ctx.Validate( );
 
-		mCtx = &ctx;
+		m_Ctx = &ctx;
 		init( );
 
 	}
 
 	const StaticMeshResource& MeshManager::GetStatic( StaticMeshHandle handle ) {
-		if (mStaticMeshes.Contains( handle ))
-			return mStaticMeshes[ handle ];
+		if (m_StaticMeshes.Contains( handle ))
+			return m_StaticMeshes[ handle ];
 		else
-			return mStaticMeshes[ mDefaultMesh ];
+			return m_StaticMeshes[ m_DefaultMesh ];
 	}
 
 	StaticMeshHandle MeshManager::CreateStatic( StringView path, ResourceRoot root ) {
 
 		uint64 hash = HashString( path );
 
-		if (mStaticMeshCache.contains( hash ))
-			return mStaticMeshCache[ hash ];
+		if (m_StaticMeshCache.contains( hash ))
+			return m_StaticMeshCache[ hash ];
 
 		auto meshGeometry = ResourceLoader::LoadMeshFromFile( root, path );
 
 		if (!meshGeometry) {
 			LUM_LOG_ERROR( "Failed to load model %s: %s", path.data(), meshGeometry.GetError() );
-			return mErrorMesh;
+			return m_ErrorMesh;
 		}
 
 		detail::RenderResources res = upload_gpu( detail::MeshType::Static, meshGeometry.ValueRef( ) );
 
 		StaticMeshResource meshResource;
-		meshResource.mVbo = res.mVbo;
-		meshResource.mEbo = res.mEbo;
-		meshResource.mVao = res.mVao;
-		meshResource.mNumIndices = meshGeometry.ValueRef( ).mIndices.size( );
+		meshResource.m_Vbo = res.m_Vbo;
+		meshResource.m_Ebo = res.m_Ebo;
+		meshResource.m_Vao = res.m_Vao;
+		meshResource.m_NumIndices = meshGeometry.ValueRef( ).m_Indices.size( );
 
-		StaticMeshHandle meshHandle = mStaticMeshes.Append( std::move( meshResource ) );
+		StaticMeshHandle meshHandle = m_StaticMeshes.Append( std::move( meshResource ) );
 
-		mStaticMeshCache[ hash ] = meshHandle;
+		m_StaticMeshCache[ hash ] = meshHandle;
 
 		return meshHandle;
 	}
@@ -69,18 +69,18 @@ namespace lum {
 		if (!meshGeometry) {
 			LUM_LOG_ERROR( "Failed to load model %s: %s", path, meshGeometry.GetError() );
 			MeshGeometry fallback;
-			fallback.mVertices = mDefaultVertices;
-			fallback.mIndices = mDefaultIndices;
+			fallback.m_Vertices = m_DefaultVertices;
+			fallback.m_Indices = m_DefaultIndices;
 			meshGeometry = fallback;
 		}
 
 		detail::RenderResources res = upload_gpu( detail::MeshType::Dynamic, meshGeometry.ValueRef( ) );
 
 		DynamicMeshInstance meshInstance;
-		meshInstance.mData = meshGeometry.ValueRef( );
-		meshInstance.mVbo = res.mVbo;
-		meshInstance.mEbo = res.mEbo;
-		meshInstance.mVao = res.mVao;
+		meshInstance.m_Data = meshGeometry.ValueRef( );
+		meshInstance.m_Vbo = res.m_Vbo;
+		meshInstance.m_Ebo = res.m_Ebo;
+		meshInstance.m_Vao = res.m_Vao;
 
 		return meshInstance;
 	}
@@ -94,11 +94,11 @@ namespace lum {
 
 	void MeshManager::init( ) {
 
-		mCtx( ).mEventBus( ).SubscribePermanently<EComponentAdded<CStaticMesh>>(
+		m_Ctx( ).m_EventBus( ).SubscribePermanently<EComponentAdded<CStaticMesh>>(
 			[&]( const EComponentAdded<CStaticMesh>& mesh ) {
 				
-				if(!mesh.mComponent->mPath.empty())
-					mesh.mComponent->mHandle = CreateStatic( mesh.mComponent->mPath );
+				if(!mesh.m_Component->m_Path.empty())
+					mesh.m_Component->m_Handle = CreateStatic( mesh.m_Component->m_Path );
 
 			}
 		);
@@ -128,54 +128,54 @@ namespace lum {
 		detail::RenderResources res;
 
 		rhi::BufferCreateInfo vboDesc;
-		vboDesc.mBufferUsage = usage;
-		vboDesc.mData = data.mVertices.data( );
-		vboDesc.mMapFlags = mapFlag;
-		vboDesc.mSize = ComputeByteSize( data.mVertices );
-		vboDesc.mBufferType = rhi::BufferType::Vertex;
-		res.mVbo = mCtx().mRenderDev().CreateBuffer( vboDesc );
+		vboDesc.m_BufferUsage = usage;
+		vboDesc.m_Data = data.m_Vertices.data( );
+		vboDesc.m_MapFlags = mapFlag;
+		vboDesc.m_Size = ComputeByteSize( data.m_Vertices );
+		vboDesc.m_BufferType = rhi::BufferType::Vertex;
+		res.m_Vbo = m_Ctx().m_RenderDev().CreateBuffer( vboDesc );
 
 		rhi::BufferCreateInfo eboDesc;
-		eboDesc.mBufferUsage = usage;
-		eboDesc.mData = data.mIndices.data( );
-		eboDesc.mMapFlags = mapFlag;
-		eboDesc.mSize = ComputeByteSize( data.mIndices );
-		eboDesc.mBufferType = rhi::BufferType::Element;
-		res.mEbo = mCtx().mRenderDev().CreateBuffer( eboDesc );
+		eboDesc.m_BufferUsage = usage;
+		eboDesc.m_Data = data.m_Indices.data( );
+		eboDesc.m_MapFlags = mapFlag;
+		eboDesc.m_Size = ComputeByteSize( data.m_Indices );
+		eboDesc.m_BufferType = rhi::BufferType::Element;
+		res.m_Ebo = m_Ctx().m_RenderDev().CreateBuffer( eboDesc );
 
 		rhi::VertexAttribute vaoAttrib[ 5 ];
 
 		auto& position = vaoAttrib[ 0 ];
-		position.mFormat = rhi::DataFormat::Vec3;
-		position.mRelativeOffset = offsetof( Vertex, mPosition );
-		position.mShaderLocation = LUM_LAYOUT_POSITION;
+		position.m_Format = rhi::DataFormat::Vec3;
+		position.m_RelativeOffset = offsetof( Vertex, m_Position );
+		position.m_ShaderLocation = LUM_LAYOUT_POSITION;
 
 		auto& normal = vaoAttrib[ 1 ];
-		normal.mFormat = rhi::DataFormat::Vec3;
-		normal.mRelativeOffset = offsetof( Vertex, mNormal );
-		normal.mShaderLocation = LUM_LAYOUT_NORMAL;
+		normal.m_Format = rhi::DataFormat::Vec3;
+		normal.m_RelativeOffset = offsetof( Vertex, m_Normal );
+		normal.m_ShaderLocation = LUM_LAYOUT_NORMAL;
 
 		auto& uv = vaoAttrib[ 2 ];
-		uv.mFormat = rhi::DataFormat::Vec2;
-		uv.mRelativeOffset = offsetof( Vertex, mUv );
-		uv.mShaderLocation = LUM_LAYOUT_UV;
+		uv.m_Format = rhi::DataFormat::Vec2;
+		uv.m_RelativeOffset = offsetof( Vertex, m_Uv );
+		uv.m_ShaderLocation = LUM_LAYOUT_UV;
 
 		auto& tg = vaoAttrib[ 3 ];
-		tg.mFormat = rhi::DataFormat::Vec3;
-		tg.mRelativeOffset = offsetof( Vertex, mTangent );
-		tg.mShaderLocation = LUM_LAYOUT_TANGENT;
+		tg.m_Format = rhi::DataFormat::Vec3;
+		tg.m_RelativeOffset = offsetof( Vertex, m_Tangent );
+		tg.m_ShaderLocation = LUM_LAYOUT_TANGENT;
 
 		auto& btg = vaoAttrib[ 4 ];
-		btg.mFormat = rhi::DataFormat::Vec3;
-		btg.mRelativeOffset = offsetof( Vertex, mBitangent );
-		btg.mShaderLocation = LUM_LAYOUT_BITANGENT;
+		btg.m_Format = rhi::DataFormat::Vec3;
+		btg.m_RelativeOffset = offsetof( Vertex, m_Bitangent );
+		btg.m_ShaderLocation = LUM_LAYOUT_BITANGENT;
 
 		rhi::VertexLayoutCreateInfo vaoDesc;
-		vaoDesc.mAttributes = vaoAttrib;
-		vaoDesc.mStride = sizeof( Vertex );
-		res.mVao = mCtx( ).mRenderDev( ).CreateVertexLayout( vaoDesc, res.mVbo );
+		vaoDesc.m_Attributes = vaoAttrib;
+		vaoDesc.m_Stride = sizeof( Vertex );
+		res.m_Vao = m_Ctx( ).m_RenderDev( ).CreateVertexLayout( vaoDesc, res.m_Vbo );
 
-		mCtx( ).mRenderDev( ).AttachElementBufferToLayout( res.mEbo, res.mVao );
+		m_Ctx( ).m_RenderDev( ).AttachElementBufferToLayout( res.m_Ebo, res.m_Vao );
 
 		return res;
 	}
@@ -184,36 +184,36 @@ namespace lum {
 		{ // Default mesh
 
 			MeshGeometry data;
-			data.mVertices = mDefaultVertices;
-			data.mIndices = mDefaultIndices;
+			data.m_Vertices = m_DefaultVertices;
+			data.m_Indices = m_DefaultIndices;
 
 			detail::RenderResources res = upload_gpu( detail::MeshType::Static, data );
 
 			StaticMeshResource staticMesh;
-			staticMesh.mVbo = res.mVbo;
-			staticMesh.mEbo = res.mEbo;
-			staticMesh.mVao = res.mVao;
-			staticMesh.mNumIndices = data.mIndices.size( );
+			staticMesh.m_Vbo = res.m_Vbo;
+			staticMesh.m_Ebo = res.m_Ebo;
+			staticMesh.m_Vao = res.m_Vao;
+			staticMesh.m_NumIndices = data.m_Indices.size( );
 
-			mDefaultMesh = mStaticMeshes.Append( std::move( staticMesh ) );
+			m_DefaultMesh = m_StaticMeshes.Append( std::move( staticMesh ) );
 
 		}
 		{ // Error mesh
 			auto meshGeometry = ResourceLoader::LoadMeshFromFile( ResourceRoot::Internal, "models/ERRORText.fbx" );
 			if (!meshGeometry) {
 				LUM_LOG_ERROR( "Failed to load fallback error model: %s", meshGeometry.GetError() );
-				mErrorMesh = mDefaultMesh;
+				m_ErrorMesh = m_DefaultMesh;
 				return;
 			}
 			detail::RenderResources res = upload_gpu( detail::MeshType::Static, meshGeometry.ValueRef( ) );
 
 			StaticMeshResource staticMesh;
-			staticMesh.mVbo = res.mVbo;
-			staticMesh.mEbo = res.mEbo;
-			staticMesh.mVao = res.mVao;
-			staticMesh.mNumIndices = meshGeometry.ValueRef( ).mIndices.size( );
+			staticMesh.m_Vbo = res.m_Vbo;
+			staticMesh.m_Ebo = res.m_Ebo;
+			staticMesh.m_Vao = res.m_Vao;
+			staticMesh.m_NumIndices = meshGeometry.ValueRef( ).m_Indices.size( );
 
-			mErrorMesh = mStaticMeshes.Append( std::move( staticMesh ) );
+			m_ErrorMesh = m_StaticMeshes.Append( std::move( staticMesh ) );
 
 		}
 

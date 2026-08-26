@@ -18,14 +18,14 @@ namespace lum {
 	//---------------------------------------------------------
 
 	void ShaderManager::Initialize( rhi::IRenderDevice& device ) {
-		mRenderDevice = &device;
+		m_RenderDevice = &device;
 	}
 
 	rhi::ShaderHandle ShaderManager::LoadShader( Path vertexPath, Path fragmentPath, ResourceRoot root ) {
 
 		uint64 hash = vertexPath.Hash( ) ^ fragmentPath.Hash( );
-		if (mShaders.contains( hash ))
-			return mShaders[ hash ];
+		if (m_Shaders.contains( hash ))
+			return m_Shaders[ hash ];
 
 		auto vertexData = ResourceLoader::BuildShaderSource( root, vertexPath );
 		if (!vertexData) {
@@ -40,12 +40,12 @@ namespace lum {
 		}
 		
 		rhi::ShaderCreateInfo desc{};
-		desc.mVertexContent = vertexData.ValueRef( );
-		desc.mFragmentContent = fragmentData.ValueRef( );
+		desc.m_VertexContent = vertexData.ValueRef( );
+		desc.m_FragmentContent = fragmentData.ValueRef( );
 		
-		rhi::ShaderHandle shader = mRenderDevice->CreateShader( desc );
+		rhi::ShaderHandle shader = m_RenderDevice->CreateShader( desc );
 		
-		mShaders[ hash ] = shader;
+		m_Shaders[ hash ] = shader;
 
 		return shader;
 

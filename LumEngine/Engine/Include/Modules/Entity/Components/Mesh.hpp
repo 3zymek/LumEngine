@@ -20,12 +20,12 @@ namespace lum {
 		LUM_GENERATED_BODY( )
 
 		LUM_PROPERTY( Droppable = "FILE" )
-		String mPath{};
+		String m_Path{};
 
-		String mLastLoadedPath = "";
+		String m_LastLoadedPath = "";
 
 		/* @brief Handle to the static mesh asset registered in MeshManager. */
-		StaticMeshHandle mHandle;
+		StaticMeshHandle m_Handle;
 
 	};
 

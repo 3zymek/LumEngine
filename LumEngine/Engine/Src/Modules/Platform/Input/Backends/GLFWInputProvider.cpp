@@ -5,9 +5,9 @@ namespace lum::input {
 	bool GLFWInputProvider::KeyPressed( Key key ) {
 
 		if (key == Key::MOUSE_LEFT || key == Key::MOUSE_RIGHT || key == Key::MOUSE_MIDDLE) {
-			return glfwGetMouseButton( mNativeWindow.Ptr( ), GetNativeKey( key ) ) == GLFW_PRESS;
+			return glfwGetMouseButton( m_NativeWindow.Ptr( ), GetNativeKey( key ) ) == GLFW_PRESS;
 		}
-		return glfwGetKey( mNativeWindow.Ptr( ), GetNativeKey( key ) ) == GLFW_PRESS;
+		return glfwGetKey( m_NativeWindow.Ptr( ), GetNativeKey( key ) ) == GLFW_PRESS;
 
 	}
 
@@ -30,8 +30,8 @@ namespace lum::input {
 
 	Vector2 GLFWInputProvider::GetMousePosition( ) const {
 		float64 x{}, y{};
-		glfwGetCursorPos( mNativeWindow.Ptr( ), &x, &y );
-		return Vector2( ToFloat32( x ), ToFloat32( y ) );
+		glfwGetCursorPos( m_NativeWindow.Ptr( ), &x, &y );
+		return Vector2( SafeCast<float32>( x ), SafeCast<float32>( y ) );
 	}
 
 }

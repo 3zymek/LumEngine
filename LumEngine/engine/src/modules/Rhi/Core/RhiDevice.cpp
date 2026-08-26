@@ -13,13 +13,13 @@ namespace lum::rhi {
 
 	void IRenderDevice::Finalize( ) {
 
-		for (auto [handle, p] : mPipelines.Each( ))    Delete( handle );
-		for (auto [handle, f] : mFramebuffers.Each( )) Delete( handle );
-		for (auto [handle, l] : mLayouts.Each( ))      Delete( handle );
-		for (auto [handle, b] : mBuffers.Each( ))      Delete( handle );
-		for (auto [handle, t] : mTextures.Each( ))     Delete( handle );
-		for (auto [handle, s] : mShaders.Each( ))      Delete( handle );
-		for (auto [handle, l] : mSamplers.Each( ))     Delete( handle );
+		for (auto [handle, p] : m_Pipelines.Each( ))    Delete( handle );
+		for (auto [handle, f] : m_Framebuffers.Each( )) Delete( handle );
+		for (auto [handle, l] : m_Layouts.Each( ))      Delete( handle );
+		for (auto [handle, b] : m_Buffers.Each( ))      Delete( handle );
+		for (auto [handle, t] : m_Textures.Each( ))     Delete( handle );
+		for (auto [handle, s] : m_Shaders.Each( ))      Delete( handle );
+		for (auto [handle, l] : m_Samplers.Each( ))     Delete( handle );
 
 	}
 
@@ -29,14 +29,14 @@ namespace lum::rhi {
 
 	bool IRenderDevice::validate_texture_descriptor( const TextureCreateInfo& desc ) const noexcept {
 
-		if (mTextures.DenseSize( ) >= skMaxTextures) {
+		if (m_Textures.DenseSize( ) >= skMaxTextures) {
 
 			LUM_LOG_WARN( "Max textures reached" );
 			return false;
 
 		}
 
-		if (desc.mData.mPixels.data( ) == nullptr) {
+		if (desc.m_Data.m_Pixels.data( ) == nullptr) {
 			LUM_LOG_WARN( "Texture pixel data is null" );
 			return false;
 		}
@@ -46,34 +46,34 @@ namespace lum::rhi {
 	}
 	bool IRenderDevice::validate_buffer_descriptor( const BufferCreateInfo& desc ) const noexcept {
 
-		if (desc.mBufferUsage == BufferUsage::Static) {
+		if (desc.m_BufferUsage == BufferUsage::Static) {
 			LUM_ASSERT(
-				desc.mMapFlags.IsEmpty( ),
+				desc.m_MapFlags.IsEmpty( ),
 				"Static buffers cannot be mapped"
 			);
 		}
 
-		if (desc.mMapFlags.Has( MapFlag::Coherent )) {
+		if (desc.m_MapFlags.Has( MapFlag::Coherent )) {
 			LUM_ASSERT(
-				desc.mMapFlags.Has( MapFlag::Persistent ),
+				desc.m_MapFlags.Has( MapFlag::Persistent ),
 				"Coherent flag requires Persistent flag"
 			);
 		}
 
-		if (desc.mMapFlags.Has( MapFlag::Persistent )) {
+		if (desc.m_MapFlags.Has( MapFlag::Persistent )) {
 			LUM_ASSERT(
-				desc.mMapFlags.Has( MapFlag::Read ) || desc.mMapFlags.Has( MapFlag::Write ),
+				desc.m_MapFlags.Has( MapFlag::Read ) || desc.m_MapFlags.Has( MapFlag::Write ),
 				"Persistent flag requires Read or Write flag"
 			);
 		}
 
-		if (mBuffers.DenseSize( ) >= skMaxBuffers) {
+		if (m_Buffers.DenseSize( ) >= skMaxBuffers) {
 			LUM_LOG_WARN( "Max buffers reached" );
 			return false;
 		}
 
-		LUM_ASSERT( desc.mSize > 0, "Invalid buffer size" );
-		LUM_ASSERT( desc.mBufferType != BufferType::None, "No buffer type given" );
+		LUM_ASSERT( desc.m_Size > 0, "Invalid buffer size" );
+		LUM_ASSERT( desc.m_BufferType != BufferType::None, "No buffer type given" );
 
 		return true;
 

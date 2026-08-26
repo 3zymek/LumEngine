@@ -14,22 +14,22 @@ namespace lum::rhi {
 	struct TextureRect {
 
 		/* @brief X offset in pixels from the left edge of the texture. */
-		uint32 mX = 0;
+		uint32 m_X = 0;
 
 		/* @brief Y offset in pixels from the top edge of the texture. */
-		uint32 mY = 0;
+		uint32 m_Y = 0;
 
 		/* @brief Width of the region in pixels. */
-		uint32 mWidth = 0;
+		uint32 m_Width = 0;
 
 		/* @brief Height of the region in pixels. */
-		uint32 mHeight = 0;
+		uint32 m_Height = 0;
 
 		/* @brief Depth of the region in pixels, used for Texture3D. */
-		uint32 mDepth = 1;
+		uint32 m_Depth = 1;
 
 		/* @brief Mip level this region targets. */
-		uint32 mMipLevel = 0;
+		uint32 m_MipLevel = 0;
 
 	};
 
@@ -114,44 +114,44 @@ namespace lum::rhi {
 	*
 	* Contains all information required to upload and configure a texture,
 	* including its pixel data, format, dimensions, and type. Width and height
-	* can be omitted if they are already present in mData, in which case they
+	* can be omitted if they are already present in m_Data, in which case they
 	* will be inferred automatically.
 	*
 	*/
 	struct TextureCreateInfo {
 
 		/* @brief Raw pixel data loaded from the CPU side. */
-		ImageData mData;
+		ImageData m_Data;
 
 		/* @brief GPU-side storage format for the texture. */
-		TextureFormat mInternalFormat = TextureFormat::RGBA8;
+		TextureFormat m_InternalFormat = TextureFormat::RGBA8;
 
 		/* @brief CPU-side pixel channel layout of the source data. */
-		PixelLayout mPixelFormat = PixelLayout::RGBA;
+		PixelLayout m_PixelFormat = PixelLayout::RGBA;
 
 		/* @brief Data type of each pixel channel in the source buffer. */
-		PixelDataType mDataType = PixelDataType::UnsignedByte;
+		PixelDataType m_DataType = PixelDataType::UnsignedByte;
 
 		/* @brief Whether to automatically generate mipmaps after upload. */
 		bool bGenerateMipmaps = false;
 
 		/* @brief Number of mip levels to generate. 0 = calculate automatically. */
-		uint32 mMipmapLevels = 0;
+		uint32 m_MipmapLevels = 0;
 
 		/* @brief Number of samples for multisampled textures. 0 = not multisampled. */
-		uint32 mSamples = 0;
+		uint32 m_Samples = 0;
 
 		/* @brief Dimensionality and type of the texture. */
-		TextureKind mTextureType = TextureKind::None;
+		TextureKind m_TextureType = TextureKind::None;
 
-		/* @brief Texture width in pixels. 0 = infer from mData. */
-		uint32 mWidth = 0;
+		/* @brief Texture width in pixels. 0 = infer from m_Data. */
+		uint32 m_Width = 0;
 
-		/* @brief Texture height in pixels. 0 = infer from mData. */
-		uint32 mHeight = 0;
+		/* @brief Texture height in pixels. 0 = infer from m_Data. */
+		uint32 m_Height = 0;
 
 		/* @brief Texture depth in pixels. Used for Texture3D only. */
-		uint32 mDepth = 0;
+		uint32 m_Depth = 0;
 
 		/* @brief Per-face pixel data for cubemap textures.
 		* Faces are ordered: +X, -X, +Y, -Y, +Z, -Z.
@@ -159,9 +159,9 @@ namespace lum::rhi {
 		struct Cubemap {
 
 			/* @brief Pixel data for each of the six cubemap faces. */
-			ImageData mFaces[6]{};
+			ImageData m_Faces[6]{};
 
-		} mCubemap;
+		} m_Cubemap;
 	};
 
 	/* @brief Describes a partial update to an existing GPU texture.
@@ -170,13 +170,13 @@ namespace lum::rhi {
 	struct TextureUpdateDescription {
 
 		/* @brief Target region within the texture to update. */
-		TextureRect mRect;
+		TextureRect m_Rect;
 
 		/* @brief New pixel data to upload into the target region. */
-		ImageData mData;
+		ImageData m_Data;
 
 		/* @brief Whether to regenerate mipmaps after the update. */
-		bool mGenerateMipmaps = false;
+		bool m_GenerateMipmaps = false;
 
 	};
 
@@ -186,28 +186,28 @@ namespace lum::rhi {
 	struct Texture {
 
 		/* @brief Region and dimensions of the texture. */
-		TextureRect mRect{};
+		TextureRect m_Rect{};
 
 		/* @brief Dimensionality and type of the texture. */
-		TextureKind mKind = TextureKind::None;
+		TextureKind m_Kind = TextureKind::None;
 
 		/* @brief GPU-side internal storage format. */
-		TextureFormat mFormat = TextureFormat::RGBA8;
+		TextureFormat m_Format = TextureFormat::RGBA8;
 
 		/* @brief CPU-side pixel channel layout used during upload. */
-		PixelLayout mPixelLayout = PixelLayout::RGBA;
+		PixelLayout m_PixelLayout = PixelLayout::RGBA;
 
 		/* @brief Data type of each pixel channel used during upload. */
-		PixelDataType mPixelDataType = PixelDataType::UnsignedByte;
+		PixelDataType m_PixelDataType = PixelDataType::UnsignedByte;
 
 		/* @brief Number of mip levels generated for this texture. */
-		uint32 mMipmapLevels = 0;
+		uint32 m_MipmapLevels = 0;
 
 		/* @brief Number of samples for multisampled textures. 0 = not multisampled. */
-		uint32 mSampleCount = 0;
+		uint32 m_SampleCount = 0;
 
 		/* @brief Underlying GPU texture handle. */
-		TextureID mHandle = 0;
+		TextureID m_Handle = 0;
 
 	};
 

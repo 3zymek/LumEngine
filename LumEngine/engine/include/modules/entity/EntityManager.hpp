@@ -27,25 +27,25 @@ namespace lum {
 		* iterating over entities that share a set of component types.
 		*/
 		class LUM_API EntityManager {
-			public:
+		public:
 
 			EntityManager( ) { initialize_pools( ); }
 
 			/* @brief Move constructor. Transfers all component pool ownership from other. */
 			EntityManager( EntityManager&& other ) noexcept {
-				for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
-					mComponentPools[ i ] = other.mComponentPools[ i ];
-					other.mComponentPools[ i ] = nullptr;
+				for (int32 i = 0; i < limits::k_MaxComponentTypes; i++) {
+					m_ComponentPools[ i ] = other.m_ComponentPools[ i ];
+					other.m_ComponentPools[ i ] = nullptr;
 				}
-				mEventBus = other.mEventBus;
-				other.mEventBus = nullptr;
+				m_EventBus = other.m_EventBus;
+				other.m_EventBus = nullptr;
 			}
 
 			~EntityManager( ) { destroy_pools( ); }
 
 			/* @brief Binds the entity manager to an event bus for component lifecycle events. */
-			void Initialize( ev::EventBus& bus ) { 
-				mEventBus = bus; 
+			void Initialize( ev::EventBus& bus ) {
+				m_EventBus = bus;
 			}
 
 			//=========================================================================
@@ -179,9 +179,9 @@ namespace lum {
 			*/
 			template<typename tCallback>
 			void ForEachComponent( EntityID entityId, tCallback&& callback ) {
-				for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
-					if (mComponentPools[ i ] && mComponentPools[ i ]->Contains( entityId ))
-						callback( mComponentPools[ i ]->GetBase( entityId ), mComponentPools[ i ] );
+				for (int32 i = 0; i < limits::k_MaxComponentTypes; i++) {
+					if (m_ComponentPools[ i ] && m_ComponentPools[ i ]->Contains( entityId ))
+						callback( m_ComponentPools[ i ]->GetBase( entityId ), m_ComponentPools[ i ] );
 				}
 			}
 
@@ -195,12 +195,12 @@ namespace lum {
 			template<detail::cComponent tType>
 			detail::ComponentPool<tType>& GetPool( );
 
-			private:
+		private:
 
 			/* @brief Array of component pools indexed by component type ID. */
-			ComponentBasePool* mComponentPools[ limits::kMaxComponentTypes ];
+			ComponentBasePool* m_ComponentPools[ limits::k_MaxComponentTypes ];
 
-			SafePtr<ev::EventBus> mEventBus = nullptr;
+			SafePtr<ev::EventBus> m_EventBus = nullptr;
 
 			/* @brief Initializes all pool slots to nullptr. */
 			void initialize_pools( );

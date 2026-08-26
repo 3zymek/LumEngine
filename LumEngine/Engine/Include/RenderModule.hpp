@@ -16,11 +16,11 @@ namespace lum {
 
 	struct RenderModuleCreateInfo {
 
-		SafePtr<rhi::IRenderDevice> mRenderDev = nullptr;
-		SafePtr<ResourceModule> mResourceModule = nullptr;
-		SafePtr<ev::EventBus> mEventBus = nullptr;
-		uint32 mViewportWidth = 1280;
-		uint32 mViewportHeight = 720;
+		SafePtr<rhi::IRenderDevice> m_RenderDev = nullptr;
+		SafePtr<ResourceModule> m_ResourceModule = nullptr;
+		SafePtr<ev::EventBus> m_EventBus = nullptr;
+		uint32 m_ViewportWidth = 1280;
+		uint32 m_ViewportHeight = 720;
 
 	};
 
@@ -29,8 +29,8 @@ namespace lum {
 	class LUM_API RenderModule {
 	public:
 
-		render::Renderer	 mRenderer{};
-		render::RenderSystem mRenderSys{};
+		render::Renderer	 m_Renderer{};
+		render::RenderSystem m_RenderSys{};
 
 		void Initialize( const RenderModuleCreateInfo& info );
 

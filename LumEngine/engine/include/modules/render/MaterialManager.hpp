@@ -33,7 +33,7 @@ namespace lum {
 		* @param base Material base data to upload.
 		* @return Handle to the uploaded base material.
 		*/
-		LUM_NODISCARD MaterialBaseHandle UploadBase( const MaterialBase& base ) { return mBaseMaterials.Append( base ); }
+		LUM_NODISCARD MaterialBaseHandle UploadBase( const MaterialBase& base ) { return m_BaseMaterials.Append( base ); }
 
 		/* @brief Resolves a material descriptor and uploads it to the base material pool.
 		* Loads textures from provided paths and automatically applies fallbacks for unset fields.
@@ -62,11 +62,11 @@ namespace lum {
 
 	private:
 
-		SafePtr<render::RendererContext> mCtx = nullptr;
-		MaterialBaseHandle mDefaultMaterial{};
+		SafePtr<render::RendererContext> m_Ctx = nullptr;
+		MaterialBaseHandle m_DefaultMaterial{};
 
 		/* @brief Pool storing all uploaded base materials, indexed by MaterialBaseHandle. */
-		cstd::HandlePool<MaterialBaseHandle, MaterialBase> mBaseMaterials{ limits::kMaxMaterials };
+		cstd::HandlePool<MaterialBaseHandle, MaterialBase> m_BaseMaterials{ limits::k_MaxMaterials };
 
 		void init();
 

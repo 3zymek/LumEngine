@@ -23,36 +23,36 @@ namespace lum::render {
 
 		ctx.Validate( );
 
-		mCtx = ctx;
+		m_Ctx = ctx;
 
 		init( );
 
 	}
 
 	void EnvironmentPass::SetCubemapTexture( rhi::TextureHandle tex ) {
-		mCubemap.mTexture = tex;
+		m_Cubemap.m_Texture = tex;
 		generate_irradiance_map( );
 		generate_prefiltered_map( );
 	}
 
 	void EnvironmentPass::Execute( detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad ) {
 
-		auto& device = mCtx().mRenderDev( );
+		auto& device = m_Ctx().m_RenderDev( );
 
-		device.BindFramebuffer( quad.mSceneFbo ); // Render skybox to screenquad
-		device.BindPipeline( mCubemap.mPipeline );
-		device.BindShader( mCubemap.mShader );
-		device.BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
-		device.BindSampler( mSampler, LUM_TEX_CUBEMAP );
+		device.BindFramebuffer( quad.m_SceneFbo ); // Render skybox to screenquad
+		device.BindPipeline( m_Cubemap.m_Pipeline );
+		device.BindShader( m_Cubemap.m_Shader );
+		device.BindTexture( m_Cubemap.m_Texture, LUM_TEX_CUBEMAP );
+		device.BindSampler( m_Sampler, LUM_TEX_CUBEMAP );
 
-		device.DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
+		device.DrawElements( m_Cubemap.m_Vao, m_Cubemap.m_NumIndices );
 
 	}
 
 	rhi::TextureHandle EnvironmentPass::GetTexture( detail::IBLTexture tex ) const noexcept {
 		switch (tex) {
-		case detail::IBLTexture::IrradianceMap: return mIBL.mIrradiance.mTexture;
-		case detail::IBLTexture::PrefilteredMap: return mIBL.mPrefiltered.mTexture;
+		case detail::IBLTexture::IrradianceMap: return mIBL.m_Irradiance.m_Texture;
+		case detail::IBLTexture::PrefilteredMap: return mIBL.m_Prefiltered.m_Texture;
 		default: return { };
 		}
 		return {};
@@ -67,16 +67,16 @@ namespace lum::render {
 	void EnvironmentPass::generate_irradiance_map( ) {
 
 		rhi::BufferHandle captureUBO;
-		auto& device = mCtx().mRenderDev( );
+		auto& device = m_Ctx().m_RenderDev( );
 
 		// Capture UBO (IBL)s
 		{
 
 			rhi::BufferCreateInfo desc;
-			desc.mBufferType = rhi::BufferType::Uniform;
-			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
-			desc.mMapFlags = rhi::MapFlag::Write;
-			desc.mSize = sizeof( Matrix4 ) * 2;
+			desc.m_BufferType = rhi::BufferType::Uniform;
+			desc.m_BufferUsage = rhi::BufferUsage::Dynamic;
+			desc.m_MapFlags = rhi::MapFlag::Write;
+			desc.m_Size = sizeof( Matrix4 ) * 2;
 			captureUBO = device.CreateBuffer( desc );
 			device.SetUniformBufferBinding( captureUBO, LUM_UBO_IRRADIANCE );
 
@@ -89,10 +89,10 @@ namespace lum::render {
 
 		device.SetViewport( 0, 0, 32, 32 );
 		device.BindFramebuffer( captureFBO );
-		device.BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
-		device.BindSampler( mSampler, LUM_TEX_CUBEMAP );
-		device.BindPipeline( mCubemap.mPipeline );
-		device.BindShader( mIBL.mIrradiance.mShader );
+		device.BindTexture( m_Cubemap.m_Texture, LUM_TEX_CUBEMAP );
+		device.BindSampler( m_Sampler, LUM_TEX_CUBEMAP );
+		device.BindPipeline( m_Cubemap.m_Pipeline );
+		device.BindShader( mIBL.m_Irradiance.m_Shader );
 
 		for (int32 i = 0; i < 6; i++) {
 
@@ -100,19 +100,19 @@ namespace lum::render {
 			device.UpdateBuffer( captureUBO, matrices );
 
 			rhi::TextureLayerAttachment attach;
-			attach.mAttachment = rhi::BufferBit::Color;
-			attach.mMip = 1;
-			attach.mLayer = i;
-			attach.mSlot = 0;
-			device.AttachTextureLayer( captureFBO, mIBL.mIrradiance.mTexture, attach );
-			device.DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
+			attach.m_Attachment = rhi::BufferBit::Color;
+			attach.m_Mip = 1;
+			attach.m_Layer = i;
+			attach.m_Slot = 0;
+			device.AttachTextureLayer( captureFBO, mIBL.m_Irradiance.m_Texture, attach );
+			device.DrawElements( m_Cubemap.m_Vao, m_Cubemap.m_NumIndices );
 
 		}
 
 		device.Delete( captureFBO );
 		device.Delete( captureUBO );
 
-		device.SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
+		device.SetViewport( 0, 0, viewport.m_Width, viewport.m_Height );
 
 	}
 
@@ -120,16 +120,16 @@ namespace lum::render {
 
 		rhi::BufferHandle captureUBO;
 
-		auto& device = mCtx().mRenderDev( );
+		auto& device = m_Ctx().m_RenderDev( );
 
 		// Capture UBO (IBL)
 		{
 
 			rhi::BufferCreateInfo desc;
-			desc.mBufferType = rhi::BufferType::Uniform;
-			desc.mBufferUsage = rhi::BufferUsage::Dynamic;
-			desc.mMapFlags = rhi::MapFlag::Write;
-			desc.mSize = sizeof( Matrix4 ) * 2 + sizeof( float32 );
+			desc.m_BufferType = rhi::BufferType::Uniform;
+			desc.m_BufferUsage = rhi::BufferUsage::Dynamic;
+			desc.m_MapFlags = rhi::MapFlag::Write;
+			desc.m_Size = sizeof( Matrix4 ) * 2 + sizeof( float32 );
 			captureUBO = device.CreateBuffer( desc );
 			device.SetUniformBufferBinding( captureUBO, LUM_UBO_PREFILTERED_MAP );
 
@@ -141,21 +141,21 @@ namespace lum::render {
 		rhi::ViewportState			viewport = device.GetViewport( );
 
 		device.BindFramebuffer( captureFBO );
-		device.BindTexture( mCubemap.mTexture, LUM_TEX_CUBEMAP );
-		device.BindSampler( mSampler, LUM_TEX_CUBEMAP );
-		device.BindPipeline( mCubemap.mPipeline );
-		device.BindShader( mIBL.mPrefiltered.mShader );
+		device.BindTexture( m_Cubemap.m_Texture, LUM_TEX_CUBEMAP );
+		device.BindSampler( m_Sampler, LUM_TEX_CUBEMAP );
+		device.BindPipeline( m_Cubemap.m_Pipeline );
+		device.BindShader( mIBL.m_Prefiltered.m_Shader );
 
 		struct LUM_UBO_ALIGNMENT UniformData {
-			Matrix4 mProjection = Matrix4( 1.0f );
-			Matrix4 mView = Matrix4( 1.0f );
-			float32 mRoughness{};
+			Matrix4 m_Projection = Matrix4( 1.0f );
+			Matrix4 m_View = Matrix4( 1.0f );
+			float32 m_Roughness{};
 			float32 _pad[ 3 ]{};
 		};
 
-		for (uint32 mip = 0; mip < mIBL.mPrefiltered.skMipmapLevels; mip++) {
+		for (uint32 mip = 0; mip < mIBL.m_Prefiltered.skMipmapLevels; mip++) {
 
-			float32 roughness = ToFloat32( mip ) / ToFloat32( (mIBL.mPrefiltered.skMipmapLevels - 1) );
+			float32 roughness = SafeCast<float32>( mip ) / SafeCast<float32>( (mIBL.m_Prefiltered.skMipmapLevels - 1) );
 
 			uint32 mipSize = 128 >> mip;
 			device.SetViewport( 0, 0, mipSize, mipSize );
@@ -163,19 +163,19 @@ namespace lum::render {
 			for (int32 i = 0; i < 6; i++) {
 
 				UniformData data{};
-				data.mProjection = captureProjection;
-				data.mView = captureViews[ i ];
-				data.mRoughness = roughness;
+				data.m_Projection = captureProjection;
+				data.m_View = captureViews[ i ];
+				data.m_Roughness = roughness;
 
 				device.UpdateBuffer( captureUBO, &data );
 
 				rhi::TextureLayerAttachment attach;
-				attach.mAttachment = rhi::BufferBit::Color;
-				attach.mMip = mip;
-				attach.mLayer = i;
-				attach.mSlot = 0;
-				device.AttachTextureLayer( captureFBO, mIBL.mPrefiltered.mTexture, attach );
-				device.DrawElements( mCubemap.mVao, mCubemap.mNumIndices );
+				attach.m_Attachment = rhi::BufferBit::Color;
+				attach.m_Mip = mip;
+				attach.m_Layer = i;
+				attach.m_Slot = 0;
+				device.AttachTextureLayer( captureFBO, mIBL.m_Prefiltered.m_Texture, attach );
+				device.DrawElements( m_Cubemap.m_Vao, m_Cubemap.m_NumIndices );
 
 			}
 
@@ -184,7 +184,7 @@ namespace lum::render {
 		device.Delete( captureFBO );
 		device.Delete( captureUBO );
 
-		device.SetViewport( 0, 0, viewport.mWidth, viewport.mHeight );
+		device.SetViewport( 0, 0, viewport.m_Width, viewport.m_Height );
 
 	}
 
@@ -208,113 +208,113 @@ namespace lum::render {
 
 		};
 
-		mCubemap.mNumIndices = ArraySize( cubemapIndices );
+		m_Cubemap.m_NumIndices = ArraySize( cubemapIndices );
 
-		auto& device = mCtx().mRenderDev( );
+		auto& device = m_Ctx().m_RenderDev( );
 
 		// Cubemap VBO
-		if (!device.IsValid( mCubemap.mVbo )) {
+		if (!device.IsValid( m_Cubemap.m_Vbo )) {
 
 			rhi::BufferCreateInfo desc;
-			desc.mBufferUsage = rhi::BufferUsage::Static;
-			desc.mMapFlags = rhi::MapFlag::None;
-			desc.mSize = ComputeByteSize( cubemapVertices );
-			desc.mData = cubemapVertices;
-			desc.mBufferType = rhi::BufferType::Vertex;
-			mCubemap.mVbo = device.CreateBuffer( desc );
+			desc.m_BufferUsage = rhi::BufferUsage::Static;
+			desc.m_MapFlags = rhi::MapFlag::None;
+			desc.m_Size = ComputeByteSize( cubemapVertices );
+			desc.m_Data = cubemapVertices;
+			desc.m_BufferType = rhi::BufferType::Vertex;
+			m_Cubemap.m_Vbo = device.CreateBuffer( desc );
 
 		}
 
 		// Cubemap EBO
-		if (!device.IsValid( mCubemap.mEbo )) {
+		if (!device.IsValid( m_Cubemap.m_Ebo )) {
 
 			rhi::BufferCreateInfo desc;
-			desc.mBufferUsage = rhi::BufferUsage::Static;
-			desc.mMapFlags = rhi::MapFlag::None;
-			desc.mSize = ComputeByteSize( cubemapIndices );
-			desc.mData = cubemapIndices;
-			desc.mBufferType = rhi::BufferType::Element;
-			mCubemap.mEbo = device.CreateBuffer( desc );
+			desc.m_BufferUsage = rhi::BufferUsage::Static;
+			desc.m_MapFlags = rhi::MapFlag::None;
+			desc.m_Size = ComputeByteSize( cubemapIndices );
+			desc.m_Data = cubemapIndices;
+			desc.m_BufferType = rhi::BufferType::Element;
+			m_Cubemap.m_Ebo = device.CreateBuffer( desc );
 
 		}
 
 		// Cubemap VAO
-		if (!device.IsValid( mCubemap.mVao )) {
+		if (!device.IsValid( m_Cubemap.m_Vao )) {
 
 			rhi::VertexAttribute attrs[ ]{
 				{
-					.mFormat = rhi::DataFormat::Vec3,
-					.mRelativeOffset = 0,
-					.mShaderLocation = LUM_LAYOUT_POSITION
+					.m_Format = rhi::DataFormat::Vec3,
+					.m_RelativeOffset = 0,
+					.m_ShaderLocation = LUM_LAYOUT_POSITION
 				}
 			};
 			rhi::VertexLayoutCreateInfo desc;
-			desc.mStride = 3 * sizeof( float32 );
-			desc.mAttributes = attrs;
-			mCubemap.mVao = device.CreateVertexLayout( desc, mCubemap.mVbo );
-			device.AttachElementBufferToLayout( mCubemap.mEbo, mCubemap.mVao );
+			desc.m_Stride = 3 * sizeof( float32 );
+			desc.m_Attributes = attrs;
+			m_Cubemap.m_Vao = device.CreateVertexLayout( desc, m_Cubemap.m_Vbo );
+			device.AttachElementBufferToLayout( m_Cubemap.m_Ebo, m_Cubemap.m_Vao );
 
 		}
 
 		// Cubemap sampler
-		if (!device.IsValid( mSampler )) {
+		if (!device.IsValid( m_Sampler )) {
 
 			rhi::SamplerCreateInfo desc;
-			desc.mMinFilter = rhi::SamplerMinFilter::LinearMipmapLinear;
-			desc.mMagFilter = rhi::SamplerMagFilter::Linear;
-			desc.mWrapR = rhi::SamplerWrap::ClampEdge;
-			desc.mWrapS = rhi::SamplerWrap::ClampEdge;
-			desc.mWrapT = rhi::SamplerWrap::ClampEdge;
-			mSampler = device.CreateSampler( desc );
+			desc.m_MinFilter = rhi::SamplerMinFilter::LinearMipmapLinear;
+			desc.m_MagFilter = rhi::SamplerMagFilter::Linear;
+			desc.m_WrapR = rhi::SamplerWrap::ClampEdge;
+			desc.m_WrapS = rhi::SamplerWrap::ClampEdge;
+			desc.m_WrapT = rhi::SamplerWrap::ClampEdge;
+			m_Sampler = device.CreateSampler( desc );
 
 		}
 
 		// Cubemap Pipeline
-		if (!device.IsValid( mCubemap.mPipeline )) {
+		if (!device.IsValid( m_Cubemap.m_Pipeline )) {
 
 			rhi::PipelineCreateInfo desc;
-			desc.mDepthStencil.mDepth.bEnabled = true;
-			desc.mDepthStencil.mDepth.bWriteToZBuffer = false;
-			desc.mDepthStencil.mDepth.mCompare = rhi::CompareFlag::LessEqual;
-			desc.mCull.bEnabled = false;
-			desc.mCull.mFace = rhi::Face::Back;
-			mCubemap.mPipeline = device.CreatePipeline( desc );
+			desc.m_DepthStencil.m_Depth.bEnabled = true;
+			desc.m_DepthStencil.m_Depth.bWriteToZBuffer = false;
+			desc.m_DepthStencil.m_Depth.m_Compare = rhi::CompareFlag::LessEqual;
+			desc.m_Cull.bEnabled = false;
+			desc.m_Cull.m_Face = rhi::Face::Back;
+			m_Cubemap.m_Pipeline = device.CreatePipeline( desc );
 
 		}
 
 		// Irradiance map (IBL)
-		if (!device.IsValid( mIBL.mIrradiance.mTexture )) {
+		if (!device.IsValid( mIBL.m_Irradiance.m_Texture )) {
 
 			rhi::TextureCreateInfo desc;
-			desc.mTextureType = rhi::TextureKind::Cubemap;
-			desc.mInternalFormat = rhi::TextureFormat::RGB16F;
-			desc.mPixelFormat = rhi::PixelLayout::RGB;
-			desc.mDataType = rhi::PixelDataType::Float;
-			desc.mWidth = 32;
-			desc.mHeight = 32;
-			mIBL.mIrradiance.mTexture = device.CreateTexture( desc );
+			desc.m_TextureType = rhi::TextureKind::Cubemap;
+			desc.m_InternalFormat = rhi::TextureFormat::RGB16F;
+			desc.m_PixelFormat = rhi::PixelLayout::RGB;
+			desc.m_DataType = rhi::PixelDataType::Float;
+			desc.m_Width = 32;
+			desc.m_Height = 32;
+			mIBL.m_Irradiance.m_Texture = device.CreateTexture( desc );
 
 		}
 
 		// Prefiltered environment map (IBL)
-		if (!device.IsValid( mIBL.mPrefiltered.mTexture )) {
+		if (!device.IsValid( mIBL.m_Prefiltered.m_Texture )) {
 
 			rhi::TextureCreateInfo desc;
-			desc.mTextureType = rhi::TextureKind::Cubemap;
-			desc.mPixelFormat = rhi::PixelLayout::RGB;
-			desc.mInternalFormat = rhi::TextureFormat::RGB16F;
-			desc.mWidth = 128;
-			desc.mHeight = 128;
-			desc.mMipmapLevels = 5;
-			mIBL.mPrefiltered.mTexture = device.CreateTexture( desc );
+			desc.m_TextureType = rhi::TextureKind::Cubemap;
+			desc.m_PixelFormat = rhi::PixelLayout::RGB;
+			desc.m_InternalFormat = rhi::TextureFormat::RGB16F;
+			desc.m_Width = 128;
+			desc.m_Height = 128;
+			desc.m_MipmapLevels = 5;
+			mIBL.m_Prefiltered.m_Texture = device.CreateTexture( desc );
 
 		}
 		{ // Shaders
 
-			mCubemap.mShader = mCtx().mShaderMgr().LoadShader( "shaders/skybox_pass.vert", "shaders/skybox_pass.frag", ResourceRoot::Internal );
+			m_Cubemap.m_Shader = m_Ctx().m_ShaderMgr().LoadShader( "shaders/skybox_pass.vert", "shaders/skybox_pass.frag", ResourceRoot::Internal );
 
-			mIBL.mIrradiance.mShader = mCtx().mShaderMgr( ).LoadShader( "shaders/irradiance.vert", "shaders/irradiance.frag", ResourceRoot::Internal );
-			mIBL.mPrefiltered.mShader = mCtx().mShaderMgr( ).LoadShader( "shaders/prefiltered_env.vert", "shaders/prefiltered_env.frag", ResourceRoot::Internal );
+			mIBL.m_Irradiance.m_Shader = m_Ctx().m_ShaderMgr( ).LoadShader( "shaders/irradiance.vert", "shaders/irradiance.frag", ResourceRoot::Internal );
+			mIBL.m_Prefiltered.m_Shader = m_Ctx().m_ShaderMgr( ).LoadShader( "shaders/prefiltered_env.vert", "shaders/prefiltered_env.frag", ResourceRoot::Internal );
 
 		}
 

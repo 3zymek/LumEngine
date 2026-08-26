@@ -26,7 +26,7 @@ namespace lum {
 		void RenderSystem::Initialize( render::Renderer* renderer ) {
 
 			LUM_ASSERT( renderer != nullptr, "Renderer is null" );
-			mRenderer = renderer;
+			m_Renderer = renderer;
 
 		}
 
@@ -34,55 +34,55 @@ namespace lum {
 
 			auto isVisible = [ & ]( EntityID id ) { auto e = scene.GetEntity( id ); return e && e->IsVisible( ); };
 
-			scene.mEntityMgr.EachWithID<CTransform, CMaterialInstance, CStaticMesh>(
+			scene.m_EntityMgr.EachWithID<CTransform, CMaterialInstance, CStaticMesh>(
 				[ & ]( EntityID id, CTransform& transform, CMaterialInstance& material, CStaticMesh& mesh ) {
 
 					if (!isVisible( id )) return;
 
 					render::RenderInstance inst;
-					inst.mMaterial = &material;
-					inst.mStaticMesh = &mesh;
-					inst.mTransform = &transform;
+					inst.m_Material = &material;
+					inst.m_StaticMesh = &mesh;
+					inst.m_Transform = &transform;
 
 
-					mRenderer->SubmitInstance( inst );
+					m_Renderer->SubmitInstance( inst );
 
 				}
 			);
 
-			scene.mEntityMgr.EachWithID<CTransform, CPointLight>(
+			scene.m_EntityMgr.EachWithID<CTransform, CPointLight>(
 				[ & ]( EntityID id, CTransform& transform, CPointLight& light ) {
 
 					if (!isVisible( id )) return;
 
 					PointLight pointL;
 
-					pointL.mPosition = transform.mPosition;
-					pointL.mIntensity = light.mIntensity;
-					pointL.mColor = light.mColor;
-					pointL.mRadius = light.mRadius;
+					pointL.m_Position = transform.m_Position;
+					pointL.m_Intensity = light.m_Intensity;
+					pointL.m_Color = light.m_Color;
+					pointL.m_Radius = light.m_Radius;
 
-					mRenderer->AddPointLight( pointL );
+					m_Renderer->AddPointLight( pointL );
 
 				}
 			);
 
-			scene.mEntityMgr.EachWithID<CTransform, CSpotLight>(
+			scene.m_EntityMgr.EachWithID<CTransform, CSpotLight>(
 				[ & ]( EntityID id, CTransform& transform, CSpotLight& light ) {
 
 					if (!isVisible( id )) return;
 
 					SpotLight spotL;
 
-					spotL.mPosition = transform.mPosition;
-					spotL.mIntensity = light.mIntensity;
-					spotL.mColor = light.mColor;
-					spotL.mRadius = light.mRadius;
-					spotL.mDirection = Normalize( light.mDirection );
-					spotL.mInnerCone = cos( Radians( light.mInnerAngle ) );
-					spotL.mOuterCone = cos( Radians( light.mOuterCone ) );
+					spotL.m_Position = transform.m_Position;
+					spotL.m_Intensity = light.m_Intensity;
+					spotL.m_Color = light.m_Color;
+					spotL.m_Radius = light.m_Radius;
+					spotL.m_Direction = Normalize( light.m_Direction );
+					spotL.m_InnerCone = cos( Radians( light.m_InnerAngle ) );
+					spotL.m_OuterCone = cos( Radians( light.m_OuterCone ) );
 
-					mRenderer->AddSpotLight( spotL );
+					m_Renderer->AddSpotLight( spotL );
 
 				}
 			);

@@ -10,17 +10,17 @@ namespace lum::rhi::gl {
 
 	ShaderHandle GLDevice::CreateShader( const ShaderCreateInfo& desc ) {
 
-		LUM_ASSERT( mShaders.DenseSize( ) < skMaxShaders, "Max shaders reached" );
+		LUM_ASSERT( m_Shaders.DenseSize( ) < skMaxShaders, "Max shaders reached" );
 
 		Shader shader;
 
 		GLuint vshader = glCreateShader( GL_VERTEX_SHADER );
 		GLuint fshader = glCreateShader( GL_FRAGMENT_SHADER );
 
-		const char* vertexContent = desc.mVertexContent.c_str( );
+		const char* vertexContent = desc.m_VertexContent.c_str( );
 		glShaderSource( vshader, 1, &vertexContent, nullptr );
 
-		const char* fragmentContent = desc.mFragmentContent.c_str( );
+		const char* fragmentContent = desc.m_FragmentContent.c_str( );
 		glShaderSource( fshader, 1, &fragmentContent, nullptr );
 
 		if (!compile_shader( vshader ))
@@ -28,31 +28,31 @@ namespace lum::rhi::gl {
 		if (!compile_shader( fshader ))
 			return ShaderHandle{};
 
-		shader.mHandle = glCreateProgram( );
+		shader.m_Handle = glCreateProgram( );
 
-		glAttachShader( shader.mHandle, vshader );
-		glAttachShader( shader.mHandle, fshader );
+		glAttachShader( shader.m_Handle, vshader );
+		glAttachShader( shader.m_Handle, fshader );
 
 		glDeleteShader( vshader );
 		glDeleteShader( fshader );
 
-		link_program( shader.mHandle );
+		link_program( shader.m_Handle );
 
-		return mShaders.Append( std::move( shader ) );
+		return m_Shaders.Append( std::move( shader ) );
 
 	}
 	void GLDevice::BindShader( ShaderHandle shader ) {
 
 		if (!IsValid( shader )) return;
 
-		if (mCurrentShader == shader) {
+		if (m_CurrentShader == shader) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
-		mCurrentShader = shader;
+		m_CurrentShader = shader;
 
-		glUseProgram( mShaders[ shader ].mHandle );
+		glUseProgram( m_Shaders[ shader ].m_Handle );
 
 		LUM_PROFILER_CACHE_MISS( );
 
@@ -61,9 +61,9 @@ namespace lum::rhi::gl {
 
 		LUM_RETURN_IF( !IsValid( shader ), LUM_SEV_WARN, "Invalid shader" );
 
-		glDeleteProgram( mShaders[ shader ].mHandle );
+		glDeleteProgram( m_Shaders[ shader ].m_Handle );
 
-		mShaders.Remove( shader );
+		m_Shaders.Remove( shader );
 
 	}
 
@@ -102,50 +102,50 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, float32 value ) {
 
-		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
-		glProgramUniform1f( mShaders[ shader ].mHandle, location, value );
+		LUM_ASSERT( m_Shaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform1f( m_Shaders[ shader ].m_Handle, location, value );
 
 	}
 	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, uint32 value ) {
 
-		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
-		glProgramUniform1ui( mShaders[ shader ].mHandle, location, value );
+		LUM_ASSERT( m_Shaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform1ui( m_Shaders[ shader ].m_Handle, location, value );
 
 	}
 	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, bool value ) {
 
-		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
-		glProgramUniform1i( mShaders[ shader ].mHandle, location, value ? 1 : 0 );
+		LUM_ASSERT( m_Shaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform1i( m_Shaders[ shader ].m_Handle, location, value ? 1 : 0 );
 
 	}
 	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, const Vector2& value ) {
 
-		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
-		glProgramUniform2f( mShaders[ shader ].mHandle, location, value.mX, value.mY );
+		LUM_ASSERT( m_Shaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform2f( m_Shaders[ shader ].m_Handle, location, value.m_X, value.m_Y );
 
 	}
 	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, const Vector3& value ) {
 
-		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
-		glProgramUniform3f( mShaders[ shader ].mHandle, location, value.mX, value.mY, value.mZ );
+		LUM_ASSERT( m_Shaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform3f( m_Shaders[ shader ].m_Handle, location, value.m_X, value.m_Y, value.m_Z );
 
 	}
 	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, const Vector4& value ) {
 
-		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
-		glProgramUniform4f( mShaders[ shader ].mHandle, location, value.mX, value.mY, value.mZ, value.mW );
+		LUM_ASSERT( m_Shaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform4f( m_Shaders[ shader ].m_Handle, location, value.m_X, value.m_Y, value.m_Z, value.m_W );
 
 	}
 	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, const Matrix3& value ) {
 
-		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
-		glProgramUniformMatrix3fv( mShaders[ shader ].mHandle, location, 1, GL_FALSE, value.Data( ) );
+		LUM_ASSERT( m_Shaders.Contains( shader ), "Invalid shader" );
+		glProgramUniformMatrix3fv( m_Shaders[ shader ].m_Handle, location, 1, GL_FALSE, value.Data( ) );
 
 	}
 	void GLDevice::SetUniform( ShaderHandle shader, uint32 location, const Matrix4& value ) {
 
-		LUM_ASSERT( mShaders.Contains( shader ), "Invalid shader" );
-		glProgramUniform4fv( mShaders[ shader ].mHandle, location, 1, value.Data( ) );
+		LUM_ASSERT( m_Shaders.Contains( shader ), "Invalid shader" );
+		glProgramUniform4fv( m_Shaders[ shader ].m_Handle, location, 1, value.Data( ) );
 
 	}
 

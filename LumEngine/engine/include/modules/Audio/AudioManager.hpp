@@ -23,12 +23,12 @@ namespace lum {
 	public:
 
 		AudioManager( ) = default;
-		~AudioManager( ) { }
+		~AudioManager( ) {}
 
 		/* @brief Initializes the audio manager and binds it to an AHI device.
 		* @param device Pointer to an initialized AudioDevice backend.
 		*/
-		void Initialize( ahi::AudioDevice* device, ev::EventBus* bus );
+		void Initialize( ahi::IAudioDevice* device, ev::EventBus& bus );
 
 		// -------------------------------------------------------------------------
 		// Sound assets
@@ -124,13 +124,13 @@ namespace lum {
 
 	private:
 
-		ahi::AudioDevice*	mDevice = nullptr;
-		ev::EventBus*		mEventBus = nullptr;
+		ahi::IAudioDevice* m_Device = nullptr;
+		SafePtr<ev::EventBus> m_EventBus = nullptr;
 
-		std::unordered_map<HashedString, ahi::SoundHandle>			mSounds;
-		std::unordered_map<HashedString, ahi::ChannelGroupHandle>	mGroups;
-		std::unordered_map<HashedString, ahi::AudioEffectHandle>	mEffects;
-		std::unordered_map<EntityID, ahi::SoundInstance>			mInstances;
+		std::unordered_map<HashedString, ahi::SoundHandle>			m_Sounds{};
+		std::unordered_map<HashedString, ahi::ChannelGroupHandle>	m_Groups{};
+		std::unordered_map<HashedString, ahi::AudioEffectHandle>	m_Effects{};
+		std::unordered_map<EntityID, ahi::SoundInstance>			m_Instances{};
 
 	};
 

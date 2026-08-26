@@ -22,8 +22,8 @@ namespace lum::editor {
 				const qreal dpr = devicePixelRatioF( );
 
 				EWindowResized resized{};
-				resized.mWidth = static_cast<uint32>(mPendingSize.width( ) * dpr);
-				resized.mHeight = static_cast<uint32>(mPendingSize.height( ) * dpr);
+				resized.m_Width = SafeCast<uint32>(mPendingSize.width( ) * dpr);
+				resized.m_Height = SafeCast<uint32>(mPendingSize.height( ) * dpr);
 				mInfo.mEventBus( ).Emit( resized );
 
 			}
@@ -44,8 +44,8 @@ namespace lum::editor {
 		}
 
 		const qreal dpr = devicePixelRatio( );
-		const uint32 width = texture.Value( ).mRect.mWidth;
-		const uint32 height = texture.Value( ).mRect.mHeight;
+		const uint32 width = texture.Value( ).m_Rect.m_Width;
+		const uint32 height = texture.Value( ).m_Rect.m_Height;
 
 		if (width <= 0 || height <= 0) return;
 

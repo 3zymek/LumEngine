@@ -22,7 +22,7 @@ namespace lum {
 		* @brief Constructs a GLFW rendering context.
 		* @param window GLFW window used by the rendering context.
 		*/
-		GLFWOpenGLContext( GLFWwindow* window ) : mWindow( window ) {}
+		GLFWOpenGLContext( GLFWwindow* window ) : m_Window( window ) {}
 
 		void Initialize( ) override;
 
@@ -36,7 +36,7 @@ namespace lum {
 
 	private:
 
-		SafePtr<GLFWwindow> mWindow = nullptr; //< Non-owning pointer to the GLFW window.
+		SafePtr<GLFWwindow> m_Window = nullptr; //< Non-owning pointer to the GLFW window.
 
 	};
 

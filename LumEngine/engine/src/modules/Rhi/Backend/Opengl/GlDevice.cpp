@@ -40,7 +40,7 @@ namespace lum::rhi::gl {
 
 #		endif
 
-		mRenderContext = glContext;
+		m_RenderContext = glContext;
 
 		glEnable( GL_TEXTURE_CUBE_MAP_SEAMLESS );
 
@@ -48,9 +48,9 @@ namespace lum::rhi::gl {
 
 	void GLDevice::Draw( VertexLayoutHandle layout, uint32 numVertices ) {
 
-		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
+		LUM_ASSERT( m_Layouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
 
-		glBindVertexArray( mLayouts[ layout ].mHandle );
+		glBindVertexArray( m_Layouts[ layout ].m_Handle );
 		glDrawArrays( GL_TRIANGLES, 0, numVertices );
 
 		LUM_PROFILER_DRAW_CALL( );
@@ -59,9 +59,9 @@ namespace lum::rhi::gl {
 
 	void GLDevice::DrawInstanced( VertexLayoutHandle layout, uint32 numVertices, uint32 numInstances ) {
 
-		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
+		LUM_ASSERT( m_Layouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
 
-		glBindVertexArray( mLayouts[ layout ].mHandle );
+		glBindVertexArray( m_Layouts[ layout ].m_Handle );
 		glDrawArraysInstanced( GL_TRIANGLES, 0, numVertices, numInstances );
 
 		LUM_PROFILER_DRAW_CALL( );
@@ -69,9 +69,9 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::DrawInstancedBase( VertexLayoutHandle layout, uint32 numVertices, uint32 numInstances, uint32 baseInstance ) {
 
-		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
+		LUM_ASSERT( m_Layouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
 
-		glBindVertexArray( mLayouts[ layout ].mHandle );
+		glBindVertexArray( m_Layouts[ layout ].m_Handle );
 		glDrawArraysInstancedBaseInstance( GL_TRIANGLES, 0, numVertices, numInstances, baseInstance );
 
 		LUM_PROFILER_DRAW_CALL( );
@@ -80,10 +80,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::DrawElements( VertexLayoutHandle layout, uint32 numIndices ) {
 
-		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
-		LUM_ASSERT( mBuffers.Contains( mLayouts[ layout ].mElementBuff ), "Layout doesn't have attached any element buffers" );
+		LUM_ASSERT( m_Layouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
+		LUM_ASSERT( m_Buffers.Contains( m_Layouts[ layout ].m_ElementBuff ), "Layout doesn't have attached any element buffers" );
 
-		glBindVertexArray( mLayouts[ layout ].mHandle );
+		glBindVertexArray( m_Layouts[ layout ].m_Handle );
 		glDrawElements( GL_TRIANGLES, static_cast<GLsizei>(numIndices), GL_UNSIGNED_INT, nullptr );
 
 		LUM_PROFILER_DRAW_CALL( );
@@ -92,10 +92,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::DrawElementsInstanced( VertexLayoutHandle layout, uint32 numIndices, uint32 numInstances ) {
 
-		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
-		LUM_ASSERT( mBuffers.Contains( mLayouts[ layout ].mElementBuff ), "Layout doesn't have attached any element buffers" );
+		LUM_ASSERT( m_Layouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
+		LUM_ASSERT( m_Buffers.Contains( m_Layouts[ layout ].m_ElementBuff ), "Layout doesn't have attached any element buffers" );
 
-		glBindVertexArray( mLayouts[ layout ].mHandle );
+		glBindVertexArray( m_Layouts[ layout ].m_Handle );
 		glDrawElementsInstanced( GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr, numInstances );
 
 		LUM_PROFILER_DRAW_CALL( );
@@ -103,10 +103,10 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::DrawElementsInstancedBase( VertexLayoutHandle layout, uint32 numIndices, uint32 numInstances, uint32 baseInstance ) {
 
-		LUM_ASSERT( mLayouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
-		LUM_ASSERT( mBuffers.Contains( mLayouts[ layout ].mElementBuff ), "Layout doesn't have attached any element buffers" );
+		LUM_ASSERT( m_Layouts.Contains( layout ), "Cannot draw, invalid vertex layout" );
+		LUM_ASSERT( m_Buffers.Contains( m_Layouts[ layout ].m_ElementBuff ), "Layout doesn't have attached any element buffers" );
 
-		glBindVertexArray( mLayouts[ layout ].mHandle );
+		glBindVertexArray( m_Layouts[ layout ].m_Handle );
 		glDrawElementsInstancedBaseInstance( GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr, numIndices, baseInstance );
 
 		LUM_PROFILER_DRAW_CALL( );
@@ -115,7 +115,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SwapBuffers( ) {
 
-		mRenderContext->SwapBuffers( );
+		m_RenderContext->SwapBuffers( );
 
 	}
 

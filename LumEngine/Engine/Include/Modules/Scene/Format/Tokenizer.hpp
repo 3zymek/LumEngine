@@ -22,11 +22,11 @@ namespace lum::fmt {
 		void Tokenize( StringView content, const Path& filePath );
 
 		/* @brief Returns the token list produced by the last Tokenize call. */
-		std::vector<Token>& GetTokens( ) noexcept { return mTokens; }
+		std::vector<Token>& GetTokens( ) noexcept { return m_Tokens; }
 
 	private:
 
-		std::vector<Token> mTokens;
+		std::vector<Token> m_Tokens;
 
 	};
 

@@ -17,10 +17,10 @@ namespace lum {
 
 	struct LUM_API SceneModuleCreateInfo {
 
-		SafePtr<ResourceModule> mResourceModule = nullptr;
-		SafePtr<RenderModule> mRenderModule = nullptr;
-		SafePtr<AudioModule> mAudioModule = nullptr;
-		SafePtr<ev::EventBus> mEventBus = nullptr;
+		SafePtr<ResourceModule> m_ResourceModule = nullptr;
+		SafePtr<RenderModule> m_RenderModule = nullptr;
+		SafePtr<AudioModule> m_AudioModule = nullptr;
+		SafePtr<ev::EventBus> m_EventBus = nullptr;
 
 	};
 
@@ -29,7 +29,7 @@ namespace lum {
 	class LUM_API SceneModule {
 	public:
 
-		SceneManager mSceneMgr{};
+		SceneManager m_SceneMgr{};
 
 		void Initialize( const SceneModuleCreateInfo& info );
 

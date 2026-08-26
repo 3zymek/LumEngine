@@ -31,7 +31,7 @@ namespace lum {
 			if (ToLower( cat ) == "voice") { return SoundCategory::Voice; }
 			if (ToLower( cat ) == "ambient") { return SoundCategory::Ambient; }
 
-			LUM_LOG_WARN( "Sound category %s doesn't exist", cat.data( ) );
+			LUM_LOG_WARN( "Sound category {} doesn't exist", cat.data( ) );
 
 			return SoundCategory::Music;
 
@@ -39,7 +39,7 @@ namespace lum {
 
 		// Compile-time flag table indexed by SoundCategory.
 		// Order must match SoundCategory enum declaration exactly.
-		inline constexpr Flags<ahi::SoundFlag> kSoundCategoryFlags[ ] = {
+		inline constexpr Flags<ahi::SoundFlag> k_SoundCategoryFlags[ ] = {
 			// SFX
 			ahi::SoundFlag::CreateSample | ahi::SoundFlag::Flat2D,
 			// SFX3D
@@ -54,7 +54,7 @@ namespace lum {
 
 		// Returns the AHI sound flags associated with the given category.
 		inline constexpr Flags<ahi::SoundFlag> GetSoundFlags( SoundCategory category ) {
-			return detail::kSoundCategoryFlags[ static_cast< byte >(category) ];
+			return detail::k_SoundCategoryFlags[ ToUnderlyingEnum(category) ];
 		}
 
 	} // namespace detail

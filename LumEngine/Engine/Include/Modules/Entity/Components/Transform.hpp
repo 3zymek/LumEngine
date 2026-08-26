@@ -16,16 +16,16 @@ namespace lum {
         LUM_GENERATED_BODY( )
 
         /* @brief Local position relative to parent. */
-        LUM_PROPERTY( ) Vector3 mPosition = Vector3( 0.0f );
+        LUM_PROPERTY( ) Vector3 m_Position = Vector3( 0.0f );
 
         /* @brief Local non-uniform scale relative to parent. */
-        LUM_PROPERTY( ) Vector3 mScale = Vector3( 1.0f );
+        LUM_PROPERTY( ) Vector3 m_Scale = Vector3( 1.0f );
 
         /* @brief Local Euler rotation in degrees relative to parent. */
-        LUM_PROPERTY( ) Vector3 mRotation = Vector3( 0.0f );
+        LUM_PROPERTY( ) Vector3 m_Rotation = Vector3( 0.0f );
 
         /* @brief World space transform matrix, computed by TransformSystem. */
-        Matrix4 mWorldMatrix = Matrix4( 1.0f );
+        Matrix4 m_WorldMatrix = Matrix4( 1.0f );
 
 	};
 

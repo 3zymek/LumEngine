@@ -34,7 +34,7 @@ namespace lum {
 		*/
 		namespace detail {
 
-			SafePtr<IInputProvider> inputProvider = nullptr;
+			inline SafePtr<IInputProvider> g_InputProvider = nullptr;
 
 			/* @brief Sets the input provider used by the global input API.
 			*  @param provider Input provider implementation to use.
@@ -43,7 +43,7 @@ namespace lum {
 			*  used by the input system.
 			*/
 			inline void SetInputProvider( IInputProvider& provider ) noexcept {
-				inputProvider = provider;
+				g_InputProvider = provider;
 			}
 
 		} // namespace lum::input::detail
@@ -53,7 +53,7 @@ namespace lum {
 		*  @return True if the key is currently pressed, otherwise false.
 		*/
 		inline bool KeyPressed( Key key ) noexcept {
-			return detail::inputProvider( ).KeyPressed( key );
+			return detail::g_InputProvider( ).KeyPressed( key );
 		}
 
 		/* @brief Checks whether a key was pressed during the current input state.
@@ -64,14 +64,14 @@ namespace lum {
 		*  a single key press rather than continuous input.
 		*/
 		inline bool KeyPressedOnce( Key key ) noexcept {
-			return detail::inputProvider( ).KeyPressedOnce( key );
+			return detail::g_InputProvider( ).KeyPressedOnce( key );
 		}
 
 		/* @brief Returns the current mouse cursor position.
 		*  @return Mouse position in window coordinates.
 		*/
 		inline Vector2 GetMousePosition( ) {
-			return detail::inputProvider( ).GetMousePosition( );
+			return detail::g_InputProvider( ).GetMousePosition( );
 		}
 
 	} // namespace lum::input

@@ -24,7 +24,7 @@ namespace lum::ahi {
 	* Concrete implementations (e.g. FMODDevice) wrap a specific audio backend.
 	* All heavy lifting is deferred to Update() which must be called once per frame.
 	*/
-	class AudioDevice {
+	class IAudioDevice {
 	public:
 
 		/* @brief Initializes the audio backend. Must be called before any other method.
@@ -106,7 +106,7 @@ namespace lum::ahi {
 		* @param inst  Sound instance carrying playback state (volume, pitch, position, loop).
 		* @param group Channel group to route the sound through. Defaults to master.
 		*/
-		virtual void Play( SoundInstance& inst, ChannelGroupHandle group = kDefaultGroup ) = 0;
+		virtual void Play( SoundInstance& inst, ChannelGroupHandle group = k_DefaultGroup ) = 0;
 
 		/* @brief Immediately stops all currently playing sounds. */
 		virtual void StopAll( ) = 0;
@@ -131,9 +131,9 @@ namespace lum::ahi {
 		*/
 		virtual void Set3DSettings( float32 dopplerScale, float32 distanceFactor, float32 rolloffScale ) = 0;
 
-		bool IsValid( SoundHandle sound )			const noexcept { return mSounds.Contains( sound ); }
-		bool IsValid( ChannelGroupHandle group )	const noexcept { return mChannelGroups.Contains( group ); }
-		bool IsValid( AudioEffectHandle effect )	const noexcept { return mEffects.Contains( effect ); }
+		bool IsValid( SoundHandle sound )			const noexcept { return m_Sounds.Contains( sound ); }
+		bool IsValid( ChannelGroupHandle group )	const noexcept { return m_ChannelGroups.Contains( group ); }
+		bool IsValid( AudioEffectHandle effect )	const noexcept { return m_Effects.Contains( effect ); }
 
 		/* @brief Synchronises all active sound instances with the audio backend.
 		* Must be called once per frame. Applies dirty state (volume, pitch, position, loop, pause, stop).
@@ -146,17 +146,17 @@ namespace lum::ahi {
 
 	protected:
 
-		cstd::HandlePool<SoundHandle, void*>	mSounds{ limits::kMaxAudioSounds };
-		cstd::HandlePool<ChannelGroupHandle, void*> mChannelGroups{ limits::kMaxChannelsGroup };
-		cstd::HandlePool<AudioEffectHandle, AudioEffect> mEffects{ limits::kMaxAudioEffects };
-		
+		cstd::HandlePool<SoundHandle, void*>				m_Sounds{ limits::k_MaxAudioSounds };
+		cstd::HandlePool<ChannelGroupHandle, void*>			m_ChannelGroups{ limits::k_MaxChannelsGroup };
+		cstd::HandlePool<AudioEffectHandle, AudioEffect>	m_Effects{ limits::k_MaxAudioEffects };
+
 		/* @brief Maps active sound instance IDs to their backend channel pointers.
 		*  Entries are inserted on Play() and removed when playback ends or StopAll() is called.
 		*/
-		std::unordered_map<SoundInstanceID, void*> mChannels;
+		std::unordered_map<SoundInstanceID, void*> m_Channels{};
 
 	};
 
-	AudioDevice* CreateDevice( AudioBackend backend );
+	std::unique_ptr<IAudioDevice> CreateDevice( AudioBackend backend );
 
 } // namespace lum::ahi

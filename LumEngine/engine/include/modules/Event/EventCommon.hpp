@@ -51,15 +51,15 @@ namespace lum {
 		/* @brief Type-erased callback slot storing a lambda, invoke and destroy pointers. */
 		struct EventCallback {
 
-			LambdaStorage	mStorage{};          /* @brief Raw storage for the captured lambda. */
-			InvokeFunction  mInvoke = nullptr;  /* @brief Pointer to the lambda invocation wrapper. */
-			DestroyFunction mDestroy = nullptr;  /* @brief Pointer to the lambda destructor wrapper. */
-			bool			mActive = false;    /* @brief Whether this slot is currently occupied. */
+			LambdaStorage	m_Storage{};          /* @brief Raw storage for the captured lambda. */
+			InvokeFunction  m_Invoke = nullptr;  /* @brief Pointer to the lambda invocation wrapper. */
+			DestroyFunction m_Destroy = nullptr;  /* @brief Pointer to the lambda destructor wrapper. */
+			bool			m_Active = false;    /* @brief Whether this slot is currently occupied. */
 
 			/* @brief Destroys the stored lambda and marks the slot as inactive. */
 			void Destroy( ) {
-				(*mDestroy)(&mStorage);
-				mActive = false;
+				(*m_Destroy)(&m_Storage);
+				m_Active = false;
 			}
 		};
 

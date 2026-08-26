@@ -11,27 +11,27 @@ namespace lum::rhi {
 
 	struct PipelineCreateInfo {
 
-		RasterizerState		mRasterizer		{};
-		DepthStencilState		mDepthStencil	{};
-		ScissorState			mScissor		{};
-		CullState				mCull			{};
-		BlendState				mBlend			{};
-		ColorMask				mColorMask		{};
+		RasterizerState		m_Rasterizer		{};
+		DepthStencilState		m_DepthStencil	{};
+		ScissorState			m_Scissor		{};
+		CullState				m_Cull			{};
+		BlendState				m_Blend			{};
+		ColorMask				m_ColorMask		{};
 
-		ShaderHandle			mShader{};
+		ShaderHandle			m_Shader{};
 
 	};
 
 	struct Pipeline {
 
-		RasterizerState		mRasterizer		{};
-		DepthStencilState		mDepthStencil	{};
-		ScissorState			mScissor		{};
-		CullState				mCull			{};
-		BlendState				mBlend			{};
-		ColorMask				mColorMask		{};
+		RasterizerState		m_Rasterizer		{};
+		DepthStencilState		m_DepthStencil	{};
+		ScissorState			m_Scissor		{};
+		CullState				m_Cull			{};
+		BlendState				m_Blend			{};
+		ColorMask				m_ColorMask		{};
 
-		ShaderHandle			mShader{};
+		ShaderHandle			m_Shader{};
 
 	};
 

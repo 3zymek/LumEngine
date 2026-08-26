@@ -35,25 +35,25 @@ namespace lum::rhi {
 	struct SamplerCreateInfo {
 
 		// Filter that applies to texture, when texture is magnified ( scaled up )
-		SamplerMagFilter mMagFilter{};
+		SamplerMagFilter m_MagFilter{};
 		// Filter that applies to texture, when texture is minified ( scaled down )
-		SamplerMinFilter mMinFilter{};
+		SamplerMinFilter m_MinFilter{};
 
 		// How texture is acting out of bounds on s( x ) axis ( when s > 1 )
-		SamplerWrap mWrapS{};
+		SamplerWrap m_WrapS{};
 		// How texture is acting out of bounds on t( y ) axis ( when t > 1 )
-		SamplerWrap mWrapT{};
+		SamplerWrap m_WrapT{};
 		// How texture is acting out of bounds on r( z ) axis ( when r > 1, ONLY FOR 3D TEXTURES )
-		SamplerWrap mWrapR{};
+		SamplerWrap m_WrapR{};
 
 		// Level of anisotropic filtering ( sharpens textures at steep viewing angles, prevents blur and stretch )
-		float32 mAnisotropy = 0.0f;
+		float32 m_Anisotropy = 0.0f;
 
 	};
 
 	struct Sampler {
 
-		SamplerID mHandle = 0;
+		SamplerID m_Handle = 0;
 
 	};
 

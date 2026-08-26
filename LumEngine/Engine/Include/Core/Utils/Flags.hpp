@@ -20,10 +20,10 @@ namespace lum {
 
 		using UnderlyingType = std::underlying_type_t<tType>;
 
-		UnderlyingType mFlags = 0;
+		UnderlyingType m_Flags = 0;
 
 		constexpr Flags( ) noexcept = default;
-		constexpr Flags( tType flag ) noexcept : mFlags( static_cast<UnderlyingType>( flag ) ) { }
+		constexpr Flags( tType flag ) noexcept : m_Flags( static_cast<UnderlyingType>(flag) ) {}
 		constexpr Flags( std::initializer_list<tType> list ) {
 			for (tType f : list)
 				Set( f );
@@ -34,50 +34,67 @@ namespace lum {
 		* Performs bitwise OR to add the flag to the current set.
 		* @param flags Flag to enable.
 		*/
-		constexpr void Set( tType flag ) noexcept { mFlags |= static_cast< UnderlyingType >( flag ); }
+		constexpr void Set( tType flag ) noexcept { 
+			m_Flags |= static_cast<UnderlyingType>(flag); 
+		}
 
 		/*! @brief Enables (sets) multiple flags.
 		*
 		* Performs bitwise OR to merge the given flags into the current set.
 		* @param flags Flags to enable.
 		*/
-		constexpr void Set( Flags<tType> flags ) noexcept { mFlags |= flags.mFlags; }
+		constexpr void Set( Flags<tType> flags ) noexcept { 
+			m_Flags |= flags.m_Flags; 
+		}
+
 		/*! @brief Disables (clears) a single flag.
 		*
 		* Performs bitwise AND with negation to remove the flag.
 		* @param flags Flag to disable.
 		*/
-		constexpr void Unset( tType flag ) noexcept { mFlags &= ~static_cast< UnderlyingType >( flag ); }
+		constexpr void Unset( tType flag ) noexcept { 
+			m_Flags &= ~static_cast<UnderlyingType>(flag); 
+		}
 
 		/*! @brief Disables (clears) multiple flags.
 		*
 		* Performs bitwise AND with negation to remove the given flags.
 		* @param flags Flags to disable.
 		*/
-		constexpr void Unset( Flags<tType> flags ) noexcept { mFlags &= ~flags.mFlags; }
+		constexpr void Unset( Flags<tType> flags ) noexcept { 
+			m_Flags &= ~flags.m_Flags; 
+		}
 
 		/* @brief Inverts a single flag — sets it if cleared, clears it if set.
 		*  @param flag Flag to invert.
 		*/
-		constexpr void Invert( tType flag ) noexcept { mFlags ^= static_cast< UnderlyingType >( flag ); }
+		constexpr void Invert( tType flag ) noexcept { 
+			m_Flags ^= static_cast<UnderlyingType>(flag); 
+		}
 
 		/* @brief Inverts multiple flags — sets cleared ones, clears set ones.
 		*  @param flags Flags to invert.
 		*/
-		constexpr void Invert( Flags<tType> flags ) noexcept { mFlags ^= flags.mFlags; }
+		constexpr void Invert( Flags<tType> flags ) noexcept { 
+			m_Flags ^= flags.m_Flags; 
+		}
 
 		/*! @brief Checks if no flags are set.
 		*
 		* @return True if the flag set is empty (all bits are zero).
 		*/
-		constexpr bool IsEmpty( ) const noexcept { return mFlags == 0; }
+		constexpr bool IsEmpty( ) const noexcept {
+			return m_Flags == 0;
+		}
 
 		/*! @brief Checks if a specific flag is set.
 		*
 		* @param flag Flag to check.
 		* @return True if the flag is set, false otherwise.
 		*/
-		constexpr bool Has( tType flag ) const noexcept { return (mFlags & static_cast< UnderlyingType >( flag )) != 0; }
+		constexpr bool Has( tType flag ) const noexcept {
+			return (m_Flags & static_cast<UnderlyingType>(flag)) != 0;
+		}
 
 		/*! @brief Checks if only the allowed flags are set.
 		*
@@ -85,22 +102,24 @@ namespace lum {
 		* @param allowed Set of allowed flags.
 		* @return True if only allowed flags are set, false otherwise.
 		*/
-		constexpr bool HasOnly( Flags<tType> allowed ) const noexcept { return (mFlags & ~allowed.mFlags) == 0; }
+		constexpr bool HasOnly( Flags<tType> allowed ) const noexcept {
+			return (m_Flags & ~allowed.m_Flags) == 0;
+		}
 
 		/*! @brief Clears all flags.
 		* Resets the internal flag state to zero.
 		*/
-		constexpr void Clear( ) noexcept { mFlags = 0; }
+		constexpr void Clear( ) noexcept { m_Flags = 0; }
 
 		constexpr Flags& operator=( tType flag ) noexcept {
-			mFlags = static_cast< UnderlyingType >( flag );
+			m_Flags = static_cast<UnderlyingType>(flag);
 			return *this;
 		}
 
 	};
 
 	template<cEnum tType>
-	struct EnableEnumFlags : std::false_type { };
+	struct EnableEnumFlags : std::false_type {};
 
 	/* @brief Enables bitwise flag operations for a given enum class.
 	*
@@ -147,8 +166,8 @@ namespace lum {
 		requires EnableEnumFlags<tType>::value
 	constexpr Flags<tType> operator&( tType a, tType b ) {
 		Flags<tType> result;
-		if ((static_cast< std::underlying_type_t<tType> >(a) &
-			  static_cast< std::underlying_type_t<tType> >(b)) != 0) {
+		if ((static_cast<std::underlying_type_t<tType>>(a) &
+			  static_cast<std::underlying_type_t<tType>>(b)) != 0) {
 			result.Set( a & b );
 		}
 		return result;

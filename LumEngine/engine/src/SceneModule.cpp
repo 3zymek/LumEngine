@@ -15,15 +15,15 @@ namespace lum {
 	void SceneModule::Initialize( const SceneModuleCreateInfo& info ) {
 
 		SceneManagerContext ctx;
-		ctx.mAudioMgr = info.mAudioModule( ).mAudioMgr;
-		ctx.mMaterialMgr = info.mResourceModule( ).mMaterialMgr;
-		ctx.mMeshMgr = info.mResourceModule( ).mMeshMgr;
-		ctx.mTextureMgr = info.mResourceModule( ).mTextureMgr;
-		ctx.mShaderMgr = info.mResourceModule( ).mShaderMgr;
-		ctx.mRenderer = info.mRenderModule( ).mRenderer;
-		ctx.mEventBus = info.mEventBus;
+		ctx.m_AudioMgr = info.m_AudioModule( ).m_AudioMgr;
+		ctx.m_MaterialMgr = info.m_ResourceModule( ).m_MaterialMgr;
+		ctx.m_MeshMgr = info.m_ResourceModule( ).m_MeshMgr;
+		ctx.m_TextureMgr = info.m_ResourceModule( ).m_TextureMgr;
+		ctx.m_ShaderMgr = info.m_ResourceModule( ).m_ShaderMgr;
+		ctx.m_Renderer = info.m_RenderModule( ).m_Renderer;
+		ctx.m_EventBus = info.m_EventBus;
 
-		mSceneMgr.Initialize( ctx );
+		m_SceneMgr.Initialize( ctx );
 
 	}
 

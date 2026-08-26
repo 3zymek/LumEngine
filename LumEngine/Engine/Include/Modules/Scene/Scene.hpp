@@ -18,15 +18,15 @@ namespace lum {
     public:
 
         /* @brief List of all entity IDs belonging to this scene. */
-        std::unordered_map<EntityID, Entity> mEntities{};
-        std::unordered_map<EntityID, EntityID> mParents{};
-        std::unordered_map<EntityID, std::vector<EntityID>> mChildren{};
+        std::unordered_map<EntityID, Entity> m_Entities{};
+        std::unordered_map<EntityID, EntityID> m_Parents{};
+        std::unordered_map<EntityID, std::vector<EntityID>> m_Children{};
 
         /* @brief ECS manager owning and managing components for this scene. */
-        ecs::EntityManager mEntityMgr{};
+        ecs::EntityManager m_EntityMgr{};
 
         /* @brief Path of this scene. */
-        Path mScenePath{};
+        Path m_ScenePath{};
 
         void AttachChild( EntityID parent, EntityID child );
         void DetachChild( EntityID child );

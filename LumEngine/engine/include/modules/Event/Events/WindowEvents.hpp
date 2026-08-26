@@ -9,9 +9,9 @@
 
 namespace lum {
 
-	struct EWindowResized	: public Event { uint32 mWidth; uint32 mHeight; };
+	struct EWindowResized	: public Event { uint32 m_Width; uint32 m_Height; };
 	struct EWindowClosed	: public Event { };
-	struct EKeyPressed		: public Event { input::Key mKey; };
-	struct EKeyReleased		: public Event { input::Key mKey; };
+	struct EKeyPressed		: public Event { input::Key m_Key; };
+	struct EKeyReleased		: public Event { input::Key m_Key; };
 
 } // namespace lum

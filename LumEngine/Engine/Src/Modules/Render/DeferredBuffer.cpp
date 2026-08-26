@@ -19,7 +19,7 @@ namespace lum::render::detail {
 
 		ctx.Validate( );
 
-		mCtx = ctx;
+		m_Ctx = ctx;
 
 		create_textures( w, h );
 		create_framebuffer( );
@@ -30,22 +30,22 @@ namespace lum::render::detail {
 
 	void DeferredBuffer::BindTextures( ) const {
 
-		mCtx( ).mRenderDev( ).BindTexture( mAlbedoTex, LUM_GBUFFER_ALBEDO );
-		mCtx( ).mRenderDev( ).BindTexture( mNormalTex, LUM_GBUFFER_NORMAL );
-		mCtx( ).mRenderDev( ).BindTexture( mDepthTex, LUM_GBUFFER_DEPTH );
+		m_Ctx( ).m_RenderDev( ).BindTexture( m_AlbedoTex, LUM_GBUFFER_ALBEDO );
+		m_Ctx( ).m_RenderDev( ).BindTexture( m_NormalTex, LUM_GBUFFER_NORMAL );
+		m_Ctx( ).m_RenderDev( ).BindTexture( m_DepthTex, LUM_GBUFFER_DEPTH );
 
 	}
 
 	rhi::TextureHandle DeferredBuffer::GetAttachment( DeferredBufferAttachment tex ) {
 
 		switch (tex) {
-		case DeferredBufferAttachment::Albedo: return mAlbedoTex;
-		case DeferredBufferAttachment::Normal: return mNormalTex;
-		case DeferredBufferAttachment::Depth: return mDepthTex;
-		default: return mAlbedoTex;
+		case DeferredBufferAttachment::Albedo: return m_AlbedoTex;
+		case DeferredBufferAttachment::Normal: return m_NormalTex;
+		case DeferredBufferAttachment::Depth: return m_DepthTex;
+		default: return m_AlbedoTex;
 		}
 
-		return mAlbedoTex;
+		return m_AlbedoTex;
 
 	}
 
@@ -56,61 +56,61 @@ namespace lum::render::detail {
 
 	void DeferredBuffer::create_textures( uint32 width, uint32 height ) {
 
-		mCtx( ).mRenderDev( ).Delete( mAlbedoTex );
-		mCtx( ).mRenderDev( ).Delete( mNormalTex );
-		mCtx( ).mRenderDev( ).Delete( mDepthTex );
+		m_Ctx( ).m_RenderDev( ).Delete( m_AlbedoTex );
+		m_Ctx( ).m_RenderDev( ).Delete( m_NormalTex );
+		m_Ctx( ).m_RenderDev( ).Delete( m_DepthTex );
 
 		rhi::TextureCreateInfo desc;
 		{ // Albedo
-			desc.mPixelFormat = rhi::PixelLayout::RGBA;
-			desc.mInternalFormat = rhi::TextureFormat::RGBA16F;
-			desc.mWidth = width;
-			desc.mHeight = height;
-			desc.mTextureType = rhi::TextureKind::Texture2D;
-			mAlbedoTex = mCtx( ).mRenderDev( ).CreateTexture( desc );
+			desc.m_PixelFormat = rhi::PixelLayout::RGBA;
+			desc.m_InternalFormat = rhi::TextureFormat::RGBA16F;
+			desc.m_Width = width;
+			desc.m_Height = height;
+			desc.m_TextureType = rhi::TextureKind::Texture2D;
+			m_AlbedoTex = m_Ctx( ).m_RenderDev( ).CreateTexture( desc );
 		}
 		{ // Normal
-			desc.mPixelFormat = rhi::PixelLayout::RGBA;
-			desc.mInternalFormat = rhi::TextureFormat::RGBA16F;
-			desc.mWidth = width;
-			desc.mHeight = height;
-			desc.mTextureType = rhi::TextureKind::Texture2D;
-			mNormalTex = mCtx( ).mRenderDev( ).CreateTexture( desc );
+			desc.m_PixelFormat = rhi::PixelLayout::RGBA;
+			desc.m_InternalFormat = rhi::TextureFormat::RGBA16F;
+			desc.m_Width = width;
+			desc.m_Height = height;
+			desc.m_TextureType = rhi::TextureKind::Texture2D;
+			m_NormalTex = m_Ctx( ).m_RenderDev( ).CreateTexture( desc );
 		}
 		{ // Depth
-			desc.mPixelFormat = rhi::PixelLayout::DepthComponent;
-			desc.mInternalFormat = rhi::TextureFormat::Depth32F;
-			desc.mWidth = width;
-			desc.mHeight = height;
-			desc.mTextureType = rhi::TextureKind::Texture2D;
-			mDepthTex = mCtx( ).mRenderDev( ).CreateTexture( desc );
+			desc.m_PixelFormat = rhi::PixelLayout::DepthComponent;
+			desc.m_InternalFormat = rhi::TextureFormat::Depth32F;
+			desc.m_Width = width;
+			desc.m_Height = height;
+			desc.m_TextureType = rhi::TextureKind::Texture2D;
+			m_DepthTex = m_Ctx( ).m_RenderDev( ).CreateTexture( desc );
 		}
 
 	}
 
 	void DeferredBuffer::create_framebuffer( ) {
 
-		if (mCtx( ).mRenderDev( ).IsValid( mFramebuffer ))
-			mCtx( ).mRenderDev( ).Delete( mFramebuffer );
+		if (m_Ctx( ).m_RenderDev( ).IsValid( m_Framebuffer ))
+			m_Ctx( ).m_RenderDev( ).Delete( m_Framebuffer );
 
 		{
 			rhi::FramebufferCreateInfo desc;
-			desc.mColorTex.push_back( { LUM_GBUFFER_ALBEDO, mAlbedoTex } );
-			desc.mColorTex.push_back( { LUM_GBUFFER_NORMAL, mNormalTex } );
-			desc.mDepthTex = mDepthTex;
-			mFramebuffer = mCtx( ).mRenderDev( ).CreateFramebuffer( desc );
+			desc.m_ColorTex.push_back( { LUM_GBUFFER_ALBEDO, m_AlbedoTex } );
+			desc.m_ColorTex.push_back( { LUM_GBUFFER_NORMAL, m_NormalTex } );
+			desc.m_DepthTex = m_DepthTex;
+			m_Framebuffer = m_Ctx( ).m_RenderDev( ).CreateFramebuffer( desc );
 		}
 
 	}
 
 	void DeferredBuffer::subscribe_event( ) {
 
-		mCtx( ).mEventBus( ).SubscribePermanently<EWindowResized>(
+		m_Ctx( ).m_EventBus( ).SubscribePermanently<EWindowResized>(
 			[&]( const EWindowResized& ev ) {
 
-				if (ev.mWidth == 0 || ev.mHeight == 0) return;
+				if (ev.m_Width == 0 || ev.m_Height == 0) return;
 
-				create_textures( ev.mWidth, ev.mHeight );
+				create_textures( ev.m_Width, ev.m_Height );
 				create_framebuffer( );
 
 			} );

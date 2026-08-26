@@ -19,34 +19,34 @@ namespace lum::fmt {
 
 		for (int32 i = 0; i < tokens.size(); i++) {
 
-			if (tokens[i].mType == TokenType::Parameter) {
+			if (tokens[i].m_Type == TokenType::Parameter) {
 				
-				if (tokens[i].mValue == "albedo") {
+				if (tokens[i].m_Value == "albedo") {
 					
 					String path = detail::ReadStringParameter(tokens, i);
 					
-					material.mAlbedoTex = path;
+					material.m_AlbedoTex = path;
 					
 				}
-				else if (tokens[i].mValue == "normal") {
+				else if (tokens[i].m_Value == "normal") {
 					
 					String path = detail::ReadStringParameter(tokens, i);
 
-					material.mNormalTex = path;
+					material.m_NormalTex = path;
 
 				}
-				else if (tokens[i].mValue == "roughness") {
+				else if (tokens[i].m_Value == "roughness") {
 		
 					String path = detail::ReadStringParameter(tokens, i);
 
-					material.mRoughnessTex = path;
+					material.m_RoughnessTex = path;
 
 				}
-				else if (tokens[i].mValue == "metallic") {
+				else if (tokens[i].m_Value == "metallic") {
 					
 					String path = detail::ReadStringParameter(tokens, i);
 
-					material.mMetallicTex = path;
+					material.m_MetallicTex = path;
 
 					
 				}

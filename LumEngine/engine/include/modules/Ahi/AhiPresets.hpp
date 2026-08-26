@@ -54,7 +54,7 @@ namespace lum::ahi {
 
 	namespace detail {
 
-		inline constexpr AudioEffectCreateInfo kEffectPresetLookup[ ] = {
+		inline constexpr AudioEffectCreateInfo k_EffectPresetLookup[ ] = {
 
 			// -------------------------------------------------------
 			// Off
@@ -65,40 +65,40 @@ namespace lum::ahi {
 			// Underwater
 			// -------------------------------------------------------
 			{
-				.mFreqPass = {
-					.mLow = { true,  800.0f, 0.6f },
-					.mHigh = { false, 0.0f,   0.0f },
+				.m_FreqPass = {
+					.m_Low = { true,  800.0f, 0.6f },
+					.m_High = { false, 0.0f,   0.0f },
 				},
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 1500.0f,
-					.mEarlyDelay = 7.0f,
-					.mLateDelay = 11.0f,
-					.mReferenceFreq = 1000.0f,
-					.mDiffusion = 1.0f,
-					.mWetLevel = -4.0f,
-					.mDryLevel = -6.0f,
-					.mDensity = 0.5f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 1500.0f,
+					.m_EarlyDelay = 7.0f,
+					.m_LateDelay = 11.0f,
+					.m_ReferenceFreq = 1000.0f,
+					.m_Diffusion = 1.0f,
+					.m_WetLevel = -4.0f,
+					.m_DryLevel = -6.0f,
+					.m_Density = 0.5f,
 				},
-				.mChorus = {
-					.mEnabled = true,
-					.mRate = 0.3f,
-					.mDepth = 4.0f,
-					.mMix = 25.0f,
+				.m_Chorus = {
+					.m_Enabled = true,
+					.m_Rate = 0.3f,
+					.m_Depth = 4.0f,
+					.m_Mix = 25.0f,
 				},
-				.mCompressor = {
-					.mEnabled = true,
-					.mThreshold = -18.0f,
-					.mRatio = 3.0f,
-					.mAttack = 20.0f,
-					.mRelease = 200.0f,
-					.mGainMakeup = 2.0f,
+				.m_Compressor = {
+					.m_Enabled = true,
+					.m_Threshold = -18.0f,
+					.m_Ratio = 3.0f,
+					.m_Attack = 20.0f,
+					.m_Release = 200.0f,
+					.m_GainMakeup = 2.0f,
 				},
-				.mParamEQ = {
-					.mEnabled = true,
-					.mCenter = 60.0f,    // Deep sub-bass depth
-					.mBandwidth = 1.2f,
-					.mGain = 5.0f,
+				.m_ParamEQ = {
+					.m_Enabled = true,
+					.m_Center = 60.0f,    // Deep sub-bass depth
+					.m_Bandwidth = 1.2f,
+					.m_Gain = 5.0f,
 				},
 			},
 
@@ -106,34 +106,34 @@ namespace lum::ahi {
 			// Underground
 			// -------------------------------------------------------
 			{
-				.mFreqPass = {
-					.mLow = { true, 120.0f, 1.8f },
-					.mHigh = { false, 0.0f,  0.0f },
+				.m_FreqPass = {
+					.m_Low = { true, 120.0f, 1.8f },
+					.m_High = { false, 0.0f,  0.0f },
 				},
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 10000.0f,
-					.mEarlyDelay = 20.0f,
-					.mLateDelay = 40.0f,
-					.mReferenceFreq = 500.0f,
-					.mDiffusion = 0.4f,
-					.mWetLevel = -2.0f,
-					.mDryLevel = -3.0f,
-					.mDensity = 0.4f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 10000.0f,
+					.m_EarlyDelay = 20.0f,
+					.m_LateDelay = 40.0f,
+					.m_ReferenceFreq = 500.0f,
+					.m_Diffusion = 0.4f,
+					.m_WetLevel = -2.0f,
+					.m_DryLevel = -3.0f,
+					.m_Density = 0.4f,
 				},
-				.mCompressor = {
-					.mEnabled = true,
-					.mThreshold = -24.0f,
-					.mRatio = 6.0f,
-					.mAttack = 5.0f,
-					.mRelease = 300.0f,
-					.mGainMakeup = 4.0f,
+				.m_Compressor = {
+					.m_Enabled = true,
+					.m_Threshold = -24.0f,
+					.m_Ratio = 6.0f,
+					.m_Attack = 5.0f,
+					.m_Release = 300.0f,
+					.m_GainMakeup = 4.0f,
 				},
-				.mParamEQ = {
-					.mEnabled = true,
-					.mCenter = 70.0f,    // Heavy low-end rumble
-					.mBandwidth = 1.0f,
-					.mGain = 7.0f,
+				.m_ParamEQ = {
+					.m_Enabled = true,
+					.m_Center = 70.0f,    // Heavy low-end rumble
+					.m_Bandwidth = 1.0f,
+					.m_Gain = 7.0f,
 				},
 			},
 
@@ -141,22 +141,22 @@ namespace lum::ahi {
 			// Cave
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 3000.0f,
-					.mEarlyDelay = 15.0f,
-					.mLateDelay = 22.0f,
-					.mReferenceFreq = 4000.0f,
-					.mDiffusion = 0.5f,
-					.mWetLevel = -6.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 3000.0f,
+					.m_EarlyDelay = 15.0f,
+					.m_LateDelay = 22.0f,
+					.m_ReferenceFreq = 4000.0f,
+					.m_Diffusion = 0.5f,
+					.m_WetLevel = -6.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
-				.mParamEQ = {
-					.mEnabled = true,
-					.mCenter = 100.0f,   // Booming low end
-					.mBandwidth = 1.0f,
-					.mGain = 5.0f,
+				.m_ParamEQ = {
+					.m_Enabled = true,
+					.m_Center = 100.0f,   // Booming low end
+					.m_Bandwidth = 1.0f,
+					.m_Gain = 5.0f,
 				},
 			},
 
@@ -164,20 +164,20 @@ namespace lum::ahi {
 			// Forest
 			// -------------------------------------------------------
 			{
-				.mFreqPass = {
-					.mLow = { true, 6000.0f, 0.4f },
-					.mHigh = { false, 0.0f,   0.0f },
+				.m_FreqPass = {
+					.m_Low = { true, 6000.0f, 0.4f },
+					.m_High = { false, 0.0f,   0.0f },
 				},
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 1500.0f,
-					.mEarlyDelay = 20.0f,
-					.mLateDelay = 30.0f,
-					.mReferenceFreq = 3000.0f,
-					.mDiffusion = 0.3f,
-					.mWetLevel = -14.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 0.7f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 1500.0f,
+					.m_EarlyDelay = 20.0f,
+					.m_LateDelay = 30.0f,
+					.m_ReferenceFreq = 3000.0f,
+					.m_Diffusion = 0.3f,
+					.m_WetLevel = -14.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 0.7f,
 				},
 			},
 
@@ -185,16 +185,16 @@ namespace lum::ahi {
 			// Mountains
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 8000.0f,
-					.mEarlyDelay = 40.0f,
-					.mLateDelay = 80.0f,
-					.mReferenceFreq = 2500.0f,
-					.mDiffusion = 0.2f,
-					.mWetLevel = -8.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 0.5f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 8000.0f,
+					.m_EarlyDelay = 40.0f,
+					.m_LateDelay = 80.0f,
+					.m_ReferenceFreq = 2500.0f,
+					.m_Diffusion = 0.2f,
+					.m_WetLevel = -8.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 0.5f,
 				},
 			},
 
@@ -202,16 +202,16 @@ namespace lum::ahi {
 			// Plain
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 4000.0f,
-					.mEarlyDelay = 30.0f,
-					.mLateDelay = 60.0f,
-					.mReferenceFreq = 3000.0f,
-					.mDiffusion = 0.2f,
-					.mWetLevel = -10.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 0.6f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 4000.0f,
+					.m_EarlyDelay = 30.0f,
+					.m_LateDelay = 60.0f,
+					.m_ReferenceFreq = 3000.0f,
+					.m_Diffusion = 0.2f,
+					.m_WetLevel = -10.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 0.6f,
 				},
 			},
 
@@ -219,16 +219,16 @@ namespace lum::ahi {
 			// City
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 1500.0f,
-					.mEarlyDelay = 7.0f,
-					.mLateDelay = 11.0f,
-					.mReferenceFreq = 5000.0f,
-					.mDiffusion = 0.3f,
-					.mWetLevel = -10.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 1500.0f,
+					.m_EarlyDelay = 7.0f,
+					.m_LateDelay = 11.0f,
+					.m_ReferenceFreq = 5000.0f,
+					.m_Diffusion = 0.3f,
+					.m_WetLevel = -10.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
 			},
 
@@ -236,16 +236,16 @@ namespace lum::ahi {
 			// Alley
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 1500.0f,
-					.mEarlyDelay = 7.0f,
-					.mLateDelay = 11.0f,
-					.mReferenceFreq = 5000.0f,
-					.mDiffusion = 0.3f,
-					.mWetLevel = -9.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 1500.0f,
+					.m_EarlyDelay = 7.0f,
+					.m_LateDelay = 11.0f,
+					.m_ReferenceFreq = 5000.0f,
+					.m_Diffusion = 0.3f,
+					.m_WetLevel = -9.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
 			},
 
@@ -253,16 +253,16 @@ namespace lum::ahi {
 			// ParkingLot
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 1700.0f,
-					.mEarlyDelay = 8.0f,
-					.mLateDelay = 12.0f,
-					.mReferenceFreq = 5000.0f,
-					.mDiffusion = 0.5f,
-					.mWetLevel = -8.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 1700.0f,
+					.m_EarlyDelay = 8.0f,
+					.m_LateDelay = 12.0f,
+					.m_ReferenceFreq = 5000.0f,
+					.m_Diffusion = 0.5f,
+					.m_WetLevel = -8.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
 			},
 
@@ -270,26 +270,26 @@ namespace lum::ahi {
 			// SewerPipe
 			// -------------------------------------------------------
 			{
-				.mFreqPass = {
-					.mLow = { false, 0.0f,    0.0f },
-					.mHigh = { true,  120.0f,  2.0f },
+				.m_FreqPass = {
+					.m_Low = { false, 0.0f,    0.0f },
+					.m_High = { true,  120.0f,  2.0f },
 				},
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 2800.0f,
-					.mEarlyDelay = 14.0f,
-					.mLateDelay = 21.0f,
-					.mReferenceFreq = 9000.0f,
-					.mDiffusion = 0.9f,
-					.mWetLevel = -3.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 0.8f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 2800.0f,
+					.m_EarlyDelay = 14.0f,
+					.m_LateDelay = 21.0f,
+					.m_ReferenceFreq = 9000.0f,
+					.m_Diffusion = 0.9f,
+					.m_WetLevel = -3.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 0.8f,
 				},
-				.mParamEQ = {
-					.mEnabled = true,
-					.mCenter = 150.0f,
-					.mBandwidth = 0.8f,
-					.mGain = 4.0f,
+				.m_ParamEQ = {
+					.m_Enabled = true,
+					.m_Center = 150.0f,
+					.m_Bandwidth = 0.8f,
+					.m_Gain = 4.0f,
 				},
 			},
 
@@ -297,16 +297,16 @@ namespace lum::ahi {
 			// SmallRoom
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 400.0f,
-					.mEarlyDelay = 2.0f,
-					.mLateDelay = 3.0f,
-					.mReferenceFreq = 5000.0f,
-					.mDiffusion = 0.5f,
-					.mWetLevel = -10.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 400.0f,
+					.m_EarlyDelay = 2.0f,
+					.m_LateDelay = 3.0f,
+					.m_ReferenceFreq = 5000.0f,
+					.m_Diffusion = 0.5f,
+					.m_WetLevel = -10.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
 			},
 
@@ -314,16 +314,16 @@ namespace lum::ahi {
 			// Bathroom
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 800.0f,
-					.mEarlyDelay = 3.0f,
-					.mLateDelay = 5.0f,
-					.mReferenceFreq = 8000.0f,
-					.mDiffusion = 1.0f,
-					.mWetLevel = -4.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 800.0f,
+					.m_EarlyDelay = 3.0f,
+					.m_LateDelay = 5.0f,
+					.m_ReferenceFreq = 8000.0f,
+					.m_Diffusion = 1.0f,
+					.m_WetLevel = -4.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
 			},
 
@@ -331,16 +331,16 @@ namespace lum::ahi {
 			// Livingroom
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 500.0f,
-					.mEarlyDelay = 3.0f,
-					.mLateDelay = 4.0f,
-					.mReferenceFreq = 5000.0f,
-					.mDiffusion = 0.4f,
-					.mWetLevel = -11.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 500.0f,
+					.m_EarlyDelay = 3.0f,
+					.m_LateDelay = 4.0f,
+					.m_ReferenceFreq = 5000.0f,
+					.m_Diffusion = 0.4f,
+					.m_WetLevel = -11.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
 			},
 
@@ -348,22 +348,22 @@ namespace lum::ahi {
 			// Stoneroom
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 2300.0f,
-					.mEarlyDelay = 12.0f,
-					.mLateDelay = 17.0f,
-					.mReferenceFreq = 5000.0f,
-					.mDiffusion = 0.6f,
-					.mWetLevel = -6.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 2300.0f,
+					.m_EarlyDelay = 12.0f,
+					.m_LateDelay = 17.0f,
+					.m_ReferenceFreq = 5000.0f,
+					.m_Diffusion = 0.6f,
+					.m_WetLevel = -6.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
-				.mParamEQ = {
-					.mEnabled = true,
-					.mCenter = 120.0f,
-					.mBandwidth = 0.8f,
-					.mGain = 3.0f,
+				.m_ParamEQ = {
+					.m_Enabled = true,
+					.m_Center = 120.0f,
+					.m_Bandwidth = 0.8f,
+					.m_Gain = 3.0f,
 				},
 			},
 
@@ -371,22 +371,22 @@ namespace lum::ahi {
 			// StoneCorridor
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 2700.0f,
-					.mEarlyDelay = 13.0f,
-					.mLateDelay = 20.0f,
-					.mReferenceFreq = 5000.0f,
-					.mDiffusion = 0.8f,
-					.mWetLevel = -6.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 2700.0f,
+					.m_EarlyDelay = 13.0f,
+					.m_LateDelay = 20.0f,
+					.m_ReferenceFreq = 5000.0f,
+					.m_Diffusion = 0.8f,
+					.m_WetLevel = -6.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
-				.mParamEQ = {
-					.mEnabled = true,
-					.mCenter = 120.0f,
-					.mBandwidth = 0.8f,
-					.mGain = 3.0f,
+				.m_ParamEQ = {
+					.m_Enabled = true,
+					.m_Center = 120.0f,
+					.m_Bandwidth = 0.8f,
+					.m_Gain = 3.0f,
 				},
 			},
 
@@ -394,16 +394,16 @@ namespace lum::ahi {
 			// Auditorium
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 4300.0f,
-					.mEarlyDelay = 20.0f,
-					.mLateDelay = 30.0f,
-					.mReferenceFreq = 5000.0f,
-					.mDiffusion = 0.8f,
-					.mWetLevel = -6.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 4300.0f,
+					.m_EarlyDelay = 20.0f,
+					.m_LateDelay = 30.0f,
+					.m_ReferenceFreq = 5000.0f,
+					.m_Diffusion = 0.8f,
+					.m_WetLevel = -6.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
 			},
 
@@ -411,16 +411,16 @@ namespace lum::ahi {
 			// ConcertHall
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 2800.0f,
-					.mEarlyDelay = 15.0f,
-					.mLateDelay = 35.0f,
-					.mReferenceFreq = 5000.0f,
-					.mDiffusion = 0.9f,
-					.mWetLevel = -5.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 2800.0f,
+					.m_EarlyDelay = 15.0f,
+					.m_LateDelay = 35.0f,
+					.m_ReferenceFreq = 5000.0f,
+					.m_Diffusion = 0.9f,
+					.m_WetLevel = -5.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
 			},
 
@@ -428,22 +428,22 @@ namespace lum::ahi {
 			// Arena
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 7200.0f,
-					.mEarlyDelay = 20.0f,
-					.mLateDelay = 30.0f,
-					.mReferenceFreq = 5000.0f,
-					.mDiffusion = 0.8f,
-					.mWetLevel = -4.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 7200.0f,
+					.m_EarlyDelay = 20.0f,
+					.m_LateDelay = 30.0f,
+					.m_ReferenceFreq = 5000.0f,
+					.m_Diffusion = 0.8f,
+					.m_WetLevel = -4.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
-				.mParamEQ = {
-					.mEnabled = true,
-					.mCenter = 80.0f,
-					.mBandwidth = 1.0f,
-					.mGain = 3.0f,
+				.m_ParamEQ = {
+					.m_Enabled = true,
+					.m_Center = 80.0f,
+					.m_Bandwidth = 1.0f,
+					.m_Gain = 3.0f,
 				},
 			},
 
@@ -451,22 +451,22 @@ namespace lum::ahi {
 			// Hangar
 			// -------------------------------------------------------
 			{
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 10000.0f,
-					.mEarlyDelay = 20.0f,
-					.mLateDelay = 30.0f,
-					.mReferenceFreq = 5000.0f,
-					.mDiffusion = 0.5f,
-					.mWetLevel = -3.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 10000.0f,
+					.m_EarlyDelay = 20.0f,
+					.m_LateDelay = 30.0f,
+					.m_ReferenceFreq = 5000.0f,
+					.m_Diffusion = 0.5f,
+					.m_WetLevel = -3.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 1.0f,
 				},
-				.mParamEQ = {
-					.mEnabled = true,
-					.mCenter = 90.0f,
-					.mBandwidth = 1.2f,
-					.mGain = 4.0f,
+				.m_ParamEQ = {
+					.m_Enabled = true,
+					.m_Center = 90.0f,
+					.m_Bandwidth = 1.2f,
+					.m_Gain = 4.0f,
 				},
 			},
 
@@ -474,21 +474,21 @@ namespace lum::ahi {
 			// Radio  (walkie-talkie / military comms)
 			// -------------------------------------------------------
 			{
-				.mFreqPass = {
-					.mLow = { true,  3000.0f, 2.5f },
-					.mHigh = { true,  800.0f,  2.5f },
+				.m_FreqPass = {
+					.m_Low = { true,  3000.0f, 2.5f },
+					.m_High = { true,  800.0f,  2.5f },
 				},
-				.mDistortion = {
-					.mEnabled = true,
-					.mLevel = 0.25f,
+				.m_Distortion = {
+					.m_Enabled = true,
+					.m_Level = 0.25f,
 				},
-				.mCompressor = {
-					.mEnabled = true,
-					.mThreshold = -12.0f,
-					.mRatio = 8.0f,
-					.mAttack = 2.0f,
-					.mRelease = 80.0f,
-					.mGainMakeup = 3.0f,
+				.m_Compressor = {
+					.m_Enabled = true,
+					.m_Threshold = -12.0f,
+					.m_Ratio = 8.0f,
+					.m_Attack = 2.0f,
+					.m_Release = 80.0f,
+					.m_GainMakeup = 3.0f,
 				},
 			},
 
@@ -496,21 +496,21 @@ namespace lum::ahi {
 			// Phone
 			// -------------------------------------------------------
 			{
-				.mFreqPass = {
-					.mLow = { true,  3400.0f, 3.0f },
-					.mHigh = { true,  300.0f,  3.0f },
+				.m_FreqPass = {
+					.m_Low = { true,  3400.0f, 3.0f },
+					.m_High = { true,  300.0f,  3.0f },
 				},
-				.mDistortion = {
-					.mEnabled = true,
-					.mLevel = 0.35f,
+				.m_Distortion = {
+					.m_Enabled = true,
+					.m_Level = 0.35f,
 				},
-				.mCompressor = {
-					.mEnabled = true,
-					.mThreshold = -10.0f,
-					.mRatio = 10.0f,
-					.mAttack = 1.0f,
-					.mRelease = 60.0f,
-					.mGainMakeup = 2.0f,
+				.m_Compressor = {
+					.m_Enabled = true,
+					.m_Threshold = -10.0f,
+					.m_Ratio = 10.0f,
+					.m_Attack = 1.0f,
+					.m_Release = 60.0f,
+					.m_GainMakeup = 2.0f,
 				},
 			},
 
@@ -518,24 +518,24 @@ namespace lum::ahi {
 			// MegaphoneMuffled
 			// -------------------------------------------------------
 			{
-				.mFreqPass = {
-					.mLow = { true,  2000.0f, 1.5f },
-					.mHigh = { true,  500.0f,  1.0f },
+				.m_FreqPass = {
+					.m_Low = { true,  2000.0f, 1.5f },
+					.m_High = { true,  500.0f,  1.0f },
 				},
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 300.0f,
-					.mEarlyDelay = 5.0f,
-					.mLateDelay = 8.0f,
-					.mReferenceFreq = 2000.0f,
-					.mDiffusion = 0.6f,
-					.mWetLevel = -8.0f,
-					.mDryLevel = 0.0f,
-					.mDensity = 0.8f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 300.0f,
+					.m_EarlyDelay = 5.0f,
+					.m_LateDelay = 8.0f,
+					.m_ReferenceFreq = 2000.0f,
+					.m_Diffusion = 0.6f,
+					.m_WetLevel = -8.0f,
+					.m_DryLevel = 0.0f,
+					.m_Density = 0.8f,
 				},
-				.mDistortion = {
-					.mEnabled = true,
-					.mLevel = 0.5f,
+				.m_Distortion = {
+					.m_Enabled = true,
+					.m_Level = 0.5f,
 				},
 			},
 
@@ -543,34 +543,34 @@ namespace lum::ahi {
 			// InHelmet
 			// -------------------------------------------------------
 			{
-				.mFreqPass = {
-					.mLow = { true,  3500.0f, 0.5f },
-					.mHigh = { false, 0.0f,    0.0f },
+				.m_FreqPass = {
+					.m_Low = { true,  3500.0f, 0.5f },
+					.m_High = { false, 0.0f,    0.0f },
 				},
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 150.0f,
-					.mEarlyDelay = 1.0f,
-					.mLateDelay = 2.0f,
-					.mReferenceFreq = 3000.0f,
-					.mDiffusion = 0.9f,
-					.mWetLevel = -8.0f,
-					.mDryLevel = -2.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 150.0f,
+					.m_EarlyDelay = 1.0f,
+					.m_LateDelay = 2.0f,
+					.m_ReferenceFreq = 3000.0f,
+					.m_Diffusion = 0.9f,
+					.m_WetLevel = -8.0f,
+					.m_DryLevel = -2.0f,
+					.m_Density = 1.0f,
 				},
-				.mCompressor = {
-					.mEnabled = true,
-					.mThreshold = -15.0f,
-					.mRatio = 3.0f,
-					.mAttack = 5.0f,
-					.mRelease = 100.0f,
-					.mGainMakeup = 1.0f,
+				.m_Compressor = {
+					.m_Enabled = true,
+					.m_Threshold = -15.0f,
+					.m_Ratio = 3.0f,
+					.m_Attack = 5.0f,
+					.m_Release = 100.0f,
+					.m_GainMakeup = 1.0f,
 				},
-				.mParamEQ = {
-					.mEnabled = true,
-					.mCenter = 200.0f,
-					.mBandwidth = 0.8f,
-					.mGain = 4.0f,
+				.m_ParamEQ = {
+					.m_Enabled = true,
+					.m_Center = 200.0f,
+					.m_Bandwidth = 0.8f,
+					.m_Gain = 4.0f,
 				},
 			},
 
@@ -578,34 +578,34 @@ namespace lum::ahi {
 			// Explosion  (post-explosion ear ringing)
 			// -------------------------------------------------------
 			{
-				.mFreqPass = {
-					.mLow = { true,  2000.0f, 0.3f },
-					.mHigh = { true,  200.0f,  0.5f },
+				.m_FreqPass = {
+					.m_Low = { true,  2000.0f, 0.3f },
+					.m_High = { true,  200.0f,  0.5f },
 				},
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 800.0f,
-					.mEarlyDelay = 5.0f,
-					.mLateDelay = 15.0f,
-					.mReferenceFreq = 1500.0f,
-					.mDiffusion = 0.7f,
-					.mWetLevel = -5.0f,
-					.mDryLevel = -8.0f,
-					.mDensity = 0.8f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 800.0f,
+					.m_EarlyDelay = 5.0f,
+					.m_LateDelay = 15.0f,
+					.m_ReferenceFreq = 1500.0f,
+					.m_Diffusion = 0.7f,
+					.m_WetLevel = -5.0f,
+					.m_DryLevel = -8.0f,
+					.m_Density = 0.8f,
 				},
-				.mCompressor = {
-					.mEnabled = true,
-					.mThreshold = -6.0f,
-					.mRatio = 20.0f,
-					.mAttack = 0.5f,
-					.mRelease = 500.0f,
-					.mGainMakeup = 0.0f,
+				.m_Compressor = {
+					.m_Enabled = true,
+					.m_Threshold = -6.0f,
+					.m_Ratio = 20.0f,
+					.m_Attack = 0.5f,
+					.m_Release = 500.0f,
+					.m_GainMakeup = 0.0f,
 				},
-				.mParamEQ = {
-					.mEnabled = true,
-					.mCenter = 80.0f,
-					.mBandwidth = 1.5f,
-					.mGain = 8.0f,
+				.m_ParamEQ = {
+					.m_Enabled = true,
+					.m_Center = 80.0f,
+					.m_Bandwidth = 1.5f,
+					.m_Gain = 8.0f,
 				},
 			},
 
@@ -613,34 +613,34 @@ namespace lum::ahi {
 			// Horror
 			// -------------------------------------------------------
 			{
-				.mFreqPass = {
-					.mLow = { true,  5000.0f, 0.3f },
-					.mHigh = { false, 0.0f,    0.0f },
+				.m_FreqPass = {
+					.m_Low = { true,  5000.0f, 0.3f },
+					.m_High = { false, 0.0f,    0.0f },
 				},
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 6000.0f,
-					.mEarlyDelay = 25.0f,
-					.mLateDelay = 50.0f,
-					.mReferenceFreq = 2000.0f,
-					.mDiffusion = 0.6f,
-					.mWetLevel = -5.0f,
-					.mDryLevel = -2.0f,
-					.mDensity = 0.6f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 6000.0f,
+					.m_EarlyDelay = 25.0f,
+					.m_LateDelay = 50.0f,
+					.m_ReferenceFreq = 2000.0f,
+					.m_Diffusion = 0.6f,
+					.m_WetLevel = -5.0f,
+					.m_DryLevel = -2.0f,
+					.m_Density = 0.6f,
 				},
-				.mCompressor = {
-					.mEnabled = true,
-					.mThreshold = -20.0f,
-					.mRatio = 4.0f,
-					.mAttack = 30.0f,
-					.mRelease = 400.0f,
-					.mGainMakeup = 1.0f,
+				.m_Compressor = {
+					.m_Enabled = true,
+					.m_Threshold = -20.0f,
+					.m_Ratio = 4.0f,
+					.m_Attack = 30.0f,
+					.m_Release = 400.0f,
+					.m_GainMakeup = 1.0f,
 				},
-				.mParamEQ = {
-					.mEnabled = true,
-					.mCenter = 60.0f,
-					.mBandwidth = 1.5f,
-					.mGain = 6.0f,
+				.m_ParamEQ = {
+					.m_Enabled = true,
+					.m_Center = 60.0f,
+					.m_Bandwidth = 1.5f,
+					.m_Gain = 6.0f,
 				},
 			},
 
@@ -648,32 +648,32 @@ namespace lum::ahi {
 			// Dream
 			// -------------------------------------------------------
 			{
-				.mFreqPass = {
-					.mLow = { true,  7000.0f, 0.4f },
-					.mHigh = { false, 0.0f,    0.0f },
+				.m_FreqPass = {
+					.m_Low = { true,  7000.0f, 0.4f },
+					.m_High = { false, 0.0f,    0.0f },
 				},
-				.mReverb = {
-					.mEnabled = true,
-					.mDecayTime = 5000.0f,
-					.mEarlyDelay = 20.0f,
-					.mLateDelay = 40.0f,
-					.mReferenceFreq = 4000.0f,
-					.mDiffusion = 1.0f,
-					.mWetLevel = -3.0f,
-					.mDryLevel = -4.0f,
-					.mDensity = 1.0f,
+				.m_Reverb = {
+					.m_Enabled = true,
+					.m_DecayTime = 5000.0f,
+					.m_EarlyDelay = 20.0f,
+					.m_LateDelay = 40.0f,
+					.m_ReferenceFreq = 4000.0f,
+					.m_Diffusion = 1.0f,
+					.m_WetLevel = -3.0f,
+					.m_DryLevel = -4.0f,
+					.m_Density = 1.0f,
 				},
-				.mChorus = {
-					.mEnabled = true,
-					.mRate = 0.2f,
-					.mDepth = 6.0f,
-					.mMix = 40.0f,
+				.m_Chorus = {
+					.m_Enabled = true,
+					.m_Rate = 0.2f,
+					.m_Depth = 6.0f,
+					.m_Mix = 40.0f,
 				},
-				.mFlange = {
-					.mEnabled = true,
-					.mRate = 0.15f,
-					.mDepth = 0.4f,
-					.mMix = 30.0f,
+				.m_Flange = {
+					.m_Enabled = true,
+					.m_Rate = 0.15f,
+					.m_Depth = 0.4f,
+					.m_Mix = 30.0f,
 				},
 			},
 
@@ -686,7 +686,7 @@ namespace lum::ahi {
 	*  @return Fully configured effect descriptor ready for AudioDevice::CreateEffect().
 	*/
 	inline ahi::AudioEffectCreateInfo GetPreset( EffectPreset preset ) {
-		return detail::kEffectPresetLookup[ ToUnderlyingEnum( preset ) ];
+		return detail::k_EffectPresetLookup[ ToUnderlyingEnum( preset ) ];
 	}
 
 } // namespace lum::ahi

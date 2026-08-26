@@ -12,11 +12,6 @@
 namespace lum {
 
 	struct Vertex;
-	namespace detail {
-
-		namespace fs = std::filesystem;
-
-	} // namespace lum::detail
 
 	/* @brief Identifies the root directory used for asset path resolution. */
 	enum class LUM_API ResourceRoot : byte {
@@ -28,21 +23,21 @@ namespace lum {
 	struct LUM_API ImageData {
 
 		/* @brief Texture width in pixels. */
-		int32 mWidth = 0;
+		int32 m_Width = 0;
 
 		/* @brief Texture height in pixels. */
-		int32 mHeight = 0;
+		int32 m_Height = 0;
 
 		/* @brief Number of color channels (e.g. 3 = RGB, 4 = RGBA). */
-		int32 mChannels = 0;
+		int32 m_Channels = 0;
 
 		/* @brief Raw pixel data. */
-		std::vector<uint8> mPixels;
+		std::vector<uint8> m_Pixels{};
 
 		/* @brief Raw float pixels used in HDRI. */
-		std::vector<float32> mFloatPixels;
+		std::vector<float32> m_FloatPixels{};
 
-		bool mIsHdr = false;
+		bool m_IsHdr = false;
 
 	};
 
@@ -50,10 +45,10 @@ namespace lum {
 	struct LUM_API MeshGeometry {
 
 		/* @brief List of vertices. */
-		std::vector<Vertex> mVertices;
+		std::vector<Vertex> m_Vertices;
 
 		/* @brief List of indices. */
-		std::vector<uint32> mIndices;
+		std::vector<uint32> m_Indices;
 
 	};
 
@@ -79,10 +74,10 @@ namespace lum {
 		/* @brief Sets the project root directory for external asset resolution.
 		* @param path Absolute path to the project root.
 		*/
-		static void SetProjectRoot( Path path ) { sProjectRoot = path; }
+		static void SetProjectRoot( Path path ) { s_ProjectRoot = path; }
 
 		/* @brief Returns the current project root path as a string. */
-		LUM_NODISCARD static String GetProjectRoot( ) { return sProjectRoot.ToString( ); }
+		LUM_NODISCARD static String GetProjectRoot( ) { return s_ProjectRoot.ToString( ); }
 
 		/* @brief Loads a texture from disk.
 		* @param root           Root directory identifier.
@@ -117,13 +112,13 @@ namespace lum {
 	private:
 
 		/* @brief Absolute path to the project root (external assets). */
-		static inline Path sProjectRoot{ "" };
+		static inline Path s_ProjectRoot{ "" };
 
 		/* @brief Absolute path to the engine internal assets directory. */
-		static inline Path sInternalAssetsRoot = FileSystem::CurrentPath().ParentPath( ) / "LumEngine" / "InternalAssets";
+		static inline Path s_InternalAssetsRoot = FileSystem::CurrentPath().ParentPath( ) / "LumEngine" / "InternalAssets";
 
 		/* @brief Path to the shared shader define header prepended to all shaders. */
-		static inline Path sShaderDefineFile = FileSystem::CurrentPath( ).ParentPath( ) / "LumEngine" / "Engine" / "Include" / "Modules" / "Render" / "ShadersDefine.h";
+		static inline Path s_ShaderDefineFile = FileSystem::CurrentPath( ).ParentPath( ) / "LumEngine" / "Engine" / "Include" / "Modules" / "Render" / "ShadersDefine.h";
 
 		ResourceLoader( const ResourceLoader& ) = delete;
 		ResourceLoader( ResourceLoader&& ) = delete;

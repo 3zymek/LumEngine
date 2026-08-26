@@ -54,18 +54,18 @@ namespace lum::rhi {
 		struct PolygonState {
 			
 			// Polygon rasterization mode (fill, wireframe, or points)
-			TopologyMode mTopologyMode = TopologyMode::Fill;
+			TopologyMode m_TopologyMode = TopologyMode::Fill;
 
 			// Faces affected by the rasterization mode
-			Face mTopologyModeFaces = Face::FrontBack;
+			Face m_TopologyModeFaces = Face::FrontBack;
 
 			// Point size for point topology
-			float32 mPointSize = 1.f;
+			float32 m_PointSize = 1.f;
 
 			// Line width for line topology
-			float32 mLineWidth = 1.f;
+			float32 m_LineWidth = 1.f;
 
-		} mPolygon;
+		} m_Polygon;
 
 		/*!
 		* @brief Depth bias configuration.
@@ -81,18 +81,18 @@ namespace lum::rhi {
 			bool bEnable = false;
 
 			// Specifies a scale factor that is used to create a variable depth offset for each polygon. The initial value is 0.
-			float32 mSlopeFactor = 0.f;
+			float32 m_SlopeFactor = 0.f;
 
 			// Is multiplied by an implementation-specific value to create a constant depth offset. The initial value is 0. 
-			float32 mUnits = 0.f;
+			float32 m_Units = 0.f;
 
 			// Specifies the maximum (or minimum if negative) depth offset value.
 			// If clamp is positive, the calculated offset is clamped to at most this value.
 			// If clamp is negative, the calculated offset is clamped to at least this value.
 			// If clamp is zero, no clamping is applied. The initial value is 0.
-			float32 mClamp = 0.f;
+			float32 m_Clamp = 0.f;
 
-		} mDepthBias;
+		} m_DepthBias;
 
 		struct MultisampleState {
 
@@ -101,7 +101,7 @@ namespace lum::rhi {
 			bool bEnableSampleAlphaToCoverage = false;
 			bool bEnableSampleAlphaToOne = false;
 
-			Ranged<float32, 0.0f, 1.0f> mSampleCoverage = 1.0f;
+			Ranged<float32, 0.0f, 1.0f> m_SampleCoverage = 1.0f;
 			bool bCoverageInvert = false;
 
 		} mMSAA;
@@ -128,34 +128,34 @@ namespace lum::rhi {
 		// Specifies the reference value for the stencil test. 
 		// ref is clamped to the range [0,2n−1], where n is the number of bitplanes in the stencil buffer. 
 		// The initial value is 0. 
-		int32 mReference = 0;
+		int32 m_Reference = 0;
 
 		// Specifies a mask that is ANDed with both the reference value
 		// and the stored stencil value when the test is done.
 		// The initial value is all 1's ( 0xFFFFFFFF ).
-		uint32 mReadMask = 0xFFFFFFFF;
+		uint32 m_ReadMask = 0xFFFFFFFF;
 
 		// Specifies a bit mask to enable and disable writing of individual bits in the stencil planes.
 		// Initially, the mask is all 1's ( 0xFFFFFFFF ).
-		uint32 mWriteMask = 0xFFFFFFFF;
+		uint32 m_WriteMask = 0xFFFFFFFF;
 
 		// Specifies the test function. 
 		// The initial value is CompareFlag::Always. 
-		CompareFlag mCompareFlag = CompareFlag::Always;
+		CompareFlag m_CompareFlag = CompareFlag::Always;
 
 		// Specifies the action to take when the stencil test fails. 
 		// The initial value is StencilOp::Keep. 
-		StencilOp mStencilFailOp = StencilOp::Keep;
+		StencilOp m_StencilFailOp = StencilOp::Keep;
 
 		// Specifies the stencil action when the stencil test passes, but the depth test fails. dpfail accepts the same symbolic 
 		// constants as sfail. 
 		// The initial value is StencilOp::Keep.
-		StencilOp mDepthFailOp = StencilOp::Keep;
+		StencilOp m_DepthFailOp = StencilOp::Keep;
 
 		// Specifies the stencil action when both the stencil test and the depth test pass, or when the stencil test passes and 
 		// either there is no depth buffer or depth testing is not enabled. dppass accepts the same symbolic constants as sfail. 
 		// The initial value is StencilOp::Keep. 
-		StencilOp mPassOp = StencilOp::Keep;
+		StencilOp m_PassOp = StencilOp::Keep;
 
 	};
 
@@ -177,9 +177,9 @@ namespace lum::rhi {
 
 			// Specifies the depth comparison function. 
 			// The initial value is CompareFlag::Less. 
-			CompareFlag	mCompare = CompareFlag::Less;
+			CompareFlag	m_Compare = CompareFlag::Less;
 
-		} mDepth;
+		} m_Depth;
 
 		struct Stencil {
 
@@ -188,18 +188,18 @@ namespace lum::rhi {
 			bool bEnabled = false;
 
 			// Stencil state for front
-			StencilFaceState mFront{};
+			StencilFaceState m_Front{};
 
 			// Stencil state for back
-			StencilFaceState mBack{};
+			StencilFaceState m_Back{};
 
 			// Helper for creating same stencil face state for both sides.
 			static Stencil CreateBothSides(const StencilFaceState& state) {
-				return { .bEnabled = true, .mFront = state, .mBack = state };
+				return { .bEnabled = true, .m_Front = state, .m_Back = state };
 			}
 
 
-		} mStencil;
+		} m_Stencil;
 
 	};
 
@@ -213,11 +213,11 @@ namespace lum::rhi {
 		
 		// Specifies whether front- or back-facing facets are candidates for culling. 
 		// The initial value is Face::Back. 
-		Face mFace = Face::Back;
+		Face m_Face = Face::Back;
 		
 		// Specifies the orientation of front-facing polygons. 
 		// The initial value is WindingOrder::CounterClockwise. 
-		WindingOrder mWindingOrder = WindingOrder::CounterClockwise;
+		WindingOrder m_WindingOrder = WindingOrder::CounterClockwise;
 
 	};
 
@@ -238,10 +238,10 @@ namespace lum::rhi {
 		int32 y = 0;
 
 		// Specify the width of the scissor box.
-		int32 mWidth = 0;
+		int32 m_Width = 0;
 		
 		// Specify the height of the scissor box.
-		int32 mHeight = 0;
+		int32 m_Height = 0;
 
 	};
 
@@ -307,32 +307,32 @@ namespace lum::rhi {
 
 		// Specified how the alpha source blending factor is computed.
 		// The initial value is BlendFactor::One.
-		BlendFactor mSrcAlphaFactor = BlendFactor::One;
+		BlendFactor m_SrcAlphaFactor = BlendFactor::One;
 
 		// Specified how the alpha destination blending factor is computed.
 		// The initial value is BlendFactor::Zero.
-		BlendFactor mDstAlphaFactor = BlendFactor::Zero;
+		BlendFactor m_DstAlphaFactor = BlendFactor::Zero;
 
 		// specifies the alpha blend equation, how the alpha component of the source and destination colors are combined.
 		// The initial value is BlendOp::Add.
-		BlendOp mAlphaOp = BlendOp::Add;
+		BlendOp m_AlphaOp = BlendOp::Add;
 
 		// Specifies how the red, green, and blue blending factors are computed.
 		// The initial value is BlendFactor::One.
-		BlendFactor mSrcColorFactor = BlendFactor::One;
+		BlendFactor m_SrcColorFactor = BlendFactor::One;
 
 		// Specifies how the red, green, and blue destination blending factors are computed.
 		// The initial value is BlendFactor::Zero.
-		BlendFactor mDstColorFactor = BlendFactor::Zero;
+		BlendFactor m_DstColorFactor = BlendFactor::Zero;
 
 		// Specifies the RGB blend equation, how the red, green, and blue components of the source and destination colors are combined.
 		// The initial value is BlendOp::Add.
-		BlendOp mColorOp = BlendOp::Add;
+		BlendOp m_ColorOp = BlendOp::Add;
 
 		// Constant blend color used when blend factors are set to BlendFactor::ConstantColor or BlendFactor::OneMinusConstantColor.
 		// This color is independent of source and destination and acts as a fixed reference value in the blend equation.
 		// The initial value is (0, 0, 0, 0) - transparent black.
-		Vector4 mBlendColor = { 0.f, 0.f, 0.f, 0.f };
+		Vector4 m_BlendColor = { 0.f, 0.f, 0.f, 0.f };
 
 	};
 	
@@ -340,8 +340,8 @@ namespace lum::rhi {
 
 		int32 x{};
 		int32 y{};
-		int32 mWidth{};
-		int32 mHeight{};
+		int32 m_Width{};
+		int32 m_Height{};
 
 	};
 

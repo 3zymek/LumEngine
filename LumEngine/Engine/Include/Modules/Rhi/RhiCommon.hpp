@@ -17,19 +17,19 @@ namespace lum {
 	struct alignas(16) LUM_API Vertex {
 
 		/* @brief Vertex position in 3D space. */
-		Vector3 mPosition;
+		Vector3 m_Position;
 
 		/* @brief Vertex normal vector. */
-		Vector3 mNormal;
+		Vector3 m_Normal;
 
 		/* @brief Texture coordinates. */
-		Vector2 mUv;
+		Vector2 m_Uv;
 
 		/* @brief Tangent vector used for TBN matrix construction. */
-		Vector3 mTangent;
+		Vector3 m_Tangent;
 
 		/* @brief Bitangent vector used for TBN matrix construction. */
-		Vector3 mBitangent;
+		Vector3 m_Bitangent;
 
 	};
 
@@ -120,17 +120,17 @@ namespace lum {
 		/* @brief Describes a single texture layer attachment operation for a framebuffer.
 		* Used to bind a specific layer of a Texture2DArray or Cubemap to an FBO attachment point.
 		*
-		* @param mLayer        Layer index to attach (array layer or cubemap face).
-		* @param mMip          Mip level to attach. 0 = base level.
-		* @param mSlot         Color attachment index. Only used when mAttachment == Color.
-		* @param mAttachment   Framebuffer attachment point (Color, Depth, Stencil, or Depth|Stencil).
+		* @param m_Layer        Layer index to attach (array layer or cubemap face).
+		* @param m_Mip          Mip level to attach. 0 = base level.
+		* @param m_Slot         Color attachment index. Only used when m_Attachment == Color.
+		* @param m_Attachment   Framebuffer attachment point (Color, Depth, Stencil, or Depth|Stencil).
 		*/
 		struct TextureLayerAttachment {
 
-			uint32 mLayer = 0;
-			uint32 mMip = 0;
-			uint32 mSlot = 0;
-			Flags<BufferBit> mAttachment = BufferBit::Color;
+			uint32 m_Layer = 0;
+			uint32 m_Mip = 0;
+			uint32 m_Slot = 0;
+			Flags<BufferBit> m_Attachment = BufferBit::Color;
 
 		};
 

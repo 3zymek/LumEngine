@@ -11,11 +11,11 @@
 
 namespace lum::ahi {
 
-	AudioDevice* CreateDevice( AudioBackend backend ) {
+	std::unique_ptr<IAudioDevice> CreateDevice( AudioBackend backend ) {
 		switch (backend) {
-			case AudioBackend::Fmod: return new fmod::FMODDevice();
+			case AudioBackend::Fmod: return std::make_unique<fmod::FMODDevice>();
 		}
-		return new fmod::FMODDevice( );
+		return std::make_unique<fmod::FMODDevice>( );
 	}
 
 }

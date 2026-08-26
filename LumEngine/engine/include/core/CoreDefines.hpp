@@ -11,6 +11,14 @@
 #define LUM_GENERATED_BODY( )
 #define LUM_CLASS_EXTENSIONS( )
 
+#if defined(_DEBUG) || !defined(NDEBUG)
+#   define LUM_DEBUG 1
+#   define LUM_RELEASE 0
+#else
+#   define LUM_DEBUG 0
+#   define LUM_RELEASE 1
+#endif
+
 #if defined(_WIN32)
 #   if defined(LUM_ENGINE_BUILD)
 #       define LUM_API __declspec(dllexport)

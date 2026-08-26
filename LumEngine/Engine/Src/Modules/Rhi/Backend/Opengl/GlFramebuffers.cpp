@@ -11,27 +11,27 @@ namespace lum::rhi::gl {
 
 	FramebufferHandle GLDevice::CreateFramebuffer( const FramebufferCreateInfo& desc ) {
 
-		LUM_ASSERT( mFramebuffers.DenseSize( ) <= skMaxFramebuffers, "Max framebuffers reached" );
+		LUM_ASSERT( m_Framebuffers.DenseSize( ) <= skMaxFramebuffers, "Max framebuffers reached" );
 
 		Framebuffer fbo;
-		glCreateFramebuffers( 1, &fbo.mHandle );
+		glCreateFramebuffers( 1, &fbo.m_Handle );
 
 		std::vector<GLenum> drawBuffers;
 		uint32 samples = 0;
 
-		for (auto& [slot, texHandle] : desc.mColorTex) {
+		for (auto& [slot, texHandle] : desc.m_ColorTex) {
 
-			const Texture* tex = mTextures.Get( texHandle );
+			const Texture* tex = m_Textures.Get( texHandle );
 
 			if (samples == 0)
-				samples = tex->mSampleCount;
+				samples = tex->m_SampleCount;
 			else
-				LUM_ASSERT( tex->mSampleCount == samples, "Sample count mismatch" );
+				LUM_ASSERT( tex->m_SampleCount == samples, "Sample count mismatch" );
 
 			glNamedFramebufferTexture(
-				fbo.mHandle,
+				fbo.m_Handle,
 				GL_COLOR_ATTACHMENT0 + slot,
-				tex->mHandle,
+				tex->m_Handle,
 				0
 			);
 			drawBuffers.push_back( GL_COLOR_ATTACHMENT0 + slot );
@@ -41,39 +41,39 @@ namespace lum::rhi::gl {
 
 		if (drawBuffers.empty( )) {
 			GLenum drawBuffer = GL_COLOR_ATTACHMENT0;
-			glNamedFramebufferDrawBuffers( fbo.mHandle, 1, &drawBuffer );
+			glNamedFramebufferDrawBuffers( fbo.m_Handle, 1, &drawBuffer );
 		}
 		else {
-			glNamedFramebufferDrawBuffers( fbo.mHandle, drawBuffers.size( ), drawBuffers.data( ) );
+			glNamedFramebufferDrawBuffers( fbo.m_Handle, drawBuffers.size( ), drawBuffers.data( ) );
 		}
 
 
-		if (IsValid( desc.mDepthTex )) {
+		if (IsValid( desc.m_DepthTex )) {
 
-			const Texture* tex = mTextures.Get( desc.mDepthTex );
+			const Texture* tex = m_Textures.Get( desc.m_DepthTex );
 
-			LUM_ASSERT( is_depth_format( tex->mFormat ), "Invalid framebuffer depth texture format" );
-			LUM_ASSERT( tex->mSampleCount == samples, "Depth sample mismatch" );
-			glNamedFramebufferTexture( fbo.mHandle, GL_DEPTH_ATTACHMENT, mTextures.Get( desc.mDepthTex )->mHandle, 0 );
+			LUM_ASSERT( is_depth_format( tex->m_Format ), "Invalid framebuffer depth texture format" );
+			LUM_ASSERT( tex->m_SampleCount == samples, "Depth sample mismatch" );
+			glNamedFramebufferTexture( fbo.m_Handle, GL_DEPTH_ATTACHMENT, m_Textures.Get( desc.m_DepthTex )->m_Handle, 0 );
 		}
 
-		if (IsValid( desc.mStencilTex )) {
+		if (IsValid( desc.m_StencilTex )) {
 
-			const Texture* tex = mTextures.Get( desc.mStencilTex );
+			const Texture* tex = m_Textures.Get( desc.m_StencilTex );
 
-			LUM_ASSERT( is_stencil_format( tex->mFormat ), "Invalid framebuffer stencil texture format" );
-			glNamedFramebufferTexture( fbo.mHandle, GL_STENCIL_ATTACHMENT, mTextures.Get( desc.mStencilTex )->mHandle, 0 );
+			LUM_ASSERT( is_stencil_format( tex->m_Format ), "Invalid framebuffer stencil texture format" );
+			glNamedFramebufferTexture( fbo.m_Handle, GL_STENCIL_ATTACHMENT, m_Textures.Get( desc.m_StencilTex )->m_Handle, 0 );
 
 		}
 
-		if (!desc.mColorTex.empty( ) || IsValid( desc.mDepthTex ) || IsValid( desc.mStencilTex )) {
+		if (!desc.m_ColorTex.empty( ) || IsValid( desc.m_DepthTex ) || IsValid( desc.m_StencilTex )) {
 			LUM_ASSERT(
-				glCheckNamedFramebufferStatus( fbo.mHandle, GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE,
+				glCheckNamedFramebufferStatus( fbo.m_Handle, GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE,
 				"Framebuffer is not complete"
 			);
 		}
 
-		return mFramebuffers.Append( std::move( fbo ) );
+		return m_Framebuffers.Append( std::move( fbo ) );
 
 	}
 
@@ -83,55 +83,55 @@ namespace lum::rhi::gl {
 		LUM_ASSERT( IsValid( tex ), "Invalid texture" );
 
 		GLenum attachment;
-		if (desc.mAttachment.Has( BufferBit::Depth ) && desc.mAttachment.Has( BufferBit::Stencil ))
+		if (desc.m_Attachment.Has( BufferBit::Depth ) && desc.m_Attachment.Has( BufferBit::Stencil ))
 			attachment = GL_DEPTH_STENCIL_ATTACHMENT;
-		else if (desc.mAttachment.Has( BufferBit::Depth ))
+		else if (desc.m_Attachment.Has( BufferBit::Depth ))
 			attachment = GL_DEPTH_ATTACHMENT;
-		else if (desc.mAttachment.Has( BufferBit::Stencil ))
+		else if (desc.m_Attachment.Has( BufferBit::Stencil ))
 			attachment = GL_STENCIL_ATTACHMENT;
 		else
-			attachment = GL_COLOR_ATTACHMENT0 + desc.mSlot;
+			attachment = GL_COLOR_ATTACHMENT0 + desc.m_Slot;
 
 		glNamedFramebufferTextureLayer(
-			mFramebuffers[fbo ].mHandle,
+			m_Framebuffers[fbo ].m_Handle,
 			attachment,
-			mTextures[tex ].mHandle,
-			desc.mMip,
-			desc.mLayer
+			m_Textures[tex ].m_Handle,
+			desc.m_Mip,
+			desc.m_Layer
 		);
 
 	}
 
 	void GLDevice::BlitFramebuffer( const FramebufferBlitDescription& desc ) {
 
-		LUM_ASSERT( validate_framebuffer_handle( desc.mDestination ), "Invalid destination framebuffer" );
-		LUM_ASSERT( validate_framebuffer_handle( desc.mSource ), "Invalid source framebuffer handle" );
+		LUM_ASSERT( validate_framebuffer_handle( desc.m_Destination ), "Invalid destination framebuffer" );
+		LUM_ASSERT( validate_framebuffer_handle( desc.m_Source ), "Invalid source framebuffer handle" );
 		LUM_ASSERT(
-			!(desc.mCopyMask.Has( BufferBit::Depth ) || desc.mCopyMask.Has( BufferBit::Stencil ))
-			|| desc.mFilter == SamplerMagFilter::Nearest,
+			!(desc.m_CopyMask.Has( BufferBit::Depth ) || desc.m_CopyMask.Has( BufferBit::Stencil ))
+			|| desc.m_Filter == SamplerMagFilter::Nearest,
 			"Depth and stencil blit requires Nearest filter"
 		);
 
-		uint32 srcX1 = desc.mSrcX1 == 0 ? mViewportState.mWidth : desc.mSrcX1;
-		uint32 srcY1 = desc.mSrcY1 == 0 ? mViewportState.mHeight : desc.mSrcY1;
-		uint32 dstX1 = desc.mDstX1 == 0 ? mViewportState.mWidth : desc.mDstX1;
-		uint32 dstY1 = desc.mDstY1 == 0 ? mViewportState.mHeight : desc.mDstY1;
+		uint32 srcX1 = desc.m_SrcX1 == 0 ? m_ViewportState.m_Width : desc.m_SrcX1;
+		uint32 srcY1 = desc.m_SrcY1 == 0 ? m_ViewportState.m_Height : desc.m_SrcY1;
+		uint32 dstX1 = desc.m_DstX1 == 0 ? m_ViewportState.m_Width : desc.m_DstX1;
+		uint32 dstY1 = desc.m_DstY1 == 0 ? m_ViewportState.m_Height : desc.m_DstY1;
 
-		GLuint dstID = IsValid( desc.mDestination ) ? mFramebuffers[ desc.mDestination ].mHandle : 0;
-		GLuint srcID = IsValid( desc.mSource ) ? mFramebuffers[ desc.mSource ].mHandle : 0;
+		GLuint dstID = IsValid( desc.m_Destination ) ? m_Framebuffers[ desc.m_Destination ].m_Handle : 0;
+		GLuint srcID = IsValid( desc.m_Source ) ? m_Framebuffers[ desc.m_Source ].m_Handle : 0;
 
 		GLbitfield mask = 0;
 
-		mask |= (desc.mCopyMask.Has( BufferBit::Color )) ? GL_COLOR_BUFFER_BIT : 0;
-		mask |= (desc.mCopyMask.Has( BufferBit::Depth )) ? GL_DEPTH_BUFFER_BIT : 0;
-		mask |= (desc.mCopyMask.Has( BufferBit::Stencil )) ? GL_STENCIL_BUFFER_BIT : 0;
+		mask |= (desc.m_CopyMask.Has( BufferBit::Color )) ? GL_COLOR_BUFFER_BIT : 0;
+		mask |= (desc.m_CopyMask.Has( BufferBit::Depth )) ? GL_DEPTH_BUFFER_BIT : 0;
+		mask |= (desc.m_CopyMask.Has( BufferBit::Stencil )) ? GL_STENCIL_BUFFER_BIT : 0;
 
 		glBlitNamedFramebuffer(
 			srcID, dstID,
-			desc.mSrcX0, desc.mSrcY0, srcX1, srcY1,
-			desc.mDstX0, desc.mDstY0, dstX1, dstY1,
+			desc.m_SrcX0, desc.m_SrcY0, srcX1, srcY1,
+			desc.m_DstX0, desc.m_DstY0, dstX1, dstY1,
 			mask,
-			desc.mFilter == SamplerMagFilter::Linear ? GL_LINEAR : GL_NEAREST
+			desc.m_Filter == SamplerMagFilter::Linear ? GL_LINEAR : GL_NEAREST
 		);
 
 	}
@@ -150,24 +150,24 @@ namespace lum::rhi::gl {
 
 		if (!IsValid( buff )) return;
 
-		Framebuffer& fbo = mFramebuffers[ buff ];
-		glDeleteFramebuffers( 1, &fbo.mHandle );
+		Framebuffer& fbo = m_Framebuffers[ buff ];
+		glDeleteFramebuffers( 1, &fbo.m_Handle );
 
-		mFramebuffers.Remove( buff );
+		m_Framebuffers.Remove( buff );
 	}
 
 	void GLDevice::BindFramebuffer( FramebufferHandle buff ) {
 
 		LUM_ASSERT( validate_framebuffer_handle( buff ), "Invalid framebuffer" );
 
-		if (mCurrentFramebuffer == buff) {
+		if (m_CurrentFramebuffer == buff) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
-		mCurrentFramebuffer = buff;
+		m_CurrentFramebuffer = buff;
 
-		GLuint handle = IsValid( buff ) ? mFramebuffers[ buff ].mHandle : 0;
+		GLuint handle = IsValid( buff ) ? m_Framebuffers[ buff ].m_Handle : 0;
 		glBindFramebuffer( GL_FRAMEBUFFER, handle );
 
 		LUM_PROFILER_CACHE_MISS( );
@@ -182,10 +182,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetColorMask( bool r, bool g, bool b, bool a ) {
 
-		if (r == mColorMask.mR &&
-			 g == mColorMask.mG &&
-			 b == mColorMask.mB &&
-			 a == mColorMask.mA) {
+		if (r == m_ColorMask.mR &&
+			 g == m_ColorMask.mG &&
+			 b == m_ColorMask.mB &&
+			 a == m_ColorMask.mA) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
@@ -197,10 +197,10 @@ namespace lum::rhi::gl {
 			a ? GL_TRUE : GL_FALSE
 		);
 
-		mColorMask.mR = r;
-		mColorMask.mG = g;
-		mColorMask.mB = b;
-		mColorMask.mA = a;
+		m_ColorMask.mR = r;
+		m_ColorMask.mG = g;
+		m_ColorMask.mB = b;
+		m_ColorMask.mA = a;
 
 		LUM_PROFILER_CACHE_MISS( );
 
@@ -208,10 +208,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetColorMask( ColorMask rgba ) {
 
-		if (rgba.mR == mColorMask.mR &&
-			 rgba.mG == mColorMask.mG &&
-			 rgba.mB == mColorMask.mB &&
-			 rgba.mA == mColorMask.mA) {
+		if (rgba.mR == m_ColorMask.mR &&
+			 rgba.mG == m_ColorMask.mG &&
+			 rgba.mB == m_ColorMask.mB &&
+			 rgba.mA == m_ColorMask.mA) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
@@ -223,10 +223,10 @@ namespace lum::rhi::gl {
 			rgba.mA ? GL_TRUE : GL_FALSE
 		);
 
-		mColorMask.mR = rgba.mR;
-		mColorMask.mG = rgba.mG;
-		mColorMask.mB = rgba.mB;
-		mColorMask.mA = rgba.mA;
+		m_ColorMask.mR = rgba.mR;
+		m_ColorMask.mG = rgba.mG;
+		m_ColorMask.mB = rgba.mB;
+		m_ColorMask.mA = rgba.mA;
 
 		LUM_PROFILER_CACHE_MISS( );
 
@@ -234,7 +234,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetClearColor( Vector4 color ) {
 
-		if (mClearColor == color) {
+		if (m_ClearColor == color) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}

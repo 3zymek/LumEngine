@@ -18,13 +18,13 @@ namespace lum {
 		LUM_GENERATED_BODY( )
 
 		LUM_PROPERTY( )
-		float32 mIntensity = 1.0f; // Light intensity in linear space
+		float32 m_Intensity = 1.0f; // Light intensity in linear space
 
 		LUM_PROPERTY( )
-		float32 mRadius = 10.0f; // Maximum range of the light
+		float32 m_Radius = 10.0f; // Maximum range of the light
 
 		LUM_PROPERTY( )
-		Vector3 mColor = Vector3( 1.0f ); // Light color in linear RGB
+		Vector3 m_Color = Vector3( 1.0f ); // Light color in linear RGB
 
 	};
 

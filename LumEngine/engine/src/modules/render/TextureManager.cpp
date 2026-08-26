@@ -16,7 +16,7 @@ namespace lum {
 
 	void TextureManager::Initialize( rhi::IRenderDevice& device ) {
 
-		mRenderDevice = &device;
+		m_RenderDevice = &device;
 
 		init( );
 
@@ -26,11 +26,11 @@ namespace lum {
 
 		uint64 hash = HashString( path );
 
-		if (mTextures.contains( hash )) {
-			return mTextures[ hash ];
+		if (m_Textures.contains( hash )) {
+			return m_Textures[ hash ];
 		}
 		else
-			return mMissingTexture;
+			return m_MissingTexture;
 
 	}
 
@@ -38,24 +38,24 @@ namespace lum {
 
 		uint64 hash = HashString( path );
 
-		if (mTextures.contains( hash ))
-			return mTextures[ hash ];
+		if (m_Textures.contains( hash ))
+			return m_Textures[ hash ];
 
 		auto data = ResourceLoader::LoadImageFromFile( id, path );
 
 		if (!data) {
 			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), data.GetError() );
-			return mMissingTexture;
+			return m_MissingTexture;
 		}
 
 		rhi::TextureCreateInfo desc = sTexturePresetsLookup[ ToUnderlyingEnum( preset ) ];
 
-		desc.mData = data.ValueRef( );
-		desc.mTextureType = rhi::TextureKind::Texture2D;
-		desc.mPixelFormat = ChannelsToFormat( data->mChannels );
-		rhi::TextureHandle handle = mRenderDevice->CreateTexture( desc );
+		desc.m_Data = data.ValueRef( );
+		desc.m_TextureType = rhi::TextureKind::Texture2D;
+		desc.m_PixelFormat = ChannelsToFormat( data->m_Channels );
+		rhi::TextureHandle handle = m_RenderDevice->CreateTexture( desc );
 
-		mTextures[ hash ] = handle;
+		m_Textures[ hash ] = handle;
 
 		return handle;
 	}
@@ -75,40 +75,40 @@ namespace lum {
 
 		uint64 hash = HashString( path );
 
-		if (mTextures.contains( hash ))
-			return mTextures[ hash ];
+		if (m_Textures.contains( hash ))
+			return m_Textures[ hash ];
 
 		auto data = ResourceLoader::LoadImageFromFile( root, path );
 		if (!data) {
 			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), data.GetError( ) );
-			return mMissingTexture;
+			return m_MissingTexture;
 		}
 
-		uint32 faceSize = std::min(data->mWidth / 4, data->mHeight / 2);
+		uint32 faceSize = std::min(data->m_Width / 4, data->m_Height / 2);
 
 		std::array<ImageData, 6> convertedData = convert_equirectangular_to_cubemap( data.ValueRef( ), faceSize );
 
 		rhi::TextureCreateInfo desc;
 		for (int32 i = 0; i < 6; i++) {
-			desc.mCubemap.mFaces[ i ] = convertedData[ i ];
+			desc.m_Cubemap.m_Faces[ i ] = convertedData[ i ];
 		}
 
-		desc.mInternalFormat = rhi::TextureFormat::RGB16F;
-		desc.mPixelFormat = rhi::PixelLayout::RGB;
-		desc.mTextureType = rhi::TextureKind::Cubemap;
+		desc.m_InternalFormat = rhi::TextureFormat::RGB16F;
+		desc.m_PixelFormat = rhi::PixelLayout::RGB;
+		desc.m_TextureType = rhi::TextureKind::Cubemap;
 
-		rhi::TextureHandle handle = mRenderDevice->CreateTexture( desc );
-		mTextures[ hash ] = handle;
+		rhi::TextureHandle handle = m_RenderDevice->CreateTexture( desc );
+		m_Textures[ hash ] = handle;
 		return handle;
 	}
 
 	rhi::TextureHandle TextureManager::GetFallbackTexture( FallbackTexture fallback ) {
 		switch (fallback) {
-		case FallbackTexture::Missing: return mMissingTexture;
-		case FallbackTexture::DefaultNormal: return mDefaultNormalTexture;
-		case FallbackTexture::DefaultRoughness: return mDefaultRoughnessTexture;
-		case FallbackTexture::DefaultMetallic: return mDefaultMetallicTexture;
-		default: return mDefaultAlbedoTexture;
+		case FallbackTexture::Missing: return m_MissingTexture;
+		case FallbackTexture::DefaultNormal: return m_DefaultNormalTexture;
+		case FallbackTexture::DefaultRoughness: return m_DefaultRoughnessTexture;
+		case FallbackTexture::DefaultMetallic: return m_DefaultMetallicTexture;
+		default: return m_DefaultAlbedoTexture;
 		}
 	}
 
@@ -129,69 +129,69 @@ namespace lum {
 	void TextureManager::create_defaults( ) {
 		{ // Default albedo texture
 			ImageData data;
-			data.mPixels = { 255, 255, 255, 255 };
-			data.mWidth = 1;
-			data.mHeight = 1;
-			data.mChannels = 4;
+			data.m_Pixels = { 255, 255, 255, 255 };
+			data.m_Width = 1;
+			data.m_Height = 1;
+			data.m_Channels = 4;
 			rhi::TextureCreateInfo desc;
-			desc.mData = data;
-			desc.mInternalFormat = rhi::TextureFormat::SRGB8_Alpha8;
-			desc.mPixelFormat = rhi::PixelLayout::RGBA;
-			desc.mTextureType = rhi::TextureKind::Texture2D;
-			mDefaultAlbedoTexture = mRenderDevice->CreateTexture( desc );
+			desc.m_Data = data;
+			desc.m_InternalFormat = rhi::TextureFormat::SRGB8_Alpha8;
+			desc.m_PixelFormat = rhi::PixelLayout::RGBA;
+			desc.m_TextureType = rhi::TextureKind::Texture2D;
+			m_DefaultAlbedoTexture = m_RenderDevice->CreateTexture( desc );
 		}
 		{ // Default normal texture
 			ImageData data;
-			data.mPixels = { 128, 128, 255 };
-			data.mWidth = 1;
-			data.mHeight = 1;
-			data.mChannels = 3;
+			data.m_Pixels = { 128, 128, 255 };
+			data.m_Width = 1;
+			data.m_Height = 1;
+			data.m_Channels = 3;
 			rhi::TextureCreateInfo desc;
-			desc.mData = data;
-			desc.mInternalFormat = rhi::TextureFormat::RGBA16F;
-			desc.mPixelFormat = rhi::PixelLayout::RGBA;
-			desc.mTextureType = rhi::TextureKind::Texture2D;
-			mDefaultNormalTexture = mRenderDevice->CreateTexture( desc );
+			desc.m_Data = data;
+			desc.m_InternalFormat = rhi::TextureFormat::RGBA16F;
+			desc.m_PixelFormat = rhi::PixelLayout::RGBA;
+			desc.m_TextureType = rhi::TextureKind::Texture2D;
+			m_DefaultNormalTexture = m_RenderDevice->CreateTexture( desc );
 		}
 		{ // Default roughness texture
 			ImageData data;
-			data.mPixels = { 128 };
-			data.mWidth = 1;
-			data.mHeight = 1;
-			data.mChannels = 1;
+			data.m_Pixels = { 128 };
+			data.m_Width = 1;
+			data.m_Height = 1;
+			data.m_Channels = 1;
 			rhi::TextureCreateInfo desc;
-			desc.mData = data;
-			desc.mInternalFormat = rhi::TextureFormat::R8;
-			desc.mPixelFormat = rhi::PixelLayout::R;
-			desc.mTextureType = rhi::TextureKind::Texture2D;
-			mDefaultRoughnessTexture = mRenderDevice->CreateTexture( desc );
+			desc.m_Data = data;
+			desc.m_InternalFormat = rhi::TextureFormat::R8;
+			desc.m_PixelFormat = rhi::PixelLayout::R;
+			desc.m_TextureType = rhi::TextureKind::Texture2D;
+			m_DefaultRoughnessTexture = m_RenderDevice->CreateTexture( desc );
 		}
 		{ // Default metallic texture
 			ImageData data;
-			data.mPixels = { 255 };
-			data.mWidth = 1;
-			data.mHeight = 1;
-			data.mChannels = 1;
+			data.m_Pixels = { 255 };
+			data.m_Width = 1;
+			data.m_Height = 1;
+			data.m_Channels = 1;
 			rhi::TextureCreateInfo desc;
-			desc.mData = data;
-			desc.mInternalFormat = rhi::TextureFormat::R8;
-			desc.mPixelFormat = rhi::PixelLayout::R;
-			desc.mTextureType = rhi::TextureKind::Texture2D;
-			mDefaultMetallicTexture = mRenderDevice->CreateTexture( desc );
+			desc.m_Data = data;
+			desc.m_InternalFormat = rhi::TextureFormat::R8;
+			desc.m_PixelFormat = rhi::PixelLayout::R;
+			desc.m_TextureType = rhi::TextureKind::Texture2D;
+			m_DefaultMetallicTexture = m_RenderDevice->CreateTexture( desc );
 		}
 		{ // Missing texture
 			auto data = ResourceLoader::LoadImageFromFile( ResourceRoot::Internal, "textures/missingTex.png" );
 			if (!data) {
 				LUM_LOG_ERROR( "Failed to load missing texture fallback: %s", data.GetError() );
-				mMissingTexture = mDefaultAlbedoTexture;
+				m_MissingTexture = m_DefaultAlbedoTexture;
 				return;
 			}
 			rhi::TextureCreateInfo desc;
-			desc.mData = data.ValueRef( );
-			desc.mInternalFormat = rhi::TextureFormat::RGB8;
-			desc.mPixelFormat = rhi::PixelLayout::RGB;
-			desc.mTextureType = rhi::TextureKind::Texture2D;
-			mMissingTexture = mRenderDevice->CreateTexture( desc );
+			desc.m_Data = data.ValueRef( );
+			desc.m_InternalFormat = rhi::TextureFormat::RGB8;
+			desc.m_PixelFormat = rhi::PixelLayout::RGB;
+			desc.m_TextureType = rhi::TextureKind::Texture2D;
+			m_MissingTexture = m_RenderDevice->CreateTexture( desc );
 		}
 	}
 
@@ -200,14 +200,14 @@ namespace lum {
 
 		std::array<ImageData, 6> faces;
 		for (int32 i = 0; i < 6; i++) {
-			faces[ i ].mWidth = faceSize;
-			faces[ i ].mHeight = faceSize;
-			faces[ i ].mChannels = 3;
-			faces[ i ].mIsHdr = equirect.mIsHdr;
-			if (equirect.mIsHdr)
-				faces[ i ].mFloatPixels.resize( faceSize * faceSize * 3 );
+			faces[ i ].m_Width = faceSize;
+			faces[ i ].m_Height = faceSize;
+			faces[ i ].m_Channels = 3;
+			faces[ i ].m_IsHdr = equirect.m_IsHdr;
+			if (equirect.m_IsHdr)
+				faces[ i ].m_FloatPixels.resize( faceSize * faceSize * 3 );
 			else
-				faces[ i ].mPixels.resize( faceSize * faceSize * 3 );
+				faces[ i ].m_Pixels.resize( faceSize * faceSize * 3 );
 		}
 
 		for (int32 face = 0; face < 6; face++) {
@@ -228,24 +228,24 @@ namespace lum {
 					}
 					dir = Normalize( dir );
 
-					float32 eu = atan2( dir.mZ, dir.mX ) / (2.0f * Pi()) + 0.5f;
-					float32 ev = 0.5f - asin( std::clamp( dir.mY, -1.0f, 1.0f ) ) / Pi();
+					float32 eu = atan2( dir.m_Z, dir.m_X ) / (2.0f * Pi()) + 0.5f;
+					float32 ev = 0.5f - asin( std::clamp( dir.m_Y, -1.0f, 1.0f ) ) / Pi();
 
-					int32 px = ( int32 ) (eu * equirect.mWidth) % equirect.mWidth;
-					int32 py = ( int32 ) (ev * equirect.mHeight) % equirect.mHeight;
+					int32 px = ( int32 ) (eu * equirect.m_Width) % equirect.m_Width;
+					int32 py = ( int32 ) (ev * equirect.m_Height) % equirect.m_Height;
 
-					int32 srcIdx = (py * equirect.mWidth + px) * equirect.mChannels;
+					int32 srcIdx = (py * equirect.m_Width + px) * equirect.m_Channels;
 					int32 dstIdx = (y * faceSize + x) * 3;
 
-					if (equirect.mIsHdr) {
-						faces[ face ].mFloatPixels[ dstIdx + 0 ] = equirect.mFloatPixels[ srcIdx + 0 ];
-						faces[ face ].mFloatPixels[ dstIdx + 1 ] = equirect.mFloatPixels[ srcIdx + 1 ];
-						faces[ face ].mFloatPixels[ dstIdx + 2 ] = equirect.mFloatPixels[ srcIdx + 2 ];
+					if (equirect.m_IsHdr) {
+						faces[ face ].m_FloatPixels[ dstIdx + 0 ] = equirect.m_FloatPixels[ srcIdx + 0 ];
+						faces[ face ].m_FloatPixels[ dstIdx + 1 ] = equirect.m_FloatPixels[ srcIdx + 1 ];
+						faces[ face ].m_FloatPixels[ dstIdx + 2 ] = equirect.m_FloatPixels[ srcIdx + 2 ];
 					}
 					else {
-						faces[ face ].mPixels[ dstIdx + 0 ] = equirect.mPixels[ srcIdx + 0 ];
-						faces[ face ].mPixels[ dstIdx + 1 ] = equirect.mPixels[ srcIdx + 1 ];
-						faces[ face ].mPixels[ dstIdx + 2 ] = equirect.mPixels[ srcIdx + 2 ];
+						faces[ face ].m_Pixels[ dstIdx + 0 ] = equirect.m_Pixels[ srcIdx + 0 ];
+						faces[ face ].m_Pixels[ dstIdx + 1 ] = equirect.m_Pixels[ srcIdx + 1 ];
+						faces[ face ].m_Pixels[ dstIdx + 2 ] = equirect.m_Pixels[ srcIdx + 2 ];
 					}
 				}
 			}

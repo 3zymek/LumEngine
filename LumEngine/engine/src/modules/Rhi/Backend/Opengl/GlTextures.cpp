@@ -17,9 +17,9 @@ namespace lum::rhi::gl {
 	*  Returns nullptr if the appropriate pixel buffer is empty.
 	*/
 	LUM_FORCEINLINE static const void* resolve_pixel_data( const ImageData& data ) noexcept {
-		if (data.mIsHdr)
-			return data.mFloatPixels.empty( ) ? nullptr : data.mFloatPixels.data( );
-		return data.mPixels.empty( ) ? nullptr : data.mPixels.data( );
+		if (data.m_IsHdr)
+			return data.m_FloatPixels.empty( ) ? nullptr : data.m_FloatPixels.data( );
+		return data.m_Pixels.empty( ) ? nullptr : data.m_Pixels.data( );
 	}
 
 	/* @brief Fills common metadata fields on a Texture from a TextureCreateInfo. */
@@ -30,15 +30,15 @@ namespace lum::rhi::gl {
 		uint32 height,
 		uint32 mipmapLevels
 	) noexcept {
-		tex.mPixelLayout = desc.mPixelFormat;
-		tex.mPixelDataType = desc.mDataType;
-		tex.mFormat = desc.mInternalFormat;
-		tex.mSampleCount = desc.mSamples;
-		tex.mRect.mWidth = width;
-		tex.mRect.mHeight = height;
-		tex.mRect.mDepth = desc.mDepth;
-		tex.mKind = desc.mTextureType;
-		tex.mMipmapLevels = mipmapLevels;
+		tex.m_PixelLayout = desc.m_PixelFormat;
+		tex.m_PixelDataType = desc.m_DataType;
+		tex.m_Format = desc.m_InternalFormat;
+		tex.m_SampleCount = desc.m_Samples;
+		tex.m_Rect.m_Width = width;
+		tex.m_Rect.m_Height = height;
+		tex.m_Rect.m_Depth = desc.m_Depth;
+		tex.m_Kind = desc.m_TextureType;
+		tex.m_MipmapLevels = mipmapLevels;
 	}
 
 	// -------------------------------------------------------------------------
@@ -47,9 +47,9 @@ namespace lum::rhi::gl {
 
 	TextureHandle GLDevice::CreateTexture( const TextureCreateInfo& desc ) {
 
-		LUM_ASSERT( desc.mTextureType != TextureKind::None, "No texture type given" );
+		LUM_ASSERT( desc.m_TextureType != TextureKind::None, "No texture type given" );
 
-		switch (desc.mTextureType) {
+		switch (desc.m_TextureType) {
 			case TextureKind::Texture2D:
 			case TextureKind::Texture2DMultiSampled:	return create_texture_2d( desc );
 			case TextureKind::Texture2DArray:			return create_texture_2d_array( desc );
@@ -65,13 +65,13 @@ namespace lum::rhi::gl {
 		LUM_ASSERT( IsValid( src ), "Invalid source texture" );
 		LUM_ASSERT( IsValid( dst ), "Invalid destination texture" );
 
-		const Texture& srcTex = mTextures[ src ];
-		const Texture& dstTex = mTextures[ dst ];
+		const Texture& srcTex = m_Textures[ src ];
+		const Texture& dstTex = m_Textures[ dst ];
 
 		glCopyImageSubData(
-			srcTex.mHandle, skTextureTypeLookup[ LookupCast( srcTex.mKind ) ], 0, 0, 0, 0,
-			dstTex.mHandle, skTextureTypeLookup[ LookupCast( dstTex.mKind ) ], 0, 0, 0, 0,
-			srcTex.mRect.mWidth, srcTex.mRect.mHeight, 1
+			srcTex.m_Handle, skTextureTypeLookup[ LookupCast( srcTex.m_Kind ) ], 0, 0, 0, 0,
+			dstTex.m_Handle, skTextureTypeLookup[ LookupCast( dstTex.m_Kind ) ], 0, 0, 0, 0,
+			srcTex.m_Rect.m_Width, srcTex.m_Rect.m_Height, 1
 		);
 
 	}
@@ -86,29 +86,29 @@ namespace lum::rhi::gl {
 
 		if (!IsValid( tex )) return;
 
-		LUM_ASSERT( resolve_pixel_data( desc.mData ) != nullptr, "Texture pixel data is null" );
-		LUM_ASSERT( desc.mData.mWidth > 0 && desc.mData.mHeight > 0, "Invalid texture dimensions" );
+		LUM_ASSERT( resolve_pixel_data( desc.m_Data ) != nullptr, "Texture pixel data is null" );
+		LUM_ASSERT( desc.m_Data.m_Width > 0 && desc.m_Data.m_Height > 0, "Invalid texture dimensions" );
 
-		const Texture& texture = mTextures[ tex ];
+		const Texture& texture = m_Textures[ tex ];
 
-		uint32 width = (desc.mRect.mWidth == 0) ? desc.mData.mWidth : desc.mRect.mWidth;
-		uint32 height = (desc.mRect.mHeight == 0) ? desc.mData.mHeight : desc.mRect.mHeight;
+		uint32 width = (desc.m_Rect.m_Width == 0) ? desc.m_Data.m_Width : desc.m_Rect.m_Width;
+		uint32 height = (desc.m_Rect.m_Height == 0) ? desc.m_Data.m_Height : desc.m_Rect.m_Height;
 
-		width = std::clamp( width, 0u, texture.mRect.mWidth - desc.mRect.mX );
-		height = std::clamp( height, 0u, texture.mRect.mHeight - desc.mRect.mY );
+		width = std::clamp( width, 0u, texture.m_Rect.m_Width - desc.m_Rect.m_X );
+		height = std::clamp( height, 0u, texture.m_Rect.m_Height - desc.m_Rect.m_Y );
 
 		glTextureSubImage2D(
-			texture.mHandle,
+			texture.m_Handle,
 			0,
-			desc.mRect.mX, desc.mRect.mY,
+			desc.m_Rect.m_X, desc.m_Rect.m_Y,
 			width, height,
-			skImageFormatLookup[ LookupCast( texture.mPixelLayout ) ],
-			skTextureDataTypeLookup[ LookupCast( texture.mPixelDataType ) ],
-			resolve_pixel_data( desc.mData )
+			skImageFormatLookup[ LookupCast( texture.m_PixelLayout ) ],
+			skTextureDataTypeLookup[ LookupCast( texture.m_PixelDataType ) ],
+			resolve_pixel_data( desc.m_Data )
 		);
 
-		if (desc.mGenerateMipmaps && MipmapLvls( width, height ) > 1)
-			glGenerateTextureMipmap( texture.mHandle );
+		if (desc.m_GenerateMipmaps && MipmapLvls( width, height ) > 1)
+			glGenerateTextureMipmap( texture.m_Handle );
 
 	}
 
@@ -116,8 +116,8 @@ namespace lum::rhi::gl {
 
 		if (!IsValid( texture )) return;
 
-		glDeleteTextures( 1, &mTextures[ texture ].mHandle );
-		mTextures.Remove( texture );
+		glDeleteTextures( 1, &m_Textures[ texture ].m_Handle );
+		m_Textures.Remove( texture );
 
 	}
 
@@ -126,13 +126,13 @@ namespace lum::rhi::gl {
 		LUM_ASSERT( binding < skMaxTextureUnits, "Invalid texture binding" );
 		if (!IsValid( texture )) return;
 
-		if (mCurrentTextures[ binding ] == texture) {
+		if (m_CurrentTextures[ binding ] == texture) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
-		mCurrentTextures[ binding ] = texture;
-		glBindTextureUnit( binding, mTextures[ texture ].mHandle );
+		m_CurrentTextures[ binding ] = texture;
+		glBindTextureUnit( binding, m_Textures[ texture ].m_Handle );
 
 		LUM_PROFILER_CACHE_MISS( );
 
@@ -142,15 +142,15 @@ namespace lum::rhi::gl {
 
 		if (!IsValid( texture )) return;
 
-		Texture& tex = mTextures[ texture ];
+		Texture& tex = m_Textures[ texture ];
 
-		usize bufSize = tex.mRect.mWidth * tex.mRect.mHeight * 4;
+		usize bufSize = tex.m_Rect.m_Width * tex.m_Rect.m_Height * 4;
 
 		glGetTextureImage(
-			static_cast<GLuint>(tex.mHandle),
+			static_cast<GLuint>(tex.m_Handle),
 			0,
-			skImageFormatLookup[ ToUnderlyingEnum( tex.mPixelLayout ) ], // <--- mDataFormat (lub mPixelLayout) zamias mFormat!
-			skTextureDataTypeLookup[ ToUnderlyingEnum( tex.mPixelDataType ) ],
+			skImageFormatLookup[ ToUnderlyingEnum( tex.m_PixelLayout ) ], // <--- m_DataFormat (lub m_PixelLayout) zamias m_Format!
+			skTextureDataTypeLookup[ ToUnderlyingEnum( tex.m_PixelDataType ) ],
 			static_cast<GLsizei>(bufSize),
 			pixels
 		);
@@ -165,46 +165,46 @@ namespace lum::rhi::gl {
 
 		Texture texture;
 
-		uint32 width = (desc.mWidth == 0) ? desc.mData.mWidth : desc.mWidth;
-		uint32 height = (desc.mHeight == 0) ? desc.mData.mHeight : desc.mHeight;
+		uint32 width = (desc.m_Width == 0) ? desc.m_Data.m_Width : desc.m_Width;
+		uint32 height = (desc.m_Height == 0) ? desc.m_Data.m_Height : desc.m_Height;
 		uint32 mipmapLevels = desc.bGenerateMipmaps
-			? (desc.mMipmapLevels == 0 ? MipmapLvls( width, height ) : desc.mMipmapLevels)
+			? (desc.m_MipmapLevels == 0 ? MipmapLvls( width, height ) : desc.m_MipmapLevels)
 			: 1;
 
-		if (desc.mTextureType == TextureKind::Texture2D) {
+		if (desc.m_TextureType == TextureKind::Texture2D) {
 
-			const void* data = resolve_pixel_data( desc.mData );
+			const void* data = resolve_pixel_data( desc.m_Data );
 
-			glCreateTextures( GL_TEXTURE_2D, 1, &texture.mHandle );
+			glCreateTextures( GL_TEXTURE_2D, 1, &texture.m_Handle );
 			glTextureStorage2D(
-				texture.mHandle,
+				texture.m_Handle,
 				mipmapLevels,
-				skImageLayoutLookup[ LookupCast( desc.mInternalFormat ) ],
+				skImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
 				width, height
 			);
 
 			if (data != nullptr)
 				glTextureSubImage2D(
-					texture.mHandle,
+					texture.m_Handle,
 					0,
 					0, 0,
 					width, height,
-					skImageFormatLookup[ LookupCast( desc.mPixelFormat ) ],
-					skTextureDataTypeLookup[ LookupCast( desc.mDataType ) ],
+					skImageFormatLookup[ LookupCast( desc.m_PixelFormat ) ],
+					skTextureDataTypeLookup[ LookupCast( desc.m_DataType ) ],
 					data
 				);
 
 			if (mipmapLevels > 1)
-				glGenerateTextureMipmap( texture.mHandle );
+				glGenerateTextureMipmap( texture.m_Handle );
 
 		}
-		else if (desc.mTextureType == TextureKind::Texture2DMultiSampled) {
+		else if (desc.m_TextureType == TextureKind::Texture2DMultiSampled) {
 
-			glCreateTextures( GL_TEXTURE_2D_MULTISAMPLE, 1, &texture.mHandle );
+			glCreateTextures( GL_TEXTURE_2D_MULTISAMPLE, 1, &texture.m_Handle );
 			glTextureStorage2DMultisample(
-				texture.mHandle,
-				desc.mSamples,
-				skImageLayoutLookup[ LookupCast( desc.mInternalFormat ) ],
+				texture.m_Handle,
+				desc.m_Samples,
+				skImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
 				width, height,
 				GL_TRUE
 			);
@@ -212,36 +212,36 @@ namespace lum::rhi::gl {
 		}
 
 		fill_texture_metadata( texture, desc, width, height, mipmapLevels );
-		return mTextures.Append( std::move( texture ) );
+		return m_Textures.Append( std::move( texture ) );
 
 	}
 
 	TextureHandle GLDevice::create_texture_2d_array( const TextureCreateInfo& desc ) {
 
-		LUM_ASSERT( desc.mDepth > 0, "Texture2DArray requires at least 1 layer (mDepth)" );
+		LUM_ASSERT( desc.m_Depth > 0, "Texture2DArray requires at least 1 layer (m_Depth)" );
 
 		Texture texture;
 
-		uint32 width = (desc.mWidth == 0) ? desc.mData.mWidth : desc.mWidth;
-		uint32 height = (desc.mHeight == 0) ? desc.mData.mHeight : desc.mHeight;
+		uint32 width = (desc.m_Width == 0) ? desc.m_Data.m_Width : desc.m_Width;
+		uint32 height = (desc.m_Height == 0) ? desc.m_Data.m_Height : desc.m_Height;
 		uint32 mipmapLevels = desc.bGenerateMipmaps
-			? (desc.mMipmapLevels == 0 ? MipmapLvls( width, height ) : desc.mMipmapLevels)
+			? (desc.m_MipmapLevels == 0 ? MipmapLvls( width, height ) : desc.m_MipmapLevels)
 			: 1;
 
-		glCreateTextures( GL_TEXTURE_2D_ARRAY, 1, &texture.mHandle );
+		glCreateTextures( GL_TEXTURE_2D_ARRAY, 1, &texture.m_Handle );
 		glTextureStorage3D(
-			texture.mHandle,
+			texture.m_Handle,
 			mipmapLevels,
-			skImageLayoutLookup[ LookupCast( desc.mInternalFormat ) ],
+			skImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
 			width, height,
-			desc.mDepth
+			desc.m_Depth
 		);
 
 		if (mipmapLevels > 1)
-			glGenerateTextureMipmap( texture.mHandle );
+			glGenerateTextureMipmap( texture.m_Handle );
 
 		fill_texture_metadata( texture, desc, width, height, mipmapLevels );
-		return mTextures.Append( std::move( texture ) );
+		return m_Textures.Append( std::move( texture ) );
 
 	}
 
@@ -256,18 +256,18 @@ namespace lum::rhi::gl {
 
 		Texture tex;
 
-		glCreateTextures( GL_TEXTURE_CUBE_MAP, 1, &tex.mHandle );
+		glCreateTextures( GL_TEXTURE_CUBE_MAP, 1, &tex.m_Handle );
 
-		bool bEmpty = desc.mCubemap.mFaces[ 0 ].mWidth == 0;
+		bool bEmpty = desc.m_Cubemap.m_Faces[ 0 ].m_Width == 0;
 
-		uint32 width = bEmpty ? desc.mWidth : static_cast<uint32>(desc.mCubemap.mFaces[ 0 ].mWidth);
-		uint32 height = bEmpty ? desc.mHeight : static_cast<uint32>(desc.mCubemap.mFaces[ 0 ].mHeight);
-		uint32 mipmapLevels = (desc.mMipmapLevels > 0) ? desc.mMipmapLevels : 1;
+		uint32 width = bEmpty ? desc.m_Width : SafeCast<uint32>(desc.m_Cubemap.m_Faces[ 0 ].m_Width);
+		uint32 height = bEmpty ? desc.m_Height : SafeCast<uint32>(desc.m_Cubemap.m_Faces[ 0 ].m_Height);
+		uint32 mipmapLevels = (desc.m_MipmapLevels > 0) ? desc.m_MipmapLevels : 1;
 
 		glTextureStorage2D(
-			tex.mHandle,
+			tex.m_Handle,
 			mipmapLevels,
-			skImageLayoutLookup[ LookupCast( desc.mInternalFormat ) ],
+			skImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
 			width, height
 		);
 
@@ -275,22 +275,22 @@ namespace lum::rhi::gl {
 
 			for (usize i = 0; i < 6; i++) {
 
-				const ImageData& face = desc.mCubemap.mFaces[ i ];
+				const ImageData& face = desc.m_Cubemap.m_Faces[ i ];
 				const void* data = resolve_pixel_data( face );
 
 				LUM_ASSERT(
-					static_cast<uint32>( face.mWidth ) == width &&
-					static_cast<uint32>( face.mHeight ) == height,
+					SafeCast<uint32>( face.m_Width ) == width &&
+					SafeCast<uint32>( face.m_Height ) == height,
 					"Cubemap face %zu has mismatched dimensions", i
 				);
 
 				glTextureSubImage3D(
-					tex.mHandle,
+					tex.m_Handle,
 					0, 0, 0,
 					static_cast<GLint>(i),
-					face.mWidth, face.mHeight, 1,
-					skImageFormatLookup[ LookupCast( desc.mPixelFormat ) ],
-					skTextureDataTypeLookup[ LookupCast( desc.mDataType ) ],
+					face.m_Width, face.m_Height, 1,
+					skImageFormatLookup[ LookupCast( desc.m_PixelFormat ) ],
+					skTextureDataTypeLookup[ LookupCast( desc.m_DataType ) ],
 					data
 				);
 
@@ -299,7 +299,7 @@ namespace lum::rhi::gl {
 		}
 
 		fill_texture_metadata( tex, desc, width, height, mipmapLevels );
-		return mTextures.Append( std::move( tex ) );
+		return m_Textures.Append( std::move( tex ) );
 
 	}
 

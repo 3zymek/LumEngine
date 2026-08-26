@@ -11,61 +11,61 @@ namespace lum {
 	void SceneInstance::AttachChild( EntityID parent, EntityID child ) {
 
 		if (parent == child) return;
-		if (mParents.contains( child )) return;
+		if (m_Parents.contains( child )) return;
 		EntityID current = parent;
-		while (mParents.contains( current )) {
-			current = mParents[ current ];
+		while (m_Parents.contains( current )) {
+			current = m_Parents[ current ];
 			if (current == child) return;
 		}
-		mParents[ child ] = parent;
-		mChildren[ parent ].push_back( child );
+		m_Parents[ child ] = parent;
+		m_Children[ parent ].push_back( child );
 
 	}
 
 	void SceneInstance::DetachChild( EntityID child ) {
 
-		if (!mParents.contains( child )) return;
+		if (!m_Parents.contains( child )) return;
 
-		EntityID parent = mParents[ child ];
-		mParents.erase( child );
+		EntityID parent = m_Parents[ child ];
+		m_Parents.erase( child );
 
-		auto& children = mChildren[ parent ];
+		auto& children = m_Children[ parent ];
 		children.erase(
 			std::remove( children.begin( ), children.end( ), child ), children.end( )
 		);
 
 		if (children.empty( ))
-			mChildren.erase( parent );
+			m_Children.erase( parent );
 
 	}
 
 	Optional<Entity> SceneInstance::GetEntity( EntityID entity ) {
 
-		auto it = mEntities.find( entity );
-		return (it != mEntities.end( )) ? it->second : Optional<Entity>::Empty( );
+		auto it = m_Entities.find( entity );
+		return (it != m_Entities.end( )) ? it->second : Optional<Entity>::Empty( );
 
 	}
 
 	Entity& SceneInstance::CreateEntity( ) {
 
 		EntityID id = UniqueID<Entity>::Get( );
-		return mEntities.emplace( id, Entity( id ) ).first->second;
+		return m_Entities.emplace( id, Entity( id ) ).first->second;
 
 	}
 
 	void SceneInstance::DeleteEntity( EntityID entity ) {
 
-		auto it = mEntities.find( entity );
-		if (it != mEntities.end( )) {
-			for (EntityID child : mChildren[ entity ]) {
+		auto it = m_Entities.find( entity );
+		if (it != m_Entities.end( )) {
+			for (EntityID child : m_Children[ entity ]) {
 				DeleteEntity( child );
 			}
-			mChildren.erase( entity );
+			m_Children.erase( entity );
 		}
 
 		DetachChild( entity );
-		mEntities.erase( entity );
-		mEntityMgr.DestroyEntity( entity );
+		m_Entities.erase( entity );
+		m_EntityMgr.DestroyEntity( entity );
 
 	}
 

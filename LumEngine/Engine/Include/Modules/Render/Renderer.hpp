@@ -29,7 +29,7 @@ namespace lum::render {
 		*/
 		void Initialize( const RendererContext& ctx, uint32 w, uint32 h );
 
-		rhi::TextureHandle GetFrameTexture( ) { return mScreenQuad.mPostprocessTex; }
+		rhi::TextureHandle GetFrameTexture( ) { return m_ScreenQuad.m_PostprocessTex; }
 
 
 		//---------------------------------------------------------
@@ -39,7 +39,7 @@ namespace lum::render {
 		/* @brief Sets the environment cubemap texture used for skybox rendering and IBL precomputation.
 		*  @param tex Handle to a valid HDR cubemap texture.
 		*/
-		void SetEnvironmentTexture( rhi::TextureHandle tex ) { mEnvironmentPass.SetCubemapTexture( tex ); }
+		void SetEnvironmentTexture( rhi::TextureHandle tex ) { m_EnvironmentPass.SetCubemapTexture( tex ); }
 
 
 
@@ -61,20 +61,20 @@ namespace lum::render {
 		/* @brief Submits a point light to be included in the current frame's lighting.
 		*  @param light Point light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
-		void AddPointLight( const PointLight& light ) { mLightPass.AddPointLight( light ); }
+		void AddPointLight( const PointLight& light ) { m_LightPass.AddPointLight( light ); }
 
 		/* @brief Submits a spot light to be included in the current frame's lighting.
 		*  @param light Spot light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
-		void AddSpotLight( const SpotLight& light ) { mLightPass.AddSpotLight( light ); }
+		void AddSpotLight( const SpotLight& light ) { m_LightPass.AddSpotLight( light ); }
 
 		/* @brief Sets the active directional light for the current frame.
 		*  @param light Directional light to set.
 		*/
-		void SetDirectionalLight( const DirectionalLight& light ) { mLightPass.SetDirectionalLight( light ); }
+		void SetDirectionalLight( const DirectionalLight& light ) { m_LightPass.SetDirectionalLight( light ); }
 
 		/* @brief Returns the currently active directional light. */
-		DirectionalLight GetDirectionalLight( ) { return mLightPass.GetDirectionalLight( ); }
+		DirectionalLight GetDirectionalLight( ) { return m_LightPass.GetDirectionalLight( ); }
 
 
 
@@ -85,7 +85,7 @@ namespace lum::render {
 		/* @brief Submits a render instance for drawing in the current frame.
 		*  @param instance Render instance containing transform, mesh and material.
 		*/
-		void SubmitInstance( const RenderInstance& instance ) { mGeometryPass.Submit( instance ); }
+		void SubmitInstance( const RenderInstance& instance ) { m_GeometryPass.Submit( instance ); }
 
 
 
@@ -103,9 +103,9 @@ namespace lum::render {
 	private:
 
 		/* @brief Cached context holding all subsystem manager references. */
-		RendererContext mCtx;
-		detail::DeferredBuffer mDefferedBuffer;
-		detail::ScreenQuad mScreenQuad;
+		RendererContext m_Ctx;
+		detail::DeferredBuffer m_DefferedBuffer;
+		detail::ScreenQuad m_ScreenQuad;
 
 
 
@@ -113,25 +113,25 @@ namespace lum::render {
 		// Passes
 		//---------------------------------------------------------
 
-		GeometryPass mGeometryPass;
-		LightPass mLightPass;
-		LightPassExectueContext mLightPassExecuteCtx; // Descriptor passed to the light pass each frame
-		EnvironmentPass mEnvironmentPass;
-		PostprocessPass mPostprocessPass;
-		ShadowSystem mShadowSys;
+		GeometryPass m_GeometryPass;
+		LightPass m_LightPass;
+		LightPassExectueContext m_LightPassExecuteCtx; // Descriptor passed to the light pass each frame
+		EnvironmentPass m_EnvironmentPass;
+		PostprocessPass m_PostprocessPass;
+		ShadowSystem m_ShadowSys;
 
 		//---------------------------------------------------------
 		// Uniforms
 		//---------------------------------------------------------
 
 		/* @brief Uniform buffer holding per-frame camera matrices and position. */
-		rhi::BufferHandle mCameraUbo;
+		rhi::BufferHandle m_CameraUbo;
 
-		/* @brief CPU-side camera data uploaded to mCameraUBO once per frame. */
-		detail::CameraGPU mCameraGpu{};
+		/* @brief CPU-side camera data uploaded to m_CameraUBO once per frame. */
+		detail::CameraGPU m_CameraGpu{};
 
 
-		TemporalAntiAliasing mTemporalAa{ };
+		TemporalAntiAliasing m_TemporalAa{ };
 
 
 		//---------------------------------------------------------

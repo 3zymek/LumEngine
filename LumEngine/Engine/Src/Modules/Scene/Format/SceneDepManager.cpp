@@ -24,9 +24,9 @@ namespace lum::fmt {
 
 	void SceneDependencyManager::Initialize( SceneManagerContext& ctx ) {
 
-		mCtx = &ctx;
+		m_Ctx = &ctx;
 
-		RegisterSceneComponents( mComponentsInfos );
+		RegisterSceneComponents( m_ComponentsInfos );
 		categorize_component_infos( );
 
 	}
@@ -35,16 +35,16 @@ namespace lum::fmt {
 	void SceneDependencyManager::Deserialize( SceneInstance& scene, Tokenizer& tokenizer ) {
 
 		DeserializeContext ctx{
-			.mScene = scene,
-			.mCtx = *this->mCtx
+			.m_Scene = scene,
+			.m_Ctx = *this->m_Ctx
 		};
 
 		auto tokens = tokenizer.GetTokens( );
 
 		try {
 			for (int32 i = 0; i < tokens.size( ); i++) {
-				if (tokens[ i ].mType == TokenType::Identifier) {
-					auto it = sIdentifiersDeserializeFunctions.find( HashString( ToLower( tokens[ i ].mValue ) ) );
+				if (tokens[ i ].m_Type == TokenType::Identifier) {
+					auto it = sIdentifiersDeserializeFunctions.find( HashString( ToLower( tokens[ i ].m_Value ) ) );
 					if (it != sIdentifiersDeserializeFunctions.end( )) {
 						it->second( tokens, i, ctx );
 					}
@@ -55,13 +55,13 @@ namespace lum::fmt {
 			LUM_LOG_ERROR( e.what( ) );
 		}
 
-		for (auto& [entityId, children] : ctx.mPersistentChildren) {
+		for (auto& [entityId, children] : ctx.m_PersistentChildren) {
 
 			for (EntityID child : children) {
 
 				scene.AttachChild(
 					entityId,
-					ctx.mPersistentToEntity[ child ]
+					ctx.m_PersistentToEntity[ child ]
 				);
 
 			}
@@ -74,7 +74,7 @@ namespace lum::fmt {
 
 		StringBuilder sb{};
 
-		for (auto& [entityId, entity] : scene.mEntities) {
+		for (auto& [entityId, entity] : scene.m_Entities) {
 
 			sb.Append( "entity " );
 			sb.Append( entityId );
@@ -82,12 +82,12 @@ namespace lum::fmt {
 
 			write_children( sb, scene, entityId );
 
-			scene.mEntityMgr.ForEachComponent(
+			scene.m_EntityMgr.ForEachComponent(
 				entityId,
 				[ & ]( ComponentBase* comp, ecs::ComponentBasePool* pool ) {
 					auto it = sTypeIdInfoLookup.find( pool->GetTypeId( ) );
-					if (it != sTypeIdInfoLookup.end( ) && (it->second && it->second->mSerializeFn)) {
-						it->second->mSerializeFn( sb, comp );
+					if (it != sTypeIdInfoLookup.end( ) && (it->second && it->second->m_SerializeFn)) {
+						it->second->m_SerializeFn( sb, comp );
 					}
 				} );
 
@@ -95,7 +95,7 @@ namespace lum::fmt {
 
 		}
 
-		FileSystem::WriteAllText( scene.mScenePath, sb.ToString( ) );
+		FileSystem::WriteAllText( scene.m_ScenePath, sb.ToString( ) );
 
 	}
 
@@ -112,18 +112,18 @@ namespace lum::fmt {
 
 		while (detail::InBlock( tokens, i )) {
 
-			if (tokens[ i ].mType == TokenType::Component) {
+			if (tokens[ i ].m_Type == TokenType::Component) {
 
 				detail::ExpectOpeningBracketNext( tokens, i );
 
 				while (detail::InBlock( tokens, i )) {
 
-					if (tokens[ i ].mType == TokenType::Parameter) {
+					if (tokens[ i ].m_Type == TokenType::Parameter) {
 
 						if (detail::IsString( tokens, i, "path" )) {
 							detail::ExceptColonNext( tokens, i );
-							ctx.mCtx.mRenderer().SetEnvironmentTexture(
-								ctx.mCtx.mTextureMgr().LoadEquirectangularCubemap( tokens[ i ].mValue.c_str( ) )
+							ctx.m_Ctx.m_Renderer().SetEnvironmentTexture(
+								ctx.m_Ctx.m_TextureMgr().LoadEquirectangularCubemap( tokens[ i ].m_Value.c_str( ) )
 							);
 						}
 
@@ -143,26 +143,26 @@ namespace lum::fmt {
 
 	void SceneDependencyManager::deserialize_entity( std::vector<Token>& tokens, int32& i, DeserializeContext& ctx ) {
 
-		Entity entity = ctx.mScene.CreateEntity( );
+		Entity entity = ctx.m_Scene.CreateEntity( );
 		EntityID id = entity.GetId( );
-		ctx.mCurrentEntity = id;
+		ctx.m_CurrentEntity = id;
 
 		++i;
 		EntityID persistentId = detail::ReadInt( tokens, i );
-		ctx.mPersistentToEntity.emplace( persistentId, id );
+		ctx.m_PersistentToEntity.emplace( persistentId, id );
 
 		detail::ExpectOpeningBracketNext( tokens, i );
 
 		while (detail::InBlock( tokens, i )) {
 
-			if (tokens[ i ].mType == TokenType::Component) {
+			if (tokens[ i ].m_Type == TokenType::Component) {
 
-				HashedString hashed = HashString( ToLower( tokens[ i ].mValue ) );
+				HashedString hashed = HashString( ToLower( tokens[ i ].m_Value ) );
 
 				auto it = sNameInfoLookup.find( hashed );
 
 				if (it != sNameInfoLookup.end( )) {
-					it->second->mDeserializeFn( tokens, i, ctx );
+					it->second->m_DeserializeFn( tokens, i, ctx );
 				}
 				else {
 					auto special = sEntityProperyHandlers.find( hashed );
@@ -173,8 +173,8 @@ namespace lum::fmt {
 					else {
 						throw DeserializeException(
 							"Unknown property at line %llu in file %s",
-							tokens[ i ].mLine,
-							tokens[ i ].mFilePath.ToString( ).c_str( )
+							tokens[ i ].m_Line,
+							tokens[ i ].m_FilePath.ToString( ).c_str( )
 						);
 					}
 				}
@@ -201,8 +201,8 @@ namespace lum::fmt {
 
 		}
 
-		ctx.mPersistentChildren.emplace(
-			ctx.mCurrentEntity,
+		ctx.m_PersistentChildren.emplace(
+			ctx.m_CurrentEntity,
 			std::move( children )
 		);
 
@@ -210,8 +210,8 @@ namespace lum::fmt {
 
 	void SceneDependencyManager::write_children( StringBuilder& sb, SceneInstance& scene, EntityID entity ) {
 
-		auto it = scene.mChildren.find( entity );
-		if (it == scene.mChildren.end( )) 
+		auto it = scene.m_Children.find( entity );
+		if (it == scene.m_Children.end( )) 
 			return;
 
 		sb.Append( "\t@children: [ " );
@@ -231,9 +231,9 @@ namespace lum::fmt {
 
 	void SceneDependencyManager::categorize_component_infos( ) {
 
-		for (auto& info : mComponentsInfos) {
-			sNameInfoLookup.emplace( HashString( info.mSerializationName ), &info );
-			sTypeIdInfoLookup.emplace( info.mTypeId, &info );
+		for (auto& info : m_ComponentsInfos) {
+			sNameInfoLookup.emplace( HashString( info.m_SerializationName ), &info );
+			sTypeIdInfoLookup.emplace( info.m_TypeId, &info );
 		}
 
 	}

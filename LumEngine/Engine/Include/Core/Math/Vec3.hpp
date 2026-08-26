@@ -18,19 +18,19 @@ namespace lum {
 	struct TVector3 {
 
 		/* @brief Constructs a zero-initialized vector. */
-		constexpr TVector3( ) : mX( tType( 0 ) ), mY( tType( 0 ) ), mZ( tType( 0 ) ) { }
+		constexpr TVector3( ) : m_X( tType( 0 ) ), m_Y( tType( 0 ) ), m_Z( tType( 0 ) ) { }
 
 		/* @brief Constructs a vector from individual components.
 		* @param x X component.
 		* @param y Y component.
 		* @param z Z component.
 		*/
-		constexpr TVector3( tType x, tType y, tType z ) : mX( x ), mY( y ), mZ( z ) { }
+		constexpr TVector3( tType x, tType y, tType z ) : m_X( x ), m_Y( y ), m_Z( z ) { }
 
 		/* @brief Constructs a vector with all components initialized to the same value.
 		* @param scalar Value assigned to every component.
 		*/
-		constexpr explicit TVector3( tType scalar ) : mX( scalar ), mY( scalar ), mZ( scalar ) { }
+		constexpr explicit TVector3( tType scalar ) : m_X( scalar ), m_Y( scalar ), m_Z( scalar ) { }
 
 		/* @brief Converts the vector to another arithmetic component type.
 		* @tparam tOther Destination component type.
@@ -38,15 +38,15 @@ namespace lum {
 		template<cArithmetic tOther>
 		explicit operator TVector3<tOther>( ) const {
 			return {
-				static_cast< tOther >(mX),
-				static_cast< tOther >(mY),
-				static_cast< tOther >(mZ)
+				static_cast< tOther >(m_X),
+				static_cast< tOther >(m_Y),
+				static_cast< tOther >(m_Z)
 			};
 		}
 
 		/* @brief Vector components accessible as coordinates or color channels. */
 		union {
-			struct { tType mX, mY, mZ; };
+			struct { tType m_X, m_Y, m_Z; };
 			struct { tType mR, mG, mB; };
 		};
 
@@ -56,25 +56,33 @@ namespace lum {
 		* @param rhs Vector to add.
 		* @return Resulting vector.
 		*/
-		TVector3 operator+( const TVector3& rhs ) const { return { mX + rhs.mX, mY + rhs.mY, mZ + rhs.mZ }; }
+		TVector3 operator+( const TVector3& rhs ) const { 
+			return { m_X + rhs.m_X, m_Y + rhs.m_Y, m_Z + rhs.m_Z }; 
+		}
 
 		/* @brief Subtracts two vectors component-wise.
 		* @param rhs Vector to subtract.
 		* @return Resulting vector.
 		*/
-		TVector3 operator-( const TVector3& rhs ) const { return { mX - rhs.mX, mY - rhs.mY, mZ - rhs.mZ }; }
+		TVector3 operator-( const TVector3& rhs ) const { 
+			return { m_X - rhs.m_X, m_Y - rhs.m_Y, m_Z - rhs.m_Z }; 
+		}
 
 		/* @brief Multiplies two vectors component-wise.
 		* @param rhs Vector to multiply by.
 		* @return Resulting vector.
 		*/
-		TVector3 operator*( const TVector3& rhs ) const { return { mX * rhs.mX, mY * rhs.mY, mZ * rhs.mZ }; }
+		TVector3 operator*( const TVector3& rhs ) const { 
+			return { m_X * rhs.m_X, m_Y * rhs.m_Y, m_Z * rhs.m_Z }; 
+		}
 
 		/* @brief Divides two vectors component-wise.
 		* @param rhs Vector to divide by.
 		* @return Resulting vector.
 		*/
-		TVector3 operator/( const TVector3& rhs ) const { return { mX / rhs.mX, mY / rhs.mY, mZ / rhs.mZ }; }
+		TVector3 operator/( const TVector3& rhs ) const { 
+			return { m_X / rhs.m_X, m_Y / rhs.m_Y, m_Z / rhs.m_Z }; 
+		}
 
 		// Scalar
 
@@ -82,37 +90,52 @@ namespace lum {
 		* @param scalar Scalar value.
 		* @return Resulting vector.
 		*/
-		TVector3 operator+( tType scalar ) const { return { mX + scalar, mY + scalar, mZ + scalar }; }
+		TVector3 operator+( tType scalar ) const { 
+			return { m_X + scalar, m_Y + scalar, m_Z + scalar }; 
+		}
 
 		/* @brief Adds a scalar to every vector component in-place.
 		* @param scalar Scalar value.
 		* @return Reference to this vector.
 		*/
-		TVector3& operator+=( tType scalar ) { mX += scalar; mY += scalar; mZ += scalar; return *this; }
+		TVector3& operator+=( tType scalar ) { 
+			m_X += scalar; m_Y += scalar; m_Z += scalar; 
+			return *this; 
+		}
 
 		/* @brief Subtracts a scalar from every vector component.
 		* @param scalar Scalar value.
 		* @return Resulting vector.
 		*/
-		TVector3 operator-( tType scalar ) const { return { mX - scalar, mY - scalar, mZ - scalar }; }
+		TVector3 operator-( tType scalar ) const { 
+			return { m_X - scalar, m_Y - scalar, m_Z - scalar }; 
+		}
 
 		/* @brief Subtracts a scalar from every vector component in-place.
 		* @param scalar Scalar value.
 		* @return Reference to this vector.
 		*/
-		TVector3& operator-=( tType scalar ) { mX -= scalar; mY -= scalar; mZ -= scalar; return *this; }
+		TVector3& operator-=( tType scalar ) { 
+			m_X -= scalar; m_Y -= scalar; m_Z -= scalar; 
+			return *this; 
+		}
 
 		/* @brief Multiplies every vector component by a scalar.
 		* @param scalar Scalar multiplier.
 		* @return Resulting vector.
 		*/
-		TVector3 operator*( tType scalar ) const { return { mX * scalar, mY * scalar, mZ * scalar }; }
+		TVector3 operator*( tType scalar ) const { 
+			return { m_X * scalar, m_Y * scalar, m_Z * scalar }; 
+		}
 
 		/* @brief Multiplies every vector component by a scalar in-place.
 		* @param scalar Scalar multiplier.
 		* @return Reference to this vector.
 		*/
-		TVector3& operator*=( tType scalar ) { mX *= scalar; mY *= scalar; mZ *= scalar; return *this; }
+		TVector3& operator*=( tType scalar ) { 
+			m_X *= scalar; m_Y *= scalar; m_Z *= scalar; 
+			return *this; 
+		}
 
 		/* @brief Divides every vector component by a scalar.
 		* @param scalar Scalar divisor.
@@ -120,7 +143,7 @@ namespace lum {
 		*/
 		TVector3 operator/( tType scalar ) const {
 			tType inv = tType( 1 ) / scalar;
-			return { mX * inv, mY * inv, mZ * inv };
+			return { m_X * inv, m_Y * inv, m_Z * inv };
 		}
 
 		/* @brief Divides every vector component by a scalar in-place.
@@ -129,9 +152,9 @@ namespace lum {
 		*/
 		TVector3& operator/=( tType scalar ) {
 			tType inv = tType( 1 ) / scalar;
-			mX *= inv;
-			mY *= inv;
-			mZ *= inv;
+			m_X *= inv;
+			m_Y *= inv;
+			m_Z *= inv;
 			return *this;
 		}
 
@@ -141,20 +164,28 @@ namespace lum {
 		* @param rhs Vector to add.
 		* @return Reference to this vector.
 		*/
-		TVector3& operator+=( const TVector3& rhs ) { mX += rhs.mX; mY += rhs.mY; mZ += rhs.mZ; return *this; }
+		TVector3& operator+=( const TVector3& rhs ) { 
+			m_X += rhs.m_X; m_Y += rhs.m_Y; m_Z += rhs.m_Z; 
+			return *this; 
+		}
 
 		/* @brief Subtracts another vector from this vector.
 		* @param rhs Vector to subtract.
 		* @return Reference to this vector.
 		*/
-		TVector3& operator-=( const TVector3& rhs ) { mX -= rhs.mX; mY -= rhs.mY; mZ -= rhs.mZ; return *this; }
+		TVector3& operator-=( const TVector3& rhs ) { 
+			m_X -= rhs.m_X; m_Y -= rhs.m_Y; m_Z -= rhs.m_Z; 
+			return *this; 
+		}
 
 		// Unary
 
 		/* @brief Negates every vector component.
 		* @return Negated vector.
 		*/
-		TVector3 operator-( ) const { return { -mX, -mY, -mZ }; }
+		TVector3 operator-( ) const { return { 
+			-m_X, -m_Y, -m_Z }; 
+		}
 
 		// Comparison
 
@@ -162,19 +193,27 @@ namespace lum {
 		* @param rhs Vector to compare against.
 		* @return True if all components are equal.
 		*/
-		bool operator==( const TVector3& rhs ) const { return mX == rhs.mX && mY == rhs.mY && mZ == rhs.mZ; }
+		bool operator==( const TVector3& rhs ) const { 
+			return m_X == rhs.m_X && m_Y == rhs.m_Y && m_Z == rhs.m_Z; 
+		}
 
 		/* @brief Compares two vectors for inequality.
 		* @param rhs Vector to compare against.
 		* @return True if at least one component differs.
 		*/
-		bool operator!=( const TVector3& rhs ) const { return !(*this == rhs); }
+		bool operator!=( const TVector3& rhs ) const { 
+			return !(*this == rhs); 
+		}
 
 		/* @brief Returns a pointer to the underlying vector data.
 		* @return Pointer to the first vector component.
 		*/
-		const tType* Data( ) const { return &mX; }
-		tType* Data( ) { return &mX; }
+		const tType* Data( ) const { 
+			return &m_X; 
+		}
+		tType* Data( ) { 
+			return &m_X; 
+		}
 
 	};
 
@@ -185,7 +224,9 @@ namespace lum {
 	* @return Scaled vector.
 	*/
 	template<cArithmetic tType>
-	TVector3<tType> operator*( tType scalar, const TVector3<tType>& v ) { return v * scalar; }
+	TVector3<tType> operator*( tType scalar, const TVector3<tType>& v ) { 
+		return v * scalar; 
+	}
 
 
 	//-----------------------------------------
@@ -198,7 +239,9 @@ namespace lum {
 	* @return Vector length.
 	*/
 	template<cArithmetic tType>
-	float32 Length( const TVector3<tType>& v ) { return sqrt( v.mX * v.mX + v.mY * v.mY + v.mZ * v.mZ ); }
+	float32 Length( const TVector3<tType>& v ) { 
+		return sqrt( v.m_X * v.m_X + v.m_Y * v.m_Y + v.m_Z * v.m_Z ); 
+	}
 
 	/* @brief Returns the squared length of a vector.
 	* @tparam tType Arithmetic component type.
@@ -206,7 +249,9 @@ namespace lum {
 	* @return Squared vector length.
 	*/
 	template<cArithmetic tType>
-	constexpr float32 LengthSq( const TVector3<tType>& v ) { return v.mX * v.mX + v.mY * v.mY + v.mZ * v.mZ; }
+	constexpr float32 LengthSq( const TVector3<tType>& v ) { 
+		return v.m_X * v.m_X + v.m_Y * v.m_Y + v.m_Z * v.m_Z; 
+	}
 
 	/* @brief Returns the distance between two vectors.
 	* @tparam tType Arithmetic component type.
@@ -215,7 +260,9 @@ namespace lum {
 	* @return Distance between the vectors.
 	*/
 	template<cArithmetic tType>
-	float32 Distance( const TVector3<tType>& a, const TVector3<tType>& b ) { return Length( b - a ); }
+	float32 Distance( const TVector3<tType>& a, const TVector3<tType>& b ) { 
+		return Length( b - a ); 
+	}
 
 	/* @brief Returns a normalized vector.
 	* @tparam tType Arithmetic component type.
@@ -225,7 +272,7 @@ namespace lum {
 	template<cArithmetic tType>
 	TVector3<tType> Normalize( const TVector3<tType>& v ) {
 		float32 invLen = 1.0f / Length( v );
-		return { v.mX * invLen, v.mY * invLen, v.mZ * invLen };
+		return { v.m_X * invLen, v.m_Y * invLen, v.m_Z * invLen };
 	}
 
 	/* @brief Computes the dot product of two vectors.
@@ -236,7 +283,7 @@ namespace lum {
 	*/
 	template<cArithmetic tType>
 	float32 Dot( const TVector3<tType>& v1, const TVector3<tType>& v2 ) {
-		return v1.mX * v2.mX + v1.mY * v2.mY + v1.mZ * v2.mZ;
+		return v1.m_X * v2.m_X + v1.m_Y * v2.m_Y + v1.m_Z * v2.m_Z;
 	}
 
 	/* @brief Computes the cross product of two vectors.
@@ -248,9 +295,9 @@ namespace lum {
 	template<cArithmetic tType>
 	constexpr TVector3<tType> Cross( const TVector3<tType>& v1, const TVector3<tType>& v2 ) {
 		return {
-			v1.mY * v2.mZ - v1.mZ * v2.mY,
-			v1.mZ * v2.mX - v1.mX * v2.mZ,
-			v1.mX * v2.mY - v1.mY * v2.mX
+			v1.m_Y * v2.m_Z - v1.m_Z * v2.m_Y,
+			v1.m_Z * v2.m_X - v1.m_X * v2.m_Z,
+			v1.m_X * v2.m_Y - v1.m_Y * v2.m_X
 		};
 	}
 
@@ -264,9 +311,9 @@ namespace lum {
 	template<cArithmetic tType>
 	constexpr TVector3<tType> Clamp( const TVector3<tType>& v, tType min, tType max ) {
 		return {
-			std::clamp( v.mX, min, max ),
-			std::clamp( v.mY, min, max ),
-			std::clamp( v.mZ, min, max )
+			std::clamp( v.m_X, min, max ),
+			std::clamp( v.m_Y, min, max ),
+			std::clamp( v.m_Z, min, max )
 		};
 	}
 
@@ -277,7 +324,7 @@ namespace lum {
 	*/
 	template<cArithmetic tType>
 	TVector3<tType> Abs( const TVector3<tType>& v ) {
-		return { std::abs( v.mX ), std::abs( v.mY ), std::abs( v.mZ ) };
+		return { std::abs( v.m_X ), std::abs( v.m_Y ), std::abs( v.m_Z ) };
 	}
 
 	/* @brief 3D vector using 32-bit floating-point components. */

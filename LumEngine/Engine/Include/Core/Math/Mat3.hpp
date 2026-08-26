@@ -22,13 +22,13 @@ namespace lum {
 		* @param scalar Value assigned to all diagonal elements.
 		*/
 		constexpr explicit Matrix3( float32 scalar ) {
-			mData[ 0 ] = scalar;
-			mData[ 4 ] = scalar;
-			mData[ 8 ] = scalar;
+			m_Data[ 0 ] = scalar;
+			m_Data[ 4 ] = scalar;
+			m_Data[ 8 ] = scalar;
 		}
 
 		/* @brief Raw matrix data stored in column-major order. */
-		float32 mData[ 9 ]{};
+		float32 m_Data[ 9 ]{};
 
 		// Arithmetic
 
@@ -39,7 +39,7 @@ namespace lum {
 		Matrix3 operator+( const Matrix3& rhs ) const {
 			Matrix3 result;
 			for (uint32 i = 0; i < 9; i++)
-				result.mData[ i ] = mData[ i ] + rhs.mData[ i ];
+				result.m_Data[ i ] = m_Data[ i ] + rhs.m_Data[ i ];
 			return result;
 		}
 
@@ -50,7 +50,7 @@ namespace lum {
 		Matrix3 operator-( const Matrix3& rhs ) const {
 			Matrix3 result;
 			for (uint32 i = 0; i < 9; i++)
-				result.mData[ i ] = mData[ i ] - rhs.mData[ i ];
+				result.m_Data[ i ] = m_Data[ i ] - rhs.m_Data[ i ];
 			return result;
 		}
 
@@ -63,7 +63,7 @@ namespace lum {
 			for (uint32 col = 0; col < 3; col++)
 				for (uint32 row = 0; row < 3; row++)
 					for (uint32 k = 0; k < 3; k++)
-						result.mData[ col * 3 + row ] += mData[ k * 3 + row ] * rhs.mData[ col * 3 + k ];
+						result.m_Data[ col * 3 + row ] += m_Data[ k * 3 + row ] * rhs.m_Data[ col * 3 + k ];
 			return result;
 		}
 
@@ -74,7 +74,7 @@ namespace lum {
 		Matrix3 operator/( const Matrix3& rhs ) const {
 			Matrix3 result;
 			for (uint32 i = 0; i < 9; i++)
-				result.mData[ i ] = mData[ i ] / rhs.mData[ i ];
+				result.m_Data[ i ] = m_Data[ i ] / rhs.m_Data[ i ];
 			return result;
 		}
 
@@ -89,7 +89,7 @@ namespace lum {
 		Matrix3 operator*( tType scalar ) {
 			Matrix3 result;
 			for (uint32 i = 0; i < 9; i++)
-				result.mData[ i ] = mData[ i ] * scalar;
+				result.m_Data[ i ] = m_Data[ i ] * scalar;
 			return result;
 		}
 
@@ -101,7 +101,7 @@ namespace lum {
 		template<cArithmetic tType>
 		Matrix3& operator*=( tType scalar ) {
 			for (uint32 i = 0; i < 9; i++)
-				mData[ i ] *= scalar;
+				m_Data[ i ] *= scalar;
 			return *this;
 		}
 
@@ -115,7 +115,7 @@ namespace lum {
 			Matrix3 result;
 			tType inv = 1.0 / scalar;
 			for (uint32 i = 0; i < 9; i++)
-				result.mData[ i ] = mData[ i ] * inv;
+				result.m_Data[ i ] = m_Data[ i ] * inv;
 			return result;
 		}
 
@@ -128,7 +128,7 @@ namespace lum {
 		Matrix3& operator/=( tType scalar ) {
 			tType inv = 1.0 / scalar;
 			for (uint32 i = 0; i < 9; i++)
-				mData[ i ] *= inv;
+				m_Data[ i ] *= inv;
 			return *this;
 		}
 
@@ -140,7 +140,7 @@ namespace lum {
 		*/
 		Matrix3& operator+=( const Matrix3& rhs ) {
 			for (uint32 i = 0; i < 9; i++)
-				mData[ i ] += rhs.mData[ i ];
+				m_Data[ i ] += rhs.m_Data[ i ];
 			return *this;
 		}
 
@@ -150,7 +150,7 @@ namespace lum {
 		*/
 		Matrix3& operator-=( const Matrix3& rhs ) {
 			for (uint32 i = 0; i < 9; i++)
-				mData[ i ] -= rhs.mData[ i ];
+				m_Data[ i ] -= rhs.m_Data[ i ];
 			return *this;
 		}
 
@@ -169,7 +169,7 @@ namespace lum {
 		*/
 		Matrix3& operator/=( const Matrix3& rhs ) {
 			for (uint32 i = 0; i < 9; i++)
-				mData[ i ] /= rhs.mData[ i ];
+				m_Data[ i ] /= rhs.m_Data[ i ];
 			return *this;
 		}
 
@@ -181,7 +181,7 @@ namespace lum {
 		Matrix3 operator-( ) const {
 			Matrix3 result;
 			for (uint32 i = 0; i < 9; i++)
-				result.mData[ i ] = -mData[ i ];
+				result.m_Data[ i ] = -m_Data[ i ];
 			return result;
 		}
 
@@ -193,7 +193,7 @@ namespace lum {
 		*/
 		bool operator==( const Matrix3& rhs ) const {
 			for (uint32 i = 0; i < 9; i++) {
-				if (mData[ i ] != rhs.mData[ i ]) return false;
+				if (m_Data[ i ] != rhs.m_Data[ i ]) return false;
 			}
 			return true;
 		}
@@ -207,7 +207,7 @@ namespace lum {
 		/* @brief Returns a pointer to the underlying matrix data.
 		* @return Pointer to the first matrix element.
 		*/
-		const float32* Data( ) const { return &mData[ 0 ]; }
+		const float32* Data( ) const { return &m_Data[ 0 ]; }
 
 	};
 

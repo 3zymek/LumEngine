@@ -22,14 +22,14 @@ namespace lum {
 		* @param scalar Value assigned to all diagonal elements.
 		*/
 		constexpr explicit Matrix4( float32 scalar ) {
-			mData[ 0 ] = scalar;
-			mData[ 5 ] = scalar;
-			mData[ 10 ] = scalar;
-			mData[ 15 ] = scalar;
+			m_Data[ 0 ] = scalar;
+			m_Data[ 5 ] = scalar;
+			m_Data[ 10 ] = scalar;
+			m_Data[ 15 ] = scalar;
 		}
 
 		/* @brief Raw matrix data stored in column-major order. */
-		float32 mData[ 16 ]{};
+		float32 m_Data[ 16 ]{};
 
 		// Arithmetic
 
@@ -40,7 +40,7 @@ namespace lum {
 		Matrix4 operator+( const Matrix4& rhs ) const {
 			Matrix4 result;
 			for (uint32 i = 0; i < 16; i++)
-				result.mData[ i ] = mData[ i ] + rhs.mData[ i ];
+				result.m_Data[ i ] = m_Data[ i ] + rhs.m_Data[ i ];
 			return result;
 		}
 
@@ -51,7 +51,7 @@ namespace lum {
 		Matrix4 operator-( const Matrix4& rhs ) const {
 			Matrix4 result;
 			for (uint32 i = 0; i < 16; i++)
-				result.mData[ i ] = mData[ i ] - rhs.mData[ i ];
+				result.m_Data[ i ] = m_Data[ i ] - rhs.m_Data[ i ];
 			return result;
 		}
 
@@ -64,7 +64,7 @@ namespace lum {
 			for (uint32 col = 0; col < 4; col++)
 				for (uint32 row = 0; row < 4; row++)
 					for (uint32 k = 0; k < 4; k++)
-						result.mData[ col * 4 + row ] += mData[ k * 4 + row ] * rhs.mData[ col * 4 + k ];
+						result.m_Data[ col * 4 + row ] += m_Data[ k * 4 + row ] * rhs.m_Data[ col * 4 + k ];
 			return result;
 		}
 
@@ -75,7 +75,7 @@ namespace lum {
 		Matrix4 operator/( const Matrix4& rhs ) const {
 			Matrix4 result;
 			for (uint32 i = 0; i < 16; i++)
-				result.mData[ i ] = mData[ i ] / rhs.mData[ i ];
+				result.m_Data[ i ] = m_Data[ i ] / rhs.m_Data[ i ];
 			return result;
 		}
 
@@ -90,7 +90,7 @@ namespace lum {
 		Matrix4 operator*( tType scalar ) {
 			Matrix4 result;
 			for (uint32 i = 0; i < 16; i++)
-				result.mData[ i ] = mData[ i ] * scalar;
+				result.m_Data[ i ] = m_Data[ i ] * scalar;
 			return result;
 		}
 
@@ -102,7 +102,7 @@ namespace lum {
 		template<cArithmetic tType>
 		Matrix4& operator*=( tType scalar ) {
 			for (uint32 i = 0; i < 16; i++)
-				mData[ i ] *= scalar;
+				m_Data[ i ] *= scalar;
 			return *this;
 		}
 
@@ -116,7 +116,7 @@ namespace lum {
 			Matrix4 result;
 			tType inv = 1.0 / scalar;
 			for (uint32 i = 0; i < 16; i++)
-				result.mData[ i ] = mData[ i ] * inv;
+				result.m_Data[ i ] = m_Data[ i ] * inv;
 			return result;
 		}
 
@@ -129,7 +129,7 @@ namespace lum {
 		Matrix4& operator/=( tType scalar ) {
 			tType inv = 1.0 / scalar;
 			for (uint32 i = 0; i < 16; i++)
-				mData[ i ] *= inv;
+				m_Data[ i ] *= inv;
 			return *this;
 		}
 
@@ -141,7 +141,7 @@ namespace lum {
 		*/
 		Matrix4& operator+=( const Matrix4& rhs ) {
 			for (uint32 i = 0; i < 16; i++)
-				mData[ i ] += rhs.mData[ i ];
+				m_Data[ i ] += rhs.m_Data[ i ];
 			return *this;
 		}
 
@@ -151,7 +151,7 @@ namespace lum {
 		*/
 		Matrix4& operator-=( const Matrix4& rhs ) {
 			for (uint32 i = 0; i < 16; i++)
-				mData[ i ] -= rhs.mData[ i ];
+				m_Data[ i ] -= rhs.m_Data[ i ];
 			return *this;
 		}
 
@@ -170,7 +170,7 @@ namespace lum {
 		*/
 		Matrix4& operator/=( const Matrix4& rhs ) {
 			for (uint32 i = 0; i < 16; i++)
-				mData[ i ] /= rhs.mData[ i ];
+				m_Data[ i ] /= rhs.m_Data[ i ];
 			return *this;
 		}
 
@@ -182,7 +182,7 @@ namespace lum {
 		Matrix4 operator-( ) const {
 			Matrix4 result;
 			for (uint32 i = 0; i < 16; i++)
-				result.mData[ i ] = -mData[ i ];
+				result.m_Data[ i ] = -m_Data[ i ];
 			return result;
 		}
 
@@ -194,7 +194,7 @@ namespace lum {
 		*/
 		bool operator==( const Matrix4& rhs ) const {
 			for (uint32 i = 0; i < 16; i++) {
-				if (mData[ i ] != rhs.mData[ i ]) return false;
+				if (m_Data[ i ] != rhs.m_Data[ i ]) return false;
 			}
 			return true;
 		}
@@ -208,19 +208,19 @@ namespace lum {
 		/* @brief Returns a pointer to the underlying matrix data.
 		* @return Pointer to the first matrix element.
 		*/
-		const float32* Data( ) const { return &mData[ 0 ]; }
+		const float32* Data( ) const { return &m_Data[ 0 ]; }
 
 		/* @brief Returns a pointer to the first element of the specified column.
 		* @param col Column index.
 		* @return Pointer to the first element of the column.
 		*/
-		float32* operator[]( uint32 col ) { return &mData[ col * 4 ]; }
+		float32* operator[]( uint32 col ) { return &m_Data[ col * 4 ]; }
 
 		/* @brief Returns a read-only pointer to the first element of the specified column.
 		* @param col Column index.
 		* @return Const pointer to the first element of the column.
 		*/
-		const float32* operator[]( uint32 col ) const { return &mData[ col * 4 ]; }
+		const float32* operator[]( uint32 col ) const { return &m_Data[ col * 4 ]; }
 
 	};
 

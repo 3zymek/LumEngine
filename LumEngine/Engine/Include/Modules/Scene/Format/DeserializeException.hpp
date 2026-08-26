@@ -24,18 +24,18 @@ namespace lum::fmt {
 				std::forward<tArgs>( args )...
 			);
 
-			mMessage = buffer;
+			m_Message = buffer;
 		}
 
-		explicit DeserializeException( const char* message ) : mMessage( message ) {}
+		explicit DeserializeException( const char* message ) : m_Message( message ) {}
 
 		const char* what( ) const noexcept override {
-			return mMessage.c_str( );
+			return m_Message.c_str( );
 		}
 
 	private:
 
-		String mMessage{};
+		String m_Message{};
 
 	};
 

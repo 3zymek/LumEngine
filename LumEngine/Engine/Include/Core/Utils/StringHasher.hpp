@@ -28,11 +28,11 @@ namespace lum::cstd {
 		template<usize tL>
 		inline constexpr static HashedString Hash( const char( &str )[ tL ] ) noexcept {
 
-			HashedString h = skFNV1AOffset;
+			HashedString h = sk_Offset;
 
 			for (usize i = 0; i < tL - 1; i++) {
-				h ^= static_cast< uint8 >( str[ i ] );
-				h *= skFNV1APrime;
+				h ^= static_cast<uint8>( str[ i ] );
+				h *= sk_Prime;
 			}
 
 			return h;
@@ -42,11 +42,11 @@ namespace lum::cstd {
 		// Runtime hash for StringView.
 		inline constexpr static HashedString Hash( StringView str ) noexcept {
 
-			HashedString h = skFNV1AOffset;
+			HashedString h = sk_Offset;
 
 			for (auto s : str) {
-				h ^= static_cast< uint8 >(s);
-				h *= skFNV1APrime;
+				h ^= static_cast<uint8>(s);
+				h *= sk_Prime;
 			}
 
 			return h;
@@ -55,8 +55,8 @@ namespace lum::cstd {
 
 	private:
 
-		static constexpr uint64 skFNV1AOffset = 14695981039346656037ULL; // FNV offset basis
-		static constexpr uint64 skFNV1APrime = 1099511628211ULL;        // FNV prime
+		static constexpr uint64 sk_Offset = 14695981039346656037ULL; // FNV offset basis
+		static constexpr uint64 sk_Prime = 1099511628211ULL;        // FNV prime
 
 		StringHasher( ) = delete;
 

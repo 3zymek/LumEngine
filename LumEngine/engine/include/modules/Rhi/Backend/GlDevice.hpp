@@ -373,7 +373,7 @@ namespace lum::rhi::gl {
 			GL_FLOAT_32_UNSIGNED_INT_24_8_REV
 		};
 
-		OpenGLContext* mRenderContext = nullptr;
+		OpenGLContext* m_RenderContext = nullptr;
 
 		//=================================================
 		// Private helpers

@@ -22,16 +22,16 @@ namespace lum::ecs {
 	template<detail::cComponent tType>
 	tType& EntityManager::AddComponent( EntityID entityId, tType component ) {
 		tType& retVal = GetPool<tType>( ).Add( entityId, component );
-		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus().Emit( EComponentAdded<tType>{.mId = entityId, .mComponent = &retVal } );
+		LUM_ASSERT( m_EventBus, "Event bus is nullptr" );
+		m_EventBus().Emit( EComponentAdded<tType>{.m_Id = entityId, .m_Component = &retVal } );
 		return retVal;
 	}
 
 	template<detail::cComponent tType>
 	tType& EntityManager::AddComponent( Entity entity, tType component ) {
-		tType& retVal = GetPool<tType>( ).Add( entity.mId, component );
-		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus( ).Emit( EComponentAdded<tType>{.mId = entity.mId, .mComponent = &retVal } );
+		tType& retVal = GetPool<tType>( ).Add( entity.m_Id, component );
+		LUM_ASSERT( m_EventBus, "Event bus is nullptr" );
+		m_EventBus( ).Emit( EComponentAdded<tType>{.m_Id = entity.m_Id, .m_Component = &retVal } );
 		return retVal;
 	}
 
@@ -46,7 +46,7 @@ namespace lum::ecs {
 
 	template<detail::cComponent tType>
 	tType* EntityManager::GetComponent( Entity entity ) {
-		return GetPool<tType>( ).Get( entity.mId );
+		return GetPool<tType>( ).Get( entity.m_Id );
 	}
 
 	//-----------------------------------------------------------------------------
@@ -56,15 +56,15 @@ namespace lum::ecs {
 	template<detail::cComponent tType>
 	void EntityManager::RemoveComponent( EntityID entityId ) {
 		GetPool<tType>( ).Remove( entityId );
-		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus( ).Emit( EComponentRemoved<tType>{ .mId = entityId } );
+		LUM_ASSERT( m_EventBus, "Event bus is nullptr" );
+		m_EventBus( ).Emit( EComponentRemoved<tType>{ .m_Id = entityId } );
 	}
 
 	template<detail::cComponent tType>
 	void EntityManager::RemoveComponent( Entity entity ) {
-		GetPool<tType>( ).Remove( entity.mId );
-		LUM_ASSERT( mEventBus, "Event bus is nullptr" );
-		mEventBus( ).Emit( EComponentRemoved<tType>{ .mId = entity.mId } );
+		GetPool<tType>( ).Remove( entity.m_Id );
+		LUM_ASSERT( m_EventBus, "Event bus is nullptr" );
+		m_EventBus( ).Emit( EComponentRemoved<tType>{ .m_Id = entity.m_Id } );
 	}
 
 	//-----------------------------------------------------------------------------
@@ -78,7 +78,7 @@ namespace lum::ecs {
 
 	template<detail::cComponent tType>
 	bool EntityManager::HasComponent( Entity entity ) {
-		return GetPool<tType>( ).Has( entity.mId );
+		return GetPool<tType>( ).Has( entity.m_Id );
 	}
 
 	template<detail::cComponent tFirst, detail::cComponent... tRest>
@@ -88,7 +88,7 @@ namespace lum::ecs {
 
 	template<detail::cComponent tFirst, detail::cComponent... tRest>
 	bool EntityManager::HasComponents( Entity entity ) {
-		return (HasComponent<tFirst>( entity.mId ) && (HasComponent<tRest>( entity.mId ) && ...));
+		return (HasComponent<tFirst>( entity.m_Id ) && (HasComponent<tRest>( entity.m_Id ) && ...));
 	}
 
 	//-----------------------------------------------------------------------------
@@ -98,7 +98,7 @@ namespace lum::ecs {
 	template<detail::cComponent tFirst, detail::cComponent... tRest, typename tCallback>
 	void EntityManager::Each( tCallback&& callback ) {
 		auto& pool = GetPool<tFirst>( );
-		for (auto [id, component] : pool.mComponents.Each( )) {
+		for (auto [id, component] : pool.m_Components.Each( )) {
 			bool hasAll = true;
 			if constexpr (sizeof...(tRest) > 0)
 				hasAll = HasComponents<tFirst, tRest...>( id );
@@ -110,7 +110,7 @@ namespace lum::ecs {
 	template<detail::cComponent tFirst, detail::cComponent... tRest, typename tCallback>
 	void EntityManager::EachWithID( tCallback&& callback ) {
 		auto& pool = GetPool<tFirst>( );
-		for (auto [id, component] : pool.mComponents.Each( )) {
+		for (auto [id, component] : pool.m_Components.Each( )) {
 			bool hasAll = true;
 			if constexpr (sizeof...(tRest) > 0)
 				hasAll = HasComponents<tFirst, tRest...>( id );
@@ -126,10 +126,10 @@ namespace lum::ecs {
 	template<detail::cComponent tType>
 	detail::ComponentPool<tType>& EntityManager::GetPool( ) {
 		ComponentTypeID typeID = TypeRegistry::GetTypeId<tType>( );
-		LUM_ASSERT( typeID < limits::kMaxComponentTypes, "Too many component types" );
-		if (mComponentPools[ typeID ] == nullptr)
-			mComponentPools[ typeID ] = new detail::ComponentPool<tType>( );
-		return *static_cast< detail::ComponentPool<tType>* >( mComponentPools[ typeID ] );
+		LUM_ASSERT( typeID < limits::k_MaxComponentTypes, "Too many component types" );
+		if (m_ComponentPools[ typeID ] == nullptr)
+			m_ComponentPools[ typeID ] = new detail::ComponentPool<tType>( );
+		return *static_cast< detail::ComponentPool<tType>* >( m_ComponentPools[ typeID ] );
 	}
 
 } // namespace lum::ecs
