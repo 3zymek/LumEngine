@@ -9,8 +9,7 @@
 
 namespace lum {
 
-	/*
-	* @brief Abstract rendering context interface for OpenGL.
+	/* @brief Abstract rendering context interface for OpenGL.
 	* Extends IRenderContext with OpenGL-specific context management.
 	*/
 	class OpenGLContext : public IRenderContext {

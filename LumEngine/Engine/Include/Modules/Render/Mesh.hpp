@@ -15,13 +15,13 @@ namespace lum {
 	struct StaticMeshResource {
 
 		/* @brief Vertex buffer containing mesh geometry. */
-		rhi::BufferHandle m_Vbo;
+		rhi::BufferHandle m_Vbo{};
 
 		/* @brief Index buffer defining triangle topology. */
-		rhi::BufferHandle m_Ebo;
+		rhi::BufferHandle m_Ebo{};
 
 		/* @brief Vertex layout describing attribute bindings. */
-		rhi::VertexLayoutHandle m_Vao;
+		rhi::VertexLayoutHandle m_Vao{};
 
 		/* @brief Number of indices in the index buffer. */
 		uint32 m_NumIndices = 0;
@@ -35,16 +35,16 @@ namespace lum {
 	struct DynamicMeshInstance {
 
 		/* @brief CPU-side mesh data used to re-upload when dirty. */
-		MeshGeometry m_Data;
+		MeshGeometry m_Data{};
 
 		/* @brief Vertex buffer containing mesh geometry. */
-		rhi::BufferHandle m_Vbo;
+		rhi::BufferHandle m_Vbo{};
 
 		/* @brief Index buffer defining triangle topology. */
-		rhi::BufferHandle m_Ebo;
+		rhi::BufferHandle m_Ebo{};
 
 		/* @brief Vertex layout describing attribute bindings. */
-		rhi::VertexLayoutHandle m_Vao;
+		rhi::VertexLayoutHandle m_Vao{};
 
 		/* @brief Whether the GPU buffers are out of sync with CPU data and need re-upload. */
 		bool m_Dirty = false;

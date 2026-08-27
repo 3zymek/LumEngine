@@ -98,7 +98,7 @@ namespace lum {
 	protected:
 
 		GLFWwindow* m_Window = nullptr; /* @brief Underlying GLFW window handle. */
-		ev::EventBus* m_EventBus = nullptr; /* @brief Event bus for window events. */
+		SafePtr<ev::EventBus> m_EventBus = nullptr; /* @brief Event bus for window events. */
 
 		uint32 m_Width = 0; /* @brief Current width of window. */
 		uint32 m_Height = 0; /* @brief Current height of window. */

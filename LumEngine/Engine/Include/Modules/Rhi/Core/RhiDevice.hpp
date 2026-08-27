@@ -791,11 +791,11 @@ namespace lum::rhi {
 
 	protected:
 
-		inline constexpr static uint32 skMaxTextureUnits = 32;
-		inline constexpr static uint32 skMaxSamplerUnits = 32;
+		inline constexpr static uint32 sk_MaxTextureUnits = 32;
+		inline constexpr static uint32 sk_MaxSamplerUnits = 32;
 
-		std::array<TextureHandle, skMaxTextureUnits> m_CurrentTextures{};
-		std::array<SamplerHandle, skMaxSamplerUnits> m_CurrentSamplers{};
+		std::array<TextureHandle, sk_MaxTextureUnits> m_CurrentTextures{};
+		std::array<SamplerHandle, sk_MaxSamplerUnits> m_CurrentSamplers{};
 
 		ShaderHandle		m_CurrentShader{};
 		FramebufferHandle	m_CurrentFramebuffer{};
@@ -810,7 +810,7 @@ namespace lum::rhi {
 		ColorMask			m_ColorMask{};
 
 		Flags<State>		m_EnabledStates{};
-		Vector4			m_ClearColor{};
+		Vector4				m_ClearColor{};
 
 #		if LUM_ENABLE_RENDER_PROFILER == 1
 		performance::Profiler m_Profiler{};
@@ -829,51 +829,51 @@ namespace lum::rhi {
 
 #		endif
 
-		inline constexpr static uint32 skMaxShaders = 8;
-		inline constexpr static uint32 skMaxSamplers = 500;
-		inline constexpr static uint32 skMaxBuffers = 10000;
-		inline constexpr static uint32 skMaxLayouts = 10000;
-		inline constexpr static uint32 skMaxTextures = 1000;
-		inline constexpr static uint32 skMaxFramebuffers = 100;
-		inline constexpr static uint32 skMaxPipelines = 100;
+		inline constexpr static uint32 sk_MaxShaders = 8;
+		inline constexpr static uint32 sk_MaxSamplers = 500;
+		inline constexpr static uint32 sk_MaxBuffers = 10000;
+		inline constexpr static uint32 sk_MaxLayouts = 10000;
+		inline constexpr static uint32 sk_MaxTextures = 1000;
+		inline constexpr static uint32 sk_MaxFramebuffers = 100;
+		inline constexpr static uint32 sk_MaxPipelines = 100;
 
 		cstd::HandlePool<
 			SamplerHandle, 
 			Sampler, 
-			SamplerID> m_Samplers{ skMaxSamplers };
+			SamplerID> m_Samplers{ sk_MaxSamplers };
 
 		cstd::HandlePool<
 			ShaderHandle, 
 			Shader, 
-			ShaderID> m_Shaders{ skMaxShaders };
+			ShaderID> m_Shaders{ sk_MaxShaders };
 		
 		cstd::HandlePool<
 			BufferHandle, 
 			Buffer, 
-			BufferID> m_Buffers{ skMaxBuffers };
+			BufferID> m_Buffers{ sk_MaxBuffers };
 		
 		cstd::HandlePool<
 			VertexLayoutHandle, 
 			VertexLayout, 
-			LayoutID> m_Layouts{ skMaxLayouts };
+			LayoutID> m_Layouts{ sk_MaxLayouts };
 		
 		cstd::HandlePool<
 			TextureHandle, 
 			Texture, 
-			TextureID> m_Textures{ skMaxTextures };
+			TextureID> m_Textures{ sk_MaxTextures };
 		
 		cstd::HandlePool<
 			FramebufferHandle, 
 			Framebuffer, 
-			FramebufferID> m_Framebuffers{ skMaxFramebuffers };
+			FramebufferID> m_Framebuffers{ sk_MaxFramebuffers };
 		
 		cstd::HandlePool<
 			PipelineHandle, 
 			Pipeline, 
-			PipelineID>	m_Pipelines{ skMaxPipelines };
+			PipelineID>	m_Pipelines{ sk_MaxPipelines };
 
 
-		bool validate_framebuffer_handle( FramebufferHandle buff ) const noexcept { return IsValid( buff ) || (buff == kDefaultFramebuffer); }
+		bool validate_framebuffer_handle( FramebufferHandle buff ) const noexcept { return IsValid( buff ) || (buff == k_DefaultFramebuffer); }
 
 		/* @brief Validates a texture descriptor before resource creation.
 		*  @param desc Texture descriptor to validate.

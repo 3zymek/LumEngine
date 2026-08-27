@@ -10,7 +10,7 @@
 
 namespace lum::render::detail {
 
-	enum class DeferredBufferAttachment : byte {
+	enum class DeferredBufferAttachment {
 		Albedo,
 		Normal,
 		Depth
@@ -45,7 +45,7 @@ namespace lum::render::detail {
 		}
 
 		LUM_FORCEINLINE void UnbindFramebuffer( ) const { 
-			m_Ctx( ).m_RenderDev( ).BindFramebuffer( rhi::kDefaultFramebuffer );
+			m_Ctx( ).m_RenderDev( ).BindFramebuffer( rhi::k_DefaultFramebuffer );
 		}
 
 		void Clear( ) {

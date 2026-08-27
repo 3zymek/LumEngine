@@ -18,9 +18,9 @@
 
 namespace lum::render {
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Public
-	//---------------------------------------------------------
+//=======================================================//
 
 	void GeometryPass::Initialize( RendererContext& ctx ) {
 
@@ -29,7 +29,7 @@ namespace lum::render {
 		m_Ctx = ctx;
 
 		m_Instances.reserve( limits::k_MaxDrawCallsPerFrame );
-		m_TempInstances.reserve( m_TempSize );
+		m_TempInstances.reserve( sk_TempSize );
 
 		init( );
 
@@ -71,9 +71,9 @@ namespace lum::render {
 
 
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Private
-	//---------------------------------------------------------
+//=======================================================//
 
 	void GeometryPass::init( ) {
 
@@ -94,10 +94,10 @@ namespace lum::render {
 		}
 		{ // Geometry pipeline
 			rhi::PipelineCreateInfo desc;
-			desc.m_DepthStencil.m_Depth.bEnabled = true;
-			desc.m_DepthStencil.m_Depth.bWriteToZBuffer = true;
+			desc.m_DepthStencil.m_Depth.m_Enabled = true;
+			desc.m_DepthStencil.m_Depth.m_WriteToZBuffer = true;
 			desc.m_DepthStencil.m_Depth.m_Compare = rhi::CompareFlag::Less;
-			desc.m_Cull.bEnabled = true;
+			desc.m_Cull.m_Enabled = true;
 			desc.m_Cull.m_Face = rhi::Face::Back;
 			m_Pipeline = m_Ctx( ).m_RenderDev( ).CreatePipeline( desc );
 			m_Shader = m_Ctx( ).m_ShaderMgr( ).LoadShader( "shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ResourceRoot::Internal );
@@ -107,14 +107,14 @@ namespace lum::render {
 
 	void GeometryPass::draw_instance( const RenderInstance& instance ) {
 
-		const auto* mat = instance.m_Material;
+		const auto mat = instance.m_Material;
 
-		upload_material( *mat );
+		upload_material( mat.Ref() );
 
-		m_Ctx( ).m_RenderDev( ).BindTexture( mat->m_AlbedoTex, LUM_TEX_ALBEDO );
-		m_Ctx( ).m_RenderDev( ).BindTexture( mat->m_NormalTex, LUM_TEX_NORMAL );
-		m_Ctx( ).m_RenderDev( ).BindTexture( mat->m_RoughnessTex, LUM_TEX_ROUGHNESS );
-		m_Ctx( ).m_RenderDev( ).BindTexture( mat->m_MetallicTex, LUM_TEX_METALNESS );
+		m_Ctx( ).m_RenderDev( ).BindTexture( mat( ).m_AlbedoTex, LUM_TEX_ALBEDO );
+		m_Ctx( ).m_RenderDev( ).BindTexture( mat( ).m_NormalTex, LUM_TEX_NORMAL );
+		m_Ctx( ).m_RenderDev( ).BindTexture( mat( ).m_RoughnessTex, LUM_TEX_ROUGHNESS );
+		m_Ctx( ).m_RenderDev( ).BindTexture( mat( ).m_MetallicTex, LUM_TEX_METALNESS );
 
 		draw_mesh( instance );
 
@@ -122,7 +122,7 @@ namespace lum::render {
 
 	void GeometryPass::draw_mesh( const RenderInstance& instance ) {
 
-		const StaticMeshResource& res = m_Ctx( ).m_MeshMgr( ).GetStatic( instance.m_StaticMesh->m_Handle );
+		const StaticMeshResource& res = m_Ctx( ).m_MeshMgr( ).GetStatic( instance.m_StaticMesh( ).m_Handle );
 
 		upload_model_matrix( instance );
 		m_Ctx( ).m_RenderDev( ).DrawElements( res.m_Vao, res.m_NumIndices );
@@ -131,7 +131,7 @@ namespace lum::render {
 
 	void GeometryPass::upload_model_matrix( const RenderInstance& instance ) {
 
-		m_Ctx( ).m_RenderDev( ).UpdateBuffer( m_ModelUniform, instance.m_Transform->m_WorldMatrix.Data(), 0, 0 );
+		m_Ctx( ).m_RenderDev( ).UpdateBuffer( m_ModelUniform, instance.m_Transform( ).m_WorldMatrix.Data(), 0, 0 );
 
 	}
 	void GeometryPass::upload_material( const CMaterialInstance& mat ) {

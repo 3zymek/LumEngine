@@ -18,9 +18,9 @@ namespace lum {
 	struct LUM_API SceneModuleCreateInfo {
 
 		SafePtr<ResourceModule> m_ResourceModule = nullptr;
-		SafePtr<RenderModule> m_RenderModule = nullptr;
-		SafePtr<AudioModule> m_AudioModule = nullptr;
-		SafePtr<ev::EventBus> m_EventBus = nullptr;
+		SafePtr<RenderModule>	m_RenderModule = nullptr;
+		SafePtr<AudioModule>	m_AudioModule = nullptr;
+		SafePtr<ev::EventBus>	m_EventBus = nullptr;
 
 	};
 

@@ -15,9 +15,9 @@
 
 namespace lum {
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Public
-	//---------------------------------------------------------
+//=======================================================//
 
 	void MaterialManager::Initialize( render::RendererContext& ctx ) {
 
@@ -92,9 +92,9 @@ namespace lum {
 
 
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Private
-	//---------------------------------------------------------
+//=======================================================//
 
 	void MaterialManager::init( ) {
 
@@ -105,6 +105,7 @@ namespace lum {
 					ResourceLoader::ResolveResourcePath( ResourceRoot::External, mat.m_Component->m_BasePath )
 				);
 				if (!content) {
+					LUM_LOG_INFO( "{}", mat.m_Component->m_BasePath );
 					LUM_LOG_ERROR( "Failed to load material {}: {}", mat.m_Component->m_BasePath, content.GetError() );
 					*mat.m_Component = GetDefaultInstance();
 					return;
@@ -146,7 +147,7 @@ namespace lum {
 
 			auto& texMgr = m_Ctx( ).m_TextureMgr( );
 			
-			MaterialBase base;
+			MaterialBase base{};
 			base.m_AlbedoTex	= texMgr.GetFallbackTexture( FallbackTexture::DefaultAlbedo );
 			base.m_NormalTex	= texMgr.GetFallbackTexture( FallbackTexture::DefaultNormal );
 			base.m_MetallicTex	= texMgr.GetFallbackTexture( FallbackTexture::DefaultMetallic );

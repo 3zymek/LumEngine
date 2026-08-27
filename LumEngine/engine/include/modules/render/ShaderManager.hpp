@@ -49,10 +49,10 @@ namespace lum {
 	private:
 
 		/* @brief Pointer to the RHI device used for shader creation. */
-		rhi::IRenderDevice* m_RenderDevice = nullptr;
+		SafePtr<rhi::IRenderDevice> m_RenderDevice = nullptr;
 
 		/* @brief Cache mapping shader path hashes to their corresponding shader handles. */
-		std::unordered_map<uint64, rhi::ShaderHandle> m_Shaders;
+		std::unordered_map<uint64, rhi::ShaderHandle> m_Shaders{};
 
 	};
 } // namespace lum

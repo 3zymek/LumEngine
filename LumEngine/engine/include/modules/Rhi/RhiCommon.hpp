@@ -17,19 +17,19 @@ namespace lum {
 	struct alignas(16) LUM_API Vertex {
 
 		/* @brief Vertex position in 3D space. */
-		Vector3 m_Position;
+		Vector3 m_Position{};
 
 		/* @brief Vertex normal vector. */
-		Vector3 m_Normal;
+		Vector3 m_Normal{};
 
 		/* @brief Texture coordinates. */
-		Vector2 m_Uv;
+		Vector2 m_Uv{};
 
 		/* @brief Tangent vector used for TBN matrix construction. */
-		Vector3 m_Tangent;
+		Vector3 m_Tangent{};
 
 		/* @brief Bitangent vector used for TBN matrix construction. */
-		Vector3 m_Bitangent;
+		Vector3 m_Bitangent{};
 
 	};
 
@@ -100,10 +100,7 @@ namespace lum {
 		/* @brief Typed handle wrapping a vertex layout (VAO) ID. */
 		struct VertexLayoutHandle : public cstd::BaseHandle<LayoutID> { };
 
-		inline constexpr FramebufferHandle kDefaultFramebuffer { 0, MaxValue<FramebufferID>( ) };
-
-		/* @brief Bitmask storage type used for RHI flag enums. */
-		using REnumFlag = uint16;
+		inline constexpr FramebufferHandle k_DefaultFramebuffer { 0, MaxValue<FramebufferID>( ) };
 
 		enum class RenderBackend : byte {
 			OpenGL,
@@ -137,7 +134,7 @@ namespace lum {
 		/* @brief Vertex attribute data format passed to the GPU.
 		* Describes the component count and type of a single vertex attribute.
 		*/
-		enum class DataFormat : byte {
+		enum class DataFormat {
 			Float1, /* @brief Single float scalar. */
 			Vec2,   /* @brief 2-component float vector (x, y). */
 			Vec3,   /* @brief 3-component float vector (x, y, z). */
@@ -147,7 +144,7 @@ namespace lum {
 		};
 
 		/* @brief Type of a GPU buffer object. */
-		enum class BufferType : byte {
+		enum class BufferType {
 			None,
 			Vertex,        /* @brief Vertex buffer object (VBO). */
 			Element,       /* @brief Index buffer object (EBO). */
@@ -158,13 +155,13 @@ namespace lum {
 		/* @brief Intended usage pattern of a GPU buffer.
 		* Hints the driver on how to optimize memory allocation.
 		*/
-		enum class BufferUsage : byte {
+		enum class BufferUsage {
 			Static,  /* @brief Data is set once and never changed (fast reads). */
 			Dynamic  /* @brief Data is updated frequently during runtime. */
 		};
 
 		/* @brief Polygon rasterization mode. */
-		enum class TopologyMode : byte {
+		enum class TopologyMode {
 			Point, /* @brief Render vertices as individual points. */
 			Line,  /* @brief Render polygon edges as lines (wireframe). */
 			Fill   /* @brief Fill polygon interiors (solid rendering). */
@@ -183,24 +180,24 @@ namespace lum {
 		};
 
 		/* @brief Specifies which polygon face(s) an operation applies to. */
-		enum class Face : byte {
+		enum class Face {
 			Front,     /* @brief Apply to front-facing polygons only. */
 			Back,      /* @brief Apply to back-facing polygons only. */
 			FrontBack, /* @brief Apply to both front and back-facing polygons. */
 		};
 
 		/* @brief Determines which polygon winding order is considered front-facing. */
-		enum class WindingOrder : byte {
+		enum class WindingOrder {
 			CounterClockwise, /* @brief Triangles wound counter-clockwise are front-facing. */
 			Clockwise         /* @brief Triangles wound clockwise are front-facing. */
 		};
 
 		/* @brief Per-channel write mask controlling which color channels are written to the framebuffer. */
 		struct ColorMask {
-			bool mR : 1 = true; /* @brief Enable writes to the red channel. */
-			bool mG : 1 = true; /* @brief Enable writes to the green channel. */
-			bool mB : 1 = true; /* @brief Enable writes to the blue channel. */
-			bool mA : 1 = true; /* @brief Enable writes to the alpha channel. */
+			bool m_R : 1 = true; /* @brief Enable writes to the red channel. */
+			bool m_G : 1 = true; /* @brief Enable writes to the green channel. */
+			bool m_B : 1 = true; /* @brief Enable writes to the blue channel. */
+			bool m_A : 1 = true; /* @brief Enable writes to the alpha channel. */
 		};
 
 		/* @brief Internal implementation details for the RHI.
@@ -208,33 +205,32 @@ namespace lum {
 		*/
 		namespace detail {
 
-#		if LUM_ENABLE_DEBUG_RENDER == 1
-			inline void APIENTRY GLDebugCallback(
-				GLenum src,
-				GLenum type,
-				GLuint id,
-				GLenum severity,
-				GLsizei length,
-				const char* msg,
-				const void* usrParam
-			) {
-				if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
-					LUM_LOG_DEBUG( msg );
-				else if (severity == GL_DEBUG_SEVERITY_LOW)
-					LUM_LOG_INFO( msg );
-				else if (severity == GL_DEBUG_SEVERITY_MEDIUM)
-					LUM_LOG_WARN( msg );
-				else if (severity == GL_DEBUG_SEVERITY_HIGH)
-					LUM_LOG_ERROR( msg );
+#			if LUM_ENABLE_DEBUG_RENDER == 1
+				inline void APIENTRY GLDebugCallback(
+					GLenum src,
+					GLenum type,
+					GLuint id,
+					GLenum severity,
+					GLsizei length,
+					const char* msg,
+					const void* usrParam
+				) {
+					if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+						LUM_LOG_DEBUG( msg );
+					else if (severity == GL_DEBUG_SEVERITY_LOW)
+						LUM_LOG_INFO( msg );
+					else if (severity == GL_DEBUG_SEVERITY_MEDIUM)
+						LUM_LOG_WARN( msg );
+					else if (severity == GL_DEBUG_SEVERITY_HIGH)
+						LUM_LOG_ERROR( msg );
 
-			}
-#		endif
+				}
+#			endif
 
 			/* @brief Lookup table mapping EDataFormat enum values to their component counts.
 			* Indexed by the underlying value of EDataFormat.
 			*/
-			inline constexpr
-				uint8 kDataFormatLookup[ ] = { 1, 2, 3, 4, 9, 16 };
+			inline constexpr uint8 k_DataFormatLookup[ ] = { 1, 2, 3, 4, 9, 16 };
 
 		} // namespace lum::rhi::detail
 

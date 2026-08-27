@@ -3,9 +3,9 @@
 
 namespace lum::render {
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Public
-	//---------------------------------------------------------
+//=======================================================//
 
 	void PostprocessPass::Initialize( RendererContext& ctx ) {
 
@@ -32,7 +32,7 @@ namespace lum::render {
 		if (exe.m_TAAEnabled)
 			device.Copy( quad.m_PostprocessTex, exe.m_PreviousFrameTex );
 
-		device.BindFramebuffer( rhi::kDefaultFramebuffer );
+		device.BindFramebuffer( rhi::k_DefaultFramebuffer );
 
 
 	}

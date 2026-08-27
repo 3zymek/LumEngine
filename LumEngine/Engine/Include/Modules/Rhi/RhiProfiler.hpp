@@ -20,29 +20,29 @@ namespace lum::rhi {
 
 			/* @brief Begins a new profiling session and resets all counters. */
 			void StartRecording() {
-				bRecording = true;
-				cacheHits = 0;
-				cacheMisses = 0;
+				m_Recording = true;
+				m_CacheHits = 0;
+				m_CacheMisses = 0;
 			}
 
 			/* @brief Ends the current profiling session. */
 			void EndRecording() {
-				bRecording = false;
+				m_Recording = false;
 			}
 
 			/* @brief Increments the draw call counter by one. */
 			void RegisterDrawCall() {
-				drawCalls++;
+				m_DrawCalls++;
 			}
 
 			/* @brief Increments the cache miss counter by one. */
 			void RegisterCacheMiss() {
-				cacheMisses++;
+				m_CacheMisses++;
 			}
 
 			/* @brief Increments the cache hit counter by one. */
 			void RegisterCacheHit() {
-				cacheHits++;
+				m_CacheHits++;
 			}
 
 			/* @brief Computes the cache hit rate for the current session.
@@ -50,23 +50,23 @@ namespace lum::rhi {
 			*         Returns 0.0 if no cache accesses have been recorded.
 			*/
 			float32 GetCacheHitRate() const {
-				uint32 total = cacheHits + cacheMisses;
-				return total > 0 ? (float32)cacheHits / total : 0.0f;
+				uint32 total = m_CacheHits + m_CacheMisses;
+				return total > 0 ? (float32)m_CacheHits / total : 0.0f;
 			}
 
 		private:
 
 			/* @brief Whether the profiler is currently recording. */
-			bool bRecording = false;
+			bool m_Recording = false;
 
 			/* @brief Total number of draw calls recorded in the current session. */
-			uint32 drawCalls = 0;
+			uint32 m_DrawCalls = 0;
 
 			/* @brief Number of cache hits recorded in the current session. */
-			uint32 cacheHits = 0;
+			uint32 m_CacheHits = 0;
 
 			/* @brief Number of cache misses recorded in the current session. */
-			uint32 cacheMisses = 0;
+			uint32 m_CacheMisses = 0;
 
 		};
 

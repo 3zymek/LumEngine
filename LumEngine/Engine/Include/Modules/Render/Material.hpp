@@ -16,19 +16,19 @@ namespace lum {
 	struct MaterialBase {
 
 		/* @brief Albedo (base color) texture map. */
-		rhi::TextureHandle m_AlbedoTex;
+		rhi::TextureHandle m_AlbedoTex{};
 
 		/* @brief Normal map for surface detail. */
-		rhi::TextureHandle m_NormalTex;
+		rhi::TextureHandle m_NormalTex{};
 
 		/* @brief Roughness texture map. */
-		rhi::TextureHandle m_RoughnessTex;
+		rhi::TextureHandle m_RoughnessTex{};
 
 		/* @brief Metallic texture map. */
-		rhi::TextureHandle m_MetallicTex;
+		rhi::TextureHandle m_MetallicTex{};
 
 		/* @brief Ambient occlusion texture map. */
-		rhi::TextureHandle m_AmbientTex;
+		rhi::TextureHandle m_AmbientTex{};
 
 	};
 
@@ -38,15 +38,15 @@ namespace lum {
 	*/
 	struct MaterialDescriptor {
 
-		Optional<String> m_AlbedoTex;      // Path to albedo texture
-		Optional<String> m_NormalTex;      // Path to normal map
-		Optional<String> m_RoughnessTex;   // Path to roughness map
-		Optional<String> m_MetallicTex;    // Path to metallic map
+		Optional<String> m_AlbedoTex{};      // Path to albedo texture
+		Optional<String> m_NormalTex{};      // Path to normal map
+		Optional<String> m_RoughnessTex{};   // Path to roughness map
+		Optional<String> m_MetallicTex{};    // Path to metallic map
 
 	};
 
 	/* @brief Strongly typed handle referencing a base material in the pool. */
-	struct MaterialBaseHandle : cstd::BaseHandle<uint32> { };
+	struct MaterialBaseHandle : cstd::BaseHandle<uint32> {};
 
 	/* @brief Identifies which texture map to set on a material base. */
 	enum class MaterialMember {

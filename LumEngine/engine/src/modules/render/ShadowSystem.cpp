@@ -6,9 +6,9 @@
 
 namespace lum::render {
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Public
-	//---------------------------------------------------------
+//=======================================================//
 
 	void ShadowSystem::Initialize( RendererContext& ctx ) {
 
@@ -18,8 +18,8 @@ namespace lum::render {
 		{ // Shadow mapping pipeline
 
 			rhi::PipelineCreateInfo desc;
-			desc.m_DepthStencil.m_Depth.bEnabled = true;
-			desc.m_Cull.bEnabled = true;
+			desc.m_DepthStencil.m_Depth.m_Enabled = true;
+			desc.m_Cull.m_Enabled = true;
 			desc.m_Cull.m_Face = rhi::Face::Back;
 			m_ShadowMappingPipeline = m_Ctx().m_RenderDev( ).CreatePipeline( desc );
 
@@ -57,8 +57,8 @@ namespace lum::render {
 			desc.m_BufferUsage = rhi::BufferUsage::Dynamic;
 			desc.m_MapFlags = rhi::MapFlag::Write;
 			desc.m_Size = sizeof( Matrix4 );
-			m_LightSpaceUBO = ctx.m_RenderDev( ).CreateBuffer( desc );
-			ctx.m_RenderDev( ).SetUniformBufferBinding( m_LightSpaceUBO, LUM_UBO_LIGHTSPACE_MATRIX );
+			m_LightSpaceUbo = ctx.m_RenderDev( ).CreateBuffer( desc );
+			ctx.m_RenderDev( ).SetUniformBufferBinding( m_LightSpaceUbo, LUM_UBO_LIGHTSPACE_MATRIX );
 		}
 		{ // Shaders
 			m_Shader = ctx.m_ShaderMgr( ).LoadShader( "shaders/shadow_mapping/directional.vert", "shaders/shadow_mapping/directional.frag", ResourceRoot::Internal );
@@ -87,8 +87,8 @@ namespace lum::render {
 			desc.m_BufferUsage = rhi::BufferUsage::Dynamic;
 			desc.m_MapFlags = rhi::MapFlag::Write;
 			desc.m_Size = sizeof( Matrix4 ) * limits::k_MaxShadowCastingSpotLights;
-			m_LightSpaceUBO = ctx.m_RenderDev( ).CreateBuffer( desc );
-			ctx.m_RenderDev( ).SetUniformBufferBinding( m_LightSpaceUBO, LUM_UBO_LIGHTSPACE_MATRIX );
+			m_LightSpaceUbo = ctx.m_RenderDev( ).CreateBuffer( desc );
+			ctx.m_RenderDev( ).SetUniformBufferBinding( m_LightSpaceUbo, LUM_UBO_LIGHTSPACE_MATRIX );
 		}
 		{ // Shader
 			m_Shader = ctx.m_ShaderMgr( ).LoadShader( "shaders/shadow_mapping/spot.vert", "shaders/shadow_mapping/spot.frag", ResourceRoot::Internal );
@@ -112,7 +112,7 @@ namespace lum::render {
 
 		geoPass.DrawScene( );
 
-		device.BindFramebuffer( rhi::kDefaultFramebuffer );
+		device.BindFramebuffer( rhi::k_DefaultFramebuffer );
 		device.SetViewport( 0, 0, viewport.m_Width, viewport.m_Height );
 
 	}
@@ -133,9 +133,9 @@ namespace lum::render {
 
 
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Private
-	//---------------------------------------------------------
+//=======================================================//
 
 	void ShadowSystem::DirectionalLight::calculate_lightspace_matrix( const Vector3& dir, RendererContext& ctx ) {
 
@@ -193,7 +193,7 @@ namespace lum::render {
 	void ShadowSystem::DirectionalLight::upload_lightspace_matrix( const Matrix4& mat, RendererContext& ctx ) {
 
 		ctx.m_RenderDev().UpdateBuffer(
-			m_LightSpaceUBO,
+			m_LightSpaceUbo,
 			mat.Data()
 		);
 

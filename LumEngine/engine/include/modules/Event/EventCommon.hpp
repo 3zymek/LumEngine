@@ -14,7 +14,7 @@ namespace lum {
 	/* @brief Base tag struct for all engine events.
 	*  Inherit from this to mark a struct as a valid event type.
 	*/
-	struct LUM_API Event { };
+	struct LUM_API Event {};
 
 	/* @brief Internal implementation details for the event system.
 	*  Not intended for direct use outside of the event subsystem.
@@ -27,9 +27,8 @@ namespace lum {
 		*/
 		template<typename tType>
 		concept cEvent =
-			std::is_base_of_v<Event, tType>&&
-			std::is_trivially_copyable_v<tType>&&
-			std::is_trivially_constructible_v<tType>;
+			std::is_base_of_v<Event, tType> &&
+			std::is_copy_constructible_v<tType>;
 
 		/* @brief Underlying type for event type identifiers. */
 		using EventTypeID = uint32;

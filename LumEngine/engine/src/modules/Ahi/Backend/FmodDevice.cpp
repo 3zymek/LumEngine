@@ -9,9 +9,9 @@
 
 namespace lum::ahi::fmod {
 
-	//---------------------------------------------------------
-	// Public
-	//---------------------------------------------------------
+	//=======================================================//
+		// Public
+	//=======================================================//
 
 	void FMODDevice::Initialize( int32 maxChannels, Flags<InitFlag> flags ) {
 
@@ -33,7 +33,7 @@ namespace lum::ahi::fmod {
 		FMOD::Sound* sound = nullptr;
 		FMOD_MODE fmodFlags = translate_sound_flags( flags );
 
-		m_System->createSound( path.ToString().data( ), fmodFlags, nullptr, &sound );
+		m_System->createSound( path.ToString( ).data( ), fmodFlags, nullptr, &sound );
 
 		return m_Sounds.Append( std::move( sound ) );
 
@@ -49,7 +49,7 @@ namespace lum::ahi::fmod {
 
 	AudioEffectHandle FMODDevice::CreateEffect( const AudioEffectCreateInfo& desc ) {
 
-		AudioEffect effect;
+		AudioEffect effect{};
 
 		if (desc.m_Reverb.m_Enabled)
 			effect.m_Dsps.push_back( create_reverb_effect( desc.m_Reverb ) );
@@ -152,7 +152,7 @@ namespace lum::ahi::fmod {
 
 	ChannelGroupHandle FMODDevice::CreateChannelGroup( StringView name ) {
 
-		FMOD::ChannelGroup* group;
+		FMOD::ChannelGroup* group{};
 		m_System->createChannelGroup( name.data( ), &group );
 		return m_ChannelGroups.Append( std::move( group ) );
 
@@ -160,7 +160,7 @@ namespace lum::ahi::fmod {
 
 	void FMODDevice::PlayOneShot( SoundHandle sound, const SoundPlaybackDescription& desc ) {
 
-		FMOD::Sound* fmodSound = static_cast< FMOD::Sound* >(m_Sounds[ sound ]);
+		FMOD::Sound* fmodSound = static_cast<FMOD::Sound*>(m_Sounds[ sound ]);
 		FMOD::Channel* channel = nullptr;
 		if (desc.m_Group == k_DefaultGroup)
 			m_System->playSound( fmodSound, nullptr, false, &channel );
@@ -175,7 +175,7 @@ namespace lum::ahi::fmod {
 
 		LUM_ASSERT( m_Sounds.Contains( inst.m_Sound ), "Invalid sound" );
 
-		FMOD::Sound* fmodSound = static_cast< FMOD::Sound* >(m_Sounds[ inst.m_Sound.m_Id ]);
+		FMOD::Sound* fmodSound = static_cast<FMOD::Sound*>(m_Sounds[ inst.m_Sound.m_Id ]);
 		FMOD::Channel* channel = nullptr;
 
 		m_System->playSound( fmodSound, nullptr, inst.m_Flags.Has( SoundInstanceFlag::Paused ), &channel );
@@ -240,7 +240,7 @@ namespace lum::ahi::fmod {
 
 		FMOD::Channel* channel = to_fmod_channel( m_Channels[ inst.m_InstanceId ] );
 
-		bool playing;
+		bool playing{};
 		channel->isPlaying( &playing );
 
 		// End streaming
@@ -281,9 +281,9 @@ namespace lum::ahi::fmod {
 
 
 
-	//---------------------------------------------------------
-	// Private
-	//---------------------------------------------------------
+	//=======================================================//
+		// Private
+	//=======================================================//
 
 	FMOD_MODE FMODDevice::translate_sound_flags( Flags<SoundFlag> flags ) {
 

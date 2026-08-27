@@ -24,11 +24,11 @@ namespace lum {
 		MeshManager			m_MeshMgr{};
 		ShaderManager		m_ShaderMgr{};
 
-		void Initialize( PlatformModule& platform,  ev::EventBus& bus );
+		void Initialize( PlatformModule& platform, ev::EventBus& bus );
 
 	private:
 
-		render::RendererContext m_Ctx;
+		render::RendererContext m_Ctx{};
 
 	};
 

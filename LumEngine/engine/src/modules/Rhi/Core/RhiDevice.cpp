@@ -23,13 +23,13 @@ namespace lum::rhi {
 
 	}
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Private
-	//---------------------------------------------------------
+//=======================================================//
 
 	bool IRenderDevice::validate_texture_descriptor( const TextureCreateInfo& desc ) const noexcept {
 
-		if (m_Textures.DenseSize( ) >= skMaxTextures) {
+		if (m_Textures.DenseSize( ) >= sk_MaxTextures) {
 
 			LUM_LOG_WARN( "Max textures reached" );
 			return false;
@@ -67,7 +67,7 @@ namespace lum::rhi {
 			);
 		}
 
-		if (m_Buffers.DenseSize( ) >= skMaxBuffers) {
+		if (m_Buffers.DenseSize( ) >= sk_MaxBuffers) {
 			LUM_LOG_WARN( "Max buffers reached" );
 			return false;
 		}

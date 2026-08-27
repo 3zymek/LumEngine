@@ -30,11 +30,11 @@ namespace lum::rhi {
 
 		BufferID		m_Handle = 0;
 
-		BufferType		m_Type	= BufferType::None;
-		BufferUsage		m_Usage	= BufferUsage::Static;
-		Flags<MapFlag>	m_Flags	{};
-		usize			m_Size	= 0;
-		bool			m_Mapped	= false;
+		BufferType		m_Type = BufferType::None;
+		BufferUsage		m_Usage = BufferUsage::Static;
+		Flags<MapFlag>	m_Flags{};
+		usize			m_Size{};
+		bool			m_Mapped = false;
 
 	};
 

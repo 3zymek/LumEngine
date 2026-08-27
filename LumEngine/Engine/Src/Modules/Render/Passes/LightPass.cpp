@@ -11,9 +11,9 @@
 
 namespace lum::render {
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Public
-	//---------------------------------------------------------
+//=======================================================//
 
 	void LightPass::Initialize( RendererContext& ctx ) {
 
@@ -87,9 +87,9 @@ namespace lum::render {
 
 
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Private
-	//---------------------------------------------------------
+//=======================================================//
 
 	void LightPass::init( ) {
 
@@ -121,8 +121,8 @@ namespace lum::render {
 		if (!device.IsValid( m_Pipeline )) {
 		
 			rhi::PipelineCreateInfo desc;
-			desc.m_DepthStencil.m_Depth.bEnabled = false;
-			desc.m_DepthStencil.m_Depth.bWriteToZBuffer = false;
+			desc.m_DepthStencil.m_Depth.m_Enabled = false;
+			desc.m_DepthStencil.m_Depth.m_WriteToZBuffer = false;
 			m_Pipeline = m_Ctx( ).m_RenderDev( ).CreatePipeline( desc );
 		
 		}
@@ -140,12 +140,12 @@ namespace lum::render {
 
 		m_Ctx( ).m_RenderDev().UpdateBuffer(
 			m_LightsUbo, &m_ActivePointLights,
-			skOffsetActivePoint, sizeof( int32 )
+			sk_OffsetActivePoint, sizeof( int32 )
 		);
 
 		m_Ctx( ).m_RenderDev( ).UpdateBuffer(
 			m_LightsUbo, m_PointLights.data( ),
-			skOffsetPointLights, sizeof( PointLight ) * LUM_MAX_LIGHTS
+			sk_OffsetPointLights, sizeof( PointLight ) * LUM_MAX_LIGHTS
 		);
 
 	}
@@ -153,12 +153,12 @@ namespace lum::render {
 
 		m_Ctx( ).m_RenderDev( ).UpdateBuffer(
 			m_LightsUbo, &m_ActiveSpotLights,
-			skOffsetActiveSpot, sizeof( int32 )
+			sk_OffsetActiveSpot, sizeof( int32 )
 		);
 
 		m_Ctx( ).m_RenderDev( ).UpdateBuffer(
 			m_LightsUbo, m_SpotLights.data( ),
-			skOffsetSpotLights, sizeof( SpotLight ) * LUM_MAX_LIGHTS
+			sk_OffsetSpotLights, sizeof( SpotLight ) * LUM_MAX_LIGHTS
 		);
 
 	}

@@ -31,7 +31,7 @@ namespace lum::rhi::gl {
 			glVertexArrayAttribFormat(
 				layout.m_Handle,
 				desc.m_Attributes[ i ].m_ShaderLocation,
-				detail::kDataFormatLookup[ LookupCast( desc.m_Attributes[ i ].m_Format ) ],
+				detail::k_DataFormatLookup[ LookupCast( desc.m_Attributes[ i ].m_Format ) ],
 				GL_FLOAT,
 				GL_FALSE,
 				desc.m_Attributes[ i ].m_RelativeOffset

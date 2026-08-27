@@ -34,7 +34,7 @@ namespace lum::rhi {
 	};
 
 	/* @brief Dimensionality and type of a GPU texture resource. */
-	enum class TextureKind : byte {
+	enum class TextureKind {
 		None,
 		Texture2D,				/* Standard 2D texture (render target, GBuffer attachment). */
 		Texture2DArray,			/* Array with multiple texture 2D layers. */
@@ -46,7 +46,7 @@ namespace lum::rhi {
 	/* @brief GPU-side internal storage format for a texture.
 	* Determines how pixel data is stored and sampled on the GPU.
 	*/
-	enum class TextureFormat : byte {
+	enum class TextureFormat {
 		
 		// 8-bit normalized
 		RGBA8,
@@ -85,7 +85,7 @@ namespace lum::rhi {
 	/* @brief CPU-side pixel channel layout of the source texture data.
 	* Describes how channels are ordered in the raw pixel buffer passed to the GPU.
 	*/
-	enum class PixelLayout : byte {
+	enum class PixelLayout {
 		RGBA,
 		RGB,
 		RG,
@@ -96,7 +96,7 @@ namespace lum::rhi {
 	};
 
 	/* @brief Data type of each pixel channel in the CPU-side pixel buffer. */
-	enum class PixelDataType : byte {
+	enum class PixelDataType {
 		UnsignedByte,
 		Byte,
 		UnsignedShort,
@@ -121,7 +121,7 @@ namespace lum::rhi {
 	struct TextureCreateInfo {
 
 		/* @brief Raw pixel data loaded from the CPU side. */
-		ImageData m_Data;
+		ImageData m_Data{};
 
 		/* @brief GPU-side storage format for the texture. */
 		TextureFormat m_InternalFormat = TextureFormat::RGBA8;
@@ -133,7 +133,7 @@ namespace lum::rhi {
 		PixelDataType m_DataType = PixelDataType::UnsignedByte;
 
 		/* @brief Whether to automatically generate mipmaps after upload. */
-		bool bGenerateMipmaps = false;
+		bool m_GenerateMipmaps = false;
 
 		/* @brief Number of mip levels to generate. 0 = calculate automatically. */
 		uint32 m_MipmapLevels = 0;
@@ -161,7 +161,7 @@ namespace lum::rhi {
 			/* @brief Pixel data for each of the six cubemap faces. */
 			ImageData m_Faces[6]{};
 
-		} m_Cubemap;
+		} m_Cubemap{};
 	};
 
 	/* @brief Describes a partial update to an existing GPU texture.
@@ -170,10 +170,10 @@ namespace lum::rhi {
 	struct TextureUpdateDescription {
 
 		/* @brief Target region within the texture to update. */
-		TextureRect m_Rect;
+		TextureRect m_Rect{};
 
 		/* @brief New pixel data to upload into the target region. */
-		ImageData m_Data;
+		ImageData m_Data{};
 
 		/* @brief Whether to regenerate mipmaps after the update. */
 		bool m_GenerateMipmaps = false;

@@ -32,9 +32,9 @@ namespace lum::render {
 		rhi::TextureHandle GetFrameTexture( ) { return m_ScreenQuad.m_PostprocessTex; }
 
 
-		//---------------------------------------------------------
+		//=======================================================//
 		// Environment
-		//---------------------------------------------------------
+		//=======================================================//
 
 		/* @brief Sets the environment cubemap texture used for skybox rendering and IBL precomputation.
 		*  @param tex Handle to a valid HDR cubemap texture.
@@ -43,9 +43,9 @@ namespace lum::render {
 
 
 
-		//---------------------------------------------------------
+		//=======================================================//
 		// Camera
-		//---------------------------------------------------------
+		//=======================================================//
 
 		/* @brief Updates the active camera used for rendering this frame.
 		*  @param camera Camera data containing view, projection and position.
@@ -54,9 +54,9 @@ namespace lum::render {
 
 
 
-		//---------------------------------------------------------
+		//=======================================================//
 		// Lights
-		//---------------------------------------------------------
+		//=======================================================//
 
 		/* @brief Submits a point light to be included in the current frame's lighting.
 		*  @param light Point light to add. Ignored if LUM_MAX_LIGHTS is reached.
@@ -78,9 +78,9 @@ namespace lum::render {
 
 
 
-		//---------------------------------------------------------
+		//=======================================================//
 		// Draw submission
-		//---------------------------------------------------------
+		//=======================================================//
 
 		/* @brief Submits a render instance for drawing in the current frame.
 		*  @param instance Render instance containing transform, mesh and material.
@@ -89,9 +89,9 @@ namespace lum::render {
 
 
 
-		//---------------------------------------------------------
+		//=======================================================//
 		// Frame
-		//---------------------------------------------------------
+		//=======================================================//
 
 		/* @brief Begins a new frame — clears per-frame light and draw state. */
 		void BeginFrame( );
@@ -103,29 +103,29 @@ namespace lum::render {
 	private:
 
 		/* @brief Cached context holding all subsystem manager references. */
-		RendererContext m_Ctx;
-		detail::DeferredBuffer m_DefferedBuffer;
-		detail::ScreenQuad m_ScreenQuad;
+		RendererContext m_Ctx{};
+		detail::DeferredBuffer m_DefferedBuffer{};
+		detail::ScreenQuad m_ScreenQuad{};
 
 
 
-		//---------------------------------------------------------
+		//=======================================================//
 		// Passes
-		//---------------------------------------------------------
+		//=======================================================//
 
-		GeometryPass m_GeometryPass;
-		LightPass m_LightPass;
-		LightPassExectueContext m_LightPassExecuteCtx; // Descriptor passed to the light pass each frame
-		EnvironmentPass m_EnvironmentPass;
-		PostprocessPass m_PostprocessPass;
-		ShadowSystem m_ShadowSys;
+		GeometryPass m_GeometryPass{};
+		LightPass m_LightPass{};
+		LightPassExectueContext m_LightPassExecuteCtx{}; // Descriptor passed to the light pass each frame
+		EnvironmentPass m_EnvironmentPass{};
+		PostprocessPass m_PostprocessPass{};
+		ShadowSystem m_ShadowSys{};
 
-		//---------------------------------------------------------
+		//=======================================================//
 		// Uniforms
-		//---------------------------------------------------------
+		//=======================================================//
 
 		/* @brief Uniform buffer holding per-frame camera matrices and position. */
-		rhi::BufferHandle m_CameraUbo;
+		rhi::BufferHandle m_CameraUbo{};
 
 		/* @brief CPU-side camera data uploaded to m_CameraUBO once per frame. */
 		detail::CameraGPU m_CameraGpu{};
@@ -134,9 +134,9 @@ namespace lum::render {
 		TemporalAntiAliasing m_TemporalAa{ };
 
 
-		//---------------------------------------------------------
+		//=======================================================//
 		// Internal
-		//---------------------------------------------------------
+		//=======================================================//
 
 		/* @brief Allocates GPU buffers and initializes all render passes. */
 		void init( uint32 w, uint32 h );

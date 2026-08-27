@@ -72,16 +72,16 @@ namespace lum::render {
 			float32 m_ShadowMapFar = m_ShadowMapDistance * 2.0f;
 
 			/* @brief Depth texture used as the shadow map attachment. */
-			rhi::TextureHandle m_ShadowMap;
+			rhi::TextureHandle m_ShadowMap{};
 
 			/* @brief Framebuffer with the shadow map as its depth attachment. */
-			rhi::FramebufferHandle m_Framebuffer;
+			rhi::FramebufferHandle m_Framebuffer{};
 
 			/* @brief Shader program used during the shadow pass. */
-			rhi::ShaderHandle m_Shader;
+			rhi::ShaderHandle m_Shader{};
 
 			/* @brief Uniform buffer holding the light space transformation matrix. */
-			rhi::BufferHandle m_LightSpaceUBO;
+			rhi::BufferHandle m_LightSpaceUbo{};
 
 			/* @brief Computes and uploads the light space matrix from the given light direction.
 			*  @param direction Normalized direction vector of the directional light.
@@ -93,7 +93,7 @@ namespace lum::render {
 			*/
 			void upload_lightspace_matrix( const Matrix4& mat, RendererContext& ctx );
 
-		} m_DirectionalLight;
+		} m_DirectionalLight{};
 
 
 
@@ -130,16 +130,16 @@ namespace lum::render {
 			float32 m_ShadowMapFar = 100.0f;
 
 			/* @brief Depth texture used as the shadow maps attachments. */
-			rhi::TextureHandle m_ShadowMaps;
+			rhi::TextureHandle m_ShadowMaps{};
 
 			/* @brief Framebuffer with the shadow maps as its depth attachment. */
-			rhi::FramebufferHandle m_Framebuffer;
+			rhi::FramebufferHandle m_Framebuffer{};
 
 			/* @brief Shader program used during the shadow pass. */
-			rhi::ShaderHandle m_Shader;
+			rhi::ShaderHandle m_Shader{};
 
 			/* @brief Uniform buffer holding the light space transformation matrix. */
-			rhi::BufferHandle m_LightSpaceUBO;
+			rhi::BufferHandle m_LightSpaceUbo{};
 			
 			/* @brief Computes the light space matrix for a spot light.
 			* @param dir Light direction.
@@ -153,7 +153,7 @@ namespace lum::render {
 			*/
 			void upload_lightspace_matrix( const Matrix4& mat, RendererContext& ctx );
 			
-		} m_SpotLight;
+		} m_SpotLight{};
 
 
 
@@ -162,7 +162,7 @@ namespace lum::render {
 
 		SafePtr<RendererContext> m_Ctx = nullptr;
 
-		rhi::PipelineHandle m_ShadowMappingPipeline;
+		rhi::PipelineHandle m_ShadowMappingPipeline{};
 
 	};
 

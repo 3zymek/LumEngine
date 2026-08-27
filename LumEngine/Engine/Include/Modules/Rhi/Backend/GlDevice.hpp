@@ -201,14 +201,16 @@ namespace lum::rhi::gl {
 
 	protected:
 
-		static inline SafePtr<OpenGLContext> sLoadingContext = nullptr;
+		static inline SafePtr<OpenGLContext> s_LoadingContext = nullptr;
+
+		SafePtr<OpenGLContext> m_RenderContext = nullptr;
 
 		//=================================================
 		// Lookup tables
 		//=================================================
 
 		/* @brief Maps TopologyMode to GL polygon mode (GL_POINT, GL_LINE, GL_FILL). */
-		inline constexpr static GLenum skTopologyModeLookup[ ] =
+		static inline constexpr GLenum sk_TopologyModeLookup[ ] =
 		{
 			GL_POINT,
 			GL_LINE,
@@ -216,7 +218,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps Face enum to GL face target (GL_FRONT, GL_BACK, GL_FRONT_AND_BACK). */
-		inline constexpr static GLenum skFacesLookup[ ] =
+		static inline constexpr GLenum sk_FacesLookup[ ] =
 		{
 			GL_FRONT,
 			GL_BACK,
@@ -224,7 +226,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps texture minification filter modes to GL equivalents. */
-		inline constexpr static GLenum skTextureMinFilterLookup[ ] =
+		static inline constexpr GLenum sk_TextureMinFilterLookup[ ] =
 		{
 			GL_LINEAR,
 			GL_LINEAR_MIPMAP_NEAREST,
@@ -235,7 +237,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps sampler wrap modes to GL wrap targets. */
-		inline constexpr static GLenum skSamplerWrapLookup[ ] =
+		static inline constexpr GLenum sk_SamplerWrapLookup[ ] =
 		{
 			GL_REPEAT,
 			GL_MIRRORED_REPEAT,
@@ -244,7 +246,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps CompareFlag to GL comparison functions. */
-		inline constexpr static GLenum skCompareFlagLookup[ ] =
+		static inline constexpr GLenum sk_CompareFlagLookup[ ] =
 		{
 			GL_EQUAL,
 			GL_NOTEQUAL,
@@ -257,7 +259,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps BlendFactor to GL blend factor constants. */
-		inline constexpr static GLenum skBlendFactorLookup[ ] =
+		static inline constexpr GLenum sk_BlendFactorLookup[ ] =
 		{
 			GL_ZERO,
 			GL_ONE,
@@ -281,7 +283,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps BlendOp to GL blend equation modes. */
-		inline constexpr static GLenum skBlendOpLookup[ ] =
+		static inline constexpr GLenum sk_BlendOpLookup[ ] =
 		{
 			GL_FUNC_ADD,
 			GL_FUNC_SUBTRACT,
@@ -291,7 +293,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps StencilOp to GL stencil operation constants. */
-		inline constexpr static GLenum skStencilOpLookup[ ] =
+		static inline constexpr GLenum sk_StencilOpLookup[ ] =
 		{
 			GL_ZERO,
 			GL_ONE,
@@ -305,7 +307,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps ClearFlag bits to GL clear buffer bits. */
-		inline constexpr static GLenum skBufferBitLookup[ ] =
+		static inline constexpr GLenum sk_BufferBitLookup[ ] =
 		{
 			GL_COLOR_BUFFER_BIT,
 			GL_DEPTH_BUFFER_BIT,
@@ -313,7 +315,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps TextureType to GL texture targets. */
-		inline constexpr static GLenum skTextureTypeLookup[ ] =
+		static inline constexpr GLenum sk_TextureTypeLookup[ ] =
 		{
 			GL_NONE,
 			GL_TEXTURE_2D,
@@ -322,7 +324,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps ImageLayout to GL sized internal formats. */
-		inline constexpr static GLenum skImageLayoutLookup[ ] =
+		static inline constexpr GLenum sk_ImageLayoutLookup[ ] =
 		{
 			GL_RGBA8,
 			GL_SRGB8_ALPHA8,
@@ -347,7 +349,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps image channel layout to GL base format (GL_RGBA, GL_DEPTH_COMPONENT, etc.). */
-		inline constexpr static GLenum skImageFormatLookup[ ] =
+		static inline constexpr GLenum sk_ImageFormatLookup[ ] =
 		{
 			GL_RGBA,
 			GL_RGB,
@@ -359,7 +361,7 @@ namespace lum::rhi::gl {
 		};
 
 		/* @brief Maps texture data types to GL data type constants. */
-		inline constexpr static GLenum skTextureDataTypeLookup[ ] =
+		static inline constexpr GLenum sk_TextureDataTypeLookup[ ] =
 		{
 			GL_UNSIGNED_BYTE,
 			GL_BYTE,
@@ -372,8 +374,6 @@ namespace lum::rhi::gl {
 			GL_UNSIGNED_INT_24_8,
 			GL_FLOAT_32_UNSIGNED_INT_24_8_REV
 		};
-
-		OpenGLContext* m_RenderContext = nullptr;
 
 		//=================================================
 		// Private helpers

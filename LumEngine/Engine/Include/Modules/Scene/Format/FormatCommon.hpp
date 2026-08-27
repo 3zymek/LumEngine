@@ -60,7 +60,7 @@ namespace lum {
 	namespace fmt {
 
 		/* @brief Token types produced by the lexer. */
-		enum class TokenType : byte {
+		enum class TokenType {
 			Identifier, // Named keyword or symbol
 			LBracket,   // {
 			RBracket,   // }
@@ -76,7 +76,7 @@ namespace lum {
 		};
 
 		/* @brief Supported file format types. */
-		enum class FileFormat : byte {
+		enum class FileFormat {
 			Scene,    // .lsc scene file
 			Material  // .lmt material file
 		};
@@ -101,10 +101,10 @@ namespace lum {
 			std::unordered_map<EntityID, std::vector<EntityID>> m_PersistentChildren{};
 
 			/* @brief Entity currently being parsed and populated with components. */
-			EntityID m_CurrentEntity;
+			EntityID m_CurrentEntity{};
 
 			/* @brief Resource manager context used to load and resolve assets. */
-			SceneManagerContext m_Ctx;
+			SceneManagerContext m_Ctx{};
 
 		};
 
@@ -187,7 +187,7 @@ namespace lum {
 			inline void ExceptOpeningBracketInPlace( std::vector<Token>& tokens, int32 i ) {
 				if (!IsToken( tokens, i, TokenType::LBracket )) {
 					throw DeserializeException(
-						"Opening bracket expected at line %llu in file %s",
+						"Opening bracket expected at line {} in file {}",
 						tokens[ i ].m_Line,
 						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
@@ -204,7 +204,7 @@ namespace lum {
 			inline void ExceptOpeningSquareBracketInPlace( std::vector<Token>& tokens, int32 i ) {
 				if (!IsToken( tokens, i, TokenType::LSquareBracket )) {
 					throw DeserializeException(
-						"Opening square bracket expected at line %llu in file %s",
+						"Opening square bracket expected at line {} in file {}",
 						tokens[ i ].m_Line,
 						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
@@ -221,7 +221,7 @@ namespace lum {
 			inline void ExceptColonInPlace( std::vector<Token>& tokens, int32 i ) {
 				if (!IsToken( tokens, i, TokenType::Colon )) {
 					throw DeserializeException(
-						"Colon expected at line %llu in file %s",
+						"Colon expected at line {} in file {}",
 						tokens[ i ].m_Line,
 						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
@@ -242,7 +242,7 @@ namespace lum {
 			inline String ReadString( std::vector<Token>& tokens, int32 i ) {
 				if (!IsToken( tokens, i, TokenType::String )) {
 					throw DeserializeException(
-						"String expected at line %llu in file %s",
+						"String expected at line {} in file {}",
 						tokens[ i ].m_Line,
 						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
@@ -259,7 +259,7 @@ namespace lum {
 			inline bool ReadBool( std::vector<Token>& tokens, int32 i ) {
 				if (!IsToken( tokens, i, TokenType::Number )) {
 					throw DeserializeException(
-						"Bool expected at line %llu in file %s",
+						"Bool expected at line {} in file {}",
 						tokens[ i ].m_Line,
 						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
@@ -276,7 +276,7 @@ namespace lum {
 			inline float32 ReadFloat( std::vector<Token>& tokens, int32 i ) {
 				if (!IsToken( tokens, i, TokenType::Number )) {
 					throw DeserializeException(
-						"Float expected at line %llu in file %s",
+						"Float expected at line {} in file {}",
 						tokens[ i ].m_Line,
 						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
@@ -294,7 +294,7 @@ namespace lum {
 			inline int64 ReadInt( std::vector<Token>& tokens, int32 i ) {
 				if (!IsToken( tokens, i, TokenType::Number )) {
 					throw DeserializeException(
-						"Integer expected at line %llu in file %s",
+						"Integer expected at line {} in file {}",
 						tokens[ i ].m_Line,
 						tokens[ i ].m_FilePath.ToString( ).c_str( )
 					);
@@ -316,7 +316,7 @@ namespace lum {
 
 					if (!IsToken( tokens, tokenIndex, TokenType::Number )) {
 						throw DeserializeException(
-							"Vector3 expected at line %llu in file %s",
+							"Vector3 expected at line {} in file {}",
 							tokens[ tokenIndex ].m_Line,
 							tokens[ tokenIndex ].m_FilePath.ToString( ).c_str( )
 						);
@@ -342,7 +342,7 @@ namespace lum {
 
 					if (!IsToken( tokens, tokenIndex, TokenType::Number )) {
 						throw DeserializeException(
-							"Vector2 expected at line %llu in file %s",
+							"Vector2 expected at line {} in file {}",
 							tokens[ tokenIndex ].m_Line,
 							tokens[ tokenIndex ].m_FilePath.ToString( ).c_str( )
 						);

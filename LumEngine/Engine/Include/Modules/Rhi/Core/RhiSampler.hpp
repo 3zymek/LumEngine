@@ -9,13 +9,13 @@
 namespace lum::rhi {
 
 	// Filter that applies to texture, when texture is magnified ( scaled up )
-	enum class SamplerMagFilter : byte {
+	enum class SamplerMagFilter {
 		Linear,	// Takes 4 neighbouring texels and calculates it weighted average value (Effect: Smoothness, Fuzzy, no sharp edges).
 		Nearest	// Takes texture coordinate from UV map, rounds it and takes 1 texel (Effect: Sharpness). 
 	};
 
 	// Filter that applies to texture, when texture is minified ( scaled down )
-	enum class SamplerMinFilter : byte {
+	enum class SamplerMinFilter {
 		Linear,					// Takes 4 neighbouring texels and calculates it weighted average value ( Effect: Smoothness, Fuzzy, no sharp edges, NO MIPMAP ).
 		LinearMipmapNearest,	// Takes 4 neighbouring texels from single mipmap and calculates it weighted average value ( Effect: Compromise for quality and performance, smoothness ).
 		LinearMipmapLinear,		// Takes 4 neighbouring texels from 2 mipmaps and calculates it weighted average value ( Effect: Best quality, smooth but not fuzzy ).
@@ -25,11 +25,11 @@ namespace lum::rhi {
 	};
 
 	// Defines what will happen to texture when out of bounds
-	enum class SamplerWrap : byte {
+	enum class SamplerWrap {
 		Repeat,				// Texture will repeat
-		RepeatMirrored,	// Texture will repeat and every second repeat is mirrored
+		RepeatMirrored,		// Texture will repeat and every second repeat is mirrored
 		ClampEdge,			// Last texture pixel will be streched
-		ClampBorder		// Sets color border outside bounds
+		ClampBorder			// Sets color border outside bounds
 	};
 
 	struct SamplerCreateInfo {
@@ -47,7 +47,7 @@ namespace lum::rhi {
 		SamplerWrap m_WrapR{};
 
 		// Level of anisotropic filtering ( sharpens textures at steep viewing angles, prevents blur and stretch )
-		float32 m_Anisotropy = 0.0f;
+		float32 m_Anisotropy{};
 
 	};
 

@@ -15,15 +15,15 @@
 
 namespace lum::ecs {
 
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 	// AddComponent
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 
 	template<detail::cComponent tType>
 	tType& EntityManager::AddComponent( EntityID entityId, tType component ) {
 		tType& retVal = GetPool<tType>( ).Add( entityId, component );
 		LUM_ASSERT( m_EventBus, "Event bus is nullptr" );
-		m_EventBus().Emit( EComponentAdded<tType>{.m_Id = entityId, .m_Component = &retVal } );
+		m_EventBus( ).Emit( EComponentAdded<tType>{.m_Id = entityId, .m_Component = &retVal } );
 		return retVal;
 	}
 
@@ -35,9 +35,9 @@ namespace lum::ecs {
 		return retVal;
 	}
 
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 	// GetComponent
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 
 	template<detail::cComponent tType>
 	tType* EntityManager::GetComponent( EntityID entityId ) {
@@ -49,9 +49,9 @@ namespace lum::ecs {
 		return GetPool<tType>( ).Get( entity.m_Id );
 	}
 
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 	// RemoveComponent
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 
 	template<detail::cComponent tType>
 	void EntityManager::RemoveComponent( EntityID entityId ) {
@@ -67,9 +67,9 @@ namespace lum::ecs {
 		m_EventBus( ).Emit( EComponentRemoved<tType>{ .m_Id = entity.m_Id } );
 	}
 
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 	// HasComponent / HasComponents
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 
 	template<detail::cComponent tType>
 	bool EntityManager::HasComponent( EntityID entityId ) {
@@ -91,9 +91,9 @@ namespace lum::ecs {
 		return (HasComponent<tFirst>( entity.m_Id ) && (HasComponent<tRest>( entity.m_Id ) && ...));
 	}
 
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 	// Each
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 
 	template<detail::cComponent tFirst, detail::cComponent... tRest, typename tCallback>
 	void EntityManager::Each( tCallback&& callback ) {
@@ -119,9 +119,9 @@ namespace lum::ecs {
 		}
 	}
 
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 	// GetPool
-	//-----------------------------------------------------------------------------
+	//=======================================================//
 
 	template<detail::cComponent tType>
 	detail::ComponentPool<tType>& EntityManager::GetPool( ) {

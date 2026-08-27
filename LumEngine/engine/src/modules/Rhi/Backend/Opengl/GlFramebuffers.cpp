@@ -11,7 +11,7 @@ namespace lum::rhi::gl {
 
 	FramebufferHandle GLDevice::CreateFramebuffer( const FramebufferCreateInfo& desc ) {
 
-		LUM_ASSERT( m_Framebuffers.DenseSize( ) <= skMaxFramebuffers, "Max framebuffers reached" );
+		LUM_ASSERT( m_Framebuffers.DenseSize( ) <= sk_MaxFramebuffers, "Max framebuffers reached" );
 
 		Framebuffer fbo;
 		glCreateFramebuffers( 1, &fbo.m_Handle );
@@ -182,10 +182,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetColorMask( bool r, bool g, bool b, bool a ) {
 
-		if (r == m_ColorMask.mR &&
-			 g == m_ColorMask.mG &&
-			 b == m_ColorMask.mB &&
-			 a == m_ColorMask.mA) {
+		if (r == m_ColorMask.m_R &&
+			 g == m_ColorMask.m_G &&
+			 b == m_ColorMask.m_B &&
+			 a == m_ColorMask.m_A) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
@@ -197,10 +197,10 @@ namespace lum::rhi::gl {
 			a ? GL_TRUE : GL_FALSE
 		);
 
-		m_ColorMask.mR = r;
-		m_ColorMask.mG = g;
-		m_ColorMask.mB = b;
-		m_ColorMask.mA = a;
+		m_ColorMask.m_R = r;
+		m_ColorMask.m_G = g;
+		m_ColorMask.m_B = b;
+		m_ColorMask.m_A = a;
 
 		LUM_PROFILER_CACHE_MISS( );
 
@@ -208,25 +208,25 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetColorMask( ColorMask rgba ) {
 
-		if (rgba.mR == m_ColorMask.mR &&
-			 rgba.mG == m_ColorMask.mG &&
-			 rgba.mB == m_ColorMask.mB &&
-			 rgba.mA == m_ColorMask.mA) {
+		if (rgba.m_R == m_ColorMask.m_R &&
+			 rgba.m_G == m_ColorMask.m_G &&
+			 rgba.m_B == m_ColorMask.m_B &&
+			 rgba.m_A == m_ColorMask.m_A) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
 		glColorMask(
-			rgba.mR ? GL_TRUE : GL_FALSE,
-			rgba.mG ? GL_TRUE : GL_FALSE,
-			rgba.mB ? GL_TRUE : GL_FALSE,
-			rgba.mA ? GL_TRUE : GL_FALSE
+			rgba.m_R ? GL_TRUE : GL_FALSE,
+			rgba.m_G ? GL_TRUE : GL_FALSE,
+			rgba.m_B ? GL_TRUE : GL_FALSE,
+			rgba.m_A ? GL_TRUE : GL_FALSE
 		);
 
-		m_ColorMask.mR = rgba.mR;
-		m_ColorMask.mG = rgba.mG;
-		m_ColorMask.mB = rgba.mB;
-		m_ColorMask.mA = rgba.mA;
+		m_ColorMask.m_R = rgba.m_R;
+		m_ColorMask.m_G = rgba.m_G;
+		m_ColorMask.m_B = rgba.m_B;
+		m_ColorMask.m_A = rgba.m_A;
 
 		LUM_PROFILER_CACHE_MISS( );
 

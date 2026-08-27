@@ -4,50 +4,67 @@
 // 
 //=============================================================================//
 #pragma once
-#include "Rhi/RhiPch.hpp"
 
 namespace lum::input {
 
+	/* @brief Unified virtual key codes for keyboard and mouse input handling.
+	*
+	* Maps platform-independent input layout (matching GLFW/Native virtual key standards)
+	* into a single enum class used by InputSystem and event dispatchers.
+	*/
 	enum class Key {
 
-		SPACE,
-		APOSTROPHE, COMMA, MINUS, PERIOD, SLASH,
-		NUM0, NUM1, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9,
-		SEMICOLON, EQUAL,
+		Space,
+		Apostrophe, Comma, Minus, Period, Slash,
+		Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9,
+		Semicolon, Equal,
 		A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
-		LEFT_BRACKET, BACKSLASH, RIGHT_BRACKET, GRAVE_ACCENT,
-		WORLD_1, WORLD_2,
+		LeftBracket, Backslash, RightBracket,
+		GraveAccent, /* @brief Backtick / tilde key (` / ~) placed below Escape. */
 
-		ESCAPE, ENTER, TAB, BACKSPACE, INSERT, DELETE_KEY,
-		RIGHT, LEFT, DOWN, UP,
-		PAGE_UP, PAGE_DOWN, HOME, END,
-		CAPS_LOCK, SCROLL_LOCK, NUM_LOCK, PRINT_SCREEN, PAUSE,
+		/* @brief Non-US / international layout keys (ISO keyboards).
+		* Used for OEM specific keys present on non-US keyboard layouts.
+		*/
+		World1,
+		World2,
+
+		Escape, Enter, Tab, Backspace, Insert, DeleteKey,
+		Right, Left, Down, Up,
+		PageUp, PageDown, Home, End,
+		CapsLock, ScrollLock, NumLock, PrintScreen, Pause,
 
 		F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
 		F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24, F25,
 
-		KP_0, KP_1, KP_2, KP_3, KP_4, KP_5, KP_6, KP_7, KP_8, KP_9,
-		KP_DECIMAL, KP_DIVIDE, KP_MULTIPLY, KP_SUBTRACT, KP_ADD, KP_ENTER, KP_EQUAL,
+		/* @brief Numeric Keypad (Numpad) keys. */
+		Kp0, Kp1, Kp2, Kp3, Kp4, Kp5, Kp6, Kp7, Kp8, Kp9,
+		KpDecimal, KpDivide, KpMultiply, KpSubtract, KpAdd, KpEnter, KpEqual,
 
-		LEFT_SHIFT, LEFT_CONTROL, LEFT_ALT, LEFT_SUPER,
-		RIGHT_SHIFT, RIGHT_CONTROL, RIGHT_ALT, RIGHT_SUPER,
-		MENU,
+		/* @brief Modifier keys. */
+		LeftShift, LeftControl, LeftAlt,
+		LeftSuper,        /* @brief Left Windows key on PC, Command key on macOS, Super key on Linux. */
+		RightShift, RightControl, RightAlt,
+		RightSuper,       /* @brief Right Windows key on PC, Command key on macOS, Super key on Linux. */
+		Menu,             /* @brief Context menu key usually placed next to Right Control. */
 
-		MOUSE_LEFT,
-		MOUSE_RIGHT,
-		MOUSE_MIDDLE,
+		/* @brief Mouse button virtual keys mapped into unified input stream. */
+		MouseLeft,
+		MouseRight,
+		MouseMiddle,
 
-		MAX_COUNT // NOT A KEY
+		/* @brief Total count of valid virtual key entries.
+		* Useful for sizing fixed arrays storing key states (down/pressed/up).
+		*/
+		MaxCount
 	};
 
-#	define LUM_MAX_KEYS ToUnderlyingEnum( Key::MAX_COUNT )
+	/* @brief Total number of virtual key code entries available in the Key enum. */
+#	define LUM_MAX_KEYS ToUnderlyingEnum( Key::MaxCount )
+
+	/* @brief Compile-time assertion ensuring input mapping array size matches Key::MaxCount precisely.
+	* @param size Size of the platform-specific key map array (e.g., s_KeyMap.size()).
+	*/
 #	define LUM_ASSERT_KEY_ARRAY_SIZE( size ) \
-		LUM_SASSERT( size == static_cast<int32>(lum::input::Key::MAX_COUNT) && "Key map array size mismatch!" )
+		LUM_SASSERT( size == static_cast<int32>(lum::input::Key::MaxCount) && "Key map array size mismatch!" )
 
-	namespace detail {
-
-		inline std::array<bool, LUM_MAX_KEYS> pressedKeysArray{};
-
-	}
-
-}
+} // namespace lum::input

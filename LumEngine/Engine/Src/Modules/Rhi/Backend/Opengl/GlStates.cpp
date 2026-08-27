@@ -12,15 +12,15 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SetViewport( int32 x, int32 y, int32 width, int32 height ) {
 
-		if (m_ViewportState.x == x && m_ViewportState.y == y && m_ViewportState.m_Width == width && m_ViewportState.m_Height == height) {
+		if (m_ViewportState.m_X == x && m_ViewportState.m_Y == y && m_ViewportState.m_Width == width && m_ViewportState.m_Height == height) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
 		glViewport( x, y, width, height );
 
-		m_ViewportState.x = x;
-		m_ViewportState.y = y;
+		m_ViewportState.m_X = x;
+		m_ViewportState.m_Y = y;
 		m_ViewportState.m_Width = width;
 		m_ViewportState.m_Height = height;
 
@@ -29,38 +29,38 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetViewportX( int32 x ) {
 
-		if (m_ViewportState.x == x) {
+		if (m_ViewportState.m_X == x) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
 		glViewport(
 			x,
-			m_ViewportState.y,
+			m_ViewportState.m_Y,
 			m_ViewportState.m_Width,
 			m_ViewportState.m_Height
 		);
 
-		m_ViewportState.x = x;
+		m_ViewportState.m_X = x;
 
 		LUM_PROFILER_CACHE_MISS( );
 
 	}
 	void GLDevice::SetViewportY( int32 y ) {
 
-		if (m_ViewportState.y == y) {
+		if (m_ViewportState.m_Y == y) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
 		glViewport(
-			m_ViewportState.x,
+			m_ViewportState.m_X,
 			y,
 			m_ViewportState.m_Width,
 			m_ViewportState.m_Height
 		);
 
-		m_ViewportState.y = y;
+		m_ViewportState.m_Y = y;
 
 		LUM_PROFILER_CACHE_MISS( );
 
@@ -73,8 +73,8 @@ namespace lum::rhi::gl {
 		}
 
 		glViewport(
-			m_ViewportState.x,
-			m_ViewportState.y,
+			m_ViewportState.m_X,
+			m_ViewportState.m_Y,
 			width,
 			m_ViewportState.m_Height
 		);
@@ -92,8 +92,8 @@ namespace lum::rhi::gl {
 		}
 
 		glViewport(
-			m_ViewportState.x,
-			m_ViewportState.y,
+			m_ViewportState.m_X,
+			m_ViewportState.m_Y,
 			m_ViewportState.m_Width,
 			height
 		);
@@ -132,13 +132,13 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetScissors( int32 x, int32 y, int32 width, int32 height ) {
 
-		if (m_ScissorState.x == x && m_ScissorState.y == y && m_ScissorState.m_Width == width && m_ScissorState.m_Height == height) {
+		if (m_ScissorState.m_X == x && m_ScissorState.m_Y == y && m_ScissorState.m_Width == width && m_ScissorState.m_Height == height) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
-		m_ScissorState.x = x;
-		m_ScissorState.y = y;
+		m_ScissorState.m_X = x;
+		m_ScissorState.m_Y = y;
 		m_ScissorState.m_Width = width;
 		m_ScissorState.m_Height = height;
 
@@ -149,38 +149,38 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetScissorX( int32 x ) {
 
-		if (m_ScissorState.x == x) {
+		if (m_ScissorState.m_X == x) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
 		glScissor(
 			x,
-			m_ScissorState.y,
+			m_ScissorState.m_Y,
 			m_ScissorState.m_Width,
 			m_ScissorState.m_Height
 		);
 
-		m_ScissorState.x = x;
+		m_ScissorState.m_X = x;
 
 		LUM_PROFILER_CACHE_MISS( );
 
 	}
 	void GLDevice::SetScissorY( int32 y ) {
 
-		if (m_ScissorState.y == y) {
+		if (m_ScissorState.m_Y == y) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
 		glScissor(
-			m_ScissorState.x,
+			m_ScissorState.m_X,
 			y,
 			m_ScissorState.m_Width,
 			m_ScissorState.m_Height
 		);
 
-		m_ScissorState.y = y;
+		m_ScissorState.m_Y = y;
 
 		LUM_PROFILER_CACHE_MISS( );
 
@@ -193,8 +193,8 @@ namespace lum::rhi::gl {
 		}
 
 		glScissor(
-			m_ScissorState.x,
-			m_ScissorState.y,
+			m_ScissorState.m_X,
+			m_ScissorState.m_Y,
 			width,
 			m_ScissorState.m_Height
 		);
@@ -212,8 +212,8 @@ namespace lum::rhi::gl {
 		}
 
 		glScissor(
-			m_ScissorState.x,
-			m_ScissorState.y,
+			m_ScissorState.m_X,
+			m_ScissorState.m_Y,
 			m_ScissorState.m_Width,
 			height
 		);
@@ -259,7 +259,7 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		glCullFace( skFacesLookup[ LookupCast( face ) ] );
+		glCullFace( sk_FacesLookup[ LookupCast( face ) ] );
 
 		m_CullState.m_Face = face;
 
@@ -331,10 +331,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[ LookupCast( srcColor ) ],
-			skBlendFactorLookup[ LookupCast( dstColor ) ],
-			skBlendFactorLookup[ LookupCast( srcAlpha ) ],
-			skBlendFactorLookup[ LookupCast( dstAlpha ) ]
+			sk_BlendFactorLookup[ LookupCast( srcColor ) ],
+			sk_BlendFactorLookup[ LookupCast( dstColor ) ],
+			sk_BlendFactorLookup[ LookupCast( srcAlpha ) ],
+			sk_BlendFactorLookup[ LookupCast( dstAlpha ) ]
 		);
 
 		m_BlendState.m_SrcColorFactor = srcColor;
@@ -353,10 +353,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[ LookupCast( srcColor ) ],
-			skBlendFactorLookup[ LookupCast( dstColor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_SrcAlphaFactor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_DstAlphaFactor ) ]
+			sk_BlendFactorLookup[ LookupCast( srcColor ) ],
+			sk_BlendFactorLookup[ LookupCast( dstColor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_SrcAlphaFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_DstAlphaFactor ) ]
 		);
 
 		m_BlendState.m_SrcColorFactor = srcColor;
@@ -373,10 +373,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_SrcColorFactor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_DstColorFactor ) ],
-			skBlendFactorLookup[ LookupCast( srcAlpha ) ],
-			skBlendFactorLookup[ LookupCast( dstAlpha ) ]
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_SrcColorFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_DstColorFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( srcAlpha ) ],
+			sk_BlendFactorLookup[ LookupCast( dstAlpha ) ]
 		);
 
 		m_BlendState.m_SrcAlphaFactor = srcAlpha;
@@ -393,10 +393,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[ LookupCast( factor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_DstColorFactor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_SrcAlphaFactor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_DstAlphaFactor ) ]
+			sk_BlendFactorLookup[ LookupCast( factor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_DstColorFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_SrcAlphaFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_DstAlphaFactor ) ]
 		);
 
 		m_BlendState.m_SrcColorFactor = factor;
@@ -412,10 +412,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_SrcColorFactor ) ],
-			skBlendFactorLookup[ LookupCast( factor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_SrcAlphaFactor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_DstAlphaFactor ) ]
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_SrcColorFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( factor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_SrcAlphaFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_DstAlphaFactor ) ]
 		);
 
 		m_BlendState.m_DstColorFactor = factor;
@@ -431,10 +431,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_SrcColorFactor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_DstColorFactor ) ],
-			skBlendFactorLookup[ LookupCast( factor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_DstAlphaFactor ) ]
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_SrcColorFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_DstColorFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( factor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_DstAlphaFactor ) ]
 		);
 
 		m_BlendState.m_SrcAlphaFactor = factor;
@@ -450,10 +450,10 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendFuncSeparate(
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_SrcColorFactor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_DstColorFactor ) ],
-			skBlendFactorLookup[ LookupCast( m_BlendState.m_SrcAlphaFactor ) ],
-			skBlendFactorLookup[ LookupCast( factor ) ]
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_SrcColorFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_DstColorFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( m_BlendState.m_SrcAlphaFactor ) ],
+			sk_BlendFactorLookup[ LookupCast( factor ) ]
 		);
 
 		m_BlendState.m_DstAlphaFactor = factor;
@@ -470,8 +470,8 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendEquationSeparate(
-			skBlendOpLookup[ LookupCast( colorOp ) ],
-			skBlendOpLookup[ LookupCast( alphaOp ) ]
+			sk_BlendOpLookup[ LookupCast( colorOp ) ],
+			sk_BlendOpLookup[ LookupCast( alphaOp ) ]
 		);
 
 		m_BlendState.m_AlphaOp = alphaOp;
@@ -488,8 +488,8 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendEquationSeparate(
-			skBlendOpLookup[ LookupCast( op ) ],
-			skBlendOpLookup[ LookupCast( m_BlendState.m_AlphaOp ) ]
+			sk_BlendOpLookup[ LookupCast( op ) ],
+			sk_BlendOpLookup[ LookupCast( m_BlendState.m_AlphaOp ) ]
 		);
 
 		m_BlendState.m_ColorOp = op;
@@ -505,8 +505,8 @@ namespace lum::rhi::gl {
 		}
 
 		glBlendEquationSeparate(
-			skBlendOpLookup[ LookupCast( m_BlendState.m_ColorOp ) ],
-			skBlendOpLookup[ LookupCast( op ) ]
+			sk_BlendOpLookup[ LookupCast( m_BlendState.m_ColorOp ) ],
+			sk_BlendOpLookup[ LookupCast( op ) ]
 		);
 
 		m_BlendState.m_AlphaOp = op;
@@ -579,7 +579,7 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		glDepthFunc( skCompareFlagLookup[ LookupCast( func ) ] );
+		glDepthFunc( sk_CompareFlagLookup[ LookupCast( func ) ] );
 
 		LUM_PROFILER_CACHE_MISS( );
 
@@ -624,7 +624,7 @@ namespace lum::rhi::gl {
 
 			glStencilFuncSeparate(
 				GL_FRONT,
-				skCompareFlagLookup[ LookupCast( front.m_CompareFlag ) ],
+				sk_CompareFlagLookup[ LookupCast( front.m_CompareFlag ) ],
 				ref,
 				front.m_ReadMask
 			);
@@ -645,7 +645,7 @@ namespace lum::rhi::gl {
 
 			glStencilFuncSeparate(
 				GL_BACK,
-				skCompareFlagLookup[ LookupCast( back.m_CompareFlag ) ],
+				sk_CompareFlagLookup[ LookupCast( back.m_CompareFlag ) ],
 				ref,
 				back.m_ReadMask
 			);
@@ -679,9 +679,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_FRONT,
-				skStencilOpLookup[ LookupCast( sfail ) ],
-				skStencilOpLookup[ LookupCast( dpfail ) ],
-				skStencilOpLookup[ LookupCast( dppass ) ]
+				sk_StencilOpLookup[ LookupCast( sfail ) ],
+				sk_StencilOpLookup[ LookupCast( dpfail ) ],
+				sk_StencilOpLookup[ LookupCast( dppass ) ]
 			);
 
 			front.m_StencilFailOp = sfail;
@@ -702,9 +702,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_BACK,
-				skStencilOpLookup[ LookupCast( sfail ) ],
-				skStencilOpLookup[ LookupCast( dpfail ) ],
-				skStencilOpLookup[ LookupCast( dppass ) ]
+				sk_StencilOpLookup[ LookupCast( sfail ) ],
+				sk_StencilOpLookup[ LookupCast( dpfail ) ],
+				sk_StencilOpLookup[ LookupCast( dppass ) ]
 			);
 
 			back.m_StencilFailOp = sfail;
@@ -737,9 +737,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_FRONT,
-				skStencilOpLookup[ LookupCast( op ) ],
-				skStencilOpLookup[ LookupCast( front.m_DepthFailOp ) ],
-				skStencilOpLookup[ LookupCast( front.m_PassOp ) ]
+				sk_StencilOpLookup[ LookupCast( op ) ],
+				sk_StencilOpLookup[ LookupCast( front.m_DepthFailOp ) ],
+				sk_StencilOpLookup[ LookupCast( front.m_PassOp ) ]
 			);
 
 			front.m_StencilFailOp = op;
@@ -758,9 +758,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_BACK,
-				skStencilOpLookup[ LookupCast( op ) ],
-				skStencilOpLookup[ LookupCast( back.m_DepthFailOp ) ],
-				skStencilOpLookup[ LookupCast( back.m_PassOp ) ]
+				sk_StencilOpLookup[ LookupCast( op ) ],
+				sk_StencilOpLookup[ LookupCast( back.m_DepthFailOp ) ],
+				sk_StencilOpLookup[ LookupCast( back.m_PassOp ) ]
 			);
 
 			back.m_StencilFailOp = op;
@@ -791,9 +791,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_FRONT,
-				skStencilOpLookup[ LookupCast( front.m_StencilFailOp ) ],
-				skStencilOpLookup[ LookupCast( op ) ],
-				skStencilOpLookup[ LookupCast( front.m_PassOp ) ]
+				sk_StencilOpLookup[ LookupCast( front.m_StencilFailOp ) ],
+				sk_StencilOpLookup[ LookupCast( op ) ],
+				sk_StencilOpLookup[ LookupCast( front.m_PassOp ) ]
 			);
 
 			front.m_DepthFailOp = op;
@@ -812,9 +812,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_BACK,
-				skStencilOpLookup[ LookupCast( back.m_StencilFailOp ) ],
-				skStencilOpLookup[ LookupCast( op ) ],
-				skStencilOpLookup[ LookupCast( back.m_PassOp ) ]
+				sk_StencilOpLookup[ LookupCast( back.m_StencilFailOp ) ],
+				sk_StencilOpLookup[ LookupCast( op ) ],
+				sk_StencilOpLookup[ LookupCast( back.m_PassOp ) ]
 			);
 
 			back.m_DepthFailOp = op;
@@ -845,9 +845,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_FRONT,
-				skStencilOpLookup[ LookupCast( front.m_StencilFailOp ) ],
-				skStencilOpLookup[ LookupCast( front.m_DepthFailOp ) ],
-				skStencilOpLookup[ LookupCast( op ) ]
+				sk_StencilOpLookup[ LookupCast( front.m_StencilFailOp ) ],
+				sk_StencilOpLookup[ LookupCast( front.m_DepthFailOp ) ],
+				sk_StencilOpLookup[ LookupCast( op ) ]
 			);
 
 			front.m_PassOp = op;
@@ -866,9 +866,9 @@ namespace lum::rhi::gl {
 
 			glStencilOpSeparate(
 				GL_BACK,
-				skStencilOpLookup[ LookupCast( back.m_StencilFailOp ) ],
-				skStencilOpLookup[ LookupCast( back.m_DepthFailOp ) ],
-				skStencilOpLookup[ LookupCast( op ) ]
+				sk_StencilOpLookup[ LookupCast( back.m_StencilFailOp ) ],
+				sk_StencilOpLookup[ LookupCast( back.m_DepthFailOp ) ],
+				sk_StencilOpLookup[ LookupCast( op ) ]
 			);
 
 			back.m_PassOp = op;
@@ -980,8 +980,8 @@ namespace lum::rhi::gl {
 		}
 
 		glPolygonMode(
-			skFacesLookup[ LookupCast( face ) ],
-			skTopologyModeLookup[ LookupCast( mode ) ]
+			sk_FacesLookup[ LookupCast( face ) ],
+			sk_TopologyModeLookup[ LookupCast( mode ) ]
 		);
 
 		m_RasterizerState.m_Polygon.m_TopologyMode = mode;
@@ -1117,15 +1117,15 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::SetSampleCoverage( float32 value, bool invert ) {
 
-		auto& msaaState = m_RasterizerState.mMSAA;
+		auto& msaaState = m_RasterizerState.mMsaa;
 
-		if (value == msaaState.m_SampleCoverage && invert == msaaState.bCoverageInvert) {
+		if (value == msaaState.m_SampleCoverage && invert == msaaState.m_CoverageInvert) {
 			LUM_PROFILER_CACHE_HIT( );
 			return;
 		}
 
 		msaaState.m_SampleCoverage = value;
-		msaaState.bCoverageInvert = invert;
+		msaaState.m_CoverageInvert = invert;
 
 		glSampleCoverage( value, invert ? GL_TRUE : GL_FALSE );
 

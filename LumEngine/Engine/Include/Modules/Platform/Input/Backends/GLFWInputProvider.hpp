@@ -1,22 +1,51 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: GLFW implementation of the engine input provider interface.
+//
+//=============================================================================//
 #pragma once
+
 #include "Platform/Input/InputProvider.hpp"
 
 namespace lum::input {
 
+	/* @brief GLFW-backed implementation of IInputProvider.
+	*
+	* Handles platform-specific key and mouse state queries by mapping
+	* internal engine Key enum values to GLFW key codes.
+	*/
 	class GLFWInputProvider : public IInputProvider {
 	public:
 
 		GLFWInputProvider( GLFWwindow& window ) : m_NativeWindow( window ) {}
 
+		/* @brief Checks whether the specified key or mouse button is currently held down.
+		* @param key Target virtual key enum entry.
+		* @return True if key is down, false otherwise.
+		*/
 		bool KeyPressed( Key key ) override;
+
+		/* @brief Checks whether the specified key was pressed once during the current frame.
+		* @param key Target virtual key enum entry.
+		* @return True if key transition occurred this frame, false otherwise.
+		*/
 		bool KeyPressedOnce( Key key ) override;
+
+		/* @brief Queries current cursor position relative to window client area.
+		* @return Screen-space mouse position coordinates as Vector2.
+		*/
 		Vector2 GetMousePosition( ) const override;
 
 	private:
 
 		SafePtr<GLFWwindow> m_NativeWindow = nullptr;
 
-		static inline constexpr std::array<int32, LUM_MAX_KEYS> sKeyMap = {
+		/* @brief Internal lookup table mapping Key enum values to GLFW key codes.
+		*
+		* Indexed directly via static_cast<uint32>(Key::...); order must match
+		* the Key enum layout precisely.
+		*/
+		static inline constexpr std::array<int32, LUM_MAX_KEYS> s_KeyMap = {
 			GLFW_KEY_SPACE,
 			GLFW_KEY_APOSTROPHE,
 			GLFW_KEY_COMMA,
@@ -54,12 +83,19 @@ namespace lum::input {
 			GLFW_MOUSE_BUTTON_MIDDLE
 		};
 
-		LUM_ASSERT_KEY_ARRAY_SIZE( sKeyMap.size( ) );
+		/* @brief Frame key-state tracker for single-press detection (KeyPressedOnce). */
+		static inline std::array<bool, LUM_MAX_KEYS> k_PressedKeysArray{};
 
+		LUM_ASSERT_KEY_ARRAY_SIZE( s_KeyMap.size( ) );
+
+		/* @brief Converts engine Key enum value to underlying native GLFW key identifier.
+		* @param key Engine virtual key code.
+		* @return Native GLFW key macro code.
+		*/
 		inline uint32 GetNativeKey( Key key ) {
-			return sKeyMap[ static_cast<uint32>(key) ];
+			return s_KeyMap[ static_cast<uint32>(key) ];
 		}
 
 	};
 
-}
+} // namespace lum::input

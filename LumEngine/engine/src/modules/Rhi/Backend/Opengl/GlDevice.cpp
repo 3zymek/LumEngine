@@ -115,7 +115,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SwapBuffers( ) {
 
-		m_RenderContext->SwapBuffers( );
+		m_RenderContext().SwapBuffers( );
 
 	}
 

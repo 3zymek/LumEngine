@@ -26,8 +26,8 @@ namespace lum {
 	struct CTransform;
 	///////////////////////
 
-	struct StaticMeshHandle : cstd::BaseHandle<uint32> { };
-	struct DynamicMeshHandle : cstd::BaseHandle<uint32> { };
+	struct StaticMeshHandle : cstd::BaseHandle<uint32> {};
+	struct DynamicMeshHandle : cstd::BaseHandle<uint32> {};
 
 }
 
@@ -44,7 +44,7 @@ namespace lum::render {
 		SafePtr<MeshManager>		m_MeshMgr = nullptr;
 		SafePtr<ShaderManager>		m_ShaderMgr = nullptr;
 		SafePtr<ev::EventBus>		m_EventBus = nullptr;
-		
+
 		void Validate( ) const {
 			LUM_ASSERT( m_RenderDev, "RendererContext: IRenderDevice is nullptr!" );
 			LUM_ASSERT( m_TextureMgr, "RendererContext: TextureManager is nullptr!" );
@@ -66,7 +66,7 @@ namespace lum::render {
 
 		/* @brief Intensity multiplier applied to the light color. */
 		float32 m_Intensity = 10.f;
-		
+
 		/* @brief Linear RGB color of the light. */
 		Vector3 m_Color = { 1.0f, 1.0f, 1.0f };
 
@@ -107,9 +107,9 @@ namespace lum::render {
 	/* @brief Represents a single renderable object submitted to the renderer per frame. */
 	struct RenderInstance {
 
-		CTransform*			m_Transform = nullptr;
-		CStaticMesh*		m_StaticMesh = nullptr;
-		CMaterialInstance*	m_Material = nullptr;
+		SafePtr<CTransform>			m_Transform = nullptr;
+		SafePtr<CStaticMesh>		m_StaticMesh = nullptr;
+		SafePtr<CMaterialInstance>	m_Material = nullptr;
 
 	};
 
@@ -132,22 +132,22 @@ namespace lum::render {
 
 		struct ScreenQuad {
 
-			rhi::VertexLayoutHandle m_Vao;
+			rhi::VertexLayoutHandle m_Vao{};
 
-			rhi::BufferHandle m_Vbo;
-			rhi::BufferHandle m_Ebo;
+			rhi::BufferHandle m_Vbo{};
+			rhi::BufferHandle m_Ebo{};
 
-			rhi::FramebufferHandle m_SceneFbo;
-			rhi::FramebufferHandle m_PostprocessFbo;
+			rhi::FramebufferHandle m_SceneFbo{};
+			rhi::FramebufferHandle m_PostprocessFbo{};
 
-			rhi::TextureHandle m_SceneTex;
-			rhi::TextureHandle m_PostprocessTex;
+			rhi::TextureHandle m_SceneTex{};
+			rhi::TextureHandle m_PostprocessTex{};
 
 		};
 
 		struct PostprocessExecuteContext {
 
-			
+
 
 		};
 
@@ -155,22 +155,22 @@ namespace lum::render {
 		struct Cubemap {
 
 			/* @brief Shader program used for skybox rendering. */
-			rhi::ShaderHandle m_Shader;
+			rhi::ShaderHandle m_Shader{};
 
 			/* @brief Pipeline state for the environment pass. */
-			rhi::PipelineHandle m_Pipeline;
+			rhi::PipelineHandle m_Pipeline{};
 
 			/* @brief Cubemap or equirectangular environment texture. */
-			rhi::TextureHandle m_Texture;
+			rhi::TextureHandle m_Texture{};
 
 			/* @brief Vertex buffer holding skybox geometry. */
-			rhi::BufferHandle m_Vbo;
+			rhi::BufferHandle m_Vbo{};
 
 			/* @brief Index buffer for skybox geometry. */
-			rhi::BufferHandle m_Ebo;
+			rhi::BufferHandle m_Ebo{};
 
 			/* @brief Vertex layout describing skybox vertex attributes. */
-			rhi::VertexLayoutHandle m_Vao;
+			rhi::VertexLayoutHandle m_Vao{};
 
 			/* @brief Number of indices in the skybox index buffer. */
 			uint32 m_NumIndices = 0;

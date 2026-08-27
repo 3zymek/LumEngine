@@ -17,9 +17,9 @@
 
 namespace lum {
 
-	//---------------------------------------------------------
+	//=======================================================//
 	// Public
-	//---------------------------------------------------------
+	//=======================================================//
 
 	Result<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, const Path& filepath, ImageFormat expectedFormat ) {
 

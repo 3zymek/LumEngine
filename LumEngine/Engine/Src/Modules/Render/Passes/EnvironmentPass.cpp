@@ -15,9 +15,9 @@
 
 namespace lum::render {
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Public
-	//---------------------------------------------------------
+//=======================================================//
 
 	void EnvironmentPass::Initialize( RendererContext& ctx ) {
 
@@ -51,8 +51,8 @@ namespace lum::render {
 
 	rhi::TextureHandle EnvironmentPass::GetTexture( detail::IBLTexture tex ) const noexcept {
 		switch (tex) {
-		case detail::IBLTexture::IrradianceMap: return mIBL.m_Irradiance.m_Texture;
-		case detail::IBLTexture::PrefilteredMap: return mIBL.m_Prefiltered.m_Texture;
+		case detail::IBLTexture::IrradianceMap: return m_Ibl.m_Irradiance.m_Texture;
+		case detail::IBLTexture::PrefilteredMap: return m_Ibl.m_Prefiltered.m_Texture;
 		default: return { };
 		}
 		return {};
@@ -60,9 +60,9 @@ namespace lum::render {
 
 
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Private
-	//---------------------------------------------------------
+//=======================================================//
 
 	void EnvironmentPass::generate_irradiance_map( ) {
 
@@ -92,7 +92,7 @@ namespace lum::render {
 		device.BindTexture( m_Cubemap.m_Texture, LUM_TEX_CUBEMAP );
 		device.BindSampler( m_Sampler, LUM_TEX_CUBEMAP );
 		device.BindPipeline( m_Cubemap.m_Pipeline );
-		device.BindShader( mIBL.m_Irradiance.m_Shader );
+		device.BindShader( m_Ibl.m_Irradiance.m_Shader );
 
 		for (int32 i = 0; i < 6; i++) {
 
@@ -104,7 +104,7 @@ namespace lum::render {
 			attach.m_Mip = 1;
 			attach.m_Layer = i;
 			attach.m_Slot = 0;
-			device.AttachTextureLayer( captureFBO, mIBL.m_Irradiance.m_Texture, attach );
+			device.AttachTextureLayer( captureFBO, m_Ibl.m_Irradiance.m_Texture, attach );
 			device.DrawElements( m_Cubemap.m_Vao, m_Cubemap.m_NumIndices );
 
 		}
@@ -144,7 +144,7 @@ namespace lum::render {
 		device.BindTexture( m_Cubemap.m_Texture, LUM_TEX_CUBEMAP );
 		device.BindSampler( m_Sampler, LUM_TEX_CUBEMAP );
 		device.BindPipeline( m_Cubemap.m_Pipeline );
-		device.BindShader( mIBL.m_Prefiltered.m_Shader );
+		device.BindShader( m_Ibl.m_Prefiltered.m_Shader );
 
 		struct LUM_UBO_ALIGNMENT UniformData {
 			Matrix4 m_Projection = Matrix4( 1.0f );
@@ -153,9 +153,9 @@ namespace lum::render {
 			float32 _pad[ 3 ]{};
 		};
 
-		for (uint32 mip = 0; mip < mIBL.m_Prefiltered.skMipmapLevels; mip++) {
+		for (uint32 mip = 0; mip < m_Ibl.m_Prefiltered.sk_MipmapLevels; mip++) {
 
-			float32 roughness = SafeCast<float32>( mip ) / SafeCast<float32>( (mIBL.m_Prefiltered.skMipmapLevels - 1) );
+			float32 roughness = SafeCast<float32>( mip ) / SafeCast<float32>( (m_Ibl.m_Prefiltered.sk_MipmapLevels - 1) );
 
 			uint32 mipSize = 128 >> mip;
 			device.SetViewport( 0, 0, mipSize, mipSize );
@@ -174,7 +174,7 @@ namespace lum::render {
 				attach.m_Mip = mip;
 				attach.m_Layer = i;
 				attach.m_Slot = 0;
-				device.AttachTextureLayer( captureFBO, mIBL.m_Prefiltered.m_Texture, attach );
+				device.AttachTextureLayer( captureFBO, m_Ibl.m_Prefiltered.m_Texture, attach );
 				device.DrawElements( m_Cubemap.m_Vao, m_Cubemap.m_NumIndices );
 
 			}
@@ -273,17 +273,17 @@ namespace lum::render {
 		if (!device.IsValid( m_Cubemap.m_Pipeline )) {
 
 			rhi::PipelineCreateInfo desc;
-			desc.m_DepthStencil.m_Depth.bEnabled = true;
-			desc.m_DepthStencil.m_Depth.bWriteToZBuffer = false;
+			desc.m_DepthStencil.m_Depth.m_Enabled = true;
+			desc.m_DepthStencil.m_Depth.m_WriteToZBuffer = false;
 			desc.m_DepthStencil.m_Depth.m_Compare = rhi::CompareFlag::LessEqual;
-			desc.m_Cull.bEnabled = false;
+			desc.m_Cull.m_Enabled = false;
 			desc.m_Cull.m_Face = rhi::Face::Back;
 			m_Cubemap.m_Pipeline = device.CreatePipeline( desc );
 
 		}
 
 		// Irradiance map (IBL)
-		if (!device.IsValid( mIBL.m_Irradiance.m_Texture )) {
+		if (!device.IsValid( m_Ibl.m_Irradiance.m_Texture )) {
 
 			rhi::TextureCreateInfo desc;
 			desc.m_TextureType = rhi::TextureKind::Cubemap;
@@ -292,12 +292,12 @@ namespace lum::render {
 			desc.m_DataType = rhi::PixelDataType::Float;
 			desc.m_Width = 32;
 			desc.m_Height = 32;
-			mIBL.m_Irradiance.m_Texture = device.CreateTexture( desc );
+			m_Ibl.m_Irradiance.m_Texture = device.CreateTexture( desc );
 
 		}
 
 		// Prefiltered environment map (IBL)
-		if (!device.IsValid( mIBL.m_Prefiltered.m_Texture )) {
+		if (!device.IsValid( m_Ibl.m_Prefiltered.m_Texture )) {
 
 			rhi::TextureCreateInfo desc;
 			desc.m_TextureType = rhi::TextureKind::Cubemap;
@@ -306,15 +306,15 @@ namespace lum::render {
 			desc.m_Width = 128;
 			desc.m_Height = 128;
 			desc.m_MipmapLevels = 5;
-			mIBL.m_Prefiltered.m_Texture = device.CreateTexture( desc );
+			m_Ibl.m_Prefiltered.m_Texture = device.CreateTexture( desc );
 
 		}
 		{ // Shaders
 
 			m_Cubemap.m_Shader = m_Ctx().m_ShaderMgr().LoadShader( "shaders/skybox_pass.vert", "shaders/skybox_pass.frag", ResourceRoot::Internal );
 
-			mIBL.m_Irradiance.m_Shader = m_Ctx().m_ShaderMgr( ).LoadShader( "shaders/irradiance.vert", "shaders/irradiance.frag", ResourceRoot::Internal );
-			mIBL.m_Prefiltered.m_Shader = m_Ctx().m_ShaderMgr( ).LoadShader( "shaders/prefiltered_env.vert", "shaders/prefiltered_env.frag", ResourceRoot::Internal );
+			m_Ibl.m_Irradiance.m_Shader = m_Ctx().m_ShaderMgr( ).LoadShader( "shaders/irradiance.vert", "shaders/irradiance.frag", ResourceRoot::Internal );
+			m_Ibl.m_Prefiltered.m_Shader = m_Ctx().m_ShaderMgr( ).LoadShader( "shaders/prefiltered_env.vert", "shaders/prefiltered_env.frag", ResourceRoot::Internal );
 
 		}
 

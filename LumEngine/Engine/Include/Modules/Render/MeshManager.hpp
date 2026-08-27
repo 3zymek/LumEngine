@@ -12,16 +12,16 @@ namespace lum {
 
 	namespace detail {
 
-		enum class MeshType : byte {
+		enum class MeshType {
 			Static,
 			Dynamic
 		};
 
 		/* @brief Stores raw GPU buffer handles for a mesh (VBO, EBO, VAO). */
 		struct RenderResources {
-			rhi::BufferHandle			m_Vbo;
-			rhi::BufferHandle			m_Ebo;
-			rhi::VertexLayoutHandle		m_Vao;
+			rhi::BufferHandle			m_Vbo{};
+			rhi::BufferHandle			m_Ebo{};
+			rhi::VertexLayoutHandle		m_Vao{};
 		};
 
 	} // namespace lum::detail
@@ -64,13 +64,13 @@ namespace lum {
 
 		SafePtr<render::RendererContext> m_Ctx = nullptr;
 
-		std::unordered_map<uint64, StaticMeshHandle>			m_StaticMeshCache; // Path hash -> handle cache.
+		std::unordered_map<uint64, StaticMeshHandle>			m_StaticMeshCache{}; // Path hash -> handle cache.
 		cstd::HandlePool<StaticMeshHandle, StaticMeshResource>	m_StaticMeshes{ limits::k_MaxModels };
 
 		// Fallback mesh used when no mesh is assigned.
-		StaticMeshHandle m_DefaultMesh;
+		StaticMeshHandle m_DefaultMesh{};
 		// Fallback mesh used when loading fails.
-		StaticMeshHandle m_ErrorMesh;
+		StaticMeshHandle m_ErrorMesh{};
 
 		std::vector<Vertex> m_DefaultVertices = {
 			// position                normal               uv

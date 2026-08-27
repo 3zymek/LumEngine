@@ -51,7 +51,7 @@ namespace lum {
 
 	void Window::ToggleState( Flags<WindowStateFlags> flags, bool value ) {
 		for (uint32 bit = 0; bit < sk_WindowStateHandlersSize; bit++) {
-			WindowStateFlags flag = static_cast< WindowStateFlags >( 1u << bit );
+			WindowStateFlags flag = static_cast<WindowStateFlags>( 1u << bit );
 			if (flags.Has( flag ) && (value != m_State.Has( flag ))) {
 				sk_WindowStateHandlers[ bit ]( m_Window, value );
 				m_State.Invert( flag );
@@ -64,7 +64,8 @@ namespace lum {
 		int32 width, height;
 		glfwGetWindowSize( m_Window, &width, &height );
 		if (width != m_Width || height != m_Height) {
-			EWindowResized ev;
+
+			EWindowResized ev{};
 
 			m_Width = width;
 			m_Height = height;
@@ -72,7 +73,8 @@ namespace lum {
 			ev.m_Width = width;
 			ev.m_Height = height;
 
-			m_EventBus->Emit( ev );
+			m_EventBus( ).Emit( ev );
+
 		}
 
 		/*
@@ -126,7 +128,7 @@ namespace lum {
 			const auto& icon = desc.m_IconData.Value( );
 
 			GLFWimage image;
-			image.pixels = const_cast< unsigned char* >(icon.m_Pixels.data( ));
+			image.pixels = const_cast<unsigned char*>(icon.m_Pixels.data( ));
 			image.height = icon.m_Height;
 			image.width = icon.m_Width;
 

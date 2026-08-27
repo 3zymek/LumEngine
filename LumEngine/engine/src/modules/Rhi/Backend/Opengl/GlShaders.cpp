@@ -10,7 +10,7 @@ namespace lum::rhi::gl {
 
 	ShaderHandle GLDevice::CreateShader( const ShaderCreateInfo& desc ) {
 
-		LUM_ASSERT( m_Shaders.DenseSize( ) < skMaxShaders, "Max shaders reached" );
+		LUM_ASSERT( m_Shaders.DenseSize( ) < sk_MaxShaders, "Max shaders reached" );
 
 		Shader shader;
 

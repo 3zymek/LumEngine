@@ -11,7 +11,7 @@ namespace lum::render {
 
 	struct PostprocessPassExecute {
 		bool m_TAAEnabled = false;
-		rhi::TextureHandle m_PreviousFrameTex;
+		rhi::TextureHandle m_PreviousFrameTex{};
 		Vector2 m_JitterOffset{};
 	};
 
@@ -30,7 +30,7 @@ namespace lum::render {
 		SafePtr<RendererContext> m_Ctx = nullptr;
 
 		/* @brief Shader used for the final post-process blit to the default framebuffer. */
-		rhi::ShaderHandle m_Shader;
+		rhi::ShaderHandle m_Shader{};
 
 		
 

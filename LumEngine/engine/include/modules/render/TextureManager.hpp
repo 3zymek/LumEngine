@@ -12,7 +12,7 @@ namespace lum {
 	struct ImageData;
 
 	/* @brief Defines texture type presets used to configure format and sampling. */
-	enum class TexturePreset : uint8 {
+	enum class TexturePreset {
 		Albedo,
 		Normal,
 		Metallic,
@@ -20,7 +20,7 @@ namespace lum {
 	};
 
 	/* @brief Built-in fallback texture types for missing or unset assets. */
-	enum class FallbackTexture : uint8 {
+	enum class FallbackTexture {
 		Missing,       // Checkered texture indicating missing asset
 		DefaultAlbedo, // 1x1 white (255, 255, 255) neutral fallback for albedo and non-color maps
 		DefaultNormal, // 1x1 flat normal (128, 128, 255) fallback when no normal map is provided
@@ -31,7 +31,7 @@ namespace lum {
 	/* @brief Descriptor for loading a cubemap from 6 individual face textures. */
 	struct CubemapDescriptor {
 		/* @brief Paths to the 6 cubemap faces in order: +X, -X, +Y, -Y, +Z, -Z */
-		const char* m_Faces[6];
+		const char* m_Faces[6]{};
 	};
 
 	/* @brief Manages GPU texture resources and their lifecycle.
@@ -91,21 +91,21 @@ namespace lum {
 
 	private:
 
-		rhi::IRenderDevice* m_RenderDevice = nullptr;
+		SafePtr<rhi::IRenderDevice> m_RenderDevice = nullptr;
 
 		/* @brief Fallback texture displayed when a requested asset cannot be found. */
-		rhi::TextureHandle m_MissingTexture;
+		rhi::TextureHandle m_MissingTexture{};
 
 		/* @brief Default 1x1 white texture used as a neutral fallback for albedo and non-color maps. */
-		rhi::TextureHandle m_DefaultAlbedoTexture;
+		rhi::TextureHandle m_DefaultAlbedoTexture{};
 
 		/* @brief Default 1x1 (128, 128, 255) texture representing a flat normal, used when no normal map is provided. */
-		rhi::TextureHandle m_DefaultNormalTexture;
-		rhi::TextureHandle m_DefaultRoughnessTexture;
-		rhi::TextureHandle m_DefaultMetallicTexture;
+		rhi::TextureHandle m_DefaultNormalTexture{};
+		rhi::TextureHandle m_DefaultRoughnessTexture{};
+		rhi::TextureHandle m_DefaultMetallicTexture{};
 
 		/* @brief Cache mapping texture path hashes to their GPU handles. */
-		std::unordered_map<uint64, rhi::TextureHandle> m_Textures;
+		std::unordered_map<uint64, rhi::TextureHandle> m_Textures{};
 
 
 		void init( );
@@ -127,36 +127,35 @@ namespace lum {
 		std::array<ImageData, 6> convert_equirectangular_to_cubemap( const ImageData& equirect, int32 faceSize = 4096 );
 
 		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
-		static inline rhi::TextureCreateInfo sTexturePresetsLookup[] = {
+		static inline rhi::TextureCreateInfo s_TexturePresetsLookup[] = {
 			{ // ALBEDO
 				.m_InternalFormat = rhi::TextureFormat::SRGB8_Alpha8,
 				.m_PixelFormat = rhi::PixelLayout::RGBA,
 				.m_DataType = rhi::PixelDataType::UnsignedByte,
-				.bGenerateMipmaps = true,
+				.m_GenerateMipmaps = true,
 			},
 			{ // NORMAL
 				.m_InternalFormat = rhi::TextureFormat::RGB8,
 				.m_PixelFormat = rhi::PixelLayout::RGB,
 				.m_DataType = rhi::PixelDataType::UnsignedByte,
-				.bGenerateMipmaps = true
+				.m_GenerateMipmaps = true
 			},
 			{ // METALNESS
 				.m_InternalFormat = rhi::TextureFormat::R8,
 				.m_PixelFormat = rhi::PixelLayout::R,
 				.m_DataType = rhi::PixelDataType::UnsignedByte,
-				.bGenerateMipmaps = true
+				.m_GenerateMipmaps = true
 			},
 			{ // ROUGHNESS
 				.m_InternalFormat = rhi::TextureFormat::R8,
 				.m_PixelFormat = rhi::PixelLayout::R,
 				.m_DataType = rhi::PixelDataType::UnsignedByte,
-				.bGenerateMipmaps = true
+				.m_GenerateMipmaps = true
 			},
 		};
 
 		/* @brief Lookup table mapping ETexturePreset to texture binding slot indices. */
-		inline constexpr
-		static uint16 skTextureBindingLookups[] = {
+		static inline constexpr uint16 sk_TextureBindingLookups[] = {
 			LUM_TEX_ALBEDO,
 			LUM_TEX_NORMAL,
 			LUM_TEX_METALNESS,

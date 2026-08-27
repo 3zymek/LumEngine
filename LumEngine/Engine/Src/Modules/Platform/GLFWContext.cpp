@@ -3,6 +3,7 @@
 // Purpose: GLFW-based OpenGL rendering context implementation.
 //
 //=============================================================================//
+
 #include "Platform/GLFWOpenGLContext.hpp"
 
 namespace lum {

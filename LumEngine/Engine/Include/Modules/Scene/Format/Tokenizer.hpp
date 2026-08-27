@@ -26,7 +26,7 @@ namespace lum::fmt {
 
 	private:
 
-		std::vector<Token> m_Tokens;
+		std::vector<Token> m_Tokens{};
 
 	};
 

@@ -13,9 +13,9 @@
 
 namespace lum::render {
 
-	//---------------------------------------------------------
+	//=======================================================//
 	// Public
-	//---------------------------------------------------------
+	//=======================================================//
 
 	void Renderer::Initialize( const RendererContext& ctx, uint32 w, uint32 h ) {
 
@@ -50,7 +50,7 @@ namespace lum::render {
 	void Renderer::BeginFrame( ) {
 
 		m_LightPass.ClearLights( ); // clear added lights from previous frame
-		m_Ctx.m_RenderDev().BindFramebuffer( rhi::kDefaultFramebuffer ); // bind default framebuffer
+		m_Ctx.m_RenderDev().BindFramebuffer( rhi::k_DefaultFramebuffer ); // bind default framebuffer
 		m_Ctx.m_RenderDev().Clear( rhi::BufferBit::Color | rhi::BufferBit::Depth | rhi::BufferBit::Stencil ); // clear default framebuffer
 
 	}
@@ -84,9 +84,9 @@ namespace lum::render {
 
 
 
-	//---------------------------------------------------------
+//=======================================================//
 	// Private
-	//---------------------------------------------------------
+//=======================================================//
 
 	void Renderer::init( uint32 w, uint32 h ) {
 

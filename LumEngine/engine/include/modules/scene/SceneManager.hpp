@@ -4,6 +4,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Scene/Scene.hpp"
 #include "Format/FormatCommon.hpp"
 #include "Scene/Format/SceneDepManager.hpp"
@@ -43,7 +44,7 @@ namespace lum {
     private:
         
         /* @brief Cached context holding all resource manager references. */
-        SceneManagerContext m_Ctx;
+        SceneManagerContext m_Ctx{};
 
         fmt::SceneDependencyManager m_SceneDependencyMgr{};
 

@@ -69,8 +69,8 @@ namespace lum::rhi::gl {
 		const Texture& dstTex = m_Textures[ dst ];
 
 		glCopyImageSubData(
-			srcTex.m_Handle, skTextureTypeLookup[ LookupCast( srcTex.m_Kind ) ], 0, 0, 0, 0,
-			dstTex.m_Handle, skTextureTypeLookup[ LookupCast( dstTex.m_Kind ) ], 0, 0, 0, 0,
+			srcTex.m_Handle, sk_TextureTypeLookup[ LookupCast( srcTex.m_Kind ) ], 0, 0, 0, 0,
+			dstTex.m_Handle, sk_TextureTypeLookup[ LookupCast( dstTex.m_Kind ) ], 0, 0, 0, 0,
 			srcTex.m_Rect.m_Width, srcTex.m_Rect.m_Height, 1
 		);
 
@@ -102,8 +102,8 @@ namespace lum::rhi::gl {
 			0,
 			desc.m_Rect.m_X, desc.m_Rect.m_Y,
 			width, height,
-			skImageFormatLookup[ LookupCast( texture.m_PixelLayout ) ],
-			skTextureDataTypeLookup[ LookupCast( texture.m_PixelDataType ) ],
+			sk_ImageFormatLookup[ LookupCast( texture.m_PixelLayout ) ],
+			sk_TextureDataTypeLookup[ LookupCast( texture.m_PixelDataType ) ],
 			resolve_pixel_data( desc.m_Data )
 		);
 
@@ -123,7 +123,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::BindTexture( TextureHandle texture, uint16 binding ) {
 
-		LUM_ASSERT( binding < skMaxTextureUnits, "Invalid texture binding" );
+		LUM_ASSERT( binding < sk_MaxTextureUnits, "Invalid texture binding" );
 		if (!IsValid( texture )) return;
 
 		if (m_CurrentTextures[ binding ] == texture) {
@@ -149,8 +149,8 @@ namespace lum::rhi::gl {
 		glGetTextureImage(
 			static_cast<GLuint>(tex.m_Handle),
 			0,
-			skImageFormatLookup[ ToUnderlyingEnum( tex.m_PixelLayout ) ], // <--- m_DataFormat (lub m_PixelLayout) zamias m_Format!
-			skTextureDataTypeLookup[ ToUnderlyingEnum( tex.m_PixelDataType ) ],
+			sk_ImageFormatLookup[ ToUnderlyingEnum( tex.m_PixelLayout ) ], // <--- m_DataFormat (lub m_PixelLayout) zamias m_Format!
+			sk_TextureDataTypeLookup[ ToUnderlyingEnum( tex.m_PixelDataType ) ],
 			static_cast<GLsizei>(bufSize),
 			pixels
 		);
@@ -167,7 +167,7 @@ namespace lum::rhi::gl {
 
 		uint32 width = (desc.m_Width == 0) ? desc.m_Data.m_Width : desc.m_Width;
 		uint32 height = (desc.m_Height == 0) ? desc.m_Data.m_Height : desc.m_Height;
-		uint32 mipmapLevels = desc.bGenerateMipmaps
+		uint32 mipmapLevels = desc.m_GenerateMipmaps
 			? (desc.m_MipmapLevels == 0 ? MipmapLvls( width, height ) : desc.m_MipmapLevels)
 			: 1;
 
@@ -179,7 +179,7 @@ namespace lum::rhi::gl {
 			glTextureStorage2D(
 				texture.m_Handle,
 				mipmapLevels,
-				skImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
+				sk_ImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
 				width, height
 			);
 
@@ -189,8 +189,8 @@ namespace lum::rhi::gl {
 					0,
 					0, 0,
 					width, height,
-					skImageFormatLookup[ LookupCast( desc.m_PixelFormat ) ],
-					skTextureDataTypeLookup[ LookupCast( desc.m_DataType ) ],
+					sk_ImageFormatLookup[ LookupCast( desc.m_PixelFormat ) ],
+					sk_TextureDataTypeLookup[ LookupCast( desc.m_DataType ) ],
 					data
 				);
 
@@ -204,7 +204,7 @@ namespace lum::rhi::gl {
 			glTextureStorage2DMultisample(
 				texture.m_Handle,
 				desc.m_Samples,
-				skImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
+				sk_ImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
 				width, height,
 				GL_TRUE
 			);
@@ -224,7 +224,7 @@ namespace lum::rhi::gl {
 
 		uint32 width = (desc.m_Width == 0) ? desc.m_Data.m_Width : desc.m_Width;
 		uint32 height = (desc.m_Height == 0) ? desc.m_Data.m_Height : desc.m_Height;
-		uint32 mipmapLevels = desc.bGenerateMipmaps
+		uint32 mipmapLevels = desc.m_GenerateMipmaps
 			? (desc.m_MipmapLevels == 0 ? MipmapLvls( width, height ) : desc.m_MipmapLevels)
 			: 1;
 
@@ -232,7 +232,7 @@ namespace lum::rhi::gl {
 		glTextureStorage3D(
 			texture.m_Handle,
 			mipmapLevels,
-			skImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
+			sk_ImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
 			width, height,
 			desc.m_Depth
 		);
@@ -267,7 +267,7 @@ namespace lum::rhi::gl {
 		glTextureStorage2D(
 			tex.m_Handle,
 			mipmapLevels,
-			skImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
+			sk_ImageLayoutLookup[ LookupCast( desc.m_InternalFormat ) ],
 			width, height
 		);
 
@@ -289,8 +289,8 @@ namespace lum::rhi::gl {
 					0, 0, 0,
 					static_cast<GLint>(i),
 					face.m_Width, face.m_Height, 1,
-					skImageFormatLookup[ LookupCast( desc.m_PixelFormat ) ],
-					skTextureDataTypeLookup[ LookupCast( desc.m_DataType ) ],
+					sk_ImageFormatLookup[ LookupCast( desc.m_PixelFormat ) ],
+					sk_TextureDataTypeLookup[ LookupCast( desc.m_DataType ) ],
 					data
 				);
 

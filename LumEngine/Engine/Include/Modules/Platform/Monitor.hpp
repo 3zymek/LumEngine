@@ -48,7 +48,7 @@ namespace lum {
 		*  @return Pointer to the GLFWmonitor containing the window.
 		*/
 		static GLFWmonitor* GetWindowMonitor( GLFWwindow* window ) {
-			int32 wx, wy, ww, wh;
+			int32 wx{}, wy{}, ww{}, wh{};
 			glfwGetWindowPos( window, &wx, &wy );
 			glfwGetWindowSize( window, &ww, &wh );
 
@@ -56,10 +56,10 @@ namespace lum {
 			GLFWmonitor** monitors = glfwGetMonitors( &count );
 
 			for (int32 i = 0; i < count; i++) {
-				int32 m_X, m_Y, m_W, mh;
-				glfwGetMonitorWorkarea( monitors[ i ], &m_X, &m_Y, &m_W, &mh );
+				int32 mx{}, my{}, mw{}, mh;
+				glfwGetMonitorWorkarea( monitors[ i ], &mx, &my, &mw, &mh );
 
-				if (wx >= m_X && wx < m_X + m_W && wy >= m_Y && wy < m_Y + mh)
+				if (wx >= mx && wx < mx + mw && wy >= my && wy < my + mh)
 					return monitors[ i ];
 			}
 

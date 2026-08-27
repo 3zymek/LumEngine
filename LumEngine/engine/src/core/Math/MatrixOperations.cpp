@@ -1,3 +1,9 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Implementation of core 4x4 matrix transformation operations.
+//
+//=============================================================================//
+
 #include "Core/Math/MatrixOperations.hpp"
 
 namespace lum {

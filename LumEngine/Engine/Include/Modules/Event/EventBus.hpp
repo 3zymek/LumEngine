@@ -4,6 +4,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Event/EventCommon.hpp"
 #include "Event/EventPool.hpp"
 
@@ -18,7 +19,7 @@ namespace lum::ev {
 	class LUM_API EventBus {
 	public:
 
-		EventBus( ) { initialize_pools( ); }
+		EventBus( ) = default;
 		~EventBus( ) { destroy_pools( ); }
 
 		/*! @brief Emits an event to all subscribers of the given type.
@@ -29,9 +30,9 @@ namespace lum::ev {
 		*  @param event Reference to the event instance to dispatch.
 		*  @thread_safety Call from the main thread or the thread that owns the EventBus.
 		*/
-		template< detail::cEvent EventType >
-		void Emit( const EventType& event ) {
-			get_pool<EventType>( ).Emit( event );
+		template<detail::cEvent tEventType>
+		void Emit( const tEventType& event ) {
+			get_pool<tEventType>( ).Emit( event );
 		}
 
 		/*! @brief Subscribes a one-time callback to an event type.
@@ -44,9 +45,9 @@ namespace lum::ev {
 		*  @return SubscriptionID Handle to unsubscribe manually if needed.
 		*  @thread_safety Call from the main thread or bus-owning thread.
 		*/
-		template< detail::cEvent EventType, typename Lambda >
-		detail::SubscriptionID Subscribe( Lambda&& lambda ) {
-			return get_pool<EventType>( ).Subscribe( std::forward<Lambda>( lambda ) );
+		template<detail::cEvent tEventType, typename tLambda>
+		detail::SubscriptionID Subscribe( tLambda&& lambda ) {
+			return get_pool<tEventType>( ).Subscribe( std::forward<tLambda>( lambda ) );
 		}
 
 		/*! @brief Subscribes a permanent callback to an event type.
@@ -59,9 +60,9 @@ namespace lum::ev {
 		*  @return SubscriptionID Handle for manual unsubscription.
 		*  @thread_safety Call from the main thread or bus-owning thread.
 		*/
-		template< detail::cEvent EventType, typename Lambda >
-		detail::SubscriptionID SubscribePermanently( Lambda&& lambda ) {
-			return get_pool<EventType>( ).SubscribePermanently( std::forward<Lambda>( lambda ) );
+		template<detail::cEvent tEventType, typename tLambda>
+		detail::SubscriptionID SubscribePermanently( tLambda&& lambda ) {
+			return get_pool<tEventType>( ).SubscribePermanently( std::forward<tLambda>( lambda ) );
 		}
 
 		/*! @brief Unsubscribes a previously registered one-time callback.
@@ -72,9 +73,9 @@ namespace lum::ev {
 		*  @param id Handle returned by Subscribe().
 		*  @thread_safety Call from the main thread or bus-owning thread.
 		*/
-		template< detail::cEvent EventType >
+		template<detail::cEvent tEventType>
 		void Unsubscribe( detail::SubscriptionID id ) {
-			get_pool<EventType>( ).Unsubscribe( id );
+			get_pool<tEventType>( ).Unsubscribe( id );
 		}
 
 		/*! @brief Unsubscribes a previously registered permanent callback.
@@ -85,9 +86,9 @@ namespace lum::ev {
 		*  @param id Handle returned by SubscribePermanently().
 		*  @thread_safety Call from the main thread or bus-owning thread.
 		*/
-		template< detail::cEvent EventType >
+		template<detail::cEvent tEventType>
 		void UnsubscribePermanent( detail::SubscriptionID id ) {
-			get_pool<EventType>( ).UnsubscribePermanent( id );
+			get_pool<tEventType>( ).UnsubscribePermanent( id );
 		}
 
 		/*! @brief Polls all event pools and executes pending events.
@@ -125,14 +126,7 @@ namespace lum::ev {
 				ptr = new detail::EventPool<tType>( );
 			}
 
-			return *static_cast< detail::EventPool<tType>* >( ptr );
-		}
-
-		/* @brief Initializes all pool slots to nullptr. */
-		void initialize_pools( ) {
-			for (usize i = 0; i < limits::k_MaxEventTypes; i++) {
-				m_Pools[ i ] = nullptr;
-			}
+			return *static_cast<detail::EventPool<tType>*>( ptr );
 		}
 
 		/* @brief Deletes all allocated event pools and resets slots to nullptr. */

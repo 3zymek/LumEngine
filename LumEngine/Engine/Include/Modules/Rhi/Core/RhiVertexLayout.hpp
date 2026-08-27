@@ -22,10 +22,11 @@ namespace lum::rhi {
 		usize m_ShaderLocation = 0;
 		
 	};
+
 	struct VertexLayoutCreateInfo {
 
 		// Pointer to the array of vertex attributes.
-		std::span<const VertexAttribute> m_Attributes;
+		std::span<const VertexAttribute> m_Attributes{};
 
 		// Sizeof single element in buffer.
 		usize m_Stride = 0;
@@ -42,7 +43,7 @@ namespace lum::rhi {
 	struct VertexLayout {
 		
 		LayoutID		m_Handle = 0;
-		BufferHandle	m_ElementBuff;
+		BufferHandle	m_ElementBuff{};
 
 	};
 

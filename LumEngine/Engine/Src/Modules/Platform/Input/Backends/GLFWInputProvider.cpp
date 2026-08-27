@@ -1,10 +1,20 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: GLFW implementation of the engine input provider interface.
+//
+//=============================================================================//
+
 #include "Platform/Input/Backends/GLFWInputProvider.hpp"
 
 namespace lum::input {
 
+	//=======================================================//
+	// Public
+	//=======================================================//
+
 	bool GLFWInputProvider::KeyPressed( Key key ) {
 
-		if (key == Key::MOUSE_LEFT || key == Key::MOUSE_RIGHT || key == Key::MOUSE_MIDDLE) {
+		if (key == Key::MouseLeft || key == Key::MouseRight || key == Key::MouseMiddle) {
 			return glfwGetMouseButton( m_NativeWindow.Ptr( ), GetNativeKey( key ) ) == GLFW_PRESS;
 		}
 		return glfwGetKey( m_NativeWindow.Ptr( ), GetNativeKey( key ) ) == GLFW_PRESS;
@@ -16,13 +26,13 @@ namespace lum::input {
 		bool keyPressed = KeyPressed( key );
 		int32 keyCode = ToUnderlyingEnum( key );
 
-		if (keyPressed && !detail::pressedKeysArray[ keyCode ]) {
-			detail::pressedKeysArray[ keyCode ] = true;
+		if (keyPressed && !k_PressedKeysArray[ keyCode ]) {
+			k_PressedKeysArray[ keyCode ] = true;
 			return true;
 		}
 		
 		if (!keyPressed)
-			detail::pressedKeysArray[ keyCode ] = false;
+			k_PressedKeysArray[ keyCode ] = false;
 
 		return false;
 

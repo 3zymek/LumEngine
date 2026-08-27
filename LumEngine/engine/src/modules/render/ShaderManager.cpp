@@ -13,9 +13,9 @@
 
 namespace lum {
 
-	//---------------------------------------------------------
+	//=======================================================//
 	// Public
-	//---------------------------------------------------------
+	//=======================================================//
 
 	void ShaderManager::Initialize( rhi::IRenderDevice& device ) {
 		m_RenderDevice = &device;
@@ -29,13 +29,13 @@ namespace lum {
 
 		auto vertexData = ResourceLoader::BuildShaderSource( root, vertexPath );
 		if (!vertexData) {
-			LUM_LOG_ERROR( "Failed to load shader %s: %s", vertexPath.ToString( ), vertexData.GetError( ) );
+			LUM_LOG_ERROR( "Failed to load shader from file {}: {}", vertexPath.ToString( ), vertexData.GetError( ) );
 			return {};
 		}
 
 		auto fragmentData = ResourceLoader::BuildShaderSource( root, fragmentPath );
 		if (!fragmentData) {
-			LUM_LOG_ERROR( "Failed to load shader %s: %s", fragmentPath.ToString( ), fragmentData.GetError( ) );
+			LUM_LOG_ERROR( "Failed to load shader from file {}: {}", fragmentPath.ToString( ), fragmentData.GetError( ) );
 			return {};
 		}
 		
@@ -43,7 +43,7 @@ namespace lum {
 		desc.m_VertexContent = vertexData.ValueRef( );
 		desc.m_FragmentContent = fragmentData.ValueRef( );
 		
-		rhi::ShaderHandle shader = m_RenderDevice->CreateShader( desc );
+		rhi::ShaderHandle shader = m_RenderDevice().CreateShader( desc );
 		
 		m_Shaders[ hash ] = shader;
 

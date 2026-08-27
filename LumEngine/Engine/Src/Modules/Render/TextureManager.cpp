@@ -10,14 +10,13 @@
 
 namespace lum {
 
-	//---------------------------------------------------------
+	//=======================================================//
 	// Public
-	//---------------------------------------------------------
+	//=======================================================//
 
 	void TextureManager::Initialize( rhi::IRenderDevice& device ) {
 
 		m_RenderDevice = &device;
-
 		init( );
 
 	}
@@ -44,16 +43,16 @@ namespace lum {
 		auto data = ResourceLoader::LoadImageFromFile( id, path );
 
 		if (!data) {
-			LUM_LOG_ERROR( "Failed to load texture %s: %s", path.data( ), data.GetError() );
+			LUM_LOG_ERROR( "Failed to load texture from file {}: {}", path.data( ), data.GetError() );
 			return m_MissingTexture;
 		}
 
-		rhi::TextureCreateInfo desc = sTexturePresetsLookup[ ToUnderlyingEnum( preset ) ];
+		rhi::TextureCreateInfo desc = s_TexturePresetsLookup[ ToUnderlyingEnum( preset ) ];
 
 		desc.m_Data = data.ValueRef( );
 		desc.m_TextureType = rhi::TextureKind::Texture2D;
 		desc.m_PixelFormat = ChannelsToFormat( data->m_Channels );
-		rhi::TextureHandle handle = m_RenderDevice->CreateTexture( desc );
+		rhi::TextureHandle handle = m_RenderDevice().CreateTexture( desc );
 
 		m_Textures[ hash ] = handle;
 
@@ -97,7 +96,7 @@ namespace lum {
 		desc.m_PixelFormat = rhi::PixelLayout::RGB;
 		desc.m_TextureType = rhi::TextureKind::Cubemap;
 
-		rhi::TextureHandle handle = m_RenderDevice->CreateTexture( desc );
+		rhi::TextureHandle handle = m_RenderDevice( ).CreateTexture( desc );
 		m_Textures[ hash ] = handle;
 		return handle;
 	}
@@ -116,9 +115,9 @@ namespace lum {
 
 
 
-	//---------------------------------------------------------
+	//=======================================================//
 	// Private
-	//---------------------------------------------------------
+	//=======================================================//
 
 	void TextureManager::init( ) {
 
@@ -138,7 +137,7 @@ namespace lum {
 			desc.m_InternalFormat = rhi::TextureFormat::SRGB8_Alpha8;
 			desc.m_PixelFormat = rhi::PixelLayout::RGBA;
 			desc.m_TextureType = rhi::TextureKind::Texture2D;
-			m_DefaultAlbedoTexture = m_RenderDevice->CreateTexture( desc );
+			m_DefaultAlbedoTexture = m_RenderDevice( ).CreateTexture( desc );
 		}
 		{ // Default normal texture
 			ImageData data;
@@ -151,7 +150,7 @@ namespace lum {
 			desc.m_InternalFormat = rhi::TextureFormat::RGBA16F;
 			desc.m_PixelFormat = rhi::PixelLayout::RGBA;
 			desc.m_TextureType = rhi::TextureKind::Texture2D;
-			m_DefaultNormalTexture = m_RenderDevice->CreateTexture( desc );
+			m_DefaultNormalTexture = m_RenderDevice( ).CreateTexture( desc );
 		}
 		{ // Default roughness texture
 			ImageData data;
@@ -164,7 +163,7 @@ namespace lum {
 			desc.m_InternalFormat = rhi::TextureFormat::R8;
 			desc.m_PixelFormat = rhi::PixelLayout::R;
 			desc.m_TextureType = rhi::TextureKind::Texture2D;
-			m_DefaultRoughnessTexture = m_RenderDevice->CreateTexture( desc );
+			m_DefaultRoughnessTexture = m_RenderDevice( ).CreateTexture( desc );
 		}
 		{ // Default metallic texture
 			ImageData data;
@@ -177,7 +176,7 @@ namespace lum {
 			desc.m_InternalFormat = rhi::TextureFormat::R8;
 			desc.m_PixelFormat = rhi::PixelLayout::R;
 			desc.m_TextureType = rhi::TextureKind::Texture2D;
-			m_DefaultMetallicTexture = m_RenderDevice->CreateTexture( desc );
+			m_DefaultMetallicTexture = m_RenderDevice( ).CreateTexture( desc );
 		}
 		{ // Missing texture
 			auto data = ResourceLoader::LoadImageFromFile( ResourceRoot::Internal, "textures/missingTex.png" );
@@ -191,12 +190,11 @@ namespace lum {
 			desc.m_InternalFormat = rhi::TextureFormat::RGB8;
 			desc.m_PixelFormat = rhi::PixelLayout::RGB;
 			desc.m_TextureType = rhi::TextureKind::Texture2D;
-			m_MissingTexture = m_RenderDevice->CreateTexture( desc );
+			m_MissingTexture = m_RenderDevice( ).CreateTexture( desc );
 		}
 	}
 
-	std::array<ImageData, 6>
-	TextureManager::convert_equirectangular_to_cubemap( const ImageData& equirect, int32 faceSize ) {
+	std::array<ImageData, 6> TextureManager::convert_equirectangular_to_cubemap( const ImageData& equirect, int32 faceSize ) {
 
 		std::array<ImageData, 6> faces;
 		for (int32 i = 0; i < 6; i++) {

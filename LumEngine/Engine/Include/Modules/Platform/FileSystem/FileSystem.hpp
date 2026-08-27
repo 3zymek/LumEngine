@@ -48,7 +48,7 @@ namespace lum {
 			std::ofstream file( path.m_Path );
 			if (!file.is_open( )) {
 				char buff[ 512 ]{};
-				FormatString( buff, "Failed to write file '%s': '%s'", path.ToString( ).c_str( ), strerror( errno ) );
+				FormatString( buff, "Failed to write file '{}': '{}'", path.ToString( ).c_str( ), strerror( errno ) );
 				return Result<bool>::Failure( buff );
 			}
 

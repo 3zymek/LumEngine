@@ -35,11 +35,11 @@ namespace lum::rhi::gl {
 		const auto& depth = pip.m_DepthStencil.m_Depth;
 		const auto& stencil = pip.m_DepthStencil.m_Stencil;
 
-		ToggleDepthTest( depth.bEnabled );
+		ToggleDepthTest( depth.m_Enabled );
 
 		SetDepthFunc( depth.m_Compare );
 
-		ToggleStencilTest( stencil.bEnabled );
+		ToggleStencilTest( stencil.m_Enabled );
 		SetStencilReference( stencil.m_Front.m_Reference, Face::Front );
 		SetStencilReference( stencil.m_Back.m_Reference, Face::Back );
 		SetStencilOp( stencil.m_Front.m_StencilFailOp, stencil.m_Front.m_DepthFailOp, stencil.m_Front.m_PassOp, Face::Front );
@@ -50,15 +50,15 @@ namespace lum::rhi::gl {
 
 		const auto& scissors = pip.m_Scissor;
 
-		ToggleScissors( pip.m_Scissor.bEnabled );
-		SetScissors( scissors.x, scissors.y, scissors.m_Width, scissors.m_Height ); // Default options
+		ToggleScissors( pip.m_Scissor.m_Enabled );
+		SetScissors( scissors.m_X, scissors.m_Y, scissors.m_Width, scissors.m_Height ); // Default options
 
 	}
 	void GLDevice::bind_check_blend( const Pipeline& pip ) noexcept {
 
 		const auto& blend = pip.m_Blend;
 
-		ToggleBlend( blend.bEnabled );
+		ToggleBlend( blend.m_Enabled );
 
 		SetBlendFactors( blend.m_SrcColorFactor, blend.m_DstColorFactor, blend.m_SrcAlphaFactor, blend.m_DstAlphaFactor );
 		SetBlendOp( blend.m_ColorOp, blend.m_AlphaOp );
@@ -68,7 +68,7 @@ namespace lum::rhi::gl {
 
 		const auto& cull = pip.m_Cull;
 
-		ToggleCull( cull.bEnabled );
+		ToggleCull( cull.m_Enabled );
 
 		SetCullFace( cull.m_Face );
 		SetFrontFace( cull.m_WindingOrder );
@@ -87,7 +87,7 @@ namespace lum::rhi::gl {
 
 	PipelineHandle GLDevice::CreatePipeline( const PipelineCreateInfo& desc ) {
 
-		LUM_ASSERT( m_Pipelines.DenseSize( ) <= skMaxPipelines, "Max pipelines reached" );
+		LUM_ASSERT( m_Pipelines.DenseSize( ) <= sk_MaxPipelines, "Max pipelines reached" );
 
 		if (desc.m_Shader.m_Id != NullID<ShaderID>( ) && !IsValid( desc.m_Shader )) {
 			LUM_LOG_ERROR( "Shader %d doesn't exist", desc.m_Shader.m_Id );

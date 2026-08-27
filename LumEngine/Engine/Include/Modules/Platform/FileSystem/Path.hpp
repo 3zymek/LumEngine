@@ -14,12 +14,12 @@ namespace lum {
 	public:
 
 		template<usize tL>
-		Path( FixedString<tL> path ) : m_Path( path.Data() ) { }
-		Path( const char* path ) : m_Path( path ) { }
-		Path( const StringView& path ) : m_Path( path ) { }
-		Path( const String& path ) : m_Path( path ) { }
-		Path( const std::filesystem::path& path ) : m_Path( path ) { }
-		Path() { }
+		Path( FixedString<tL> path ) : m_Path( path.Data( ) ) {}
+		Path( const char* path ) : m_Path( path ) {}
+		Path( const StringView& path ) : m_Path( path ) {}
+		Path( const String& path ) : m_Path( path ) {}
+		Path( const std::filesystem::path& path ) : m_Path( path ) {}
+		Path( ) {}
 
 		LUM_FORCEINLINE String ToString( ) const {
 			return m_Path.string( );
@@ -82,8 +82,8 @@ namespace lum {
 		}
 
 		LUM_FORCEINLINE Path& ReplaceExtension( const StringView& extension ) {
-			m_Path.replace_extension( extension ); 
-			return *this; 
+			m_Path.replace_extension( extension );
+			return *this;
 		}
 
 		Path operator/( const Path& other ) const {

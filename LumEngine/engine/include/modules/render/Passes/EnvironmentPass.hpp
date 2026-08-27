@@ -15,7 +15,7 @@ namespace lum::render {
 
 		class DeferredBuffer;
 
-		enum class IBLTexture : byte {
+		enum class IBLTexture {
 			IrradianceMap,
 			PrefilteredMap
 		};
@@ -59,11 +59,11 @@ namespace lum::render {
 		SafePtr<RendererContext> m_Ctx = nullptr;
 
 		/* @brief Cubemap mesh, shader, pipeline and texture data. */
-		detail::Cubemap m_Cubemap;
+		detail::Cubemap m_Cubemap{};
 
-		rhi::PipelineHandle m_Pipeline;
-		rhi::ShaderHandle m_Shader;
-		rhi::SamplerHandle m_Sampler;
+		rhi::PipelineHandle m_Pipeline{};
+		rhi::ShaderHandle m_Shader{};
+		rhi::SamplerHandle m_Sampler{};
 
 		/* @brief Contains all IBL precomputed textures and their generation shaders. */
 		struct IBL {
@@ -73,21 +73,21 @@ namespace lum::render {
 			*/
 			struct IrradianceMap {
 
-				rhi::TextureHandle m_Texture;
-				rhi::ShaderHandle  m_Shader;
+				rhi::TextureHandle m_Texture{};
+				rhi::ShaderHandle  m_Shader{};
 
-			} m_Irradiance;
+			} m_Irradiance{};
 
 			/* @brief Prefiltered environment cubemap — encodes specular indirect lighting
 			*  at varying roughness levels across mip chain (mip 0 = mirror, last mip = fully rough).
 			*/
 			struct PrefilteredMap {
 
-				rhi::TextureHandle m_Texture;
-				rhi::ShaderHandle  m_Shader;
-				static constexpr uint8 skMipmapLevels = 5;
+				rhi::TextureHandle m_Texture{};
+				rhi::ShaderHandle  m_Shader{};
+				static constexpr uint8 sk_MipmapLevels = 5;
 
-			} m_Prefiltered;
+			} m_Prefiltered{};
 
 			static Matrix4 GetCaptureProjection( ) {
 				return Perspective( Radians( 90.0f ), 1.0f, 0.1f, 10.0f );
@@ -104,7 +104,7 @@ namespace lum::render {
 				} };
 			}
 
-		} mIBL;
+		} m_Ibl{};
 
 		void generate_irradiance_map( );
 		void generate_prefiltered_map( );

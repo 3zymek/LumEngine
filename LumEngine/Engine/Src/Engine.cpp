@@ -7,10 +7,10 @@
 #include "Engine.hpp"
 
 namespace lum {
-
-	//---------------------------------------------------------
+	
+	//=======================================================//
 	// Public
-	//---------------------------------------------------------
+	//=======================================================//
 
 	void Engine::Initialize( const EngineCreateInfo& info ) {
 
@@ -23,7 +23,7 @@ namespace lum {
 		{
 			RenderModuleCreateInfo desc{};
 			desc.m_EventBus = m_EventBus;
-			desc.m_RenderDev = m_Platform.m_RenderDevice.get();
+			desc.m_RenderDev = m_Platform.m_RenderDevice.get( );
 			desc.m_ResourceModule = &m_ResourceModule;
 			m_RenderModule.Initialize( desc );
 		}
@@ -40,8 +40,8 @@ namespace lum {
 	}
 	void Engine::BeginFrame( ) {
 
-		if(m_Platform.m_Window.HasValue())
-			m_Platform.m_Window.Value().Update( );
+		if (m_Platform.m_Window.HasValue( ))
+			m_Platform.m_Window.Value( ).Update( );
 		m_EventBus.FlushEvents( );
 		m_RenderModule.m_Renderer.BeginFrame( );
 
@@ -82,4 +82,4 @@ namespace lum {
 		return delta.count( );
 	}
 
-}
+} // namespace lum

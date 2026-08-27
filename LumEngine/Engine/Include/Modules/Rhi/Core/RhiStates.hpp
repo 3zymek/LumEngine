@@ -25,7 +25,7 @@ namespace lum::rhi {
 	};
 
 	// Specifies the comparison function used in LumEngine RHI.
-	enum class CompareFlag : byte {
+	enum class CompareFlag {
 		Equal,			// Passes if the incoming depth value is equal to the stored depth value.
 		NotEqual,		// Passes if the incoming depth value is not equal to the stored depth value.
 		LessEqual,		// Passes if the incoming depth value is less than or equal to the stored depth value.
@@ -60,12 +60,12 @@ namespace lum::rhi {
 			Face m_TopologyModeFaces = Face::FrontBack;
 
 			// Point size for point topology
-			float32 m_PointSize = 1.f;
+			float32 m_PointSize = 1.0f;
 
 			// Line width for line topology
-			float32 m_LineWidth = 1.f;
+			float32 m_LineWidth = 1.0f;
 
-		} m_Polygon;
+		} m_Polygon{};
 
 		/*!
 		* @brief Depth bias configuration.
@@ -81,35 +81,35 @@ namespace lum::rhi {
 			bool bEnable = false;
 
 			// Specifies a scale factor that is used to create a variable depth offset for each polygon. The initial value is 0.
-			float32 m_SlopeFactor = 0.f;
+			float32 m_SlopeFactor = 0.0f;
 
 			// Is multiplied by an implementation-specific value to create a constant depth offset. The initial value is 0. 
-			float32 m_Units = 0.f;
+			float32 m_Units = 0.0f;
 
 			// Specifies the maximum (or minimum if negative) depth offset value.
 			// If clamp is positive, the calculated offset is clamped to at most this value.
 			// If clamp is negative, the calculated offset is clamped to at least this value.
 			// If clamp is zero, no clamping is applied. The initial value is 0.
-			float32 m_Clamp = 0.f;
+			float32 m_Clamp = 0.0f;
 
-		} m_DepthBias;
+		} m_DepthBias{};
 
 		struct MultisampleState {
 
-			bool bEnable = false;
-			bool bEnableSampleCoverage = false;
-			bool bEnableSampleAlphaToCoverage = false;
-			bool bEnableSampleAlphaToOne = false;
+			bool m_Enable = false;
+			bool m_EnableSampleCoverage = false;
+			bool m_EnableSampleAlphaToCoverage = false;
+			bool m_EnableSampleAlphaToOne = false;
 
 			Ranged<float32, 0.0f, 1.0f> m_SampleCoverage = 1.0f;
-			bool bCoverageInvert = false;
+			bool m_CoverageInvert = false;
 
-		} mMSAA;
+		} mMsaa{};
 
 	};
 
 	// Front and back stencil test actions.
-	enum class StencilOp : byte {
+	enum class StencilOp {
 		Zero,			// Sets the stencil buffer value to 0. 
 		One,			// Sets the stencil buffer value to 1. 
 		Keep,			// Keeps the current value. 
@@ -168,24 +168,24 @@ namespace lum::rhi {
 			// Specifies whether the depth buffer is enabled for writing. 
 			// If flag is false, depth buffer writing is disabled. Otherwise, it is enabled. 
 			// The initial value is false.
-			bool bEnabled = false;
+			bool m_Enabled = false;
 
 			// Specifies whether the depth buffer is enabled for writing. 
 			// If flag is false, depth buffer writing is disabled. Otherwise, it is enabled. 
 			// The initial value is true.
-			bool bWriteToZBuffer = true;
+			bool m_WriteToZBuffer = true;
 
 			// Specifies the depth comparison function. 
 			// The initial value is CompareFlag::Less. 
 			CompareFlag	m_Compare = CompareFlag::Less;
 
-		} m_Depth;
+		} m_Depth{};
 
 		struct Stencil {
 
 			// Defines if stencil test is enabled.
 			// The initial value is false.
-			bool bEnabled = false;
+			bool m_Enabled = false;
 
 			// Stencil state for front
 			StencilFaceState m_Front{};
@@ -195,11 +195,11 @@ namespace lum::rhi {
 
 			// Helper for creating same stencil face state for both sides.
 			static Stencil CreateBothSides(const StencilFaceState& state) {
-				return { .bEnabled = true, .m_Front = state, .m_Back = state };
+				return { .m_Enabled = true, .m_Front = state, .m_Back = state };
 			}
 
 
-		} m_Stencil;
+		} m_Stencil{};
 
 	};
 
@@ -209,7 +209,7 @@ namespace lum::rhi {
 
 		// Defines if cull is enabled.
 		// The initial value is false.
-		bool bEnabled = false;
+		bool m_Enabled = false;
 		
 		// Specifies whether front- or back-facing facets are candidates for culling. 
 		// The initial value is Face::Back. 
@@ -227,15 +227,15 @@ namespace lum::rhi {
 
 		// Defines if scissor test is enabled.
 		// The initial value is false.
-		bool bEnabled = false;
+		bool m_Enabled = false;
 		
 		// Specify the lower left corner of the scissor box on x axis.
 		// Initially 0. 
-		int32 x = 0;
+		int32 m_X = 0;
 		
 		// Specify the lower left corner of the scissor box on y axis.
 		// Initially 0. 
-		int32 y = 0;
+		int32 m_Y = 0;
 
 		// Specify the width of the scissor box.
 		int32 m_Width = 0;
@@ -246,7 +246,7 @@ namespace lum::rhi {
 	};
 
 	// Specifies the blending factor used for source or destination color in blending operations.
-	enum class BlendFactor : byte {
+	enum class BlendFactor {
 
 		Zero,					// Multiply by 0, effectively ignoring this component.
 		One,					// Multiply by 1, use full value of this component.
@@ -278,7 +278,7 @@ namespace lum::rhi {
 	};
 
 	// Specifies the operation used to combine source and destination colors in blending.
-	enum class BlendOp : byte {
+	enum class BlendOp {
 
 		// Add the weighted source and destination colors.
 		//( C_out = C_src * F_src + C_dst * F_dst )
@@ -303,7 +303,7 @@ namespace lum::rhi {
 
 		// Defines if blending is enabled.
 		// The initial value is false.
-		bool bEnabled = false;
+		bool m_Enabled = false;
 
 		// Specified how the alpha source blending factor is computed.
 		// The initial value is BlendFactor::One.
@@ -338,8 +338,8 @@ namespace lum::rhi {
 	
 	struct ViewportState {
 
-		int32 x{};
-		int32 y{};
+		int32 m_X{};
+		int32 m_Y{};
 		int32 m_Width{};
 		int32 m_Height{};
 

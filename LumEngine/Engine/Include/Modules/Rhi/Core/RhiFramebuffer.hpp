@@ -4,6 +4,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Rhi/RhiCommon.hpp"
 
 namespace lum::rhi {
@@ -12,13 +13,13 @@ namespace lum::rhi {
     struct FramebufferCreateInfo {
 
         /* @brief Color attachments — pairs of binding slot and texture handle. */
-        std::vector<std::pair<uint8, TextureHandle>> m_ColorTex;
+        std::vector<std::pair<uint8, TextureHandle>> m_ColorTex{};
 
         /* @brief Optional depth attachment texture. */
-        TextureHandle m_DepthTex;
+        TextureHandle m_DepthTex{};
 
         /* @brief Optional stencil attachment texture. */
-        TextureHandle m_StencilTex;
+        TextureHandle m_StencilTex{};
 
     };
 
@@ -26,10 +27,10 @@ namespace lum::rhi {
     struct FramebufferBlitDescription {
 
         /* @brief Source framebuffer to read from. */
-        FramebufferHandle m_Source;
+        FramebufferHandle m_Source{};
 
         /* @brief Destination framebuffer to write to. */
-        FramebufferHandle m_Destination;
+        FramebufferHandle m_Destination{};
 
         /* @brief Bottom-left corner of the source rectangle. */
         uint32 m_SrcX0 = 0;
@@ -48,7 +49,7 @@ namespace lum::rhi {
         uint32 m_DstY1 = 0;
 
         /* @brief Buffers to copy — color, depth, stencil or a combination. */
-        Flags<BufferBit> m_CopyMask;
+        Flags<BufferBit> m_CopyMask{};
 
         /* @brief Filtering method applied when source and destination rectangles differ in size. Use Nearest for depth and stencil. */
         SamplerMagFilter m_Filter = SamplerMagFilter::Nearest;
