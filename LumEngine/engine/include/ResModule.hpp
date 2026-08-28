@@ -19,10 +19,10 @@ namespace lum {
 	class LUM_API ResourceModule {
 	public:
 
-		TextureManager		m_TextureMgr{};
-		MaterialManager		m_MaterialMgr{};
-		MeshManager			m_MeshMgr{};
-		ShaderManager		m_ShaderMgr{};
+		TextureManager		m_Texturem_Gr{};
+		MaterialManager		m_Materialm_Gr{};
+		MeshManager			m_Meshm_Gr{};
+		ShaderManager		m_Shaderm_Gr{};
 
 		void Initialize( PlatformModule& platform, ev::EventBus& bus );
 

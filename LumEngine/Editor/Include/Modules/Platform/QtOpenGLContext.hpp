@@ -28,8 +28,8 @@ namespace lum::editor {
 
 	private:
 
-		QOffscreenSurface* mSurface = nullptr; //< Owning pointer to the Qt offscreen surface.
-		QOpenGLContext* mContext = nullptr;   //< Owning pointer to the Qt OpenGL context.
+		QOffscreenSurface* m_Surface = nullptr; //< Owning pointer to the Qt offscreen surface.
+		QOpenGLContext* m_Context = nullptr;   //< Owning pointer to the Qt OpenGL context.
 
 	};
 

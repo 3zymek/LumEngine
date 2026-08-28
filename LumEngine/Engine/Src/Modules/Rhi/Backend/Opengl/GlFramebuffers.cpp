@@ -140,7 +140,7 @@ namespace lum::rhi::gl {
 
 		BindFramebuffer( fbo );
 
-		glClearColor( color.mR, color.mG, color.mB, color.mA );
+		glClearColor( color.m_R, color.m_G, color.m_B, color.m_A );
 		glClearDepth( std::clamp( depth, 0.0f, 1.0f ) );
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
@@ -239,7 +239,7 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		glClearColor( color.mR, color.mG, color.mB, color.mA );
+		glClearColor( color.m_R, color.m_G, color.m_B, color.m_A );
 
 		LUM_PROFILER_CACHE_MISS( );
 

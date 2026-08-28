@@ -46,7 +46,7 @@ namespace lum {
         /* @brief Cached context holding all resource manager references. */
         SceneManagerContext m_Ctx{};
 
-        fmt::SceneDependencyManager m_SceneDependencyMgr{};
+        fmt::SceneDependencyManager m_SceneDependencym_Gr{};
 
         /* @brief Pointer to the currently active scene. */
         SceneInstance* m_CurrentScene = nullptr;

@@ -311,10 +311,10 @@ namespace lum::render {
 		}
 		{ // Shaders
 
-			m_Cubemap.m_Shader = m_Ctx().m_ShaderMgr().LoadShader( "shaders/skybox_pass.vert", "shaders/skybox_pass.frag", ResourceRoot::Internal );
+			m_Cubemap.m_Shader = m_Ctx().m_Shaderm_Gr().LoadShader( "shaders/skybox_pass.vert", "shaders/skybox_pass.frag", ResourceRoot::Internal );
 
-			m_Ibl.m_Irradiance.m_Shader = m_Ctx().m_ShaderMgr( ).LoadShader( "shaders/irradiance.vert", "shaders/irradiance.frag", ResourceRoot::Internal );
-			m_Ibl.m_Prefiltered.m_Shader = m_Ctx().m_ShaderMgr( ).LoadShader( "shaders/prefiltered_env.vert", "shaders/prefiltered_env.frag", ResourceRoot::Internal );
+			m_Ibl.m_Irradiance.m_Shader = m_Ctx().m_Shaderm_Gr( ).LoadShader( "shaders/irradiance.vert", "shaders/irradiance.frag", ResourceRoot::Internal );
+			m_Ibl.m_Prefiltered.m_Shader = m_Ctx().m_Shaderm_Gr( ).LoadShader( "shaders/prefiltered_env.vert", "shaders/prefiltered_env.frag", ResourceRoot::Internal );
 
 		}
 

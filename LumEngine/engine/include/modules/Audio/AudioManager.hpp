@@ -120,7 +120,7 @@ namespace lum {
 		/* @brief Updates active sound instances based on entity audio components.
 		* Must be called once per frame.
 		*/
-		void UpdateInstances( ecs::EntityManager* mgr );
+		void UpdateInstances( ecs::EntityManager* m_Gr );
 
 	private:
 

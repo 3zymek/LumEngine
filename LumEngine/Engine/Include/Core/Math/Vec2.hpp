@@ -42,11 +42,11 @@ namespace lum {
 		/* @brief Vector components accessible as coordinates or color channels. */
 		union {
 			struct { tType m_X, m_Y; };
-			struct { tType mR, mG; };
+			struct { tType m_R, m_G; };
 		};
 
 		// Arithmetic
-
+		
 		/* @brief Adds two vectors component-wise.
 		* @param rhs Vector to add.
 		* @return Resulting vector.
@@ -262,8 +262,8 @@ namespace lum {
 	template<cArithmetic tType>
 	constexpr TVector2<tType> Clamp( const TVector2<tType>& v, tType min, tType max ) {
 		return {
-			std::clamp( v.m_X, min, max ),
-			std::clamp( v.m_Y, min, max )
+			Clamp( v.m_X, min, max ),
+			Clamp( v.m_Y, min, max )
 		};
 	}
 

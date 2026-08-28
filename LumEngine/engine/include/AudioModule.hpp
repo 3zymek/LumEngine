@@ -15,7 +15,7 @@ namespace lum {
 	public:
 
 		std::unique_ptr<ahi::IAudioDevice> m_AudioDevice = nullptr;
-		AudioManager m_AudioMgr{};
+		AudioManager m_Audiom_Gr{};
 
 		void Initialize( ev::EventBus& bus );
 		void Finalize( );

@@ -123,7 +123,7 @@ namespace lum::fmt {
 						if (detail::IsString( tokens, i, "path" )) {
 							detail::ExceptColonNext( tokens, i );
 							ctx.m_Ctx.m_Renderer().SetEnvironmentTexture(
-								ctx.m_Ctx.m_TextureMgr().LoadEquirectangularCubemap( tokens[ i ].m_Value.c_str( ) )
+								ctx.m_Ctx.m_Texturem_Gr().LoadEquirectangularCubemap( tokens[ i ].m_Value.c_str( ) )
 							);
 						}
 

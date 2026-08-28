@@ -86,7 +86,7 @@ namespace lum {
 		/* @brief Vector components accessible as coordinates or color channels. */
 		union {
 			struct { tType m_X, m_Y, m_Z, m_W; };
-			struct { tType mR, mG, mB, mA; };
+			struct { tType m_R, m_G, m_B, m_A; };
 		};
 
 		// Arithmetic

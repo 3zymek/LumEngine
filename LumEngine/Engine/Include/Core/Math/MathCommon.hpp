@@ -24,7 +24,7 @@ namespace lum {
 	* @return Absolute value of the input.
 	*/
 	template<cArithmetic tType = float32>
-	constexpr tType Abs( tType val ) { return std::abs( val ); }
+	LUM_NODISCARD constexpr tType Abs( tType val ) { return std::abs( val ); }
 
 	/* @brief Converts an angle from degrees to radians.
 	* @tparam tType Arithmetic type.
@@ -32,7 +32,7 @@ namespace lum {
 	* @return Equivalent angle in radians.
 	*/
 	template<cArithmetic tType = float32>
-	constexpr tType Radians( tType degrees ) { return degrees * (Pi<tType>( ) / tType( 180 )); }
+	LUM_NODISCARD constexpr tType Radians( tType degrees ) { return degrees * (Pi<tType>( ) / tType( 180 )); }
 
 	/* @brief Converts an angle from radians to degrees.
 	* @tparam tType Arithmetic type.
@@ -40,7 +40,7 @@ namespace lum {
 	* @return Equivalent angle in degrees.
 	*/
 	template<cArithmetic tType = float32>
-	constexpr tType Degrees( tType radians ) { return radians * (tType( 180 ) / Pi<tType>( )); }
+	LUM_NODISCARD constexpr tType Degrees( tType radians ) { return radians * (tType( 180 ) / Pi<tType>( )); }
 
 	/* @brief Compares two numeric values using an epsilon tolerance.
 	* @tparam tType Arithmetic type.
@@ -50,8 +50,20 @@ namespace lum {
 	* @return True if the values differ by less than the specified epsilon.
 	*/
 	template<cArithmetic tType>
-	constexpr bool NearlyEqual( tType a, tType b, tType eps = Epsilon<tType>( ) ) {
+	LUM_NODISCARD constexpr bool NearlyEqual( tType a, tType b, tType eps = Epsilon<tType>( ) ) {
 		return std::abs( a - b ) < eps;
+	}
+	
+	/* @brief Clamps a numeric value between a specified minimum and maximum boundary.
+	* @tparam tType Arithmetic type.
+	* @param val Value to be clamped.
+	* @param min Lower boundary.
+	* @param max Upper boundary.
+	* @return Minimum if val < min, maximum if val > max, otherwise val.
+	*/
+	template<cArithmetic tType>
+	LUM_NODISCARD constexpr tType Clamp( tType val, tType min, tType max ) noexcept {
+		return (val < min) ? min : ((val > max) ? max : val);
 	}
 
 } // namespace lum

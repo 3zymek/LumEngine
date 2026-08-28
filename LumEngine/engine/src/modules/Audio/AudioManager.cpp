@@ -200,9 +200,9 @@ namespace lum {
 
 	}
 
-	void AudioManager::UpdateInstances( ecs::EntityManager* mgr ) {
+	void AudioManager::UpdateInstances( ecs::EntityManager* m_Gr ) {
 
-		mgr->Each<CCamera, CTransform>(
+		m_Gr->Each<CCamera, CTransform>(
 			[&]( CCamera& camera, CTransform& transform ) {
 				ahi::ListenerAttributes attrs;
 
@@ -214,7 +214,7 @@ namespace lum {
 
 			} );
 
-		mgr->EachWithID<CTransform, CAudioEmitter>(
+		m_Gr->EachWithID<CTransform, CAudioEmitter>(
 			[&]( EntityID id, CTransform& transf, CAudioEmitter& emitter ) {
 
 				/*

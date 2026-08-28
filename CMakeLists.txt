@@ -118,6 +118,7 @@ source_group(TREE "${CMAKE_SOURCE_DIR}/LumEngine/Editor" FILES
 target_include_directories(LumEngineEditor PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine"
     "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include"
+    "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/Modules"
     "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include"
     "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/Modules"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Glm"

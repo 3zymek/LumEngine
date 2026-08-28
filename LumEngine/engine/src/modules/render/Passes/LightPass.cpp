@@ -129,7 +129,7 @@ namespace lum::render {
 
 		{ // Shaders
 
-			m_Shader = m_Ctx( ).m_ShaderMgr( ).LoadShader( "shaders/light_pass.vert", "shaders/light_pass.frag", ResourceRoot::Internal );
+			m_Shader = m_Ctx( ).m_Shaderm_Gr( ).LoadShader( "shaders/light_pass.vert", "shaders/light_pass.frag", ResourceRoot::Internal );
 		
 		}
 

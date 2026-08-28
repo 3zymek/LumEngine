@@ -2,21 +2,24 @@
 
 #include "EditorPch.hpp"
 #include "Rhi/RhiCommon.hpp"
+#include "Core/EditorCamera.hpp"
 
 namespace lum {
 
 	namespace rhi { class IRenderDevice; }
 	namespace ev { class EventBus; }
 	class IRenderContext;
+	class Engine;
 
 }
 
 namespace lum::editor {
 	
 	struct ViewportCreateInfo {
-		SafePtr<rhi::IRenderDevice> mRenderDevice = nullptr;
-		SafePtr<IRenderContext> mRenderContext = nullptr;
-		SafePtr<ev::EventBus> mEventBus = nullptr;
+		SafePtr<rhi::IRenderDevice> m_RenderDevice = nullptr;
+		SafePtr<IRenderContext> m_RenderContext = nullptr;
+		SafePtr<ev::EventBus> m_EventBus = nullptr;
+		SafePtr<Engine> m_Engine = nullptr;
 	};
 
 	class ViewportWidget : public QWidget {
@@ -30,28 +33,30 @@ namespace lum::editor {
 
 		void Initialize( const ViewportCreateInfo& info );
 		LUM_FORCEINLINE void SetTexture( rhi::TextureHandle tex ) {
-			mTextureId = tex;
+			m_TextureId = tex;
 			update( );
 		}
 
 	protected:
-
+		
 		void paintEvent( QPaintEvent* event ) override;
 		void resizeEvent( QResizeEvent* event ) override;
 		void mousePressEvent( QMouseEvent* event ) override;
 		void mouseReleaseEvent( QMouseEvent* event ) override;
 		void mouseMoveEvent( QMouseEvent* event ) override;
+		void keyPressEvent( QKeyEvent* event ) override;
 
 	private:
 
-		QTimer mResizeTimer{};
-		QSize mPendingSize{};
-		const uint32 mResizeFreshrate = 50; // in ms
+		EditorCamera m_Camera{};
 
-		bool mControlsUnlocked = false;
+		QTimer m_ResizeTimer{};
+		QSize m_PendingSize{};
+		const uint32 m_ResizeFreshrate = 50; // in ms
+		bool m_ControlsUnlocked = false;
 
-		ViewportCreateInfo mInfo{};
-		rhi::TextureHandle mTextureId{};
+		ViewportCreateInfo m_Ctx{};
+		rhi::TextureHandle m_TextureId{};
 
 	};
 

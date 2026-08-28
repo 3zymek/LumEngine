@@ -16,7 +16,7 @@ namespace lum::editor {
     class Editor {
     public:
 
-        Editor( int argc, char* argv[ ] ) : mQtApp( argc, argv ) {}
+        Editor( int argc, char* argv[ ] ) : m_QtApp( argc, argv ) {}
 
         void Initialize( );
         void Run( );
@@ -24,15 +24,15 @@ namespace lum::editor {
 
     private:
 
-        QApplication mQtApp;
-        Engine mEngine{};
+        QApplication m_QtApp;
+        Engine m_Engine{};
 
-        ViewportWidget mViewport{};
+        ViewportWidget m_Viewport{};
 
-        std::unique_ptr<IRenderContext> mRenderContext = nullptr;
+        std::unique_ptr<IRenderContext> m_RenderContext = nullptr;
 
         QMainWindow* m_Window = nullptr;
-        QLabel* mLabel = nullptr;
+        QLabel* m_Label = nullptr;
 
     };
 

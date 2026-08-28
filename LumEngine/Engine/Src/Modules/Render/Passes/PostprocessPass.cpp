@@ -13,7 +13,7 @@ namespace lum::render {
 
 		m_Ctx = ctx;
 
-		m_Shader = m_Ctx().m_ShaderMgr( ).LoadShader( "shaders/postprocess_pass.vert", "shaders/postprocess_pass.frag", ResourceRoot::Internal );
+		m_Shader = m_Ctx().m_Shaderm_Gr( ).LoadShader( "shaders/postprocess_pass.vert", "shaders/postprocess_pass.frag", ResourceRoot::Internal );
 
 	}
 

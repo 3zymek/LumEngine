@@ -47,7 +47,7 @@ namespace lum {
 		/* @brief Vector components accessible as coordinates or color channels. */
 		union {
 			struct { tType m_X, m_Y, m_Z; };
-			struct { tType mR, mG, mB; };
+			struct { tType m_R, m_G, m_B; };
 		};
 
 		// Arithmetic
@@ -311,9 +311,9 @@ namespace lum {
 	template<cArithmetic tType>
 	constexpr TVector3<tType> Clamp( const TVector3<tType>& v, tType min, tType max ) {
 		return {
-			std::clamp( v.m_X, min, max ),
-			std::clamp( v.m_Y, min, max ),
-			std::clamp( v.m_Z, min, max )
+			Clamp( v.m_X, min, max ),
+			Clamp( v.m_Y, min, max ),
+			Clamp( v.m_Z, min, max )
 		};
 	}
 

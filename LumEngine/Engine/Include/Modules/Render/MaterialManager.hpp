@@ -25,7 +25,7 @@ namespace lum {
 
 		/* @brief Initializes the manager with the given device and texture manager.
 		* @param device  Pointer to the active render device.
-		* @param texMgr  Pointer to the texture manager for fallback resolution.
+		* @param texm_Gr  Pointer to the texture manager for fallback resolution.
 		*/
 		void Initialize( render::RendererContext& ctx );
 

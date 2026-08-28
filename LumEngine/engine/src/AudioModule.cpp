@@ -16,7 +16,7 @@ namespace lum {
 
 		m_AudioDevice = ahi::CreateDevice( ahi::AudioBackend::Fmod );
 		m_AudioDevice->Initialize( 512, ahi::InitFlag::RightHanded3D | ahi::InitFlag::DistanceFilter );
-		m_AudioMgr.Initialize( m_AudioDevice.get(), bus );
+		m_Audiom_Gr.Initialize( m_AudioDevice.get(), bus );
 
 	}
 

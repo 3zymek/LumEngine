@@ -96,7 +96,7 @@ namespace lum {
 
 			LUM_ASSERT(
 				m_Value != nullptr,
-				"Attempted to access unitialized SafePtr at %s: %u (%s)",
+				"Attempted to access nullptr (SafePtr) at {}: {} ({})",
 				loc.file_name( ),
 				loc.line( ),
 				loc.function_name( )
@@ -191,7 +191,7 @@ namespace lum {
 
 		/* @brief Logs the underlying pointer for debugging purposes. */
 		void PrintDebug( ) const {
-			LUM_LOG_DEBUG( m_Value );
+			LUM_LOG_DEBUG( "{}", m_Value );
 		}
 
 	private:

@@ -314,7 +314,7 @@ namespace lum::rhi::gl {
 			return;
 		}
 
-		glBlendColor( rgba.mR, rgba.mG, rgba.mB, rgba.mA );
+		glBlendColor( rgba.m_R, rgba.m_G, rgba.m_B, rgba.m_A );
 
 		m_BlendState.m_BlendColor = rgba;
 

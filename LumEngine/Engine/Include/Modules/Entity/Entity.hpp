@@ -48,9 +48,9 @@ namespace lum {
 		friend class ecs::EntityManager;
 
 		/* @brief Constructs a managed entity bound to the given entity manager.
-		* @param mgr Reference to the entity manager that owns this entity.
+		* @param m_Gr Reference to the entity manager that owns this entity.
 		*/
-		ManagedEntity( ecs::EntityManager* mgr ) : Entity( UniqueID<Entity>::Get( ) ), m_EntityManager( mgr ) { }
+		ManagedEntity( ecs::EntityManager* m_Gr ) : Entity( UniqueID<Entity>::Get( ) ), m_EntityManager( m_Gr ) { }
 
 		/* @brief Adds a component of type tType to this entity.
 		* @param component Component value to add (default constructed if not provided).

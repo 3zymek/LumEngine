@@ -31,7 +31,7 @@ namespace lum {
 			/* @brief Processes all renderable entities and submits them for drawing.
 			* Updates camera matrices from CCamera and CTransform,
 			* then submits each CStaticMesh with its material and transform.
-			* @param entityMgr Active entity manager to query components from.
+			* @param entitym_Gr Active entity manager to query components from.
 			* @param window    Window used to compute the current aspect ratio.
 			*/
 			void Update( SceneInstance& scene );

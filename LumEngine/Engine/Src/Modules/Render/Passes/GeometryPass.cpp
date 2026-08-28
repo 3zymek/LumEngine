@@ -100,7 +100,7 @@ namespace lum::render {
 			desc.m_Cull.m_Enabled = true;
 			desc.m_Cull.m_Face = rhi::Face::Back;
 			m_Pipeline = m_Ctx( ).m_RenderDev( ).CreatePipeline( desc );
-			m_Shader = m_Ctx( ).m_ShaderMgr( ).LoadShader( "shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ResourceRoot::Internal );
+			m_Shader = m_Ctx( ).m_Shaderm_Gr( ).LoadShader( "shaders/geometry_pass.vert", "shaders/geometry_pass.frag", ResourceRoot::Internal );
 		}
 
 	}
@@ -122,7 +122,7 @@ namespace lum::render {
 
 	void GeometryPass::draw_mesh( const RenderInstance& instance ) {
 
-		const StaticMeshResource& res = m_Ctx( ).m_MeshMgr( ).GetStatic( instance.m_StaticMesh( ).m_Handle );
+		const StaticMeshResource& res = m_Ctx( ).m_Meshm_Gr( ).GetStatic( instance.m_StaticMesh( ).m_Handle );
 
 		upload_model_matrix( instance );
 		m_Ctx( ).m_RenderDev( ).DrawElements( res.m_Vao, res.m_NumIndices );

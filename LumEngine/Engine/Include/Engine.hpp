@@ -21,7 +21,7 @@ namespace lum {
 	public:
 
 		void Initialize( const EngineCreateInfo& info );
-		void SetScene( const Path& path ) { m_SceneModule.m_SceneMgr.SetScene( path ); }
+		void SetScene( const Path& path ) { m_SceneModule.m_Scenem_Gr.SetScene( path ); }
 		void BeginFrame( );
 		void EndFrame( );
 		void Tick( );

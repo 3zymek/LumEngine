@@ -23,7 +23,7 @@ namespace lum {
 	void SceneManager::Initialize( SceneManagerContext& ctx ) {
 
 		m_Ctx = ctx;
-		m_SceneDependencyMgr.Initialize( m_Ctx );
+		m_SceneDependencym_Gr.Initialize( m_Ctx );
 
 	}
 
@@ -66,7 +66,7 @@ namespace lum {
 		scene.m_EntityMgr.Initialize( m_Ctx.m_EventBus() );
 		scene.m_ScenePath = fullPath;
 
-		m_SceneDependencyMgr.Deserialize( scene, tokenizer );
+		m_SceneDependencym_Gr.Deserialize( scene, tokenizer );
 		m_Scenes.emplace( hash, std::move( scene ) );
 
 		LUM_LOG_INFO( "Loaded scene: {}", scenePath.ToString( ) );
@@ -75,7 +75,7 @@ namespace lum {
 
 	void SceneManager::SaveScene( SceneInstance& scene ) {
 
-		m_SceneDependencyMgr.Serialize( scene );
+		m_SceneDependencym_Gr.Serialize( scene );
 		LUM_LOG_INFO( "Saved scene: {}", scene.m_ScenePath.ToString() );
 	   
 	}

@@ -39,18 +39,18 @@ namespace lum::render {
 	struct RendererContext {
 
 		SafePtr<rhi::IRenderDevice>	m_RenderDev = nullptr;
-		SafePtr<TextureManager>		m_TextureMgr = nullptr;
-		SafePtr<MaterialManager>	m_MaterialMgr = nullptr;
-		SafePtr<MeshManager>		m_MeshMgr = nullptr;
-		SafePtr<ShaderManager>		m_ShaderMgr = nullptr;
+		SafePtr<TextureManager>		m_Texturem_Gr = nullptr;
+		SafePtr<MaterialManager>	m_Materialm_Gr = nullptr;
+		SafePtr<MeshManager>		m_Meshm_Gr = nullptr;
+		SafePtr<ShaderManager>		m_Shaderm_Gr = nullptr;
 		SafePtr<ev::EventBus>		m_EventBus = nullptr;
 
 		void Validate( ) const {
 			LUM_ASSERT( m_RenderDev, "RendererContext: IRenderDevice is nullptr!" );
-			LUM_ASSERT( m_TextureMgr, "RendererContext: TextureManager is nullptr!" );
-			LUM_ASSERT( m_MaterialMgr, "RendererContext: MaterialManager is nullptr!" );
-			LUM_ASSERT( m_MeshMgr, "RendererContext: MeshManager is nullptr!" );
-			LUM_ASSERT( m_ShaderMgr, "RendererContext: ShaderManager is nullptr!" );
+			LUM_ASSERT( m_Texturem_Gr, "RendererContext: TextureManager is nullptr!" );
+			LUM_ASSERT( m_Materialm_Gr, "RendererContext: MaterialManager is nullptr!" );
+			LUM_ASSERT( m_Meshm_Gr, "RendererContext: MeshManager is nullptr!" );
+			LUM_ASSERT( m_Shaderm_Gr, "RendererContext: ShaderManager is nullptr!" );
 			LUM_ASSERT( m_EventBus, "RendererContext: EventBus is nullptr!" );
 		}
 

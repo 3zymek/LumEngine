@@ -61,7 +61,7 @@ namespace lum::render {
 			ctx.m_RenderDev( ).SetUniformBufferBinding( m_LightSpaceUbo, LUM_UBO_LIGHTSPACE_MATRIX );
 		}
 		{ // Shaders
-			m_Shader = ctx.m_ShaderMgr( ).LoadShader( "shaders/shadow_mapping/directional.vert", "shaders/shadow_mapping/directional.frag", ResourceRoot::Internal );
+			m_Shader = ctx.m_Shaderm_Gr( ).LoadShader( "shaders/shadow_mapping/directional.vert", "shaders/shadow_mapping/directional.frag", ResourceRoot::Internal );
 		}
 
 	}
@@ -91,7 +91,7 @@ namespace lum::render {
 			ctx.m_RenderDev( ).SetUniformBufferBinding( m_LightSpaceUbo, LUM_UBO_LIGHTSPACE_MATRIX );
 		}
 		{ // Shader
-			m_Shader = ctx.m_ShaderMgr( ).LoadShader( "shaders/shadow_mapping/spot.vert", "shaders/shadow_mapping/spot.frag", ResourceRoot::Internal );
+			m_Shader = ctx.m_Shaderm_Gr( ).LoadShader( "shaders/shadow_mapping/spot.vert", "shaders/shadow_mapping/spot.frag", ResourceRoot::Internal );
 		}
 
 	}

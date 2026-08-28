@@ -53,11 +53,11 @@ namespace lum {
 	}
 	void Engine::Tick( ) {
 
-		SceneInstance* scene = m_SceneModule.m_SceneMgr.GetCurrentScene( );
+		SceneInstance* scene = m_SceneModule.m_Scenem_Gr.GetCurrentScene( );
 
 		if (scene) {
 			TransformSystem::Update( *scene );
-			m_AudioModule.m_AudioMgr.UpdateInstances( &scene->m_EntityMgr );
+			m_AudioModule.m_Audiom_Gr.UpdateInstances( &scene->m_EntityMgr );
 			m_RenderModule.m_RenderSys.Update( *scene );
 		}
 

@@ -17,19 +17,19 @@ namespace lum::editor {
 		format.setProfile( QSurfaceFormat::CoreProfile );
 		format.setVersion( 4, 5 );
 
-		mContext = new QOpenGLContext( );
-		mContext->setFormat( format );
+		m_Context = new QOpenGLContext( );
+		m_Context->setFormat( format );
 
-		if (!mContext->create( )) {
+		if (!m_Context->create( )) {
 			LUM_LOG_FATAL( "Failed to create QOpenGLContext" );
 			return;
 		}
 
-		mSurface = new QOffscreenSurface( );
-		mSurface->setFormat( mContext->format( ) );
-		mSurface->create( );
+		m_Surface = new QOffscreenSurface( );
+		m_Surface->setFormat( m_Context->format( ) );
+		m_Surface->create( );
 
-		if (!mSurface->isValid( )) {
+		if (!m_Surface->isValid( )) {
 			LUM_LOG_FATAL( "Failed to create QOffscreenSurface" );
 			return;
 		}
@@ -37,16 +37,16 @@ namespace lum::editor {
 	}
 
 	void QtOpenGLContext::SwapBuffers( ) {
-		mContext->swapBuffers( mSurface );
+		m_Context->swapBuffers( m_Surface );
 	}
 
 	void QtOpenGLContext::MakeCurrent( ) {
-		mContext->makeCurrent( mSurface );
+		m_Context->makeCurrent( m_Surface );
 	}
 
 	void* QtOpenGLContext::GetProcAddress( const char* functionName ) {
 
-		return reinterpret_cast<void*>(mContext->getProcAddress( functionName ));
+		return reinterpret_cast<void*>(m_Context->getProcAddress( functionName ));
 
 	}
 

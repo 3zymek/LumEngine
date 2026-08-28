@@ -32,27 +32,27 @@ namespace lum {
 
 		MaterialBase base{};
 
-		auto& texMgr = m_Ctx( ).m_TextureMgr( );
+		auto& texm_Gr = m_Ctx( ).m_Texturem_Gr( );
 
 		if (desc.m_AlbedoTex) {
-			base.m_AlbedoTex = texMgr.Load( desc.m_AlbedoTex.Value( ), TexturePreset::Albedo );
+			base.m_AlbedoTex = texm_Gr.Load( desc.m_AlbedoTex.Value( ), TexturePreset::Albedo );
 		}
-		else base.m_AlbedoTex = texMgr.GetFallbackTexture( FallbackTexture::DefaultAlbedo );
+		else base.m_AlbedoTex = texm_Gr.GetFallbackTexture( FallbackTexture::DefaultAlbedo );
 
 		if (desc.m_NormalTex) {
-			base.m_NormalTex = texMgr.Load( desc.m_NormalTex.Value( ), TexturePreset::Normal );
+			base.m_NormalTex = texm_Gr.Load( desc.m_NormalTex.Value( ), TexturePreset::Normal );
 		}
-		else base.m_NormalTex = texMgr.GetFallbackTexture( FallbackTexture::DefaultNormal );
+		else base.m_NormalTex = texm_Gr.GetFallbackTexture( FallbackTexture::DefaultNormal );
 
 		if (desc.m_RoughnessTex) {
-			base.m_RoughnessTex = texMgr.Load( desc.m_RoughnessTex.Value( ), TexturePreset::Roughness );
+			base.m_RoughnessTex = texm_Gr.Load( desc.m_RoughnessTex.Value( ), TexturePreset::Roughness );
 		}
-		else base.m_RoughnessTex = texMgr.GetFallbackTexture( FallbackTexture::DefaultRoughness );
+		else base.m_RoughnessTex = texm_Gr.GetFallbackTexture( FallbackTexture::DefaultRoughness );
 
 		if (desc.m_MetallicTex) {
-			base.m_MetallicTex = texMgr.Load( desc.m_MetallicTex.Value( ), TexturePreset::Metallic );
+			base.m_MetallicTex = texm_Gr.Load( desc.m_MetallicTex.Value( ), TexturePreset::Metallic );
 		}
-		else base.m_MetallicTex = texMgr.GetFallbackTexture( FallbackTexture::DefaultMetallic );
+		else base.m_MetallicTex = texm_Gr.GetFallbackTexture( FallbackTexture::DefaultMetallic );
 
 		return m_BaseMaterials.Append( base );
 
@@ -134,7 +134,7 @@ namespace lum {
 
 		if (!m_Ctx( ).m_RenderDev().IsValid( tex )) {
 			LUM_LOG_DEBUG( "No texture given, setting default fallback" );
-			return m_Ctx( ).m_TextureMgr().GetFallbackTexture( FallbackTexture::DefaultAlbedo );
+			return m_Ctx( ).m_Texturem_Gr().GetFallbackTexture( FallbackTexture::DefaultAlbedo );
 		}
 		else
 			return tex;
@@ -145,14 +145,14 @@ namespace lum {
 
 		{ // Base material
 
-			auto& texMgr = m_Ctx( ).m_TextureMgr( );
+			auto& texm_Gr = m_Ctx( ).m_Texturem_Gr( );
 			
 			MaterialBase base{};
-			base.m_AlbedoTex	= texMgr.GetFallbackTexture( FallbackTexture::DefaultAlbedo );
-			base.m_NormalTex	= texMgr.GetFallbackTexture( FallbackTexture::DefaultNormal );
-			base.m_MetallicTex	= texMgr.GetFallbackTexture( FallbackTexture::DefaultMetallic );
-			base.m_RoughnessTex	= texMgr.GetFallbackTexture( FallbackTexture::DefaultRoughness );
-			base.m_AmbientTex	= texMgr.GetFallbackTexture( FallbackTexture::DefaultAlbedo );
+			base.m_AlbedoTex	= texm_Gr.GetFallbackTexture( FallbackTexture::DefaultAlbedo );
+			base.m_NormalTex	= texm_Gr.GetFallbackTexture( FallbackTexture::DefaultNormal );
+			base.m_MetallicTex	= texm_Gr.GetFallbackTexture( FallbackTexture::DefaultMetallic );
+			base.m_RoughnessTex	= texm_Gr.GetFallbackTexture( FallbackTexture::DefaultRoughness );
+			base.m_AmbientTex	= texm_Gr.GetFallbackTexture( FallbackTexture::DefaultAlbedo );
 
 			m_DefaultMaterial = UploadBase( base );
 
