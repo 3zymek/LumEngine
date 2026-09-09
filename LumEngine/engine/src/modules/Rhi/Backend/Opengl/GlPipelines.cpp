@@ -101,7 +101,10 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::Delete( PipelineHandle& pipeline ) {
 
-		LUM_RETURN_IF( !IsValid( pipeline ), LUM_SEV_WARN, "Invalid pipeline" );
+		if (!IsValid( pipeline )) {
+			LUM_LOG_WARN( "Invalid pipeline" );
+			return;
+		}
 
 		m_Pipelines.Remove( pipeline );
 

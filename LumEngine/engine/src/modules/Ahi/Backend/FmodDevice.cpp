@@ -93,7 +93,11 @@ namespace lum::ahi::fmod {
 
 	void FMODDevice::DeleteEffect( AudioEffectHandle& effect ) {
 
-		LUM_RETURN_IF( !IsValid( effect ), LUM_SEV_WARN, "Invalid effect handle" );
+		if (!IsValid( effect )) {
+			LUM_LOG_WARN( "Invalid effect handle" );
+			return;
+		}
+
 		AudioEffect& sfx = m_Effects[ effect ];
 
 		for (auto [slot, value] : m_ChannelGroups.Each( )) {
@@ -113,8 +117,15 @@ namespace lum::ahi::fmod {
 
 	void FMODDevice::SetGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) {
 
-		LUM_RETURN_IF( !IsValid( effect ), LUM_SEV_WARN, "Invalid effect handle" );
-		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group handle" );
+		if (!IsValid( effect )) {
+			LUM_LOG_WARN( "Invalid effect handle" );
+			return;
+		}
+
+		if (!IsValid( group )) {
+			LUM_LOG_WARN( "Invalid group handle" );
+			return;
+		}
 
 		FMOD::ChannelGroup* fmodGroup = to_fmod_channel_group( m_ChannelGroups[ group ] );
 		AudioEffect sfx = m_Effects[ effect ];
@@ -126,20 +137,32 @@ namespace lum::ahi::fmod {
 	}
 	void FMODDevice::SetGroupVolume( ChannelGroupHandle group, float32 volume ) {
 
-		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group" );
+		if (!IsValid( group )) {
+			LUM_LOG_WARN( "Invalid group" );
+			return;
+		}
 		to_fmod_channel_group( m_ChannelGroups[ group ] )->setVolume( std::clamp( volume, 0.0f, 1.0f ) );
 
 	}
 	void FMODDevice::SetGroupPitch( ChannelGroupHandle group, float32 pitch ) {
 
-		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group" );
+		if (!IsValid( group )) {
+			LUM_LOG_WARN( "Invalid group" );
+			return;
+		}
 		to_fmod_channel_group( m_ChannelGroups[ group ] )->setPitch( std::clamp( pitch, 0.0f, 1.0f ) );
 
 	}
 	void FMODDevice::RemoveGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) {
 
-		LUM_RETURN_IF( !IsValid( effect ), LUM_SEV_WARN, "Invalid effect handle" );
-		LUM_RETURN_IF( !IsValid( group ), LUM_SEV_WARN, "Invalid group handle" );
+		if (!IsValid( effect )) {
+			LUM_LOG_WARN( "Invalid effect handle" );
+			return;
+		}
+		if (!IsValid( group )) {
+			LUM_LOG_WARN( "Invalid group handle" );
+			return;
+		}
 
 		FMOD::ChannelGroup* fmodGroup = to_fmod_channel_group( m_ChannelGroups[ group ] );
 		AudioEffect sfx = m_Effects[ effect ];

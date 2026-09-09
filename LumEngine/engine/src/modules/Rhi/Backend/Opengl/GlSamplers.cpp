@@ -53,7 +53,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::Delete( SamplerHandle sampler ) {
 
-		LUM_RETURN_IF( !IsValid( sampler ), LUM_SEV_WARN, "Invalid sampler" );
+		if (!IsValid( sampler )) {
+			LUM_LOG_WARN( "Invalid sampler" );
+			return;
+		}
 
 		glDeleteSamplers( 1, &m_Samplers[ sampler ].m_Handle );
 		m_Samplers.Remove( sampler );

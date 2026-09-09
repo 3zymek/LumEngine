@@ -105,7 +105,10 @@ namespace lum {
 	void AudioManager::DeleteEffect( StringView name ) {
 
 		HashedString hash = HashString( name );
-		LUM_RETURN_IF( !m_Effects.contains( hash ), LUM_SEV_WARN, "Effect named %s doesn't exist", name.data( ) );
+		if (!m_Effects.contains( hash )) {
+			LUM_LOG_WARN( "Effect named {} doesn't exist", name.data( ) );
+			return;
+		}
 		DeleteEffect( m_Effects[ hash ] );
 
 	}
@@ -148,14 +151,20 @@ namespace lum {
 	void AudioManager::BindEffectToGroup( ahi::ChannelGroupHandle group, StringView effect ) {
 
 		HashedString hash = HashString( effect );
-		LUM_RETURN_IF( !m_Effects.contains( hash ), LUM_SEV_WARN, "Invalid effect" );
+		if (!m_Effects.contains( hash )) {
+			LUM_LOG_WARN( "Invalid effect" );
+			return;
+		}
 		BindEffectToGroup( group, m_Effects[ hash ] );
 
 	}
 	void AudioManager::BindEffectToGroup( StringView group, ahi::AudioEffectHandle effect ) {
 
 		HashedString hash = HashString( group );
-		LUM_RETURN_IF( !m_Groups.contains( hash ), LUM_SEV_WARN, "Invalid group" );
+		if (!m_Groups.contains( hash )) {
+			LUM_LOG_WARN( "Invalid group" );
+			return;
+		}
 		BindEffectToGroup( m_Groups[ hash ], effect );
 
 	}
@@ -164,15 +173,24 @@ namespace lum {
 		HashedString hashGroup = HashString( group );
 		HashedString hashEffect = HashString( effect );
 
-		LUM_RETURN_IF( !m_Groups.contains( hashGroup ), LUM_SEV_WARN, "Invalid group" );
-		LUM_RETURN_IF( !m_Effects.contains( hashEffect ), LUM_SEV_WARN, "Invalid effect" );
+		if (!m_Groups.contains( hashGroup )) {
+			LUM_LOG_WARN( "Invalid group" );
+			return;
+		}
+		if (!m_Effects.contains( hashEffect )) {
+			LUM_LOG_WARN( "Invalid effect" );
+			return;
+		}
 		BindEffectToGroup( m_Groups[ hashGroup ], m_Effects[ hashEffect ] );
 
 	}
 	void AudioManager::SetGroupVolume( StringView group, float32 volume ) {
 
 		HashedString hash = HashString( group );
-		LUM_RETURN_IF( !m_Groups.contains( hash ), LUM_SEV_WARN, "Group %s dosen't exist", group.data( ) );
+		if (!m_Groups.contains( hash )) {
+			LUM_LOG_WARN( "Group {} dosen't exist", group.data( ) );
+			return;
+		}
 		SetGroupVolume( m_Groups[ hash ], volume );
 
 	}
@@ -184,7 +202,10 @@ namespace lum {
 	void AudioManager::SetGroupPitch( StringView group, float32 pitch ) {
 
 		HashedString hash = HashString( group );
-		LUM_RETURN_IF( !m_Groups.contains( hash ), LUM_SEV_WARN, "Group %s dosen't exist", group.data( ) );
+		if (!m_Groups.contains( hash )) {
+			LUM_LOG_WARN( "Group {} dosen't exist", group.data( ) );
+			return;
+		}
 		SetGroupPitch( m_Groups[ hash ], pitch );
 
 	}

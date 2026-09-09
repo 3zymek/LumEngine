@@ -14,7 +14,6 @@
 
 #include "Core/Utils/StringHasher.hpp"
 #include "Core/Utils/Logger.hpp"
-#include "Core/Utils/LumAssert.hpp"
 #include "Core/Utils/FormatString.hpp"
 #include "Core/Utils/SafePtr.hpp"
 

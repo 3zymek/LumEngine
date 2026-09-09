@@ -5,7 +5,6 @@
 //=============================================================================//
 #pragma once
 #include "Event/EventCommon.hpp"
-#include "Core/Utils/LumAssert.hpp"
 #include "Core/Limits.hpp"
 
 namespace lum::ev::detail {

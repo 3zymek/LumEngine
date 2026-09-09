@@ -52,7 +52,10 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::Delete( VertexLayoutHandle& layout ) {
 
-		LUM_RETURN_IF( !IsValid( layout ), LUM_SEV_WARN, "Invalid layout" );
+		if (!IsValid( layout )) {
+			LUM_LOG_WARN( "Invalid layout" );
+			return;
+		}
 		glDeleteVertexArrays( 1, &m_Layouts[ layout ].m_Handle );
 		m_Layouts.Remove( layout );
 

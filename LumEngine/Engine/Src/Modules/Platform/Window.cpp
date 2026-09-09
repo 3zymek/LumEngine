@@ -6,7 +6,6 @@
 
 #include "Platform/Window.hpp"
 #include "Event/EventBus.hpp"
-#include "Core/Utils/LumAssert.hpp"
 #include "Event/Events/WindowEvents.hpp"
 #include "Platform/Input/Input.hpp"
 

@@ -7,7 +7,6 @@
 #include "Platform/OpenGLContext.hpp"
 
 #include "Core/Utils/Logger.hpp"
-#include "Core/Utils/LumAssert.hpp"
 
 #include "Core/ViewportWidget.hpp"
 

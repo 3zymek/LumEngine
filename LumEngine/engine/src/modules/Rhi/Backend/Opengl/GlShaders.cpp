@@ -59,7 +59,10 @@ namespace lum::rhi::gl {
 	}
 	void GLDevice::Delete( ShaderHandle& shader ) {
 
-		LUM_RETURN_IF( !IsValid( shader ), LUM_SEV_WARN, "Invalid shader" );
+		if (!IsValid( shader )) {
+			LUM_LOG_WARN( "Invalid shader" );
+			return;
+		}
 
 		glDeleteProgram( m_Shaders[ shader ].m_Handle );
 

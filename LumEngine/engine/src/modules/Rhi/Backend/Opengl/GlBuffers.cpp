@@ -55,7 +55,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::Delete( BufferHandle& buff ) {
 
-		LUM_RETURN_IF( !IsValid( buff ), LUM_SEV_DEBUG, "Invalid buffer" );
+		if (!IsValid( buff )) {
+			LUM_LOG_DEBUG( "Invalid buffer" );
+			return;
+		}
 
 		Buffer& buffer = m_Buffers[ buff ];
 		UnmapBuffer( buff );
@@ -68,7 +71,10 @@ namespace lum::rhi::gl {
 
 	void* GLDevice::MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset, usize size ) {
 
-		LUM_RETURN_DEF_IF( !IsValid( buff ), LUM_SEV_WARN, "Invalid buffer" );
+		if (!IsValid( buff )) {
+			LUM_LOG_WARN( "Invalid buffer" );
+			return nullptr;
+		}
 
 		Buffer& buffer = m_Buffers[ buff ];
 
@@ -85,7 +91,10 @@ namespace lum::rhi::gl {
 
 	void GLDevice::UnmapBuffer( BufferHandle buff ) {
 
-		LUM_RETURN_IF( !IsValid( buff ), LUM_SEV_WARN, "Invalid buffer" );
+		if (!IsValid( buff )) {
+			LUM_LOG_WARN( "Invalid buffer" );
+			return;
+		}
 
 		Buffer& buffer = m_Buffers[ buff ];
 		if (!buffer.m_Mapped) return;

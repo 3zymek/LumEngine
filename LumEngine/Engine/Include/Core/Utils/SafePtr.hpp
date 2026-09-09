@@ -6,7 +6,6 @@
 #pragma once
 
 #include "Core/Utils/Logger.hpp"
-#include "Core/Utils/LumAssert.hpp"
 #include "Core/CoreDefines.hpp"
 #include "Core/Types.hpp"
 #include "Core/Utils/OwningPtr.hpp"

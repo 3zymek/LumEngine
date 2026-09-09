@@ -6,7 +6,6 @@
 
 #include "Platform/QtOpenGLContext.hpp"
 #include "Core/Utils/Logger.hpp"
-#include "Core/Utils/LumAssert.hpp"
 
 namespace lum::editor {
 
