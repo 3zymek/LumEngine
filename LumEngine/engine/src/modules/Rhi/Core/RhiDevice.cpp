@@ -23,9 +23,9 @@ namespace lum::rhi {
 
 	}
 
-//=======================================================//
+	//=======================================================//
 	// Private
-//=======================================================//
+	//=======================================================//
 
 	bool IRenderDevice::validate_texture_descriptor( const TextureCreateInfo& desc ) const noexcept {
 
@@ -102,14 +102,15 @@ namespace lum::rhi {
 
 	}
 
-	std::unique_ptr<IRenderDevice> CreateDevice( RenderBackend backend ) {
+	OwningPtr<IRenderDevice> CreateDevice( RenderBackend backend ) {
 
 		switch (backend) {
 			case RenderBackend::OpenGL:
-				return std::move( std::make_unique<gl::GLDevice>( ) );
+				return OwningPtr<rhi::gl::GLDevice>::Create( );
 			default:
 				return nullptr;
 		}
+
 	}
 
 }

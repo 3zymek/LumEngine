@@ -10,37 +10,38 @@
 
 namespace lum {
 
-    //---------------------------------------------------------
-    // Public
-    //---------------------------------------------------------
+	//---------------------------------------------------------
+	// Public
+	//---------------------------------------------------------
 
-    void PlatformModule::Initialize( EngineCreateInfo info, ev::EventBus& bus ) {
+	void PlatformModule::Initialize( EngineCreateInfo info, ev::EventBus& bus ) {
 
-        info.m_Window.m_Title = info.m_ApplicationName;
+		info.m_Window.m_Title = info.m_ApplicationName;
 
-        if (!info.m_RenderContext) {
+		if (!info.m_RenderContext) {
 
-            m_Window = Window{};
-            m_Window.Value().Initialize( info.m_Window, bus );
+			// Create default window with default LumEngine backends
 
-            auto* glfwWindow = static_cast<GLFWwindow*>(m_Window.Value( ).GetNativeWindow( ));
+			m_Window = Window{};
+			m_Window.Value( ).Initialize( info.m_Window, bus );
 
-            //input::SetActiveWindow( glfwWindow );
+			auto* glfwWindow = static_cast<GLFWwindow*>(m_Window.Value( ).GetNativeWindow( ));
 
-            m_DefaultContext = std::make_unique<GLFWOpenGLContext>( glfwWindow );
-            m_RenderContext = m_DefaultContext.get();
-        }
-        else {
-            m_RenderContext = info.m_RenderContext;
-        }
+			m_DefaultRenderContext = OwningPtr<GLFWOpenGLContext>::Create( glfwWindow );
+			m_ActiveRenderContext = m_DefaultRenderContext;
 
-        m_RenderDevice = rhi::CreateDevice( info.m_RenderingBackend );
-        m_RenderDevice->Initialize( m_RenderContext() );
+		}
+		else {
+			m_ActiveRenderContext = info.m_RenderContext;
+		}
 
-    }
+		m_RenderDevice = rhi::CreateDevice( info.m_RenderingBackend );
+		m_RenderDevice( ).Initialize( m_ActiveRenderContext( ) );
 
-    void PlatformModule::Finalize( ) {
-        m_RenderDevice->Finalize( );
-    }
+	}
+
+	void PlatformModule::Finalize( ) {
+		m_RenderDevice( ).Finalize( );
+	}
 
 } // namespace lum

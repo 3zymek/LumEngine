@@ -76,6 +76,7 @@ target_include_directories(LumEngine PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Inc"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Assimp/Inc"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Stb/Inc"
+    "${CMAKE_SOURCE_DIR}/LumEngine/External/Vulkan/Inc"
 )
 
 target_link_libraries(LumEngine PRIVATE

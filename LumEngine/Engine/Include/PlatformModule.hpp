@@ -10,14 +10,34 @@
 #include "Platform/Window.hpp"
 #include "CreateInfo.hpp"
 #include "Core/Utils/SafePtr.hpp"
+#include "Core/Utils/OwningPtr.hpp"
 
 namespace lum {
 
 	namespace rhi { class IRenderDevice; }
 
+	/* @brief Configuration parameters for initializing the platform lifecycle module.
+	*
+	* Defines external overrides and input bindings for windowing, render context
+	* management, and OS event processing.
+	*/
 	struct PlatformModuleCreateInfo {
-		SafePtr<IRenderContext> m_RenderContext = nullptr;
-		SafePtr<input::IInputProvider> m_InputProvider = nullptr;
+
+		/* @brief Optional external render context override.
+		*
+		* If provided (non-null), PlatformModule skips creating m_DefaultRenderContext
+		* and binds m_ActiveRenderContext directly to this pointer. Leave nullptr to
+		* allow the engine to instantiate its default context and create all essentials for rendering.
+		*/
+		SafePtr<IRenderContext> m_CustomRenderContext = nullptr;
+
+		/* @brief Optional custom input handling subsystem.
+		*
+		* Allows overriding the default OS window input polling provider with a
+		* user-defined or mock input pipeline.
+		*/
+		SafePtr<input::IInputProvider> m_CustomInputProvider = nullptr;
+
 	};
 
 	// Owns the OS window and the RHI render device.
@@ -26,10 +46,12 @@ namespace lum {
 	public:
 
 		Optional<Window> m_Window = Optional<Window>::Empty();
-		std::unique_ptr<rhi::IRenderDevice> m_RenderDevice = nullptr;
 
-		SafePtr<IRenderContext> m_RenderContext = nullptr;
-		std::unique_ptr<GLFWOpenGLContext> m_DefaultContext = nullptr;
+		OwningPtr<rhi::IRenderDevice> m_RenderDevice = nullptr;
+
+		OwningPtr<GLFWOpenGLContext> m_DefaultRenderContext = nullptr;
+
+		SafePtr<IRenderContext> m_ActiveRenderContext = nullptr;
 
 		void Initialize( EngineCreateInfo info, ev::EventBus& bus );
 		void Finalize( );

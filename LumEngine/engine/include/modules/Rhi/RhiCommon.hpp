@@ -80,27 +80,27 @@ namespace lum {
 		using ShaderID = uint8;  /* @brief Numeric identifier for a shader program (compact). */
 
 		/* @brief Typed handle wrapping a pipeline state object ID. */
-		struct PipelineHandle : public cstd::BaseHandle<PipelineID> { };
+		struct PipelineHandle : public cstd::BaseHandle<PipelineID> {};
 
 		/* @brief Typed handle wrapping a framebuffer object ID. */
 		struct FramebufferHandle : public cstd::BaseHandle<FramebufferID> { using BaseHandle::BaseHandle; };
 
 		/* @brief Typed handle wrapping a texture sampler ID. */
-		struct SamplerHandle : public cstd::BaseHandle<SamplerID> { };
+		struct SamplerHandle : public cstd::BaseHandle<SamplerID> {};
 
 		/* @brief Typed handle wrapping a shader program ID. */
-		struct ShaderHandle : public cstd::BaseHandle<ShaderID> { };
+		struct ShaderHandle : public cstd::BaseHandle<ShaderID> {};
 
 		/* @brief Typed handle wrapping a GPU texture ID. */
-		struct TextureHandle : public cstd::BaseHandle<TextureID> { };
+		struct TextureHandle : public cstd::BaseHandle<TextureID> {};
 
 		/* @brief Typed handle wrapping a GPU buffer object ID. */
-		struct BufferHandle : public cstd::BaseHandle<BufferID> { };
+		struct BufferHandle : public cstd::BaseHandle<BufferID> {};
 
 		/* @brief Typed handle wrapping a vertex layout (VAO) ID. */
-		struct VertexLayoutHandle : public cstd::BaseHandle<LayoutID> { };
+		struct VertexLayoutHandle : public cstd::BaseHandle<LayoutID> {};
 
-		inline constexpr FramebufferHandle k_DefaultFramebuffer { 0, MaxValue<FramebufferID>( ) };
+		inline constexpr FramebufferHandle k_DefaultFramebuffer{ 0, MaxValue<FramebufferID>( ) };
 
 		enum class RenderBackend : byte {
 			OpenGL,
@@ -169,14 +169,14 @@ namespace lum {
 
 		/* @brief Bitmask flags controlling CPU-side buffer mapping behavior. */
 		enum class MapFlag : bitfield {
-			None				= 0,
-			Persistent			= 1 << 0, /* @brief Mapping persists across multiple frames. */
-			Write				= 1 << 1, /* @brief CPU may write to the mapped range. */
-			Read				= 1 << 2, /* @brief CPU may read from the mapped range. */
-			Coherent			= 1 << 3, /* @brief Writes are immediately visible to the GPU. */
-			Invalidate_Range	= 1 << 4, /* @brief GPU allocates a new range; old range remains valid. */
-			Invalidate_Buffer	= 1 << 5, /* @brief GPU allocates a new buffer; old buffer is discarded. */
-			Unsynchronized		= 1 << 6, /* @brief Map without GPU synchronization guarantees. */
+			None = 0,
+			Persistent = 1 << 0, /* @brief Mapping persists across multiple frames. */
+			Write = 1 << 1, /* @brief CPU may write to the mapped range. */
+			Read = 1 << 2, /* @brief CPU may read from the mapped range. */
+			Coherent = 1 << 3, /* @brief Writes are immediately visible to the GPU. */
+			Invalidate_Range = 1 << 4, /* @brief GPU allocates a new range; old range remains valid. */
+			Invalidate_Buffer = 1 << 5, /* @brief GPU allocates a new buffer; old buffer is discarded. */
+			Unsynchronized = 1 << 6, /* @brief Map without GPU synchronization guarantees. */
 		};
 
 		/* @brief Specifies which polygon face(s) an operation applies to. */
@@ -206,25 +206,25 @@ namespace lum {
 		namespace detail {
 
 #			if LUM_ENABLE_DEBUG_RENDER == 1
-				inline void APIENTRY GLDebugCallback(
-					GLenum src,
-					GLenum type,
-					GLuint id,
-					GLenum severity,
-					GLsizei length,
-					const char* msg,
-					const void* usrParam
-				) {
-					if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
-						LUM_LOG_DEBUG( msg );
-					else if (severity == GL_DEBUG_SEVERITY_LOW)
-						LUM_LOG_INFO( msg );
-					else if (severity == GL_DEBUG_SEVERITY_MEDIUM)
-						LUM_LOG_WARN( msg );
-					else if (severity == GL_DEBUG_SEVERITY_HIGH)
-						LUM_LOG_ERROR( msg );
+			inline void APIENTRY GLDebugCallback(
+				GLenum src,
+				GLenum type,
+				GLuint id,
+				GLenum severity,
+				GLsizei length,
+				const char* msg,
+				const void* usrParam
+			) {
+				if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+					LUM_LOG_DEBUG( msg );
+				else if (severity == GL_DEBUG_SEVERITY_LOW)
+					LUM_LOG_INFO( msg );
+				else if (severity == GL_DEBUG_SEVERITY_MEDIUM)
+					LUM_LOG_WARN( msg );
+				else if (severity == GL_DEBUG_SEVERITY_HIGH)
+					LUM_LOG_ERROR( msg );
 
-				}
+			}
 #			endif
 
 			/* @brief Lookup table mapping EDataFormat enum values to their component counts.

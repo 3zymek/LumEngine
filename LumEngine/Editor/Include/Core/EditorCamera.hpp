@@ -49,6 +49,8 @@ namespace lum::editor {
 			m_Right = Normalize( Cross( m_Forward, Vector3( 0.0f, 1.0f, 0.0f ) ) );
 			Vector3 up = Normalize( Cross( m_Right, m_Forward ) );
 
+			m_DeltaTime = delta;
+
 			static bool s_Initialized = false;
 			static Vector2 s_LastPos = Vector2( 0.0f, 0.0f );
 
@@ -65,8 +67,6 @@ namespace lum::editor {
 			}
 
 			if (unlocked) {
-
-				m_DeltaTime = delta;
 
 				Vector2 deltaPos = currentPos - s_LastPos;
 				s_LastPos = currentPos;

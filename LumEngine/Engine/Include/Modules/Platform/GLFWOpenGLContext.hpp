@@ -12,9 +12,7 @@ class GLFWwindow;
 
 namespace lum {
 
-	/*
-	* @brief OpenGL rendering context backed by a GLFW window.
-	*/
+	/* @brief OpenGL rendering context backed by a GLFW window. */
 	class GLFWOpenGLContext : public OpenGLContext {
 	public:
 

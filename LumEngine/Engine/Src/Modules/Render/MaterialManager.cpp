@@ -32,7 +32,7 @@ namespace lum {
 
 		MaterialBase base{};
 
-		auto& texm_Gr = m_Ctx( ).m_Texturem_Gr( );
+		auto& texm_Gr = m_Ctx( ).m_TextureMgr( );
 
 		if (desc.m_AlbedoTex) {
 			base.m_AlbedoTex = texm_Gr.Load( desc.m_AlbedoTex.Value( ), TexturePreset::Albedo );
@@ -134,7 +134,7 @@ namespace lum {
 
 		if (!m_Ctx( ).m_RenderDev().IsValid( tex )) {
 			LUM_LOG_DEBUG( "No texture given, setting default fallback" );
-			return m_Ctx( ).m_Texturem_Gr().GetFallbackTexture( FallbackTexture::DefaultAlbedo );
+			return m_Ctx( ).m_TextureMgr().GetFallbackTexture( FallbackTexture::DefaultAlbedo );
 		}
 		else
 			return tex;
@@ -145,7 +145,7 @@ namespace lum {
 
 		{ // Base material
 
-			auto& texm_Gr = m_Ctx( ).m_Texturem_Gr( );
+			auto& texm_Gr = m_Ctx( ).m_TextureMgr( );
 			
 			MaterialBase base{};
 			base.m_AlbedoTex	= texm_Gr.GetFallbackTexture( FallbackTexture::DefaultAlbedo );

@@ -22,24 +22,44 @@ namespace lum::editor {
 		SafePtr<Engine> m_Engine = nullptr;
 	};
 
+	/*
+	class ViewportWindow : public QWindow {
+		
+		Q_OBJECT
+
+	public:
+		
+		ViewportWindow( ) {
+			setSurfaceType( QSurface::RasterSurface );
+		}
+		~ViewportWindow( ) override = default;
+
+	protected:
+
+		bool event( QEvent* event ) override {
+			if (event->type( ) == QEvent::UpdateRequest) {
+				return true;
+			}
+			return QWindow::event( event );
+		}
+
+	};
+
 	class ViewportWidget : public QWidget {
 
 		Q_OBJECT
 
 	public:
 
-		explicit ViewportWidget( QWidget* parent = nullptr ) : QWidget( parent ) { }
+		explicit ViewportWidget( QWidget* parent = nullptr );
 		~ViewportWidget( ) override = default;
 
 		void Initialize( const ViewportCreateInfo& info );
-		LUM_FORCEINLINE void SetTexture( rhi::TextureHandle tex ) {
-			m_TextureId = tex;
-			update( );
-		}
+
+		LUM_NODISCARD void* GetNativeHandle( ) const;
 
 	protected:
-		
-		void paintEvent( QPaintEvent* event ) override;
+
 		void resizeEvent( QResizeEvent* event ) override;
 		void mousePressEvent( QMouseEvent* event ) override;
 		void mouseReleaseEvent( QMouseEvent* event ) override;
@@ -48,17 +68,19 @@ namespace lum::editor {
 
 	private:
 
+		ViewportWindow* m_Window = nullptr;
+		QWidget* m_Container = nullptr; //
+
 		EditorCamera m_Camera{};
 
 		QTimer m_ResizeTimer{};
 		QSize m_PendingSize{};
-		const uint32 m_ResizeFreshrate = 50; // in ms
+		const uint32 m_ResizeFreshrate = 1; // in ms
 		bool m_ControlsUnlocked = false;
 
 		ViewportCreateInfo m_Ctx{};
-		rhi::TextureHandle m_TextureId{};
+		rhi::TextureHandle m_FrameTextureId{};
 
-	};
+	};*/
 
-
-}
+} // namespace lum::editor

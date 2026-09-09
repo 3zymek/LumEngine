@@ -27,7 +27,7 @@ namespace lum::editor {
         QApplication m_QtApp;
         Engine m_Engine{};
 
-        ViewportWidget m_Viewport{};
+        //ViewportWidget m_Viewport{};
 
         std::unique_ptr<IRenderContext> m_RenderContext = nullptr;
 

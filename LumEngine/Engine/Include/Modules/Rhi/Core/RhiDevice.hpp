@@ -901,8 +901,8 @@ namespace lum::rhi {
 	/* @brief Creates a render device tied to the given window.
 	* Initializes the underlying graphics backend.
 	* @param backend Backend used.
-	* @return Unique pointer to the created device.
+	* @return Owning pointer to the created device.
 	*/
-	std::unique_ptr<IRenderDevice> CreateDevice( RenderBackend backend );
+	OwningPtr<IRenderDevice> CreateDevice( RenderBackend backend );
 
 } // namespace lum::rhi

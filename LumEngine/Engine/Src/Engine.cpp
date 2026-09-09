@@ -23,7 +23,7 @@ namespace lum {
 		{
 			RenderModuleCreateInfo desc{};
 			desc.m_EventBus = m_EventBus;
-			desc.m_RenderDev = m_Platform.m_RenderDevice.get( );
+			desc.m_RenderDev = m_Platform.m_RenderDevice();
 			desc.m_ResourceModule = &m_ResourceModule;
 			m_RenderModule.Initialize( desc );
 		}
@@ -42,7 +42,11 @@ namespace lum {
 
 		if (m_Platform.m_Window.HasValue( ))
 			m_Platform.m_Window.Value( ).Update( );
+
 		m_EventBus.FlushEvents( );
+		
+		m_Platform.m_RenderDevice( ).SetClearColor( { 1.0f, 1.0f, 0.0f, 1.0f } );
+
 		m_RenderModule.m_Renderer.BeginFrame( );
 
 	}
@@ -50,14 +54,16 @@ namespace lum {
 
 		m_RenderModule.m_Renderer.EndFrame( );
 
+		m_Platform.m_ActiveRenderContext( ).SwapBuffers( );
+
 	}
 	void Engine::Tick( ) {
 
-		SceneInstance* scene = m_SceneModule.m_Scenem_Gr.GetCurrentScene( );
+		SceneInstance* scene = m_SceneModule.m_SceneMgr.GetCurrentScene( );
 
 		if (scene) {
 			TransformSystem::Update( *scene );
-			m_AudioModule.m_Audiom_Gr.UpdateInstances( &scene->m_EntityMgr );
+			m_AudioModule.m_AudioMgr.UpdateInstances( &scene->m_EntityMgr );
 			m_RenderModule.m_RenderSys.Update( *scene );
 		}
 
@@ -73,11 +79,11 @@ namespace lum {
 	float64 Engine::GetDeltaTime( ) {
 		using clock = std::chrono::high_resolution_clock;
 
-		static auto sLastTime = clock::now( );
+		static auto s_LastTime = clock::now( );
 		auto currentTime = clock::now( );
 
-		std::chrono::duration<float64> delta = currentTime - sLastTime;
-		sLastTime = currentTime;
+		std::chrono::duration<float64> delta = currentTime - s_LastTime;
+		s_LastTime = currentTime;
 
 		return delta.count( );
 	}

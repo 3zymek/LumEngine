@@ -23,19 +23,19 @@ namespace lum::editor {
 		info.m_Window.m_Height = 720;
 		m_Engine.Initialize( info );
 
-		m_Engine.Scene( ).m_Scenem_Gr.LoadScene( "scene.lsc" );
-		m_Engine.Scene( ).m_Scenem_Gr.SetScene( "scene.lsc" );
+		m_Engine.Scene( ).m_SceneMgr.LoadScene( "scene.lsc" );
+		m_Engine.Scene( ).m_SceneMgr.SetScene( "scene.lsc" );
 
 		{
 			ViewportCreateInfo	info{};
-			info.m_RenderDevice	= m_Engine.Platform( ).m_RenderDevice.get( );
+			info.m_RenderDevice	= m_Engine.Platform( ).m_RenderDevice( );
 			info.m_RenderContext = m_RenderContext.get( );
 			info.m_EventBus		= m_Engine.EventBus( );
 			info.m_Engine		= m_Engine;
-			m_Viewport.Initialize( info );
+			//m_Viewport.Initialize( info );
 		}
 
-		m_Window->setCentralWidget( &m_Viewport );
+		//m_Window->setCentralWidget( &m_Viewport );
 		m_Window->show( );
 
 		EWindowResized initialResizeEvent{};
@@ -43,7 +43,7 @@ namespace lum::editor {
 		initialResizeEvent.m_Height = 720;
 		//mEngine.EventBus( ).Emit( initialResizeEvent );
 
-		m_Viewport.SetTexture( m_Engine.Render( ).m_Renderer.GetFrameTexture( ) );
+		//m_Viewport.SetTexture( m_Engine.Render( ).m_Renderer.GetFrameTexture( ) );
 
 		QTimer* timer = new QTimer( m_Window );
 		QObject::connect(
@@ -55,24 +55,14 @@ namespace lum::editor {
 
 				m_Engine.BeginFrame( );
 
-				/*
-				render::RenderCamera dummyCamera{};
-				dummyCamera.m_Position = Vector3( 0.0f, 0.0f, 5.0f );
-				dummyCamera.m_View = LookAt( dummyCamera.m_Position, Vector3( 0.0f, 0.0f, 0.0f ), Vector3( 0.0f, 1.0f, 0.0f ) );
-				dummyCamera.m_Projection = Perspective( Radians( 60.0f ), 1280.0f / 720.0f, 0.1f, 1000.0f );
-
-				m_Engine.Render( ).m_Renderer.UpdateCamera( dummyCamera );
-				*/
-
 				m_Engine.Tick( );
 				m_Engine.EndFrame( );
 
-				m_Viewport.SetTexture( m_Engine.Render( ).m_Renderer.GetFrameTexture( ) );
-				m_Viewport.update( );
+				//m_Viewport.update( );
 
 			}
 		);
-		timer->start( 16 );
+		timer->start( 1 );
 
 	}
 

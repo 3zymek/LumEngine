@@ -9,6 +9,7 @@
 #include "Core/Utils/LumAssert.hpp"
 #include "Core/CoreDefines.hpp"
 #include "Core/Types.hpp"
+#include "Core/Utils/OwningPtr.hpp"
 
 namespace lum {
 
@@ -53,7 +54,7 @@ namespace lum {
 
 		/*
 		* @brief Constructs a SafePtr by copying another SafePtr.
-		* 
+		*
 		* @param val SafePtr whose referenced object will be copied.
 		*/
 		SafePtr( const SafePtr<tType>& val ) : m_Value( val.m_Value ) {}
@@ -84,15 +85,15 @@ namespace lum {
 		// Primary Access Operator
 		// =========================================================================
 
-		/*
-		* @brief Accesses the referenced object.
+		/* @brief Accesses the referenced object.
 		*
 		* @return Reference to the referenced object.
 		*
 		* Asserts at runtime if the SafePtr is empty. The source location of the
 		* access is included in the assertion message.
+		* PLEASE USE THIS AS YOUR PRIMARY POINTER ACCESS FOR SAFETY
 		*/
-		tType& operator()( std::source_location loc = std::source_location::current( ) ) const {
+		LUM_NODISCARD tType& operator()( std::source_location loc = std::source_location::current( ) ) const {
 
 			LUM_ASSERT(
 				m_Value != nullptr,
@@ -110,47 +111,42 @@ namespace lum {
 		// =========================================================================
 
 		SafePtr& operator=( tType* other ) {
-
 			m_Value = other;
 			return *this;
 		}
 
 		SafePtr& operator=( tType& other ) {
-
 			m_Value = &other;
 			return *this;
 		}
 
 		SafePtr& operator=( const SafePtr<tType>& other ) {
-
 			m_Value = other.m_Value;
 			return *this;
 		}
+		SafePtr& operator=( const OwningPtr<tType>& other ) {
+			m_Value = other.Ptr( );
+			return *this;
+		}
 
-		/*
-		* @brief Assigns a pointer of a convertible type to the SafePtr.
-		* @tparam tOther Source pointer type.
-		* @param other Pointer to the object to reference.
-		* @return Reference to this SafePtr.
-		*/
+
+		template<cNonPointer tOther>
+			requires(std::is_convertible_v<tOther*, tType*>)
+		SafePtr& operator=( const OwningPtr<tOther>& other ) {
+			m_Value = other.Ptr( );
+			return *this;
+		}
+
 		template<cNonPointer tOther>
 			requires(std::is_convertible_v<tOther*, tType*>)
 		SafePtr& operator=( tOther* other ) {
-
 			m_Value = other;
 			return *this;
 		}
 
-		/*
-		* @brief Assigns another convertible SafePtr to this SafePtr.
-		* @tparam tOther Source SafePtr type.
-		* @param other SafePtr whose referenced object will be copied.
-		* @return Reference to this SafePtr.
-		*/
 		template<cNonPointer tOther>
 			requires(std::is_convertible_v<tOther*, tType*>)
 		SafePtr& operator=( const SafePtr<tOther>& other ) {
-
 			m_Value = other.m_Value;
 			return *this;
 		}
@@ -159,44 +155,47 @@ namespace lum {
 		// Accessors & Utility
 		// =========================================================================
 
-		/* 
-		* @brief Returns the underlying raw pointer.
+		/* @brief Returns the underlying raw pointer.
 		* @return Pointer to the referenced object, or nullptr if empty.
 		*/
-		LUM_NODISCARD tType* Ptr( ) const {
+		LUM_NODISCARD tType* Ptr( ) const noexcept {
 			return m_Value;
 		}
 
-		/* 
-		* @brief Returns a reference to the referenced object.
+		/* @brief Returns a reference to the referenced object.
 		* @return Reference to the referenced object.
 		* Asserts at runtime if the SafePtr is empty.
 		*/
-		LUM_NODISCARD tType& Ref( ) const {
-			return (*this)();
+		LUM_NODISCARD tType& Ref( std::source_location loc = std::source_location::current( ) ) const {
+			return (*this)(loc);
 		}
 
 		/* @brief Returns if Ptr != nullptr */
-		explicit operator bool( ) const {
+		explicit operator bool( ) const noexcept {
 			return m_Value != nullptr;
 		}
+		bool operator==( const void* other ) const noexcept {
+			return (m_Value == other);
+		}
+		bool operator!=( const void* other ) const noexcept {
+			return !((*this) == other);
+		}
 
-		/* 
-		* @brief Clears the referenced pointer.
+		/* @brief Clears the referenced pointer.
 		* After calling Clear(), the SafePtr no longer references an object.
 		*/
-		void Clear( ) {
+		void Clear( ) noexcept {
 			m_Value = nullptr;
 		}
 
 		/* @brief Logs the underlying pointer for debugging purposes. */
-		void PrintDebug( ) const {
+		void PrintDebug( ) const noexcept {
 			LUM_LOG_DEBUG( "{}", m_Value );
 		}
 
 	private:
 
-		tType* m_Value{ nullptr }; // < Non-owning pointer to the referenced object.
+		tType* m_Value = nullptr; // < Non-owning pointer to the referenced object.
 
 	};
 

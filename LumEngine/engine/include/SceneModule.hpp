@@ -29,7 +29,7 @@ namespace lum {
 	class LUM_API SceneModule {
 	public:
 
-		SceneManager m_Scenem_Gr{};
+		SceneManager m_SceneMgr{};
 
 		void Initialize( const SceneModuleCreateInfo& info );
 

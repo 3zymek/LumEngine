@@ -17,6 +17,8 @@
 #include <QPainter>
 #include <QImage>
 #include <QCursor>
+#include <QWindow>
+#include <QVBoxLayout>
 
 #include <QOpenGLContext>
 #include <QOffscreenSurface>

@@ -42,11 +42,11 @@ namespace lum {
 	
 	/* @brief Descriptor used to configure a window on creation. */
 	struct LUM_API WindowCreateInfo {
-		Flags<WindowInitFlags>		m_Flags = {};
-		String						m_Title = "m_YGame";		/* @brief Window title bar text. */
-		Optional<ImageData>			m_IconData{};			/* @brief Optional loaded icon texture data. */
-		uint32						m_Height = 720;			/* @brief Initial window height in pixels. */
-		uint32						m_Width = 1280;			/* @brief Initial window width in pixels. */
+		Flags<WindowInitFlags>		m_Flags = {};				/* @brief Initialization flags. */
+		String						m_Title = "LumEngineApp";	/* @brief Window title bar text. */
+		Optional<ImageData>			m_IconData{};				/* @brief Optional loaded icon texture data. */
+		uint32						m_Height = 720;				/* @brief Initial window height in pixels. */
+		uint32						m_Width = 1280;				/* @brief Initial window width in pixels. */
 	};
 
 	/* @brief Platform window wrapping a GLFW window.
@@ -69,31 +69,41 @@ namespace lum {
 		void SetHeight( uint32 height );
 
 		/* @brief Returns the current window width in pixels. */
-		uint32 GetWidth( ) const noexcept;
+		LUM_NODISCARD uint32 GetWidth( ) const noexcept;
 
 		/* @brief Returns the current window height in pixels. */
-		uint32 GetHeight( ) const noexcept;
+		LUM_NODISCARD uint32 GetHeight( ) const noexcept;
 
-		/* @brief Returns the underlying native GLFW window pointer. */
-		void* GetNativeWindow( ) const noexcept { return m_Window; }
-
-		/* @brief Returns the time in seconds since GLFW was initialized. */
-		float64 GetTime( ) const noexcept { return glfwGetTime( ); }
-
+		/* @brief Toggles window state. */
 		void ToggleState( Flags<WindowStateFlags> flag, bool value );
 
 		/* @brief Polls window events and emits Events */
 		void Update( ) noexcept;
 
+		/* @brief Returns the underlying native GLFW window pointer. */
+		LUM_FORCEINLINE LUM_NODISCARD void* GetNativeWindow( ) const noexcept { 
+			return m_Window; 
+		}
+
+		/* @brief Returns the time in seconds since GLFW was initialized. */
+		LUM_FORCEINLINE LUM_NODISCARD float64 GetTime( ) const noexcept { 
+			return glfwGetTime( ); 
+		}
+
 		/* @brief Returns true if the window is still open. */
-		bool IsOpen( ) const noexcept { return !glfwWindowShouldClose( m_Window ); }
+		LUM_FORCEINLINE LUM_NODISCARD bool IsOpen( ) const noexcept { 
+			return !glfwWindowShouldClose( m_Window ); 
+		}
 
 		/* @brief Signals the window to close on the next Update() call. */
-		void Close( ) const { glfwSetWindowShouldClose( m_Window, true ); }
+		void Close( ) const { 
+			glfwSetWindowShouldClose( m_Window, true ); 
+		}
 
 		/* @brief Minimizes the window to the taskbar. */
-		void Minimize( ) const { glfwIconifyWindow( m_Window ); }
-
+		void Minimize( ) const { 
+			glfwIconifyWindow( m_Window ); 
+		}
 
 	protected:
 
