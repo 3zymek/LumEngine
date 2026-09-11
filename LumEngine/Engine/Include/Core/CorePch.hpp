@@ -26,5 +26,6 @@
 #include <deque>
 #include <source_location>
 #include <charconv>
+#include <unordered_set>
 
 #include "Core/CoreDefines.hpp"
