@@ -29,14 +29,14 @@ namespace lum {
 		/* @brief Constructs a ranged value.
 		* @param val Initial value, clamped to the valid range.
 		*/
-		constexpr Ranged( tType val ) : m_Value( std::clamp( val, tMin, tMax ) ) { }
+		constexpr Ranged( tType val ) : m_Value( Clamp( val, tMin, tMax ) ) { }
 
 		/* @brief Assigns a new value.
 		* @param oth Value to assign.
 		* @return Reference to this object.
 		*/
 		constexpr Ranged& operator=( tType oth ) {
-			m_Value = std::clamp( oth, tMin, tMax );
+			m_Value = Clamp( oth, tMin, tMax );
 			return *this;
 		}
 

@@ -11,9 +11,10 @@ namespace lum::rhi::vk {
 
 		create_vk_instance( info );
 		volkLoadInstance( m_Instance );
-
 		choose_adapter( );
-		
+		create_logical_device( );
+		create_main_surface( );
+
 	}
 
 	void VulkanDevice::create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept {
@@ -42,7 +43,7 @@ namespace lum::rhi::vk {
 		// ENABLE VALIDATION
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
 		if (info.m_EnableValidation) {
-			
+
 			debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 
 			debugCreateInfo.messageSeverity =
@@ -96,8 +97,8 @@ namespace lum::rhi::vk {
 		for (int32 i = 0; i <= numDevices; i++) {
 
 			VulkanAdapter evaluated = m_AdapterEvaluator.EvaluateAdapter( devices[ i ] );
-			
-			if (evaluated.m_Score > bestAdapter.m_Score) 
+
+			if (evaluated.m_Score > bestAdapter.m_Score)
 				bestAdapter = evaluated;
 
 		}
@@ -106,8 +107,56 @@ namespace lum::rhi::vk {
 			LUM_LOG_FATAL( "Failed to initialize Vulkan backend: None of the ({}) detected GPU(s) satisfy LumEngine's minimum required features.", numDevices );
 			return;
 		}
-		
+
 		m_Adapter = bestAdapter;
+
+	}
+
+	void VulkanDevice::create_logical_device( ) noexcept {
+
+		// ENABLE SWAPCHAIN CONFIGURATION
+		std::vector<const char*> deviceExtensions = {
+			VK_KHR_SWAPCHAIN_EXTENSION_NAME
+		};
+
+		float32 priorities = 1.0f;
+
+		VkDeviceQueueCreateInfo graphicsQueueInfo{};
+		graphicsQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		graphicsQueueInfo.pQueuePriorities = &priorities;
+		graphicsQueueInfo.queueCount = 1;
+		graphicsQueueInfo.queueFamilyIndex = m_Adapter.m_Queues.m_GraphicsQueueIndex;
+
+		VkDeviceQueueCreateInfo computeQueueInfo{};
+		computeQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		computeQueueInfo.pQueuePriorities = &priorities;
+		computeQueueInfo.queueCount = 1;
+		computeQueueInfo.queueFamilyIndex = m_Adapter.m_Queues.m_ComputeQueueIndex;
+
+		std::vector<VkDeviceQueueCreateInfo> queuesInfos = {
+			graphicsQueueInfo
+		};
+
+		if (m_Adapter.m_Queues.HasQueue( m_Adapter.m_Queues.m_ComputeQueueIndex ))
+			queuesInfos.push_back( computeQueueInfo );
+
+		VkDeviceCreateInfo info{ };
+		info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		info.enabledExtensionCount = SafeCast<uint32>( deviceExtensions.size( ) );
+		info.ppEnabledExtensionNames = deviceExtensions.data( );
+		info.pEnabledFeatures = &m_Adapter.m_Features;
+		info.queueCreateInfoCount = SafeCast<uint32>(queuesInfos.size( ));
+		info.pQueueCreateInfos = queuesInfos.data( );
+
+		if (vkCreateDevice( m_Adapter.m_Device, &info, nullptr, &m_LogicalDevice ) != VK_SUCCESS) {
+			LUM_LOG_FATAL( "Failed to create Logical Device! (Vulkan)" );
+		}
+
+	}
+
+	void VulkanDevice::create_main_surface( ) noexcept {
+
+		
 
 	}
 

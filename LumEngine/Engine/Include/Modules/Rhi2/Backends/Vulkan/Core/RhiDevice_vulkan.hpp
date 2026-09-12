@@ -16,11 +16,16 @@ namespace lum::rhi::vk {
 
 		void create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept;
 		void choose_adapter( ) noexcept;
+		void create_logical_device( ) noexcept;
+		void create_main_surface( ) noexcept;
 
-		VkInstance m_Instance{};
-		
+		VkInstance m_Instance = VK_NULL_HANDLE;
+
 		VulkanAdapterEvaluator m_AdapterEvaluator{};
 		VulkanAdapter m_Adapter{};
+
+		VkDevice m_LogicalDevice = VK_NULL_HANDLE;
+		VkSurfaceKHR m_MainSurface = VK_NULL_HANDLE;
 
 	};
 

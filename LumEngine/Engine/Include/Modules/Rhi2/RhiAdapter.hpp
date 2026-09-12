@@ -35,8 +35,6 @@ namespace lum::rhi {
 
 	};
 
-	using AdapterScore = Ranged<uint32, 0, 100>;
-
 	class AdapterRequirements {
 	public:
 
@@ -44,7 +42,7 @@ namespace lum::rhi {
 			m_RequiredFeatures.emplace( feature );
 		}
 
-		void AddFeature( AdapterFeature feature, AdapterScore weight ) {
+		void AddFeature( AdapterFeature feature, Ranged<uint32, 0, 100> weight ) {
 			m_FeatureWeights.try_emplace( feature, weight );
 		}
 

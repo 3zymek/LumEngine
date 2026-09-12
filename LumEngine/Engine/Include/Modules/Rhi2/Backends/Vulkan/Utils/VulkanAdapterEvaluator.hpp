@@ -5,9 +5,31 @@
 
 namespace lum::rhi::vk {
 
+	class VulkanQueueFamilies {
+	public:
+
+		uint32 m_GraphicsQueueIndex = MaxValue<uint32>( );
+		uint32 m_PresentQueueIndex = MaxValue<uint32>( ); // IMPLEMENT PRESENT QUEUE INDEX
+		uint32 m_ComputeQueueIndex = MaxValue<uint32>( );
+
+		LUM_NODISCARD constexpr bool HasQueue( uint32 index ) const noexcept {
+			return index != MaxValue<uint32>( );
+		}
+
+		LUM_NODISCARD constexpr bool IsValid( ) const noexcept {
+			return HasQueue( m_GraphicsQueueIndex ) && HasQueue( m_PresentQueueIndex );
+		}
+
+	};
+
 	struct VulkanAdapter {
-		VkPhysicalDeviceFeatures m_Features{};
-		uint32 m_Score = 0;
+
+		VkPhysicalDevice			m_Device = VK_NULL_HANDLE;
+		VkPhysicalDeviceFeatures	m_Features{};
+		VulkanQueueFamilies			m_Queues{};
+		AdapterDescription			m_Desc{};
+		uint32						m_Score = 0;
+
 	};
 
 	class VulkanAdapterEvaluator {
