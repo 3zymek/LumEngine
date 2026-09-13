@@ -3,6 +3,12 @@
 #include "Rhi2/RhiCommon.hpp"
 #include "Rhi2/RhiAdapter.hpp"
 
+namespace lum {
+
+	class ISurfaceProvider;
+
+} // namespace lum
+
 namespace lum::rhi {
 
 	struct RenderDeviceCreateInfo {
@@ -11,6 +17,7 @@ namespace lum::rhi {
 		void*						m_NativeWindowHandle = nullptr;
 		bool						m_EnableValidation = false;
 		AdapterRequirements			m_AdapterRequirements{};
+		SafePtr<ISurfaceProvider>	m_SurfaceProvider = nullptr;
 
 	};
 

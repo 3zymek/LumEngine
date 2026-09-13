@@ -54,7 +54,7 @@ namespace lum {
 
 		m_RenderModule.m_Renderer.EndFrame( );
 
-		m_Platform.m_ActiveRenderContext( ).SwapBuffers( );
+		//m_Platform.m_ActiveRenderContext( ).SwapBuffers( );
 
 	}
 	void Engine::Tick( ) {

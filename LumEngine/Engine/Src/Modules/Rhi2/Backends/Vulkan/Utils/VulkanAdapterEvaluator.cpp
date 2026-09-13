@@ -1,7 +1,24 @@
 #include "Rhi2/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
-#include "volk.h"
 
 namespace lum::rhi::vk {
+
+	void VulkanAdapter::QuerySurfaceCapabilities( VkSurfaceKHR surface ) noexcept {
+
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR( m_Device, surface, &m_SurfaceSupport.m_Capabilities );
+
+		m_SurfaceSupport.m_Formats.clear( );
+		uint32 numFormats = 0;
+		vkGetPhysicalDeviceSurfaceFormatsKHR( m_Device, surface, &numFormats, nullptr );
+		m_SurfaceSupport.m_Formats.reserve( numFormats );
+		vkGetPhysicalDeviceSurfaceFormatsKHR( m_Device, surface, &numFormats, m_SurfaceSupport.m_Formats.data() );
+
+		m_SurfaceSupport.m_PresentModes.clear( );
+		uint32 numPresentModes = 0;
+		vkGetPhysicalDeviceSurfacePresentModesKHR( m_Device, surface, &numPresentModes, nullptr );
+		m_SurfaceSupport.m_PresentModes.reserve( numPresentModes );
+		vkGetPhysicalDeviceSurfacePresentModesKHR( m_Device, surface, &numPresentModes, m_SurfaceSupport.m_PresentModes.data( ) );
+
+	}
 
 	void VulkanAdapterEvaluator::SetRequirements( const AdapterRequirements& req ) noexcept {
 

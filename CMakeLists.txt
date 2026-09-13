@@ -53,21 +53,16 @@ add_library(LumEngine STATIC
 )
 
 add_dependencies(LumEngine RunLHC)
-set_source_files_properties(${ENGINE_C}         PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
-set_source_files_properties(${EXTERNAL_C}       PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+
+set_source_files_properties(${ENGINE_C}          PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+set_source_files_properties(${EXTERNAL_C}        PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 set_source_files_properties(${EXTERNAL_CPP_IMPL} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
 source_group(TREE "${CMAKE_SOURCE_DIR}/LumEngine/Engine" FILES
     ${ENGINE_CPP} ${ENGINE_C} ${ENGINE_HEADERS} ${ENGINE_SHADERS} ${ENGINE_IPP}
 )
 
-target_precompile_headers(LumEngine PRIVATE
-    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/Core/CorePch.hpp"
-    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/Modules/Ahi/AhiPch.hpp"
-    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/Modules/Rhi/RhiPch.hpp"
-)
-
-target_include_directories(LumEngine PRIVATE
+target_include_directories(LumEngine PUBLIC
     "${CMAKE_SOURCE_DIR}/LumEngine"
     "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include"
     "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/Modules"
@@ -79,11 +74,13 @@ target_include_directories(LumEngine PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Vulkan/Inc"
 )
 
+target_precompile_headers(LumEngine PRIVATE
+    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/Core/CorePch.hpp"
+)
+
 target_link_libraries(LumEngine PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Fmod/Lib/fmod_vc.lib"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Lib/glfw3.lib"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Lib/glfw3_mt.lib"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Lib/glfw3dll.lib"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Assimp/Lib/assimp-vc143-mt.lib"
 )
 
@@ -102,31 +99,14 @@ add_executable(LumEngineEditor
 )
 
 add_dependencies(LumEngineEditor LumEngine)
+
 source_group(TREE "${CMAKE_SOURCE_DIR}/LumEngine/Editor" FILES
     ${EDITOR_CPP} ${EDITOR_HEADERS} ${EDITOR_UI}
 )
 
-# ── HIDE CONSOLE ──────────────────────────────────────────────
-#if(WIN32)
-#    set_target_properties(LumEngineEditor PROPERTIES
-#        WIN32_EXECUTABLE TRUE
-#    )
-#    target_link_options(LumEngineEditor PRIVATE
-#        /ENTRY:mainCRTStartup
-#    )
-#endif()
-
 target_include_directories(LumEngineEditor PRIVATE
-    "${CMAKE_SOURCE_DIR}/LumEngine"
     "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include"
     "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/Modules"
-    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include"
-    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/Modules"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Glm"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Fmod/Inc"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Inc"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Assimp/Inc"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Stb/Inc"
 )
 
 target_precompile_headers(LumEngineEditor PRIVATE
@@ -138,11 +118,6 @@ target_link_libraries(LumEngineEditor PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Fmod/Lib/fmod_vc.lib"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Lib/glfw3.lib"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Lib/glfw3_mt.lib"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Lib/glfw3dll.lib"
-    "${CMAKE_SOURCE_DIR}/LumEngine/External/Assimp/Lib/assimp-vc143-mt.lib"
     opengl32.lib
 )
 

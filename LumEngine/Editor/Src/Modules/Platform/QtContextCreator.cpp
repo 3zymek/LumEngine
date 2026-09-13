@@ -8,7 +8,7 @@
 #include "Platform/QtOpenGLContext.hpp"
 
 namespace lum::editor {
-
+	/*
 	std::unique_ptr<IRenderContext> QtContextCreator::Create( Api api ) {
 		switch (api) {
 			case Api::OpenGL:
@@ -16,6 +16,6 @@ namespace lum::editor {
 			default:
 				return nullptr;
 		}
-	}
+	}*/
 
 }

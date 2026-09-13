@@ -1,6 +1,5 @@
 #pragma once
 
-#include "volk.h"
 
 namespace lum::rhi::vk {
 

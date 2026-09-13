@@ -27,16 +27,13 @@ namespace lum {
 
 			auto* glfwWindow = static_cast<GLFWwindow*>(m_Window.Value( ).GetNativeWindow( ));
 
-			m_DefaultRenderContext = OwningPtr<GLFWOpenGLContext>::Create( glfwWindow );
-			m_ActiveRenderContext = m_DefaultRenderContext;
-
 		}
 		else {
-			m_ActiveRenderContext = info.m_RenderContext;
+			
 		}
 
 		m_RenderDevice = rhi::CreateDevice( info.m_RenderingBackend );
-		m_RenderDevice( ).Initialize( m_ActiveRenderContext( ) );
+		m_RenderDevice( ).Initialize(  );
 
 	}
 

@@ -23,8 +23,6 @@
 #include "Rhi/Core/RhiFramebuffer.hpp"
 #include "Rhi/Core/RhiPipeline.hpp"
 
-#include "Platform/RenderContext.hpp"
-
 #if LUM_ENABLE_RENDER_PROFILER == 1
 #	include "Rhi/RhiProfiler.hpp"
 #endif
@@ -54,7 +52,7 @@ namespace lum::rhi {
 		*  Must be called before any rendering operations.
 		*  @param window Pointer to the engine window to render into.
 		*/
-		virtual void Initialize( IRenderContext& ctx ) = 0;
+		virtual void Initialize( ) = 0;
 
 		/* @brief Destroys all active RHI resources and shuts down the rendering device.
 		* Must be called before the window is destroyed.

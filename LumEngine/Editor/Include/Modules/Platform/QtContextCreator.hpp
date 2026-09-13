@@ -5,26 +5,25 @@
 //=============================================================================//
 #pragma once
 
-#include "Platform/RenderContext.hpp"
-
 namespace lum::editor {
 
-	/* @brief Factory class for creating Qt-based rendering contexts. */
+	/* @brief Factory class for creating Qt-based rendering contexts.
 	class QtContextCreator {
 	public:
 
 		enum class Api {
 			OpenGL,
-			/* Vulkan */
+			 Vulkan
 		};
 
-		/*
+		
 		* @brief Creates a rendering context for the specified graphics API.
 		* @param api Target graphics API.
 		* @return Unique pointer to the created IRenderContext instance.
-		*/
+		
 		static std::unique_ptr<IRenderContext> Create( Api api );
 
 	};
+	*/
 
 } // namespace lum::editor

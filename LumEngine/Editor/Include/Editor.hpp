@@ -4,7 +4,6 @@
 
 #include "CreateInfo.hpp"
 #include "Engine.hpp"
-#include "Platform/OpenGLContext.hpp"
 
 #include "Core/Utils/Logger.hpp"
 
@@ -28,7 +27,7 @@ namespace lum::editor {
 
         //ViewportWidget m_Viewport{};
 
-        std::unique_ptr<IRenderContext> m_RenderContext = nullptr;
+        //std::unique_ptr<IRenderContext> m_RenderContext = nullptr;
 
         QMainWindow* m_Window = nullptr;
         QLabel* m_Label = nullptr;

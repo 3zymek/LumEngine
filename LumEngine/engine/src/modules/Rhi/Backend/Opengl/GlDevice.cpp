@@ -8,29 +8,10 @@
 
 #include "Rhi/Backend/GlDevice.hpp"
 #include "Platform/Window.hpp"
-#include "Platform/OpenGLContext.hpp"
 
 namespace lum::rhi::gl {
 
-	void GLDevice::Initialize( IRenderContext& ctx ) {
-
-		auto* glContext = static_cast<OpenGLContext*>(&ctx);
-
-		glContext->MakeCurrent( );
-
-		static SafePtr<OpenGLContext> sContext = nullptr;
-		sContext = glContext;
-
-		bool result = gladLoadGLLoader(
-			reinterpret_cast<GLADloadproc>(
-				+[]( const char* functionName ) -> void* {
-					return sContext( ).GetProcAddress( functionName );
-				}
-			)
-		);
-
-		if (!result)
-			return;
+	void GLDevice::Initialize( ) {
 
 #		if LUM_ENABLE_DEBUG_RENDER == 1
 
@@ -39,8 +20,6 @@ namespace lum::rhi::gl {
 			glDebugMessageCallback( rhi::detail::GLDebugCallback, nullptr );
 
 #		endif
-
-		m_RenderContext = glContext;
 
 		glEnable( GL_TEXTURE_CUBE_MAP_SEAMLESS );
 
@@ -115,7 +94,7 @@ namespace lum::rhi::gl {
 
 	void GLDevice::SwapBuffers( ) {
 
-		m_RenderContext().SwapBuffers( );
+		
 
 	}
 

@@ -5,23 +5,21 @@
 //=============================================================================//
 #pragma once
 
-#include "Platform/OpenGLContext.hpp"
+//#include "Platform/OpenGLContext.hpp"
 
 class QOffscreenSurface;
-class QOpenGLContext;
+//class QOpenGLContext;
 
 namespace lum::editor {
 
-	/* @brief OpenGL rendering context backed by Qt QOffscreenSurface. */
+	/* @brief OpenGL rendering context backed by Qt QOffscreenSurface.
 	class QtOpenGLContext : public OpenGLContext {
 	public:
 
 		void Initialize( ) override;
 
-		/* @brief Presents the rendered frame using Qt. */
 		void SwapBuffers( ) override;
 
-		/* @brief Makes the Qt OpenGL context current on the offscreen surface. */
 		void MakeCurrent( ) override;
 
 		void* GetProcAddress( const char* functionName ) override;
@@ -31,6 +29,6 @@ namespace lum::editor {
 		QOffscreenSurface* m_Surface = nullptr; //< Owning pointer to the Qt offscreen surface.
 		QOpenGLContext* m_Context = nullptr;   //< Owning pointer to the Qt OpenGL context.
 
-	};
+	}; */
 
 } // namespace lum::editor

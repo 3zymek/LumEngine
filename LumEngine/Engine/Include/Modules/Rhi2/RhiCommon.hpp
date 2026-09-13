@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Rhi/RhiPch.hpp"
 #include "Core/CoreCommon.hpp"
 #include "Core/Utils/Logger.hpp"
 

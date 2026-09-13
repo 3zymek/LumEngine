@@ -6,14 +6,13 @@
 #pragma once
 #include "Rhi/Core/RhiDevice.hpp"
 #include "Core/CoreDefines.hpp"
-#include "Platform/OpenGLContext.hpp"
 
 namespace lum::rhi::gl {
 
 	class GLDevice : public IRenderDevice {
 	public:
 
-		void Initialize( IRenderContext& ctx ) override;
+		void Initialize( ) override;
 
 		//=================================================
 		// Buffers
@@ -200,10 +199,6 @@ namespace lum::rhi::gl {
 
 
 	protected:
-
-		static inline SafePtr<OpenGLContext> s_LoadingContext = nullptr;
-
-		SafePtr<OpenGLContext> m_RenderContext = nullptr;
 
 		//=================================================
 		// Lookup tables

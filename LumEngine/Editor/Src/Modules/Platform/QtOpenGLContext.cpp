@@ -8,7 +8,7 @@
 #include "Core/Utils/Logger.hpp"
 
 namespace lum::editor {
-
+	/*
 	void QtOpenGLContext::Initialize( ) {
 
 		QSurfaceFormat format{};
@@ -47,6 +47,6 @@ namespace lum::editor {
 
 		return reinterpret_cast<void*>(m_Context->getProcAddress( functionName ));
 
-	}
+	}*/
 
 }

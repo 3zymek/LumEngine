@@ -1,5 +1,7 @@
 #include "Rhi2/Backends/Vulkan/Core/RhiDevice_vulkan.hpp"
 #include "Rhi2/RhiAdapter.hpp"
+#include "Platform/SurfaceProvider.hpp"
+#include "Platform/VulkanSurfaceProvider.hpp"
 
 namespace lum::rhi::vk {
 
@@ -8,6 +10,8 @@ namespace lum::rhi::vk {
 		if (volkInitialize( ) != VK_SUCCESS) {
 			LUM_LOG_FATAL( "Failed to initialize volk (Vulkan loader)" );
 		}
+
+		m_SurfaceProvider = static_cast<IVulkanSurfaceProvider*>( &info.m_SurfaceProvider() );
 
 		create_vk_instance( info );
 		volkLoadInstance( m_Instance );
@@ -145,7 +149,7 @@ namespace lum::rhi::vk {
 		info.enabledExtensionCount = SafeCast<uint32>( deviceExtensions.size( ) );
 		info.ppEnabledExtensionNames = deviceExtensions.data( );
 		info.pEnabledFeatures = &m_Adapter.m_Features;
-		info.queueCreateInfoCount = SafeCast<uint32>(queuesInfos.size( ));
+		info.queueCreateInfoCount = SafeCast<uint32>( queuesInfos.size( ) );
 		info.pQueueCreateInfos = queuesInfos.data( );
 
 		if (vkCreateDevice( m_Adapter.m_Device, &info, nullptr, &m_LogicalDevice ) != VK_SUCCESS) {
@@ -156,7 +160,16 @@ namespace lum::rhi::vk {
 
 	void VulkanDevice::create_main_surface( ) noexcept {
 
+		m_MainSurface = m_SurfaceProvider( ).CreateSurface( m_Instance );
+
+	}
+
+	void VulkanDevice::create_swapchain( ) noexcept {
+
+		VkSwapchainCreateInfoKHR info{};
+		info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 		
+		info.surface = m_MainSurface;
 
 	}
 

@@ -13,12 +13,12 @@ namespace lum::editor {
 		m_Window->setWindowTitle( "LumEngine Editor" );
 		m_Window->resize( 1280, 720 );
 
-		m_RenderContext = QtContextCreator::Create( QtContextCreator::Api::OpenGL );
-		m_RenderContext->Initialize( );
+		//m_RenderContext = QtContextCreator::Create( QtContextCreator::Api::OpenGL );
+		//m_RenderContext->Initialize( );
 
 		EngineCreateInfo info{};
 		info.m_ProjectDir = "C:\\Users\\szymek\\Desktop\\lumen_assets";
-		info.m_RenderContext = m_RenderContext.get( );
+		//info.m_RenderContext = m_RenderContext.get( );
 		info.m_Window.m_Width = 1280;
 		info.m_Window.m_Height = 720;
 		m_Engine.Initialize( info );
@@ -29,7 +29,7 @@ namespace lum::editor {
 		{
 			ViewportCreateInfo	info{};
 			info.m_RenderDevice	= m_Engine.Platform( ).m_RenderDevice( );
-			info.m_RenderContext = m_RenderContext.get( );
+			//info.m_RenderContext = m_RenderContext.get( );
 			info.m_EventBus		= m_Engine.EventBus( );
 			info.m_Engine		= m_Engine;
 			//m_Viewport.Initialize( info );
@@ -51,7 +51,7 @@ namespace lum::editor {
 			&QTimer::timeout,
 			[ & ]( ) {
 				
-				m_RenderContext->MakeCurrent( );
+				//m_RenderContext->MakeCurrent( );
 
 				m_Engine.BeginFrame( );
 
