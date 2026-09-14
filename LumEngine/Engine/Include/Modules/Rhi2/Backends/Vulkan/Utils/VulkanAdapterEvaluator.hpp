@@ -5,10 +5,16 @@
 
 namespace lum::rhi::vk {
 
-	struct VulkanSurfaceSupport {
+	class VulkanSurfaceSupport {
+	public:
+
 		VkSurfaceCapabilitiesKHR		m_Capabilities{};
 		std::vector<VkSurfaceFormatKHR> m_Formats{};
 		std::vector<VkPresentModeKHR>	m_PresentModes{};
+
+		LUM_NODISCARD VkSurfaceFormatKHR SelectSurfaceFormat( ) const noexcept;
+		LUM_NODISCARD VkPresentModeKHR SelectPresentMode( ) const noexcept;
+
 	};
 
 	class VulkanQueueFamilies {

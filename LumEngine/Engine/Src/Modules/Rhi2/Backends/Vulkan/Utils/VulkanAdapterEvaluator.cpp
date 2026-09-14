@@ -2,6 +2,29 @@
 
 namespace lum::rhi::vk {
 
+	VkSurfaceFormatKHR VulkanSurfaceSupport::SelectSurfaceFormat( ) const noexcept {
+
+		for (const auto format : m_Formats) {
+			if ((format.format == VK_FORMAT_R8G8B8A8_SRGB || format.format == VK_FORMAT_B8G8R8A8_SRGB) &&
+				format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+				return format;
+			}
+		}
+		return m_Formats.size( ) > 0 ? m_Formats[ 0 ] : VkSurfaceFormatKHR();
+
+	}
+
+	VkPresentModeKHR VulkanSurfaceSupport::SelectPresentMode( ) const noexcept {
+
+		for (const auto presentMode : m_PresentModes) {
+			if (presentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+				return presentMode;
+			}
+		}
+		return VK_PRESENT_MODE_FIFO_KHR;
+
+	}
+
 	void VulkanAdapter::QuerySurfaceCapabilities( VkSurfaceKHR surface ) noexcept {
 
 		vkGetPhysicalDeviceSurfaceCapabilitiesKHR( m_Device, surface, &m_SurfaceSupport.m_Capabilities );

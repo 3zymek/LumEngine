@@ -12,6 +12,8 @@ int main( int argc, char* argv[ ] ) {
     lum::Engine engine{};
     engine.Initialize( desc );
 
+    
+
     while (engine.Platform( ).m_Window.Value( ).IsOpen( )) {
 
         engine.BeginFrame( );

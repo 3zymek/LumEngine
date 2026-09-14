@@ -11,7 +11,7 @@ namespace lum::rhi::vk {
 			LUM_LOG_FATAL( "Failed to initialize volk (Vulkan loader)" );
 		}
 
-		m_SurfaceProvider = static_cast<IVulkanSurfaceProvider*>( &info.m_SurfaceProvider() );
+		m_SurfaceProvider = static_cast<IVulkanSurfaceProvider*>(&info.m_SurfaceProvider( ));
 
 		create_vk_instance( info );
 		volkLoadInstance( m_Instance );
@@ -164,13 +164,119 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::create_swapchain( ) noexcept {
+	void VulkanDevice::create_swapchain( TVector2<uint32> windowSize ) noexcept {
+
+		VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		uint32 numQueueFamilyIndex = 0;
+		const uint32* pQueueFamilyIndices = nullptr;
+
+		uint32 graphicsIdx = m_Adapter.m_Queues.m_GraphicsQueueIndex;
+		uint32 presentIdx = m_Adapter.m_Queues.m_PresentQueueIndex;
+
+		uint32 queueFamilyIndices[ ] = { graphicsIdx, presentIdx };
+
+		if (graphicsIdx != presentIdx) {
+			sharingMode = VK_SHARING_MODE_CONCURRENT;
+			numQueueFamilyIndex = 2;
+			pQueueFamilyIndices = queueFamilyIndices;
+		}
+
+		const auto& capabilities = m_Adapter.m_SurfaceSupport.m_Capabilities;
+		uint32 imageCount = capabilities.minImageCount + 1;
+		if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount) {
+			imageCount = capabilities.maxImageCount;
+		}
+
+		VkPresentModeKHR presentMode = m_Adapter.m_SurfaceSupport.SelectPresentMode( );
+		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
+		VkSwapchainKHR oldSwapchain = m_Swapchain;
+		VkExtent2D extent{};
+		if (capabilities.currentExtent.width != UINT32_MAX) {
+			extent = capabilities.currentExtent;
+		}
+		else {
+			extent.width = Clamp(
+				windowSize.m_X,
+				capabilities.minImageExtent.width,
+				capabilities.maxImageExtent.width
+			);
+			extent.height = Clamp(
+				windowSize.m_Y,
+				capabilities.minImageExtent.height,
+				capabilities.maxImageExtent.height
+			);
+		}
 
 		VkSwapchainCreateInfoKHR info{};
 		info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-		
+		info.pQueueFamilyIndices = pQueueFamilyIndices;
+		info.queueFamilyIndexCount = numQueueFamilyIndex;
+		info.clipped = VK_TRUE;
+		info.presentMode = presentMode;
+		info.oldSwapchain = oldSwapchain;
+
+		info.minImageCount = imageCount;
+		info.imageColorSpace = surfaceFormat.colorSpace;
+		info.imageFormat = surfaceFormat.format;
+		info.imageSharingMode = sharingMode;
+		info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		info.imageExtent = extent;
+		info.imageArrayLayers = 1;
+
+		info.preTransform = capabilities.currentTransform;
+		info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 		info.surface = m_MainSurface;
 
+		if (vkCreateSwapchainKHR( m_LogicalDevice, &info, nullptr, &m_Swapchain ) != VK_SUCCESS) {
+			LUM_LOG_FATAL( "Failed to create Swapchain! (Vulkan)" );
+			return;
+		}
+		if (oldSwapchain != VK_NULL_HANDLE) {
+			vkDestroySwapchainKHR( m_LogicalDevice, oldSwapchain, nullptr );
+		}
+
+	}
+
+	void VulkanDevice::extract_swapchain_images( ) noexcept {
+
+		for (auto& view : m_SwapchainImageViews) {
+			if (view != VK_NULL_HANDLE) {
+				vkDestroyImageView( m_LogicalDevice, view, nullptr );
+			}
+		}
+
+		uint32 numImages = 0;
+		vkGetSwapchainImagesKHR( m_LogicalDevice, m_Swapchain, &numImages, nullptr );
+		m_SwapchainImages.resize( numImages );
+		vkGetSwapchainImagesKHR( m_LogicalDevice, m_Swapchain, &numImages, m_SwapchainImages.data( ) );
+
+		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
+
+		m_SwapchainImageViews.resize( numImages );
+		for (uint32 i = 0; i < numImages; i++) {
+
+			VkImageViewCreateInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+			info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+			info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+			info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+			info.image = m_SwapchainImages[ i ];
+			info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			info.format = surfaceFormat.format;
+			info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			info.subresourceRange.baseMipLevel = 0;
+			info.subresourceRange.levelCount = 1;
+			info.subresourceRange.baseArrayLayer = 0;
+			info.subresourceRange.layerCount = 1;
+			
+			if (vkCreateImageView( m_LogicalDevice, &info, nullptr, &m_SwapchainImageViews[ i ] ) != VK_SUCCESS) {
+				LUM_LOG_FATAL( "Failed to create swapchain image view at index {}! (Vulkan)", i );
+				return;
+			}
+
+		}
+		
 	}
 
 } // namespace lum::rhi::vk

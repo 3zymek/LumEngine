@@ -24,7 +24,8 @@ namespace lum::rhi::vk {
 		void choose_adapter( ) noexcept;
 		void create_logical_device( ) noexcept;
 		void create_main_surface( ) noexcept;
-		void create_swapchain( ) noexcept;
+		void create_swapchain( TVector2<uint32> windowSize ) noexcept;
+		void extract_swapchain_images( ) noexcept;
 
 		VkInstance m_Instance = VK_NULL_HANDLE;
 
@@ -37,6 +38,8 @@ namespace lum::rhi::vk {
 		VkSurfaceKHR m_MainSurface = VK_NULL_HANDLE;
 
 		VkSwapchainKHR m_Swapchain = VK_NULL_HANDLE;
+		std::vector<VkImage> m_SwapchainImages{};
+		std::vector<VkImageView> m_SwapchainImageViews{};
 
 	};
 
