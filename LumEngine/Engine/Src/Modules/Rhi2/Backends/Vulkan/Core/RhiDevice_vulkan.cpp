@@ -18,6 +18,10 @@ namespace lum::rhi::vk {
 		choose_adapter( );
 		create_logical_device( );
 		create_main_surface( );
+		create_swapchain( {} );
+		extract_swapchain_images( );
+		create_command_pool( );
+		allocate_command_buffers( );
 
 	}
 
@@ -32,8 +36,15 @@ namespace lum::rhi::vk {
 			extensions.push_back( VK_EXT_DEBUG_UTILS_EXTENSION_NAME );
 		}
 
+		uint32 apiVersion = 0;
+		vkEnumerateInstanceVersion( &apiVersion );
+
+		uint32 apiMajor = VK_API_VERSION_MAJOR( apiVersion );
+		uint32 apiMinor = VK_API_VERSION_MINOR( apiVersion );
+		uint32 apiPatch = VK_API_VERSION_PATCH( apiVersion );
+
 		VkApplicationInfo appInfo{};
-		appInfo.apiVersion = VK_MAKE_VERSION( 1, 0, 0 );
+		appInfo.apiVersion = VK_MAKE_VERSION( apiMajor, apiMinor, apiPatch );
 		appInfo.engineVersion = VK_MAKE_VERSION( 0, 3, 0 );
 		appInfo.pApplicationName = "Blank";
 		appInfo.pEngineName = "LumEngine";
@@ -151,6 +162,7 @@ namespace lum::rhi::vk {
 		info.pEnabledFeatures = &m_Adapter.m_Features;
 		info.queueCreateInfoCount = SafeCast<uint32>( queuesInfos.size( ) );
 		info.pQueueCreateInfos = queuesInfos.data( );
+		info.pNext = detail::LogicalDeviceFeatures::GetStatic( ).GetChainHead( );
 
 		if (vkCreateDevice( m_Adapter.m_Device, &info, nullptr, &m_LogicalDevice ) != VK_SUCCESS) {
 			LUM_LOG_FATAL( "Failed to create Logical Device! (Vulkan)" );
@@ -269,14 +281,80 @@ namespace lum::rhi::vk {
 			info.subresourceRange.levelCount = 1;
 			info.subresourceRange.baseArrayLayer = 0;
 			info.subresourceRange.layerCount = 1;
-			
+
 			if (vkCreateImageView( m_LogicalDevice, &info, nullptr, &m_SwapchainImageViews[ i ] ) != VK_SUCCESS) {
 				LUM_LOG_FATAL( "Failed to create swapchain image view at index {}! (Vulkan)", i );
 				return;
 			}
 
 		}
+
+	}
+
+	void VulkanDevice::create_main_pipeline( ) noexcept {
+
+		VkPipelineColorBlendStateCreateInfo colorBlend{};
+		colorBlend.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+
+		VkVertexInputBindingDescription bindingDesc{};
+		bindingDesc.stride = sizeof( Vertex );
+		bindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+		bindingDesc.binding = 0;
+
+		VkPipelineViewportStateCreateInfo viewportInfo{};
+		viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 		
+		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
+		inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+
+		VkPipelineRasterizationStateCreateInfo rasterizationInfo{};
+		rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
+		rasterizationInfo.cullMode = VK_CULL_MODE_BACK_BIT;
+		rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
+		rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
+	
+		VkGraphicsPipelineCreateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		info.pVertexInputState = &detail::DefaultVertexLayout::GetStatic( ).GetStateCreateInfo( );
+		info.pViewportState = &viewportInfo;
+		info.pInputAssemblyState = &inputAssemblyInfo;
+		info.pRasterizationState = &rasterizationInfo;
+		info.pColorBlendState;
+
+
+	}
+
+	void VulkanDevice::create_command_pool( ) noexcept {
+
+		if (!m_Adapter.m_Queues.HasQueue( m_Adapter.m_Queues.m_GraphicsQueueIndex )) {
+			LUM_LOG_ERROR( "Cannot create command pool: Adapter doesn't have graphics queue index! (Vulkan)" );
+			return;
+		}
+
+		VkCommandPoolCreateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		info.queueFamilyIndex = m_Adapter.m_Queues.m_GraphicsQueueIndex;
+		info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
+		if (vkCreateCommandPool( m_LogicalDevice, &info, nullptr, &m_CmdPool ) != VK_SUCCESS) {
+			LUM_LOG_FATAL( "Failed to create command pool! (Vulkan)" );
+			return;
+		}
+
+	}
+
+	void VulkanDevice::allocate_command_buffers( ) noexcept {
+
+		VkCommandBufferAllocateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		info.commandPool = m_CmdPool;
+		info.commandBufferCount = SafeCast<uint32>( m_CmdBuffers.size( ) );
+		info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+
+		vkAllocateCommandBuffers( m_LogicalDevice, nullptr, m_CmdBuffers.data( ) );
+
 	}
 
 } // namespace lum::rhi::vk

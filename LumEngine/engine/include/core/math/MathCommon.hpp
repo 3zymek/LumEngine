@@ -66,4 +66,9 @@ namespace lum {
 		return (val < min) ? min : ((val > max) ? max : val);
 	}
 
+	LUM_API LUM_NODISCARD constexpr float32 Normalize( float32 val, float32 min, float32 max ) noexcept {
+		//LUM_ASSERT( min != max, "Normalized scope cannot be equal" );
+		return (val - min) / (max - min);
+	}
+
 } // namespace lum

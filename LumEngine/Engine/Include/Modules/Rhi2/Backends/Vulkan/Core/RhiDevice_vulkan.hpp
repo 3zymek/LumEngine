@@ -26,6 +26,9 @@ namespace lum::rhi::vk {
 		void create_main_surface( ) noexcept;
 		void create_swapchain( TVector2<uint32> windowSize ) noexcept;
 		void extract_swapchain_images( ) noexcept;
+		void create_main_pipeline( ) noexcept;
+		void create_command_pool( ) noexcept;
+		void allocate_command_buffers( ) noexcept;
 
 		VkInstance m_Instance = VK_NULL_HANDLE;
 
@@ -40,6 +43,12 @@ namespace lum::rhi::vk {
 		VkSwapchainKHR m_Swapchain = VK_NULL_HANDLE;
 		std::vector<VkImage> m_SwapchainImages{};
 		std::vector<VkImageView> m_SwapchainImageViews{};
+
+		VkPipeline m_MainPipeline = VK_NULL_HANDLE;
+
+		VkCommandPool m_CmdPool = VK_NULL_HANDLE;
+		std::vector<VkCommandBuffer> m_CmdBuffers{ LUM_MAX_FRAMES_IN_FLIGHT };
+
 
 	};
 
