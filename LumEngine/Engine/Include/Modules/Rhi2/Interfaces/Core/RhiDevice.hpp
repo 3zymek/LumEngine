@@ -24,8 +24,10 @@ namespace lum::rhi {
 	class IRenderDevice {
 	public:
 
-		virtual void Initialize( const RenderDeviceCreateInfo& info ) noexcept;
-		virtual void Finalize( ) noexcept;
+		virtual void Initialize( const RenderDeviceCreateInfo& info ) noexcept = 0;
+		virtual void Finalize( ) noexcept = 0;
+
+		virtual void DrawFrame( ) noexcept = 0;
 
 		virtual ~IRenderDevice( ) = default;
 

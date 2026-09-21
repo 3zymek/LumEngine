@@ -10,7 +10,7 @@ namespace lum::rhi::vk {
 				return format;
 			}
 		}
-		return m_Formats.size( ) > 0 ? m_Formats[ 0 ] : VkSurfaceFormatKHR();
+		return m_Formats.size( ) > 0 ? m_Formats[ 0 ] : VkSurfaceFormatKHR( );
 
 	}
 
@@ -33,7 +33,7 @@ namespace lum::rhi::vk {
 		uint32 numFormats = 0;
 		vkGetPhysicalDeviceSurfaceFormatsKHR( m_Device, surface, &numFormats, nullptr );
 		m_SurfaceSupport.m_Formats.reserve( numFormats );
-		vkGetPhysicalDeviceSurfaceFormatsKHR( m_Device, surface, &numFormats, m_SurfaceSupport.m_Formats.data() );
+		vkGetPhysicalDeviceSurfaceFormatsKHR( m_Device, surface, &numFormats, m_SurfaceSupport.m_Formats.data( ) );
 
 		m_SurfaceSupport.m_PresentModes.clear( );
 		uint32 numPresentModes = 0;
@@ -49,7 +49,7 @@ namespace lum::rhi::vk {
 
 	}
 
-	VulkanAdapter VulkanAdapterEvaluator::EvaluateAdapter( VkPhysicalDevice device ) const noexcept {
+	Result<VulkanAdapter> VulkanAdapterEvaluator::EvaluateAdapter( VkPhysicalDevice device, VkSurfaceKHR surface ) const noexcept {
 
 		VulkanAdapter adapter{};
 
@@ -95,6 +95,19 @@ namespace lum::rhi::vk {
 				}
 			}
 
+			VkBool32 presentSupport = VK_FALSE;
+			if (surface != VK_NULL_HANDLE) {
+				vkGetPhysicalDeviceSurfaceSupportKHR( device, i, surface, &presentSupport );
+			}
+			else {
+				LUM_LOG_FATAL( "Surface is null handle! Cannot evaluate present support. (Vulkan)" );
+				return Result<VulkanAdapter>::Failure( );
+			}
+
+			if (presentSupport && !adapter.m_Queues.HasQueue( adapter.m_Queues.m_PresentQueueIndex )) {
+				adapter.m_Queues.m_PresentQueueIndex = i;
+			}
+
 		}
 
 		adapter.m_Desc.m_AdapterName = props.deviceName;
@@ -105,7 +118,7 @@ namespace lum::rhi::vk {
 
 			auto it = sk_AdapterFeaturesMap.find( feature );
 			if (it == sk_AdapterFeaturesMap.end( )) {
-				LUM_LOG_FATAL( "Feature isn't mapped" );
+				LUM_LOG_ERROR( "Adapter '{}' missing required feature!", props.deviceName );
 				continue;
 			}
 
@@ -114,7 +127,7 @@ namespace lum::rhi::vk {
 				adapter.m_Score++;
 			}
 			else {
-				return {};
+				return Result<VulkanAdapter>::Failure( );
 			}
 
 		}
@@ -123,7 +136,7 @@ namespace lum::rhi::vk {
 
 			auto it = sk_AdapterFeaturesMap.find( feature );
 			if (it == sk_AdapterFeaturesMap.end( )) {
-				LUM_LOG_WARN( "Feature isn't mapped" );
+				LUM_LOG_ERROR( "Adapter '{}' missing required feature!", props.deviceName );
 				continue;
 			}
 
@@ -134,7 +147,7 @@ namespace lum::rhi::vk {
 
 		}
 
-		return adapter;
+		return Result<VulkanAdapter>::Success( adapter );
 
 	}
 

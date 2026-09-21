@@ -40,8 +40,14 @@ namespace lum {
 		* @return Result instance in a failed state.
 		*/
 		static Result Failure( const String& msg ) {
-			Result r;
+			Result r{};
 			r.m_ErrorMsg = msg;
+			return r;
+		}
+
+		static Result Failure( ) {
+			Result r{};
+			r.m_ErrorMsg = "";
 			return r;
 		}
 

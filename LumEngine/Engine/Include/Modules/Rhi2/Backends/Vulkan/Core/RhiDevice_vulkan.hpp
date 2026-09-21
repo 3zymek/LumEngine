@@ -18,17 +18,22 @@ namespace lum::rhi::vk {
 		void Initialize( const RenderDeviceCreateInfo& info ) noexcept override;
 		void Finalize( ) noexcept override;
 
+		void DrawFrame( ) noexcept override;
+
 	private:
 
 		void create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept;
 		void choose_adapter( ) noexcept;
 		void create_logical_device( ) noexcept;
+		void acquire_queues( ) noexcept;
+		void create_shader_stages( ) noexcept;
 		void create_main_surface( ) noexcept;
 		void create_swapchain( TVector2<uint32> windowSize ) noexcept;
 		void extract_swapchain_images( ) noexcept;
 		void create_main_pipeline( ) noexcept;
 		void create_command_pool( ) noexcept;
 		void allocate_command_buffers( ) noexcept;
+		void create_sync_primitives( ) noexcept;
 
 		VkInstance m_Instance = VK_NULL_HANDLE;
 
@@ -44,11 +49,22 @@ namespace lum::rhi::vk {
 		std::vector<VkImage> m_SwapchainImages{};
 		std::vector<VkImageView> m_SwapchainImageViews{};
 
+		VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
 		VkPipeline m_MainPipeline = VK_NULL_HANDLE;
 
 		VkCommandPool m_CmdPool = VK_NULL_HANDLE;
 		std::vector<VkCommandBuffer> m_CmdBuffers{ LUM_MAX_FRAMES_IN_FLIGHT };
 
+		VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
+		VkQueue m_ComputeQueue = VK_NULL_HANDLE;
+		VkQueue m_PresentQueue = VK_NULL_HANDLE;
+
+		VkSemaphore m_ImageAvailableSemaphore = VK_NULL_HANDLE;
+		VkSemaphore m_RenderFinishedSemaphore = VK_NULL_HANDLE;
+		VkFence m_Fence = VK_NULL_HANDLE;
+
+		VkShaderModule DT_Vertex = VK_NULL_HANDLE;
+		VkShaderModule DT_Fragment = VK_NULL_HANDLE;
 
 	};
 

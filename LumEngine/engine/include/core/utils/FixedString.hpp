@@ -7,6 +7,7 @@
 //=============================================================================//
 #pragma once
 
+#include "Core/CoreDefines.hpp"
 #include "Core/CoreCommon.hpp"
 
 namespace lum {
@@ -16,7 +17,7 @@ namespace lum {
 	*  Provides assignment, concatenation, comparison, searching and raw buffer access.
 	*  @tparam tLength Maximum number of characters the string can store excluding null terminator.
 	*/
-	template<usize tLength>
+	template<usize tLength = 256>
 	struct FixedString {
 
 		static constexpr usize sk_Npos = usize( -1 );

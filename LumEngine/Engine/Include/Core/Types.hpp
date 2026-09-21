@@ -44,6 +44,9 @@ namespace lum {
 	template<typename tType>
 	concept cArithmetic = std::is_arithmetic_v<std::remove_cvref_t<tType>>;
 
+	template<typename tType>
+	concept cArithmeticUnsigned = std::is_unsigned_v<std::remove_cvref_t<tType>>;
+
 	/* @brief Constrains tType to types representable as a C string (char or string-like objects). */
 	template<typename tType>
 	concept cStringable = std::same_as<tType, char> || requires(tType t) {

@@ -6,6 +6,8 @@
 #pragma once
 
 #include "Core/CorePch.hpp"
+#include "Core/Utils/Logger.hpp"
+
 #include "Core/CoreDefines.hpp"
 #include "Core/Types.hpp"
 #include "Core/Limits.hpp"
@@ -13,7 +15,6 @@
 #include "Core/Math/MathCommon.hpp"
 
 #include "Core/Utils/StringHasher.hpp"
-#include "Core/Utils/Logger.hpp"
 #include "Core/Utils/FormatString.hpp"
 #include "Core/Utils/SafePtr.hpp"
 

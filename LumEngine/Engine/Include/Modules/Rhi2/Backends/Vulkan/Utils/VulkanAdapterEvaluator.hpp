@@ -52,7 +52,7 @@ namespace lum::rhi::vk {
 	public:
 
 		void SetRequirements( const AdapterRequirements& req ) noexcept;
-		VulkanAdapter EvaluateAdapter( VkPhysicalDevice device ) const noexcept;
+		Result<VulkanAdapter> EvaluateAdapter( VkPhysicalDevice device, VkSurfaceKHR surface ) const noexcept;
 
 	private:
 

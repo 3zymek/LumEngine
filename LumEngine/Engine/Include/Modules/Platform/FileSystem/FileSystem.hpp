@@ -23,7 +23,27 @@ namespace lum {
 
 		}
 
-		/* @brief Reads the entire contents of a text file. */
+		static Result<std::vector<uint32>> ReadAllBytes( const Path& path ) {
+
+			std::ifstream file( path.m_Path, std::ios::binary | std::ios::ate );
+			if (!file.is_open( )) {
+				char buff[ 512 ]{};
+				FormatString( buff, "Failed to read file '{}': '{}'", path.ToString( ), strerror( errno ) );
+				return Result<std::vector<uint32>>::Failure( buff );
+			}
+			
+			usize size = static_cast<usize>( file.tellg( ) );
+			
+			file.seekg( 0 );
+			std::vector<uint32> bytes( size / sizeof( uint32 ) );
+			file.read( reinterpret_cast<char*>(bytes.data( )), size );
+			
+			file.close( );
+
+			return bytes;
+
+		}
+
 		static Result<String> ReadAllText( const Path& path ) {
 
 			std::ifstream file( path.m_Path );

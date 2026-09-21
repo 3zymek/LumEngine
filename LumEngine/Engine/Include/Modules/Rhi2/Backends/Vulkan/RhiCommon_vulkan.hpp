@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Rhi2/RhiCommon.hpp"
+#include "volk.h"
 
 namespace lum::rhi::vk {
 
@@ -85,13 +87,13 @@ namespace lum::rhi::vk {
 
 			void create_defaults( ) {
 
-				m_Vulkan14Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES;
-				m_Vulkan14Features.dynamicRenderingLocalRead = VK_TRUE;
-				m_Vulkan14Features.pNext = nullptr;
+				//m_Vulkan14Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES;
+				//m_Vulkan14Features.dynamicRenderingLocalRead = VK_TRUE;
+				//m_Vulkan14Features.pNext = nullptr;
 
 				m_Vulkan13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
 				m_Vulkan13Features.dynamicRendering = VK_TRUE;
-				m_Vulkan13Features.pNext = &m_Vulkan14Features;
+				m_Vulkan13Features.pNext = nullptr;
 
 				m_Vulkan12Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
 				m_Vulkan12Features.descriptorIndexing = VK_TRUE;
@@ -99,7 +101,7 @@ namespace lum::rhi::vk {
 
 			}
 
-			VkPhysicalDeviceVulkan14Features m_Vulkan14Features{};
+			//VkPhysicalDeviceVulkan14Features m_Vulkan14Features{};
 			VkPhysicalDeviceVulkan13Features m_Vulkan13Features{};
 			VkPhysicalDeviceVulkan12Features m_Vulkan12Features{};
 

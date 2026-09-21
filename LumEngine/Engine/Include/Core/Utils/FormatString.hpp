@@ -7,6 +7,7 @@
 
 #include "Core/CorePch.hpp"
 #include "Core/Types.hpp"
+#include "Core/Utils/FixedString.hpp"
 
 namespace lum {
 
@@ -110,6 +111,26 @@ namespace lum {
 	inline void FormatString( char( &output )[ tL ], const char* fmt, tArgs&&... args ) {
 		char* current = output;
 		const char* end = output + tL - 1; // Reserve 1 byte for null terminator
+
+		detail::FormatImpl( current, end, fmt, std::forward<tArgs>( args )... );
+		*current = '\0'; // Guaranteed null-termination
+	}
+
+	/* @brief Formats a compile-time char array with variadic arguments.
+	*
+	* Safer alternative to sprintf_s/snprintf. Ensures zero heap allocations
+	* and automatic null-termination within the destination array boundaries.
+	*
+	* @tparam tL Length of target destination character array (deduced automatically).
+	* @tparam tArgs Variadic pack of argument types to format.
+	* @param[out] output FixedString to receive output.
+	* @param[in] fmt Format string containing "{}" placeholders.
+	* @param[in] args Arguments to substitute into placeholders.
+	*/
+	template<typename... tArgs, usize tLength>
+	inline void FormatString( FixedString<tLength>& fixedStr, const char* fmt, tArgs&&... args ) {
+		char* current = fixedStr.At( 0 );
+		const char* end = fixedStr.At( 0 ) + tLength - 1; // Reserve 1 byte for null terminator
 
 		detail::FormatImpl( current, end, fmt, std::forward<tArgs>( args )... );
 		*current = '\0'; // Guaranteed null-termination

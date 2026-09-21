@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Platform/Input/InputProvider.hpp"
+#include "glfw3.h"
 
 namespace lum::input {
 
