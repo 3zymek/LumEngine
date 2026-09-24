@@ -37,8 +37,13 @@ namespace lum::rhi::vk {
 			vkDeviceWaitIdle( m_LogicalDevice );
 
 			vkDestroyFence( m_LogicalDevice, m_Fence, nullptr );
-			vkDestroySemaphore( m_LogicalDevice, m_ImageAvailableSemaphore, nullptr );
-			vkDestroySemaphore( m_LogicalDevice, m_RenderFinishedSemaphore, nullptr );
+
+			for (auto& semaphore : m_ImageAvailableSemaphores) {
+				vkDestroySemaphore( m_LogicalDevice, semaphore, nullptr );
+			}
+			for (auto& semaphore : m_RenderFinishedSemaphores) {
+				vkDestroySemaphore( m_LogicalDevice, semaphore, nullptr );
+			}
 
 			vkDestroyCommandPool( m_LogicalDevice, m_CmdPool, nullptr );
 
@@ -72,7 +77,10 @@ namespace lum::rhi::vk {
 
 		// Acquire image from swapchain
 		uint32 imageIndex{};
-		vkAcquireNextImageKHR( m_LogicalDevice, m_Swapchain, UINT64_MAX, m_ImageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex );
+
+		VkSemaphore& imageAvailableSemaphore = m_ImageAvailableSemaphores[ m_CurrentFrame ];
+
+		vkAcquireNextImageKHR( m_LogicalDevice, m_Swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex );
 
 		// Record commands
 		VkCommandBuffer& buffer = m_CmdBuffers[ 0 ];
@@ -108,7 +116,7 @@ namespace lum::rhi::vk {
 		colorAttachment.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		colorAttachment.clearValue = { {{ 0.1f, 0.1f, 0.1f, 0.1f }} };
+		colorAttachment.clearValue = { {{ 0.0f, 0.0f, 0.0f, 0.0f }} };
 
 		VkExtent2D currentExtent = m_Adapter.m_SurfaceSupport.m_Capabilities.currentExtent;
 
@@ -127,7 +135,7 @@ namespace lum::rhi::vk {
 		VkRect2D scissor{ {0, 0}, currentExtent };
 		vkCmdSetViewport( buffer, 0, 1, &viewport );
 		vkCmdSetScissor( buffer, 0, 1, &scissor );
-
+		
 		vkCmdDraw( buffer, 3, 1, 0, 0 ); // Draw simple triangle
 
 		vkCmdEndRendering( buffer );
@@ -147,12 +155,12 @@ namespace lum::rhi::vk {
 		// Send commands to GPU
 		VkSemaphoreSubmitInfo waitSemaphoreInfo{};
 		waitSemaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
-		waitSemaphoreInfo.semaphore = m_ImageAvailableSemaphore;
+		waitSemaphoreInfo.semaphore = imageAvailableSemaphore;
 		waitSemaphoreInfo.stageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
 
 		VkSemaphoreSubmitInfo signalSemaphoreInfo{};
 		signalSemaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
-		signalSemaphoreInfo.semaphore = m_RenderFinishedSemaphore;
+		signalSemaphoreInfo.semaphore = m_RenderFinishedSemaphores[imageIndex];
 		signalSemaphoreInfo.stageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT;
 
 		VkCommandBufferSubmitInfo cmdBufferInfo{};
@@ -168,19 +176,21 @@ namespace lum::rhi::vk {
 		submitInfo.commandBufferInfoCount = 1;
 		submitInfo.pCommandBufferInfos = &cmdBufferInfo;
 
+		vkEndCommandBuffer( buffer );
 		vkQueueSubmit2( m_GraphicsQueue, 1, &submitInfo, m_Fence );
 
 		// Present
 		VkPresentInfoKHR presentInfo{};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = &m_RenderFinishedSemaphore;
+		presentInfo.pWaitSemaphores = &m_RenderFinishedSemaphores[ imageIndex ];
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = &m_Swapchain;
 		presentInfo.pImageIndices = &imageIndex;
 
 		vkQueuePresentKHR( m_PresentQueue, &presentInfo );
 
+		m_CurrentFrame = (m_CurrentFrame + 1) % LUM_MAX_FRAMES_IN_FLIGHT;
 
 	}
 
@@ -294,6 +304,7 @@ namespace lum::rhi::vk {
 		}
 
 		m_Adapter = bestAdapter;
+		LUM_LOG_INFO( "{}", bestAdapter.m_Score );
 
 	}
 
@@ -304,40 +315,50 @@ namespace lum::rhi::vk {
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME
 		};
 
+		const auto& queues = m_Adapter.m_Queues;
+
 		float32 priorities = 1.0f;
 
 		VkDeviceQueueCreateInfo graphicsQueueInfo{};
 		graphicsQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		graphicsQueueInfo.pQueuePriorities = &priorities;
 		graphicsQueueInfo.queueCount = 1;
-		graphicsQueueInfo.queueFamilyIndex = m_Adapter.m_Queues.m_GraphicsQueueIndex;
+		graphicsQueueInfo.queueFamilyIndex = queues.m_GraphicsQueueIndex;
 
 		VkDeviceQueueCreateInfo computeQueueInfo{};
 		computeQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		computeQueueInfo.pQueuePriorities = &priorities;
 		computeQueueInfo.queueCount = 1;
-		computeQueueInfo.queueFamilyIndex = m_Adapter.m_Queues.m_ComputeQueueIndex;
+		computeQueueInfo.queueFamilyIndex = queues.m_ComputeQueueIndex;
 
 		VkDeviceQueueCreateInfo presentQueueInfo{};
 		presentQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		presentQueueInfo.pQueuePriorities = &priorities;
 		presentQueueInfo.queueCount = 1;
-		presentQueueInfo.queueFamilyIndex = m_Adapter.m_Queues.m_PresentQueueIndex;
+		presentQueueInfo.queueFamilyIndex = queues.m_PresentQueueIndex;
 
-		std::vector<VkDeviceQueueCreateInfo> queuesInfos = {
-			graphicsQueueInfo, presentQueueInfo
-		};
+		std::vector<VkDeviceQueueCreateInfo> queueInfos{};
+		queueInfos.push_back( graphicsQueueInfo );
 
-		if (m_Adapter.m_Queues.HasQueue( m_Adapter.m_Queues.m_ComputeQueueIndex ))
-			queuesInfos.push_back( computeQueueInfo );
+		if (queues.m_GraphicsQueueIndex != queues.m_PresentQueueIndex) {
+			queueInfos.push_back( presentQueueInfo );
+		}
+
+		if (queues.HasQueue( queues.m_ComputeQueueIndex ) &&
+			 queues.m_ComputeQueueIndex != queues.m_PresentQueueIndex && 
+			 queues.m_ComputeQueueIndex != queues.m_GraphicsQueueIndex) {
+
+			queueInfos.push_back( computeQueueInfo );
+
+		}
 
 		VkDeviceCreateInfo info{ };
 		info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		info.enabledExtensionCount = SafeCast<uint32>( deviceExtensions.size( ) );
 		info.ppEnabledExtensionNames = deviceExtensions.data( );
 		info.pEnabledFeatures = &m_Adapter.m_Features;
-		info.queueCreateInfoCount = SafeCast<uint32>( queuesInfos.size( ) );
-		info.pQueueCreateInfos = queuesInfos.data( );
+		info.queueCreateInfoCount = SafeCast<uint32>( queueInfos.size( ) );
+		info.pQueueCreateInfos = queueInfos.data( );
 		info.pNext = detail::LogicalDeviceFeatures::GetStatic( ).GetChainHead( );
 
 		if (vkCreateDevice( m_Adapter.m_Device, &info, nullptr, &m_LogicalDevice ) != VK_SUCCESS) {
@@ -361,15 +382,15 @@ namespace lum::rhi::vk {
 
 		auto createShader = [ & ]( const Path& path, VkShaderModule& module ) -> void {
 
-			auto code = FileSystem::ReadAllBytes( path );
+			auto code = FileSystem::ReadBinaryFile( path );
 			if (!code) {
-				LUM_LOG_FATAL( "Failed to read {} file: ", path.ToString( ), code.GetError( ) );
+				LUM_LOG_FATAL( "Failed to read {} file: {}", path.ToString( ), code.GetError( ) );
 				return;
 			}
 
 			VkShaderModuleCreateInfo info{};
 			info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-			info.codeSize = code.ValueRef( ).size( );
+			info.codeSize = code.ValueRef( ).size( ) * sizeof(uint32);
 			info.pCode = code.ValueRef( ).data( );
 
 			if (vkCreateShaderModule( m_LogicalDevice, &info, nullptr, &module ) != VK_SUCCESS) {
@@ -652,14 +673,23 @@ namespace lum::rhi::vk {
 		VkSemaphoreCreateInfo semaphoreInfo{};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-		if (vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphore ) != VK_SUCCESS) {
-			LUM_LOG_FATAL( "Failed to create image available semaphore! (Vulkan)" );
-			return;
+		usize numImages = m_SwapchainImages.size( );
+
+		for (auto& semaphore : m_ImageAvailableSemaphores) {
+			if (vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) != VK_SUCCESS) {
+				LUM_LOG_FATAL( "Failed to create image available semaphore! (Vulkan)",  );
+				return;
+			}
 		}
-		if (vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore ) != VK_SUCCESS) {
-			LUM_LOG_FATAL( "Failed to create render finished semaphore! (Vulkan)" );
-			return;
+
+		m_RenderFinishedSemaphores.resize( numImages );
+		for (auto& semaphore : m_RenderFinishedSemaphores) {
+			if (vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) != VK_SUCCESS) {
+				LUM_LOG_FATAL( "Failed to create render finished semaphore! (Vulkan)" );
+				return;
+			}
 		}
+
 
 		VkFenceCreateInfo fenceCreateInfo{};
 		fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;

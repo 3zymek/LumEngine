@@ -23,16 +23,18 @@ namespace lum {
 
 		}
 
-		static Result<std::vector<uint32>> ReadAllBytes( const Path& path ) {
+		static Result<std::vector<uint32>> ReadBinaryFile( const Path& path ) {
 
 			std::ifstream file( path.m_Path, std::ios::binary | std::ios::ate );
 			if (!file.is_open( )) {
-				char buff[ 512 ]{};
-				FormatString( buff, "Failed to read file '{}': '{}'", path.ToString( ), strerror( errno ) );
-				return Result<std::vector<uint32>>::Failure( buff );
+				return Result<std::vector<uint32>>::Failure( strerror( errno ) );
 			}
 			
 			usize size = static_cast<usize>( file.tellg( ) );
+
+			if (size % sizeof( uint32 ) != 0) {
+				return Result<std::vector<uint32>>::Failure( "Binary file size is not aligned to 4 bytes" );
+			}
 			
 			file.seekg( 0 );
 			std::vector<uint32> bytes( size / sizeof( uint32 ) );
@@ -48,9 +50,7 @@ namespace lum {
 
 			std::ifstream file( path.m_Path );
 			if (!file.is_open( )) {
-				char buff[ 512 ]{};
-				FormatString( buff, "Failed to read file '{}': '{}'", path.ToString( ), strerror( errno ) );
-				return Result<String>::Failure( buff );
+				return Result<String>::Failure( strerror( errno ) );
 			}
 
 			std::ostringstream ss;
@@ -68,8 +68,7 @@ namespace lum {
 			std::ofstream file( path.m_Path );
 			if (!file.is_open( )) {
 				char buff[ 512 ]{};
-				FormatString( buff, "Failed to write file '{}': '{}'", path.ToString( ).c_str( ), strerror( errno ) );
-				return Result<bool>::Failure( buff );
+				return Result<bool>::Failure( strerror( errno ) );
 			}
 
 			file << content;

@@ -32,13 +32,13 @@ namespace lum::rhi::vk {
 		m_SurfaceSupport.m_Formats.clear( );
 		uint32 numFormats = 0;
 		vkGetPhysicalDeviceSurfaceFormatsKHR( m_Device, surface, &numFormats, nullptr );
-		m_SurfaceSupport.m_Formats.reserve( numFormats );
+		m_SurfaceSupport.m_Formats.resize( numFormats );
 		vkGetPhysicalDeviceSurfaceFormatsKHR( m_Device, surface, &numFormats, m_SurfaceSupport.m_Formats.data( ) );
 
 		m_SurfaceSupport.m_PresentModes.clear( );
 		uint32 numPresentModes = 0;
 		vkGetPhysicalDeviceSurfacePresentModesKHR( m_Device, surface, &numPresentModes, nullptr );
-		m_SurfaceSupport.m_PresentModes.reserve( numPresentModes );
+		m_SurfaceSupport.m_PresentModes.resize( numPresentModes );
 		vkGetPhysicalDeviceSurfacePresentModesKHR( m_Device, surface, &numPresentModes, m_SurfaceSupport.m_PresentModes.data( ) );
 
 	}
@@ -52,9 +52,23 @@ namespace lum::rhi::vk {
 	Result<VulkanAdapter> VulkanAdapterEvaluator::EvaluateAdapter( VkPhysicalDevice device, VkSurfaceKHR surface ) const noexcept {
 
 		VulkanAdapter adapter{};
+		adapter.m_Device = device;
 
 		VkPhysicalDeviceFeatures features{};
 		vkGetPhysicalDeviceFeatures( device, &features );
+
+		VkPhysicalDeviceSynchronization2Features sync2{};
+		sync2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES;
+
+		VkPhysicalDeviceFeatures2 features2{};
+		features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+		features2.pNext = &sync2;
+
+		vkGetPhysicalDeviceFeatures2( device, &features2 );
+
+		if (sync2.synchronization2 != VK_TRUE) {
+			return Result<VulkanAdapter>::Failure( );
+		}
 
 		VkPhysicalDeviceProperties props{};
 		vkGetPhysicalDeviceProperties( device, &props );
@@ -62,6 +76,7 @@ namespace lum::rhi::vk {
 		VkPhysicalDeviceMemoryProperties memProps{};
 		vkGetPhysicalDeviceMemoryProperties( device, &memProps );
 
+		// Calculate adapter's memory capacity
 		if (memProps.memoryHeapCount > 0) {
 
 			for (usize i = 0; i < memProps.memoryHeapCount; i++) {
@@ -75,6 +90,7 @@ namespace lum::rhi::vk {
 
 		}
 
+		// Enumerate queue families
 		uint32 numQueueFamilies = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties( device, &numQueueFamilies, nullptr );
 		std::vector<VkQueueFamilyProperties> queueFamilies( numQueueFamilies );
@@ -87,11 +103,13 @@ namespace lum::rhi::vk {
 			if (queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 				if (!adapter.m_Queues.HasQueue( adapter.m_Queues.m_GraphicsQueueIndex )) {
 					adapter.m_Queues.m_GraphicsQueueIndex = i;
+					adapter.m_Score += 1;
 				}
 			}
 			if (queueFlags & VK_QUEUE_COMPUTE_BIT) {
 				if (!adapter.m_Queues.HasQueue( adapter.m_Queues.m_ComputeQueueIndex )) {
 					adapter.m_Queues.m_ComputeQueueIndex = i;
+					adapter.m_Score += 50;
 				}
 			}
 
@@ -113,6 +131,8 @@ namespace lum::rhi::vk {
 		adapter.m_Desc.m_AdapterName = props.deviceName;
 		adapter.m_Desc.m_AdapterId = props.deviceID;
 		adapter.m_Desc.m_VendorId = props.vendorID;
+
+		// Features evaluation
 
 		for (auto feature : m_Requirements.GetRequiredFeatures( )) {
 
@@ -146,6 +166,8 @@ namespace lum::rhi::vk {
 			}
 
 		}
+
+		adapter.QuerySurfaceCapabilities( surface );
 
 		return Result<VulkanAdapter>::Success( adapter );
 

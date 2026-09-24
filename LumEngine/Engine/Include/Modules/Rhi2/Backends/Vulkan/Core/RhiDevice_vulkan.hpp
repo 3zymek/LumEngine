@@ -58,13 +58,16 @@ namespace lum::rhi::vk {
 		VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
 		VkQueue m_ComputeQueue = VK_NULL_HANDLE;
 		VkQueue m_PresentQueue = VK_NULL_HANDLE;
+		
+		std::array<VkSemaphore, LUM_MAX_FRAMES_IN_FLIGHT> m_ImageAvailableSemaphores{};
+		std::vector<VkSemaphore> m_RenderFinishedSemaphores{};
 
-		VkSemaphore m_ImageAvailableSemaphore = VK_NULL_HANDLE;
-		VkSemaphore m_RenderFinishedSemaphore = VK_NULL_HANDLE;
 		VkFence m_Fence = VK_NULL_HANDLE;
 
 		VkShaderModule DT_Vertex = VK_NULL_HANDLE;
 		VkShaderModule DT_Fragment = VK_NULL_HANDLE;
+
+		uint32 m_CurrentFrame = 0;
 
 	};
 

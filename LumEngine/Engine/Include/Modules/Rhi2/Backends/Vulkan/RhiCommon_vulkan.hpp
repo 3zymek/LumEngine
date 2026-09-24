@@ -56,10 +56,15 @@ namespace lum::rhi::vk {
 				uvAttr.offset = offsetof( Vertex, m_Uv );
 
 				m_InputStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-				m_InputStateInfo.vertexAttributeDescriptionCount = m_AttributeDescriptions.size( );
-				m_InputStateInfo.pVertexAttributeDescriptions = m_AttributeDescriptions.data( );
-				m_InputStateInfo.vertexBindingDescriptionCount = 1;
-				m_InputStateInfo.pVertexBindingDescriptions = &m_VertexBindingDesciption;
+
+				//m_InputStateInfo.vertexAttributeDescriptionCount = m_AttributeDescriptions.size( );
+				m_InputStateInfo.vertexAttributeDescriptionCount = 0;
+				//m_InputStateInfo.pVertexAttributeDescriptions = m_AttributeDescriptions.data( );
+				m_InputStateInfo.pVertexAttributeDescriptions = nullptr;
+				//m_InputStateInfo.vertexBindingDescriptionCount = 1;
+				m_InputStateInfo.vertexBindingDescriptionCount = 0;
+				//m_InputStateInfo.pVertexBindingDescriptions = &m_VertexBindingDesciption;
+				m_InputStateInfo.pVertexBindingDescriptions = nullptr;
 
 			}
 
@@ -78,7 +83,7 @@ namespace lum::rhi::vk {
 			}
 
 			LUM_NODISCARD const void* GetChainHead( ) const noexcept {
-				return &m_Vulkan12Features;
+				return &m_12Features;
 			}
 
 		private:
@@ -91,19 +96,20 @@ namespace lum::rhi::vk {
 				//m_Vulkan14Features.dynamicRenderingLocalRead = VK_TRUE;
 				//m_Vulkan14Features.pNext = nullptr;
 
-				m_Vulkan13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
-				m_Vulkan13Features.dynamicRendering = VK_TRUE;
-				m_Vulkan13Features.pNext = nullptr;
+				m_13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+				m_13Features.dynamicRendering = VK_TRUE;
+				m_13Features.synchronization2 = VK_TRUE;
+				m_13Features.pNext = nullptr;
 
-				m_Vulkan12Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
-				m_Vulkan12Features.descriptorIndexing = VK_TRUE;
-				m_Vulkan12Features.pNext = &m_Vulkan13Features;
+				m_12Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+				m_12Features.descriptorIndexing = VK_TRUE;
+				m_12Features.pNext = &m_13Features;
 
 			}
 
 			//VkPhysicalDeviceVulkan14Features m_Vulkan14Features{};
-			VkPhysicalDeviceVulkan13Features m_Vulkan13Features{};
-			VkPhysicalDeviceVulkan12Features m_Vulkan12Features{};
+			VkPhysicalDeviceVulkan13Features m_13Features{};
+			VkPhysicalDeviceVulkan12Features m_12Features{};
 
 		};
 

@@ -4,8 +4,11 @@
 #include "Core/Utils/OwningPtr.hpp"
 #include "Platform/VulkanSurfaceProvider.hpp"
 #include "Platform/GLFWVulkanSurfaceProvider.hpp"
+#include "Core/Utils/ResourceLoader.hpp"
 using namespace lum;
 int main( int argc, char* argv[ ] ) {
+
+    ResourceLoader::SetProjectRoot( "C:/Users/szymek/Desktop/lumen_assets" );
 
     OwningPtr<rhi::IRenderDevice> device = OwningPtr<rhi::vk::VulkanDevice>::Create( );
 
@@ -29,6 +32,7 @@ int main( int argc, char* argv[ ] ) {
 
     while (true) {
         device( ).DrawFrame( );
+        glfwPollEvents( );
     }
 
     device( ).Finalize( );
