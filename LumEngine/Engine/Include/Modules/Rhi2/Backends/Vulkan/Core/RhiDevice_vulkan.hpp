@@ -18,7 +18,7 @@ namespace lum::rhi::vk {
 		void Initialize( const RenderDeviceCreateInfo& info ) noexcept override;
 		void Finalize( ) noexcept override;
 
-		void DrawFrame( ) noexcept override;
+		void UpdateFrame( ) noexcept override;
 
 	private:
 
@@ -28,12 +28,15 @@ namespace lum::rhi::vk {
 		void acquire_queues( ) noexcept;
 		void create_shader_stages( ) noexcept;
 		void create_main_surface( ) noexcept;
-		void create_swapchain( TVector2<uint32> windowSize ) noexcept;
+		void create_new_swapchain( ) noexcept;
 		void extract_swapchain_images( ) noexcept;
 		void create_main_pipeline( ) noexcept;
 		void create_command_pool( ) noexcept;
 		void allocate_command_buffers( ) noexcept;
 		void create_sync_primitives( ) noexcept;
+		void handle_resize( ) noexcept;
+
+		TVector2<uint32> m_WindowSize{};
 
 		VkInstance m_Instance = VK_NULL_HANDLE;
 

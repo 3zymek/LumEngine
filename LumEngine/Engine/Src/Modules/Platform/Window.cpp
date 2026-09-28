@@ -99,6 +99,8 @@ namespace lum {
 			return;
 		}
 
+		glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
+
 		if (desc.m_Flags.Has( WindowInitFlags::NoResize ))
 			glfwWindowHint( GLFW_RESIZABLE, GLFW_FALSE );
 
@@ -126,7 +128,7 @@ namespace lum {
 
 			const auto& icon = desc.m_IconData.Value( );
 
-			GLFWimage image;
+			GLFWimage image{};
 			image.pixels = const_cast<unsigned char*>(icon.m_Pixels.data( ));
 			image.height = icon.m_Height;
 			image.width = icon.m_Width;

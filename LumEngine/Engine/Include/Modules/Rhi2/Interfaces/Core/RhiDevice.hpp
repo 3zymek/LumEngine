@@ -7,6 +7,10 @@ namespace lum {
 
 	class ISurfaceProvider;
 
+	namespace ev {
+		class EventBus;
+	} // namespace ev
+
 } // namespace lum
 
 namespace lum::rhi {
@@ -17,7 +21,8 @@ namespace lum::rhi {
 		void*						m_NativeWindowHandle = nullptr;
 		bool						m_EnableValidation = false;
 		AdapterRequirements			m_AdapterRequirements{};
-		SafePtr<ISurfaceProvider>	m_SurfaceProvider = nullptr;
+		SafePtr<ISurfaceProvider>	m_SurfaceProvider = nullptr; // REQUIRED
+		SafePtr<ev::EventBus>		m_EventBus = nullptr; // REQUIRED
 
 	};
 
@@ -27,7 +32,7 @@ namespace lum::rhi {
 		virtual void Initialize( const RenderDeviceCreateInfo& info ) noexcept = 0;
 		virtual void Finalize( ) noexcept = 0;
 
-		virtual void DrawFrame( ) noexcept = 0;
+		virtual void UpdateFrame( ) noexcept = 0;
 
 		virtual ~IRenderDevice( ) = default;
 

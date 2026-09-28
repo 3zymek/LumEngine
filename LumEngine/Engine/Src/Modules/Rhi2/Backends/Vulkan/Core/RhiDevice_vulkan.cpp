@@ -3,6 +3,8 @@
 #include "Platform/SurfaceProvider.hpp"
 #include "Platform/VulkanSurfaceProvider.hpp"
 #include "Core/Utils/ResourceLoader.hpp"
+#include "Event/Events/WindowEvents.hpp"
+#include "Event/EventBus.hpp"
 
 namespace lum::rhi::vk {
 
@@ -21,12 +23,18 @@ namespace lum::rhi::vk {
 		create_logical_device( );
 		acquire_queues( );
 		create_shader_stages( );
-		create_swapchain( {} );
+		create_new_swapchain( );
 		extract_swapchain_images( );
 		create_main_pipeline( );
 		create_command_pool( );
 		allocate_command_buffers( );
 		create_sync_primitives( );
+
+		info.m_EventBus( ).SubscribePermanently<EWindowResized>(
+			[ & ]( const EWindowResized& e ) {
+				m_WindowSize = { e.m_Width, e.m_Height };
+			}
+		);
 
 	}
 
@@ -69,26 +77,42 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::DrawFrame( ) noexcept {
+	void VulkanDevice::UpdateFrame( ) noexcept {
 
 		// Sync GPU and CPU
 		vkWaitForFences( m_LogicalDevice, 1, &m_Fence, VK_TRUE, UINT64_MAX );
-		vkResetFences( m_LogicalDevice, 1, &m_Fence );
+
+
 
 		// Acquire image from swapchain
 		uint32 imageIndex{};
-
 		VkSemaphore& imageAvailableSemaphore = m_ImageAvailableSemaphores[ m_CurrentFrame ];
+		VkResult acquireImageResult = vkAcquireNextImageKHR( m_LogicalDevice, m_Swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex );
 
-		vkAcquireNextImageKHR( m_LogicalDevice, m_Swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex );
+		if (acquireImageResult == VK_ERROR_OUT_OF_DATE_KHR) {
+			handle_resize( );
+			return;
+		}
+		if (acquireImageResult != VK_SUCCESS && acquireImageResult != VK_SUBOPTIMAL_KHR) {
+			return;
+		}
+		vkResetFences( m_LogicalDevice, 1, &m_Fence );
 
-		// Record commands
+
+
+
+
+		// Begin recording
 		VkCommandBuffer& buffer = m_CmdBuffers[ 0 ];
 		vkResetCommandBuffer( buffer, 0 );
 
 		VkCommandBufferBeginInfo beginInfo{};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		vkBeginCommandBuffer( buffer, &beginInfo );
+
+
+
+
 
 		// Entry barrier
 		VkImageMemoryBarrier2 barrierToRender{};
@@ -109,7 +133,11 @@ namespace lum::rhi::vk {
 
 		vkCmdPipelineBarrier2( buffer, &dependencyInfo );
 
-		// DYNAMIC RENDERING
+
+
+
+
+		// Dynamic Rendering
 		VkRenderingAttachmentInfo colorAttachment{};
 		colorAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
 		colorAttachment.imageView = m_SwapchainImageViews[ imageIndex ];
@@ -135,10 +163,16 @@ namespace lum::rhi::vk {
 		VkRect2D scissor{ {0, 0}, currentExtent };
 		vkCmdSetViewport( buffer, 0, 1, &viewport );
 		vkCmdSetScissor( buffer, 0, 1, &scissor );
-		
+
 		vkCmdDraw( buffer, 3, 1, 0, 0 ); // Draw simple triangle
 
 		vkCmdEndRendering( buffer );
+
+
+
+
+
+
 
 		// Outry barrier
 		VkImageMemoryBarrier2 barrierToPresent = barrierToRender;
@@ -152,6 +186,8 @@ namespace lum::rhi::vk {
 		vkCmdPipelineBarrier2( buffer, &dependencyInfo );
 
 
+
+
 		// Send commands to GPU
 		VkSemaphoreSubmitInfo waitSemaphoreInfo{};
 		waitSemaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
@@ -160,7 +196,7 @@ namespace lum::rhi::vk {
 
 		VkSemaphoreSubmitInfo signalSemaphoreInfo{};
 		signalSemaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
-		signalSemaphoreInfo.semaphore = m_RenderFinishedSemaphores[imageIndex];
+		signalSemaphoreInfo.semaphore = m_RenderFinishedSemaphores[ imageIndex ];
 		signalSemaphoreInfo.stageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT;
 
 		VkCommandBufferSubmitInfo cmdBufferInfo{};
@@ -176,8 +212,21 @@ namespace lum::rhi::vk {
 		submitInfo.commandBufferInfoCount = 1;
 		submitInfo.pCommandBufferInfos = &cmdBufferInfo;
 
-		vkEndCommandBuffer( buffer );
-		vkQueueSubmit2( m_GraphicsQueue, 1, &submitInfo, m_Fence );
+		VkResult endBufferResult = vkEndCommandBuffer( buffer );
+		if (endBufferResult != VK_SUCCESS) {
+			LUM_LOG_ERROR( "Failed to end command buffer (vkEndCommandBuffer()), result: {}! (Vulkan)", (int32) endBufferResult );
+			return;
+		}
+
+		VkResult queueSubmitResult = vkQueueSubmit2( m_GraphicsQueue, 1, &submitInfo, m_Fence );
+		if (queueSubmitResult != VK_SUCCESS) {
+			LUM_LOG_ERROR( "Failed to vkQueueSubmit2(), result: {}! (Vulkan)", (int32) queueSubmitResult );
+			return;
+		}
+
+
+
+
 
 		// Present
 		VkPresentInfoKHR presentInfo{};
@@ -190,7 +239,12 @@ namespace lum::rhi::vk {
 
 		vkQueuePresentKHR( m_PresentQueue, &presentInfo );
 
+
+
+
+		// Calculate Frame
 		m_CurrentFrame = (m_CurrentFrame + 1) % LUM_MAX_FRAMES_IN_FLIGHT;
+
 
 	}
 
@@ -345,7 +399,7 @@ namespace lum::rhi::vk {
 		}
 
 		if (queues.HasQueue( queues.m_ComputeQueueIndex ) &&
-			 queues.m_ComputeQueueIndex != queues.m_PresentQueueIndex && 
+			 queues.m_ComputeQueueIndex != queues.m_PresentQueueIndex &&
 			 queues.m_ComputeQueueIndex != queues.m_GraphicsQueueIndex) {
 
 			queueInfos.push_back( computeQueueInfo );
@@ -390,7 +444,7 @@ namespace lum::rhi::vk {
 
 			VkShaderModuleCreateInfo info{};
 			info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-			info.codeSize = code.ValueRef( ).size( ) * sizeof(uint32);
+			info.codeSize = code.ValueRef( ).size( ) * sizeof( uint32 );
 			info.pCode = code.ValueRef( ).data( );
 
 			if (vkCreateShaderModule( m_LogicalDevice, &info, nullptr, &module ) != VK_SUCCESS) {
@@ -398,11 +452,11 @@ namespace lum::rhi::vk {
 				return;
 			}
 
-		};
+			};
 
-		createShader( 
-			ResourceLoader::ResolveResourcePath( ResourceRoot::External, "debug.vert.spv" ), 
-			DT_Vertex 
+		createShader(
+			ResourceLoader::ResolveResourcePath( ResourceRoot::External, "debug.vert.spv" ),
+			DT_Vertex
 		);
 
 		createShader(
@@ -418,7 +472,9 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::create_swapchain( TVector2<uint32> windowSize ) noexcept {
+	void VulkanDevice::create_new_swapchain( ) noexcept {
+
+		m_Adapter.QuerySurfaceCapabilities( m_MainSurface );
 
 		VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		uint32 numQueueFamilyIndex = 0;
@@ -450,12 +506,12 @@ namespace lum::rhi::vk {
 		}
 		else {
 			extent.width = Clamp(
-				windowSize.m_X,
+				m_WindowSize.m_X,
 				capabilities.minImageExtent.width,
 				capabilities.maxImageExtent.width
 			);
 			extent.height = Clamp(
-				windowSize.m_Y,
+				m_WindowSize.m_Y,
 				capabilities.minImageExtent.height,
 				capabilities.maxImageExtent.height
 			);
@@ -480,6 +536,14 @@ namespace lum::rhi::vk {
 		info.preTransform = capabilities.currentTransform;
 		info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 		info.surface = m_MainSurface;
+
+		LUM_LOG_INFO(
+			"Swapchain extent: {}x{} | Window: {}x{}",
+			extent.width,
+			extent.height,
+			m_WindowSize.m_X,
+			m_WindowSize.m_Y
+		);
 
 		if (vkCreateSwapchainKHR( m_LogicalDevice, &info, nullptr, &m_Swapchain ) != VK_SUCCESS) {
 			LUM_LOG_FATAL( "Failed to create Swapchain! (Vulkan)" );
@@ -569,10 +633,10 @@ namespace lum::rhi::vk {
 		colorBlend.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 
 		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-		colorBlendAttachment.colorWriteMask = 
-			VK_COLOR_COMPONENT_R_BIT | 
-			VK_COLOR_COMPONENT_G_BIT | 
-			VK_COLOR_COMPONENT_B_BIT | 
+		colorBlendAttachment.colorWriteMask =
+			VK_COLOR_COMPONENT_R_BIT |
+			VK_COLOR_COMPONENT_G_BIT |
+			VK_COLOR_COMPONENT_B_BIT |
 			VK_COLOR_COMPONENT_A_BIT;
 
 		colorBlendAttachment.blendEnable = VK_FALSE;
@@ -677,7 +741,7 @@ namespace lum::rhi::vk {
 
 		for (auto& semaphore : m_ImageAvailableSemaphores) {
 			if (vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) != VK_SUCCESS) {
-				LUM_LOG_FATAL( "Failed to create image available semaphore! (Vulkan)",  );
+				LUM_LOG_FATAL( "Failed to create image available semaphore! (Vulkan)", );
 				return;
 			}
 		}
@@ -699,6 +763,15 @@ namespace lum::rhi::vk {
 			LUM_LOG_FATAL( "Failed to create fence! (Vulkan)" );
 			return;
 		}
+
+	}
+
+	void VulkanDevice::handle_resize( ) noexcept {
+
+		vkDeviceWaitIdle( m_LogicalDevice );
+
+		create_new_swapchain( );
+		extract_swapchain_images( );
 
 	}
 
