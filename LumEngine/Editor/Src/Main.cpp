@@ -38,7 +38,7 @@ int main( int argc, char* argv[ ] ) {
 
 	while (true) {
 		window.Update( );
-		device( ).DrawFrame( );
+		device( ).UpdateFrame( );
 	}
 
 	device( ).Finalize( );

@@ -35,6 +35,7 @@ namespace lum::rhi::vk {
 		void allocate_command_buffers( ) noexcept;
 		void create_sync_primitives( ) noexcept;
 		void handle_resize( ) noexcept;
+		void create_vertex_buffers( ) noexcept;
 
 		TVector2<uint32> m_WindowSize{};
 
@@ -71,6 +72,10 @@ namespace lum::rhi::vk {
 		VkShaderModule DT_Fragment = VK_NULL_HANDLE;
 
 		uint32 m_CurrentFrame = 0;
+
+		VkBuffer DT_Buffer{};
+		VkMemoryRequirements DT_BufferRequirements{};
+		VkDeviceMemory DT_BufferMemory{};
 
 	};
 

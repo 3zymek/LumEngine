@@ -57,14 +57,14 @@ namespace lum::rhi::vk {
 
 				m_InputStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-				//m_InputStateInfo.vertexAttributeDescriptionCount = m_AttributeDescriptions.size( );
-				m_InputStateInfo.vertexAttributeDescriptionCount = 0;
-				//m_InputStateInfo.pVertexAttributeDescriptions = m_AttributeDescriptions.data( );
-				m_InputStateInfo.pVertexAttributeDescriptions = nullptr;
-				//m_InputStateInfo.vertexBindingDescriptionCount = 1;
-				m_InputStateInfo.vertexBindingDescriptionCount = 0;
-				//m_InputStateInfo.pVertexBindingDescriptions = &m_VertexBindingDesciption;
-				m_InputStateInfo.pVertexBindingDescriptions = nullptr;
+				m_InputStateInfo.vertexAttributeDescriptionCount = m_AttributeDescriptions.size( );
+				//m_InputStateInfo.vertexAttributeDescriptionCount = 0;
+				m_InputStateInfo.pVertexAttributeDescriptions = m_AttributeDescriptions.data( );
+				//m_InputStateInfo.pVertexAttributeDescriptions = nullptr;
+				m_InputStateInfo.vertexBindingDescriptionCount = 1;
+				//m_InputStateInfo.vertexBindingDescriptionCount = 0;
+				m_InputStateInfo.pVertexBindingDescriptions = &m_VertexBindingDesciption;
+				//m_InputStateInfo.pVertexBindingDescriptions = nullptr;
 
 			}
 

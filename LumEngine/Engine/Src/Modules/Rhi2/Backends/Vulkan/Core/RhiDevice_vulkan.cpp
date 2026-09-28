@@ -29,6 +29,7 @@ namespace lum::rhi::vk {
 		create_command_pool( );
 		allocate_command_buffers( );
 		create_sync_primitives( );
+		create_vertex_buffers( );
 
 		info.m_EventBus( ).SubscribePermanently<EWindowResized>(
 			[ & ]( const EWindowResized& e ) {
@@ -103,12 +104,12 @@ namespace lum::rhi::vk {
 
 
 		// Begin recording
-		VkCommandBuffer& buffer = m_CmdBuffers[ 0 ];
-		vkResetCommandBuffer( buffer, 0 );
+		VkCommandBuffer& commandBuffer = m_CmdBuffers[ 0 ];
+		vkResetCommandBuffer( commandBuffer, 0 );
 
 		VkCommandBufferBeginInfo beginInfo{};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		vkBeginCommandBuffer( buffer, &beginInfo );
+		vkBeginCommandBuffer( commandBuffer, &beginInfo );
 
 
 
@@ -131,7 +132,7 @@ namespace lum::rhi::vk {
 		dependencyInfo.imageMemoryBarrierCount = 1;
 		dependencyInfo.pImageMemoryBarriers = &barrierToRender;
 
-		vkCmdPipelineBarrier2( buffer, &dependencyInfo );
+		vkCmdPipelineBarrier2( commandBuffer, &dependencyInfo );
 
 
 
@@ -155,18 +156,25 @@ namespace lum::rhi::vk {
 		renderingInfo.colorAttachmentCount = 1;
 		renderingInfo.pColorAttachments = &colorAttachment;
 
-		vkCmdBeginRendering( buffer, &renderingInfo );
+		vkCmdBeginRendering( commandBuffer, &renderingInfo );
 
-		vkCmdBindPipeline( buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_MainPipeline );
+		vkCmdBindPipeline( commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_MainPipeline );
 
 		VkViewport viewport{ 0.0f, 0.0f, (float32) currentExtent.width, (float32) currentExtent.height, 0.0f, 1.0f };
 		VkRect2D scissor{ {0, 0}, currentExtent };
-		vkCmdSetViewport( buffer, 0, 1, &viewport );
-		vkCmdSetScissor( buffer, 0, 1, &scissor );
+		vkCmdSetViewport( commandBuffer, 0, 1, &viewport );
+		vkCmdSetScissor( commandBuffer, 0, 1, &scissor );
 
-		vkCmdDraw( buffer, 3, 1, 0, 0 ); // Draw simple triangle
 
-		vkCmdEndRendering( buffer );
+		//
+		VkDeviceSize offset = 0;
+		vkCmdBindVertexBuffers( commandBuffer, 0, 1, &DT_Buffer, &offset );
+		//
+
+
+		vkCmdDraw( commandBuffer, 3, 1, 0, 0 ); // Draw simple triangle
+
+		vkCmdEndRendering( commandBuffer );
 
 
 
@@ -183,7 +191,7 @@ namespace lum::rhi::vk {
 		barrierToPresent.dstStageMask = VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT;
 
 		dependencyInfo.pImageMemoryBarriers = &barrierToPresent;
-		vkCmdPipelineBarrier2( buffer, &dependencyInfo );
+		vkCmdPipelineBarrier2( commandBuffer, &dependencyInfo );
 
 
 
@@ -201,7 +209,7 @@ namespace lum::rhi::vk {
 
 		VkCommandBufferSubmitInfo cmdBufferInfo{};
 		cmdBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO;
-		cmdBufferInfo.commandBuffer = buffer;
+		cmdBufferInfo.commandBuffer = commandBuffer;
 
 		VkSubmitInfo2 submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2;
@@ -212,7 +220,7 @@ namespace lum::rhi::vk {
 		submitInfo.commandBufferInfoCount = 1;
 		submitInfo.pCommandBufferInfos = &cmdBufferInfo;
 
-		VkResult endBufferResult = vkEndCommandBuffer( buffer );
+		VkResult endBufferResult = vkEndCommandBuffer( commandBuffer );
 		if (endBufferResult != VK_SUCCESS) {
 			LUM_LOG_ERROR( "Failed to end command buffer (vkEndCommandBuffer()), result: {}! (Vulkan)", (int32) endBufferResult );
 			return;
@@ -772,6 +780,74 @@ namespace lum::rhi::vk {
 
 		create_new_swapchain( );
 		extract_swapchain_images( );
+
+	}
+
+	void VulkanDevice::create_vertex_buffers( ) noexcept {
+
+		static std::vector<Vertex> s_Vertices = {
+			{
+				{ 0.0f, -0.5f, 0.0f },
+				{ 1.0f, 0.0f, 0.0f },
+				{ 0.5f, 0.0f }
+			},
+			{
+				{ 0.5f, 0.5f, 0.0f },
+				{ 0.0f, 1.0f, 0.0f },
+				{ 1.0f, 1.0f }
+			},
+			{
+				{ -0.5f, 0.5f, 0.0f },
+				{ 0.0f, 0.0f, 1.0f },
+				{ 0.0f, 1.0f }
+			}
+		};
+
+		VkBufferCreateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		info.size = s_Vertices.size( ) * sizeof( Vertex );
+		info.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+		info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+
+		if (vkCreateBuffer( m_LogicalDevice, &info, nullptr, &DT_Buffer ) != VK_SUCCESS) {
+			LUM_LOG_FATAL( "Failed to create buffer! (Vulkan)" );
+			return;
+		}
+
+		vkGetBufferMemoryRequirements( m_LogicalDevice, DT_Buffer, &DT_BufferRequirements );
+
+
+		//
+		VkPhysicalDeviceMemoryProperties memoryProperties{};
+		vkGetPhysicalDeviceMemoryProperties( m_Adapter.m_Device, &memoryProperties );
+
+		uint32 memoryTypeIndex = UINT32_MAX;
+
+		for (uint32 i = 0; i < memoryProperties.memoryTypeCount; i++) {
+			bool typeSupported = DT_BufferRequirements.memoryTypeBits & (1 << i);
+			bool hostVisible = memoryProperties.memoryTypes[ i ].propertyFlags &
+				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+
+			if (typeSupported && hostVisible) {
+				memoryTypeIndex = i;
+				break;
+			}
+		}
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.memoryTypeIndex = memoryTypeIndex;
+		allocInfo.allocationSize = DT_BufferRequirements.size;
+
+		vkAllocateMemory( m_LogicalDevice, &allocInfo, nullptr, &DT_BufferMemory );
+		
+		vkBindBufferMemory( m_LogicalDevice, DT_Buffer, DT_BufferMemory, 0 );
+
+		void* data = nullptr;
+		vkMapMemory( m_LogicalDevice, DT_BufferMemory, 0, DT_BufferRequirements.size, 0, &data );
+		memcpy( data, s_Vertices.data( ), s_Vertices.size( ) * sizeof( Vertex ) );
+		vkUnmapMemory( m_LogicalDevice, DT_BufferMemory );
 
 	}
 
