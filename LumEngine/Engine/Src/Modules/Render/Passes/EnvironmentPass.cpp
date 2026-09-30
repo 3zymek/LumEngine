@@ -66,17 +66,17 @@ namespace lum::render {
 
 	void EnvironmentPass::generate_irradiance_map( ) {
 
-		rhi::BufferHandle captureUBO;
+		rhi::BufferHandleOLD captureUBO;
 		auto& device = m_Ctx().m_RenderDev( );
 
 		// Capture UBO (IBL)s
 		{
 
-			rhi::BufferCreateInfo desc;
-			desc.m_BufferType = rhi::BufferType::Uniform;
-			desc.m_BufferUsage = rhi::BufferUsage::Dynamic;
+			rhi::BufferCreateInfoOLD desc;
+			desc.m_BufferType = rhi::BufferTypeOLD::Uniform;
+			desc.m_BufferUsage = rhi::BufferUsageOLD::Dynamic;
 			desc.m_MapFlags = rhi::MapFlag::Write;
-			desc.m_Size = sizeof( Matrix4 ) * 2;
+			desc.m_BufferSize = sizeof( Matrix4 ) * 2;
 			captureUBO = device.CreateBuffer( desc );
 			device.SetUniformBufferBinding( captureUBO, LUM_UBO_IRRADIANCE );
 
@@ -118,18 +118,18 @@ namespace lum::render {
 
 	void EnvironmentPass::generate_prefiltered_map( ) {
 
-		rhi::BufferHandle captureUBO;
+		rhi::BufferHandleOLD captureUBO;
 
 		auto& device = m_Ctx().m_RenderDev( );
 
 		// Capture UBO (IBL)
 		{
 
-			rhi::BufferCreateInfo desc;
-			desc.m_BufferType = rhi::BufferType::Uniform;
-			desc.m_BufferUsage = rhi::BufferUsage::Dynamic;
+			rhi::BufferCreateInfoOLD desc;
+			desc.m_BufferType = rhi::BufferTypeOLD::Uniform;
+			desc.m_BufferUsage = rhi::BufferUsageOLD::Dynamic;
 			desc.m_MapFlags = rhi::MapFlag::Write;
-			desc.m_Size = sizeof( Matrix4 ) * 2 + sizeof( float32 );
+			desc.m_BufferSize = sizeof( Matrix4 ) * 2 + sizeof( float32 );
 			captureUBO = device.CreateBuffer( desc );
 			device.SetUniformBufferBinding( captureUBO, LUM_UBO_PREFILTERED_MAP );
 
@@ -215,12 +215,12 @@ namespace lum::render {
 		// Cubemap VBO
 		if (!device.IsValid( m_Cubemap.m_Vbo )) {
 
-			rhi::BufferCreateInfo desc;
-			desc.m_BufferUsage = rhi::BufferUsage::Static;
+			rhi::BufferCreateInfoOLD desc;
+			desc.m_BufferUsage = rhi::BufferUsageOLD::Static;
 			desc.m_MapFlags = rhi::MapFlag::None;
-			desc.m_Size = ComputeByteSize( cubemapVertices );
+			desc.m_BufferSize = ComputeByteSize( cubemapVertices );
 			desc.m_Data = cubemapVertices;
-			desc.m_BufferType = rhi::BufferType::Vertex;
+			desc.m_BufferType = rhi::BufferTypeOLD::Vertex;
 			m_Cubemap.m_Vbo = device.CreateBuffer( desc );
 
 		}
@@ -228,12 +228,12 @@ namespace lum::render {
 		// Cubemap EBO
 		if (!device.IsValid( m_Cubemap.m_Ebo )) {
 
-			rhi::BufferCreateInfo desc;
-			desc.m_BufferUsage = rhi::BufferUsage::Static;
+			rhi::BufferCreateInfoOLD desc;
+			desc.m_BufferUsage = rhi::BufferUsageOLD::Static;
 			desc.m_MapFlags = rhi::MapFlag::None;
-			desc.m_Size = ComputeByteSize( cubemapIndices );
+			desc.m_BufferSize = ComputeByteSize( cubemapIndices );
 			desc.m_Data = cubemapIndices;
-			desc.m_BufferType = rhi::BufferType::Element;
+			desc.m_BufferType = rhi::BufferTypeOLD::Element;
 			m_Cubemap.m_Ebo = device.CreateBuffer( desc );
 
 		}

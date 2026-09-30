@@ -125,7 +125,7 @@ namespace lum::render {
 		//=======================================================//
 
 		/* @brief Uniform buffer holding per-frame camera matrices and position. */
-		rhi::BufferHandle m_CameraUbo{};
+		rhi::BufferHandleOLD m_CameraUbo{};
 
 		/* @brief CPU-side camera data uploaded to m_CameraUBO once per frame. */
 		detail::CameraGPU m_CameraGpu{};

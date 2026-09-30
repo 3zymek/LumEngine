@@ -43,7 +43,7 @@ namespace lum::rhi {
 	struct VertexLayout {
 		
 		LayoutID		m_Handle = 0;
-		BufferHandle	m_ElementBuff{};
+		BufferHandleOLD	m_ElementBuff{};
 
 	};
 

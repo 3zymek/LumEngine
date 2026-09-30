@@ -44,9 +44,9 @@ namespace lum::rhi {
 		return true;
 
 	}
-	bool IRenderDevice::validate_buffer_descriptor( const BufferCreateInfo& desc ) const noexcept {
+	bool IRenderDevice::validate_buffer_descriptor( const BufferCreateInfoOLD& desc ) const noexcept {
 
-		if (desc.m_BufferUsage == BufferUsage::Static) {
+		if (desc.m_BufferUsage == BufferUsageOLD::Static) {
 			LUM_ASSERT(
 				desc.m_MapFlags.IsEmpty( ),
 				"Static buffers cannot be mapped"
@@ -72,8 +72,8 @@ namespace lum::rhi {
 			return false;
 		}
 
-		LUM_ASSERT( desc.m_Size > 0, "Invalid buffer size" );
-		LUM_ASSERT( desc.m_BufferType != BufferType::None, "No buffer type given" );
+		LUM_ASSERT( desc.m_BufferSize > 0, "Invalid buffer size" );
+		LUM_ASSERT( desc.m_BufferType != BufferTypeOLD::None, "No buffer type given" );
 
 		return true;
 

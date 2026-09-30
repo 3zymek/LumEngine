@@ -2,6 +2,7 @@
 
 #include "Rhi2/RhiCommon.hpp"
 #include "Rhi2/RhiAdapter.hpp"
+#include "Rhi2/Interfaces/Core/RhiBuffer.hpp"
 
 namespace lum {
 
@@ -33,6 +34,9 @@ namespace lum::rhi {
 		virtual void Finalize( ) noexcept = 0;
 
 		virtual void UpdateFrame( ) noexcept = 0;
+
+		virtual BufferHandle2 CreateBuffer( const BufferCreateInfo2& info ) noexcept = 0;
+		virtual void DestroyBuffer( BufferHandle2& handle ) noexcept = 0;
 
 		virtual ~IRenderDevice( ) = default;
 

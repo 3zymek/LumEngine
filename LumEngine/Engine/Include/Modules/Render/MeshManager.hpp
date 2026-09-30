@@ -19,8 +19,8 @@ namespace lum {
 
 		/* @brief Stores raw GPU buffer handles for a mesh (VBO, EBO, VAO). */
 		struct RenderResources {
-			rhi::BufferHandle			m_Vbo{};
-			rhi::BufferHandle			m_Ebo{};
+			rhi::BufferHandleOLD			m_Vbo{};
+			rhi::BufferHandleOLD			m_Ebo{};
 			rhi::VertexLayoutHandle		m_Vao{};
 		};
 

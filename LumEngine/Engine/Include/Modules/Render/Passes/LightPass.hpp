@@ -104,10 +104,10 @@ namespace lum::render {
 		detail::DirectionalLightGPU m_DirectionalLightData{};
 
 		/* @brief Shader storage buffer holding all active point and spot lights. */
-		rhi::BufferHandle m_LightsUbo{};
+		rhi::BufferHandleOLD m_LightsUbo{};
 
 		/* @brief Uniform buffer holding the active directional light data. */
-		rhi::BufferHandle m_DirectionalLightUbo{};
+		rhi::BufferHandleOLD m_DirectionalLightUbo{};
 
 		rhi::PipelineHandle m_Pipeline{};
 		rhi::ShaderHandle	m_Shader{};

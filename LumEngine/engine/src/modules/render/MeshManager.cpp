@@ -88,9 +88,9 @@ namespace lum {
 
 
 
-//=======================================================//
+	//=======================================================//
 	// Private
-//=======================================================//
+	//=======================================================//
 
 	void MeshManager::init( ) {
 
@@ -110,37 +110,37 @@ namespace lum {
 	detail::RenderResources MeshManager::upload_gpu( detail::MeshType type, const MeshGeometry& data ) {
 
 		Flags<rhi::MapFlag> mapFlag{};
-		rhi::BufferUsage usage{};
+		rhi::BufferUsageOLD usage{};
 
 		if (type == detail::MeshType::Static) {
 
 			mapFlag = rhi::MapFlag::None;
-			usage = rhi::BufferUsage::Static;
+			usage = rhi::BufferUsageOLD::Static;
 
 		}
 		else if (type == detail::MeshType::Dynamic) {
 
 			mapFlag = rhi::MapFlag::Read | rhi::MapFlag::Write;
-			usage = rhi::BufferUsage::Dynamic;
+			usage = rhi::BufferUsageOLD::Dynamic;
 
 		}
 
 		detail::RenderResources res;
 
-		rhi::BufferCreateInfo vboDesc;
+		rhi::BufferCreateInfoOLD vboDesc;
 		vboDesc.m_BufferUsage = usage;
 		vboDesc.m_Data = data.m_Vertices.data( );
 		vboDesc.m_MapFlags = mapFlag;
-		vboDesc.m_Size = ComputeByteSize( data.m_Vertices );
-		vboDesc.m_BufferType = rhi::BufferType::Vertex;
+		vboDesc.m_BufferSize = ComputeByteSize( data.m_Vertices );
+		vboDesc.m_BufferType = rhi::BufferTypeOLD::Vertex;
 		res.m_Vbo = m_Ctx().m_RenderDev().CreateBuffer( vboDesc );
 
-		rhi::BufferCreateInfo eboDesc;
+		rhi::BufferCreateInfoOLD eboDesc;
 		eboDesc.m_BufferUsage = usage;
 		eboDesc.m_Data = data.m_Indices.data( );
 		eboDesc.m_MapFlags = mapFlag;
-		eboDesc.m_Size = ComputeByteSize( data.m_Indices );
-		eboDesc.m_BufferType = rhi::BufferType::Element;
+		eboDesc.m_BufferSize = ComputeByteSize( data.m_Indices );
+		eboDesc.m_BufferType = rhi::BufferTypeOLD::Element;
 		res.m_Ebo = m_Ctx().m_RenderDev().CreateBuffer( eboDesc );
 
 		rhi::VertexAttribute vaoAttrib[ 5 ];

@@ -54,6 +54,8 @@ namespace lum::rhi::vk {
 		VulkanAdapter adapter{};
 		adapter.m_Device = device;
 
+		vkGetPhysicalDeviceMemoryProperties( device, &adapter.m_MemoryProperties );
+
 		VkPhysicalDeviceFeatures features{};
 		vkGetPhysicalDeviceFeatures( device, &features );
 

@@ -3,6 +3,7 @@
 #include "Rhi2/Interfaces/Core/RhiDevice.hpp"
 #include "Rhi2/Backends/Vulkan/RhiCommon_vulkan.hpp"
 #include "Rhi2/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
+#include "Rhi2/Backends/Vulkan/Core/RhiBuffer_vulkan.hpp"
 
 namespace lum {
 
@@ -20,7 +21,12 @@ namespace lum::rhi::vk {
 
 		void UpdateFrame( ) noexcept override;
 
+		BufferHandle2 CreateBuffer( const BufferCreateInfo2& info ) noexcept override;
+		void DestroyBuffer( BufferHandle2& handle ) noexcept override;
+	
 	private:
+
+		void assert_device( ) const;
 
 		void create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept;
 		void choose_adapter( ) noexcept;
@@ -28,14 +34,22 @@ namespace lum::rhi::vk {
 		void acquire_queues( ) noexcept;
 		void create_shader_stages( ) noexcept;
 		void create_main_surface( ) noexcept;
-		void create_new_swapchain( ) noexcept;
-		void extract_swapchain_images( ) noexcept;
+		void recreate_swapchain( ) noexcept;
+		void recreate_swapchain_images( ) noexcept;
 		void create_main_pipeline( ) noexcept;
 		void create_command_pool( ) noexcept;
 		void allocate_command_buffers( ) noexcept;
 		void create_sync_primitives( ) noexcept;
 		void handle_resize( ) noexcept;
 		void create_vertex_buffers( ) noexcept;
+
+
+
+		static inline constexpr usize sk_MaxBuffers = 256;
+
+		cstd::HandlePool<BufferHandle2, VulkanBuffer, BufferID2> m_Buffers{ sk_MaxBuffers };
+
+
 
 		TVector2<uint32> m_WindowSize{};
 
@@ -73,9 +87,9 @@ namespace lum::rhi::vk {
 
 		uint32 m_CurrentFrame = 0;
 
-		VkBuffer DT_Buffer{};
-		VkMemoryRequirements DT_BufferRequirements{};
-		VkDeviceMemory DT_BufferMemory{};
+		BufferHandle2 DT_Buffer{};
+
+		bool m_Initialized = false;
 
 	};
 

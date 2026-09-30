@@ -9,13 +9,13 @@
 
 namespace lum::rhi::gl {
 
-	VertexLayoutHandle GLDevice::CreateVertexLayout( const VertexLayoutCreateInfo& desc, BufferHandle vbo ) {
+	VertexLayoutHandle GLDevice::CreateVertexLayout( const VertexLayoutCreateInfo& desc, BufferHandleOLD vbo ) {
 
 		LUM_ASSERT( IsValid( vbo ), "Invalid buffer" );
 		LUM_ASSERT( desc.m_Attributes.size( ) > 0, "Vertex layout has no attributes" );
 
 		VertexLayout layout;
-		Buffer& buffer = m_Buffers[ vbo ];
+		BufferOLD& buffer = m_Buffers[ vbo ];
 
 		glCreateVertexArrays( 1, &layout.m_Handle );
 		glVertexArrayVertexBuffer(

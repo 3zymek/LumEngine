@@ -71,24 +71,24 @@ namespace lum::render {
 
 
 
-//=======================================================//
+	//=======================================================//
 	// Private
-//=======================================================//
+	//=======================================================//
 
 	void GeometryPass::init( ) {
 
-		rhi::BufferCreateInfo desc;
-		desc.m_BufferUsage = rhi::BufferUsage::Dynamic;
+		rhi::BufferCreateInfoOLD desc;
+		desc.m_BufferUsage = rhi::BufferUsageOLD::Dynamic;
 		desc.m_MapFlags = rhi::MapFlag::Write;
 		{ // Model Uniform
-			desc.m_Size = sizeof( detail::ModelGPU );
-			desc.m_BufferType = rhi::BufferType::Uniform;
+			desc.m_BufferSize = sizeof( detail::ModelGPU );
+			desc.m_BufferType = rhi::BufferTypeOLD::Uniform;
 			m_ModelUniform = m_Ctx( ).m_RenderDev( ).CreateBuffer( desc );
 			m_Ctx( ).m_RenderDev( ).SetUniformBufferBinding( m_ModelUniform, LUM_UBO_MODEL_BINDING );
 		}
 		{ // Material Uniform
-			desc.m_Size = sizeof( detail::MaterialGPU );
-			desc.m_BufferType = rhi::BufferType::Uniform;
+			desc.m_BufferSize = sizeof( detail::MaterialGPU );
+			desc.m_BufferType = rhi::BufferTypeOLD::Uniform;
 			m_MaterialUniform = m_Ctx( ).m_RenderDev( ).CreateBuffer( desc );
 			m_Ctx( ).m_RenderDev( ).SetUniformBufferBinding( m_MaterialUniform, LUM_UBO_MATERIAL_BINDING );
 		}

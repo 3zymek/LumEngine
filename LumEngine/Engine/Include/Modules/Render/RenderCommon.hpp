@@ -134,8 +134,8 @@ namespace lum::render {
 
 			rhi::VertexLayoutHandle m_Vao{};
 
-			rhi::BufferHandle m_Vbo{};
-			rhi::BufferHandle m_Ebo{};
+			rhi::BufferHandleOLD m_Vbo{};
+			rhi::BufferHandleOLD m_Ebo{};
 
 			rhi::FramebufferHandle m_SceneFbo{};
 			rhi::FramebufferHandle m_PostprocessFbo{};
@@ -164,10 +164,10 @@ namespace lum::render {
 			rhi::TextureHandle m_Texture{};
 
 			/* @brief Vertex buffer holding skybox geometry. */
-			rhi::BufferHandle m_Vbo{};
+			rhi::BufferHandleOLD m_Vbo{};
 
 			/* @brief Index buffer for skybox geometry. */
-			rhi::BufferHandle m_Ebo{};
+			rhi::BufferHandleOLD m_Ebo{};
 
 			/* @brief Vertex layout describing skybox vertex attributes. */
 			rhi::VertexLayoutHandle m_Vao{};

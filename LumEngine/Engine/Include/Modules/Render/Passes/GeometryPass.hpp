@@ -53,10 +53,10 @@ namespace lum::render {
 		detail::MaterialGPU m_MaterialUbo{};
 
 		/* @brief GPU buffer holding the per-draw model matrix uniform. */
-		rhi::BufferHandle m_ModelUniform{};
+		rhi::BufferHandleOLD m_ModelUniform{};
 
 		/* @brief GPU buffer holding the per-draw material uniform. */
-		rhi::BufferHandle m_MaterialUniform{};
+		rhi::BufferHandleOLD m_MaterialUniform{};
 
 		rhi::PipelineHandle m_Pipeline{};
 		rhi::ShaderHandle m_Shader{};

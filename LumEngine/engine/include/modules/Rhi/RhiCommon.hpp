@@ -71,7 +71,7 @@ namespace lum {
 			return MaxValue<T>( );
 		}
 
-		using BufferID = uint32; /* @brief Numeric identifier for a GPU buffer object. */
+		using BufferIDOLD = uint32; /* @brief Numeric identifier for a GPU buffer object. */
 		using LayoutID = uint32; /* @brief Numeric identifier for a vertex layout (VAO). */
 		using TextureID = uint32; /* @brief Numeric identifier for a GPU texture object. */
 		using SamplerID = uint32; /* @brief Numeric identifier for a texture sampler. */
@@ -95,7 +95,7 @@ namespace lum {
 		struct TextureHandle : public cstd::BaseHandle<TextureID> {};
 
 		/* @brief Typed handle wrapping a GPU buffer object ID. */
-		struct BufferHandle : public cstd::BaseHandle<BufferID> {};
+		struct BufferHandleOLD : public cstd::BaseHandle<BufferIDOLD> {};
 
 		/* @brief Typed handle wrapping a vertex layout (VAO) ID. */
 		struct VertexLayoutHandle : public cstd::BaseHandle<LayoutID> {};
@@ -144,7 +144,7 @@ namespace lum {
 		};
 
 		/* @brief Type of a GPU buffer object. */
-		enum class BufferType {
+		enum class BufferTypeOLD {
 			None,
 			Vertex,        /* @brief Vertex buffer object (VBO). */
 			Element,       /* @brief Index buffer object (EBO). */
@@ -155,7 +155,7 @@ namespace lum {
 		/* @brief Intended usage pattern of a GPU buffer.
 		* Hints the driver on how to optimize memory allocation.
 		*/
-		enum class BufferUsage {
+		enum class BufferUsageOLD {
 			Static,  /* @brief Data is set once and never changed (fast reads). */
 			Dynamic  /* @brief Data is updated frequently during runtime. */
 		};

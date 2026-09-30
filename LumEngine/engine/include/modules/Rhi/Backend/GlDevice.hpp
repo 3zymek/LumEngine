@@ -18,14 +18,14 @@ namespace lum::rhi::gl {
 		// Buffers
 		//=================================================
 
-		BufferHandle CreateBuffer( const BufferCreateInfo& desc ) override;
-		void UpdateBuffer( BufferHandle buff, const void* data, usize offset, usize size ) override;
-		void Delete( BufferHandle& buff ) override;
-		void* MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset, usize size ) override;
-		void UnmapBuffer( BufferHandle buff ) override;
-		void SetShaderStorageBinding( BufferHandle ssbo, uint32 binding ) override;
-		void AttachElementBufferToLayout( BufferHandle ebo, VertexLayoutHandle vao ) override;
-		void SetUniformBufferBinding( BufferHandle ubo, int32 binding ) override;
+		BufferHandleOLD CreateBuffer( const BufferCreateInfoOLD& desc ) override;
+		void UpdateBuffer( BufferHandleOLD buff, const void* data, usize offset, usize size ) override;
+		void Delete( BufferHandleOLD& buff ) override;
+		void* MapBuffer( BufferHandleOLD buff, Flags<MapFlag> flags, usize offset, usize size ) override;
+		void UnmapBuffer( BufferHandleOLD buff ) override;
+		void SetShaderStorageBinding( BufferHandleOLD ssbo, uint32 binding ) override;
+		void AttachElementBufferToLayout( BufferHandleOLD ebo, VertexLayoutHandle vao ) override;
+		void SetUniformBufferBinding( BufferHandleOLD ubo, int32 binding ) override;
 
 
 
@@ -46,7 +46,7 @@ namespace lum::rhi::gl {
 		// Layouts
 		//=================================================
 
-		VertexLayoutHandle CreateVertexLayout( const VertexLayoutCreateInfo& desc, BufferHandle vbo ) override;
+		VertexLayoutHandle CreateVertexLayout( const VertexLayoutCreateInfo& desc, BufferHandleOLD vbo ) override;
 		void Delete( VertexLayoutHandle& layout ) override;
 
 

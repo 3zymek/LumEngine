@@ -23,19 +23,22 @@ namespace lum::rhi::vk {
 		create_logical_device( );
 		acquire_queues( );
 		create_shader_stages( );
-		create_new_swapchain( );
-		extract_swapchain_images( );
+		recreate_swapchain( );
+		recreate_swapchain_images( );
 		create_main_pipeline( );
 		create_command_pool( );
 		allocate_command_buffers( );
 		create_sync_primitives( );
-		create_vertex_buffers( );
 
 		info.m_EventBus( ).SubscribePermanently<EWindowResized>(
 			[ & ]( const EWindowResized& e ) {
 				m_WindowSize = { e.m_Width, e.m_Height };
 			}
 		);
+
+		m_Initialized = true;
+
+		create_vertex_buffers( );
 
 	}
 
@@ -168,7 +171,7 @@ namespace lum::rhi::vk {
 
 		//
 		VkDeviceSize offset = 0;
-		vkCmdBindVertexBuffers( commandBuffer, 0, 1, &DT_Buffer, &offset );
+		vkCmdBindVertexBuffers( commandBuffer, 0, 1, &m_Buffers[ DT_Buffer ].m_VkBuffer, &offset );
 		//
 
 
@@ -254,6 +257,10 @@ namespace lum::rhi::vk {
 		m_CurrentFrame = (m_CurrentFrame + 1) % LUM_MAX_FRAMES_IN_FLIGHT;
 
 
+	}
+
+	void VulkanDevice::assert_device( ) const {
+		LUM_ASSERT( m_Initialized, "RHI Device is not initialized!!!" );
 	}
 
 	void VulkanDevice::create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept {
@@ -480,7 +487,7 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::create_new_swapchain( ) noexcept {
+	void VulkanDevice::recreate_swapchain( ) noexcept {
 
 		m_Adapter.QuerySurfaceCapabilities( m_MainSurface );
 
@@ -563,7 +570,7 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::extract_swapchain_images( ) noexcept {
+	void VulkanDevice::recreate_swapchain_images( ) noexcept {
 
 		for (auto& view : m_SwapchainImageViews) {
 			if (view != VK_NULL_HANDLE) {
@@ -778,8 +785,8 @@ namespace lum::rhi::vk {
 
 		vkDeviceWaitIdle( m_LogicalDevice );
 
-		create_new_swapchain( );
-		extract_swapchain_images( );
+		recreate_swapchain( );
+		recreate_swapchain_images( );
 
 	}
 
@@ -803,51 +810,12 @@ namespace lum::rhi::vk {
 			}
 		};
 
-		VkBufferCreateInfo info{};
-		info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		info.size = s_Vertices.size( ) * sizeof( Vertex );
-		info.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-		info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-
-		if (vkCreateBuffer( m_LogicalDevice, &info, nullptr, &DT_Buffer ) != VK_SUCCESS) {
-			LUM_LOG_FATAL( "Failed to create buffer! (Vulkan)" );
-			return;
-		}
-
-		vkGetBufferMemoryRequirements( m_LogicalDevice, DT_Buffer, &DT_BufferRequirements );
-
-
-		//
-		VkPhysicalDeviceMemoryProperties memoryProperties{};
-		vkGetPhysicalDeviceMemoryProperties( m_Adapter.m_Device, &memoryProperties );
-
-		uint32 memoryTypeIndex = UINT32_MAX;
-
-		for (uint32 i = 0; i < memoryProperties.memoryTypeCount; i++) {
-			bool typeSupported = DT_BufferRequirements.memoryTypeBits & (1 << i);
-			bool hostVisible = memoryProperties.memoryTypes[ i ].propertyFlags &
-				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-
-			if (typeSupported && hostVisible) {
-				memoryTypeIndex = i;
-				break;
-			}
-		}
-
-		VkMemoryAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		allocInfo.memoryTypeIndex = memoryTypeIndex;
-		allocInfo.allocationSize = DT_BufferRequirements.size;
-
-		vkAllocateMemory( m_LogicalDevice, &allocInfo, nullptr, &DT_BufferMemory );
-		
-		vkBindBufferMemory( m_LogicalDevice, DT_Buffer, DT_BufferMemory, 0 );
-
-		void* data = nullptr;
-		vkMapMemory( m_LogicalDevice, DT_BufferMemory, 0, DT_BufferRequirements.size, 0, &data );
-		memcpy( data, s_Vertices.data( ), s_Vertices.size( ) * sizeof( Vertex ) );
-		vkUnmapMemory( m_LogicalDevice, DT_BufferMemory );
+		BufferCreateInfo2 info{};
+		info.m_DataSize = s_Vertices.size( ) * sizeof( Vertex );
+		info.m_BufferSize = s_Vertices.size( ) * sizeof( Vertex );
+		info.m_Data = s_Vertices.data( );
+		info.m_Usage = BufferUsage2::Vertex;
+		DT_Buffer = CreateBuffer( info );
 
 	}
 

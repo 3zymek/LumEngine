@@ -37,12 +37,13 @@ namespace lum::rhi::vk {
 	class VulkanAdapter {
 	public:
 
-		VkPhysicalDevice			m_Device = VK_NULL_HANDLE;
-		VkPhysicalDeviceFeatures	m_Features{};
-		VulkanSurfaceSupport		m_SurfaceSupport{};
-		VulkanQueueFamilies			m_Queues{};
-		AdapterDescription			m_Desc{};
-		uint32						m_Score = 0;
+		VkPhysicalDevice m_Device = VK_NULL_HANDLE;
+		VkPhysicalDeviceFeatures m_Features{};
+		VkPhysicalDeviceMemoryProperties m_MemoryProperties{};
+		VulkanSurfaceSupport m_SurfaceSupport{};
+		VulkanQueueFamilies	m_Queues{};
+		AdapterDescription m_Desc{};
+		uint32 m_Score = 0;
 
 		void QuerySurfaceCapabilities( VkSurfaceKHR surface ) noexcept;
 

@@ -81,7 +81,7 @@ namespace lum::render {
 			rhi::ShaderHandle m_Shader{};
 
 			/* @brief Uniform buffer holding the light space transformation matrix. */
-			rhi::BufferHandle m_LightSpaceUbo{};
+			rhi::BufferHandleOLD m_LightSpaceUbo{};
 
 			/* @brief Computes and uploads the light space matrix from the given light direction.
 			*  @param direction Normalized direction vector of the directional light.
@@ -139,7 +139,7 @@ namespace lum::render {
 			rhi::ShaderHandle m_Shader{};
 
 			/* @brief Uniform buffer holding the light space transformation matrix. */
-			rhi::BufferHandle m_LightSpaceUbo{};
+			rhi::BufferHandleOLD m_LightSpaceUbo{};
 			
 			/* @brief Computes the light space matrix for a spot light.
 			* @param dir Light direction.

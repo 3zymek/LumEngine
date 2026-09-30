@@ -104,11 +104,11 @@ namespace lum::render {
 		// Camera Uniform
 		if (!m_Ctx.m_RenderDev().IsValid( m_CameraUbo )) {
 
-			rhi::BufferCreateInfo desc;
-			desc.m_BufferUsage = rhi::BufferUsage::Dynamic;
+			rhi::BufferCreateInfoOLD desc;
+			desc.m_BufferUsage = rhi::BufferUsageOLD::Dynamic;
 			desc.m_MapFlags = rhi::MapFlag::Write;
-			desc.m_Size = sizeof( detail::CameraGPU );
-			desc.m_BufferType = rhi::BufferType::Uniform;
+			desc.m_BufferSize = sizeof( detail::CameraGPU );
+			desc.m_BufferType = rhi::BufferTypeOLD::Uniform;
 			m_CameraUbo = m_Ctx.m_RenderDev().CreateBuffer( desc );
 			m_Ctx.m_RenderDev().SetUniformBufferBinding( m_CameraUbo, LUM_UBO_CAMERA_BINDING );
 
@@ -124,10 +124,10 @@ namespace lum::render {
 				{ {-1.f,  1.f, 0.f}, {}, {0.f, 1.f}, {}, {} },
 			};
 
-			rhi::BufferCreateInfo desc;
-			desc.m_BufferUsage = rhi::BufferUsage::Static;
-			desc.m_Size = ComputeByteSize( vertices );
-			desc.m_BufferType = rhi::BufferType::Vertex;
+			rhi::BufferCreateInfoOLD desc;
+			desc.m_BufferUsage = rhi::BufferUsageOLD::Static;
+			desc.m_BufferSize = ComputeByteSize( vertices );
+			desc.m_BufferType = rhi::BufferTypeOLD::Vertex;
 			desc.m_Data = vertices.data( );
 			m_ScreenQuad.m_Vbo = m_Ctx.m_RenderDev( ).CreateBuffer( desc );
 		}
@@ -140,10 +140,10 @@ namespace lum::render {
 				2, 3, 0
 			};
 
-			rhi::BufferCreateInfo desc;
-			desc.m_BufferUsage = rhi::BufferUsage::Static;
-			desc.m_Size = ComputeByteSize( indices );
-			desc.m_BufferType = rhi::BufferType::Element;
+			rhi::BufferCreateInfoOLD desc;
+			desc.m_BufferUsage = rhi::BufferUsageOLD::Static;
+			desc.m_BufferSize = ComputeByteSize( indices );
+			desc.m_BufferType = rhi::BufferTypeOLD::Element;
 			desc.m_Data = indices.data( );
 			m_ScreenQuad.m_Ebo = m_Ctx.m_RenderDev( ).CreateBuffer( desc );
 

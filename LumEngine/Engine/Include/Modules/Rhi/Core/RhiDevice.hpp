@@ -68,7 +68,7 @@ namespace lum::rhi {
 		* @return Handle to the created buffer.
 		*/
 		LUM_NODISCARD
-			virtual BufferHandle CreateBuffer( const BufferCreateInfo& desc ) = 0;
+			virtual BufferHandleOLD CreateBuffer( const BufferCreateInfoOLD& desc ) = 0;
 
 		/* @brief Uploads data from CPU memory into a GPU buffer.
 		* @param buff   Handle of the buffer to update.
@@ -76,12 +76,12 @@ namespace lum::rhi {
 		* @param offset Byte offset from the start of the buffer (default 0).
 		* @param size   Byte count to copy; 0 means whole buffer (default 0).
 		*/
-		virtual void UpdateBuffer( BufferHandle buff, const void* data, usize offset = 0, usize size = 0 ) = 0;
+		virtual void UpdateBuffer( BufferHandleOLD buff, const void* data, usize offset = 0, usize size = 0 ) = 0;
 
 		/* @brief Frees the GPU memory associated with the given buffer.
 		* @param buff Handle to delete. Becomes invalid after this call.
 		*/
-		virtual void Delete( BufferHandle& buff ) = 0;
+		virtual void Delete( BufferHandleOLD& buff ) = 0;
 
 		/* @brief Maps a GPU buffer into CPU address space for direct access.
 		* @param buff   Handle of the buffer to map.
@@ -92,31 +92,31 @@ namespace lum::rhi {
 		* @note Must be followed by UnmapBuffer() when done.
 		*/
 		LUM_NODISCARD
-			virtual void* MapBuffer( BufferHandle buff, Flags<MapFlag> flags, usize offset = 0, usize size = 0 ) = 0;
+			virtual void* MapBuffer( BufferHandleOLD buff, Flags<MapFlag> flags, usize offset = 0, usize size = 0 ) = 0;
 
 		/* @brief Unmaps a previously mapped buffer and synchronizes with the GPU.
 		* @param buff Handle of the buffer to unmap.
 		*/
-		virtual void UnmapBuffer( BufferHandle buff ) = 0;
+		virtual void UnmapBuffer( BufferHandleOLD buff ) = 0;
 
 		/* @brief Binds a shader storage buffer (SSBO) to a shader binding point.
 		* @param ssbo    Handle of the SSBO.
 		* @param binding Binding index matching the shader layout.
 		*/
-		virtual void SetShaderStorageBinding( BufferHandle ssbo, uint32 binding ) = 0;
+		virtual void SetShaderStorageBinding( BufferHandleOLD ssbo, uint32 binding ) = 0;
 
 		/* @brief Attaches an index buffer (EBO) to a vertex layout (VAO).
 		* Required before issuing indexed draw calls.
 		* @param ebo Handle of the element buffer.
 		* @param vao Handle of the vertex layout to attach it to.
 		*/
-		virtual void AttachElementBufferToLayout( BufferHandle ebo, VertexLayoutHandle vao ) = 0;
+		virtual void AttachElementBufferToLayout( BufferHandleOLD ebo, VertexLayoutHandle vao ) = 0;
 
 		/* @brief Binds a uniform buffer (UBO) to a shader binding point.
 		* @param ubo     Handle of the uniform buffer.
 		* @param binding Binding index matching the shader uniform block.
 		*/
-		virtual void SetUniformBufferBinding( BufferHandle ubo, int32 binding ) = 0;
+		virtual void SetUniformBufferBinding( BufferHandleOLD ubo, int32 binding ) = 0;
 
 
 		///////////////////////////////////////////////////
@@ -164,7 +164,7 @@ namespace lum::rhi {
 		* @return Handle to the created vertex layout.
 		*/
 		LUM_NODISCARD
-			virtual VertexLayoutHandle CreateVertexLayout( const VertexLayoutCreateInfo& desc, BufferHandle vbo ) = 0;
+			virtual VertexLayoutHandle CreateVertexLayout( const VertexLayoutCreateInfo& desc, BufferHandleOLD vbo ) = 0;
 
 		/* @brief Destroys a vertex layout and releases its GPU resources.
 		* @param layout Handle to delete. Becomes invalid after this call.
@@ -608,7 +608,7 @@ namespace lum::rhi {
 		///////////////////////////////////////////////////
 
 		/* @brief Returns true if the buffer handle refers to a live resource. */
-		bool IsValid( BufferHandle handle ) const noexcept { return m_Buffers.Contains( handle ); }
+		bool IsValid( BufferHandleOLD handle ) const noexcept { return m_Buffers.Contains( handle ); }
 
 		/* @brief Returns true if the texture handle refers to a live resource. */
 		bool IsValid( TextureHandle handle ) const noexcept { return m_Textures.Contains( handle ); }
@@ -629,7 +629,7 @@ namespace lum::rhi {
 		bool IsValid( SamplerHandle handle ) const noexcept { return m_Samplers.Contains( handle ); }
 
 
-		uint32 GetNativeHandle( BufferHandle handle ) noexcept {
+		uint32 GetNativeHandle( BufferHandleOLD handle ) noexcept {
 			if (m_Buffers.Contains( handle ))
 				return m_Buffers[ handle ].m_Handle;
 			return {};
@@ -755,9 +755,9 @@ namespace lum::rhi {
 				return Optional<Shader>::Empty( );
 			return m_Shaders[ shader ];
 		}
-		Optional<Buffer> Get( BufferHandle buffer ) {
+		Optional<BufferOLD> Get( BufferHandleOLD buffer ) {
 			if (!m_Buffers.Contains( buffer ))
-				return Optional<Buffer>::Empty( );
+				return Optional<BufferOLD>::Empty( );
 			return m_Buffers[ buffer ];
 		}
 		Optional<VertexLayout> Get( VertexLayoutHandle layout ) {
@@ -846,9 +846,9 @@ namespace lum::rhi {
 			ShaderID> m_Shaders{ sk_MaxShaders };
 		
 		cstd::HandlePool<
-			BufferHandle, 
-			Buffer, 
-			BufferID> m_Buffers{ sk_MaxBuffers };
+			BufferHandleOLD, 
+			BufferOLD,
+			BufferIDOLD> m_Buffers{ sk_MaxBuffers };
 		
 		cstd::HandlePool<
 			VertexLayoutHandle, 
@@ -883,7 +883,7 @@ namespace lum::rhi {
 		*  @param desc Buffer descriptor to validate.
 		*  @return True if the descriptor is valid, false otherwise.
 		*/
-		bool validate_buffer_descriptor( const BufferCreateInfo& ) const noexcept;
+		bool validate_buffer_descriptor( const BufferCreateInfoOLD& ) const noexcept;
 
 		/* @brief Returns true if the given image layout is a depth format. */
 		bool is_depth_format( TextureFormat fmt ) const noexcept;

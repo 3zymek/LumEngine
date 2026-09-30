@@ -113,16 +113,16 @@ namespace lum::cstd {
 		struct HandleIterator {
 
 			/* @brief Pointer to dense object storage. */
-			tValue* m_Dense;
+			tValue* m_Dense{};
 
 			/* @brief Mapping from dense indices to slot indices. */
-			SparseT* m_DenseToSparse;
+			SparseT* m_DenseToSparse{};
 
 			/* @brief Generation counters for each slot. */
-			GenerationT* m_Generations;
+			GenerationT* m_Generations{};
 
 			/* @brief Current dense array index. */
-			SparseT m_Index;
+			SparseT m_Index{};
 
 
 			/* @brief Returns the current handle and object pointer pair.
@@ -262,6 +262,11 @@ namespace lum::cstd {
 		/* @brief Checks whether the pool contains no objects. */
 		inline constexpr bool DenseEmpty( ) const {
 			return m_Dense.empty( );
+		}
+
+		/* @brief Checks whether the pool is full with objects. */
+		inline constexpr bool IsFull( ) const {
+			return m_Dense.size( ) >= k_MaxSize;
 		}
 
 

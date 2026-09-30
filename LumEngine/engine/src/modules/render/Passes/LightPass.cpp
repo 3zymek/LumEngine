@@ -93,8 +93,8 @@ namespace lum::render {
 
 	void LightPass::init( ) {
 
-		rhi::BufferCreateInfo desc;
-		desc.m_BufferUsage = rhi::BufferUsage::Dynamic;
+		rhi::BufferCreateInfoOLD desc;
+		desc.m_BufferUsage = rhi::BufferUsageOLD::Dynamic;
 		desc.m_MapFlags = rhi::MapFlag::Write;
 
 		auto& device = m_Ctx( ).m_RenderDev( );
@@ -102,8 +102,8 @@ namespace lum::render {
 		// Point Lights SSBO
 		if (!device.IsValid( m_LightsUbo )) {
 
-			desc.m_Size = (sizeof( PointLight ) * LUM_MAX_LIGHTS + sizeof( int32 )) + (sizeof( SpotLight ) * LUM_MAX_LIGHTS + sizeof( int32 ));
-			desc.m_BufferType = rhi::BufferType::ShaderStorage;
+			desc.m_BufferSize = (sizeof( PointLight ) * LUM_MAX_LIGHTS + sizeof( int32 )) + (sizeof( SpotLight ) * LUM_MAX_LIGHTS + sizeof( int32 ));
+			desc.m_BufferType = rhi::BufferTypeOLD::ShaderStorage;
 			m_LightsUbo = device.CreateBuffer( desc );
 			device.SetShaderStorageBinding( m_LightsUbo, LUM_SSBO_LIGHTS_BINDING );
 
@@ -111,8 +111,8 @@ namespace lum::render {
 		// Directional Light UBO
 		if (!device.IsValid( m_DirectionalLightUbo )) {
 
-			desc.m_Size = sizeof( m_DirectionalLightData );
-			desc.m_BufferType = rhi::BufferType::Uniform;
+			desc.m_BufferSize = sizeof( m_DirectionalLightData );
+			desc.m_BufferType = rhi::BufferTypeOLD::Uniform;
 			m_DirectionalLightUbo = device.CreateBuffer( desc );
 			device.SetUniformBufferBinding( m_DirectionalLightUbo, LUM_UBO_DIRECTIONAL_LIGHT );
 

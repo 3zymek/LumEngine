@@ -15,10 +15,10 @@ namespace lum {
 	struct StaticMeshResource {
 
 		/* @brief Vertex buffer containing mesh geometry. */
-		rhi::BufferHandle m_Vbo{};
+		rhi::BufferHandleOLD m_Vbo{};
 
 		/* @brief Index buffer defining triangle topology. */
-		rhi::BufferHandle m_Ebo{};
+		rhi::BufferHandleOLD m_Ebo{};
 
 		/* @brief Vertex layout describing attribute bindings. */
 		rhi::VertexLayoutHandle m_Vao{};
@@ -38,10 +38,10 @@ namespace lum {
 		MeshGeometry m_Data{};
 
 		/* @brief Vertex buffer containing mesh geometry. */
-		rhi::BufferHandle m_Vbo{};
+		rhi::BufferHandleOLD m_Vbo{};
 
 		/* @brief Index buffer defining triangle topology. */
-		rhi::BufferHandle m_Ebo{};
+		rhi::BufferHandleOLD m_Ebo{};
 
 		/* @brief Vertex layout describing attribute bindings. */
 		rhi::VertexLayoutHandle m_Vao{};
