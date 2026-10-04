@@ -28,6 +28,8 @@ Debug/
 Release/
 build/
 LumEngine/External
+.vscode/
+.DS_Store/
 
 !tools/*.dll
 !tools/*.json
