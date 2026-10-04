@@ -1,0 +1,14 @@
+{
+
+    "tokens_to_ignore": [
+        "LUM_FORCEINLINE",
+        "LUM_NODISCARD"
+    ],
+    "ends_with_to_ignore": [
+        "_API"
+    ],
+    "starts_with_to_ignore": [
+        "__"
+    ]
+
+}

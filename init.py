@@ -1,0 +1,19 @@
+from tools.init_cmake import setup_cmake
+from tools.init_fmod import setup_fmod
+from tools.init_glfw import setup_glfw
+from tools.init_assimp import setup_assimp
+from tools.init_qt import setup_qt
+from tools.init_stb import setup_stb
+from tools.init_vulkan import setup_vulkan
+
+
+setup_fmod()
+setup_qt()
+setup_stb()
+setup_glfw()
+setup_assimp()
+setup_vulkan()
+setup_cmake()
+
+print("Setup finished")
+input("Press Enter to exit...")
