@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "LumEngine Editor",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build LumEngine",
+            "stopAtEntry": false,
+            "MIMode": "lldb"
+        }
+    ]
+}

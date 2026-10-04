@@ -1,0 +1,3 @@
+[submodule "Lumen-Header-Compiler"]
+	path = Lumen-Header-Compiler
+	url = https://github.com/3zymek/Lumen-Header-Compiler

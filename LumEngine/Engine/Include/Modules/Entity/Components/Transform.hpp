@@ -1,0 +1,34 @@
+//========= Copyright (C) 2025-present 3zymek, MIT License ============//
+//
+// Purpose: Defines position, rotation and scale in 3D world
+//
+//=============================================================================//
+#pragma once
+#include "Entity/EcsCommon.hpp"
+#include "Entity/Components/Transform.gen.hpp"
+
+namespace lum {
+
+	/* @brief ECS component storing the 3D transform of an entity. */
+    LUM_CLASS( Category = "TRANSFORM" )
+    struct CTransform : public ComponentBase {
+
+        LUM_GENERATED_BODY( )
+
+        /* @brief Local position relative to parent. */
+        LUM_PROPERTY( ) Vector3 m_Position = Vector3( 0.0f );
+
+        /* @brief Local non-uniform scale relative to parent. */
+        LUM_PROPERTY( ) Vector3 m_Scale = Vector3( 1.0f );
+
+        /* @brief Local Euler rotation in degrees relative to parent. */
+        LUM_PROPERTY( ) Vector3 m_Rotation = Vector3( 0.0f );
+
+        /* @brief World space transform matrix, computed by TransformSystem. */
+        Matrix4 m_WorldMatrix = Matrix4( 1.0f );
+
+	};
+
+    LUM_CLASS_EXTENSIONS( )
+
+} // namespace lum

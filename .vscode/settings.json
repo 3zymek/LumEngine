@@ -1,0 +1,6 @@
+{
+    "C_Cpp.default.compilerPath": "/usr/bin/clang++",
+    "cmake.outputLogEncoding": "utf-8",
+    "terminal.integrated.minimumContrastRatio": 1,
+    "cmake.buildBeforeRun": false
+}
