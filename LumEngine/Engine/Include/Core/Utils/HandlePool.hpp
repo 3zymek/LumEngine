@@ -128,14 +128,14 @@ namespace lum::cstd {
 			/* @brief Returns the current handle and object pointer pair.
 			* @return Pair containing handle and object address.
 			*/
-			std::pair<tHandle, tValue*> operator*( ) {
+			std::pair<tHandle, tValue&> operator*( ) {
 				SparseT slot = m_DenseToSparse[ m_Index ];
 
 				tHandle handle;
 				handle.m_Id = slot;
 				handle.m_Generation = m_Generations[ slot ];
 
-				return { handle, &m_Dense[ m_Index ] };
+				return { handle, m_Dense[ m_Index ] };
 			}
 
 			HandleIterator& operator++( ) {
@@ -172,7 +172,7 @@ namespace lum::cstd {
 		/* @brief Returns an iterable range containing handles and objects.
 		* @return Range for structured binding iteration.
 		*/
-		HandleRange Each( ) {
+		HandleRange Iterate( ) {
 			return {
 				{ m_Dense.data( ), m_DenseToSlot.data( ), m_Generations.data( ), 0 },
 				{ m_Dense.data( ), m_DenseToSlot.data( ), m_Generations.data( ), static_cast<SparseT>(m_Dense.size( )) }

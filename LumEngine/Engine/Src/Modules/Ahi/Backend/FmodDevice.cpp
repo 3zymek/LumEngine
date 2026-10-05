@@ -100,9 +100,9 @@ namespace lum::ahi::fmod {
 
 		AudioEffect& sfx = m_Effects[ effect ];
 
-		for (auto [slot, value] : m_ChannelGroups.Each( )) {
+		for (auto&& [slot, value] : m_ChannelGroups.Iterate( )) {
 
-			FMOD::ChannelGroup* group = to_fmod_channel_group( *value );
+			FMOD::ChannelGroup* group = to_fmod_channel_group( value );
 			for (auto* dsp : sfx.m_Dsps) {
 				group->removeDSP( to_fmod_dsp( dsp ) );
 			}

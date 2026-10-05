@@ -50,6 +50,10 @@ namespace lum::rhi::vk {
 
 			vkDeviceWaitIdle(m_LogicalDevice);
 
+			for (auto&& [handle, buffer] : m_Buffers.Iterate( )) {
+				DestroyBuffer( handle );
+			}
+
 			vkDestroyFence(m_LogicalDevice, m_Fence, nullptr);
 
 			for (auto& semaphore : m_ImageAvailableSemaphores) {
@@ -68,9 +72,6 @@ namespace lum::rhi::vk {
 
 			for (auto view : m_SwapchainImageViews) {
 				vkDestroyImageView(m_LogicalDevice, view, nullptr);
-			}
-			for (auto img : m_SwapchainImages) {
-				vkDestroyImage(m_LogicalDevice, img, nullptr);
 			}
 
 			vkDestroySwapchainKHR(m_LogicalDevice, m_Swapchain, nullptr);

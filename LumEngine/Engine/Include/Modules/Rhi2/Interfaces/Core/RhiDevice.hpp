@@ -27,7 +27,7 @@ namespace lum::rhi {
 
 	};
 
-	class IRenderDevice {
+	class IRenderDevice2 {
 	public:
 
 		virtual void Initialize( const RenderDeviceCreateInfo& info ) noexcept = 0;
@@ -38,7 +38,7 @@ namespace lum::rhi {
 		virtual BufferHandle2 CreateBuffer( const BufferCreateInfo2& info ) noexcept = 0;
 		virtual void DestroyBuffer( BufferHandle2& handle ) noexcept = 0;
 
-	virtual ~IRenderDevice( ) = default;
+		virtual ~IRenderDevice2( ) = default;
 
 	};
 

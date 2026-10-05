@@ -13,7 +13,7 @@ namespace lum {
 
 namespace lum::rhi::vk {
 
-	class VulkanDevice : public IRenderDevice {
+	class VulkanDevice : public IRenderDevice2 {
 	public:
 
 		void Initialize( const RenderDeviceCreateInfo& info ) noexcept override;

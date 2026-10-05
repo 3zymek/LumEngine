@@ -164,7 +164,7 @@ namespace lum {
 			* @param callback Callable with signature (tFirst&, tRest&...).
 			*/
 			template<detail::cComponent tFirst, detail::cComponent... tRest, typename tCallback>
-			void Each( tCallback&& callback );
+			void Iterate( tCallback&& callback );
 
 			/* @brief Iterates over all entities that have tFirst and all tRest components.
 			* Callback receives entity ID followed by component references.
