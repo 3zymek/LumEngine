@@ -30,6 +30,7 @@ build/
 LumEngine/External
 .vscode/
 .DS_Store
+.clang-format
 
 !tools/*.dll
 !tools/*.json
