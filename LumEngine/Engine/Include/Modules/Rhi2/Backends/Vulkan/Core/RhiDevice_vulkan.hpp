@@ -4,6 +4,7 @@
 #include "Rhi2/Backends/Vulkan/RhiCommon_vulkan.hpp"
 #include "Rhi2/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
 #include "Rhi2/Backends/Vulkan/Core/RhiBuffer_vulkan.hpp"
+#include "Rhi2/Backends/Vulkan/Core/RhiShader_vulkan.hpp"
 
 namespace lum {
 
@@ -23,6 +24,9 @@ namespace lum::rhi::vk {
 
 		BufferHandle2 CreateBuffer( const BufferCreateInfo2& info ) noexcept override;
 		void DestroyBuffer( BufferHandle2& handle ) noexcept override;
+
+		virtual ShaderProgramHandle CreateShaderProgram( const ShaderProgramCreateInfo& info ) noexcept override;
+		virtual void DestroyShaderProgram( ShaderProgramHandle& handle ) noexcept override;
 	
 	private:
 
@@ -44,11 +48,22 @@ namespace lum::rhi::vk {
 		void create_vertex_buffers( ) noexcept;
 
 
+		bool create_shader( const Path& path, VkShaderModule& module ) const noexcept;
+
+
 
 		static inline constexpr usize sk_MaxBuffers = 256;
+		static inline constexpr usize sk_MaxShaderPrograms = 32;
 
-		cstd::HandlePool<BufferHandle2, VulkanBuffer, BufferID2> m_Buffers{ sk_MaxBuffers };
+		cstd::HandlePool<
+			BufferHandle2, 
+			VulkanBuffer, 
+			BufferID2> m_Buffers{ sk_MaxBuffers };
 
+		cstd::HandlePool<
+			ShaderProgramHandle, 
+			VulkanShaderProgram, 
+			ShaderID> m_ShaderPrograms{ sk_MaxShaderPrograms };
 
 
 		TVector2<uint32> m_WindowSize{};
@@ -89,7 +104,7 @@ namespace lum::rhi::vk {
 
 		BufferHandle2 DT_Buffer{};
 
-		bool m_Initialized = false;
+		bool m_IsInitialized = false;
 
 	};
 

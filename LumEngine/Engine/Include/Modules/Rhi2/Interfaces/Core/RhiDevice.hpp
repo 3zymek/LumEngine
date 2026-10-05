@@ -3,6 +3,7 @@
 #include "Rhi2/RhiCommon.hpp"
 #include "Rhi2/RhiAdapter.hpp"
 #include "Rhi2/Interfaces/Core/RhiBuffer.hpp"
+#include "Rhi2/Interfaces/Core/RhiShader.hpp"
 
 namespace lum {
 
@@ -37,6 +38,9 @@ namespace lum::rhi {
 
 		virtual BufferHandle2 CreateBuffer( const BufferCreateInfo2& info ) noexcept = 0;
 		virtual void DestroyBuffer( BufferHandle2& handle ) noexcept = 0;
+
+		virtual ShaderProgramHandle CreateShaderProgram( const ShaderProgramCreateInfo& info ) noexcept = 0;
+		virtual void DestroyShaderProgram( ShaderProgramHandle& handle ) noexcept = 0;
 
 		virtual ~IRenderDevice2( ) = default;
 
