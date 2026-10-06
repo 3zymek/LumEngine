@@ -44,7 +44,7 @@ int main( int argc, char* argv[ ] ) {
 		window.Update( );
 		device( ).UpdateFrame( );
 	}
-
+	 
 	device( ).Finalize( );
 
 
