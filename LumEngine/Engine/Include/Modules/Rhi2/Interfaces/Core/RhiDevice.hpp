@@ -3,6 +3,7 @@
 #include "Rhi2/RhiCommon.hpp"
 #include "Rhi2/RhiAdapter.hpp"
 #include "Rhi2/Interfaces/Core/RhiBuffer.hpp"
+#include "Rhi2/Interfaces/Core/RhiPipeline.hpp"
 
 namespace lum {
 
@@ -27,7 +28,7 @@ namespace lum::rhi {
 
 	};
 
-	class IRenderDevice {
+	class IRenderDevice2 {
 	public:
 
 		virtual void Initialize( const RenderDeviceCreateInfo& info ) noexcept = 0;
@@ -38,7 +39,10 @@ namespace lum::rhi {
 		virtual BufferHandle2 CreateBuffer( const BufferCreateInfo2& info ) noexcept = 0;
 		virtual void DestroyBuffer( BufferHandle2& handle ) noexcept = 0;
 
-		virtual ~IRenderDevice( ) = default;
+		virtual PipelineHandle2 CreatePipeline( const PipelineCreateInfo2& info ) noexcept = 0;
+		virtual void DestroyPipeline( PipelineHandle2& handle ) noexcept = 0;
+
+		virtual ~IRenderDevice2( ) = default;
 
 	};
 

@@ -32,42 +32,42 @@ namespace lum::render {
 	class LightPass {
 	public:
 
-		LightPass( ) = default;
+		LightPass() = default;
 
 		/* @brief Initializes the pass, allocates GPU buffers and compiles shaders.
 		*  @param ctx Context struct containing valid pointers to all subsystem managers.
 		*/
-		void Initialize( RendererContext& ctx );
+		void Initialize(RendererContext& ctx);
 
 		/* @brief Submits a point light to be included in the current frame's lighting.
 		*  @param light Point light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
-		void AddPointLight( const PointLight& light );
+		void AddPointLight(const PointLight& light);
 
 		/* @brief Submits a spot light to be included in the current frame's lighting.
 		*  @param light Spot light to add. Ignored if LUM_MAX_LIGHTS is reached.
 		*/
-		void AddSpotLight( const SpotLight& light );
+		void AddSpotLight(const SpotLight& light);
 
 		/* @brief Sets the active directional light for the current frame.
 		*  @param light Directional light to set.
 		*/
-		void SetDirectionalLight( const DirectionalLight& light );
+		void SetDirectionalLight(const DirectionalLight& light);
 
-		DirectionalLight GetDirectionalLight( );
-		DirectionalLight GetDirectionalLight( ) const;
+		DirectionalLight GetDirectionalLight();
+		DirectionalLight GetDirectionalLight() const;
 
-		const std::pair<PointLightsArr, uint32>& GetPointLights( ) const { 
-			return { m_PointLights, m_ActivePointLights }; 
+		const std::pair<const PointLightsArr&, const uint32&> GetPointLights() const {
+			return { m_PointLights, m_ActivePointLights };
 		}
-		const std::pair<SpotLightsArr, uint32>& GetSpotLights( ) const { 
-			return { m_SpotLights, m_ActiveSpotLights }; 
+		const std::pair<const SpotLightsArr&, const uint32&> GetSpotLights() const {
+			return { m_SpotLights, m_ActiveSpotLights };
 		}
 
 		/* @brief Should be called at the start of each frame before submitting new lights. */
-		LUM_FORCEINLINE void ClearLights( ) { 
-			m_ActivePointLights = 0; 
-			m_ActiveSpotLights = 0; 
+		LUM_FORCEINLINE void ClearLights() {
+			m_ActivePointLights = 0;
+			m_ActiveSpotLights = 0;
 		}
 
 		/* @brief Binds GBuffer textures, shadow map and light uniforms, then issues the fullscreen quad draw call.
@@ -75,15 +75,15 @@ namespace lum::render {
 		*  @param quad    Fullscreen quad VAO to draw the lighting onto.
 		*  @param desc    IBL and shadow map handles required for lighting.
 		*/
-		void Execute( const detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad, const LightPassExectueContext& desc );
+		void Execute(const detail::DeferredBuffer& gbuffer, const detail::ScreenQuad& quad, const LightPassExectueContext& desc);
 
 	private:
 
 		/* @brief Byte offsets into the light SSBO for each data section. */
 		static constexpr usize sk_OffsetPointLights = 0;
-		static constexpr usize sk_OffsetSpotLights = sizeof( PointLight ) * LUM_MAX_LIGHTS;
-		static constexpr usize sk_OffsetActivePoint = sk_OffsetSpotLights + sizeof( SpotLight ) * LUM_MAX_LIGHTS;
-		static constexpr usize sk_OffsetActiveSpot = sk_OffsetActivePoint + sizeof( int32 );
+		static constexpr usize sk_OffsetSpotLights = sizeof(PointLight) * LUM_MAX_LIGHTS;
+		static constexpr usize sk_OffsetActivePoint = sk_OffsetSpotLights + sizeof(SpotLight) * LUM_MAX_LIGHTS;
+		static constexpr usize sk_OffsetActiveSpot = sk_OffsetActivePoint + sizeof(int32);
 
 		/* @brief Cached context holding all subsystem manager references. */
 		SafePtr<RendererContext> m_Ctx = nullptr;
@@ -113,10 +113,10 @@ namespace lum::render {
 		rhi::ShaderHandle	m_Shader{};
 
 		/* @brief Allocates GPU buffers and initializes pipeline and shader. */
-		void init( );
-		void upload_point_lights( );
-		void upload_spot_lights( );
-		void upload_directional_light( );
+		void init();
+		void upload_point_lights();
+		void upload_spot_lights();
+		void upload_directional_light();
 
 	};
 

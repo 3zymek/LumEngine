@@ -70,6 +70,8 @@
 #if !defined(NDEBUG)
 #	define LUM_ASSERT(expr, msg, ...) \
 		do { if(!(expr)) { LUM_LOG_FATAL(msg, ##__VA_ARGS__); LUM_DEBUGBREAK(); } } while(0)
+#	define LUM_ASSERT_COUNTED_ENUM( val, e ) \
+		LUM_ASSERT( (ToUnderlyingEnum( val )) < (ToUnderlyingEnum( e::_Count )) )
 #else
 #	define LUM_ASSERT(expr, msg, ...) ((void)0)
 #endif

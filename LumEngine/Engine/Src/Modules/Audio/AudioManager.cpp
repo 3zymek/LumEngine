@@ -223,7 +223,7 @@ namespace lum {
 
 	void AudioManager::UpdateInstances( ecs::EntityManager* m_Gr ) {
 
-		m_Gr->Each<CCamera, CTransform>(
+		m_Gr->Iterate<CCamera, CTransform>(
 			[&]( CCamera& camera, CTransform& transform ) {
 				ahi::ListenerAttributes attrs;
 

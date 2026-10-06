@@ -16,7 +16,7 @@ int main( int argc, char* argv[ ] ) {
 		ResourceLoader::SetProjectRoot("/Users/br.eeziak/Desktop/glsl");
 #	endif
 
-	OwningPtr<rhi::IRenderDevice> device = OwningPtr<rhi::vk::VulkanDevice>::Create( );
+	OwningPtr<rhi::IRenderDevice2> device = OwningPtr<rhi::vk::VulkanDevice>::Create( );
 
 	ev::EventBus bus{};
 
@@ -40,7 +40,7 @@ int main( int argc, char* argv[ ] ) {
 
 	device( ).Initialize( info );
 
-	while (true) {
+	while (window.IsOpen()) {
 		window.Update( );
 		device( ).UpdateFrame( );
 	}

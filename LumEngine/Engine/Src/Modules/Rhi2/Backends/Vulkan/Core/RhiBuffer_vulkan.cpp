@@ -8,6 +8,7 @@ namespace lum::rhi::vk {
 
 		if (m_Buffers.IsFull( )) {
 			LUM_LOG_WARN( "Couldn't create buffer: Max buffer reached!" );
+			return {};
 		}
 
 		VkBufferUsageFlags usage{};

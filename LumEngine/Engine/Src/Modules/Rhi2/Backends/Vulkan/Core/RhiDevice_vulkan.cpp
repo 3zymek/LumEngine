@@ -10,6 +10,8 @@ namespace lum::rhi::vk {
 
 	void VulkanDevice::Initialize( const RenderDeviceCreateInfo& info ) noexcept {
 
+		Buffer2 t;
+
 		if (volkInitialize( ) != VK_SUCCESS) {
 			LUM_LOG_FATAL( "Failed to initialize volk (Vulkan loader)" );
 		}
@@ -36,7 +38,7 @@ namespace lum::rhi::vk {
 			}
 		);
 
-		m_Initialized = true;
+		m_IsInitialized = true;
 
 		create_vertex_buffers( );
 
@@ -44,9 +46,13 @@ namespace lum::rhi::vk {
 
 	void VulkanDevice::Finalize( ) noexcept {
 
-		if (m_LogicalDevice != VK_NULL_HANDLE) {
+		if (m_LogicalDevice != VK_NULL_HANDLE && m_IsInitialized) {
 
 			vkDeviceWaitIdle( m_LogicalDevice );
+
+			for (auto&& [handle, buffer] : m_Buffers.Iterate( )) {
+				DestroyBuffer( handle );
+			}
 
 			vkDestroyFence( m_LogicalDevice, m_Fence, nullptr );
 
@@ -66,9 +72,6 @@ namespace lum::rhi::vk {
 
 			for (auto view : m_SwapchainImageViews) {
 				vkDestroyImageView( m_LogicalDevice, view, nullptr );
-			}
-			for (auto img : m_SwapchainImages) {
-				vkDestroyImage( m_LogicalDevice, img, nullptr );
 			}
 
 			vkDestroySwapchainKHR( m_LogicalDevice, m_Swapchain, nullptr );
@@ -148,13 +151,13 @@ namespace lum::rhi::vk {
 		colorAttachment.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		colorAttachment.clearValue = { {{ 0.0f, 0.0f, 0.0f, 0.0f }} };
+		colorAttachment.clearValue = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
 
 		VkExtent2D currentExtent = m_Adapter.m_SurfaceSupport.m_Capabilities.currentExtent;
 
 		VkRenderingInfo renderingInfo{};
 		renderingInfo.sType = VK_STRUCTURE_TYPE_RENDERING_INFO;
-		renderingInfo.renderArea = { {0, 0}, currentExtent };
+		renderingInfo.renderArea = { { 0, 0 }, currentExtent };
 		renderingInfo.layerCount = 1;
 		renderingInfo.colorAttachmentCount = 1;
 		renderingInfo.pColorAttachments = &colorAttachment;
@@ -164,7 +167,7 @@ namespace lum::rhi::vk {
 		vkCmdBindPipeline( commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_MainPipeline );
 
 		VkViewport viewport{ 0.0f, 0.0f, (float32) currentExtent.width, (float32) currentExtent.height, 0.0f, 1.0f };
-		VkRect2D scissor{ {0, 0}, currentExtent };
+		VkRect2D scissor{ { 0, 0 }, currentExtent };
 		vkCmdSetViewport( commandBuffer, 0, 1, &viewport );
 		vkCmdSetScissor( commandBuffer, 0, 1, &scissor );
 
@@ -260,7 +263,7 @@ namespace lum::rhi::vk {
 	}
 
 	void VulkanDevice::assert_device( ) const {
-		LUM_ASSERT( m_Initialized, "RHI Device is not initialized!!!" );
+		LUM_ASSERT( m_IsInitialized, "RHI Device is not initialized!!!" );
 	}
 
 	void VulkanDevice::create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept {
@@ -278,15 +281,8 @@ namespace lum::rhi::vk {
 			extensions.push_back( VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME );
 #		endif
 
-		//uint32 apiVersion = 0;
-		//vkEnumerateInstanceVersion( &apiVersion );
-
-		//uint32 apiMajor = VK_API_VERSION_MAJOR( apiVersion );
-		//uint32 apiMinor = VK_API_VERSION_MINOR( apiVersion );
-		//uint32 apiPatch = VK_API_VERSION_PATCH( apiVersion );
 
 		VkApplicationInfo appInfo{};
-		//appInfo.apiVersion = VK_MAKE_VERSION( apiMajor, apiMinor, apiPatch );
 		appInfo.apiVersion = VK_MAKE_VERSION( 1, 3, 0 );
 		appInfo.engineVersion = VK_MAKE_VERSION( 0, 3, 0 );
 		appInfo.pApplicationName = "Blank";
@@ -393,7 +389,7 @@ namespace lum::rhi::vk {
 		};
 
 #		if defined(__APPLE__)
-			deviceExtensions.push_back("VK_KHR_portability_subset");
+			deviceExtensions.push_back( "VK_KHR_portability_subset" );
 #		endif
 
 		const auto& queues = m_Adapter.m_Queues;
@@ -426,14 +422,14 @@ namespace lum::rhi::vk {
 		}
 
 		if (queues.HasQueue( queues.m_ComputeQueueIndex ) &&
-			 queues.m_ComputeQueueIndex != queues.m_PresentQueueIndex &&
-			 queues.m_ComputeQueueIndex != queues.m_GraphicsQueueIndex) {
+			queues.m_ComputeQueueIndex != queues.m_PresentQueueIndex &&
+			queues.m_ComputeQueueIndex != queues.m_GraphicsQueueIndex) {
 
 			queueInfos.push_back( computeQueueInfo );
 
 		}
 
-		VkDeviceCreateInfo info{ };
+		VkDeviceCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		info.enabledExtensionCount = SafeCast<uint32>( deviceExtensions.size( ) );
 		info.ppEnabledExtensionNames = deviceExtensions.data( );

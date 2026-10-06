@@ -96,7 +96,7 @@ namespace lum::ecs {
 	//=======================================================//
 
 	template<detail::cComponent tFirst, detail::cComponent... tRest, typename tCallback>
-	void EntityManager::Each( tCallback&& callback ) {
+	void EntityManager::Iterate( tCallback&& callback ) {
 		auto& pool = GetPool<tFirst>( );
 		for (auto [id, component] : pool.m_Components.Each( )) {
 			bool hasAll = true;
