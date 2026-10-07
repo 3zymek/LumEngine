@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Rhi2/Interfaces/Core/RhiShader.hpp"
+#include "MagicEnum/magic_enum.hpp"
 
 namespace lum::rhi::vk {
 
@@ -13,7 +14,7 @@ namespace lum::rhi::vk {
 
 	struct VulkanShaderProgram {
 
-		std::array<Optional<VulkanShader>, static_cast<usize>( ShaderStage::_Count )> m_Shaders{};
+		std::array<Optional<VulkanShader>, t_EnumCount<ShaderStage>> m_Shaders{};
 
 	};
 

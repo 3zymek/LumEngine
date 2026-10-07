@@ -85,6 +85,7 @@ target_include_directories(LumEngine PUBLIC
     "${CMAKE_SOURCE_DIR}/LumEngine"
     "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include"
     "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/Modules"
+    "${CMAKE_SOURCE_DIR}/LumEngine/External"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Fmod/Inc"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Glfw/Inc"
     "${CMAKE_SOURCE_DIR}/LumEngine/External/Assimp/Inc"

@@ -9,9 +9,7 @@ namespace lum::rhi {
 		Vertex = 0U,
 		Fragment,
 		Compute,
-		Geometry,
-
-		_Count // ShaderStage enums count
+		Geometry
 	};
 
 	struct ShaderInfo2 {

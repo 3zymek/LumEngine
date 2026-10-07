@@ -29,3 +29,5 @@
 #include <unordered_set>
 
 #include "Core/CoreDefines.hpp"
+
+#include "MagicEnum/magic_enum.hpp"

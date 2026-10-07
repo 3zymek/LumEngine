@@ -3,8 +3,8 @@
 namespace lum::rhi::vk {
 
 	PipelineHandle2 VulkanDevice::CreatePipeline( const PipelineCreateInfo2& info ) noexcept {
-		 
-		constexpr auto k_MaxShaderStages = ToUnderlyingEnum( ShaderStage::_Count );
+		
+		constexpr auto k_MaxShaderStages = t_EnumCount<ShaderStage>;
 		std::array<VkPipelineShaderStageCreateInfo, k_MaxShaderStages> shaderStages{};
 		for (usize i = 0; i < info.m_ShaderInfos.size( ); i++) {
 			auto& stage = shaderStages[ i ];

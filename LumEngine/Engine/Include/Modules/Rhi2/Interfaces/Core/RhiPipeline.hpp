@@ -15,8 +15,6 @@ namespace lum::rhi {
 		PointList,
 		LineList,
 		LineStrip,
-
-		_Count // PrimitiveTopology enums count
 	};
 
 	struct AssemblyPass {
@@ -30,22 +28,32 @@ namespace lum::rhi {
 		None = 0U,
 		Front,
 		Back,
-
-		_Count // CullMode enums count
 	};
 
 	enum class PolygonMode : uint8 {
 		Fill = 0U,
 		Wireframe,
+	};
 
-		_Count // PolygonMode enums count
+	enum class FrontFace : uint8 {
+		CounterClockwise = 0U,
+		Clockwise
 	};
 
 	struct RasterizationPass {
 
+		bool m_RasterizerEnabled = true;
+
+		FrontFace m_FrontFace = FrontFace::Clockwise;
 		CullMode m_CullMode = CullMode::Back;
 		PolygonMode m_PolygonMode = PolygonMode::Fill;
-		uint32 m_WireframeWidth = 1.0f;
+		float32 m_WireframeWidth = 1.0f;
+
+		bool m_DepthBiasEnabled = false;
+		float32 m_DepthBiasConstant = 0.0f;
+		float32 m_DepthBiasSlope = 0.0f;
+		float32 m_DepthBiasClamp = 0.0f;
+		
 
 	};
 
@@ -53,6 +61,7 @@ namespace lum::rhi {
 
 		std::vector<ShaderInfo2> m_ShaderInfos{};
 		AssemblyPass m_AssemblyPass{};
+		RasterizationPass m_RasterizationPass{};
 
 	};
 

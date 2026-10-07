@@ -221,4 +221,7 @@ namespace lum {
 		return static_cast<tTarget>(value);
 	}
 
+	template<cEnum tEnum>
+	inline constexpr usize t_EnumCount = magic_enum::enum_count<tEnum>( );
+
 } // namespace lum
