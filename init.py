@@ -5,6 +5,7 @@ from tools.init_assimp import setup_assimp
 from tools.init_qt import setup_qt
 from tools.init_stb import setup_stb
 from tools.init_vulkan import setup_vulkan
+from tools.init_magic_enum import setup_magic_enum
 
 
 setup_fmod()
@@ -13,6 +14,7 @@ setup_stb()
 setup_glfw()
 setup_assimp()
 setup_vulkan()
+setup_magic_enum()
 setup_cmake()
 
 print("Setup finished")
