@@ -89,18 +89,18 @@ namespace lum::rhi {
 	};
 
 	enum class ColorComponentFlag : bitfield {
-		None	= 1 << 0,
-		Red		= 1 << 1,
-		Green	= 1 << 2,
-		Blue	= 1 << 3,
-		Alpha	= 1 << 4
+		None = 1 << 0,
+		Red = 1 << 1,
+		Green = 1 << 2,
+		Blue = 1 << 3,
+		Alpha = 1 << 4
 	};
 
 } // namespace lum::rhi
 
 namespace lum {
 
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::ColorComponentFlag );
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS(rhi::ColorComponentFlag);
 
 } // namespace lum
 
@@ -112,12 +112,12 @@ namespace lum::rhi {
 		BlendFactor m_SrcColorBlendFactor{};
 		BlendFactor m_DstColorBlendFactor{};
 		BlendFactor m_SrcAlphaBlendFactor{};
-		BlendFactor m_DstAlphaBlendFactor{}; 
+		BlendFactor m_DstAlphaBlendFactor{};
 
 		BlendOp m_ColorBlendOp{};
 		BlendOp m_AlphaBlendOp{};
 
-		Flags<ColorComponentFlag> m_ColorMask = 
+		Flags<ColorComponentFlag> m_ColorMask =
 			ColorComponentFlag::Red | ColorComponentFlag::Green | ColorComponentFlag::Blue | ColorComponentFlag::Alpha;
 
 	};
@@ -126,6 +126,11 @@ namespace lum::rhi {
 
 		std::vector<ColorBlendAttachment> m_Attachments{};
 		Vector4 m_BlendConstants{};
+
+	};
+
+	struct MultisamplePass {
+		Ranged<uint32, 1, 16> m_Samples = 1;
 
 	};
 
