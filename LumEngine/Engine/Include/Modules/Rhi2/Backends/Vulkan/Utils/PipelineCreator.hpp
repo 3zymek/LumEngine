@@ -29,16 +29,12 @@ namespace lum::rhi::vk {
 				stage->stage = to_vk( shaderInfo.m_Stage );
 				stage->module = create_shader_module( shaderInfo.m_Path );
 
-
-
 			}
 
 			static inline constexpr std::array<VkDynamicState, 2> s_DynamicStates = {
 				VK_DYNAMIC_STATE_VIEWPORT,
 				VK_DYNAMIC_STATE_SCISSOR
 			};
-
-
 
 			VkPipelineDynamicStateCreateInfo dynamicState{};
 			dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
@@ -65,8 +61,32 @@ namespace lum::rhi::vk {
 				rasterizationState.depthBiasClamp = info.m_RasterizationPass.m_DepthBiasClamp;
 			}
 
+			const uint32 numColorAttachments = SafeCast<uint32>(info.m_ColorBlendPass.m_Attachments.size( ));
+			std::vector<VkPipelineColorBlendAttachmentState> colorAttachments( numColorAttachments );
+			for (uint32 i = 0; i < numColorAttachments; i++) {
 
+				auto& attachment				= colorAttachments[ i ];
+				const auto& attachmentInfo		= info.m_ColorBlendPass.m_Attachments[ i ];
+				attachment.blendEnable			= attachmentInfo.m_BlendEnabled ? VK_TRUE : VK_FALSE;
+				attachment.srcColorBlendFactor	= to_vk( attachmentInfo.m_SrcColorBlendFactor );
+				attachment.dstColorBlendFactor	= to_vk( attachmentInfo.m_DstColorBlendFactor );
+				attachment.srcAlphaBlendFactor	= to_vk( attachmentInfo.m_SrcAlphaBlendFactor );
+				attachment.dstAlphaBlendFactor	= to_vk( attachmentInfo.m_DstAlphaBlendFactor );
+				attachment.colorBlendOp			= to_vk( attachmentInfo.m_ColorBlendOp );
+				attachment.alphaBlendOp			= to_vk( attachmentInfo.m_AlphaBlendOp );
+				attachment.colorWriteMask		= to_vk( attachmentInfo.m_ColorMask );
 
+			}
+
+			VkPipelineColorBlendStateCreateInfo colorBlendState{};
+			colorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+			colorBlendState.attachmentCount = numColorAttachments;
+			colorBlendState.pAttachments = numColorAttachments <= 0 ? nullptr : colorAttachments.data( );
+			colorBlendState.blendConstants[ 0 ] = info.m_ColorBlendPass.m_BlendConstants.m_R;
+			colorBlendState.blendConstants[ 1 ] = info.m_ColorBlendPass.m_BlendConstants.m_G;
+			colorBlendState.blendConstants[ 2 ] = info.m_ColorBlendPass.m_BlendConstants.m_B;
+			colorBlendState.blendConstants[ 3 ] = info.m_ColorBlendPass.m_BlendConstants.m_A;
+			colorBlendState.logicOpEnable = VK_FALSE;
 
 		}
 
@@ -145,6 +165,52 @@ namespace lum::rhi::vk {
 			}
 			LUM_ASSERT( false, "Invalid FrontFace enum" );
 			return {};
+		}
+
+		[[nodiscard]] static constexpr VkBlendFactor to_vk( BlendFactor factor ) noexcept {
+			switch (factor) {
+				case BlendFactor::Zero:                  return VK_BLEND_FACTOR_ZERO;
+				case BlendFactor::One:                   return VK_BLEND_FACTOR_ONE;
+				case BlendFactor::SrcColor:              return VK_BLEND_FACTOR_SRC_COLOR;
+				case BlendFactor::OneMinusSrcColor:      return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+				case BlendFactor::DstColor:              return VK_BLEND_FACTOR_DST_COLOR;
+				case BlendFactor::OneMinusDstColor:      return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+				case BlendFactor::SrcAlpha:              return VK_BLEND_FACTOR_SRC_ALPHA;
+				case BlendFactor::OneMinusSrcAlpha:      return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+				case BlendFactor::DstAlpha:              return VK_BLEND_FACTOR_DST_ALPHA;
+				case BlendFactor::OneMinusDstAlpha:      return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+				case BlendFactor::ConstantColor:         return VK_BLEND_FACTOR_CONSTANT_COLOR;
+				case BlendFactor::OneMinusConstantColor: return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR;
+				case BlendFactor::ConstantAlpha:         return VK_BLEND_FACTOR_CONSTANT_ALPHA;
+				case BlendFactor::OneMinusConstantAlpha: return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
+			}
+			LUM_ASSERT( false, "Invalid BlendFactor enum" );
+			return {};
+		}
+
+		[[nodiscard]] static constexpr VkBlendOp to_vk( BlendOp op ) noexcept {
+			switch (op) {
+				case BlendOp::Add:              return VK_BLEND_OP_ADD;
+				case BlendOp::Substract:        return VK_BLEND_OP_SUBTRACT;
+				case BlendOp::ReverseSubstract: return VK_BLEND_OP_REVERSE_SUBTRACT;
+				case BlendOp::Min:              return VK_BLEND_OP_MIN;
+				case BlendOp::Max:              return VK_BLEND_OP_MAX;
+			}
+			LUM_ASSERT( false, "Invalid BlendOp enum" );
+			return {};
+		}
+
+		[[nodiscard]] static constexpr VkColorComponentFlags to_vk( Flags<ColorComponentFlag> flags ) noexcept {
+
+			VkColorComponentFlags vkFlags = 0;
+
+			if (flags.Has( ColorComponentFlag::None )) return 0;
+			if (flags.Has( ColorComponentFlag::Red )) vkFlags |= VK_COLOR_COMPONENT_R_BIT;
+			if (flags.Has( ColorComponentFlag::Green )) vkFlags |= VK_COLOR_COMPONENT_G_BIT;
+			if (flags.Has( ColorComponentFlag::Blue )) vkFlags |= VK_COLOR_COMPONENT_B_BIT;
+			if (flags.Has( ColorComponentFlag::Alpha )) vkFlags |= VK_COLOR_COMPONENT_A_BIT;
+
+			return vkFlags;
 		}
 
 	};
