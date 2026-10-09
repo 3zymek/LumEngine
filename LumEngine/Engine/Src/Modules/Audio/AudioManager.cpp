@@ -20,17 +20,17 @@
 
 namespace lum {
 
-//=======================================================//
+	//=======================================================//
 	// Public
-//=======================================================//
+	//=======================================================//
 
 	void AudioManager::Initialize( ahi::IAudioDevice& device, ev::EventBus& bus ) {
 
 		m_Device = device;
 		m_EventBus = bus;
 
-		m_EventBus().SubscribePermanently<EEntityDestroyed>(
-			[&]( const EEntityDestroyed& ev ) {
+		m_EventBus( ).SubscribePermanently<EEntityDestroyed>(
+			[ & ]( const EEntityDestroyed& ev ) {
 
 				if (m_Instances.contains( ev.m_Id ))
 					m_Instances[ ev.m_Id ].m_Flags.Set( ahi::SoundInstanceFlag::Kill );
@@ -46,7 +46,7 @@ namespace lum {
 
 		Path fullPath = ResourceLoader::ResolveResourcePath( ResourceRoot::External, relativePath );
 
-		ahi::SoundHandle handle = m_Device().LoadSound( fullPath, ahi::detail::GetSoundFlags( cat ) );
+		ahi::SoundHandle handle = m_Device( ).LoadSound( fullPath, ahi::detail::GetSoundFlags( cat ) );
 		m_Sounds.insert( { hash, handle } );
 
 		LUM_LOG_INFO( "Loaded sound %s", relativePath.data( ) );
@@ -70,19 +70,19 @@ namespace lum {
 	void AudioManager::PlayOneShot( StringView relativePath, const ahi::SoundPlaybackDescription& desc ) {
 
 		ahi::SoundHandle sound = FindSound( relativePath );
-		m_Device().PlayOneShot( sound, desc );
+		m_Device( ).PlayOneShot( sound, desc );
 
 	}
 
 	void AudioManager::Set3DListenerAttributes( const ahi::ListenerAttributes& attrs ) {
 
-		m_Device().Set3DListenerAttributes( attrs );
+		m_Device( ).Set3DListenerAttributes( attrs );
 
 	}
 
 	void AudioManager::StopAll( ) {
 
-		m_Device().StopAll( );
+		m_Device( ).StopAll( );
 
 	}
 
@@ -96,7 +96,7 @@ namespace lum {
 		HashedString hash = HashString( name );
 
 		if (!m_Effects.contains( hash )) {
-			m_Effects[ hash ] = m_Device().CreateEffect( desc );
+			m_Effects[ hash ] = m_Device( ).CreateEffect( desc );
 		}
 
 		return m_Effects[ hash ];
@@ -114,7 +114,7 @@ namespace lum {
 	}
 	void AudioManager::DeleteEffect( ahi::AudioEffectHandle effect ) {
 
-		m_Device().DeleteEffect( effect );
+		m_Device( ).DeleteEffect( effect );
 
 	}
 
@@ -136,7 +136,7 @@ namespace lum {
 		HashedString hash = HashString( name );
 
 		if (!m_Groups.contains( hash )) {
-			m_Groups[ hash ] = m_Device().CreateChannelGroup( name );
+			m_Groups[ hash ] = m_Device( ).CreateChannelGroup( name );
 		}
 
 		return m_Groups[ hash ];
@@ -145,7 +145,7 @@ namespace lum {
 
 	void AudioManager::BindEffectToGroup( ahi::ChannelGroupHandle group, ahi::AudioEffectHandle effect ) {
 
-		m_Device().SetGroupEffect( group, effect );
+		m_Device( ).SetGroupEffect( group, effect );
 
 	}
 	void AudioManager::BindEffectToGroup( ahi::ChannelGroupHandle group, StringView effect ) {
@@ -196,7 +196,7 @@ namespace lum {
 	}
 	void AudioManager::SetGroupVolume( ahi::ChannelGroupHandle group, float32 volume ) {
 
-		m_Device().SetGroupVolume( group, volume );
+		m_Device( ).SetGroupVolume( group, volume );
 
 	}
 	void AudioManager::SetGroupPitch( StringView group, float32 pitch ) {
@@ -211,20 +211,20 @@ namespace lum {
 	}
 	void AudioManager::SetGroupPitch( ahi::ChannelGroupHandle group, float32 pitch ) {
 
-		m_Device().SetGroupPitch( group, pitch );
+		m_Device( ).SetGroupPitch( group, pitch );
 
 	}
 
 	void AudioManager::SetMasterVolume( float32 volume ) {
 
-		m_Device().SetMasterVolume( volume );
+		m_Device( ).SetMasterVolume( volume );
 
 	}
 
 	void AudioManager::UpdateInstances( ecs::EntityManager* m_Gr ) {
 
 		m_Gr->Iterate<CCamera, CTransform>(
-			[&]( CCamera& camera, CTransform& transform ) {
+			[ & ]( CCamera& camera, CTransform& transform ) {
 				ahi::ListenerAttributes attrs;
 
 				attrs.m_Position = transform.m_Position;
@@ -236,7 +236,7 @@ namespace lum {
 			} );
 
 		m_Gr->EachWithID<CTransform, CAudioEmitter>(
-			[&]( EntityID id, CTransform& transf, CAudioEmitter& emitter ) {
+			[ & ]( EntityID id, CTransform& transf, CAudioEmitter& emitter ) {
 
 				/*
 				if (emitter.m_Marked) {
@@ -268,7 +268,7 @@ namespace lum {
 
 		for (auto it = m_Instances.begin( ); it != m_Instances.end( );) {
 
-			m_Device().UpdateInstance( it->second );
+			m_Device( ).UpdateInstance( it->second );
 			if (it->second.m_Flags.Has( ahi::SoundInstanceFlag::Kill )) {
 				it = m_Instances.erase( it );
 			}

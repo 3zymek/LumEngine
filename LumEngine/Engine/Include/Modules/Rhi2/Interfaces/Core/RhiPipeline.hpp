@@ -129,8 +129,117 @@ namespace lum::rhi {
 
 	};
 
+	enum class SampleCount : uint8 {
+		Sample1 = 0U,
+		Sample2,
+		Sample4,
+		Sample8,
+		Sample16,
+		Sample32,
+		Sample64
+	};
+
 	struct MultisamplePass {
-		Ranged<uint32, 1, 16> m_Samples = 1;
+
+		SampleCount m_SampleCount = SampleCount::Sample1;
+
+		bool m_AlphaToCoverage = false;
+		bool m_AlphaToOne = false;
+
+	};
+
+	enum class ImageFormat : uint8 {
+
+		R8_UNORM = 0U,
+		R8_SNORM,
+		R8_UINT,
+		R8_SINT,
+		R8_SRGB,
+
+		RG8_UNORM,
+		RG8_SNORM,
+		RG8_UINT,
+		RG8_SINT,
+		RG8_SRGB,
+
+		RGB8_UNORM,
+		RGB8_SNORM,
+		RGB8_UINT,
+		RGB8_SINT,
+		RGB8_SRGB,
+
+		RGBA8_UNORM,
+		RGBA8_SNORM,
+		RGBA8_UINT,
+		RGBA8_SINT,
+		RGBA8_SRGB,
+
+
+		R16_UNORM,
+		R16_SNORM,
+		R16_UINT,
+		R16_SINT,
+		R16_FLOAT,
+
+		RG16_UNORM,
+		RG16_SNORM,
+		RG16_UINT,
+		RG16_SINT,
+		RG16_FLOAT,
+
+		RGB16_UNORM,
+		RGB16_SNORM,
+		RGB16_UINT,
+		RGB16_SINT,
+		RGB16_FLOAT,
+
+		RGBA16_UNORM,
+		RGBA16_SNORM,
+		RGBA16_UINT,
+		RGBA16_SINT,
+		RGBA16_FLOAT,
+
+
+		R32_UINT,
+		R32_SINT,
+		R32_FLOAT,
+
+		RG32_UINT,
+		RG32_SINT,
+		RG32_FLOAT,
+
+		RGB32_UINT,
+		RGB32_SINT,
+		RGB32_FLOAT,
+
+		RGBA32_UINT,
+		RGBA32_SINT,
+		RGBA32_FLOAT
+
+	};
+
+	struct VertexAttribute {
+
+		uint32 m_Location = 0;
+		uint32 m_Binding = 0;
+		uint32 m_Offset = 0;
+
+		ImageFormat m_Format = ImageFormat::RGBA8_UNORM;
+
+	};
+
+	struct VertexBinding {
+
+		uint32 m_Binding = 0;
+		uint32 m_Stride = 0;
+		bool m_Instanced = false;
+
+	};
+
+	struct VertexInputPass {
+
+		std::vector<VertexAttribute> m_Attributes{};
+		std::vector<VertexBinding> m_Bindings{};
 
 	};
 
@@ -140,6 +249,8 @@ namespace lum::rhi {
 		AssemblyPass		m_AssemblyPass{};
 		RasterizationPass	m_RasterizationPass{};
 		ColorBlendPass		m_ColorBlendPass{};
+		MultisamplePass		m_MultisamplePass{};
+		VertexInputPass		m_VertexInputPass{};
 
 	};
 
