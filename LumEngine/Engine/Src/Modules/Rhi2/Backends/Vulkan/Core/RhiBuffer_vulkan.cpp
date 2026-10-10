@@ -7,7 +7,7 @@ namespace lum::rhi::vk {
 		assert_device( );
 
 		if (m_Buffers.IsFull( )) {
-			LUM_LOG_WARN( "Couldn't create buffer: Max buffer reached!" );
+			LUM_LOG_WARN( "Couldn't create buffer: Max buffers reached! Increase max buffers count or refactor your code." );
 			return {};
 		}
 
@@ -100,6 +100,9 @@ namespace lum::rhi::vk {
 		if (!m_Buffers.Contains( handle )) return;
 
 		auto& buffer = m_Buffers[ handle ];
+
+		vkDeviceWaitIdle( m_LogicalDevice );
+
 		vkDestroyBuffer( m_LogicalDevice, buffer.m_VkBuffer, nullptr );
 		vkFreeMemory( m_LogicalDevice, buffer.m_Memory, nullptr );
 

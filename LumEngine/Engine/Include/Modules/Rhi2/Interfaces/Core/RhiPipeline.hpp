@@ -93,7 +93,11 @@ namespace lum::rhi {
 		Red = 1 << 1,
 		Green = 1 << 2,
 		Blue = 1 << 3,
-		Alpha = 1 << 4
+		Alpha = 1 << 4,
+
+		RGB = Red | Green | Blue,
+		RGBA = Red | Green | Blue | Alpha,
+
 	};
 
 } // namespace lum::rhi
@@ -251,6 +255,7 @@ namespace lum::rhi {
 		ColorBlendPass		m_ColorBlendPass{};
 		MultisamplePass		m_MultisamplePass{};
 		VertexInputPass		m_VertexInputPass{};
+		
 
 	};
 

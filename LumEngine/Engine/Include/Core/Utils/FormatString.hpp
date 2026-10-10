@@ -136,4 +136,38 @@ namespace lum {
 		*current = '\0'; // Guaranteed null-termination
 	}
 
+	/*
+	 * @brief Formats a string with variadic arguments and returns the result.
+	 *
+	 * Allocates a String with additional buffer capacity to accommodate formatted
+	 * output. Ensures automatic null-termination and safe writing boundaries.
+	 *
+	 * @tparam tAdditionalLength Additional buffer capacity beyond the format string length. Defaults to 64 characters.
+	 * @tparam tArgs Variadic pack of argument types to format.
+	 * @param[in] fmt Format string containing "{}" placeholders.
+	 * @param[in] args Arguments to substitute into placeholders.
+	 * @return String containing the formatted output.
+	*/
+	template<usize tAdditionalLength = 64, typename... tArgs>
+	inline String FormatString( const char* fmt, tArgs&&... args ) {
+
+		String str{};
+		str.resize( strlen( fmt ) + tAdditionalLength );
+
+		char* current = str.data( );
+		const char* end = current + str.capacity( ) - 1;
+
+		detail::FormatImpl(
+			current,
+			end,
+			fmt,
+			std::forward<tArgs>( args )...
+		);
+
+		*current = '\0';
+
+		return str;
+
+	}
+
 } // namespace lum

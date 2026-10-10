@@ -10,13 +10,14 @@ namespace lum::rhi::vk {
 
 	void VulkanDevice::Initialize( const RenderDeviceCreateInfo& info ) noexcept {
 
-		Buffer2 t;
-
 		if (volkInitialize( ) != VK_SUCCESS) {
 			LUM_LOG_FATAL( "Failed to initialize volk (Vulkan loader)" );
+			return;
 		}
 
 		m_SurfaceProvider = static_cast<IVulkanSurfaceProvider*>(&info.m_SurfaceProvider( ));
+
+		m_IsInitialized = true;
 
 		create_vk_instance( info );
 		volkLoadInstance( m_Instance );
@@ -24,10 +25,12 @@ namespace lum::rhi::vk {
 		choose_adapter( );
 		create_logical_device( );
 		acquire_queues( );
-		create_shader_stages( );
 		recreate_swapchain( );
 		recreate_swapchain_images( );
+
+		m_PipelineCreator.Initialize( m_LogicalDevice, m_Adapter );
 		create_main_pipeline( );
+
 		create_command_pool( );
 		allocate_command_buffers( );
 		create_sync_primitives( );
@@ -37,8 +40,6 @@ namespace lum::rhi::vk {
 				m_WindowSize = { e.m_Width, e.m_Height };
 			}
 		);
-
-		m_IsInitialized = true;
 
 		create_vertex_buffers( );
 
@@ -65,10 +66,8 @@ namespace lum::rhi::vk {
 
 			vkDestroyCommandPool( m_LogicalDevice, m_CmdPool, nullptr );
 
-			vkDestroyPipeline( m_LogicalDevice, m_MainPipeline, nullptr );
-			vkDestroyPipelineLayout( m_LogicalDevice, m_PipelineLayout, nullptr );
-			vkDestroyShaderModule( m_LogicalDevice, DT_Vertex, nullptr );
-			vkDestroyShaderModule( m_LogicalDevice, DT_Fragment, nullptr );
+			vkDestroyPipeline( m_LogicalDevice, m_MainPipeline.m_Pipeline, nullptr );
+			vkDestroyPipelineLayout( m_LogicalDevice, m_MainPipeline.m_Layout, nullptr );
 
 			for (auto view : m_SwapchainImageViews) {
 				vkDestroyImageView( m_LogicalDevice, view, nullptr );
@@ -79,6 +78,13 @@ namespace lum::rhi::vk {
 			vkDestroySurfaceKHR( m_Instance, m_MainSurface, nullptr );
 			vkDestroyDevice( m_LogicalDevice, nullptr );
 			vkDestroyInstance( m_Instance, nullptr );
+
+			for (auto [handle, value] : m_Buffers.Iterate( )) {
+				DestroyBuffer( handle );
+			}
+			for (auto [handle, value] : m_Pipelines.Iterate( )) {
+				DestroyPipeline( handle );
+			}
 
 		}
 
@@ -164,7 +170,7 @@ namespace lum::rhi::vk {
 
 		vkCmdBeginRendering( commandBuffer, &renderingInfo );
 
-		vkCmdBindPipeline( commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_MainPipeline );
+		vkCmdBindPipeline( commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_MainPipeline.m_Pipeline );
 
 		VkViewport viewport{ 0.0f, 0.0f, (float32) currentExtent.width, (float32) currentExtent.height, 0.0f, 1.0f };
 		VkRect2D scissor{ { 0, 0 }, currentExtent };
@@ -455,40 +461,6 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::create_shader_stages( ) noexcept {
-
-		auto createShader = [ & ]( const Path& path, VkShaderModule& module ) -> void {
-
-			auto code = FileSystem::ReadBinaryFile( path );
-			if (!code) {
-				LUM_LOG_FATAL( "Failed to read {} file: {}", path.ToString( ), code.GetError( ) );
-				return;
-			}
-
-			VkShaderModuleCreateInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-			info.codeSize = code.ValueRef( ).size( ) * sizeof( uint32 );
-			info.pCode = code.ValueRef( ).data( );
-
-			if (vkCreateShaderModule( m_LogicalDevice, &info, nullptr, &module ) != VK_SUCCESS) {
-				LUM_LOG_FATAL( "Failed to create shader module from file '{}'! (Vulkan)", path.ToString( ) );
-				return;
-			}
-
-			};
-
-		createShader(
-			ResourceLoader::ResolveResourcePath( ResourceRoot::External, "shader.vert.spv" ),
-			DT_Vertex
-		);
-
-		createShader(
-			ResourceLoader::ResolveResourcePath( ResourceRoot::External, "shader.frag.spv" ),
-			DT_Fragment
-		);
-
-	}
-
 	void VulkanDevice::create_main_surface( ) noexcept {
 
 		m_MainSurface = m_SurfaceProvider( ).CreateSurface( m_Instance );
@@ -622,106 +594,37 @@ namespace lum::rhi::vk {
 
 	void VulkanDevice::create_main_pipeline( ) noexcept {
 
-		VkPipelineViewportStateCreateInfo viewportInfo{};
-		viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		viewportInfo.viewportCount = 1;
-		viewportInfo.pViewports = nullptr;
-		viewportInfo.scissorCount = 1;
-		viewportInfo.pScissors = nullptr;
+		PipelineCreateInfo2 info{};
 
-		std::vector<VkDynamicState> dynamicStates = {
-			VK_DYNAMIC_STATE_VIEWPORT,
-			VK_DYNAMIC_STATE_SCISSOR
-		};
+		auto& assembly = info.m_AssemblyPass;
+		assembly.m_PrimitiveRestart = false;
+		assembly.m_Topology = PrimitiveTopology::TriangleList;
 
-		VkPipelineDynamicStateCreateInfo dynamicStateInfo{};
-		dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-		dynamicStateInfo.dynamicStateCount = SafeCast<uint32>( dynamicStates.size( ) );
-		dynamicStateInfo.pDynamicStates = dynamicStates.data( );
+		auto& rast = info.m_RasterizationPass;
+		rast.m_CullMode = CullMode::Back;
+		rast.m_DepthBiasEnabled = false;
+		rast.m_PolygonMode = PolygonMode::Fill;
+		rast.m_FrontFace = FrontFace::Clockwise;
+		rast.m_RasterizerEnabled = true;
 
-		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
-		inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+		auto& blend = info.m_ColorBlendPass;
+		ColorBlendAttachment attachment{};
+		attachment.m_BlendEnabled = false;
+		attachment.m_ColorMask = ColorComponentFlag::RGBA;
+		blend.m_Attachments.push_back( attachment );
 
-		VkPipelineRasterizationStateCreateInfo rasterizationInfo{};
-		rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-		rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
-		rasterizationInfo.cullMode = VK_CULL_MODE_BACK_BIT;
-		rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
-		rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
-		rasterizationInfo.lineWidth = 1.0f;
+		ShaderInfo2 vertexInfo{};
+		vertexInfo.m_EntryPoint = "main";
+		vertexInfo.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::External, "shader.vert.spv" );
+		vertexInfo.m_Stage = ShaderStage::Vertex;
 
-		VkPipelineColorBlendStateCreateInfo colorBlend{};
-		colorBlend.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		ShaderInfo2 fragmentInfo{};
+		fragmentInfo.m_EntryPoint = "main";
+		fragmentInfo.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::External, "shader.frag.spv" );
+		fragmentInfo.m_Stage = ShaderStage::Fragment;
 
-		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-		colorBlendAttachment.colorWriteMask =
-			VK_COLOR_COMPONENT_R_BIT |
-			VK_COLOR_COMPONENT_G_BIT |
-			VK_COLOR_COMPONENT_B_BIT |
-			VK_COLOR_COMPONENT_A_BIT;
-
-		colorBlendAttachment.blendEnable = VK_FALSE;
-		colorBlend.attachmentCount = 1;
-		colorBlend.pAttachments = &colorBlendAttachment;
-
-		VkPipelineMultisampleStateCreateInfo msInfo{};
-		msInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-		msInfo.sampleShadingEnable = VK_FALSE;
-		msInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-
-		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
-
-		VkPipelineRenderingCreateInfo renderingInfo{};
-		renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
-		renderingInfo.colorAttachmentCount = 1;
-		renderingInfo.pColorAttachmentFormats = &surfaceFormat.format;
-
-		VkPipelineShaderStageCreateInfo vertStageInfo{};
-		vertStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		vertStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-		vertStageInfo.module = DT_Vertex;
-		vertStageInfo.pName = "main";
-
-		VkPipelineShaderStageCreateInfo fragStageInfo{};
-		fragStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		fragStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-		fragStageInfo.module = DT_Fragment;
-		fragStageInfo.pName = "main";
-
-		VkPipelineShaderStageCreateInfo shaderStages[ ] = { vertStageInfo, fragStageInfo };
-
-		VkPipelineLayoutCreateInfo layoutInfo{};
-		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		layoutInfo.setLayoutCount = 0;
-		layoutInfo.pSetLayouts = nullptr;
-		layoutInfo.pushConstantRangeCount = 0;
-		layoutInfo.pPushConstantRanges = nullptr;
-
-		if (vkCreatePipelineLayout( m_LogicalDevice, &layoutInfo, nullptr, &m_PipelineLayout ) != VK_SUCCESS) {
-			LUM_LOG_FATAL( "Failed to create pipeline layout! (Vulkan)" );
-			return;
-		}
-
-		VkGraphicsPipelineCreateInfo info{};
-		info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-		info.pVertexInputState = &detail::DefaultVertexLayout::GetStatic( ).GetStateCreateInfo( );
-		info.pViewportState = &viewportInfo;
-		info.pInputAssemblyState = &inputAssemblyInfo;
-		info.pRasterizationState = &rasterizationInfo;
-		info.pColorBlendState = &colorBlend;
-		info.pMultisampleState = &msInfo;
-		info.pDynamicState = &dynamicStateInfo;
-		info.pNext = &renderingInfo;
-		info.pStages = shaderStages;
-		info.stageCount = 2;
-		info.layout = m_PipelineLayout;
-
-		if (vkCreateGraphicsPipelines( m_LogicalDevice, VK_NULL_HANDLE, 1, &info, nullptr, &m_MainPipeline ) != VK_SUCCESS) {
-			LUM_LOG_FATAL( "Failed to create main graphics pipeline! (Vulkan)" );
-			return;
-		}
+		auto handle = CreatePipeline( info );
+		m_MainPipeline = m_Pipelines[ handle ];
 
 	}
 

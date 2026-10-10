@@ -4,6 +4,7 @@
 #include "Rhi2/Backends/Vulkan/RhiCommon_vulkan.hpp"
 #include "Rhi2/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
 #include "Rhi2/Backends/Vulkan/Core/RhiBuffer_vulkan.hpp"
+#include "Rhi2/Backends/Vulkan/Utils/PipelineCreator.hpp"
 
 namespace lum {
 
@@ -29,38 +30,18 @@ namespace lum::rhi::vk {
 	
 	private:
 
-		void assert_device( ) const;
-
-		void create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept;
-		void choose_adapter( ) noexcept;
-		void create_logical_device( ) noexcept;
-		void acquire_queues( ) noexcept;
-		void create_shader_stages( ) noexcept;
-		void create_main_surface( ) noexcept;
-		void recreate_swapchain( ) noexcept;
-		void recreate_swapchain_images( ) noexcept;
-		void create_main_pipeline( ) noexcept;
-		void create_command_pool( ) noexcept;
-		void allocate_command_buffers( ) noexcept;
-		void create_sync_primitives( ) noexcept;
-		void handle_resize( ) noexcept;
-		void create_vertex_buffers( ) noexcept;
-
-
-		bool create_shader_module( const Path& path, VkShaderModule& module ) const noexcept;
-
-
-
-		static inline constexpr usize sk_MaxBuffers = 256;
-		static inline constexpr usize sk_MaxShaderPrograms = 32;
+		static inline constexpr usize s_MaxBuffers = 256;
+		static inline constexpr usize s_MaxPipelines = 32;
 
 		cstd::HandlePool<
-			BufferHandle2, 
-			VulkanBuffer, 
-			BufferID2> m_Buffers{ sk_MaxBuffers };
+			BufferHandle2,
+			VulkanBuffer,
+			BufferID2> m_Buffers{ s_MaxBuffers };
 
-		
-
+		cstd::HandlePool<
+			PipelineHandle2,
+			VulkanPipeline,
+			PipelineID2> m_Pipelines{ s_MaxPipelines };
 
 		TVector2<uint32> m_WindowSize{};
 
@@ -78,8 +59,7 @@ namespace lum::rhi::vk {
 		std::vector<VkImage> m_SwapchainImages{};
 		std::vector<VkImageView> m_SwapchainImageViews{};
 
-		VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
-		VkPipeline m_MainPipeline = VK_NULL_HANDLE;
+		VulkanPipeline m_MainPipeline{};
 
 		VkCommandPool m_CmdPool = VK_NULL_HANDLE;
 		std::vector<VkCommandBuffer> m_CmdBuffers{ LUM_MAX_FRAMES_IN_FLIGHT };
@@ -87,20 +67,38 @@ namespace lum::rhi::vk {
 		VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
 		VkQueue m_ComputeQueue = VK_NULL_HANDLE;
 		VkQueue m_PresentQueue = VK_NULL_HANDLE;
-		
+
 		std::array<VkSemaphore, LUM_MAX_FRAMES_IN_FLIGHT> m_ImageAvailableSemaphores{};
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores{};
 
 		VkFence m_Fence = VK_NULL_HANDLE;
-
-		VkShaderModule DT_Vertex = VK_NULL_HANDLE;
-		VkShaderModule DT_Fragment = VK_NULL_HANDLE;
 
 		uint32 m_CurrentFrame = 0;
 
 		BufferHandle2 DT_Buffer{};
 
 		bool m_IsInitialized = false;
+
+		PipelineCreator m_PipelineCreator{};
+
+
+		void assert_device( ) const;
+
+		void create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept;
+		void choose_adapter( ) noexcept;
+		void create_logical_device( ) noexcept;
+		void acquire_queues( ) noexcept;
+		void create_main_surface( ) noexcept;
+		void recreate_swapchain( ) noexcept;
+		void recreate_swapchain_images( ) noexcept;
+		void create_main_pipeline( ) noexcept;
+		void create_command_pool( ) noexcept;
+		void allocate_command_buffers( ) noexcept;
+		void create_sync_primitives( ) noexcept;
+		void handle_resize( ) noexcept;
+		void create_vertex_buffers( ) noexcept;
+
+		bool create_shader_module( const Path& path, VkShaderModule& module ) const noexcept;
 
 	};
 

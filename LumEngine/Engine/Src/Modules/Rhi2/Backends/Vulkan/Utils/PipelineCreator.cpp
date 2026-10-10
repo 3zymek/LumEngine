@@ -1,4 +1,5 @@
 #include "Rhi2/Backends/Vulkan/Utils/PipelineCreator.hpp"
+#include "Rhi2/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
 
 namespace lum::rhi::vk {
 
@@ -6,27 +7,11 @@ namespace lum::rhi::vk {
 	// Public
 	//=======================================================//
 
-	VkPipeline PipelineCreator::CreatePipeline( const PipelineCreateInfo2& info ) {
+	Result<VulkanPipeline> PipelineCreator::CreatePipeline( const PipelineCreateInfo2& info ) {
 		
-		std::array<Optional<VkPipelineShaderStageCreateInfo>, t_EnumCount<ShaderStage>> shaderStages{};
-		for (auto& shaderInfo : info.m_ShaderInfos) {
+		VulkanPipeline pipeline{};
 
-			auto shaderIndex = ToUnderlyingEnum( shaderInfo.m_Stage );
-			auto& stage = shaderStages[ shaderIndex ];
-
-			if (stage.HasValue( )) {
-				LUM_LOG_WARN( "Shader stage slot {} is already occupied, skipping shader '{}'", shaderIndex, shaderInfo.m_Path.ToString( ) );
-				continue;
-			}
-			stage = {};
-			stage->sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-			stage->pName = shaderInfo.m_EntryPoint.data( );
-			stage->stage = to_vk( shaderInfo.m_Stage );
-			stage->module = create_shader_module( shaderInfo.m_Path );
-
-		}
-
-		static inline constexpr std::array<VkDynamicState, 2> s_DynamicStates = {
+		static constexpr std::array<VkDynamicState, 2> s_DynamicStates = {
 			VK_DYNAMIC_STATE_VIEWPORT,
 			VK_DYNAMIC_STATE_SCISSOR
 		};
@@ -43,11 +28,37 @@ namespace lum::rhi::vk {
 		viewportState.scissorCount = 1;
 		viewportState.pScissors = nullptr;
 
-
-
 		VkGraphicsPipelineCreateInfo pipInfo{};
 		pipInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipInfo.pDynamicState = &dynamicState;
+
+		VkSurfaceFormatKHR surfaceFormat = m_Adapter().m_SurfaceSupport.SelectSurfaceFormat( );
+		VkPipelineRenderingCreateInfo renderingInfo{};
+		renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
+		renderingInfo.colorAttachmentCount = 1;
+		renderingInfo.pColorAttachmentFormats = &surfaceFormat.format;
+
+		// TODO: ADD PIPELINE LAYOUT TO PipelineCreateInfo2
+		VkPipelineLayoutCreateInfo layoutInfo{};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		layoutInfo.setLayoutCount = 0;
+		layoutInfo.pSetLayouts = nullptr;
+		layoutInfo.pushConstantRangeCount = 0;
+		layoutInfo.pPushConstantRanges = nullptr;
+
+		const VkResult layoutResult = 
+			vkCreatePipelineLayout( 
+				m_LogicalDevice, 
+				&layoutInfo, 
+				nullptr, 
+				&pipeline.m_Layout 
+			);
+
+		if (layoutResult != VK_SUCCESS) {
+			return Result<VulkanPipeline>::Failure(
+				FormatString( "Failed to create pipeline layout! (VkResult: {})", static_cast<int32>(layoutResult) ) 
+			);
+		}
 
 		auto assemblyState = setup_assembly_info( info.m_AssemblyPass );
 		pipInfo.pInputAssemblyState = &assemblyState;
@@ -60,8 +71,35 @@ namespace lum::rhi::vk {
 
 		auto msState = setup_multisample_info( info.m_MultisamplePass );
 		pipInfo.pMultisampleState = &msState;
-		
+
+		auto vertexInputState = setup_vertex_input_info( info.m_VertexInputPass );
+		pipInfo.pVertexInputState = &vertexInputState;
+
+		auto shaderStages = setup_shader_modules( info );
+		pipInfo.stageCount = shaderStages.size( );
+		pipInfo.pStages = shaderStages.data( );
+
+		pipInfo.pNext = &renderingInfo;
 		pipInfo.pViewportState = &viewportState;
+		pipInfo.layout = pipeline.m_Layout;
+
+		const VkResult pipResult = 
+			vkCreateGraphicsPipelines( 
+				m_LogicalDevice, 
+				VK_NULL_HANDLE, 
+				1, 
+				&pipInfo, 
+				nullptr, 
+				&pipeline.m_Pipeline 
+			);
+
+		if (pipResult != VK_SUCCESS) {
+			return Result<VulkanPipeline>::Failure( 
+				FormatString( "Failed to create graphics pipeline! (VkResult: {})", static_cast<int32>(pipResult) )
+			);
+		}
+
+		return pipeline;
 
 	}
 
@@ -137,17 +175,82 @@ namespace lum::rhi::vk {
 	}
 	auto PipelineCreator::setup_assembly_info( const AssemblyPass& info ) noexcept -> VkPipelineInputAssemblyStateCreateInfo {
 
-		VkPipelineInputAssemblyStateCreateInfo assemblyState{};
-		assemblyState.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		assemblyState.topology = to_vk( info.m_Topology );
-		assemblyState.primitiveRestartEnable = info.m_PrimitiveRestart;
+		VkPipelineInputAssemblyStateCreateInfo vkInfo{};
+		vkInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		vkInfo.topology = to_vk( info.m_Topology );
+		vkInfo.primitiveRestartEnable = info.m_PrimitiveRestart;
+
+		return vkInfo;
 
 	}
 	auto PipelineCreator::setup_vertex_input_info( const VertexInputPass& info ) noexcept -> VkPipelineVertexInputStateCreateInfo {
 
+		usize numAttributes = info.m_Attributes.size( );
+		std::vector<VkVertexInputAttributeDescription> attributes( numAttributes );
+		for (uint32 i = 0; i < numAttributes; i++) {
+
+			auto& vkAttr = attributes[ i ];
+			const auto& attrInfo = info.m_Attributes[ i ];
+
+			vkAttr.binding = attrInfo.m_Binding;
+			vkAttr.format = to_vk( attrInfo.m_Format );
+			vkAttr.location = attrInfo.m_Location;
+			vkAttr.offset = attrInfo.m_Offset;
+
+		}
+
+		usize numBindings = info.m_Bindings.size( );
+		std::vector<VkVertexInputBindingDescription> bindings( numBindings );
+		for (uint32 i = 0; i < numBindings; i++) {
+
+			auto& vkBinding = bindings[ i ];
+			const auto& bindingInfo = info.m_Bindings[ i ];
+
+			vkBinding.binding = bindingInfo.m_Binding;
+			vkBinding.inputRate = bindingInfo.m_Instanced ? VK_VERTEX_INPUT_RATE_INSTANCE : VK_VERTEX_INPUT_RATE_VERTEX;
+			vkBinding.stride = bindingInfo.m_Stride;
+
+		}
+
+
+		VkPipelineVertexInputStateCreateInfo vkInfo{};
+		vkInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vkInfo.vertexAttributeDescriptionCount = numAttributes;
+		vkInfo.pVertexAttributeDescriptions = attributes.data( );
+		vkInfo.vertexBindingDescriptionCount = numBindings;
+		vkInfo.pVertexBindingDescriptions = bindings.data( );
+
+		return vkInfo;
+
 	}
+	auto PipelineCreator::setup_shader_modules( const PipelineCreateInfo2& info ) noexcept -> std::vector<VkPipelineShaderStageCreateInfo> {
 
+		LUM_ASSERT( info.m_ShaderInfos.size( ) <= t_EnumCount<ShaderStage>, "Too much shader create infos in PipelineCreateInfo (MAX IS 5)" );
 
+		std::array<bool, t_EnumCount<ShaderStage>> shaderSlots{};
+		std::vector<VkPipelineShaderStageCreateInfo> shaderStages{};
+
+		for (auto& shaderInfo : info.m_ShaderInfos) {
+
+			auto shaderIndex = ToUnderlyingEnum( shaderInfo.m_Stage );
+			auto isOccupied = shaderSlots[ shaderIndex ];
+
+			if (isOccupied) {
+				LUM_LOG_WARN( "Shader stage slot {} is already occupied, skipping shader '{}'", shaderIndex, shaderInfo.m_Path.ToString( ) );
+				continue;
+			}
+
+			VkPipelineShaderStageCreateInfo vkInfo{};
+			vkInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			vkInfo.pName = shaderInfo.m_EntryPoint.data( );
+			vkInfo.stage = to_vk( shaderInfo.m_Stage );
+			vkInfo.module = create_shader_module( shaderInfo.m_Path );
+
+		}
+
+		return shaderStages;
+
+	}
 
 	auto PipelineCreator::create_shader_module( const Path& path ) noexcept -> VkShaderModule {
 		auto binaryCode = FileSystem::ReadBinaryFile( path );
@@ -171,7 +274,7 @@ namespace lum::rhi::vk {
 		return module;
 	}
 
-	auto PipelineCreator::to_vk( ShaderStage stage ) noexcept -> VkShaderStageFlagBits {
+	constexpr auto PipelineCreator::to_vk( ShaderStage stage ) noexcept -> VkShaderStageFlagBits {
 		switch (stage) {
 			case ShaderStage::Vertex:   return VK_SHADER_STAGE_VERTEX_BIT;
 			case ShaderStage::Fragment: return VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -181,8 +284,7 @@ namespace lum::rhi::vk {
 		LUM_ASSERT( false, "Invalid ShaderStage" );
 		return {};
 	}
-
-	auto PipelineCreator::to_vk( PrimitiveTopology topology ) noexcept -> VkPrimitiveTopology {
+	constexpr auto PipelineCreator::to_vk( PrimitiveTopology topology ) noexcept -> VkPrimitiveTopology {
 		switch (topology) {
 			case PrimitiveTopology::TriangleList:  return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 			case PrimitiveTopology::TriangleStrip: return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
@@ -193,8 +295,7 @@ namespace lum::rhi::vk {
 		LUM_ASSERT( false, "Invalid PrimitiveTopology enum" );
 		return {};
 	}
-
-	auto PipelineCreator::to_vk( CullMode mode ) noexcept -> VkCullModeFlags {
+	constexpr auto PipelineCreator::to_vk( CullMode mode ) noexcept -> VkCullModeFlags {
 		switch (mode) {
 			case CullMode::None:  return VK_CULL_MODE_NONE;
 			case CullMode::Front: return VK_CULL_MODE_FRONT_BIT;
@@ -203,8 +304,7 @@ namespace lum::rhi::vk {
 		LUM_ASSERT( false, "Invalid CullMode enum" );
 		return {};
 	}
-
-	auto PipelineCreator::to_vk( PolygonMode mode ) noexcept -> VkPolygonMode {
+	constexpr auto PipelineCreator::to_vk( PolygonMode mode ) noexcept -> VkPolygonMode {
 		switch (mode) {
 			case PolygonMode::Fill:      return VK_POLYGON_MODE_FILL;
 			case PolygonMode::Wireframe: return VK_POLYGON_MODE_LINE;
@@ -212,8 +312,7 @@ namespace lum::rhi::vk {
 		LUM_ASSERT( false, "Invalid PolygonMode enum" );
 		return {};
 	}
-
-	auto PipelineCreator::to_vk( FrontFace face ) noexcept -> VkFrontFace {
+	constexpr auto PipelineCreator::to_vk( FrontFace face ) noexcept -> VkFrontFace {
 		switch (face) {
 			case FrontFace::CounterClockwise: return VK_FRONT_FACE_COUNTER_CLOCKWISE;
 			case FrontFace::Clockwise:        return VK_FRONT_FACE_CLOCKWISE;
@@ -221,8 +320,7 @@ namespace lum::rhi::vk {
 		LUM_ASSERT( false, "Invalid FrontFace enum" );
 		return {};
 	}
-
-	auto PipelineCreator::to_vk( BlendFactor factor ) noexcept -> VkBlendFactor {
+	constexpr auto PipelineCreator::to_vk( BlendFactor factor ) noexcept -> VkBlendFactor {
 		switch (factor) {
 			case BlendFactor::Zero:                  return VK_BLEND_FACTOR_ZERO;
 			case BlendFactor::One:                   return VK_BLEND_FACTOR_ONE;
@@ -242,8 +340,7 @@ namespace lum::rhi::vk {
 		LUM_ASSERT( false, "Invalid BlendFactor enum" );
 		return {};
 	}
-
-	auto PipelineCreator::to_vk( BlendOp op ) noexcept -> VkBlendOp {
+	constexpr auto PipelineCreator::to_vk( BlendOp op ) noexcept -> VkBlendOp {
 		switch (op) {
 			case BlendOp::Add:              return VK_BLEND_OP_ADD;
 			case BlendOp::Substract:        return VK_BLEND_OP_SUBTRACT;
@@ -254,8 +351,7 @@ namespace lum::rhi::vk {
 		LUM_ASSERT( false, "Invalid BlendOp enum" );
 		return {};
 	}
-
-	auto PipelineCreator::to_vk( Flags<ColorComponentFlag> flags ) noexcept -> VkColorComponentFlags {
+	constexpr auto PipelineCreator::to_vk( Flags<ColorComponentFlag> flags ) noexcept -> VkColorComponentFlags {
 		VkColorComponentFlags vkFlags = 0;
 
 		if (flags.Has( ColorComponentFlag::None )) return 0;
@@ -266,8 +362,7 @@ namespace lum::rhi::vk {
 
 		return vkFlags;
 	}
-
-	auto PipelineCreator::to_vk( SampleCount samples ) noexcept -> VkSampleCountFlagBits {
+	constexpr auto PipelineCreator::to_vk( SampleCount samples ) noexcept -> VkSampleCountFlagBits {
 		switch (samples) {
 			case SampleCount::Sample1:  return VK_SAMPLE_COUNT_1_BIT;
 			case SampleCount::Sample2:  return VK_SAMPLE_COUNT_2_BIT;
@@ -281,8 +376,7 @@ namespace lum::rhi::vk {
 		LUM_ASSERT( false, "Invalid SampleCount enum" );
 		return {};
 	}
-
-	auto PipelineCreator::to_vk( ImageFormat format ) noexcept -> VkFormat {
+	constexpr auto PipelineCreator::to_vk( ImageFormat format ) noexcept -> VkFormat {
 		switch (format) {
 			case ImageFormat::R8_UNORM:     return VK_FORMAT_R8_UNORM;
 			case ImageFormat::R8_SNORM:     return VK_FORMAT_R8_SNORM;
