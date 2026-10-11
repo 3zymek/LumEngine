@@ -104,7 +104,7 @@ namespace lum::rhi {
 
 namespace lum {
 
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS(rhi::ColorComponentFlag);
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::ColorComponentFlag );
 
 } // namespace lum
 
@@ -247,6 +247,65 @@ namespace lum::rhi {
 
 	};
 
+	class VertexLayoutConfiguration {
+	public:
+
+		LUM_NODISCARD static const VertexLayoutConfiguration& GetStatic( ) noexcept {
+			static VertexLayoutConfiguration val{};
+			return val;
+		}
+
+		LUM_NODISCARD const std::vector<VertexAttribute>& GetAttributeDescriptions( ) const {
+			return m_VertexInputPass.m_Attributes;
+		}
+
+		LUM_NODISCARD const VertexBinding& GetBindingDescription( ) const {
+			return m_VertexInputPass.m_Bindings[ 0 ];
+		}
+
+		LUM_NODISCARD const VertexInputPass& GetVertexInputPass( ) const {
+			return m_VertexInputPass;
+		}
+
+	private:
+
+		VertexLayoutConfiguration( ) { create_defaults( ); }
+
+		void create_defaults( ) noexcept {
+
+			VertexBinding binding{};
+			binding.m_Binding = 0;
+			binding.m_Instanced = false;
+			binding.m_Stride = sizeof( Vertex );
+			m_VertexInputPass.m_Bindings.push_back( binding );
+
+			auto& attributes = m_VertexInputPass.m_Attributes;
+			attributes.resize( 3 );
+
+			auto& posAttr = attributes[ 0 ];
+			posAttr.m_Location = 0;
+			posAttr.m_Binding = 0;
+			posAttr.m_Format = ImageFormat::RGB32_FLOAT;
+			posAttr.m_Offset = offsetof( Vertex, m_Position );
+
+			auto& colAttr = attributes[ 1 ];
+			colAttr.m_Location = 1;
+			colAttr.m_Binding = 0;
+			colAttr.m_Format = ImageFormat::RGB32_FLOAT;
+			colAttr.m_Offset = offsetof( Vertex, m_Color );
+
+			auto& uvAttr = attributes[ 2 ];
+			uvAttr.m_Location = 2;
+			uvAttr.m_Binding = 0;
+			uvAttr.m_Format = ImageFormat::RG32_FLOAT;
+			uvAttr.m_Offset = offsetof( Vertex, m_Uv );
+
+		}
+
+		VertexInputPass m_VertexInputPass{};
+
+	};
+
 	struct PipelineCreateInfo2 {
 
 		std::vector<ShaderInfo2> m_ShaderInfos{};
@@ -255,7 +314,7 @@ namespace lum::rhi {
 		ColorBlendPass		m_ColorBlendPass{};
 		MultisamplePass		m_MultisamplePass{};
 		VertexInputPass		m_VertexInputPass{};
-		
+
 
 	};
 

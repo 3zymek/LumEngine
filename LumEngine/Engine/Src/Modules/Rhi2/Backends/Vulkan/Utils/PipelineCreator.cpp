@@ -99,6 +99,10 @@ namespace lum::rhi::vk {
 			);
 		}
 
+		for (auto& shader : shaderStages) {
+			vkDestroyShaderModule( m_LogicalDevice, shader.module, nullptr );
+		}
+
 		return pipeline;
 
 	}
@@ -120,6 +124,7 @@ namespace lum::rhi::vk {
 		vkInfo.polygonMode = to_vk( info.m_PolygonMode );
 		vkInfo.lineWidth = info.m_WireframeWidth;
 		vkInfo.depthClampEnable = VK_FALSE;
+
 		if (info.m_DepthBiasEnabled) {
 			vkInfo.depthClampEnable = VK_TRUE;
 			vkInfo.depthBiasConstantFactor = info.m_DepthBiasConstant;
@@ -133,7 +138,10 @@ namespace lum::rhi::vk {
 	auto PipelineCreator::setup_color_blend_info( const ColorBlendPass& info ) noexcept -> VkPipelineColorBlendStateCreateInfo {
 
 		const uint32 numColorAttachments = SafeCast<uint32>( info.m_Attachments.size( ) );
-		std::vector<VkPipelineColorBlendAttachmentState> colorAttachments( numColorAttachments );
+		static std::vector<VkPipelineColorBlendAttachmentState> colorAttachments{};
+		colorAttachments.clear( );
+		colorAttachments.resize( numColorAttachments );
+
 		for (uint32 i = 0; i < numColorAttachments; i++) {
 
 			auto& attachment = colorAttachments[ i ];
@@ -186,7 +194,10 @@ namespace lum::rhi::vk {
 	auto PipelineCreator::setup_vertex_input_info( const VertexInputPass& info ) noexcept -> VkPipelineVertexInputStateCreateInfo {
 
 		usize numAttributes = info.m_Attributes.size( );
-		std::vector<VkVertexInputAttributeDescription> attributes( numAttributes );
+		static std::vector<VkVertexInputAttributeDescription> attributes{};
+		attributes.clear( );
+		attributes.resize( numAttributes );
+
 		for (uint32 i = 0; i < numAttributes; i++) {
 
 			auto& vkAttr = attributes[ i ];
@@ -200,7 +211,10 @@ namespace lum::rhi::vk {
 		}
 
 		usize numBindings = info.m_Bindings.size( );
-		std::vector<VkVertexInputBindingDescription> bindings( numBindings );
+		static std::vector<VkVertexInputBindingDescription> bindings{};
+		bindings.clear( );
+		bindings.resize( numBindings );
+
 		for (uint32 i = 0; i < numBindings; i++) {
 
 			auto& vkBinding = bindings[ i ];
@@ -225,7 +239,13 @@ namespace lum::rhi::vk {
 	}
 	auto PipelineCreator::setup_shader_modules( const PipelineCreateInfo2& info ) noexcept -> std::vector<VkPipelineShaderStageCreateInfo> {
 
-		LUM_ASSERT( info.m_ShaderInfos.size( ) <= t_EnumCount<ShaderStage>, "Too much shader create infos in PipelineCreateInfo (MAX IS 5)" );
+		usize numShaderInfos = info.m_ShaderInfos.size( );
+		LUM_ASSERT( numShaderInfos <= t_EnumCount<ShaderStage>, "Too much shader create infos in PipelineCreateInfo (MAX IS 5)" );
+		
+		if (numShaderInfos == 0) {
+			LUM_LOG_WARN( "Couldn't create shader modules: There are 0 shader infos in pipeline." );
+			return {};
+		}
 
 		std::array<bool, t_EnumCount<ShaderStage>> shaderSlots{};
 		std::vector<VkPipelineShaderStageCreateInfo> shaderStages{};
@@ -246,6 +266,8 @@ namespace lum::rhi::vk {
 			vkInfo.stage = to_vk( shaderInfo.m_Stage );
 			vkInfo.module = create_shader_module( shaderInfo.m_Path );
 
+			shaderStages.push_back( vkInfo );
+
 		}
 
 		return shaderStages;
@@ -253,21 +275,22 @@ namespace lum::rhi::vk {
 	}
 
 	auto PipelineCreator::create_shader_module( const Path& path ) noexcept -> VkShaderModule {
+
 		auto binaryCode = FileSystem::ReadBinaryFile( path );
 		if (!binaryCode) {
-			LUM_LOG_ERROR( "Failed to create shader: {}!", binaryCode.GetError( ) );
+			LUM_LOG_ERROR( "Couldn't create shader: {}!", binaryCode.GetError( ) );
 			return VK_NULL_HANDLE;
 		}
 
 		VkShaderModuleCreateInfo vkInfo{};
 		vkInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		vkInfo.pCode = reinterpret_cast<const uint32_t*>(binaryCode->data( ));
-		vkInfo.codeSize = binaryCode->size( );
+		vkInfo.codeSize = binaryCode->size( ) * sizeof( uint32 );
 
 		VkShaderModule module = VK_NULL_HANDLE;
 
 		if (vkCreateShaderModule( m_LogicalDevice, &vkInfo, nullptr, &module ) != VK_SUCCESS) {
-			LUM_LOG_ERROR( "Failed to create shader module! (Vulkan)" );
+			LUM_LOG_ERROR( "Couldn't create shader module! (Vulkan)" );
 			return VK_NULL_HANDLE;
 		}
 

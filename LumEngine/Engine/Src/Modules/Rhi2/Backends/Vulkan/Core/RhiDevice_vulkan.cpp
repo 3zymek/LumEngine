@@ -54,6 +54,9 @@ namespace lum::rhi::vk {
 			for (auto&& [handle, buffer] : m_Buffers.Iterate( )) {
 				DestroyBuffer( handle );
 			}
+			for (auto&& [handle, value] : m_Pipelines.Iterate( )) {
+				DestroyPipeline( handle );
+			}
 
 			vkDestroyFence( m_LogicalDevice, m_Fence, nullptr );
 
@@ -66,9 +69,6 @@ namespace lum::rhi::vk {
 
 			vkDestroyCommandPool( m_LogicalDevice, m_CmdPool, nullptr );
 
-			vkDestroyPipeline( m_LogicalDevice, m_MainPipeline.m_Pipeline, nullptr );
-			vkDestroyPipelineLayout( m_LogicalDevice, m_MainPipeline.m_Layout, nullptr );
-
 			for (auto view : m_SwapchainImageViews) {
 				vkDestroyImageView( m_LogicalDevice, view, nullptr );
 			}
@@ -78,13 +78,6 @@ namespace lum::rhi::vk {
 			vkDestroySurfaceKHR( m_Instance, m_MainSurface, nullptr );
 			vkDestroyDevice( m_LogicalDevice, nullptr );
 			vkDestroyInstance( m_Instance, nullptr );
-
-			for (auto [handle, value] : m_Buffers.Iterate( )) {
-				DestroyBuffer( handle );
-			}
-			for (auto [handle, value] : m_Pipelines.Iterate( )) {
-				DestroyPipeline( handle );
-			}
 
 		}
 
@@ -613,15 +606,19 @@ namespace lum::rhi::vk {
 		attachment.m_ColorMask = ColorComponentFlag::RGBA;
 		blend.m_Attachments.push_back( attachment );
 
+		info.m_VertexInputPass = VertexLayoutConfiguration::GetStatic().GetVertexInputPass();
+
 		ShaderInfo2 vertexInfo{};
 		vertexInfo.m_EntryPoint = "main";
 		vertexInfo.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::External, "shader.vert.spv" );
 		vertexInfo.m_Stage = ShaderStage::Vertex;
+		info.m_ShaderInfos.push_back( vertexInfo );
 
 		ShaderInfo2 fragmentInfo{};
 		fragmentInfo.m_EntryPoint = "main";
 		fragmentInfo.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::External, "shader.frag.spv" );
 		fragmentInfo.m_Stage = ShaderStage::Fragment;
+		info.m_ShaderInfos.push_back( fragmentInfo );
 
 		auto handle = CreatePipeline( info );
 		m_MainPipeline = m_Pipelines[ handle ];
