@@ -104,7 +104,7 @@ namespace lum::rhi {
 
 namespace lum {
 
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::ColorComponentFlag );
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS(rhi::ColorComponentFlag);
 
 } // namespace lum
 
@@ -250,59 +250,35 @@ namespace lum::rhi {
 	class VertexLayoutConfiguration {
 	public:
 
-		LUM_NODISCARD static const VertexLayoutConfiguration& GetStatic( ) noexcept {
+		LUM_NODISCARD static const VertexLayoutConfiguration& GetStatic() noexcept {
 			static VertexLayoutConfiguration val{};
 			return val;
 		}
 
-		LUM_NODISCARD const std::vector<VertexAttribute>& GetAttributeDescriptions( ) const {
-			return m_VertexInputPass.m_Attributes;
-		}
+		LUM_NODISCARD VertexInputPass GetVertexInputPass() const {
 
-		LUM_NODISCARD const VertexBinding& GetBindingDescription( ) const {
-			return m_VertexInputPass.m_Bindings[ 0 ];
-		}
-
-		LUM_NODISCARD const VertexInputPass& GetVertexInputPass( ) const {
-			return m_VertexInputPass;
-		}
-
-	private:
-
-		VertexLayoutConfiguration( ) { create_defaults( ); }
-
-		void create_defaults( ) noexcept {
+			VertexInputPass info{};
 
 			VertexBinding binding{};
 			binding.m_Binding = 0;
 			binding.m_Instanced = false;
-			binding.m_Stride = sizeof( Vertex );
-			m_VertexInputPass.m_Bindings.push_back( binding );
+			binding.m_Stride = sizeof(Vertex);
+			info.m_Bindings.push_back(binding);
 
-			auto& attributes = m_VertexInputPass.m_Attributes;
-			attributes.resize( 3 );
+			info.m_Attributes.reserve(3);
 
-			auto& posAttr = attributes[ 0 ];
-			posAttr.m_Location = 0;
-			posAttr.m_Binding = 0;
-			posAttr.m_Format = ImageFormat::RGB32_FLOAT;
-			posAttr.m_Offset = offsetof( Vertex, m_Position );
+			info.m_Attributes.push_back({ 0, 0, 0, ImageFormat::RGB32_FLOAT });
+			info.m_Attributes.push_back({ 1, 0, 12, ImageFormat::RGB32_FLOAT });
+			info.m_Attributes.push_back({ 2, 0, 24, ImageFormat::RG32_FLOAT });
 
-			auto& colAttr = attributes[ 1 ];
-			colAttr.m_Location = 1;
-			colAttr.m_Binding = 0;
-			colAttr.m_Format = ImageFormat::RGB32_FLOAT;
-			colAttr.m_Offset = offsetof( Vertex, m_Color );
+			LUM_LOG_INFO("TWARDY TEST - Rozmiar vectora po push_back: {}", info.m_Attributes.size());
 
-			auto& uvAttr = attributes[ 2 ];
-			uvAttr.m_Location = 2;
-			uvAttr.m_Binding = 0;
-			uvAttr.m_Format = ImageFormat::RG32_FLOAT;
-			uvAttr.m_Offset = offsetof( Vertex, m_Uv );
-
+			return info;
 		}
 
-		VertexInputPass m_VertexInputPass{};
+	private:
+
+		VertexLayoutConfiguration() = default;
 
 	};
 
@@ -314,7 +290,6 @@ namespace lum::rhi {
 		ColorBlendPass		m_ColorBlendPass{};
 		MultisamplePass		m_MultisamplePass{};
 		VertexInputPass		m_VertexInputPass{};
-
 
 	};
 
