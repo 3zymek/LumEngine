@@ -608,6 +608,12 @@ namespace lum::rhi::vk {
 
 		info.m_VertexInputPass = VertexLayoutConfiguration::GetStatic().GetVertexInputPass();
 
+		LUM_LOG_INFO( "======= AFTER VERTEX INPUT STATE ======" );
+		LUM_LOG_INFO( "Vertex input state created successfully, attribute count: {}, binding count: {}",
+			info.m_VertexInputPass.m_Attributes.size(),
+			info.m_VertexInputPass.m_Bindings.size()
+		);
+
 		ShaderInfo2 vertexInfo{};
 		vertexInfo.m_EntryPoint = "main";
 		vertexInfo.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::External, "shader.vert.spv" );

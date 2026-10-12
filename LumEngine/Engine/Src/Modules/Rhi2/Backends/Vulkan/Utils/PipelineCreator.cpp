@@ -73,7 +73,13 @@ namespace lum::rhi::vk {
 		pipInfo.pMultisampleState = &msState;
 
 		auto vertexInputState = setup_vertex_input_info( info.m_VertexInputPass );
-		pipInfo.pVertexInputState = &vertexInputState;
+		pipInfo.pVertexInputState = &vertexInputState; 
+
+		LUM_LOG_INFO( "======= AFTER VERTEX INPUT STATE ======" );
+		LUM_LOG_INFO( "Vertex input state created successfully, attribute count: {}, binding count: {}",
+			vertexInputState.vertexAttributeDescriptionCount,
+			vertexInputState.vertexBindingDescriptionCount 
+		);
 
 		auto shaderStages = setup_shader_modules( info );
 		pipInfo.stageCount = shaderStages.size( );
