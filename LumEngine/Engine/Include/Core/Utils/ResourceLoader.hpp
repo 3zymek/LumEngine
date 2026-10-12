@@ -45,10 +45,10 @@ namespace lum {
 	struct LUM_API MeshGeometry {
 
 		/* @brief List of vertices. */
-		std::vector<Vertex> m_Vertices;
+		std::vector<Vertex> m_Vertices{};
 
 		/* @brief List of indices. */
-		std::vector<uint32> m_Indices;
+		std::vector<uint32> m_Indices{};
 
 	};
 

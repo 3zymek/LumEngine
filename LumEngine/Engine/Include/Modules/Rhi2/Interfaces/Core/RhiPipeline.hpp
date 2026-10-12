@@ -89,6 +89,7 @@ namespace lum::rhi {
 	};
 
 	enum class ColorComponentFlag : bitfield {
+
 		None = 1 << 0,
 		Red = 1 << 1,
 		Green = 1 << 2,
@@ -99,6 +100,7 @@ namespace lum::rhi {
 		RGBA = Red | Green | Blue | Alpha,
 
 	};
+	using ColorComponentFlags = Flags<ColorComponentFlag>;
 
 } // namespace lum::rhi
 
@@ -121,7 +123,7 @@ namespace lum::rhi {
 		BlendOp m_ColorBlendOp{};
 		BlendOp m_AlphaBlendOp{};
 
-		Flags<ColorComponentFlag> m_ColorMask =
+		ColorComponentFlags m_ColorMask =
 			ColorComponentFlag::Red | ColorComponentFlag::Green | ColorComponentFlag::Blue | ColorComponentFlag::Alpha;
 
 	};
@@ -133,92 +135,12 @@ namespace lum::rhi {
 
 	};
 
-	enum class SampleCount : uint8 {
-		Sample1 = 0U,
-		Sample2,
-		Sample4,
-		Sample8,
-		Sample16,
-		Sample32,
-		Sample64
-	};
-
 	struct MultisamplePass {
 
 		SampleCount m_SampleCount = SampleCount::Sample1;
 
 		bool m_AlphaToCoverage = false;
 		bool m_AlphaToOne = false;
-
-	};
-
-	enum class ImageFormat : uint8 {
-
-		R8_UNORM = 0U,
-		R8_SNORM,
-		R8_UINT,
-		R8_SINT,
-		R8_SRGB,
-
-		RG8_UNORM,
-		RG8_SNORM,
-		RG8_UINT,
-		RG8_SINT,
-		RG8_SRGB,
-
-		RGB8_UNORM,
-		RGB8_SNORM,
-		RGB8_UINT,
-		RGB8_SINT,
-		RGB8_SRGB,
-
-		RGBA8_UNORM,
-		RGBA8_SNORM,
-		RGBA8_UINT,
-		RGBA8_SINT,
-		RGBA8_SRGB,
-
-
-		R16_UNORM,
-		R16_SNORM,
-		R16_UINT,
-		R16_SINT,
-		R16_FLOAT,
-
-		RG16_UNORM,
-		RG16_SNORM,
-		RG16_UINT,
-		RG16_SINT,
-		RG16_FLOAT,
-
-		RGB16_UNORM,
-		RGB16_SNORM,
-		RGB16_UINT,
-		RGB16_SINT,
-		RGB16_FLOAT,
-
-		RGBA16_UNORM,
-		RGBA16_SNORM,
-		RGBA16_UINT,
-		RGBA16_SINT,
-		RGBA16_FLOAT,
-
-
-		R32_UINT,
-		R32_SINT,
-		R32_FLOAT,
-
-		RG32_UINT,
-		RG32_SINT,
-		RG32_FLOAT,
-
-		RGB32_UINT,
-		RGB32_SINT,
-		RGB32_FLOAT,
-
-		RGBA32_UINT,
-		RGBA32_SINT,
-		RGBA32_FLOAT
 
 	};
 
@@ -271,13 +193,13 @@ namespace lum::rhi {
 			info.m_Attributes.push_back({ 1, 0, 12, ImageFormat::RGB32_FLOAT });
 			info.m_Attributes.push_back({ 2, 0, 24, ImageFormat::RG32_FLOAT });
 
-			LUM_LOG_INFO("TWARDY TEST - Rozmiar vectora po push_back: {}", info.m_Attributes.size());
-
 			return info;
 		}
 
 	private:
 
+		VertexLayoutConfiguration( const VertexLayoutConfiguration& ) = delete;
+		VertexLayoutConfiguration( VertexLayoutConfiguration&& ) = delete;
 		VertexLayoutConfiguration() = default;
 
 	};

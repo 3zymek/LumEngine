@@ -30,18 +30,6 @@ namespace lum::rhi::vk {
 		auto setup_shader_modules( const PipelineCreateInfo2& info ) noexcept -> std::vector<VkPipelineShaderStageCreateInfo>;
 		auto create_shader_module( const Path& path ) noexcept -> VkShaderModule;
 
-		// Engine enums -> vulkan types conversion
-		LUM_NODISCARD static constexpr auto	to_vk( ShaderStage stage ) noexcept -> VkShaderStageFlagBits;
-		LUM_NODISCARD static constexpr auto	to_vk( PrimitiveTopology topology ) noexcept -> VkPrimitiveTopology;
-		LUM_NODISCARD static constexpr auto	to_vk( CullMode mode ) noexcept -> VkCullModeFlags;
-		LUM_NODISCARD static constexpr auto	to_vk( PolygonMode mode ) noexcept -> VkPolygonMode;
-		LUM_NODISCARD static constexpr auto	to_vk( FrontFace face ) noexcept -> VkFrontFace;
-		LUM_NODISCARD static constexpr auto	to_vk( BlendFactor factor ) noexcept -> VkBlendFactor;
-		LUM_NODISCARD static constexpr auto	to_vk( BlendOp op ) noexcept -> VkBlendOp;
-		LUM_NODISCARD static constexpr auto	to_vk( Flags<ColorComponentFlag> flags ) noexcept -> VkColorComponentFlags;
-		LUM_NODISCARD static constexpr auto	to_vk( SampleCount samples ) noexcept -> VkSampleCountFlagBits;
-		LUM_NODISCARD static constexpr auto	to_vk( ImageFormat format ) noexcept -> VkFormat;
-
 	};
 
 } // namespace lum::rhi::vk

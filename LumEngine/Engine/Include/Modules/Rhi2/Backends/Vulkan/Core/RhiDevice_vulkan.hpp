@@ -27,11 +27,15 @@ namespace lum::rhi::vk {
 
 		PipelineHandle2 CreatePipeline( const PipelineCreateInfo2& info ) noexcept override;
 		void DestroyPipeline( PipelineHandle2& handle ) noexcept override;
+
+		ImageHandle2 CreateImage( const ImageCreateInfo2& info ) noexcept override;
+		void DestroyImage( ImageHandle2& handle ) noexcept override;
 	
 	private:
 
 		static inline constexpr usize s_MaxBuffers = 256;
 		static inline constexpr usize s_MaxPipelines = 32;
+		static inline constexpr usize s_MaxImages = 128;
 
 		cstd::HandlePool<
 			BufferHandle2,

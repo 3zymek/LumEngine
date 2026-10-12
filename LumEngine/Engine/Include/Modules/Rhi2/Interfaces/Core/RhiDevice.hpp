@@ -4,6 +4,7 @@
 #include "Rhi2/RhiAdapter.hpp"
 #include "Rhi2/Interfaces/Core/RhiBuffer.hpp"
 #include "Rhi2/Interfaces/Core/RhiPipeline.hpp"
+#include "Rhi2/Interfaces/Core/RhiImage.hpp"
 
 namespace lum {
 
@@ -41,6 +42,9 @@ namespace lum::rhi {
 
 		virtual PipelineHandle2 CreatePipeline( const PipelineCreateInfo2& info ) noexcept = 0;
 		virtual void DestroyPipeline( PipelineHandle2& handle ) noexcept = 0;
+
+		virtual ImageHandle2 CreateImage( const ImageCreateInfo2& info ) noexcept = 0;
+		virtual void DestroyImage( ImageHandle2& handle ) noexcept = 0;
 
 		virtual ~IRenderDevice2( ) = default;
 
