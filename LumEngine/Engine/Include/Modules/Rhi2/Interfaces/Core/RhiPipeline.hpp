@@ -2,6 +2,7 @@
 
 #include "Rhi2/RhiCommon.hpp"
 #include "Rhi2/Interfaces/Core/RhiShader.hpp"
+#include "Rhi2/Interfaces/Core/RhiImage.hpp"
 #include "Core/Utils/HandlePool.hpp"
 
 namespace lum::rhi {
@@ -198,8 +199,8 @@ namespace lum::rhi {
 
 	private:
 
-		VertexLayoutConfiguration( const VertexLayoutConfiguration& ) = delete;
-		VertexLayoutConfiguration( VertexLayoutConfiguration&& ) = delete;
+		VertexLayoutConfiguration(const VertexLayoutConfiguration&) = delete;
+		VertexLayoutConfiguration(VertexLayoutConfiguration&&) = delete;
 		VertexLayoutConfiguration() = default;
 
 	};

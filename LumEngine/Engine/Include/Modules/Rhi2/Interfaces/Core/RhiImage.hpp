@@ -16,7 +16,7 @@ namespace lum::rhi {
 		TransferDestination = 1 << 1,
 
 		ShaderReadable = 1 << 2, // Sampled
-		ShaderReadWrite = 1 < 3, // Storage
+		ShaderReadWrite = 1 << 3, // Storage
 
 		ColorAttachment = 1 << 4,
 		DepthStencilAttachment = 1 << 5,
@@ -28,10 +28,16 @@ namespace lum::rhi {
 	};
 	using ImageUsageFlags = Flags<ImageUsageFlag>;
 
-	enum class ImageType : uint8 {
+	enum class ImageDimension : uint8 {
 		Image1D = 0U,
 		Image2D,
 		Image3D,
+	};
+
+	enum class ImageViewType : uint8 {
+		Default = 0U,
+		ImageCube,
+		ImageArray
 	};
 
 	enum class ImageFormat : uint8 {
@@ -125,7 +131,7 @@ namespace lum::rhi {
 	struct ImageCreateInfo2 {
 
 		ImageUsageFlags m_UsageFlags = ImageUsageFlag::None;
-		ImageType m_Type = ImageType::Image2D;
+		ImageDimension m_Type = ImageDimension::Image2D;
 		ImageFormat m_Format = ImageFormat::RGBA32_FLOAT;
 		ImageExtent3D m_Extent{};
 		SampleCount m_SampleCount = SampleCount::Sample1;

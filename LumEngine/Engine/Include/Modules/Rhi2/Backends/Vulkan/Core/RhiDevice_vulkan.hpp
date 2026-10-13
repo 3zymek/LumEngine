@@ -17,20 +17,20 @@ namespace lum::rhi::vk {
 	class VulkanDevice : public IRenderDevice2 {
 	public:
 
-		void Initialize( const RenderDeviceCreateInfo& info ) noexcept override;
-		void Finalize( ) noexcept override;
+		void Initialize(const RenderDeviceCreateInfo& info) noexcept override;
+		void Finalize() noexcept override;
 
-		void UpdateFrame( ) noexcept override;
+		void UpdateFrame() noexcept override;
 
-		BufferHandle2 CreateBuffer( const BufferCreateInfo2& info ) noexcept override;
-		void DestroyBuffer( BufferHandle2& handle ) noexcept override;
+		BufferHandle2 CreateBuffer(const BufferCreateInfo2& info) noexcept override;
+		void DestroyBuffer(BufferHandle2& handle) noexcept override;
 
-		PipelineHandle2 CreatePipeline( const PipelineCreateInfo2& info ) noexcept override;
-		void DestroyPipeline( PipelineHandle2& handle ) noexcept override;
+		PipelineHandle2 CreatePipeline(const PipelineCreateInfo2& info) noexcept override;
+		void DestroyPipeline(PipelineHandle2& handle) noexcept override;
 
-		ImageHandle2 CreateImage( const ImageCreateInfo2& info ) noexcept override;
-		void DestroyImage( ImageHandle2& handle ) noexcept override;
-	
+		ImageHandle2 CreateImage(const ImageCreateInfo2& info) noexcept override;
+		void DestroyImage(ImageHandle2& handle) noexcept override;
+
 	private:
 
 		static inline constexpr usize s_MaxBuffers = 256;
@@ -46,6 +46,11 @@ namespace lum::rhi::vk {
 			PipelineHandle2,
 			VulkanPipeline,
 			PipelineID2> m_Pipelines{ s_MaxPipelines };
+
+		cstd::HandlePool<
+			ImageHandle2,
+			VulkanImage,
+			ImageID2> m_Images{ s_MaxImages };
 
 		TVector2<uint32> m_WindowSize{};
 
@@ -86,23 +91,23 @@ namespace lum::rhi::vk {
 		PipelineCreator m_PipelineCreator{};
 
 
-		void assert_device( ) const;
+		void assert_device() const;
 
-		void create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept;
-		void choose_adapter( ) noexcept;
-		void create_logical_device( ) noexcept;
-		void acquire_queues( ) noexcept;
-		void create_main_surface( ) noexcept;
-		void recreate_swapchain( ) noexcept;
-		void recreate_swapchain_images( ) noexcept;
-		void create_main_pipeline( ) noexcept;
-		void create_command_pool( ) noexcept;
-		void allocate_command_buffers( ) noexcept;
-		void create_sync_primitives( ) noexcept;
-		void handle_resize( ) noexcept;
-		void create_vertex_buffers( ) noexcept;
+		void create_vk_instance(const RenderDeviceCreateInfo& info) noexcept;
+		void choose_adapter() noexcept;
+		void create_logical_device() noexcept;
+		void acquire_queues() noexcept;
+		void create_main_surface() noexcept;
+		void recreate_swapchain() noexcept;
+		void recreate_swapchain_images() noexcept;
+		void create_main_pipeline() noexcept;
+		void create_command_pool() noexcept;
+		void allocate_command_buffers() noexcept;
+		void create_sync_primitives() noexcept;
+		void handle_resize() noexcept;
+		void create_vertex_buffers() noexcept;
 
-		bool create_shader_module( const Path& path, VkShaderModule& module ) const noexcept;
+		bool create_shader_module(const Path& path, VkShaderModule& module) const noexcept;
 
 	};
 

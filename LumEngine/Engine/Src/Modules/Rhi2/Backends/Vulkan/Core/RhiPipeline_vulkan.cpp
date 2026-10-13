@@ -2,41 +2,41 @@
 
 namespace lum::rhi::vk {
 
-	PipelineHandle2 VulkanDevice::CreatePipeline( const PipelineCreateInfo2& info ) noexcept {
-		
-		assert_device( );
+	PipelineHandle2 VulkanDevice::CreatePipeline(const PipelineCreateInfo2& info) noexcept {
 
-		if (m_Pipelines.IsFull( )) {
-			LUM_LOG_WARN( "Couldn't create pipeline: Max pipelines reached! Increase max pipelines count or refactor your code." );
+		assert_device();
+
+		if (m_Pipelines.IsFull()) {
+			LUM_LOG_WARN("Couldn't create RHI Pipeline: Max pipelines reached! Increase max pipelines count or refactor your code.");
 			return {};
 		}
 
-		auto pipeline = m_PipelineCreator.CreatePipeline( info );
+		auto pipeline = m_PipelineCreator.CreatePipeline(info);
 		if (!pipeline) {
-			LUM_LOG_ERROR( "Couldn't create pipeline: {}", pipeline.GetError( ) );
+			LUM_LOG_ERROR("Couldn't create pipeline: {}", pipeline.GetError());
 			return {};
 		}
 
-		auto pipelineHandle = m_Pipelines.Append( pipeline.ValueRef( ) );
+		auto pipelineHandle = m_Pipelines.Append(pipeline.ValueRef());
 
 		return pipelineHandle;
 
 	}
 
-	void VulkanDevice::DestroyPipeline( PipelineHandle2& handle ) noexcept {
+	void VulkanDevice::DestroyPipeline(PipelineHandle2& handle) noexcept {
 
-		assert_device( );
+		assert_device();
 
-		if (!m_Pipelines.Contains( handle )) return;
+		if (!m_Pipelines.Contains(handle)) return;
 
-		auto& pipeline = m_Pipelines[ handle ];
+		auto& pipeline = m_Pipelines[handle];
 
-		vkDeviceWaitIdle( m_LogicalDevice );
+		vkDeviceWaitIdle(m_LogicalDevice);
 
-		vkDestroyPipeline( m_LogicalDevice, pipeline.m_Pipeline, nullptr );
-		vkDestroyPipelineLayout( m_LogicalDevice, pipeline.m_Layout, nullptr );
+		vkDestroyPipeline(m_LogicalDevice, pipeline.m_Pipeline, nullptr);
+		vkDestroyPipelineLayout(m_LogicalDevice, pipeline.m_Layout, nullptr);
 
-		m_Pipelines.Remove( handle );
+		m_Pipelines.Remove(handle);
 
 	}
 
