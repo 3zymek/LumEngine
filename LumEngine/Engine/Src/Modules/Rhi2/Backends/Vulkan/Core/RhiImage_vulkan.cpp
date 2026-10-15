@@ -10,10 +10,28 @@ namespace lum::rhi::vk {
 			return {};
 		}
 
+		auto image = m_ImageCreator.CreateImage(info);
+		if (!image) {
+			LUM_LOG_ERROR("Failed to create RHI Image: {}", image.GetError());
+			return {};
+		}
 
+		return m_Images.Append(image.ValueRef());
 
 	}
 	void VulkanDevice::DestroyImage(ImageHandle2& handle) noexcept {
+
+		if (m_Images.Contains(handle)) return;
+
+		auto& image = m_Images[handle];
+		vkDeviceWaitIdle(m_LogicalDevice);
+
+		if (image.m_Image != VK_NULL_HANDLE)
+			vkDestroyImage(m_LogicalDevice, image.m_Image, nullptr);
+		if (image.m_View != VK_NULL_HANDLE)
+			vkDestroyImageView(m_LogicalDevice, image.m_View, nullptr);
+
+		m_Images.Remove(handle);
 
 	}
 

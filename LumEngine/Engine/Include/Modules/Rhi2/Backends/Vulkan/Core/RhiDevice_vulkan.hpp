@@ -5,6 +5,7 @@
 #include "Rhi2/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
 #include "Rhi2/Backends/Vulkan/Core/RhiBuffer_vulkan.hpp"
 #include "Rhi2/Backends/Vulkan/Utils/PipelineCreator.hpp"
+#include "Rhi2/Backends/Vulkan/Utils/ImageCreator.hpp"
 
 namespace lum {
 
@@ -84,15 +85,20 @@ namespace lum::rhi::vk {
 
 		uint32 m_CurrentFrame = 0;
 
-		BufferHandle2 DT_Buffer{};
+		BufferHandle2 DT_VertexBuffer{};
+		BufferHandle2 DT_IndexBuffer{};
 
 		bool m_IsInitialized = false;
 
 		PipelineCreator m_PipelineCreator{};
+		ImageCreator m_ImageCreator{};
 
+		inline static std::vector<uint32> s_Indices = {
+			0, 1, 2,
+			2, 3, 0
+		};
 
 		void assert_device() const;
-
 		void create_vk_instance(const RenderDeviceCreateInfo& info) noexcept;
 		void choose_adapter() noexcept;
 		void create_logical_device() noexcept;

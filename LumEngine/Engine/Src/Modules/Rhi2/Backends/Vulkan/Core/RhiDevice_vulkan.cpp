@@ -24,13 +24,14 @@ namespace lum::rhi::vk {
 		create_main_surface();
 		choose_adapter();
 		create_logical_device();
+
+		m_ImageCreator.Initialize(m_LogicalDevice, m_Adapter);
+		m_PipelineCreator.Initialize(m_LogicalDevice, m_Adapter);
+
 		acquire_queues();
 		recreate_swapchain();
 		recreate_swapchain_images();
-
-		m_PipelineCreator.Initialize(m_LogicalDevice, m_Adapter);
 		create_main_pipeline();
-
 		create_command_pool();
 		allocate_command_buffers();
 		create_sync_primitives();
@@ -56,6 +57,9 @@ namespace lum::rhi::vk {
 			}
 			for (auto&& [handle, value] : m_Pipelines.Iterate()) {
 				DestroyPipeline(handle);
+			}
+			for (auto&& [handle, value] : m_Images.Iterate()) {
+				DestroyImage(handle);
 			}
 
 			vkDestroyFence(m_LogicalDevice, m_Fence, nullptr);
@@ -171,13 +175,26 @@ namespace lum::rhi::vk {
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 
-		//
 		VkDeviceSize offset = 0;
-		vkCmdBindVertexBuffers(commandBuffer, 0, 1, &m_Buffers[DT_Buffer].m_VkBuffer, &offset);
-		//
+
+		vkCmdBindVertexBuffers(
+			commandBuffer,
+			0,
+			1,
+			&m_Buffers[DT_VertexBuffer].m_VkBuffer,
+			&offset
+		);
 
 
-		vkCmdDraw(commandBuffer, 3, 1, 0, 0); // Draw simple triangle
+		vkCmdBindIndexBuffer(
+			commandBuffer,
+			m_Buffers[DT_IndexBuffer].m_VkBuffer,
+			0,
+			VK_INDEX_TYPE_UINT32
+		);
+
+
+		vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0); // Draw simple triangle
 
 		vkCmdEndRendering(commandBuffer);
 
@@ -225,15 +242,15 @@ namespace lum::rhi::vk {
 		submitInfo.commandBufferInfoCount = 1;
 		submitInfo.pCommandBufferInfos = &cmdBufferInfo;
 
-		VkResult endBufferResult = vkEndCommandBuffer(commandBuffer);
+		const VkResult endBufferResult = vkEndCommandBuffer(commandBuffer);
 		if (endBufferResult != VK_SUCCESS) {
-			LUM_LOG_ERROR("Failed to end command buffer (vkEndCommandBuffer()), result: {}! (Vulkan)", (int32)endBufferResult);
+			LUM_LOG_ERROR("vkEndCommandBuffer() failure (VkResult: {})", (int32)endBufferResult);
 			return;
 		}
 
-		VkResult queueSubmitResult = vkQueueSubmit2(m_GraphicsQueue, 1, &submitInfo, m_Fence);
+		const VkResult queueSubmitResult = vkQueueSubmit2(m_GraphicsQueue, 1, &submitInfo, m_Fence);
 		if (queueSubmitResult != VK_SUCCESS) {
-			LUM_LOG_ERROR("Failed to vkQueueSubmit2(), result: {}! (Vulkan)", (int32)queueSubmitResult);
+			LUM_LOG_ERROR("vkQueueSubmit2() failure (VkResult: {})", (int32)queueSubmitResult);
 			return;
 		}
 
@@ -701,19 +718,28 @@ namespace lum::rhi::vk {
 	void VulkanDevice::create_vertex_buffers() noexcept {
 
 		static std::vector<Vertex> s_Vertices = {
+			// Bottom-left
 			{
-				{ 0.0f, -0.5f, 0.0f },
+				{ -0.5f, -0.5f, 0.0f },
 				{ 1.0f, 0.0f, 0.0f },
-				{ 0.5f, 0.0f }
+				{ 0.0f, 0.0f }
 			},
+			// Bottom-right
+			{
+				{ 0.5f, -0.5f, 0.0f },
+				{ 0.0f, 1.0f, 0.0f },
+				{ 1.0f, 0.0f }
+			},
+			// Top-right
 			{
 				{ 0.5f, 0.5f, 0.0f },
-				{ 0.0f, 1.0f, 0.0f },
+				{ 0.0f, 0.0f, 1.0f },
 				{ 1.0f, 1.0f }
 			},
+			// Top-left
 			{
 				{ -0.5f, 0.5f, 0.0f },
-				{ 0.0f, 0.0f, 1.0f },
+				{ 1.0f, 1.0f, 0.0f },
 				{ 0.0f, 1.0f }
 			}
 		};
@@ -723,7 +749,14 @@ namespace lum::rhi::vk {
 		info.m_BufferSize = s_Vertices.size() * sizeof(Vertex);
 		info.m_Data = s_Vertices.data();
 		info.m_Usage = BufferUsage2::Vertex;
-		DT_Buffer = CreateBuffer(info);
+		DT_VertexBuffer = CreateBuffer(info);
+
+		BufferCreateInfo2 info2{};
+		info2.m_DataSize = s_Indices.size() * sizeof(uint32);
+		info2.m_BufferSize = s_Indices.size() * sizeof(uint32);
+		info2.m_Data = s_Indices.data();
+		info2.m_Usage = BufferUsage2::Element;
+		DT_IndexBuffer = CreateBuffer(info2);
 
 	}
 

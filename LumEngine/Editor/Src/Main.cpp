@@ -8,15 +8,15 @@
 #include "Platform/Window.hpp"
 #include "Event/EventBus.hpp"
 using namespace lum;
-int main( int argc, char* argv[ ] ) {
+int main(int argc, char* argv[]) {
 
 #	if defined(_WIN32)
-		ResourceLoader::SetProjectRoot( "C:/Users/szymek/Desktop/lumen_assets" );
+	ResourceLoader::SetProjectRoot("C:/Users/szymek/Desktop/lumen_assets");
 #	elif defined(__APPLE__)
-		ResourceLoader::SetProjectRoot("/Users/br.eeziak/Desktop/glsl");
+	ResourceLoader::SetProjectRoot("/Users/br.eeziak/Desktop/glsl");
 #	endif
 
-	OwningPtr<rhi::IRenderDevice2> device = OwningPtr<rhi::vk::VulkanDevice>::Create( );
+	OwningPtr<rhi::IRenderDevice2> device = OwningPtr<rhi::vk::VulkanDevice>::Create();
 
 	ev::EventBus bus{};
 
@@ -25,12 +25,12 @@ int main( int argc, char* argv[ ] ) {
 	winInfo.m_Title = "Vulkan Development";
 	winInfo.m_Height = 800;
 	winInfo.m_Width = 800;
-	window.Initialize( winInfo, bus );
-	OwningPtr<GLFWVulkanSurfaceProvider> surfaceProvider = OwningPtr<GLFWVulkanSurfaceProvider>::Create( reinterpret_cast<GLFWwindow*>(window.GetNativeWindow( )) );
+	window.Initialize(winInfo, bus);
+	OwningPtr<GLFWVulkanSurfaceProvider> surfaceProvider = OwningPtr<GLFWVulkanSurfaceProvider>::Create(reinterpret_cast<GLFWwindow*>(window.GetNativeWindow()));
 
 	uint32 count{};
-	const char** glfwExtensions = glfwGetRequiredInstanceExtensions( &count );
-	std::vector<const char*> extensions( glfwExtensions, glfwExtensions + count );
+	const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&count);
+	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + count);
 
 	rhi::RenderDeviceCreateInfo info{};
 	info.m_InstanceExtensions = extensions;
@@ -38,14 +38,33 @@ int main( int argc, char* argv[ ] ) {
 	info.m_SurfaceProvider = surfaceProvider;
 	info.m_EventBus = bus;
 
-	device( ).Initialize( info );
+	device().Initialize(info);
+
+	auto data = ResourceLoader::LoadImageFromFile(ResourceRoot::External, "test.png");
+
+	rhi::ImageExtent3D extent{};
+	extent.m_Width = data->m_Width;
+	extent.m_Height = data->m_Height;
+	extent.m_Depth = 1;
+
+	rhi::ImageCreateInfo2 img{};
+	img.m_Data = data.ValueRef();
+	img.m_Dimension = rhi::ImageDimension::Image2D;
+	img.m_Format = rhi::ImageFormat::RGBA32_FLOAT;
+	img.m_ArrayLayers = 1;
+	img.m_Extent = extent;
+	img.m_MipmapLevels = 1;
+	img.m_UsageFlags = rhi::ImageUsageFlag::ColorAttachment;
+	img.m_SampleCount = rhi::SampleCount::Sample1;
+
+	auto imgh = device().CreateImage(img);
 
 	while (window.IsOpen()) {
-		window.Update( );
-		device( ).UpdateFrame( );
+		window.Update();
+		device().UpdateFrame();
 	}
-	 
-	device( ).Finalize( );
+
+	device().Finalize();
 
 
 

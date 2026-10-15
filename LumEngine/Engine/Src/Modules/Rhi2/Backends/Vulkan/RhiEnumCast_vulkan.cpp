@@ -192,6 +192,12 @@ namespace lum::rhi::vk {
 		case ImageFormat::RGBA32_UINT:  return VK_FORMAT_R32G32B32A32_UINT;
 		case ImageFormat::RGBA32_SINT:  return VK_FORMAT_R32G32B32A32_SINT;
 		case ImageFormat::RGBA32_FLOAT: return VK_FORMAT_R32G32B32A32_SFLOAT;
+
+		case ImageFormat::D16_UNORM: return VK_FORMAT_D16_UNORM;
+		case ImageFormat::D32_FLOAT: return VK_FORMAT_D32_SFLOAT;
+
+		case ImageFormat::D24_UNORM_S8_UINT: return VK_FORMAT_D24_UNORM_S8_UINT;
+		case ImageFormat::D32_FLOAT_S8_UINT: return VK_FORMAT_D32_SFLOAT_S8_UINT;
 		}
 
 		LUM_ASSERT(false, "Invalid ImageFormat enum");
@@ -204,6 +210,9 @@ namespace lum::rhi::vk {
 		case ImageDimension::Image2D: return VK_IMAGE_TYPE_2D;
 		case ImageDimension::Image3D: return VK_IMAGE_TYPE_3D;
 		}
+
+		LUM_ASSERT(false, "Invalid ImageDimension enum");
+		return {};
 
 	}
 	auto ToVk(SampleCount samples) noexcept -> VkSampleCountFlagBits {
@@ -220,12 +229,26 @@ namespace lum::rhi::vk {
 		LUM_ASSERT(false, "Invalid SampleCount enum");
 		return {};
 	}
-	auto ToVk(ImageViewType type) noexcept -> VkImageViewType {
 
-		switch (type) {
-			//case ImageType::
+	auto ToVk(SamplerWrap2 wrap) noexcept -> VkSamplerAddressMode {
+		switch (wrap) {
+		case SamplerWrap2::ClampBorder: return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		case SamplerWrap2::ClampEdge: return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+		case SamplerWrap2::Repeat: return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		case SamplerWrap2::RepeatMirrored: return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
 		}
 
+		LUM_ASSERT(false, "Invalid SamplerWrap enum");
+		return {};
+	}
+	auto ToVk(SamplerFilter filter) noexcept -> VkFilter {
+		switch (filter) {
+		case SamplerFilter::Linear: return VK_FILTER_LINEAR;
+		case SamplerFilter::Nearest: return VK_FILTER_NEAREST;
+		}
+
+		LUM_ASSERT(false, "Invalid SamplerFilter enum");
+		return {};
 	}
 
 } // namespace lum::rhi::vk

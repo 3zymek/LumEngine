@@ -12,24 +12,24 @@ namespace lum::rhi::vk {
 		std::vector<VkSurfaceFormatKHR> m_Formats{};
 		std::vector<VkPresentModeKHR>	m_PresentModes{};
 
-		LUM_NODISCARD VkSurfaceFormatKHR SelectSurfaceFormat( ) const noexcept;
-		LUM_NODISCARD VkPresentModeKHR SelectPresentMode( ) const noexcept;
+		LUM_NODISCARD VkSurfaceFormatKHR SelectSurfaceFormat() const noexcept;
+		LUM_NODISCARD VkPresentModeKHR SelectPresentMode() const noexcept;
 
 	};
 
 	class VulkanQueueFamilies {
 	public:
 
-		uint32 m_GraphicsQueueIndex = MaxValue<uint32>( );
-		uint32 m_PresentQueueIndex = MaxValue<uint32>( ); // IMPLEMENT PRESENT QUEUE INDEX
-		uint32 m_ComputeQueueIndex = MaxValue<uint32>( );
+		uint32 m_GraphicsQueueIndex = MaxValue<uint32>();
+		uint32 m_PresentQueueIndex = MaxValue<uint32>(); // IMPLEMENT PRESENT QUEUE INDEX
+		uint32 m_ComputeQueueIndex = MaxValue<uint32>();
 
-		LUM_NODISCARD constexpr bool HasQueue( uint32 index ) const noexcept {
-			return index != MaxValue<uint32>( );
+		LUM_NODISCARD constexpr bool HasQueue(uint32 index) const noexcept {
+			return index != MaxValue<uint32>();
 		}
 
-		LUM_NODISCARD constexpr bool IsValid( ) const noexcept {
-			return HasQueue( m_GraphicsQueueIndex ) && HasQueue( m_PresentQueueIndex );
+		LUM_NODISCARD constexpr bool IsValid() const noexcept {
+			return HasQueue(m_GraphicsQueueIndex) && HasQueue(m_PresentQueueIndex);
 		}
 
 	};
@@ -45,15 +45,17 @@ namespace lum::rhi::vk {
 		AdapterDescription m_Desc{};
 		uint32 m_Score = 0;
 
-		void QuerySurfaceCapabilities( VkSurfaceKHR surface ) noexcept;
+		void QuerySurfaceCapabilities(VkSurfaceKHR surface) noexcept;
+
+		uint32 FindMemoryType(uint32 typeBits, VkMemoryPropertyFlags properties);
 
 	};
 
 	class VulkanAdapterEvaluator {
 	public:
 
-		void SetRequirements( const AdapterRequirements& req ) noexcept;
-		Result<VulkanAdapter> EvaluateAdapter( VkPhysicalDevice device, VkSurfaceKHR surface ) const noexcept;
+		void SetRequirements(const AdapterRequirements& req) noexcept;
+		Result<VulkanAdapter> EvaluateAdapter(VkPhysicalDevice device, VkSurfaceKHR surface) const noexcept;
 
 	private:
 

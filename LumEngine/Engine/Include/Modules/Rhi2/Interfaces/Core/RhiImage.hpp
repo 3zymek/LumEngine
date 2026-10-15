@@ -106,7 +106,13 @@ namespace lum::rhi {
 
 		RGBA32_UINT,
 		RGBA32_SINT,
-		RGBA32_FLOAT
+		RGBA32_FLOAT,
+
+		D16_UNORM,
+		D32_FLOAT,
+
+		D24_UNORM_S8_UINT,
+		D32_FLOAT_S8_UINT,
 
 	};
 
@@ -131,15 +137,16 @@ namespace lum::rhi {
 	struct ImageCreateInfo2 {
 
 		ImageUsageFlags m_UsageFlags = ImageUsageFlag::None;
-		ImageDimension m_Type = ImageDimension::Image2D;
+		ImageDimension m_Dimension = ImageDimension::Image2D;
 		ImageFormat m_Format = ImageFormat::RGBA32_FLOAT;
 		ImageExtent3D m_Extent{};
+		ImageViewType m_ViewType = ImageViewType::Default;
 		SampleCount m_SampleCount = SampleCount::Sample1;
 
 		uint32 m_MipmapLevels = 1;
 		uint32 m_ArrayLayers = 1;
 
-		ImageData m_Data{};
+		Optional<ImageData> m_Data{};
 
 	};
 

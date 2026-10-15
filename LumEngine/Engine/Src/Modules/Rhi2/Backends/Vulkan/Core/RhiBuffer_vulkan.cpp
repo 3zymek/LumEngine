@@ -2,30 +2,30 @@
 
 namespace lum::rhi::vk {
 
-	BufferHandle2 VulkanDevice::CreateBuffer( const BufferCreateInfo2& info ) noexcept {
+	BufferHandle2 VulkanDevice::CreateBuffer(const BufferCreateInfo2& info) noexcept {
 
-		assert_device( );
+		assert_device();
 
-		if (m_Buffers.IsFull( )) {
-			LUM_LOG_WARN( "Couldn't create buffer: Max buffers reached! Increase max buffers count or refactor your code." );
+		if (m_Buffers.IsFull()) {
+			LUM_LOG_WARN("Couldn't create buffer: Max buffers reached! Increase max buffers count or refactor your code.");
 			return {};
 		}
 
 		VkBufferUsageFlags usage{};
-		if (info.m_Usage.Has( BufferUsage2::Vertex )) {
+		if (info.m_Usage.Has(BufferUsage2::Vertex)) {
 			usage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 		}
-		if (info.m_Usage.Has( BufferUsage2::Element )) {
+		if (info.m_Usage.Has(BufferUsage2::Element)) {
 			usage |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 		}
-		if (info.m_Usage.Has( BufferUsage2::Uniform )) {
+		if (info.m_Usage.Has(BufferUsage2::Uniform)) {
 			usage |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 		}
-		if (info.m_Usage.Has( BufferUsage2::ShaderStorage )) {
+		if (info.m_Usage.Has(BufferUsage2::ShaderStorage)) {
 			usage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 		}
 		if (usage == 0) {
-			LUM_LOG_WARN( "Couldn't create buffer: 0 usage flags in BufferCreateInfo!" );
+			LUM_LOG_WARN("Couldn't create buffer: 0 usage flags in BufferCreateInfo!");
 			return {};
 		}
 
@@ -37,76 +37,68 @@ namespace lum::rhi::vk {
 
 		VulkanBuffer vkBuffer{};
 
-		if (vkCreateBuffer( m_LogicalDevice, &vkInfo, nullptr, &vkBuffer.m_VkBuffer ) != VK_SUCCESS) {
-			LUM_LOG_ERROR( "Couldn't create buffer: Creation failed" );
+		if (vkCreateBuffer(m_LogicalDevice, &vkInfo, nullptr, &vkBuffer.m_VkBuffer) != VK_SUCCESS) {
+			LUM_LOG_ERROR("Couldn't create buffer: Creation failed");
 			return {};
 		}
 
-		vkGetBufferMemoryRequirements( m_LogicalDevice, vkBuffer.m_VkBuffer, &vkBuffer.m_MemoryRequirements );
+		vkGetBufferMemoryRequirements(m_LogicalDevice, vkBuffer.m_VkBuffer, &vkBuffer.m_MemoryRequirements);
 
-		uint32 memoryTypeIndex = UINT32_MAX;
-		for (uint32 i = 0; i < m_Adapter.m_MemoryProperties.memoryTypeCount; i++) {
-			bool typeSupported = vkBuffer.m_MemoryRequirements.memoryTypeBits & (1 << i);
-			bool hostVisible = m_Adapter.m_MemoryProperties.memoryTypes[ i ].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-
-			if (typeSupported && hostVisible) {
-				memoryTypeIndex = i;
-				break;
-			}
-		}
+		uint32 memoryTypeIndex = m_Adapter.FindMemoryType(
+			vkBuffer.m_MemoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+		);
 
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.memoryTypeIndex = memoryTypeIndex;
 		allocInfo.allocationSize = vkBuffer.m_MemoryRequirements.size;
 
-		vkAllocateMemory( m_LogicalDevice, &allocInfo, nullptr, &vkBuffer.m_Memory );
+		if (vkAllocateMemory(m_LogicalDevice, &allocInfo, nullptr, &vkBuffer.m_Memory) != VK_SUCCESS) {
+			LUM_LOG_ERROR("Couldn't allocate buffer memory");
+			vkDestroyBuffer(m_LogicalDevice, vkBuffer.m_VkBuffer, nullptr);
+			return {};
+		}
 
 		BufferHandle2 bufferHandle{};
 
-		if (vkBindBufferMemory( m_LogicalDevice, vkBuffer.m_VkBuffer, vkBuffer.m_Memory, 0 ) != VK_SUCCESS) {
-			LUM_LOG_ERROR( "Couldn't create buffer: Binding buffer memory failed" );
+		if (vkBindBufferMemory(m_LogicalDevice, vkBuffer.m_VkBuffer, vkBuffer.m_Memory, 0) != VK_SUCCESS) {
+			LUM_LOG_ERROR("Couldn't create buffer: Binding buffer memory failed");
 			return {};
 		}
 		else {
-			bufferHandle = m_Buffers.Append( vkBuffer );
+			bufferHandle = m_Buffers.Append(vkBuffer);
 		}
-		
+
 		// Data insertion
 		if (info.m_Data != nullptr) {
 
-			if (info.m_DataSize > info.m_BufferSize) {
-				LUM_LOG_WARN( "Couldn't insert data into buffer: Data size is greater than buffer actual size" );
-				return bufferHandle;
-			}
-
 			void* data = nullptr;
-			VkResult res = vkMapMemory( m_LogicalDevice, vkBuffer.m_Memory, 0, info.m_DataSize, 0, &data );
+			VkResult res = vkMapMemory(m_LogicalDevice, vkBuffer.m_Memory, 0, info.m_DataSize, 0, &data);
 			if (res != VK_SUCCESS) {
-				LUM_LOG_WARN( "Couldn't map buffer memory!" );
+				LUM_LOG_WARN("Couldn't map buffer memory!");
 				return bufferHandle;
 			}
-			memcpy( data, info.m_Data, info.m_DataSize );
-			vkUnmapMemory( m_LogicalDevice, vkBuffer.m_Memory );
+			memcpy(data, info.m_Data, info.m_DataSize);
+			vkUnmapMemory(m_LogicalDevice, vkBuffer.m_Memory);
 		}
 
 		return bufferHandle;
 
 	}
-	void VulkanDevice::DestroyBuffer( BufferHandle2& handle ) noexcept {
+	void VulkanDevice::DestroyBuffer(BufferHandle2& handle) noexcept {
 
-		assert_device( );
+		assert_device();
 
-		if (!m_Buffers.Contains( handle )) return;
+		if (!m_Buffers.Contains(handle)) return;
 
-		auto& buffer = m_Buffers[ handle ];
+		auto& buffer = m_Buffers[handle];
 
-		vkDeviceWaitIdle( m_LogicalDevice );
+		vkDeviceWaitIdle(m_LogicalDevice);
 
-		vkDestroyBuffer( m_LogicalDevice, buffer.m_VkBuffer, nullptr );
-		vkFreeMemory( m_LogicalDevice, buffer.m_Memory, nullptr );
+		vkDestroyBuffer(m_LogicalDevice, buffer.m_VkBuffer, nullptr);
+		vkFreeMemory(m_LogicalDevice, buffer.m_Memory, nullptr);
 
-		m_Buffers.Remove( handle );
+		m_Buffers.Remove(handle);
 
 	}
 

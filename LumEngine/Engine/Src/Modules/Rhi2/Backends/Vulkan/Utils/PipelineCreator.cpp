@@ -57,7 +57,7 @@ namespace lum::rhi::vk {
 
 		if (layoutResult != VK_SUCCESS) {
 			return Result<VulkanPipeline>::Failure(
-				FormatString("Failed to create pipeline layout! (VkResult: {})", static_cast<int32>(layoutResult))
+				FormatString("vkCreatePipelineLayout failure (VkResult: {})", static_cast<int32>(layoutResult))
 			);
 		}
 
@@ -96,7 +96,7 @@ namespace lum::rhi::vk {
 
 		if (pipResult != VK_SUCCESS) {
 			return Result<VulkanPipeline>::Failure(
-				FormatString("Failed to create graphics pipeline! (VkResult: {})", static_cast<int32>(pipResult))
+				FormatString("vkCreateGraphicsPipeline failure (VkResult: {})", static_cast<int32>(pipResult))
 			);
 		}
 
