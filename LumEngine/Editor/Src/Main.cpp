@@ -40,27 +40,6 @@ int main(int argc, char* argv[]) {
 
 	device().Initialize(info);
 
-	auto data = ResourceLoader::LoadImageFromFile(ResourceRoot::External, "test.png");
-
-	LUM_ASSERT( data, "test.png doesn't exists" );
-
-	rhi::ImageExtent3D extent{};
-	extent.m_Width = data.ValueRef( ).m_Width;
-	extent.m_Height = data.ValueRef( ).m_Height;
-	extent.m_Depth = 1;
-
-	rhi::ImageCreateInfo2 img{};
-	img.m_Data = data.ValueRef();
-	img.m_Dimension = rhi::ImageDimension::Image2D;
-	img.m_Format = rhi::ImageFormat::RGBA32_FLOAT;
-	img.m_ArrayLayers = 1;
-	img.m_Extent = extent;
-	img.m_MipmapLevels = 1;
-	img.m_UsageFlags = rhi::ImageUsageFlag::ColorAttachment;
-	img.m_SampleCount = rhi::SampleCount::Sample1;
-
-	auto imgh = device().CreateImage(img);
-
 	while (window.IsOpen()) {
 		window.Update();
 		device().UpdateFrame();

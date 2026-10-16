@@ -134,6 +134,11 @@ namespace lum::rhi {
 		Sample64
 	};
 
+	enum class ImageUsage : uint8 {
+		Static = 0U,
+		Dynamic
+	};
+
 	struct ImageCreateInfo2 {
 
 		ImageUsageFlags m_UsageFlags = ImageUsageFlag::None;
@@ -141,6 +146,7 @@ namespace lum::rhi {
 		ImageFormat m_Format = ImageFormat::RGBA32_FLOAT;
 		ImageExtent3D m_Extent{};
 		ImageViewType m_ViewType = ImageViewType::Default;
+		ImageUsage m_Usage = ImageUsage::Static;
 		SampleCount m_SampleCount = SampleCount::Sample1;
 
 		uint32 m_MipmapLevels = 1;

@@ -5,27 +5,27 @@
 
 namespace lum::rhi::vk {
 
-    class VulkanAdapter;
+	class VulkanAdapter;
 
-    class ImageCreator {
-    public:
+	class ImageCreator {
+	public:
 
-        void Initialize(VkDevice logicalDevice, SafePtr<VulkanAdapter> adapter) {
-            m_LogicalDevice = logicalDevice;
-            m_Adapter = adapter;
-        }
+		void Initialize( VkDevice logicalDevice, SafePtr<VulkanAdapter> adapter ) {
+			m_LogicalDevice = logicalDevice;
+			m_Adapter = adapter;
+		}
 
-        Result<VulkanImage> CreateImage(const ImageCreateInfo2& info) noexcept;
-        Result<VulkanSampler> CreateSampler(const SamplerCreateInfo2& info) noexcept;
+		Result<VulkanImage> CreateImage( const ImageCreateInfo2& info ) noexcept;
+		Result<VulkanSampler> CreateSampler( const SamplerCreateInfo2& info ) noexcept;
 
-    private:
+	private:
 
-        VkDevice m_LogicalDevice = VK_NULL_HANDLE;
-        SafePtr<VulkanAdapter> m_Adapter = nullptr;
+		VkDevice m_LogicalDevice = VK_NULL_HANDLE;
+		SafePtr<VulkanAdapter> m_Adapter = nullptr;
 
-        auto choose_image_view_type(const ImageCreateInfo2& info) noexcept -> VkImageViewType;
-        auto choose_aspect_mask(ImageFormat format) noexcept -> VkImageAspectFlags;
+		auto choose_image_view_type( const ImageCreateInfo2& info ) noexcept -> VkImageViewType;
+		auto choose_aspect_mask( ImageFormat format ) noexcept -> VkImageAspectFlags;
 
-    };
+	};
 
 }

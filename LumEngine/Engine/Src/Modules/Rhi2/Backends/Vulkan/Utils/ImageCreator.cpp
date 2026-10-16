@@ -17,13 +17,15 @@ namespace lum::rhi::vk {
 
 		VkFormat format = ToVk( info.m_Format );
 
+		bool isHostVisible = (info.m_Usage == ImageUsage::Static) ? false : true;
+
 		VkImageCreateInfo vkInfo{};
 		vkInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		vkInfo.usage = ToVk( info.m_UsageFlags );
 		vkInfo.format = format;
 		vkInfo.imageType = ToVk( info.m_Dimension );
 		vkInfo.extent = extent;
-		vkInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		vkInfo.tiling = isHostVisible ? VK_IMAGE_TILING_LINEAR : VK_IMAGE_TILING_OPTIMAL;
 		vkInfo.mipLevels = info.m_MipmapLevels;
 		vkInfo.arrayLayers = info.m_ArrayLayers;
 		vkInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -42,8 +44,9 @@ namespace lum::rhi::vk {
 		VkMemoryRequirements req{};
 		vkGetImageMemoryRequirements( m_LogicalDevice, image.m_Image, &req );
 
+		VkMemoryPropertyFlagBits property = isHostVisible ? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT : VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		uint32 memoryTypeIndex = m_Adapter( ).FindMemoryType(
-			req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+			req.memoryTypeBits, property
 		);
 
 		VkMemoryAllocateInfo allocInfo{};
@@ -170,7 +173,8 @@ namespace lum::rhi::vk {
 			default:
 			return VK_IMAGE_ASPECT_COLOR_BIT;
 		}
-
+		LUM_ASSERT( false, "Invalid ImageFormat enum" );
+		return {};
 	}
 
 }

@@ -4,6 +4,9 @@
 
 namespace lum::rhi {
 
+    using SamplerID2 = uint32;
+    struct SamplerHandle2 : cstd::BaseHandle<SamplerID2> {};
+
     enum class SamplerFilter {
         Linear,
         Nearest
@@ -40,6 +43,10 @@ namespace lum::rhi {
         // Level of anisotropic filtering ( sharpens textures at steep viewing angles, prevents blur and stretch ) 0 for disabled
         float32 m_Anisotropy = 0.0f;
         float32 m_MaxAnisotropy = 1.0f;
+
+    };
+
+    struct Sampler2 {
 
     };
 

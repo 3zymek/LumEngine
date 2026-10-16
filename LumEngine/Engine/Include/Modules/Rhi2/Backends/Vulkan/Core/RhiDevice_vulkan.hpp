@@ -4,6 +4,7 @@
 #include "Rhi2/Backends/Vulkan/RhiCommon_vulkan.hpp"
 #include "Rhi2/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
 #include "Rhi2/Backends/Vulkan/Core/RhiBuffer_vulkan.hpp"
+#include "Rhi2/Backends/Vulkan/Core/RhiSampler_vulkan.hpp"
 #include "Rhi2/Backends/Vulkan/Utils/PipelineCreator.hpp"
 #include "Rhi2/Backends/Vulkan/Utils/ImageCreator.hpp"
 
@@ -18,25 +19,29 @@ namespace lum::rhi::vk {
 	class VulkanDevice : public IRenderDevice2 {
 	public:
 
-		void Initialize(const RenderDeviceCreateInfo& info) noexcept override;
-		void Finalize() noexcept override;
+		void Initialize( const RenderDeviceCreateInfo& info ) noexcept override;
+		void Finalize( ) noexcept override;
 
-		void UpdateFrame() noexcept override;
+		void UpdateFrame( ) noexcept override;
 
-		BufferHandle2 CreateBuffer(const BufferCreateInfo2& info) noexcept override;
-		void DestroyBuffer(BufferHandle2& handle) noexcept override;
+		BufferHandle2 CreateBuffer( const BufferCreateInfo2& info ) noexcept override;
+		void DestroyBuffer( BufferHandle2& handle ) noexcept override;
 
-		PipelineHandle2 CreatePipeline(const PipelineCreateInfo2& info) noexcept override;
-		void DestroyPipeline(PipelineHandle2& handle) noexcept override;
+		PipelineHandle2 CreatePipeline( const PipelineCreateInfo2& info ) noexcept override;
+		void DestroyPipeline( PipelineHandle2& handle ) noexcept override;
 
-		ImageHandle2 CreateImage(const ImageCreateInfo2& info) noexcept override;
-		void DestroyImage(ImageHandle2& handle) noexcept override;
+		ImageHandle2 CreateImage( const ImageCreateInfo2& info ) noexcept override;
+		void DestroyImage( ImageHandle2& handle ) noexcept override;
+
+		SamplerHandle2 CreateSampler( const SamplerCreateInfo2& info ) noexcept override;
+		void DestroySampler( SamplerHandle2& handle ) noexcept override;
 
 	private:
 
 		static inline constexpr usize s_MaxBuffers = 256;
 		static inline constexpr usize s_MaxPipelines = 32;
 		static inline constexpr usize s_MaxImages = 128;
+		static inline constexpr usize s_MaxSamplers = 32;
 
 		cstd::HandlePool<
 			BufferHandle2,
@@ -53,25 +58,69 @@ namespace lum::rhi::vk {
 			VulkanImage,
 			ImageID2> m_Images{ s_MaxImages };
 
-		TVector2<uint32> m_WindowSize{};
+		cstd::HandlePool<
+			SamplerHandle2,
+			VulkanSampler,
+			SamplerID2> m_Samplers{ s_MaxSamplers };
 
-		VkInstance m_Instance = VK_NULL_HANDLE;
+
+
+
+
+
+
+		TVector2<uint32> m_WindowSize{};
 
 		VulkanAdapterEvaluator m_AdapterEvaluator{};
 		VulkanAdapter m_Adapter{};
 
-		VkDevice m_LogicalDevice = VK_NULL_HANDLE;
-
 		SafePtr<IVulkanSurfaceProvider> m_SurfaceProvider = nullptr;
-		VkSurfaceKHR m_MainSurface = VK_NULL_HANDLE;
-
-		VkSwapchainKHR m_Swapchain = VK_NULL_HANDLE;
-		std::vector<VkImage> m_SwapchainImages{};
-		std::vector<VkImageView> m_SwapchainImageViews{};
 
 		VulkanPipeline m_MainPipeline{};
 
+		uint32 m_CurrentFrame = 0;
+
+		bool m_IsInitialized = false;
+
+		PipelineCreator m_PipelineCreator{};
+		ImageCreator m_ImageCreator{};
+
+
+
+
+		// ===========================================================
+		// DEBUG
+		// ===========================================================
+		inline static std::vector<uint32> DT_Indices = {
+			0, 1, 2,
+			2, 3, 0
+		};
+		BufferHandle2 DT_VertexBuffer{};
+		BufferHandle2 DT_IndexBuffer{};
+
+		VkDescriptorSetLayout DT_DescriptorSetLayout{};
+		VkDescriptorPool DT_DescriptorPool{};
+		VkDescriptorSet DT_DescriptorSet{};
+
+		ImageHandle2 DT_Image{};
+		SamplerHandle2 DT_Sampler{};
+
+
+
+		// ===========================================================
+		// VULKAN SPECIFIC 
+		// ===========================================================
+
+		VkInstance m_Instance = VK_NULL_HANDLE;
+		VkDevice m_LogicalDevice = VK_NULL_HANDLE;
+		VkSurfaceKHR m_MainSurface = VK_NULL_HANDLE;
+		VkSwapchainKHR m_Swapchain = VK_NULL_HANDLE;
+
+		std::vector<VkImage> m_SwapchainImages{};
+		std::vector<VkImageView> m_SwapchainImageViews{};
+
 		VkCommandPool m_CmdPool = VK_NULL_HANDLE;
+
 		std::vector<VkCommandBuffer> m_CmdBuffers{ LUM_MAX_FRAMES_IN_FLIGHT };
 
 		VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
@@ -83,37 +132,24 @@ namespace lum::rhi::vk {
 
 		VkFence m_Fence = VK_NULL_HANDLE;
 
-		uint32 m_CurrentFrame = 0;
 
-		BufferHandle2 DT_VertexBuffer{};
-		BufferHandle2 DT_IndexBuffer{};
 
-		bool m_IsInitialized = false;
+		void assert_device( ) const;
+		void create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept;
+		void choose_adapter( ) noexcept;
+		void create_logical_device( ) noexcept;
+		void acquire_queues( ) noexcept;
+		void create_main_surface( ) noexcept;
+		void recreate_swapchain( ) noexcept;
+		void recreate_swapchain_images( ) noexcept;
+		void create_main_pipeline( ) noexcept;
+		void create_command_pool( ) noexcept;
+		void allocate_command_buffers( ) noexcept;
+		void create_sync_primitives( ) noexcept;
+		void handle_resize( ) noexcept;
+		void create_vertex_buffers( ) noexcept;
 
-		PipelineCreator m_PipelineCreator{};
-		ImageCreator m_ImageCreator{};
-
-		inline static std::vector<uint32> s_Indices = {
-			0, 1, 2,
-			2, 3, 0
-		};
-
-		void assert_device() const;
-		void create_vk_instance(const RenderDeviceCreateInfo& info) noexcept;
-		void choose_adapter() noexcept;
-		void create_logical_device() noexcept;
-		void acquire_queues() noexcept;
-		void create_main_surface() noexcept;
-		void recreate_swapchain() noexcept;
-		void recreate_swapchain_images() noexcept;
-		void create_main_pipeline() noexcept;
-		void create_command_pool() noexcept;
-		void allocate_command_buffers() noexcept;
-		void create_sync_primitives() noexcept;
-		void handle_resize() noexcept;
-		void create_vertex_buffers() noexcept;
-
-		bool create_shader_module(const Path& path, VkShaderModule& module) const noexcept;
+		bool create_shader_module( const Path& path, VkShaderModule& module ) const noexcept;
 
 	};
 

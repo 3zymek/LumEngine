@@ -5,6 +5,7 @@
 #include "Rhi2/Interfaces/Core/RhiBuffer.hpp"
 #include "Rhi2/Interfaces/Core/RhiPipeline.hpp"
 #include "Rhi2/Interfaces/Core/RhiImage.hpp"
+#include "Rhi2/Interfaces/Core/RhiSampler.hpp"
 
 namespace lum {
 
@@ -27,6 +28,7 @@ namespace lum::rhi {
 		SafePtr<ISurfaceProvider>	m_SurfaceProvider = nullptr; // REQUIRED
 		SafePtr<ev::EventBus>		m_EventBus = nullptr; // REQUIRED
 
+
 	};
 
 	class IRenderDevice2 {
@@ -45,6 +47,9 @@ namespace lum::rhi {
 
 		virtual ImageHandle2 CreateImage( const ImageCreateInfo2& info ) noexcept = 0;
 		virtual void DestroyImage( ImageHandle2& handle ) noexcept = 0;
+
+		virtual SamplerHandle2 CreateSampler( const SamplerCreateInfo2& info ) noexcept = 0;
+		virtual void DestroySampler( SamplerHandle2& handle ) noexcept = 0;
 
 		virtual ~IRenderDevice2( ) = default;
 
