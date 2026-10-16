@@ -61,7 +61,7 @@ namespace lum {
 			return r;
 		}
 		static Result Success( tType&& val ) {
-			Result r( val );
+			Result r( std::move( val ) );
 			return r;
 		}
 
@@ -89,28 +89,12 @@ namespace lum {
 			return m_Value.HasValue( ) ? &m_Value.Value( ) : nullptr;
 		}
 
-		LUM_FORCEINLINE tType& ValueRef( ) {
-			return m_Value.Value( );
+		LUM_FORCEINLINE tType& ValueRef( std::source_location loc = std::source_location::current()) {
+			return m_Value.Value( loc );
 		}
 
-		LUM_FORCEINLINE const tType& ValueRef( ) const {
-			return m_Value.Value( );
-		}
-
-		tType& operator*( ) {
-			return m_Value.Value( );
-		}
-
-		const tType& operator*( ) const {
-			return m_Value.Value( );
-		}
-
-		tType* operator->( ) {
-			return &m_Value.Value( );
-		}
-
-		const tType* operator->( ) const {
-			return &m_Value.Value( );
+		LUM_FORCEINLINE const tType& ValueRef( std::source_location loc = std::source_location::current( ) ) const {
+			return m_Value.Value( loc );
 		}
 
 		explicit operator bool( ) const {

@@ -454,8 +454,10 @@ namespace lum::rhi::vk {
 		info.pQueueCreateInfos = queueInfos.data();
 		info.pNext = detail::LogicalDeviceFeatures::GetStatic().GetChainHead();
 
-		if (vkCreateDevice(m_Adapter.m_Device, &info, nullptr, &m_LogicalDevice) != VK_SUCCESS) {
-			LUM_LOG_FATAL("Failed to create Logical Device! (Vulkan)");
+		const VkResult result = vkCreateDevice( m_Adapter.m_Device, &info, nullptr, &m_LogicalDevice );
+
+		if (result != VK_SUCCESS) {
+			LUM_LOG_FATAL("vkCreateDevice() failure (VkResult: {})", static_cast<int32>(result));
 		}
 
 	}

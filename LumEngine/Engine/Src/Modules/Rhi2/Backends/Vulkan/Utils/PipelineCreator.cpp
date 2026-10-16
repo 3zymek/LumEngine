@@ -277,16 +277,18 @@ namespace lum::rhi::vk {
 
 	auto PipelineCreator::create_shader_module(const Path& path) noexcept -> VkShaderModule {
 
-		auto binaryCode = FileSystem::ReadBinaryFile(path);
-		if (!binaryCode) {
-			LUM_LOG_ERROR("Couldn't create shader: {}!", binaryCode.GetError());
+		auto binaryCodeResult = FileSystem::ReadBinaryFile(path);
+		if (!binaryCodeResult) {
+			LUM_LOG_ERROR("Couldn't create shader: {}!", binaryCodeResult.GetError());
 			return VK_NULL_HANDLE;
 		}
+		auto& binary = binaryCodeResult.ValueRef( );
+
 
 		VkShaderModuleCreateInfo vkInfo{};
 		vkInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		vkInfo.pCode = reinterpret_cast<const uint32_t*>(binaryCode->data());
-		vkInfo.codeSize = binaryCode->size() * sizeof(uint32);
+		vkInfo.pCode = reinterpret_cast<const uint32_t*>(binary.data());
+		vkInfo.codeSize = binary.size() * sizeof(uint32);
 
 		VkShaderModule module = VK_NULL_HANDLE;
 

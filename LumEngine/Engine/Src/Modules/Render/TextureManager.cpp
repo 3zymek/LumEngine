@@ -51,7 +51,7 @@ namespace lum {
 
 		desc.m_Data = data.ValueRef( );
 		desc.m_TextureType = rhi::TextureKind::Texture2D;
-		desc.m_PixelFormat = ChannelsToFormat( data->m_Channels );
+		desc.m_PixelFormat = ChannelsToFormat( data.ValueRef( ).m_Channels );
 		rhi::TextureHandle handle = m_RenderDevice().CreateTexture( desc );
 
 		m_Textures[ hash ] = handle;
@@ -83,7 +83,10 @@ namespace lum {
 			return m_MissingTexture;
 		}
 
-		uint32 faceSize = std::min(data->m_Width / 4, data->m_Height / 2);
+		uint32 faceSize = std::min(
+			data.ValueRef().m_Width / 4, 
+			data.ValueRef( ).m_Height / 2
+		);
 
 		std::array<ImageData, 6> convertedData = convert_equirectangular_to_cubemap( data.ValueRef( ), faceSize );
 

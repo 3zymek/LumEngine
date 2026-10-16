@@ -158,30 +158,32 @@ namespace lum {
 
 		Path path = ResolveResourcePath( root, filepath );
 
-		auto shaderSource = FileSystem::ReadAllText( path );
-		if (!shaderSource) {
-			return shaderSource;
+		auto shaderSourceResut = FileSystem::ReadAllText( path );
+		if (!shaderSourceResut) {
+			return shaderSourceResut;
 		}
+		auto& src = shaderSourceResut.ValueRef( );
 
-		auto defines = FileSystem::ReadAllText( s_ShaderDefineFile );
-		if (!defines) {
-			return defines;
+		auto definesResult = FileSystem::ReadAllText( s_ShaderDefineFile );
+		if (!definesResult) {
+			return definesResult;
 		}
+		auto& defines = definesResult.ValueRef( );
 
 		String version{};
 		String clippedSource{};
-		usize versionIdx = shaderSource->find( "#version" );
+		usize versionIdx = src.find( "#version" );
 		if (versionIdx != String::npos) {
 
-			usize end = shaderSource->find( '\n', versionIdx );
-			version = shaderSource->substr( versionIdx, end - versionIdx );
-			clippedSource = shaderSource->substr( end );
+			usize end = src.find( '\n', versionIdx );
+			version = src.substr( versionIdx, end - versionIdx );
+			clippedSource = src.substr( end );
 		
 		}
 
 		std::stringstream ss;
 		ss << version << '\n';
-		ss << defines.ValueRef() << '\n';
+		ss << definesResult.ValueRef() << '\n';
 		ss << clippedSource;
 
 		return ss.str( );

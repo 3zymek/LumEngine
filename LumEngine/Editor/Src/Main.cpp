@@ -42,9 +42,11 @@ int main(int argc, char* argv[]) {
 
 	auto data = ResourceLoader::LoadImageFromFile(ResourceRoot::External, "test.png");
 
+	LUM_ASSERT( data, "test.png doesn't exists" );
+
 	rhi::ImageExtent3D extent{};
-	extent.m_Width = data->m_Width;
-	extent.m_Height = data->m_Height;
+	extent.m_Width = data.ValueRef( ).m_Width;
+	extent.m_Height = data.ValueRef( ).m_Height;
 	extent.m_Depth = 1;
 
 	rhi::ImageCreateInfo2 img{};
