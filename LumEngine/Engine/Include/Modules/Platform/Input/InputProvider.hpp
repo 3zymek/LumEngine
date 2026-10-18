@@ -5,8 +5,8 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/CoreCommon.hpp"
 #include "Platform/Input/KeyCodes.hpp"
+#include "Core/Math/Vec2.hpp"
 
 namespace lum::input {
 

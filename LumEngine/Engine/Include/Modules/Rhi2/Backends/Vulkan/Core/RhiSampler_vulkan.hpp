@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Rhi2/Interfaces/Core/RhiSampler.hpp"
+#include <vulkan/vulkan.hpp>
 
 namespace lum::rhi::vk {
 

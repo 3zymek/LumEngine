@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Rhi/RhiPch.hpp"
-#include "Core/CoreCommon.hpp"
-#include "Core/Utils/Logger.hpp"
-#include "Platform/FileSystem/FileSystem.hpp"
+#include "Core/Math/Vec3.hpp"
+#include "Core/Math/Vec2.hpp"
 
 namespace lum::rhi {
 

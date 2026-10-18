@@ -4,10 +4,16 @@
 //
 //=============================================================================//
 #pragma once
-#include "Core/Types.hpp"
+
+#include "Core/CoreTypes.hpp"
+#include "Core/CoreDefines.hpp"
+#include "Core/Utils/TypeUtils.hpp"
 #include "Core/Utils/Flags.hpp"
-#include "Rhi/RhiPch.hpp"
 #include "Core/Utils/ResourceLoader.hpp"
+#include "Core/Utils/SafePtr.hpp"
+#include "Core/Utils/Optional.hpp"
+
+#include <glfw3.h>
 
 namespace lum {
 	

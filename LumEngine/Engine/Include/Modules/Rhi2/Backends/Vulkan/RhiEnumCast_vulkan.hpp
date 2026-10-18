@@ -1,7 +1,12 @@
 #pragma once
-#include "Rhi2/Backends/Vulkan/Core/RhiPipeline_vulkan.hpp"
-#include "Rhi2/Backends/Vulkan/Core/RhiImage_vulkan.hpp"
-#include "Rhi2/Backends/Vulkan/Core/RhiSampler_vulkan.hpp"
+
+#include "Core/CoreDefines.hpp"
+#include "Rhi2/Interfaces/Core/RhiShader.hpp"
+#include "Rhi2/Interfaces/Core/RhiPipeline.hpp"
+#include "Rhi2/Interfaces/Core/RhiImage.hpp"
+#include "Rhi2/Interfaces/Core/RhiSampler.hpp"
+
+#include <vulkan/vulkan.hpp>
 
 namespace lum::rhi::vk {
 

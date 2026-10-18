@@ -6,10 +6,17 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/Setup.hpp"
-#include "Core/Types.hpp"
-#include "Core/Utils/Flags.hpp"
-#include "Core/Utils/FormatString.hpp"
+#include <chrono>
+#include <ctime>
+#include <deque>
+#include <iostream>
+#include <source_location>
+#include <utility>
+#include <vector>
+
+#include "Core/CoreDefines.hpp"
+#include "Core/CoreTypes.hpp"
+#include "StringUtils.hpp"
 
 namespace lum {
 
@@ -210,11 +217,11 @@ namespace lum {
 			std::time_t t = time / 1000;
 			std::tm tm{};
 
-			#if defined(_WIN32)
-				localtime_s( &tm, &t );
-			#else
-				localtime_r( &t, &tm );
-			#endif
+#if defined(_WIN32)
+			localtime_s( &tm, &t );
+#else
+			localtime_r( &t, &tm );
+#endif
 
 			std::strftime( out, 16, "%H:%M:%S", &tm );
 		}

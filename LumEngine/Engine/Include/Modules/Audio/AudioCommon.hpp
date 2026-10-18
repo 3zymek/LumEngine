@@ -4,8 +4,13 @@
 //
 //=============================================================================//
 #pragma once
-#include "Core/CoreCommon.hpp"
-#include "Ahi/AhiCommon.hpp"
+
+#include "Ahi/AhiTypes.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/Flags.hpp"
+#include "Core/Utils/LogMacros.hpp"
+#include "Core/Utils/StringUtils.hpp"
+#include "Core/Utils/TypeUtils.hpp"
 
 namespace lum {
 

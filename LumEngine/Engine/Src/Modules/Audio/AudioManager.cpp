@@ -5,18 +5,22 @@
 //
 //=============================================================================//
 
-#include "Audio/AudioManager.hpp"
+#include <Ahi/AhiTypes.hpp>
+#include <Ahi/Core/AhiSound.hpp>
+#include <Core/CoreTypes.hpp>
+#include <Core/Utils/LogMacros.hpp>
+#include <Core/Utils/StringUtils.hpp>
+#include <Platform/FileSystem/Path.hpp>
 
 #include "Ahi/Core/AhiDevice.hpp"
-
+#include "Audio/AudioManager.hpp"
 #include "Core/Utils/ResourceLoader.hpp"
-
-#include "Event/EventBus.hpp"
-
 #include "Entity/EntityManager.hpp"
-#include "Entity/Components/Transform.hpp"
-#include "Entity/Components/AudioEmitter.hpp"
-#include "Entity/Components/Camera.hpp"
+#include "Event/EventBus.hpp"
+#include "Event/Events/EntityEvents.hpp"
+//#include "Entity/Components/Transform.hpp"
+//#include "Entity/Components/AudioEmitter.hpp"
+//#include "Entity/Components/Camera.hpp"
 
 namespace lum {
 
@@ -222,7 +226,7 @@ namespace lum {
 	}
 
 	void AudioManager::UpdateInstances( ecs::EntityManager* m_Gr ) {
-
+		/*
 		m_Gr->Iterate<CCamera, CTransform>(
 			[ & ]( CCamera& camera, CTransform& transform ) {
 				ahi::ListenerAttributes attrs;
@@ -237,34 +241,34 @@ namespace lum {
 
 		m_Gr->EachWithID<CTransform, CAudioEmitter>(
 			[ & ]( EntityID id, CTransform& transf, CAudioEmitter& emitter ) {
+			*/
+			/*
+			if (emitter.m_Marked) {
 
-				/*
-				if (emitter.m_Marked) {
+				auto& inst = m_Instances[ id ];
 
-					auto& inst = m_Instances[ id ];
+				inst.m_Volume = emitter.m_Volume;
+				inst.m_Pitch = emitter.m_Pitch;
+				inst.m_MinDistance = emitter.m_MinDistance;
+				inst.m_MaxDistance = emitter.m_MaxDistance;
+				if (emitter.m_Paused)
+					inst.m_Flags.Set( ahi::SoundInstanceFlag::Paused );
+				if (emitter.m_Playing)
+					inst.m_Flags.Set( ahi::SoundInstanceFlag::Playing );
+				if (emitter.m_Looped)
+					inst.m_Flags.Set( ahi::SoundInstanceFlag::Looped );
+				if (emitter.m_Play)
+					inst.m_Flags.Set( ahi::SoundInstanceFlag::Play );
+				inst.m_Sound = emitter.m_Sound;
 
-					inst.m_Volume = emitter.m_Volume;
-					inst.m_Pitch = emitter.m_Pitch;
-					inst.m_MinDistance = emitter.m_MinDistance;
-					inst.m_MaxDistance = emitter.m_MaxDistance;
-					if (emitter.m_Paused)
-						inst.m_Flags.Set( ahi::SoundInstanceFlag::Paused );
-					if (emitter.m_Playing)
-						inst.m_Flags.Set( ahi::SoundInstanceFlag::Playing );
-					if (emitter.m_Looped)
-						inst.m_Flags.Set( ahi::SoundInstanceFlag::Looped );
-					if (emitter.m_Play)
-						inst.m_Flags.Set( ahi::SoundInstanceFlag::Play );
-					inst.m_Sound = emitter.m_Sound;
+				inst.m_Position = transf.m_Position;
 
-					inst.m_Position = transf.m_Position;
+			}
 
-				}
+			emitter.m_Marked = false;
+			*/
 
-				emitter.m_Marked = false;
-				*/
-
-			} );
+			//} );
 
 		for (auto it = m_Instances.begin( ); it != m_Instances.end( );) {
 

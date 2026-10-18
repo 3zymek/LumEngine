@@ -1,5 +1,10 @@
 #pragma once
 
+#include "Core/CoreTypes.hpp"
+#include "Core/CoreDefines.hpp"
+#include "Core/Utils/HandlePool.hpp"
+#include "Core/Math/Vec2.hpp"
+
 #include "Rhi2/Interfaces/Core/RhiDevice.hpp"
 #include "Rhi2/Backends/Vulkan/RhiCommon_vulkan.hpp"
 #include "Rhi2/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
@@ -7,6 +12,12 @@
 #include "Rhi2/Backends/Vulkan/Core/RhiSampler_vulkan.hpp"
 #include "Rhi2/Backends/Vulkan/Utils/PipelineCreator.hpp"
 #include "Rhi2/Backends/Vulkan/Utils/ImageCreator.hpp"
+
+#include <array>
+#include <vector>
+#include <queue>
+#include <span>
+#include <vulkan/vulkan.hpp>
 
 namespace lum {
 
@@ -16,7 +27,7 @@ namespace lum {
 
 namespace lum::rhi::vk {
 
-	class VulkanDevice : public IRenderDevice2 {
+	class LUM_API VulkanDevice : public IRenderDevice2 {
 	public:
 
 		void Initialize( const RenderDeviceCreateInfo& info ) noexcept override;
@@ -36,6 +47,8 @@ namespace lum::rhi::vk {
 		SamplerHandle2 CreateSampler( const SamplerCreateInfo2& info ) noexcept override;
 		void DestroySampler( SamplerHandle2& handle ) noexcept override;
 
+		void SendCommandBuffer( CommandBuffer&& buffer ) noexcept override;
+
 	private:
 
 		static inline constexpr usize s_MaxBuffers = 256;
@@ -43,22 +56,22 @@ namespace lum::rhi::vk {
 		static inline constexpr usize s_MaxImages = 128;
 		static inline constexpr usize s_MaxSamplers = 32;
 
-		cstd::HandlePool<
+		HandlePool<
 			BufferHandle2,
 			VulkanBuffer,
 			BufferID2> m_Buffers{ s_MaxBuffers };
 
-		cstd::HandlePool<
+		HandlePool<
 			PipelineHandle2,
 			VulkanPipeline,
 			PipelineID2> m_Pipelines{ s_MaxPipelines };
 
-		cstd::HandlePool<
+		HandlePool<
 			ImageHandle2,
 			VulkanImage,
 			ImageID2> m_Images{ s_MaxImages };
 
-		cstd::HandlePool<
+		HandlePool<
 			SamplerHandle2,
 			VulkanSampler,
 			SamplerID2> m_Samplers{ s_MaxSamplers };
@@ -67,7 +80,7 @@ namespace lum::rhi::vk {
 
 
 
-
+		std::queue<CommandBuffer> m_CommandBuffersToFlush{};
 
 		TVector2<uint32> m_WindowSize{};
 
@@ -91,6 +104,7 @@ namespace lum::rhi::vk {
 		// ===========================================================
 		// DEBUG
 		// ===========================================================
+
 		inline static std::vector<uint32> DT_Indices = {
 			0, 1, 2,
 			2, 3, 0
@@ -133,8 +147,10 @@ namespace lum::rhi::vk {
 		VkFence m_Fence = VK_NULL_HANDLE;
 
 
+		// ===========================================================
+		// INITIALIZATION HELPERS
+		// ===========================================================
 
-		void assert_device( ) const;
 		void create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept;
 		void choose_adapter( ) noexcept;
 		void create_logical_device( ) noexcept;
@@ -149,7 +165,16 @@ namespace lum::rhi::vk {
 		void handle_resize( ) noexcept;
 		void create_vertex_buffers( ) noexcept;
 
+
+		// ===========================================================
+		// RUNTIME HELPERS
+		// ===========================================================
+
+		void assert_device( ) const;
 		bool create_shader_module( const Path& path, VkShaderModule& module ) const noexcept;
+		void decode_command_buffer( std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer ) noexcept;
+		void process_commands( ) noexcept;
+
 
 	};
 

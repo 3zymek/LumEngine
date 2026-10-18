@@ -9,6 +9,8 @@
 #include "Ahi/Core/AhiDevice.hpp"
 #include "Ahi/Backend/FmodDevice.hpp"
 
+#include "Core/Utils/OwningPtr.hpp"
+
 namespace lum::ahi {
 
 	OwningPtr<IAudioDevice> CreateDevice( AudioBackend backend ) {

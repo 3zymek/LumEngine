@@ -6,7 +6,7 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/Types.hpp"
+#include "Core/CoreTypes.hpp"
 #include "Core/Math/ScalarConstants.hpp"
 #include "Core/Math/Vec2.hpp"
 #include "Core/Math/Vec3.hpp"

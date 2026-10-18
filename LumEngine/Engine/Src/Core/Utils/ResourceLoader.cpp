@@ -5,15 +5,21 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/Utils/ResourceLoader.hpp"
-#include "Rhi/RhiCommon.hpp"
+#include <sstream>
 
-//====== Backend ======
-#include <stb_image.h>			// Loading textures
-#include <Assimp/Importer.hpp>	// Loading Models
-#include <Assimp/Scene.h>		// Loading Models
-#include <Assimp/Postprocess.h> // Loading Models
-//=====================
+#include <assimp/mesh.h>
+#include <Assimp/Importer.hpp>
+#include <Assimp/Postprocess.h>
+#include <Assimp/Scene.h>
+#include <stb_image.h>
+
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/ResourceLoader.hpp"
+#include "Core/Utils/Result.hpp"
+#include "Core/Utils/TypeUtils.hpp"
+#include "Platform/FileSystem/FileSystem.hpp"
+#include "Platform/FileSystem/Path.hpp"
+#include "Rhi2/RhiCommon.hpp"
 
 namespace lum {
 
@@ -38,7 +44,7 @@ namespace lum {
 
 		if (texture.m_IsHdr) {
 
-			float32* data = stbi_loadf( strPath.c_str(), &texture.m_Width, &texture.m_Height, &format, formatCast );
+			float32* data = stbi_loadf( strPath.c_str( ), &texture.m_Width, &texture.m_Height, &format, formatCast );
 			if (!data) {
 				return Result<ImageData>::Failure( stbi_failure_reason( ) );
 			}
@@ -81,7 +87,7 @@ namespace lum {
 			return Result<MeshGeometry>::Failure( importer.GetErrorString( ) );
 		}
 
-		MeshGeometry finalData;
+		MeshGeometry finalData{};
 
 		uint32 elementOffset = 0;
 
@@ -90,8 +96,8 @@ namespace lum {
 			aiMesh* mesh = scene->mMeshes[ meshIndex ];
 
 			for (uint32 vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
-				Vertex vert;
-
+				rhi::Vertex vert{};
+				/*
 				vert.m_Position = {
 					mesh->mVertices[ vertexIndex ].x,
 					mesh->mVertices[ vertexIndex ].y,
@@ -134,7 +140,7 @@ namespace lum {
 				else vert.m_Uv = { 0.0f, 0.0f };
 
 				finalData.m_Vertices.push_back( vert );
-
+				*/ // TODO: AFTER RHI REFACTOR
 			}
 
 			for (uint32 faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
@@ -178,12 +184,12 @@ namespace lum {
 			usize end = src.find( '\n', versionIdx );
 			version = src.substr( versionIdx, end - versionIdx );
 			clippedSource = src.substr( end );
-		
+
 		}
 
 		std::stringstream ss;
 		ss << version << '\n';
-		ss << definesResult.ValueRef() << '\n';
+		ss << definesResult.ValueRef( ) << '\n';
 		ss << clippedSource;
 
 		return ss.str( );

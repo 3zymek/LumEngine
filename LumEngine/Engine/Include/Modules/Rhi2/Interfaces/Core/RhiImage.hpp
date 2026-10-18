@@ -1,12 +1,15 @@
 #pragma once
-#include "Rhi2/RhiCommon.hpp"
+
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/Flags.hpp"
 #include "Core/Utils/HandlePool.hpp"
+#include "Core/Utils/Optional.hpp"
 #include "Core/Utils/ResourceLoader.hpp"
 
 namespace lum::rhi {
 
 	using ImageID2 = uint32;
-	struct ImageHandle2 : cstd::BaseHandle<ImageID2> {};
+	struct ImageHandle2 : BaseHandle<ImageID2> {};
 
 	enum class ImageUsageFlag : bitfield {
 

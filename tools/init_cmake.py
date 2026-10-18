@@ -40,4 +40,4 @@ def setup_cmake():
 
     print("Building project...")
     subprocess.check_call(build_call)
-    subprocess.check_call(compile_call)
+    #subprocess.check_call(compile_call)

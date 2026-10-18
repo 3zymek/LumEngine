@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/Types.hpp"
 #include "Core/Setup.hpp"
 #include "Core/Utils/Logger.hpp"
 

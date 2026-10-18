@@ -5,7 +5,9 @@
 //=============================================================================//
 #pragma once
 
-#include "Scene/SceneManager.hpp"
+//#include "Scene/SceneManager.hpp"
+#include "Core/CoreDefines.hpp"
+#include "Core/Utils/SafePtr.hpp"
 #include "Entity/TransformSystem.hpp"
 
 namespace lum {
@@ -29,7 +31,7 @@ namespace lum {
 	class LUM_API SceneModule {
 	public:
 
-		SceneManager m_SceneMgr{};
+		//SceneManager m_SceneMgr{};
 
 		void Initialize( const SceneModuleCreateInfo& info );
 

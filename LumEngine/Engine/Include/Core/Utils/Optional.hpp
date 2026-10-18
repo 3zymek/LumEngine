@@ -5,7 +5,14 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/CoreCommon.hpp"
+#include <algorithm>
+#include <optional>
+#include <utility>
+#include <source_location>
+
+#include "Core/CoreDefines.hpp"
+#include "Core/Utils/Assert.hpp"
+#include "Core/Utils/StringUtils.hpp"
 
 namespace lum {
 

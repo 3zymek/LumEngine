@@ -5,8 +5,8 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/Types.hpp"
-#include "Render/ShadersDefine.h"
+#include "Core/CoreTypes.hpp"
+//#include "Render/ShadersDefine.h"
 
 /* @brief Contains compile-time constants that define hard upper limits
 *  for all engine subsystems. Adjust these to tune memory reservation.
@@ -61,7 +61,7 @@ namespace lum::limits {
 	inline constexpr usize k_MaxModels = 256;
 
 	/* @brief Maximum number of lights active in a single frame. Mirrors LUM_MAX_LIGHTS. */
-	inline constexpr usize k_MaxLights = LUM_MAX_LIGHTS;
+	//inline constexpr usize k_MaxLights = LUM_MAX_LIGHTS;
 
 	/* @brief Maximum number of materials that can be loaded simultaneously. */
 	inline constexpr usize k_MaxMaterials = 256;
@@ -73,7 +73,7 @@ namespace lum::limits {
 	inline constexpr usize k_MaxDrawCallsPerFrame = 256;
 
 	/* @brief Maximum number of spot lights that can cast shadows simultaneously. */
-	inline constexpr uint8 k_MaxShadowCastingSpotLights = LUM_MAX_SHADOW_CASTING_SPOT_LIGHTS;
+	//inline constexpr uint8 k_MaxShadowCastingSpotLights = LUM_MAX_SHADOW_CASTING_SPOT_LIGHTS;
 
 
 	//============================= Assets ==================================

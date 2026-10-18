@@ -4,10 +4,15 @@
 //
 //=============================================================================//
 
+#include <volk.h>
+#include <vulkan/vulkan_core.h>
+#include <glfw3.h>
+
+#include "Core/Utils/LogMacros.hpp"
 #include "Platform/GLFWVulkanSurfaceProvider.hpp"
 
 namespace lum {
-	
+
 	VkSurfaceKHR GLFWVulkanSurfaceProvider::CreateSurface( VkInstance instance ) const {
 
 		VkSurfaceKHR surface = VK_NULL_HANDLE;
@@ -16,7 +21,7 @@ namespace lum {
 			return VK_NULL_HANDLE;
 		}
 		return surface;
-		
+
 	}
 
 }

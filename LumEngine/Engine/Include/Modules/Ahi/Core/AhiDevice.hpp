@@ -7,14 +7,18 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/Limits.hpp"
+#include <unordered_map>
 
-#include "Platform/FileSystem/FileSystem.hpp"
-
-#include "Ahi/AhiCommon.hpp"
-#include "Ahi/Core/AhiSound.hpp"
-#include "Ahi/Core/AhiEffect.hpp"
 #include "Ahi/AhiPresets.hpp"
+#include "Ahi/AhiTypes.hpp"
+#include "Ahi/Core/AhiEffect.hpp"
+#include "Ahi/Core/AhiSound.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/Limits.hpp"
+#include "Core/Utils/Flags.hpp"
+#include "Core/Utils/HandlePool.hpp"
+#include "Core/Utils/OwningPtr.hpp"
+#include "Platform/FileSystem/Path.hpp"
 
 namespace lum::ahi {
 
@@ -148,9 +152,9 @@ namespace lum::ahi {
 
 	protected:
 
-		cstd::HandlePool<SoundHandle, void*>				m_Sounds{ limits::k_MaxAudioSounds };
-		cstd::HandlePool<ChannelGroupHandle, void*>			m_ChannelGroups{ limits::k_MaxChannelsGroup };
-		cstd::HandlePool<AudioEffectHandle, AudioEffect>	m_Effects{ limits::k_MaxAudioEffects };
+		HandlePool<SoundHandle, void*>				m_Sounds{ limits::k_MaxAudioSounds };
+		HandlePool<ChannelGroupHandle, void*>		m_ChannelGroups{ limits::k_MaxChannelsGroup };
+		HandlePool<AudioEffectHandle, AudioEffect>	m_Effects{ limits::k_MaxAudioEffects };
 
 		/* @brief Maps active sound instance IDs to their backend channel pointers.
 		*  Entries are inserted on Play() and removed when playback ends or StopAll() is called.

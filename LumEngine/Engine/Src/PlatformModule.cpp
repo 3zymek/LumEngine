@@ -4,9 +4,12 @@
 //
 //=============================================================================//
 
-#include "PlatformModule.hpp"
+#include <glfw3.h>
+
+#include "CreateInfo.hpp"
 #include "Platform/Input/Input.hpp"
-#include "Rhi/Core/RhiDevice.hpp"
+#include "Platform/Window.hpp"
+#include "PlatformModule.hpp"
 
 namespace lum {
 
@@ -29,16 +32,16 @@ namespace lum {
 
 		}
 		else {
-			
+
 		}
 
-		m_RenderDevice = rhi::CreateDevice( info.m_RenderingBackend );
-		m_RenderDevice( ).Initialize(  );
+		//m_RenderDevice = rhi::CreateDevice( info.m_RenderingBackend );
+		//m_RenderDevice( ).Initialize( );
 
 	}
 
 	void PlatformModule::Finalize( ) {
-		m_RenderDevice( ).Finalize( );
+		//m_RenderDevice( ).Finalize( );
 	}
 
 } // namespace lum

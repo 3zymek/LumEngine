@@ -3,12 +3,12 @@
 #include <QTextEdit>
 #include "Platform/QtContextCreator.hpp"
 #include "Event/Events/WindowEvents.hpp"
-#include "Render/Renderer.hpp"
+//#include "Render/Renderer.hpp"
 
 namespace lum::editor {
 
 	void Editor::Initialize( ) {
-
+		/*
 		m_Window = new QMainWindow( );
 		m_Window->setWindowTitle( "LumEngine Editor" );
 		m_Window->resize( 1280, 720 );
@@ -62,7 +62,7 @@ namespace lum::editor {
 
 			}
 		);
-		timer->start( 1 );
+		timer->start( 1 );*/
 
 	}
 

@@ -1,8 +1,15 @@
 #pragma once
 
+#include <qpoint.h>
+
+#include "Core/CoreTypes.hpp"
+#include "Core/Math/MathCommon.hpp"
+#include "Core/Math/MatrixOperations.hpp"
+#include "Core/Math/Vec2.hpp"
+#include "Core/Math/Vec3.hpp"
+#include "Core/Utils/TypeUtils.hpp"
 #include "EditorPch.hpp"
 #include "Event/Events/WindowEvents.hpp"
-#include "Render/RenderCommon.hpp"
 
 namespace lum::editor {
 
@@ -42,9 +49,9 @@ namespace lum::editor {
 				default: break;
 			}
 		}
-
-		render::RenderCamera Update( float64 delta, bool unlocked = false ) {
-
+		
+		void /*render::RenderCamera*/ Update( float64 delta, bool unlocked = false ) {
+			/*
 			m_Forward = Normalize( m_Target - m_Position );
 			m_Right = Normalize( Cross( m_Forward, Vector3( 0.0f, 1.0f, 0.0f ) ) );
 			Vector3 up = Normalize( Cross( m_Right, m_Forward ) );
@@ -91,7 +98,7 @@ namespace lum::editor {
 			data.m_View = LookAt( m_Position, m_Target, m_Up );
 
 			return data;
-
+			*/
 		}
 
 		inline void SetAspectRatio( float32 ratio ) noexcept {

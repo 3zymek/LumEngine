@@ -5,8 +5,13 @@
 //=============================================================================//
 #pragma once
 
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/SafePtr.hpp"
 #include "Platform/Input/InputProvider.hpp"
-#include "glfw3.h"
+#include "Platform/Input/KeyCodes.hpp"
+
+#include <array>
+#include <glfw3.h>
 
 namespace lum::input {
 

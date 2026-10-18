@@ -1,7 +1,14 @@
 #pragma once
+
+#include "Core/Utils/Result.hpp"
+#include "Core/Utils/SafePtr.hpp"
+
 #include "Rhi2/RhiCommon.hpp"
 #include "Rhi2/Backends/Vulkan/Core/RhiPipeline_vulkan.hpp"
 #include "Rhi2/Backends/Vulkan/RhiEnumCast_vulkan.hpp"
+
+#include <vulkan/vulkan.hpp>
+#include <vector>
 
 namespace lum::rhi::vk {
 

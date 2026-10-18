@@ -4,7 +4,14 @@
 //
 //=============================================================================//
 
+#include <glfw3.h>
+
+#include "Core/CoreTypes.hpp"
+#include "Core/Math/Vec2.hpp"
+#include "Core/Utils/SafeCast.hpp"
+#include "Core/Utils/TypeUtils.hpp"
 #include "Platform/Input/Backends/GLFWInputProvider.hpp"
+#include "Platform/Input/KeyCodes.hpp"
 
 namespace lum::input {
 
@@ -30,7 +37,7 @@ namespace lum::input {
 			k_PressedKeysArray[ keyCode ] = true;
 			return true;
 		}
-		
+
 		if (!keyPressed)
 			k_PressedKeysArray[ keyCode ] = false;
 

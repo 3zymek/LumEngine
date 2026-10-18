@@ -5,7 +5,11 @@
 //=============================================================================//
 #pragma once
 
-#include "Entity/EcsCommon.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/CoreDefines.hpp"
+#include "Core/Utils/TypeID.hpp"
+#include "Core/Utils/SafePtr.hpp"
+#include "Entity/EcsTypes.hpp"
 
 namespace lum {
 

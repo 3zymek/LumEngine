@@ -1,5 +1,6 @@
 #pragma once
-#include "Rhi2/Interfaces/Core/RhiPipeline.hpp"
+
+#include <vulkan/vulkan.hpp>
 
 namespace lum::rhi::vk {
 

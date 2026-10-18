@@ -9,6 +9,8 @@
 #pragma once
 
 #include "Ahi/Core/AhiEffect.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/TypeUtils.hpp"
 
 namespace lum::ahi {
 

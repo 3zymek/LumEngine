@@ -10,7 +10,7 @@
 namespace lum::ahi::fmod {
 
 	//=======================================================//
-		// Public
+	// Public
 	//=======================================================//
 
 	void FMODDevice::Initialize( int32 maxChannels, Flags<InitFlag> flags ) {

@@ -5,8 +5,8 @@
 //=============================================================================//
 #pragma once
 
-#include "Event/EventCommon.hpp"
-#include "Entity/EcsCommon.hpp"
+#include "Event/EventTypes.hpp"
+#include "Entity/EcsTypes.hpp"
 
 namespace lum {
 

@@ -7,6 +7,8 @@
 
 #include "Platform/Input/InputProvider.hpp"
 
+#include "Core/Utils/SafePtr.hpp"
+
 namespace lum {
 
 	using Key = input::Key;

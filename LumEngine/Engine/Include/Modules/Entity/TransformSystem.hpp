@@ -5,7 +5,7 @@
 //=============================================================================//
 #pragma once
 
-#include "Entity/EcsCommon.hpp"
+#include "Entity/EcsTypes.hpp"
 
 namespace lum {
 

@@ -4,7 +4,9 @@
 //
 //=============================================================================//
 #pragma once
-#include "Event/EventCommon.hpp"
+
+#include "Core/CoreTypes.hpp"
+#include "Event/EventTypes.hpp"
 #include "Platform/Input/Input.hpp"
 
 namespace lum {

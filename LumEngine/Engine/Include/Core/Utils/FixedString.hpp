@@ -8,7 +8,12 @@
 #pragma once
 
 #include "Core/CoreDefines.hpp"
-#include "Core/Types.hpp"
+#include "Core/Utils/Assert.hpp"
+#include "Core/CoreTypes.hpp"
+
+#include "Core/Utils/LogMacros.hpp"
+
+#include "Core/Utils/Assert.hpp"
 
 namespace lum {
 

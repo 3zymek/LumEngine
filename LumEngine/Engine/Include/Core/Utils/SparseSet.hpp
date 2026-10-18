@@ -6,9 +6,13 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/CoreCommon.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/TypeUtils.hpp"
 
-namespace lum::cstd {
+#include <utility>
+#include <vector>
+
+namespace lum {
 
 
 	/* @brief Cache-friendly sparse set container.
@@ -176,9 +180,9 @@ namespace lum::cstd {
 		static constexpr SparseT sk_NullSparse = MaxValue<SparseT>( ); // Sentinel value for empty slots.
 		const SparseT k_MaxSize = 0;
 
-		std::vector<tDense>		m_Dense;         // Contiguous value storage.
-		std::vector<SparseT>	m_Sparse;        // Maps sparse key → dense index.
-		std::vector<SparseT>	m_DenseToSparse; // Maps dense index → sparse key.
+		std::vector<tDense>		m_Dense{};         // Contiguous value storage.
+		std::vector<SparseT>	m_Sparse{};        // Maps sparse key → dense index.
+		std::vector<SparseT>	m_DenseToSparse{}; // Maps dense index → sparse key.
 
 		inline constexpr void init( SparseT size ) {
 			m_Dense.reserve( size );

@@ -29,15 +29,15 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
 
 # ── LHC ──────────────────────────────────────────────────────────────────────
-set(LHC_ROOT_DIR "${CMAKE_SOURCE_DIR}/LumEngine")
+#set(LHC_ROOT_DIR "${CMAKE_SOURCE_DIR}/LumEngine")
 
-find_program(DOTNET_EXECUTABLE dotnet REQUIRED)
+#find_program(DOTNET_EXECUTABLE dotnet REQUIRED)
 
-add_custom_target(RunLHC ALL
-    COMMAND ${DOTNET_EXECUTABLE} "${CMAKE_SOURCE_DIR}/tools/LumenHeaderCompiler.dll" "${LHC_ROOT_DIR}"
-    COMMENT "Running LHC..."
-    VERBATIM
-)
+#add_custom_target(RunLHC ALL
+#    COMMAND ${DOTNET_EXECUTABLE} "${CMAKE_SOURCE_DIR}/tools/LumenHeaderCompiler.dll" "${LHC_ROOT_DIR}"
+#    COMMENT "Running LHC..."
+#    VERBATIM
+#)
 
 if(MSVC)
     add_compile_options(/Bt)
@@ -71,7 +71,7 @@ add_library(LumEngine STATIC
     ${EXTERNAL_CPP_IMPL}
 )
 
-add_dependencies(LumEngine RunLHC)
+#add_dependencies(LumEngine RunLHC)
 
 set_source_files_properties(${ENGINE_C}          PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 set_source_files_properties(${EXTERNAL_C}        PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
@@ -95,6 +95,11 @@ target_include_directories(LumEngine PUBLIC
 
 target_precompile_headers(LumEngine PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/Core/CorePch.hpp"
+)
+
+target_compile_definitions(LumEngine PRIVATE
+    VK_NO_PROTOTYPES
+    GLFW_INCLUDE_VULKAN
 )
 
 if(WIN32)
@@ -143,6 +148,7 @@ target_compile_definitions(LumEngineEditor PRIVATE
     QT_NO_OPENGL_HEADERS
     QT_NO_OPENGL
     GLFW_INCLUDE_NONE
+    VK_NO_PROTOTYPES
 )
 
 source_group(TREE "${CMAKE_SOURCE_DIR}/LumEngine/Editor" FILES

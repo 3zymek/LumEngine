@@ -5,13 +5,21 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/CoreCommon.hpp"
+#include <concepts>
+#include <source_location>
+#include <type_traits>
+
+#include "Core/CoreDefines.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/Assert.hpp"
+#include "Core/Utils/LogMacros.hpp"
+
 
 namespace lum {
 
 	namespace detail {
 
-		 // @brief Verifies that tDestructor provides a static Destroy(tObj*) method returning void without throwing.
+		// @brief Verifies that tDestructor provides a static Destroy(tObj*) method returning void without throwing.
 		template<typename tObj, typename tDestructor>
 		concept cValidDestructor = requires(tObj * obj) {
 			{ tDestructor::Destroy( obj ) } noexcept -> std::same_as<void>;
@@ -72,7 +80,7 @@ namespace lum {
 
 		template<cNonPointer tOther, typename tOtherDestructor>
 			requires detail::cDerivedConvertion<tType, tDestructor, tOther, tOtherDestructor>
-		OwningPtr( OwningPtr<tOther, tOtherDestructor>&& other ) noexcept : m_Value( other.Release() ) {}
+		OwningPtr( OwningPtr<tOther, tOtherDestructor>&& other ) noexcept : m_Value( other.Release( ) ) {}
 
 		~OwningPtr( ) {
 			Clear( );

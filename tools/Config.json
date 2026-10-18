@@ -64,9 +64,9 @@
     ],
 
     "deserialize_registry_source_basefile": [
-      "#include \"Scene/Format/FormatCommon.hpp\"",
-      "#include \"Scene/SceneManager.hpp\"",
-      "#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
+      "//#include \"Scene/Format/FormatTypes.hpp\"",
+      "//#include \"Scene/SceneManager.hpp\"",
+      "//#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
       "",
       "{DeserializeFunctions}",
       ""
@@ -108,9 +108,9 @@
     ],
 
     "serialize_registry_source_basefile": [
-      "#include \"Scene/Format/FormatCommon.hpp\"",
-      "#include \"Scene/SceneManager.hpp\"",
-      "#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
+      "//#include \"Scene/Format/FormatTypes.hpp\"",
+      "//#include \"Scene/SceneManager.hpp\"",
+      "//#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
       "",
       "{SerializeFunctions}",
       ""
@@ -146,8 +146,8 @@
       "}"
     ],
     "editor_registry_basefile": [
-      "#include \"Core/EditorCommon.hpp\"",
-      "#include \"Entity/EcsCommon.hpp\"",
+      "//#include \"Core/EditorCommon.hpp\"",
+      "//#include \"Entity/EcsCommon.hpp\"",
       "",
       "{EditorRegistryBody}",
       ""
@@ -255,9 +255,10 @@
       ");"
     ],
     "scene_registry_basefile": [
-      "#include \"Scene/Format/FormatCommon.hpp\"",
-      "#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
-      "#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
+      "#include <vector>\n",
+      "//#include \"Scene/Format/FormatTypes.hpp\"",
+      "//#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
+      "//#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
       "namespace lum::fmt {",
       "",
       "\t{SceneRegistryBody}",

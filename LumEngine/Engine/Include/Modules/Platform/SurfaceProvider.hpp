@@ -5,8 +5,6 @@
 //=============================================================================//
 #pragma once
 
-#include "Rhi/RhiPch.hpp"
-
 namespace lum {
 
 	class ISurfaceProvider {

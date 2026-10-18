@@ -5,15 +5,17 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/Utils/Logger.hpp"
-
-#include "Event/EventBus.hpp"
-
-#include "PlatformModule.hpp"
 #include "AudioModule.hpp"
-#include "RenderModule.hpp"
-#include "ResModule.hpp"
+#include "CreateInfo.hpp"
+#include "PlatformModule.hpp"
+//#include "RenderModule.hpp"
+//#include "ResModule.hpp"
 #include "SceneModule.hpp"
+
+#include "Core/CoreDefines.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Event/EventBus.hpp"
+#include "Platform/FileSystem/Path.hpp"
 
 namespace lum {
 	
@@ -21,7 +23,7 @@ namespace lum {
 	public:
 
 		void Initialize( const EngineCreateInfo& info );
-		void SetScene( const Path& path ) { m_SceneModule.m_SceneMgr.SetScene( path ); }
+		void SetScene( const Path& path ) { /*m_SceneModule.m_SceneMgr.SetScene( path );*/ }
 		void BeginFrame( );
 		void EndFrame( );
 		void Tick( );
@@ -31,8 +33,8 @@ namespace lum {
 		ev::EventBus&		EventBus( ) { return m_EventBus; }
 		AudioModule&		Audio( ) { return m_AudioModule; }
 		PlatformModule&		Platform( ) { return m_Platform; }
-		ResourceModule&		Resource( ) { return m_ResourceModule; }
-		RenderModule&		Render( ) { return m_RenderModule; }
+		//ResourceModule&		Resource( ) { return m_ResourceModule; }
+		//RenderModule&		Render( ) { return m_RenderModule; }
 		SceneModule&		Scene( ) { return m_SceneModule; }
 
 	private:
@@ -41,8 +43,8 @@ namespace lum {
 		ev::EventBus	m_EventBus{};
 		AudioModule		m_AudioModule{};
 		PlatformModule	m_Platform{};
-		ResourceModule	m_ResourceModule{};
-		RenderModule	m_RenderModule{};
+		//ResourceModule	m_ResourceModule{};
+		//RenderModule	m_RenderModule{};
 		SceneModule		m_SceneModule{};
 
 	};

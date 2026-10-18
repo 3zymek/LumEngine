@@ -4,15 +4,24 @@
 //
 //=============================================================================//
 #pragma once
-#include "Event/EventCommon.hpp"
+
+#include <array>
+#include <utility>
+#include <vector>
+
+#include "Core/CoreTypes.hpp"
 #include "Core/Limits.hpp"
+#include "Core/Utils/Assert.hpp"
+#include "Core/Utils/LogMacros.hpp"
+#include "Core/Utils/TypeUtils.hpp"
+#include "Event/EventTypes.hpp"
 
 namespace lum::ev::detail {
 
 	/* @brief Abstract base for type-erased event pool storage. */
 	struct EventPoolBase {
 		virtual void FlushEvents( ) = 0;
-		virtual ~EventPoolBase() = default;
+		virtual ~EventPoolBase( ) = default;
 	};
 
 	/* @brief Manages subscriptions and deferred dispatch for a single event type.
@@ -107,12 +116,12 @@ namespace lum::ev::detail {
 
 	private:
 
-		std::array<EventCallback, limits::k_MaxCallbackPerFrame>   m_Callbacks;
-		std::array<EventCallback, limits::k_MaxPermanentCallbacks> m_PermanentCallbacks;
+		std::array<EventCallback, limits::k_MaxCallbackPerFrame>   m_Callbacks{};
+		std::array<EventCallback, limits::k_MaxPermanentCallbacks> m_PermanentCallbacks{};
 		SubscriptionID m_CallbackCount = 0;
 
-		std::vector<tType> m_EventsCurrent;
-		std::vector<tType> m_EventsNext;
+		std::vector<tType> m_EventsCurrent{};
+		std::vector<tType> m_EventsNext{};
 
 		bool m_Flushing = false;
 

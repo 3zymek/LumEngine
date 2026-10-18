@@ -5,13 +5,17 @@
 //=============================================================================//
 #pragma once
 
+#include "Core/CoreTypes.hpp"
+#include "Core/CoreDefines.hpp"
 #include "Core/Utils/Result.hpp"
-#include "Core/CoreCommon.hpp"
 #include "Platform/FileSystem/FileSystem.hpp"
+#include "Platform/FileSystem/Path.hpp"
+
+#include <vector>
 
 namespace lum {
 
-	struct Vertex;
+	namespace rhi { struct Vertex; }
 
 	/* @brief Identifies the root directory used for asset path resolution. */
 	enum class LUM_API ResourceRoot : byte {
@@ -45,7 +49,7 @@ namespace lum {
 	struct LUM_API MeshGeometry {
 
 		/* @brief List of vertices. */
-		std::vector<Vertex> m_Vertices{};
+		std::vector<rhi::Vertex> m_Vertices{};
 
 		/* @brief List of indices. */
 		std::vector<uint32> m_Indices{};

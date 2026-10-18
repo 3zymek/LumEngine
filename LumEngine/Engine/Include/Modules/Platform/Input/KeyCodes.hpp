@@ -5,6 +5,9 @@
 //=============================================================================//
 #pragma once
 
+#include "Core/Utils/Assert.hpp"
+#include "Core/Utils/TypeUtils.hpp"
+
 namespace lum::input {
 
 	/* @brief Unified virtual key codes for keyboard and mouse input handling.

@@ -1,14 +1,17 @@
 #pragma once
 
-#include "Rhi2/RhiCommon.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/HandlePool.hpp"
+#include "Core/Math/Vec4.hpp"
 #include "Rhi2/Interfaces/Core/RhiShader.hpp"
 #include "Rhi2/Interfaces/Core/RhiImage.hpp"
-#include "Core/Utils/HandlePool.hpp"
+
+#include <vector>
 
 namespace lum::rhi {
 
 	using PipelineID2 = uint32;
-	struct PipelineHandle2 : public cstd::BaseHandle<PipelineID2> {};
+	struct PipelineHandle2 : public BaseHandle<PipelineID2> {};
 
 	enum class PrimitiveTopology : uint8 {
 		TriangleList = 0U,

@@ -2,6 +2,7 @@
 
 #include "Rhi2/RhiCommon.hpp"
 #include "Core/Utils/HandlePool.hpp"
+#include "Platform/FileSystem/Path.hpp"
 
 namespace lum::rhi {
 

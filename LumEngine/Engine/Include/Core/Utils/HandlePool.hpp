@@ -6,9 +6,13 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/CoreCommon.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/TypeUtils.hpp"
 
-namespace lum::cstd {
+#include <vector>
+#include <concepts>
+
+namespace lum {
 
 	/* @brief Base type for all handle types.
 	*

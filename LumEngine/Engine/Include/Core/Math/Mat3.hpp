@@ -6,7 +6,7 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/Types.hpp"
+#include "Core/CoreTypes.hpp"
 #include "Core/CoreDefines.hpp"
 
 namespace lum {

@@ -8,6 +8,8 @@
 #include "Core/Utils/SafePtr.hpp"
 #include "Platform/VulkanSurfaceProvider.hpp"
 
+#include <Vulkan/vulkan.h>
+
 class GLFWwindow;
 
 namespace lum {

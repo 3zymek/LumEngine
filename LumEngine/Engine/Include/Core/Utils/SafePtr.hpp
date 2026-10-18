@@ -5,9 +5,8 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/Utils/Logger.hpp"
 #include "Core/CoreDefines.hpp"
-#include "Core/Types.hpp"
+#include "Core/CoreTypes.hpp"
 #include "Core/Utils/OwningPtr.hpp"
 
 namespace lum {
@@ -186,11 +185,6 @@ namespace lum {
 		*/
 		void Clear( ) noexcept {
 			m_Value = nullptr;
-		}
-
-		/* @brief Logs the underlying pointer for debugging purposes. */
-		void PrintDebug( ) const noexcept {
-			LUM_LOG_DEBUG( "{}", m_Value );
 		}
 
 	private:

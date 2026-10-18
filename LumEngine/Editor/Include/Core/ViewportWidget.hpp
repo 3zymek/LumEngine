@@ -1,8 +1,8 @@
 #pragma once
 
-#include "EditorPch.hpp"
-#include "Rhi/RhiCommon.hpp"
 #include "Core/EditorCamera.hpp"
+#include "Core/Utils/SafePtr.hpp"
+#include "EditorPch.hpp"
 
 namespace lum {
 
@@ -14,7 +14,7 @@ namespace lum {
 }
 
 namespace lum::editor {
-	
+
 	struct ViewportCreateInfo {
 		SafePtr<rhi::IRenderDevice> m_RenderDevice = nullptr;
 		SafePtr<IRenderContext> m_RenderContext = nullptr;
@@ -24,11 +24,11 @@ namespace lum::editor {
 
 	/*
 	class ViewportWindow : public QWindow {
-		
+
 		Q_OBJECT
 
 	public:
-		
+
 		ViewportWindow( ) {
 			setSurfaceType( QSurface::RasterSurface );
 		}

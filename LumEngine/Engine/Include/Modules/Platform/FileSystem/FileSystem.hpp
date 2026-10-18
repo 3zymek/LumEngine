@@ -5,10 +5,16 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/CoreCommon.hpp"
+#include "Core/CoreTypes.hpp"
 #include "Core/Utils/Result.hpp"
-
 #include "Platform/FileSystem/Path.hpp"
+
+#include <cerrno>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
+#include <vector>
 
 namespace lum {
 
@@ -30,7 +36,12 @@ namespace lum {
 				return Result<std::vector<uint32>>::Failure( strerror( errno ) );
 			}
 			
-			usize size = static_cast<usize>( file.tellg( ) );
+			const auto end = file.tellg( );
+			if (end < 0) {
+				return Result<std::vector<uint32>>::Failure( "Failed to determine file size" );
+			
+			}
+			usize size = static_cast<usize>( end );
 
 			if (size % sizeof( uint32 ) != 0) {
 				return Result<std::vector<uint32>>::Failure( "Binary file size is not aligned to 4 bytes" );
@@ -38,7 +49,9 @@ namespace lum {
 			
 			file.seekg( 0 );
 			std::vector<uint32> bytes( size / sizeof( uint32 ) );
-			file.read( reinterpret_cast<char*>(bytes.data( )), size );
+			if (!file.read( reinterpret_cast<char*>(bytes.data( )), static_cast<std::streamsize>(size) )) {
+				return Result<std::vector<uint32>>::Failure( "Failed to read file" );
+			}
 			
 			file.close( );
 

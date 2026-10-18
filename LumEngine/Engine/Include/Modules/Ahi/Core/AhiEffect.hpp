@@ -6,7 +6,10 @@
 //
 //=============================================================================//
 #pragma once
-#include "Ahi/AhiCommon.hpp"
+
+#include <vector>
+
+#include "Core/CoreTypes.hpp"
 
 namespace lum::ahi {
 

@@ -5,8 +5,15 @@
 //=============================================================================//
 #pragma once
 
-#include "Event/EventCommon.hpp"
+#include <utility>
+
+#include "Core/CoreDefines.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/Limits.hpp"
+#include "Core/Utils/Assert.hpp"
+#include "Core/Utils/TypeID.hpp"
 #include "Event/EventPool.hpp"
+#include "Event/EventTypes.hpp"
 
 namespace lum::ev {
 

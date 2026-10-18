@@ -6,6 +6,9 @@
 #include "Rhi2/Interfaces/Core/RhiPipeline.hpp"
 #include "Rhi2/Interfaces/Core/RhiImage.hpp"
 #include "Rhi2/Interfaces/Core/RhiSampler.hpp"
+#include "Rhi2/Interfaces/Core/RhiCommandBuffer.hpp"
+
+#include "Core/Utils/SafePtr.hpp"
 
 namespace lum {
 
@@ -30,7 +33,7 @@ namespace lum::rhi {
 
 
 	};
-
+	
 	class IRenderDevice2 {
 	public:
 
@@ -50,6 +53,8 @@ namespace lum::rhi {
 
 		virtual SamplerHandle2 CreateSampler( const SamplerCreateInfo2& info ) noexcept = 0;
 		virtual void DestroySampler( SamplerHandle2& handle ) noexcept = 0;
+
+		virtual void SendCommandBuffer( CommandBuffer&& buffer ) noexcept = 0;
 
 		virtual ~IRenderDevice2( ) = default;
 

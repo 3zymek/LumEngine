@@ -5,6 +5,8 @@
 //=============================================================================//
 #pragma once
 
+#include <Vulkan/vulkan_core.h>
+
 #include "Platform/SurfaceProvider.hpp"
 
 namespace lum {

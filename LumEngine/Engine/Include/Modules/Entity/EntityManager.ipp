@@ -13,6 +13,8 @@
 #include "Event/EventBus.hpp"
 #include "Event/Events/EntityEvents.hpp"
 
+#include "Core/Utils/Assert.hpp"
+
 namespace lum::ecs {
 
 	//=======================================================//

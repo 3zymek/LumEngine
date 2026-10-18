@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Rhi2/RhiCommon.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/HandlePool.hpp"
 
 namespace lum::rhi {
 
     using SamplerID2 = uint32;
-    struct SamplerHandle2 : cstd::BaseHandle<SamplerID2> {};
+    struct SamplerHandle2 : BaseHandle<SamplerID2> {};
 
     enum class SamplerFilter {
         Linear,

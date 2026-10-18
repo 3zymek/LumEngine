@@ -4,10 +4,15 @@
 //
 //=============================================================================//
 
+#include "Core/CorePch.hpp"
+
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/ResourceLoader.hpp"
+#include "CreateInfo.hpp"
 #include "Engine.hpp"
 
 namespace lum {
-	
+
 	//=======================================================//
 	// Public
 	//=======================================================//
@@ -18,12 +23,12 @@ namespace lum {
 
 		m_AudioModule.Initialize( m_EventBus );
 		m_Platform.Initialize( info, m_EventBus );
-		m_ResourceModule.Initialize( m_Platform, m_EventBus );
-
+		//m_ResourceModule.Initialize( m_Platform, m_EventBus );
+		/*
 		{
 			RenderModuleCreateInfo desc{};
 			desc.m_EventBus = m_EventBus;
-			desc.m_RenderDev = m_Platform.m_RenderDevice();
+			desc.m_RenderDev = m_Platform.m_RenderDevice( );
 			desc.m_ResourceModule = &m_ResourceModule;
 			m_RenderModule.Initialize( desc );
 		}
@@ -36,7 +41,7 @@ namespace lum {
 			desc.m_EventBus = m_EventBus;
 			m_SceneModule.Initialize( desc );
 		}
-
+		*/
 	}
 	void Engine::BeginFrame( ) {
 
@@ -44,21 +49,21 @@ namespace lum {
 			m_Platform.m_Window.Value( ).Update( );
 
 		m_EventBus.FlushEvents( );
-		
-		m_Platform.m_RenderDevice( ).SetClearColor( { 1.0f, 1.0f, 0.0f, 1.0f } );
 
-		m_RenderModule.m_Renderer.BeginFrame( );
+		//m_Platform.m_RenderDevice( ).SetClearColor( { 1.0f, 1.0f, 0.0f, 1.0f } );
+
+		//m_RenderModule.m_Renderer.BeginFrame( );
 
 	}
 	void Engine::EndFrame( ) {
 
-		m_RenderModule.m_Renderer.EndFrame( );
+		//m_RenderModule.m_Renderer.EndFrame( );
 
 		//m_Platform.m_ActiveRenderContext( ).SwapBuffers( );
 
 	}
 	void Engine::Tick( ) {
-
+		/*
 		SceneInstance* scene = m_SceneModule.m_SceneMgr.GetCurrentScene( );
 
 		if (scene) {
@@ -67,8 +72,8 @@ namespace lum {
 			m_RenderModule.m_RenderSys.Update( *scene );
 		}
 
-		m_AudioModule.m_AudioDevice().SubmitFrame( );
-
+		m_AudioModule.m_AudioDevice( ).SubmitFrame( );
+		*/
 	}
 	void Engine::Finalize( ) {
 

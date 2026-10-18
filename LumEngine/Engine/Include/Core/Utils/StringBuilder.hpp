@@ -5,8 +5,11 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/Types.hpp"
-#include "Core/CoreCommon.hpp"
+#include <utility>
+
+#include "Core/CoreDefines.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/StringUtils.hpp"
 
 namespace lum {
 

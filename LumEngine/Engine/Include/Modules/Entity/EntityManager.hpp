@@ -7,9 +7,12 @@
 //=============================================================================//
 #pragma once
 
+#include "Core/CoreTypes.hpp"
+#include "Core/CoreDefines.hpp"
+#include "Core/Utils/SafePtr.hpp"
 #include "Core/Limits.hpp"
 
-#include "Entity/EcsCommon.hpp"
+#include "Entity/EcsTypes.hpp"
 #include "Entity/ComponentPool.hpp"
 
 namespace lum {

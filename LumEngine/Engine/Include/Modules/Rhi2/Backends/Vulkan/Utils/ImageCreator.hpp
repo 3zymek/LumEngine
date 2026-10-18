@@ -1,7 +1,14 @@
 #pragma once
 
+#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan_core.h>
+
+#include "Core/Utils/Result.hpp"
+#include "Core/Utils/SafePtr.hpp"
 #include "Rhi2/Backends/Vulkan/Core/RhiImage_vulkan.hpp"
 #include "Rhi2/Backends/Vulkan/Core/RhiSampler_vulkan.hpp"
+#include "Rhi2/Interfaces/Core/RhiImage.hpp"
+#include "Rhi2/Interfaces/Core/RhiSampler.hpp"
 
 namespace lum::rhi::vk {
 

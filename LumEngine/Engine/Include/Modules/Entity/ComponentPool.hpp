@@ -5,8 +5,8 @@
 //=============================================================================//
 #pragma once
 
-#include "Entity/EcsCommon.hpp"
 #include "Core/Utils/SparseSet.hpp"
+#include "Entity/EcsTypes.hpp"
 
 namespace lum::ecs { class EntityManager; }
 
@@ -112,7 +112,7 @@ namespace lum::ecs {
 
 		protected:
 
-			cstd::SparseSet<EntityID, tType> m_Components{ limits::k_MaxEntities };
+			SparseSet<EntityID, tType> m_Components{ limits::k_MaxEntities };
 
 		};
 

@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/SafePtr.hpp"
+#include "Platform/FileSystem/Path.hpp"
 #include "Platform/Window.hpp"
-#include "Rhi/RhiCommon.hpp"
-#include "Core/CoreCommon.hpp"
 
 namespace lum {
 
@@ -20,7 +21,7 @@ namespace lum {
 		SafePtr<IRenderContext> m_RenderContext = nullptr;
 		SafePtr<input::IInputProvider> m_InputProvider = nullptr;
 		
-		rhi::RenderBackend m_RenderingBackend;
+		//rhi::RenderBackend m_RenderingBackend;
 
 	};
 

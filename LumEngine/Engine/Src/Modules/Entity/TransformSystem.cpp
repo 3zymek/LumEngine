@@ -4,18 +4,21 @@
 //
 //=============================================================================//
 
-#include "Entity/TransformSystem.hpp"
-#include "Scene/SceneManager.hpp"
+#include "Entity/EcsTypes.hpp"
+//#include "Scene/Scene.hpp"
 #include "Entity/EntityManager.hpp"
-#include "Entity/Components/Transform.hpp"
+#include "Entity/TransformSystem.hpp"
+//#include "Scene/SceneManager.hpp"
+
+//#include "Entity/Components/Transform.hpp"
 
 namespace lum {
 
 	void TransformSystem::Update( SceneInstance& scene ) {
 
 
-		ecs::EntityManager& m_Gr = scene.m_EntityMgr;
-
+		//ecs::EntityManager& m_Gr = scene.m_EntityMgr;
+		/*
 		m_Gr.EachWithID<CTransform>(
 			[ & ]( EntityID id, CTransform& transform ) {
 
@@ -32,13 +35,13 @@ namespace lum {
 		for (auto& [parent, children] : scene.m_Children) {
 			for (EntityID child : children)
 				update_entity_recursive( scene, child );
-		}
+		}*/
 
 
 	}
 
 	void TransformSystem::update_entity_recursive( SceneInstance& scene, EntityID id ) {
-
+		/*
 		ecs::EntityManager& m_Gr = scene.m_EntityMgr;
 
 		CTransform* transform = m_Gr.GetComponent<CTransform>( id );
@@ -55,7 +58,7 @@ namespace lum {
 			for (EntityID child : scene.m_Children[ id ])
 				update_entity_recursive( scene, child );
 		}
-
+		*/
 
 	}
 
