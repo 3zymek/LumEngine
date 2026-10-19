@@ -6,9 +6,18 @@
 //=============================================================================//
 #pragma once
 
+#include <algorithm>
+#include <cmath>
+
 #include "Core/CoreTypes.hpp"
 
 namespace lum {
+
+	template<cArithmetic tType>
+	struct TVector2;
+
+	template<cArithmetic tType>
+	struct TVector3;
 
 	/* @brief Represents a generic four-dimensional vector.
 	* Provides arithmetic, scalar and comparison operations.
@@ -18,7 +27,7 @@ namespace lum {
 	struct TVector4 {
 
 		/* @brief Constructs a zero-initialized vector. */
-		constexpr TVector4( ) : m_X( tType( 0 ) ), m_Y( tType( 0 ) ), m_Z( tType( 0 ) ), m_W( tType( 0 ) ) { }
+		constexpr TVector4( ) : m_X( tType( 0 ) ), m_Y( tType( 0 ) ), m_Z( tType( 0 ) ), m_W( tType( 0 ) ) {}
 
 		/* @brief Constructs a vector from individual components.
 		* @param x X component.
@@ -27,13 +36,15 @@ namespace lum {
 		* @param w W component.
 		*/
 		constexpr TVector4( tType x, tType y, tType z, tType w )
-			: m_X( x ), m_Y( y ), m_Z( z ), m_W( w ) { }
+			: m_X( x ), m_Y( y ), m_Z( z ), m_W( w ) {
+		}
 
 		/* @brief Constructs a vector with all components initialized to the same value.
 		* @param scalar Value assigned to every component.
 		*/
 		constexpr explicit TVector4( tType scalar )
-			: m_X( scalar ), m_Y( scalar ), m_Z( scalar ), m_W( scalar ) { }
+			: m_X( scalar ), m_Y( scalar ), m_Z( scalar ), m_W( scalar ) {
+		}
 
 		/* @brief Constructs a 4D vector from a 3D vector and an additional component.
 		* @tparam tOther Source component type.
@@ -41,11 +52,7 @@ namespace lum {
 		* @param w W component.
 		*/
 		template<cArithmetic tOther>
-		constexpr TVector4( const TVector3<tOther>& v, tOther w )
-			: m_X( static_cast< tType >(v.m_X) ),
-			m_Y( static_cast< tType >(v.m_Y) ),
-			m_Z( static_cast< tType >(v.m_Z) ),
-			m_W( static_cast< tType >(w) ) { }
+		constexpr TVector4( const TVector3<tOther>& v, tOther w );
 
 		/* @brief Converts the vector to another arithmetic component type.
 		* @tparam tOther Destination component type.
@@ -53,10 +60,10 @@ namespace lum {
 		template<cArithmetic tOther>
 		explicit operator TVector4<tOther>( ) const {
 			return {
-				static_cast< tOther >(m_X),
-				static_cast< tOther >(m_Y),
-				static_cast< tOther >(m_Z),
-				static_cast< tOther >(m_W)
+				static_cast<tOther>(m_X),
+				static_cast<tOther>(m_Y),
+				static_cast<tOther>(m_Z),
+				static_cast<tOther>(m_W)
 			};
 		}
 
@@ -64,24 +71,13 @@ namespace lum {
 		* @tparam tOther Destination component type.
 		*/
 		template<cArithmetic tOther>
-		explicit operator TVector3<tOther>( ) const {
-			return {
-				static_cast< tOther >(m_X),
-				static_cast< tOther >(m_Y),
-				static_cast< tOther >(m_Z)
-			};
-		}
+		explicit operator TVector3<tOther>( ) const;
 
 		/* @brief Converts the vector to a 2D vector.
 		* @tparam tOther Destination component type.
 		*/
 		template<cArithmetic tOther>
-		explicit operator TVector2<tOther>( ) const {
-			return {
-				static_cast< tOther >(m_X),
-				static_cast< tOther >(m_Y)
-			};
-		}
+		explicit operator TVector2<tOther>( ) const;
 
 		/* @brief Vector components accessible as coordinates or color channels. */
 		union {

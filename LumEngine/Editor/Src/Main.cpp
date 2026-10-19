@@ -4,8 +4,8 @@
 #include "Event/EventBus.hpp"
 #include "Platform/GLFWVulkanSurfaceProvider.hpp"
 #include "Platform/Window.hpp"
-#include "Rhi2/Backends/Vulkan/Core/RhiDevice_vulkan.hpp"
-#include "Rhi2/Interfaces/Core/RhiDevice.hpp"
+#include "Rhi/Backends/Vulkan/Core/RhiDevice_vulkan.hpp"
+#include "Rhi/Interfaces/Core/RhiDevice.hpp"
 #include <Core/CoreTypes.hpp>
 #include <glfw3.h>
 #include <vector>

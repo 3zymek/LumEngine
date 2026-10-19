@@ -4,7 +4,10 @@
 //
 //=============================================================================//
 
+#include "Ahi/AhiTypes.hpp"
+#include "Ahi/Core/AhiDevice.hpp"
 #include "AudioModule.hpp"
+#include "Event/EventBus.hpp"
 
 namespace lum {
 
@@ -15,14 +18,14 @@ namespace lum {
 	void AudioModule::Initialize( ev::EventBus& bus ) {
 
 		m_AudioDevice = ahi::CreateDevice( ahi::AudioBackend::Fmod );
-		m_AudioDevice().Initialize( 512, ahi::InitFlag::RightHanded3D | ahi::InitFlag::DistanceFilter );
-		m_AudioMgr.Initialize( m_AudioDevice.Ref(), bus );
+		m_AudioDevice( ).Initialize( 512, ahi::InitFlag::RightHanded3D | ahi::InitFlag::DistanceFilter );
+		m_AudioMgr.Initialize( m_AudioDevice.Ref( ), bus );
 
 	}
 
 	void AudioModule::Finalize( ) {
 
-		m_AudioDevice().Finalize( );
+		m_AudioDevice( ).Finalize( );
 
 	}
 

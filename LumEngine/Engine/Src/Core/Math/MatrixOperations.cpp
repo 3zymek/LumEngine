@@ -4,7 +4,10 @@
 //
 //=============================================================================//
 
+#include "Core/CoreTypes.hpp"
+#include "Core/Math/Mat4.hpp"
 #include "Core/Math/MatrixOperations.hpp"
+#include "Core/Math/Quaternion.hpp"
 
 namespace lum {
 

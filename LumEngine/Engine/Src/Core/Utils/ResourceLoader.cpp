@@ -3,9 +3,7 @@
 // Purpose: Loads assets (textures, sounds, shaders, models)
 // 
 //=============================================================================//
-#pragma once
-
-#include <sstream>
+#include "Core/CorePch.hpp"
 
 #include <assimp/mesh.h>
 #include <Assimp/Importer.hpp>
@@ -19,7 +17,7 @@
 #include "Core/Utils/TypeUtils.hpp"
 #include "Platform/FileSystem/FileSystem.hpp"
 #include "Platform/FileSystem/Path.hpp"
-#include "Rhi2/RhiCommon.hpp"
+#include "Rhi/RhiTypes.hpp"
 
 namespace lum {
 

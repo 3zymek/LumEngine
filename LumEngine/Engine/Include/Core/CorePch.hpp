@@ -33,3 +33,6 @@
 #include "Core/CoreDefines.hpp"
 
 #include "MagicEnum/magic_enum.hpp"
+
+#include <volk.h>
+#include <vulkan/vulkan_core.h>

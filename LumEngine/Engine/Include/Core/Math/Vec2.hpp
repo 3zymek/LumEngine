@@ -6,9 +6,18 @@
 //=============================================================================//
 #pragma once
 
+#include <algorithm>
+#include <cmath>
+
 #include "Core/CoreTypes.hpp"
 
 namespace lum {
+
+	template<cArithmetic tType>
+	struct TVector3;
+
+	template<cArithmetic tType>
+	struct TVector4;
 
 	/* @brief Represents a generic two-dimensional vector.
 	* Provides arithmetic, scalar and comparison operations.
@@ -18,26 +27,46 @@ namespace lum {
 	struct TVector2 {
 
 		/* @brief Constructs a zero-initialized vector. */
-		constexpr TVector2( ) : m_X( tType( 0 ) ), m_Y( tType( 0 ) ) { }
+		constexpr TVector2( ) : m_X( tType( 0 ) ), m_Y( tType( 0 ) ) {}
 
 		/* @brief Constructs a vector from individual components.
 		* @param x X component.
 		* @param y Y component.
 		*/
-		constexpr TVector2( tType x, tType y ) : m_X( x ), m_Y( y ) { }
+		constexpr TVector2( tType x, tType y ) : m_X( x ), m_Y( y ) {}
 
 		/* @brief Constructs a vector with both components initialized to the same value.
 		* @param scalar Value assigned to every component.
 		*/
-		constexpr explicit TVector2( tType scalar ) : m_X( scalar ), m_Y( scalar ) { }
+		constexpr explicit TVector2( tType scalar ) : m_X( scalar ), m_Y( scalar ) {}
+
+		// Cross-vector constructors
+
+		/* @brief Constructs a 2D vector from a 3D vector, discarding Z. */
+		template<cArithmetic tOther>
+		constexpr TVector2( const TVector3<tOther>& v );
+
+		/* @brief Constructs a 2D vector from a 4D vector, discarding Z and W. */
+		template<cArithmetic tOther>
+		constexpr TVector2( const TVector4<tOther>& v );
+
+		// Conversion operators
 
 		/* @brief Converts the vector to another arithmetic component type.
 		* @tparam tOther Destination component type.
 		*/
 		template<cArithmetic tOther>
 		explicit operator TVector2<tOther>( ) const {
-			return { static_cast< tOther >(m_X), static_cast< tOther >(m_Y) };
+			return { static_cast<tOther>(m_X), static_cast<tOther>(m_Y) };
 		}
+
+		/* @brief Converts the vector to a 3D vector, setting Z to zero. */
+		template<cArithmetic tOther>
+		explicit operator TVector3<tOther>( ) const;
+
+		/* @brief Converts the vector to a 4D vector, setting Z and W to zero. */
+		template<cArithmetic tOther>
+		explicit operator TVector4<tOther>( ) const;
 
 		/* @brief Vector components accessible as coordinates or color channels. */
 		union {
@@ -46,7 +75,7 @@ namespace lum {
 		};
 
 		// Arithmetic
-		
+
 		/* @brief Adds two vectors component-wise.
 		* @param rhs Vector to add.
 		* @return Resulting vector.
@@ -179,10 +208,9 @@ namespace lum {
 	* @return Scaled vector.
 	*/
 	template<cArithmetic tType>
-	TVector2<tType> operator*( tType scalar, const TVector2<tType>& v ) { 
-		return v * scalar; 
+	TVector2<tType> operator*( tType scalar, const TVector2<tType>& v ) {
+		return v * scalar;
 	}
-
 
 	//-----------------------------------------
 	// Other operations
@@ -194,8 +222,8 @@ namespace lum {
 	* @return Vector length.
 	*/
 	template<cArithmetic tType>
-	float32 Length( const TVector2<tType>& v ) { 
-		return sqrt( v.m_X * v.m_X + v.m_Y * v.m_Y ); 
+	float32 Length( const TVector2<tType>& v ) {
+		return sqrt( v.m_X * v.m_X + v.m_Y * v.m_Y );
 	}
 
 	/* @brief Returns the squared length of a vector.
@@ -204,8 +232,8 @@ namespace lum {
 	* @return Squared vector length.
 	*/
 	template<cArithmetic tType>
-	constexpr float32 LengthSq( const TVector2<tType>& v ) { 
-		return v.m_X * v.m_X + v.m_Y * v.m_Y; 
+	constexpr float32 LengthSq( const TVector2<tType>& v ) {
+		return v.m_X * v.m_X + v.m_Y * v.m_Y;
 	}
 
 	/* @brief Returns the distance between two vectors.
@@ -215,8 +243,8 @@ namespace lum {
 	* @return Distance between the vectors.
 	*/
 	template<cArithmetic tType>
-	float32 Distance( const TVector2<tType>& a, const TVector2<tType>& b ) { 
-		return Length( b - a ); 
+	float32 Distance( const TVector2<tType>& a, const TVector2<tType>& b ) {
+		return Length( b - a );
 	}
 
 	/* @brief Returns a normalized vector.

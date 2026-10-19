@@ -95,6 +95,7 @@ target_include_directories(LumEngine PUBLIC
 
 target_precompile_headers(LumEngine PRIVATE
     "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/Core/CorePch.hpp"
+    "${CMAKE_SOURCE_DIR}/LumEngine/Engine/Include/Modules/Rhi/Backends/Vulkan/VulkanPch.hpp"
 )
 
 target_compile_definitions(LumEngine PRIVATE

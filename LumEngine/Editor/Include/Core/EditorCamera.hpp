@@ -3,7 +3,7 @@
 #include <qpoint.h>
 
 #include "Core/CoreTypes.hpp"
-#include "Core/Math/MathCommon.hpp"
+#include "Core/Math/MathUtils.hpp"
 #include "Core/Math/MatrixOperations.hpp"
 #include "Core/Math/Vec2.hpp"
 #include "Core/Math/Vec3.hpp"
