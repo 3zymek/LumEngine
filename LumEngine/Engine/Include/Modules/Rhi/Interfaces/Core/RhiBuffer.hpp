@@ -6,19 +6,19 @@
 
 namespace lum::rhi {
 
-	using BufferID2 = uint32;
-	struct BufferHandle2 : public BaseHandle<BufferID2> {};
+	using BufferID = uint32;
+	struct BufferHandle : public BaseHandle<BufferID> {};
 
-	enum class BufferUsage2 : bitfield {
-		Vertex			= 1 << 0, // VBO
-		Element			= 1 << 1, // EBO
-		Uniform			= 1 << 2, // UBO
-		ShaderStorage	= 1 << 3  // SSBO
+	enum class BufferUsage : bitfield {
+		Vertex = 1 << 0, // VBO
+		Element = 1 << 1, // EBO
+		Uniform = 1 << 2, // UBO
+		ShaderStorage = 1 << 3  // SSBO
 	};
 
 	struct BufferCreateInfo2 {
 
-		Flags<BufferUsage2> m_Usage{};
+		Flags<BufferUsage> m_Usage{};
 
 		usize m_BufferSize = 0;
 		usize m_DataSize = 0;
@@ -28,7 +28,7 @@ namespace lum::rhi {
 
 	struct Buffer2 {
 
-		Flags<BufferUsage2> m_Usage{};
+		Flags<BufferUsage> m_Usage{};
 		usize m_Size = 0;
 
 	};
@@ -36,6 +36,6 @@ namespace lum::rhi {
 } // namespace lum::rhi
 namespace lum {
 
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::BufferUsage2 );
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS(rhi::BufferUsage);
 
 } // namespace lum

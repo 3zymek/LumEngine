@@ -17,13 +17,13 @@ namespace lum::rhi::vk {
 	class ImageResourceCreator {
 	public:
 
-		Result<VulkanImage> CreateImage( const VkDevice logicalDevice, const VulkanAdapter& adapter, const ImageCreateInfo2& info ) const noexcept;
-		Result<VulkanSampler> CreateSampler( const VkDevice logicalDevice, const SamplerCreateInfo2& info ) const noexcept;
+		Result<VulkanImage> CreateImage(const VkDevice logicalDevice, const VulkanAdapter& adapter, const ImageCreateInfo& info) const noexcept;
+		Result<VulkanSampler> CreateSampler(const VkDevice logicalDevice, const SamplerCreateInfo& info) const noexcept;
 
 	private:
 
-		auto choose_image_view_type( const ImageCreateInfo2& info ) const noexcept -> VkImageViewType;
-		auto choose_aspect_mask( ImageFormat format ) const noexcept -> VkImageAspectFlags;
+		auto choose_image_view_type(const ImageCreateInfo& info) const noexcept -> VkImageViewType;
+		auto choose_aspect_mask(ImageFormat format) const noexcept -> VkImageAspectFlags;
 
 	};
 

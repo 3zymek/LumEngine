@@ -32,7 +32,7 @@ namespace lum::rhi::vk {
 
 	// Sampler enums conversions
 
-	LUM_NODISCARD auto ToVk(SamplerWrap2 wrap) noexcept -> VkSamplerAddressMode;
+	LUM_NODISCARD auto ToVk(SamplerWrap wrap) noexcept -> VkSamplerAddressMode;
 	LUM_NODISCARD auto ToVk(SamplerFilter filter) noexcept -> VkFilter;
 
 } // namespace lum::rhi::vk

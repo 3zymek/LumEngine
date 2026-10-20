@@ -5,8 +5,8 @@
 
 namespace lum::rhi {
 
-    using SamplerID2 = uint32;
-    struct SamplerHandle2 : BaseHandle<SamplerID2> {};
+    using SamplerID = uint32;
+    struct SamplerHandle : BaseHandle<SamplerID> {};
 
     enum class SamplerFilter {
         Linear,
@@ -14,14 +14,14 @@ namespace lum::rhi {
     };
 
     // Defines what will happen to texture when out of bounds
-    enum class SamplerWrap2 {
+    enum class SamplerWrap {
         Repeat,				// Texture will repeat
         RepeatMirrored,		// Texture will repeat and every second repeat is mirrored
         ClampEdge,			// Last texture pixel will be streched
         ClampBorder			// Sets color border outside bounds
     };
 
-    struct SamplerCreateInfo2 {
+    struct SamplerCreateInfo {
 
         // Filter that applies to texture, when texture is magnified ( scaled up )
         SamplerFilter m_MagFilter{};
@@ -31,11 +31,11 @@ namespace lum::rhi {
         SamplerFilter m_MipmapFilter{};
 
         // How texture is acting out of bounds on s( x ) axis ( when s > 1 )
-        SamplerWrap2 m_WrapU{};
+        SamplerWrap m_WrapU{};
         // How texture is acting out of bounds on t( y ) axis ( when t > 1 )
-        SamplerWrap2 m_WrapV{};
+        SamplerWrap m_WrapV{};
         // How texture is acting out of bounds on r( z ) axis ( when r > 1, ONLY FOR 3D TEXTURES )
-        SamplerWrap2 m_WrapW{};
+        SamplerWrap m_WrapW{};
 
         float32 m_MinLod = 0.0f;
         float32 m_MaxLod = 11.0f; // 11.0f For full mipmaps
@@ -47,7 +47,7 @@ namespace lum::rhi {
 
     };
 
-    struct Sampler2 {
+    struct Sampler {
 
     };
 

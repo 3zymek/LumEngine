@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Core/CoreDefines.hpp"
 #include "Core/CoreTypes.hpp"
 #include "Core/Math/Vec4.hpp"
 #include "Core/Utils/HandlePool.hpp"
@@ -10,8 +11,8 @@
 
 namespace lum::rhi {
 
-	using PipelineID2 = uint32;
-	struct PipelineHandle2 : public BaseHandle<PipelineID2> {};
+	using PipelineID = uint32;
+	struct PipelineHandle : public BaseHandle<PipelineID> {};
 
 	enum class PrimitiveTopology : uint8 {
 		TriangleList = 0U,
@@ -208,9 +209,9 @@ namespace lum::rhi {
 
 	};
 
-	struct PipelineCreateInfo2 {
+	struct PipelineCreateInfo {
 
-		std::vector<ShaderInfo2> m_ShaderInfos{};
+		std::vector<ShaderInfo> m_ShaderInfos{};
 		AssemblyPass		m_AssemblyPass{};
 		RasterizationPass	m_RasterizationPass{};
 		ColorBlendPass		m_ColorBlendPass{};

@@ -8,7 +8,7 @@
 
 namespace lum::rhi {
 
-	class IRenderDevice2;
+	class IRenderDevice;
 
 	enum class CommandType : uint8 {
 		BindPipeline = 0U,
@@ -21,27 +21,27 @@ namespace lum::rhi {
 	class CommandBuffer {
 	public:
 
-		void BindPipeline( PipelineHandle2 handle ) {
-			struct Data { PipelineHandle2 m_Handle{}; };
-			push_command( CommandType::BindPipeline, Data{ handle } );
+		void BindPipeline(PipelineHandle handle) {
+			struct Data { PipelineHandle m_Handle{}; };
+			push_command(CommandType::BindPipeline, Data{ handle });
 		}
 
-		std::span<const uint8> GetByteStream( ) const {
+		std::span<const uint8> GetByteStream() const {
 			return m_Buffer;
 		}
 
 	protected:
 
 		template<typename tType>
-		void push_command( CommandType type, const tType& data ) {
-			append_bytes( &type, sizeof( CommandType ) );
-			append_bytes( &data, sizeof( tType ) );
+		void push_command(CommandType type, const tType& data) {
+			append_bytes(&type, sizeof(CommandType));
+			append_bytes(&data, sizeof(tType));
 		}
 
-		void append_bytes( const void* data, usize size ) {
-			usize oldSize = m_Buffer.size( );
-			m_Buffer.resize( oldSize + size );
-			std::memcpy( m_Buffer.data( ) + oldSize, data, size );
+		void append_bytes(const void* data, usize size) {
+			usize oldSize = m_Buffer.size();
+			m_Buffer.resize(oldSize + size);
+			std::memcpy(m_Buffer.data() + oldSize, data, size);
 		}
 
 		std::vector<uint8> m_Buffer{};

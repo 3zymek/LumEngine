@@ -15,7 +15,7 @@ namespace lum {
 
 namespace lum::rhi {
 
-	struct PipelineCreateInfo2;
+	struct PipelineCreateInfo;
 	class RasterizationPass;
 	class ColorBlendPass;
 	class MultisamplePass;
@@ -31,18 +31,18 @@ namespace lum::rhi::vk {
 	class PipelineCreator {
 	public:
 
-		Result<VulkanPipeline> CreatePipeline( const VkDevice logicalDevice, const VulkanAdapter& adapter, const PipelineCreateInfo2& info ) const noexcept;
+		Result<VulkanPipeline> CreatePipeline(const VkDevice logicalDevice, const VulkanAdapter& adapter, const PipelineCreateInfo& info) const noexcept;
 
 	private:
 
 		// Internal PipelineCreator helpers
-		auto setup_rasterizer_info( const RasterizationPass& info ) const noexcept -> VkPipelineRasterizationStateCreateInfo;
-		auto setup_color_blend_info( const ColorBlendPass& info ) const noexcept -> VkPipelineColorBlendStateCreateInfo;
-		auto setup_multisample_info( const MultisamplePass& info ) const noexcept -> VkPipelineMultisampleStateCreateInfo;
-		auto setup_assembly_info( const AssemblyPass& info ) const noexcept -> VkPipelineInputAssemblyStateCreateInfo;
-		auto setup_vertex_input_info( const VertexInputPass& info ) const noexcept -> VkPipelineVertexInputStateCreateInfo;
-		auto setup_shader_modules( const VkDevice logicalDevice, const PipelineCreateInfo2& info ) const noexcept -> std::vector<VkPipelineShaderStageCreateInfo>;
-		auto create_shader_module( const VkDevice logicalDevice, const Path& path ) const noexcept -> VkShaderModule;
+		auto setup_rasterizer_info(const RasterizationPass& info) const noexcept -> VkPipelineRasterizationStateCreateInfo;
+		auto setup_color_blend_info(const ColorBlendPass& info) const noexcept -> VkPipelineColorBlendStateCreateInfo;
+		auto setup_multisample_info(const MultisamplePass& info) const noexcept -> VkPipelineMultisampleStateCreateInfo;
+		auto setup_assembly_info(const AssemblyPass& info) const noexcept -> VkPipelineInputAssemblyStateCreateInfo;
+		auto setup_vertex_input_info(const VertexInputPass& info) const noexcept -> VkPipelineVertexInputStateCreateInfo;
+		auto setup_shader_modules(const VkDevice logicalDevice, const PipelineCreateInfo& info) const noexcept -> std::vector<VkPipelineShaderStageCreateInfo>;
+		auto create_shader_module(const VkDevice logicalDevice, const Path& path) const noexcept -> VkShaderModule;
 
 	};
 

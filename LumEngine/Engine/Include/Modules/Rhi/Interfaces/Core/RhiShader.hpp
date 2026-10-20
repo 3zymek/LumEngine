@@ -13,7 +13,7 @@ namespace lum::rhi {
 		Geometry
 	};
 
-	struct ShaderInfo2 {
+	struct ShaderInfo {
 
 		Path m_Path{}; // Path to shader from project's root
 		ShaderStage m_Stage{};

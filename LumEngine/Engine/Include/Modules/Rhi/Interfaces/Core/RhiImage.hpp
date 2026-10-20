@@ -8,8 +8,8 @@
 
 namespace lum::rhi {
 
-	using ImageID2 = uint32;
-	struct ImageHandle2 : BaseHandle<ImageID2> {};
+	using ImageID = uint32;
+	struct ImageHandle : BaseHandle<ImageID> {};
 
 	enum class ImageUsageFlag : bitfield {
 
@@ -142,7 +142,7 @@ namespace lum::rhi {
 		Dynamic
 	};
 
-	struct ImageCreateInfo2 {
+	struct ImageCreateInfo {
 
 		ImageUsageFlags m_UsageFlags = ImageUsageFlag::None;
 		ImageDimension m_Dimension = ImageDimension::Image2D;
@@ -159,7 +159,7 @@ namespace lum::rhi {
 
 	};
 
-	struct Image2 {
+	struct Image {
 
 	};
 
