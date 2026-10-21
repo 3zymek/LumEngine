@@ -11,18 +11,18 @@
 
 namespace lum::rhi::vk {
 
-	void CommandInterpreter::RegisterCall( CommandType type, CommandCallFn call ) {
+	void VulkanCommandInterpreter::ExecuteCall( CommandType type, VkCommandBuffer vkCmdBuffer, uint8*& ptr ) noexcept {
 
-		m_CommandCalls[ type ] = call;
-
-	}
-	void CommandInterpreter::ExecuteCall( CommandType type, VkCommandBuffer vkCmdBuf, VulkanDevice& ) {
+		auto typeIndex = ToUnderlyingEnum( type );
+		auto& call = m_CommandCalls[ typeIndex ];
 
 		LUM_ASSERT(
-			m_CommandCalls.contains( type ),
+			call.m_InvokeFn,
 			FormatString( "Unregistered CommandType ({}) encountered during decoding stream. Did you forget to register its handler?", type )
 		);
 
+		
+		call.m_InvokeFn( &call.m_Storage, vkCmdBuffer, ptr );
 
 	}
 

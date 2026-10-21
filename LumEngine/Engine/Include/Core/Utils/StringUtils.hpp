@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "Core/CoreTypes.hpp"
+#include "Core/Utils/TypeUtils.hpp"
 
 namespace lum {
 
@@ -127,7 +128,14 @@ namespace lum {
 
 		template<cEnum tEnum>
 		inline void AppendArg( char*& current, const char* end, tEnum val ) {
-			AppendArg( current, end, "DEBUG ENUM_NAME" );
+
+			auto typeName = t_EnumTypeName<tEnum>;
+			auto valueName = EnumName( val );
+
+			AppendArg( current, end, typeName );
+			AppendArg( current, end, "::" );
+			AppendArg( current, end, valueName );
+
 		}
 
 		/* @brief Base recursion terminator for string formatting.

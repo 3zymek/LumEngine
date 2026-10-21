@@ -7,19 +7,20 @@
 #include "Rhi/Backends/Vulkan/Core/RhiDevice_vulkan.hpp"
 #include "Rhi/Interfaces/Core/RhiDevice.hpp"
 #include <Core/CoreTypes.hpp>
+#include "Rhi/Interfaces/Core/RhiCommandTypes.hpp"
 #include <glfw3.h>
 #include <vector>
 
 using namespace lum;
-int main(int argc, char* argv[]) {
+int main( int argc, char* argv[ ] ) {
 
 #	if defined(_WIN32)
-	ResourceLoader::SetProjectRoot("C:/Users/szymek/Desktop/lumen_assets");
+	ResourceLoader::SetProjectRoot( "C:/Users/szymek/Desktop/lumen_assets" );
 #	elif defined(__APPLE__)
-	ResourceLoader::SetProjectRoot("/Users/br.eeziak/Desktop/glsl");
+	ResourceLoader::SetProjectRoot( "/Users/br.eeziak/Desktop/glsl" );
 #	endif
 
-	OwningPtr<rhi::IRenderDevice> device = OwningPtr<rhi::vk::VulkanDevice>::Create();
+	OwningPtr<rhi::IRenderDevice> device = OwningPtr<rhi::vk::VulkanDevice>::Create( );
 
 	ev::EventBus bus{};
 
@@ -28,12 +29,12 @@ int main(int argc, char* argv[]) {
 	winInfo.m_Title = "Vulkan Development";
 	winInfo.m_Height = 800;
 	winInfo.m_Width = 800;
-	window.Initialize(winInfo, bus);
-	OwningPtr<GLFWVulkanSurfaceProvider> surfaceProvider = OwningPtr<GLFWVulkanSurfaceProvider>::Create(reinterpret_cast<GLFWwindow*>(window.GetNativeWindow()));
+	window.Initialize( winInfo, bus );
+	OwningPtr<GLFWVulkanSurfaceProvider> surfaceProvider = OwningPtr<GLFWVulkanSurfaceProvider>::Create( reinterpret_cast<GLFWwindow*>(window.GetNativeWindow( )) );
 
 	uint32 count{};
-	const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&count);
-	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + count);
+	const char** glfwExtensions = glfwGetRequiredInstanceExtensions( &count );
+	std::vector<const char*> extensions( glfwExtensions, glfwExtensions + count );
 
 	rhi::RenderDeviceCreateInfo info{};
 	info.m_InstanceExtensions = extensions;
@@ -41,14 +42,22 @@ int main(int argc, char* argv[]) {
 	info.m_SurfaceProvider = surfaceProvider;
 	info.m_EventBus = bus;
 
-	device().Initialize(info);
+	device( ).Initialize( info );
 
-	while (window.IsOpen()) {
-		window.Update();
-		device().UpdateFrame();
+	while (window.IsOpen( )) {
+
+		rhi::CommandBuffer cmdBuffer{};
+		cmdBuffer.Push( rhi::cmd::DrawIndexed{} );
+
+		device( ).SendCommandBuffer( std::move( cmdBuffer ) );
+
+		window.Update( );
+		device( ).UpdateFrame( );
+
+
 	}
 
-	device().Finalize();
+	device( ).Finalize( );
 
 
 

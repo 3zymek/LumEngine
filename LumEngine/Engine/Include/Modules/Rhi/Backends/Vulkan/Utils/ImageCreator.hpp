@@ -2,7 +2,6 @@
 
 #include <vulkan/vulkan_core.h>
 
-
 #include <Core/Utils/Result.hpp>
 #include <Rhi/Backends/Vulkan/Core/RhiImage_vulkan.hpp>
 #include <Rhi/Backends/Vulkan/Core/RhiSampler_vulkan.hpp>

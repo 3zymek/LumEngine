@@ -1,4 +1,18 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
+
+#include <source_location>
 
 #include <vulkan/vulkan_core.h>
 
@@ -27,10 +41,6 @@ namespace lum::rhi::vk {
 
 			void create_defaults( ) {
 
-				//m_Vulkan14Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES;
-				//m_Vulkan14Features.dynamicRenderingLocalRead = VK_TRUE;
-				//m_Vulkan14Features.pNext = nullptr;
-
 				m_13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
 				m_13Features.dynamicRendering = VK_TRUE;
 				m_13Features.synchronization2 = VK_TRUE;
@@ -42,11 +52,27 @@ namespace lum::rhi::vk {
 
 			}
 
-			//VkPhysicalDeviceVulkan14Features m_Vulkan14Features{};
 			VkPhysicalDeviceVulkan13Features m_13Features{};
 			VkPhysicalDeviceVulkan12Features m_12Features{};
 
 		};
+
+		LUM_NODISCARD inline bool ResultValidation( const VkResult res, const char* fnName, const std::source_location loc = std::source_location::current( ) ) noexcept {
+			if (res != VK_SUCCESS) {
+				LUM_LOG_ERROR(
+					"Vulkan error: '{}' failed with VkResult: {}\n  -> At {}:{}",
+					fnName,
+					static_cast<int32>(res),
+					loc.file_name( ),
+					loc.line( )
+				);
+				return false;
+			}
+			return true;
+		}
+
+#		define LUM_VK_RESULT_CHECK(call) \
+			lum::rhi::vk::detail::ResultValidation( call, #call )
 
 
 	}

@@ -1,9 +1,15 @@
-//========= Copyright (C) 2025-present 3zymek, MIT License ============//
-//
-// Purpose: Defines generational handle-based containers for storing objects
-//          using stable references, slot recycling and generation tracking.
-//
-//=============================================================================//
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
 #include "Core/CoreTypes.hpp"

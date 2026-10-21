@@ -16,6 +16,7 @@
 #include "Rhi/Backends/Vulkan/Core/RhiPipeline_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/RhiEnumCast_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
+#include "Rhi/Backends/Vulkan/RhiTypes_vulkan.hpp"
 #include "Rhi/Interfaces/Core/RhiPipeline.hpp"
 #include "Rhi/Interfaces/Core/RhiShader.hpp"
 

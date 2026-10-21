@@ -26,7 +26,7 @@ namespace lum::rhi {
 
 	};
 
-	struct Buffer2 {
+	struct BufferDescription {
 
 		Flags<BufferUsage> m_Usage{};
 		usize m_Size = 0;

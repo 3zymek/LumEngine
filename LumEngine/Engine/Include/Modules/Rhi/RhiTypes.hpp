@@ -5,7 +5,8 @@
 
 namespace lum::rhi {
 
-#	define LUM_MAX_FRAMES_IN_FLIGHT 2
+	inline constexpr usize k_MaxFramesInFlight = 2;
+	inline constexpr usize k_MaxVertexBufferBindCount = 5;
 
 	struct Vertex {
 		Vector3 m_Position = Vector3( 0.0f, 0.0f, 0.0f );

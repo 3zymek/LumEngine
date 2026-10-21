@@ -13,8 +13,11 @@
 #include "Core/Utils/HandlePool.hpp"
 #include "Core/Utils/SafePtr.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiBuffer_vulkan.hpp"
+#include "Rhi/Backends/Vulkan/Core/RhiImage_vulkan.hpp"
+#include "Rhi/Backends/Vulkan/Core/RhiPipeline_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiSampler_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/RhiTypes_vulkan.hpp"
+#include "Rhi/Backends/Vulkan/Utils/CommandInterpreter.hpp"
 #include "Rhi/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
 #include "Rhi/Interfaces/Core/RhiBuffer.hpp"
 #include "Rhi/Interfaces/Core/RhiCommandBuffer.hpp"
@@ -23,8 +26,6 @@
 #include "Rhi/Interfaces/Core/RhiPipeline.hpp"
 #include "Rhi/Interfaces/Core/RhiSampler.hpp"
 #include "Rhi/RhiTypes.hpp"
-#include "RhiImage_vulkan.hpp"
-#include "RhiPipeline_vulkan.hpp"
 
 namespace lum {
 
@@ -38,24 +39,24 @@ namespace lum::rhi::vk {
 	class LUM_API VulkanDevice : public IRenderDevice {
 	public:
 
-		void Initialize(const RenderDeviceCreateInfo& info) noexcept override;
-		void Finalize() noexcept override;
+		void Initialize( const RenderDeviceCreateInfo& info ) noexcept override;
+		void Finalize( ) noexcept override;
 
-		void UpdateFrame() noexcept override;
+		void UpdateFrame( ) noexcept override;
 
-		BufferHandle CreateBuffer(const BufferCreateInfo2& info) noexcept override;
-		void DestroyBuffer(BufferHandle& handle) noexcept override;
+		BufferHandle CreateBuffer( const BufferCreateInfo2& info ) noexcept override;
+		void DestroyBuffer( BufferHandle& handle ) noexcept override;
 
-		PipelineHandle CreatePipeline(const PipelineCreateInfo& info) noexcept override;
-		void DestroyPipeline(PipelineHandle& handle) noexcept override;
+		PipelineHandle CreatePipeline( const PipelineCreateInfo& info ) noexcept override;
+		void DestroyPipeline( PipelineHandle& handle ) noexcept override;
 
-		ImageHandle CreateImage(const ImageCreateInfo& info) noexcept override;
-		void DestroyImage(ImageHandle& handle) noexcept override;
+		ImageHandle CreateImage( const ImageCreateInfo& info ) noexcept override;
+		void DestroyImage( ImageHandle& handle ) noexcept override;
 
-		SamplerHandle CreateSampler(const SamplerCreateInfo& info) noexcept override;
-		void DestroySampler(SamplerHandle& handle) noexcept override;
+		SamplerHandle CreateSampler( const SamplerCreateInfo& info ) noexcept override;
+		void DestroySampler( SamplerHandle& handle ) noexcept override;
 
-		void SendCommandBuffer(CommandBuffer&& buffer) noexcept override;
+		void SendCommandBuffer( CommandBuffer&& buffer ) noexcept override;
 
 	private:
 
@@ -87,7 +88,7 @@ namespace lum::rhi::vk {
 
 
 
-
+		VulkanCommandInterpreter m_CommandInterpreter{};
 		std::queue<CommandBuffer> m_CommandBuffersToFlush{};
 
 		TVector2<uint32> m_WindowSize{};
@@ -140,13 +141,13 @@ namespace lum::rhi::vk {
 
 		VkCommandPool m_CmdPool = VK_NULL_HANDLE;
 
-		std::vector<VkCommandBuffer> m_CmdBuffers{ LUM_MAX_FRAMES_IN_FLIGHT };
+		std::vector<VkCommandBuffer> m_CmdBuffers{ k_MaxFramesInFlight };
 
 		VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
 		VkQueue m_ComputeQueue = VK_NULL_HANDLE;
 		VkQueue m_PresentQueue = VK_NULL_HANDLE;
 
-		std::array<VkSemaphore, LUM_MAX_FRAMES_IN_FLIGHT> m_ImageAvailableSemaphores{};
+		std::array<VkSemaphore, k_MaxFramesInFlight> m_ImageAvailableSemaphores{};
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores{};
 
 		VkFence m_Fence = VK_NULL_HANDLE;
@@ -156,29 +157,30 @@ namespace lum::rhi::vk {
 		// INITIALIZATION HELPERS
 		// ===========================================================
 
-		void create_vk_instance(const RenderDeviceCreateInfo& info) noexcept;
-		void choose_adapter() noexcept;
-		void create_logical_device() noexcept;
-		void acquire_queues() noexcept;
-		void create_main_surface() noexcept;
-		void recreate_swapchain() noexcept;
-		void recreate_swapchain_images() noexcept;
-		void create_main_pipeline() noexcept;
-		void create_command_pool() noexcept;
-		void allocate_command_buffers() noexcept;
-		void create_sync_primitives() noexcept;
-		void handle_resize() noexcept;
-		void create_vertex_buffers() noexcept;
+		void create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept;
+		void choose_adapter( ) noexcept;
+		void create_logical_device( ) noexcept;
+		void acquire_queues( ) noexcept;
+		void create_main_surface( ) noexcept;
+		void recreate_swapchain( ) noexcept;
+		void recreate_swapchain_images( ) noexcept;
+		void create_main_pipeline( ) noexcept;
+		void create_command_pool( ) noexcept;
+		void allocate_command_buffers( ) noexcept;
+		void create_sync_primitives( ) noexcept;
+		void handle_resize( ) noexcept;
+		void create_vertex_buffers( ) noexcept;
+		void bind_commands_implementations( ) noexcept;
 
 
 		// ===========================================================
 		// RUNTIME HELPERS
 		// ===========================================================
 
-		void assert_device() const;
-		bool create_shader_module(const Path& path, VkShaderModule& module) const noexcept;
-		void decode_command_buffer(std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer) noexcept;
-		void process_commands() noexcept;
+		void assert_device( ) const;
+		bool create_shader_module( const Path& path, VkShaderModule& module ) const noexcept;
+		void decode_command_buffer( std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer ) noexcept;
+		void process_commands( ) noexcept;
 
 
 	};

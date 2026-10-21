@@ -78,7 +78,13 @@ namespace lum {
 	template<cEnum tEnum>
 	inline constexpr usize t_EnumCount = magic_enum::enum_count<tEnum>( );
 
-	//template<cEnum tEnum>
-	//inline constexpr StringView t_EnumName = magic_enum::enum_name<tEnum>( );
+	template<cEnum tEnum>
+	inline constexpr StringView t_EnumTypeName = magic_enum::enum_type_name<tEnum>( );
+
+	template<cEnum tEnum>
+	inline constexpr StringView EnumName( tEnum e ) noexcept {
+		return magic_enum::enum_name( e );
+	}
+
 
 } // namespace lum

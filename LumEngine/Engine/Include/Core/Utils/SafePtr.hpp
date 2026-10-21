@@ -34,6 +34,11 @@ namespace lum {
 		/*
 		* @brief Constructs an empty SafePtr.
 		*/
+		constexpr SafePtr( std::nullptr_t ) noexcept : m_Value( nullptr ) {}
+
+		/*
+		* @brief Constructs an empty SafePtr.
+		*/
 		SafePtr( ) : m_Value( nullptr ) {}
 
 		/*
@@ -125,6 +130,10 @@ namespace lum {
 		}
 		SafePtr& operator=( const OwningPtr<tType>& other ) {
 			m_Value = other.Ptr( );
+			return *this;
+		}
+		SafePtr& operator=( std::nullptr_t ) noexcept {
+			m_Value = nullptr;
 			return *this;
 		}
 
