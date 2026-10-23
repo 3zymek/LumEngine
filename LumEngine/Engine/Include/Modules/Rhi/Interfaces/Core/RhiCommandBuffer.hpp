@@ -34,7 +34,10 @@ namespace lum::rhi {
 		BindTexture,
 		BindVertexBuffers,
 		BindElementBuffer,
-		DrawIndexed
+		DrawIndexed,
+		SetViewport,
+		SetScissors,
+		UpdateResourceSet
 	};
 
 	template<typename tType>
@@ -49,10 +52,9 @@ namespace lum::rhi {
 	public:
 
 		template<typename tCommandData>
-			requires std::is_convertible_v<tCommandData, Command>
+			requires ( std::is_convertible_v<tCommandData, Command> && cHasCmdType<tCommandData> )
 		void Push( const tCommandData& data ) {
-			LUM_SASSERT( cHasCmdType<tCommandData> );
-			push_command( tCommandData::s_Type, data );
+			append_command( tCommandData::s_Type, data );
 		}
 
 		std::span<uint8> GetByteStream( ) {
@@ -62,7 +64,7 @@ namespace lum::rhi {
 	protected:
 
 		template<typename tType>
-		void push_command( CommandType type, const tType& data ) {
+		void append_command( CommandType type, const tType& data ) {
 			append_bytes( &type, sizeof( CommandType ) );
 			append_bytes( &data, sizeof( tType ) );
 		}

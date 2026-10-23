@@ -1,8 +1,21 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
-#include "Rhi/RhiTypes.hpp"
+#include "Core/Utils/Flags.hpp"
 #include "Core/Utils/HandlePool.hpp"
 #include "Platform/FileSystem/Path.hpp"
+#include "Rhi/RhiTypes.hpp"
 
 namespace lum::rhi {
 
@@ -12,6 +25,7 @@ namespace lum::rhi {
 		Compute,
 		Geometry
 	};
+	using ShaderStageFlags = Flags<ShaderStage>;
 
 	struct ShaderInfo {
 
@@ -21,4 +35,12 @@ namespace lum::rhi {
 
 	};
 
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::ShaderStage );
+
 } // namespace lum::rhi
+
+namespace lum {
+
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::ShaderStage );
+
+} // namespace lum

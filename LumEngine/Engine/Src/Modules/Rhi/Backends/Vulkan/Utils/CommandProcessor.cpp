@@ -2,7 +2,7 @@
 #include "Rhi/Backends/Vulkan/VulkanPch.hpp"
 
 // Header implementation file
-#include "Rhi/Backends/Vulkan/Utils/CommandInterpreter.hpp"
+#include "Rhi/Backends/Vulkan/Utils/CommandProcessor.hpp"
 
 #include "Core/Utils/Assert.hpp"
 #include "Core/Utils/StringUtils.hpp"
@@ -11,7 +11,7 @@
 
 namespace lum::rhi::vk {
 
-	void VulkanCommandInterpreter::ExecuteCall( CommandType type, VkCommandBuffer vkCmdBuffer, uint8*& ptr ) noexcept {
+	void VulkanCommandProcessor::ExecuteCall( CommandType type, VkCommandBuffer vkCmdBuffer, uint8*& ptr ) noexcept {
 
 		auto typeIndex = ToUnderlyingEnum( type );
 		auto& call = m_CommandCalls[ typeIndex ];

@@ -119,7 +119,7 @@ namespace lum::rhi {
 
 	};
 
-	struct ImageExtent3D {
+	struct Extent3D {
 
 		uint32 m_Width = 0;
 		uint32 m_Height = 0;
@@ -147,7 +147,7 @@ namespace lum::rhi {
 		ImageUsageFlags m_UsageFlags = ImageUsageFlag::None;
 		ImageDimension m_Dimension = ImageDimension::Image2D;
 		ImageFormat m_Format = ImageFormat::RGBA32_FLOAT;
-		ImageExtent3D m_Extent{};
+		Extent3D m_Extent{};
 		ImageViewType m_ViewType = ImageViewType::Default;
 		ImageUsage m_Usage = ImageUsage::Static;
 		SampleCount m_SampleCount = SampleCount::Sample1;

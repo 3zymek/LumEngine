@@ -1,3 +1,15 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #include "Core/CorePch.hpp"
 #include "Rhi/Backends/Vulkan/VulkanPch.hpp"
 
@@ -24,7 +36,7 @@
 
 namespace lum::rhi::vk {
 
-	void VulkanDevice::create_vk_instance(const RenderDeviceCreateInfo& info) noexcept {
+	void VulkanDevice::create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept {
 
 		std::vector<const char*> layers = {
 			"VK_LAYER_KHRONOS_validation"
@@ -32,27 +44,27 @@ namespace lum::rhi::vk {
 
 		std::vector<const char*> extensions = info.m_InstanceExtensions;
 		if (info.m_EnableValidation) {
-			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+			extensions.push_back( VK_EXT_DEBUG_UTILS_EXTENSION_NAME );
 		}
 
 #		if defined(__APPLE__)
-		extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+		extensions.push_back( VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME );
 #		endif
 
 
 		VkApplicationInfo appInfo{};
-		appInfo.apiVersion = VK_MAKE_VERSION(1, 3, 0);
-		appInfo.engineVersion = VK_MAKE_VERSION(0, 3, 0);
+		appInfo.apiVersion = VK_MAKE_VERSION( 1, 3, 0 );
+		appInfo.engineVersion = VK_MAKE_VERSION( 0, 3, 0 );
 		appInfo.pApplicationName = "Blank";
 		appInfo.pEngineName = "LumEngine";
 
 		VkInstanceCreateInfo desc{};
 		desc.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		desc.pApplicationInfo = &appInfo;
-		desc.enabledExtensionCount = SafeCast<uint32>(extensions.size());
-		desc.ppEnabledExtensionNames = extensions.data();
-		desc.enabledLayerCount = layers.size();
-		desc.ppEnabledLayerNames = layers.data();
+		desc.enabledExtensionCount = SafeCast<uint32>( extensions.size( ) );
+		desc.ppEnabledExtensionNames = extensions.data( );
+		desc.enabledLayerCount = layers.size( );
+		desc.ppEnabledLayerNames = layers.data( );
 
 #		if defined(__APPLE__)
 		desc.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
@@ -74,72 +86,68 @@ namespace lum::rhi::vk {
 				VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 
 			debugCreateInfo.pfnUserCallback =
-				[](VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+				[]( VkDebugUtilsMessageSeverityFlagBitsEXT severity,
 					VkDebugUtilsMessageTypeFlagsEXT type,
 					const VkDebugUtilsMessengerCallbackDataEXT* data,
-					void* userData) -> VkBool32 {
+					void* userData ) -> VkBool32 {
 						if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
-							LUM_LOG_ERROR("[VULKAN VALIDATION] {}", data->pMessage);
+							LUM_LOG_ERROR( "[VULKAN VALIDATION] {}", data->pMessage );
 						}
 						else {
-							LUM_LOG_WARN("[VULKAN VALIDATION] {}", data->pMessage);
+							LUM_LOG_WARN( "[VULKAN VALIDATION] {}", data->pMessage );
 						}
 						return VK_FALSE;
 				};
 
-			desc.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
-			desc.enabledLayerCount = SafeCast<uint32>(layers.size());
-			desc.ppEnabledLayerNames = layers.data();
+			desc.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
+			desc.enabledLayerCount = SafeCast<uint32>( layers.size( ) );
+			desc.ppEnabledLayerNames = layers.data( );
 
 		}
 
-		if (vkCreateInstance(&desc, nullptr, &m_Instance) != VK_SUCCESS) {
-			LUM_LOG_FATAL("Failed to create VkInstance!");
+		if (vkCreateInstance( &desc, nullptr, &m_Instance ) != VK_SUCCESS) {
+			LUM_LOG_FATAL( "Failed to create VkInstance!" );
 		}
 
 	}
 
-	void VulkanDevice::choose_adapter() noexcept {
+	void VulkanDevice::choose_adapter( ) noexcept {
 
 		uint32 numDevices = 0;
-		vkEnumeratePhysicalDevices(m_Instance, &numDevices, nullptr);
+		vkEnumeratePhysicalDevices( m_Instance, &numDevices, nullptr );
 		if (numDevices <= 0) {
-			LUM_LOG_FATAL("There are no physical devices to be found!");
+			LUM_LOG_FATAL( "There are no physical devices to be found!" );
 			return;
 		}
-		std::vector<VkPhysicalDevice> devices(numDevices);
-		vkEnumeratePhysicalDevices(m_Instance, &numDevices, devices.data());
+		std::vector<VkPhysicalDevice> devices( numDevices );
+		vkEnumeratePhysicalDevices( m_Instance, &numDevices, devices.data( ) );
 
 		VulkanAdapter bestAdapter{};
 
 		for (uint32 i = 0; i < numDevices; i++) {
 
-			Result<VulkanAdapter> evaluated = m_AdapterEvaluator.EvaluateAdapter(devices[i], m_MainSurface);
+			auto evaluated = m_AdapterEvaluator.EvaluateAdapter( devices[ i ], m_MainSurface );
 
 			if (!evaluated)
 				continue;
 
-			auto& val = evaluated.ValueRef();
+			auto& val = evaluated.ValueRef( );
 
-			if (val.m_Score > bestAdapter.m_Score && val.m_Queues.IsValid())
+			if (val.m_Score > bestAdapter.m_Score && val.m_Queues.IsValid( ))
 				bestAdapter = val;
 
 		}
 
-		LUM_LOG_INFO("Score is: {}", bestAdapter.m_Score);
-		LUM_LOG_INFO(bestAdapter.m_Queues.IsValid() ? "queues are valid" : "queues are invalid");
-
-		if (bestAdapter.m_Score == 0 || !bestAdapter.m_Queues.IsValid()) {
-			LUM_LOG_FATAL("Failed to initialize Vulkan backend: None of the ({}) detected GPU(s) satisfy LumEngine's minimum required features!", numDevices);
+		if (bestAdapter.m_Score == 0 || !bestAdapter.m_Queues.IsValid( )) {
+			LUM_LOG_FATAL( "Failed to initialize Vulkan backend: None of the ({}) detected GPU(s) satisfy LumEngine's minimum required features!", numDevices );
 			return;
 		}
 
 		m_Adapter = bestAdapter;
-		LUM_LOG_INFO("{}", bestAdapter.m_Score);
 
 	}
 
-	void VulkanDevice::create_logical_device() noexcept {
+	void VulkanDevice::create_logical_device( ) noexcept {
 
 		// ENABLE SWAPCHAIN CONFIGURATION
 		std::vector<const char*> deviceExtensions = {
@@ -147,7 +155,7 @@ namespace lum::rhi::vk {
 		};
 
 #		if defined(__APPLE__)
-		deviceExtensions.push_back("VK_KHR_portability_subset");
+		deviceExtensions.push_back( "VK_KHR_portability_subset" );
 #		endif
 
 		const auto& queues = m_Adapter.m_Queues;
@@ -173,57 +181,57 @@ namespace lum::rhi::vk {
 		presentQueueInfo.queueFamilyIndex = queues.m_PresentQueueIndex;
 
 		std::vector<VkDeviceQueueCreateInfo> queueInfos{};
-		queueInfos.push_back(graphicsQueueInfo);
+		queueInfos.push_back( graphicsQueueInfo );
 
 		if (queues.m_GraphicsQueueIndex != queues.m_PresentQueueIndex) {
-			queueInfos.push_back(presentQueueInfo);
+			queueInfos.push_back( presentQueueInfo );
 		}
 
-		if (queues.HasQueue(queues.m_ComputeQueueIndex) &&
+		if (queues.HasQueue( queues.m_ComputeQueueIndex ) &&
 			queues.m_ComputeQueueIndex != queues.m_PresentQueueIndex &&
 			queues.m_ComputeQueueIndex != queues.m_GraphicsQueueIndex) {
 
-			queueInfos.push_back(computeQueueInfo);
+			queueInfos.push_back( computeQueueInfo );
 
 		}
 
 		VkDeviceCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-		info.enabledExtensionCount = SafeCast<uint32>(deviceExtensions.size());
-		info.ppEnabledExtensionNames = deviceExtensions.data();
+		info.enabledExtensionCount = SafeCast<uint32>( deviceExtensions.size( ) );
+		info.ppEnabledExtensionNames = deviceExtensions.data( );
 		info.pEnabledFeatures = &m_Adapter.m_Features;
-		info.queueCreateInfoCount = SafeCast<uint32>(queueInfos.size());
-		info.pQueueCreateInfos = queueInfos.data();
-		info.pNext = detail::LogicalDeviceFeatures::GetStatic().GetChainHead();
+		info.queueCreateInfoCount = SafeCast<uint32>( queueInfos.size( ) );
+		info.pQueueCreateInfos = queueInfos.data( );
+		info.pNext = detail::LogicalDeviceFeatures::GetStatic( ).GetChainHead( );
 
-		const VkResult result = vkCreateDevice(m_Adapter.m_Device, &info, nullptr, &m_LogicalDevice);
+		const VkResult result = vkCreateDevice( m_Adapter.m_Device, &info, nullptr, &m_LogicalDevice );
 
 		if (result != VK_SUCCESS) {
-			LUM_LOG_FATAL("vkCreateDevice() failure (VkResult: {})", static_cast<int32>(result));
+			LUM_LOG_FATAL( "vkCreateDevice() failure (VkResult: {})", static_cast<int32>(result) );
 		}
 
 	}
 
-	void VulkanDevice::acquire_queues() noexcept {
+	void VulkanDevice::acquire_queues( ) noexcept {
 
-		vkGetDeviceQueue(m_LogicalDevice, m_Adapter.m_Queues.m_GraphicsQueueIndex, 0, &m_GraphicsQueue);
-		vkGetDeviceQueue(m_LogicalDevice, m_Adapter.m_Queues.m_PresentQueueIndex, 0, &m_PresentQueue);
+		vkGetDeviceQueue( m_LogicalDevice, m_Adapter.m_Queues.m_GraphicsQueueIndex, 0, &m_GraphicsQueue );
+		vkGetDeviceQueue( m_LogicalDevice, m_Adapter.m_Queues.m_PresentQueueIndex, 0, &m_PresentQueue );
 
-		if (m_Adapter.m_Queues.HasQueue(m_Adapter.m_Queues.m_ComputeQueueIndex)) {
-			vkGetDeviceQueue(m_LogicalDevice, m_Adapter.m_Queues.m_ComputeQueueIndex, 0, &m_ComputeQueue);
+		if (m_Adapter.m_Queues.HasQueue( m_Adapter.m_Queues.m_ComputeQueueIndex )) {
+			vkGetDeviceQueue( m_LogicalDevice, m_Adapter.m_Queues.m_ComputeQueueIndex, 0, &m_ComputeQueue );
 		}
 
 	}
 
-	void VulkanDevice::create_main_surface() noexcept {
+	void VulkanDevice::create_main_surface( ) noexcept {
 
-		m_MainSurface = m_SurfaceProvider().CreateSurface(m_Instance);
+		m_MainSurface = m_SurfaceProvider( ).CreateSurface( m_Instance );
 
 	}
 
-	void VulkanDevice::recreate_swapchain() noexcept {
+	void VulkanDevice::recreate_swapchain( ) noexcept {
 
-		m_Adapter.QuerySurfaceCapabilities(m_MainSurface);
+		m_Adapter.QuerySurfaceCapabilities( m_MainSurface );
 
 		VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		uint32 numQueueFamilyIndex = 0;
@@ -232,7 +240,7 @@ namespace lum::rhi::vk {
 		uint32 graphicsIdx = m_Adapter.m_Queues.m_GraphicsQueueIndex;
 		uint32 presentIdx = m_Adapter.m_Queues.m_PresentQueueIndex;
 
-		uint32 queueFamilyIndices[] = { graphicsIdx, presentIdx };
+		uint32 queueFamilyIndices[ ] = { graphicsIdx, presentIdx };
 
 		if (graphicsIdx != presentIdx) {
 			sharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -246,20 +254,20 @@ namespace lum::rhi::vk {
 			imageCount = capabilities.maxImageCount;
 		}
 
-		VkPresentModeKHR presentMode = m_Adapter.m_SurfaceSupport.SelectPresentMode();
-		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat();
+		VkPresentModeKHR presentMode = m_Adapter.m_SurfaceSupport.SelectPresentMode( );
+		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
 		VkSwapchainKHR oldSwapchain = m_Swapchain;
-		VkExtent2D extent{};
+
 		if (capabilities.currentExtent.width != UINT32_MAX) {
-			extent = capabilities.currentExtent;
+			m_SwapchainExtent = capabilities.currentExtent;
 		}
 		else {
-			extent.width = Clamp(
+			m_SwapchainExtent.width = Clamp(
 				m_WindowSize.m_X,
 				capabilities.minImageExtent.width,
 				capabilities.maxImageExtent.width
 			);
-			extent.height = Clamp(
+			m_SwapchainExtent.height = Clamp(
 				m_WindowSize.m_Y,
 				capabilities.minImageExtent.height,
 				capabilities.maxImageExtent.height
@@ -279,7 +287,7 @@ namespace lum::rhi::vk {
 		info.imageFormat = surfaceFormat.format;
 		info.imageSharingMode = sharingMode;
 		info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-		info.imageExtent = extent;
+		info.imageExtent = m_SwapchainExtent;
 		info.imageArrayLayers = 1;
 
 		info.preTransform = capabilities.currentTransform;
@@ -288,38 +296,37 @@ namespace lum::rhi::vk {
 
 		LUM_LOG_INFO(
 			"Swapchain extent: {}x{} | Window: {}x{}",
-			extent.width,
-			extent.height,
+			m_SwapchainExtent.width,
+			m_SwapchainExtent.height,
 			m_WindowSize.m_X,
 			m_WindowSize.m_Y
 		);
 
-		if (vkCreateSwapchainKHR(m_LogicalDevice, &info, nullptr, &m_Swapchain) != VK_SUCCESS) {
-			LUM_LOG_FATAL("Failed to create Swapchain! (Vulkan)");
+		if (!LUM_VK_RESULT_CHECK( vkCreateSwapchainKHR( m_LogicalDevice, &info, nullptr, &m_Swapchain ) )) {
 			return;
 		}
 		if (oldSwapchain != VK_NULL_HANDLE) {
-			vkDestroySwapchainKHR(m_LogicalDevice, oldSwapchain, nullptr);
+			vkDestroySwapchainKHR( m_LogicalDevice, oldSwapchain, nullptr );
 		}
 
 	}
 
-	void VulkanDevice::recreate_swapchain_images() noexcept {
+	void VulkanDevice::recreate_swapchain_images( ) noexcept {
 
 		for (auto& view : m_SwapchainImageViews) {
 			if (view != VK_NULL_HANDLE) {
-				vkDestroyImageView(m_LogicalDevice, view, nullptr);
+				vkDestroyImageView( m_LogicalDevice, view, nullptr );
 			}
 		}
 
 		uint32 numImages = 0;
-		vkGetSwapchainImagesKHR(m_LogicalDevice, m_Swapchain, &numImages, nullptr);
-		m_SwapchainImages.resize(numImages);
-		vkGetSwapchainImagesKHR(m_LogicalDevice, m_Swapchain, &numImages, m_SwapchainImages.data());
+		vkGetSwapchainImagesKHR( m_LogicalDevice, m_Swapchain, &numImages, nullptr );
+		m_SwapchainImages.resize( numImages );
+		vkGetSwapchainImagesKHR( m_LogicalDevice, m_Swapchain, &numImages, m_SwapchainImages.data( ) );
 
-		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat();
+		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
 
-		m_SwapchainImageViews.resize(numImages);
+		m_SwapchainImageViews.resize( numImages );
 		for (uint32 i = 0; i < numImages; i++) {
 
 			VkImageViewCreateInfo info{};
@@ -328,7 +335,7 @@ namespace lum::rhi::vk {
 			info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
 			info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
 			info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-			info.image = m_SwapchainImages[i];
+			info.image = m_SwapchainImages[ i ];
 			info.viewType = VK_IMAGE_VIEW_TYPE_2D;
 			info.format = surfaceFormat.format;
 			info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -337,8 +344,8 @@ namespace lum::rhi::vk {
 			info.subresourceRange.baseArrayLayer = 0;
 			info.subresourceRange.layerCount = 1;
 
-			if (vkCreateImageView(m_LogicalDevice, &info, nullptr, &m_SwapchainImageViews[i]) != VK_SUCCESS) {
-				LUM_LOG_FATAL("Failed to create swapchain image view at index {}! (Vulkan)", i);
+			if (vkCreateImageView( m_LogicalDevice, &info, nullptr, &m_SwapchainImageViews[ i ] ) != VK_SUCCESS) {
+				LUM_LOG_FATAL( "Failed to create swapchain image view at index {}! (Vulkan)", i );
 				return;
 			}
 
@@ -346,50 +353,10 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::create_main_pipeline() noexcept {
+	void VulkanDevice::create_command_pool( ) noexcept {
 
-		PipelineCreateInfo info{};
-
-		auto& assembly = info.m_AssemblyPass;
-		assembly.m_PrimitiveRestart = false;
-		assembly.m_Topology = PrimitiveTopology::TriangleList;
-
-		auto& rast = info.m_RasterizationPass;
-		rast.m_CullMode = CullMode::Back;
-		rast.m_DepthBiasEnabled = false;
-		rast.m_PolygonMode = PolygonMode::Fill;
-		rast.m_FrontFace = FrontFace::Clockwise;
-		rast.m_RasterizerEnabled = true;
-
-		auto& blend = info.m_ColorBlendPass;
-		ColorBlendAttachment attachment{};
-		attachment.m_BlendEnabled = false;
-		attachment.m_ColorMask = ColorComponentFlag::RGBA;
-		blend.m_Attachments.push_back(attachment);
-
-		info.m_VertexInputPass = VertexLayoutConfiguration::GetStatic().GetVertexInputPass();
-
-		ShaderInfo vertexInfo{};
-		vertexInfo.m_EntryPoint = "main";
-		vertexInfo.m_Path = ResourceLoader::ResolveResourcePath(ResourceRoot::External, "shader.vert.spv");
-		vertexInfo.m_Stage = ShaderStage::Vertex;
-		info.m_ShaderInfos.push_back(vertexInfo);
-
-		ShaderInfo fragmentInfo{};
-		fragmentInfo.m_EntryPoint = "main";
-		fragmentInfo.m_Path = ResourceLoader::ResolveResourcePath(ResourceRoot::External, "shader.frag.spv");
-		fragmentInfo.m_Stage = ShaderStage::Fragment;
-		info.m_ShaderInfos.push_back(fragmentInfo);
-
-		auto handle = CreatePipeline(info);
-		m_MainPipeline = m_Pipelines[handle];
-
-	}
-
-	void VulkanDevice::create_command_pool() noexcept {
-
-		if (!m_Adapter.m_Queues.HasQueue(m_Adapter.m_Queues.m_GraphicsQueueIndex)) {
-			LUM_LOG_ERROR("Cannot create command pool: Adapter doesn't have graphics queue index! (Vulkan)");
+		if (!m_Adapter.m_Queues.HasQueue( m_Adapter.m_Queues.m_GraphicsQueueIndex )) {
+			LUM_LOG_ERROR( "Cannot create command pool: Adapter doesn't have graphics queue index! (Vulkan)" );
 			return;
 		}
 
@@ -397,43 +364,43 @@ namespace lum::rhi::vk {
 		info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		info.queueFamilyIndex = m_Adapter.m_Queues.m_GraphicsQueueIndex;
 		info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
-		if (vkCreateCommandPool(m_LogicalDevice, &info, nullptr, &m_CmdPool) != VK_SUCCESS) {
-			LUM_LOG_FATAL("Failed to create command pool! (Vulkan)");
+		if (vkCreateCommandPool( m_LogicalDevice, &info, nullptr, &m_CmdPool ) != VK_SUCCESS) {
+			LUM_LOG_FATAL( "Failed to create command pool! (Vulkan)" );
 			return;
 		}
 
 	}
 
-	void VulkanDevice::allocate_command_buffers() noexcept {
+	void VulkanDevice::allocate_command_buffers( ) noexcept {
 
 		VkCommandBufferAllocateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		info.commandPool = m_CmdPool;
-		info.commandBufferCount = SafeCast<uint32>(m_CmdBuffers.size());
+		info.commandBufferCount = SafeCast<uint32>( m_CmdBuffers.size( ) );
 		info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 
-		vkAllocateCommandBuffers(m_LogicalDevice, &info, m_CmdBuffers.data());
+		vkAllocateCommandBuffers( m_LogicalDevice, &info, m_CmdBuffers.data( ) );
 
 	}
 
-	void VulkanDevice::create_sync_primitives() noexcept {
+	void VulkanDevice::create_sync_primitives( ) noexcept {
 
 		VkSemaphoreCreateInfo semaphoreInfo{};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-		usize numImages = m_SwapchainImages.size();
+		usize numImages = m_SwapchainImages.size( );
 
 		for (auto& semaphore : m_ImageAvailableSemaphores) {
-			if (vkCreateSemaphore(m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore) != VK_SUCCESS) {
-				LUM_LOG_FATAL("Failed to create image available semaphore! (Vulkan)");
+			if (vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) != VK_SUCCESS) {
+				LUM_LOG_FATAL( "Failed to create image available semaphore! (Vulkan)" );
 				return;
 			}
 		}
 
-		m_RenderFinishedSemaphores.resize(numImages);
+		m_RenderFinishedSemaphores.resize( numImages );
 		for (auto& semaphore : m_RenderFinishedSemaphores) {
-			if (vkCreateSemaphore(m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore) != VK_SUCCESS) {
-				LUM_LOG_FATAL("Failed to create render finished semaphore! (Vulkan)");
+			if (vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) != VK_SUCCESS) {
+				LUM_LOG_FATAL( "Failed to create render finished semaphore! (Vulkan)" );
 				return;
 			}
 		}
@@ -443,65 +410,21 @@ namespace lum::rhi::vk {
 		fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 		fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-		if (vkCreateFence(m_LogicalDevice, &fenceCreateInfo, nullptr, &m_Fence) != VK_SUCCESS) {
-			LUM_LOG_FATAL("Failed to create fence! (Vulkan)");
+		if (vkCreateFence( m_LogicalDevice, &fenceCreateInfo, nullptr, &m_Fence ) != VK_SUCCESS) {
+			LUM_LOG_FATAL( "Failed to create fence! (Vulkan)" );
 			return;
 		}
 
 	}
 
-	void VulkanDevice::handle_resize() noexcept {
+	void VulkanDevice::handle_resize( ) noexcept {
 
-		vkDeviceWaitIdle(m_LogicalDevice);
+		vkDeviceWaitIdle( m_LogicalDevice );
 
-		recreate_swapchain();
-		recreate_swapchain_images();
-
-	}
-
-	void VulkanDevice::create_vertex_buffers() noexcept {
-
-		static std::vector<Vertex> s_Vertices = {
-			// Bottom-left
-			{
-				{ -0.5f, -0.5f, 0.0f },
-				{ 1.0f, 0.0f, 0.0f },
-				{ 0.0f, 0.0f }
-			},
-			// Bottom-right
-			{
-				{ 0.5f, -0.5f, 0.0f },
-				{ 0.0f, 1.0f, 0.0f },
-				{ 1.0f, 0.0f }
-			},
-			// Top-right
-			{
-				{ 0.5f, 0.5f, 0.0f },
-				{ 0.0f, 0.0f, 1.0f },
-				{ 1.0f, 1.0f }
-			},
-			// Top-left
-			{
-				{ -0.5f, 0.5f, 0.0f },
-				{ 1.0f, 1.0f, 0.0f },
-				{ 0.0f, 1.0f }
-			}
-		};
-
-		BufferCreateInfo2 info{};
-		info.m_DataSize = s_Vertices.size() * sizeof(Vertex);
-		info.m_BufferSize = s_Vertices.size() * sizeof(Vertex);
-		info.m_Data = s_Vertices.data();
-		info.m_Usage = BufferUsage::Vertex;
-		DT_VertexBuffer = CreateBuffer(info);
-
-		BufferCreateInfo2 info2{};
-		info2.m_DataSize = DT_Indices.size() * sizeof(uint32);
-		info2.m_BufferSize = DT_Indices.size() * sizeof(uint32);
-		info2.m_Data = DT_Indices.data();
-		info2.m_Usage = BufferUsage::Element;
-		DT_IndexBuffer = CreateBuffer(info2);
+		recreate_swapchain_images( );
+		recreate_swapchain( );
 
 	}
+
 
 } // namespace lum::rhi::vk

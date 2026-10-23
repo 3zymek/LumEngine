@@ -39,6 +39,7 @@ namespace lum::ahi {
 		InverseRolloff = 1 << 10, // Volume decreases naturally (inverse square) with distance
 
 	};
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::ahi::SoundFlag );
 
 	/* @brief World-space transform and velocity of the audio listener (typically the camera).
 	*  Passed to Set3DListenerAttributes() once per frame.
@@ -65,6 +66,7 @@ namespace lum::ahi {
 		Vol0BecomesVirtual = 1 << 5, // Inaudible sounds become virtual instead of consuming CPU — free optimisation
 
 	};
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::ahi::InitFlag );
 
 	/* @brief Opaque handle to a channel group. Used for routing and effect processing. */
 	struct ChannelGroupHandle : BaseHandle<> { using BaseHandle::BaseHandle; };
@@ -90,8 +92,3 @@ namespace lum::ahi {
 	};
 
 } // namespace lum::ahi
-
-namespace lum {
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( ahi::SoundFlag );
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( ahi::InitFlag );
-} // namespace lum

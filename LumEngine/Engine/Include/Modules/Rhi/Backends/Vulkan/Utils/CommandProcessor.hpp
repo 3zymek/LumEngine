@@ -1,3 +1,15 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
 #include <algorithm>
@@ -54,16 +66,16 @@ namespace lum::rhi::vk {
 		}
 	};
 
-	class VulkanCommandInterpreter {
+	class VulkanCommandProcessor {
 	public:
 
-		VulkanCommandInterpreter( ) noexcept {
+		VulkanCommandProcessor( ) noexcept {
 			m_CommandCalls.resize( t_EnumCount<CommandType> );
 		}
 
 		template<typename tCommandData, typename tLambda>
 			requires std::derived_from<tCommandData, Command>
-		void RegisterTypedCall( tLambda&& lambda ) {
+		void RegisterCommandCall( tLambda&& lambda ) {
 
 			LUM_SASSERT( cHasCmdType<tCommandData> );
 			

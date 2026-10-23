@@ -1,3 +1,15 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
 #include <array>
@@ -15,9 +27,10 @@
 #include "Rhi/Backends/Vulkan/Core/RhiBuffer_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiImage_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiPipeline_vulkan.hpp"
+#include "Rhi/Backends/Vulkan/Core/RhiResourceSet_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiSampler_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/RhiTypes_vulkan.hpp"
-#include "Rhi/Backends/Vulkan/Utils/CommandInterpreter.hpp"
+#include "Rhi/Backends/Vulkan/Utils/CommandProcessor.hpp"
 #include "Rhi/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
 #include "Rhi/Interfaces/Core/RhiBuffer.hpp"
 #include "Rhi/Interfaces/Core/RhiCommandBuffer.hpp"
@@ -45,25 +58,29 @@ namespace lum::rhi::vk {
 		void UpdateFrame( ) noexcept override;
 
 		BufferHandle CreateBuffer( const BufferCreateInfo2& info ) noexcept override;
-		void DestroyBuffer( BufferHandle& handle ) noexcept override;
+		void DestroyBuffer( const BufferHandle handle ) noexcept override;
 
 		PipelineHandle CreatePipeline( const PipelineCreateInfo& info ) noexcept override;
-		void DestroyPipeline( PipelineHandle& handle ) noexcept override;
+		void DestroyPipeline( const PipelineHandle handle ) noexcept override;
 
 		ImageHandle CreateImage( const ImageCreateInfo& info ) noexcept override;
-		void DestroyImage( ImageHandle& handle ) noexcept override;
+		void DestroyImage( const ImageHandle handle ) noexcept override;
 
 		SamplerHandle CreateSampler( const SamplerCreateInfo& info ) noexcept override;
-		void DestroySampler( SamplerHandle& handle ) noexcept override;
+		void DestroySampler( const SamplerHandle handle ) noexcept override;
+
+		ResourceSetHandle CreateResourceSet( const ResourceSetCreateInfo& info ) noexcept override;
+		void DestroyResourceSet( const ResourceSetHandle handle ) noexcept override;
 
 		void SendCommandBuffer( CommandBuffer&& buffer ) noexcept override;
 
 	private:
 
-		static inline constexpr usize s_MaxBuffers = 256;
-		static inline constexpr usize s_MaxPipelines = 32;
-		static inline constexpr usize s_MaxImages = 128;
-		static inline constexpr usize s_MaxSamplers = 32;
+		static inline constexpr usize s_MaxBuffers		= 256;
+		static inline constexpr usize s_MaxPipelines	= 32;
+		static inline constexpr usize s_MaxImages		= 128;
+		static inline constexpr usize s_MaxSamplers		= 32;
+		static inline constexpr usize s_MaxResourceSets = 128;
 
 		HandlePool<
 			BufferHandle,
@@ -85,20 +102,22 @@ namespace lum::rhi::vk {
 			VulkanSampler,
 			SamplerID> m_Samplers{ s_MaxSamplers };
 
+		HandlePool<
+			ResourceSetHandle,
+			VulkanResourceSet,
+			ResourceSetID> m_ResourceSets{ s_MaxResourceSets };
 
 
-
-		VulkanCommandInterpreter m_CommandInterpreter{};
+		VulkanCommandProcessor m_CommandProcessor{};
 		std::queue<CommandBuffer> m_CommandBuffersToFlush{};
 
-		TVector2<uint32> m_WindowSize{};
+		Vector2u m_WindowSize{};
 
 		VulkanAdapterEvaluator m_AdapterEvaluator{};
 		VulkanAdapter m_Adapter{};
 
+		VkExtent2D m_SwapchainExtent{};
 		SafePtr<IVulkanSurfaceProvider> m_SurfaceProvider = nullptr;
-
-		VulkanPipeline m_MainPipeline{};
 
 		uint32 m_CurrentFrame = 0;
 
@@ -111,19 +130,9 @@ namespace lum::rhi::vk {
 		// DEBUG
 		// ===========================================================
 
-		inline static std::vector<uint32> DT_Indices = {
-			0, 1, 2,
-			2, 3, 0
-		};
-		BufferHandle DT_VertexBuffer{};
-		BufferHandle DT_IndexBuffer{};
-
 		VkDescriptorSetLayout DT_DescriptorSetLayout{};
 		VkDescriptorPool DT_DescriptorPool{};
 		VkDescriptorSet DT_DescriptorSet{};
-
-		ImageHandle DT_Image{};
-		SamplerHandle DT_Sampler{};
 
 
 
@@ -164,12 +173,10 @@ namespace lum::rhi::vk {
 		void create_main_surface( ) noexcept;
 		void recreate_swapchain( ) noexcept;
 		void recreate_swapchain_images( ) noexcept;
-		void create_main_pipeline( ) noexcept;
 		void create_command_pool( ) noexcept;
 		void allocate_command_buffers( ) noexcept;
 		void create_sync_primitives( ) noexcept;
 		void handle_resize( ) noexcept;
-		void create_vertex_buffers( ) noexcept;
 		void bind_commands_implementations( ) noexcept;
 
 
@@ -180,7 +187,7 @@ namespace lum::rhi::vk {
 		void assert_device( ) const;
 		bool create_shader_module( const Path& path, VkShaderModule& module ) const noexcept;
 		void decode_command_buffer( std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer ) noexcept;
-		void process_commands( ) noexcept;
+		void process_commands( VkCommandBuffer vkCmdBuffer ) noexcept;
 
 
 	};

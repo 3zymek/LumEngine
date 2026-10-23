@@ -5,6 +5,8 @@
 //=============================================================================//
 #pragma once
 
+#include "Core/CoreTypes.hpp"
+
 namespace lum {
 
 	/*! @brief Type-safe bitflag wrapper for enum types.
@@ -118,8 +120,7 @@ namespace lum {
 
 	};
 
-	template<cEnum tType>
-	struct EnableEnumFlags : std::false_type {};
+	constexpr bool IsBitwiseEnum( ... ) { return false; }
 
 	/* @brief Enables bitwise flag operations for a given enum class.
 	*
@@ -135,11 +136,15 @@ namespace lum {
 	*   ShaderStage stages = ShaderStage::Vertex | ShaderStage::Fragment;
 	*/
 #	define LUM_ENABLE_ENUM_BITFLAG_OPERATIONS(tType) \
-		template<> \
-		struct EnableEnumFlags<tType> : std::true_type {}
+		constexpr bool IsBitwiseEnum(tType) { return true; }
+
+	template<typename tType>
+	concept cIsBitwiseEnum = requires(tType t) {
+		requires IsBitwiseEnum( tType{} ) && std::is_enum_v<tType>;
+	};
 
 	template<cEnum tType>
-		requires EnableEnumFlags<tType>::value
+		requires cIsBitwiseEnum<tType>
 	constexpr Flags<tType> operator|( tType a, tType b ) {
 		Flags<tType> f;
 		f.Set( a );
@@ -148,14 +153,14 @@ namespace lum {
 	}
 
 	template<cEnum tType>
-		requires EnableEnumFlags<tType>::value
+		requires cIsBitwiseEnum<tType>
 	constexpr Flags<tType> operator|( Flags<tType> a, tType b ) {
 		a.Set( b );
 		return a;
 	}
 
 	template<cEnum tType>
-		requires EnableEnumFlags<tType>::value
+		requires cIsBitwiseEnum<tType>
 	constexpr Flags<tType>& operator|=( Flags<tType>& a, tType b ) {
 		a.Set( b );
 		return a;
@@ -163,7 +168,7 @@ namespace lum {
 
 
 	template<cEnum tType>
-		requires EnableEnumFlags<tType>::value
+		requires cIsBitwiseEnum<tType>
 	constexpr Flags<tType> operator&( tType a, tType b ) {
 		Flags<tType> result;
 		if ((static_cast<std::underlying_type_t<tType>>(a) &

@@ -13,7 +13,7 @@
 #include "Core/CorePch.hpp"
 #include "Rhi/Backends/Vulkan/VulkanPch.hpp"
 
-// Header implementation file
+// Header impl file
 #include "Rhi/Backends/Vulkan/Core/RhiDevice_vulkan.hpp"
 
 #include "Core/Utils/Assert.hpp"
@@ -26,6 +26,7 @@
 #include "Platform/VulkanSurfaceProvider.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiImage_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiSampler_vulkan.hpp"
+#include "Rhi/Backends/Vulkan/RhiTypes_vulkan.hpp"
 #include "Rhi/Interfaces/Core/RhiCommandBuffer.hpp"
 #include "Rhi/Interfaces/Core/RhiDevice.hpp"
 #include "Rhi/Interfaces/Core/RhiImage.hpp"
@@ -51,6 +52,7 @@ namespace lum::rhi::vk {
 
 		m_IsInitialized = true;
 
+		bind_commands_implementations( );
 
 		create_vk_instance( info );
 		volkLoadInstance( m_Instance );
@@ -64,12 +66,12 @@ namespace lum::rhi::vk {
 		// ===========================================================
 		// DEBUG
 		// ===========================================================
-
+		/*
 		auto data = ResourceLoader::LoadImageFromFile( ResourceRoot::External, "test.png" );
 
 		LUM_ASSERT( data, "test.png doesn't exists" );
 
-		rhi::ImageExtent3D extent{};
+		rhi::Extent3D extent{};
 		extent.m_Width = data.ValueRef( ).m_Width;
 		extent.m_Height = data.ValueRef( ).m_Height;
 		extent.m_Depth = 1;
@@ -83,15 +85,6 @@ namespace lum::rhi::vk {
 		img.m_MipmapLevels = 1;
 		img.m_UsageFlags = rhi::ImageUsageFlag::ColorAttachment;
 		img.m_SampleCount = rhi::SampleCount::Sample1;
-
-		DT_Image = CreateImage( img );
-
-		rhi::SamplerCreateInfo smp{};
-		DT_Sampler = CreateSampler( smp );
-
-
-		VulkanImage& image = m_Images[ DT_Image ];
-		VulkanSampler& sampler = m_Samplers[ DT_Sampler ];
 
 
 
@@ -149,11 +142,11 @@ namespace lum::rhi::vk {
 
 		vkUpdateDescriptorSets( m_LogicalDevice, 1, &descriptorWrite, 0, nullptr );
 
+		*/
 		// ===========================================================
 		// DEBUG
 		// ===========================================================
 
-		create_main_pipeline( );
 		create_command_pool( );
 		allocate_command_buffers( );
 		create_sync_primitives( );
@@ -164,11 +157,11 @@ namespace lum::rhi::vk {
 			}
 		);
 
-		create_vertex_buffers( );
-
 	}
 
 	void VulkanDevice::Finalize( ) noexcept {
+
+		assert_device( );
 
 		if (m_LogicalDevice != VK_NULL_HANDLE && m_IsInitialized) {
 
@@ -211,12 +204,10 @@ namespace lum::rhi::vk {
 
 	void VulkanDevice::UpdateFrame( ) noexcept {
 
-		process_commands( );
+		assert_device( );
 
 		// Sync GPU and CPU
 		vkWaitForFences( m_LogicalDevice, 1, &m_Fence, VK_TRUE, UINT64_MAX );
-
-
 
 		// Acquire image from swapchain
 		uint32 imageIndex{};
@@ -280,45 +271,16 @@ namespace lum::rhi::vk {
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 		colorAttachment.clearValue = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
 
-		VkExtent2D currentExtent = m_Adapter.m_SurfaceSupport.m_Capabilities.currentExtent;
-
 		VkRenderingInfo renderingInfo{};
 		renderingInfo.sType = VK_STRUCTURE_TYPE_RENDERING_INFO;
-		renderingInfo.renderArea = { { 0, 0 }, currentExtent };
+		renderingInfo.renderArea = { { 0, 0 }, m_SwapchainExtent };
 		renderingInfo.layerCount = 1;
 		renderingInfo.colorAttachmentCount = 1;
 		renderingInfo.pColorAttachments = &colorAttachment;
 
 		vkCmdBeginRendering( commandBuffer, &renderingInfo );
 
-		vkCmdBindPipeline( commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_MainPipeline.m_Pipeline );
-
-		VkViewport viewport{ 0.0f, 0.0f, (float32) currentExtent.width, (float32) currentExtent.height, 0.0f, 1.0f };
-		VkRect2D scissor{ { 0, 0 }, currentExtent };
-		vkCmdSetViewport( commandBuffer, 0, 1, &viewport );
-		vkCmdSetScissor( commandBuffer, 0, 1, &scissor );
-
-
-		VkDeviceSize offset = 0;
-
-		vkCmdBindVertexBuffers(
-			commandBuffer,
-			0,
-			1,
-			&m_Buffers[ DT_VertexBuffer ].m_VkBuffer,
-			&offset
-		);
-
-
-		vkCmdBindIndexBuffer(
-			commandBuffer,
-			m_Buffers[ DT_IndexBuffer ].m_VkBuffer,
-			0,
-			VK_INDEX_TYPE_UINT32
-		);
-
-
-		vkCmdDrawIndexed( commandBuffer, 6, 1, 0, 0, 0 ); // Draw simple triangle
+		process_commands( commandBuffer );
 
 		vkCmdEndRendering( commandBuffer );
 
@@ -410,7 +372,7 @@ namespace lum::rhi::vk {
 	// ===========================================================
 
 	void VulkanDevice::assert_device( ) const {
-		LUM_ASSERT( m_IsInitialized, "RHI Device is not initialized!!!" );
+		LUM_ASSERT( m_IsInitialized, "RHI Device is not initialized!" );
 	}
 
 	bool VulkanDevice::create_shader_module( const Path& path, VkShaderModule& module ) const noexcept {
@@ -436,33 +398,22 @@ namespace lum::rhi::vk {
 
 	void VulkanDevice::decode_command_buffer( std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer ) noexcept {
 
-		LUM_LOG_INFO( "Number of command buffers to flush: {}", m_CommandBuffersToFlush.size( ) );
-
 		uint8* current = rawBuffer.data( );
 		const uint8* end = current + rawBuffer.size( );
-
-		VkCommandBuffer commandBuffer = m_CmdBuffers[ m_CurrentFrame ];
-
-		VkCommandBufferBeginInfo beginInfo{};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		if (!LUM_VK_RESULT_CHECK( vkBeginCommandBuffer( commandBuffer, &beginInfo ) )) {
-			return;
-		}
 
 		while (current < end) {
 
 			CommandType type = *reinterpret_cast<CommandType*>( current );
 			current += sizeof( CommandType );
-
-			m_CommandInterpreter.ExecuteCall( type, commandBuffer, current );
+			m_CommandProcessor.ExecuteCall( type, vkBuffer, current );
 
 		}
 
 	}
-	void VulkanDevice::process_commands( ) noexcept {
+	void VulkanDevice::process_commands( VkCommandBuffer vkCmdBuffer ) noexcept {
 
 		if (m_CommandBuffersToFlush.size( ) == 1) {
-			decode_command_buffer( m_CommandBuffersToFlush.front( ).GetByteStream( ), m_CmdBuffers[ m_CurrentFrame ] );
+			decode_command_buffer( m_CommandBuffersToFlush.front( ).GetByteStream( ), vkCmdBuffer );
 			m_CommandBuffersToFlush.pop( );
 			return;
 
@@ -493,7 +444,7 @@ namespace lum::rhi::vk {
 
 		}
 
-		decode_command_buffer( combinedBuffer, m_CmdBuffers[ m_CurrentFrame ] );
+		decode_command_buffer( combinedBuffer, vkCmdBuffer );
 
 	}
 

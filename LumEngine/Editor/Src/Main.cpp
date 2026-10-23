@@ -5,13 +5,47 @@
 #include "Platform/GLFWVulkanSurfaceProvider.hpp"
 #include "Platform/Window.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiDevice_vulkan.hpp"
+#include "Rhi/Interfaces/Core/RhiCommandTypes.hpp"
 #include "Rhi/Interfaces/Core/RhiDevice.hpp"
 #include <Core/CoreTypes.hpp>
-#include "Rhi/Interfaces/Core/RhiCommandTypes.hpp"
 #include <glfw3.h>
+#include <Rhi/RhiTypes.hpp>
 #include <vector>
 
 using namespace lum;
+
+static std::vector<uint32> s_Indices = {
+		0, 1, 2,
+		2, 3, 0
+};
+
+static std::vector<rhi::Vertex> s_Vertices = {
+	// Bottom-left
+	{
+		{ -0.5f, -0.5f, 0.0f },
+		{ 1.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f }
+	},
+	// Bottom-right
+	{
+		{ 0.5f, -0.5f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f },
+		{ 1.0f, 0.0f }
+	},
+	// Top-right
+	{
+		{ 0.5f, 0.5f, 0.0f },
+		{ 0.0f, 0.0f, 1.0f },
+		{ 1.0f, 1.0f }
+	},
+	// Top-left
+	{
+		{ -0.5f, 0.5f, 0.0f },
+		{ 1.0f, 1.0f, 0.0f },
+		{ 0.0f, 1.0f }
+	}
+};
+
 int main( int argc, char* argv[ ] ) {
 
 #	if defined(_WIN32)
@@ -36,18 +70,95 @@ int main( int argc, char* argv[ ] ) {
 	const char** glfwExtensions = glfwGetRequiredInstanceExtensions( &count );
 	std::vector<const char*> extensions( glfwExtensions, glfwExtensions + count );
 
-	rhi::RenderDeviceCreateInfo info{};
-	info.m_InstanceExtensions = extensions;
-	info.m_EnableValidation = true;
-	info.m_SurfaceProvider = surfaceProvider;
-	info.m_EventBus = bus;
+	rhi::RenderDeviceCreateInfo deviceInfo{};
+	deviceInfo.m_InstanceExtensions = extensions;
+	deviceInfo.m_EnableValidation = true;
+	deviceInfo.m_SurfaceProvider = surfaceProvider;
+	deviceInfo.m_EventBus = bus;
 
-	device( ).Initialize( info );
+	device( ).Initialize( deviceInfo );
+
+
+	rhi::PipelineCreateInfo pipInfo{};
+
+	auto& assembly = pipInfo.m_AssemblyPass;
+	assembly.m_PrimitiveRestart = false;
+	assembly.m_Topology = rhi::PrimitiveTopology::TriangleList;
+
+	auto& rast = pipInfo.m_RasterizationPass;
+	rast.m_CullMode = rhi::CullMode::Back;
+	rast.m_DepthBiasEnabled = false;
+	rast.m_PolygonMode = rhi::PolygonMode::Fill;
+	rast.m_FrontFace = rhi::FrontFace::Clockwise;
+	rast.m_RasterizerEnabled = true;
+
+	auto& blend = pipInfo.m_ColorBlendPass;
+	rhi::ColorBlendAttachment attachment{};
+	attachment.m_BlendEnabled = false;
+	attachment.m_ColorMask = rhi::ColorComponentFlag::RGBA;
+	blend.m_Attachments.push_back( attachment );
+
+	pipInfo.m_VertexInputPass = rhi::VertexLayoutConfiguration::GetStatic( ).GetVertexInputPass( );
+
+	rhi::ShaderInfo vertexInfo{};
+	vertexInfo.m_EntryPoint = "main";
+	vertexInfo.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::External, "debug.vert.spv" );
+	vertexInfo.m_Stage = rhi::ShaderStage::Vertex;
+	pipInfo.m_ShaderInfos.push_back( vertexInfo );
+
+	rhi::ShaderInfo fragmentInfo{};
+	fragmentInfo.m_EntryPoint = "main";
+	fragmentInfo.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::External, "debug.frag.spv" );
+	fragmentInfo.m_Stage = rhi::ShaderStage::Fragment;
+	pipInfo.m_ShaderInfos.push_back( fragmentInfo );
+
+	auto pipeline = device( ).CreatePipeline( pipInfo );
+
+
+
+	rhi::BufferCreateInfo2 vboInfo{};
+	vboInfo.m_DataSize = s_Vertices.size( ) * sizeof( rhi::Vertex );
+	vboInfo.m_BufferSize = s_Vertices.size( ) * sizeof( rhi::Vertex );
+	vboInfo.m_Data = s_Vertices.data( );
+	vboInfo.m_Usage = rhi::BufferUsage::Vertex;
+	auto vbo = device( ).CreateBuffer( vboInfo );
+
+	rhi::BufferCreateInfo2 eboInfo{};
+	eboInfo.m_DataSize = s_Indices.size( ) * sizeof( uint32 );
+	eboInfo.m_BufferSize = s_Indices.size( ) * sizeof( uint32 );
+	eboInfo.m_Data = s_Indices.data( );
+	eboInfo.m_Usage = rhi::BufferUsage::Element;
+	auto ebo = device( ).CreateBuffer( eboInfo );
+
+	rhi::cmd::BindGraphicsPipeline cmdBindPip{};
+	cmdBindPip.m_Handle = pipeline;
+
+	rhi::cmd::BindVertexBuffers cmdBindVbo{};
+	cmdBindVbo.m_Handles = std::span<rhi::BufferHandle>( &vbo, 1 );
+
+	rhi::cmd::BindElementBuffer cmdBindEbo{};
+	cmdBindEbo.m_Handle = ebo;
+
+	rhi::cmd::DrawIndexed cmdDrawIndexed{};
+	cmdDrawIndexed.m_FirstIndex = 0;
+	cmdDrawIndexed.m_FirstInstance = 0;
+	cmdDrawIndexed.m_IndexCount = s_Indices.size( );
+	cmdDrawIndexed.m_InstanceCount = 1;
+	cmdDrawIndexed.m_VertexOffset = 0;
+
+	rhi::cmd::SetScissors cmdSetScissors{};
+
+	rhi::cmd::SetViewport cmdSetViewport{};
 
 	while (window.IsOpen( )) {
 
 		rhi::CommandBuffer cmdBuffer{};
-		cmdBuffer.Push( rhi::cmd::DrawIndexed{} );
+		cmdBuffer.Push( cmdBindPip );
+		cmdBuffer.Push( cmdBindVbo );
+		cmdBuffer.Push( cmdBindEbo );
+		cmdBuffer.Push( cmdSetViewport );
+		cmdBuffer.Push( cmdSetScissors );
+		cmdBuffer.Push( cmdDrawIndexed );
 
 		device( ).SendCommandBuffer( std::move( cmdBuffer ) );
 

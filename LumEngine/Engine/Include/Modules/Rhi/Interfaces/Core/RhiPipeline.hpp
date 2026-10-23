@@ -105,15 +105,11 @@ namespace lum::rhi {
 		RGBA = Red | Green | Blue | Alpha,
 
 	};
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::rhi::ColorComponentFlag );
+
 	using ColorComponentFlags = Flags<ColorComponentFlag>;
 
 } // namespace lum::rhi
-
-namespace lum {
-
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS(rhi::ColorComponentFlag);
-
-} // namespace lum
 
 namespace lum::rhi {
 

@@ -28,7 +28,8 @@ namespace lum {
 	* @tparam tType Unsigned arithmetic type used for ID and generation storage.
 	*/
 	template<std::unsigned_integral tType = uint32>
-	struct alignas(8) BaseHandle {
+	class alignas(8) BaseHandle {
+	public:
 
 		/* @brief Slot index identifying the object location.
 		*  MaxValue indicates an invalid handle.
@@ -229,7 +230,7 @@ namespace lum {
 		* @param value Object to move into storage.
 		* @return Handle referencing the inserted object.
 		*/
-		constexpr tHandle Append( tValue value ) {
+		constexpr tHandle Append( const tValue& value ) {
 
 			if (m_Dense.size( ) >= k_MaxSize)
 				throw std::runtime_error( "Handle pool full" );
@@ -251,7 +252,7 @@ namespace lum {
 			m_SlotToDense[ slot ] = static_cast<SparseT>(lastDense);
 			m_DenseToSlot.push_back( slot );
 
-			tHandle handle;
+			tHandle handle{};
 			handle.m_Id = slot;
 			handle.m_Generation = m_Generations[ slot ];
 
@@ -305,7 +306,7 @@ namespace lum {
 		*
 		* @param handle Handle of the object to remove.
 		*/
-		void Remove( tHandle handle ) {
+		void Remove( const tHandle handle ) {
 
 			SparseT slot = static_cast<SparseT>(handle.m_Id);
 

@@ -311,4 +311,7 @@ namespace lum {
 	/* @brief 2D vector using 32-bit unsigned integer components. */
 	using Vector2u = TVector2<uint32>;
 
+	/* @brief 2D vector using 32-bit signed integer components. */
+	using Vector2i = TVector2<int32>;
+
 } // namespace lum
