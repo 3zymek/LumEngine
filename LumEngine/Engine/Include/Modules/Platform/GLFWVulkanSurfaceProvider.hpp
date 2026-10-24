@@ -8,7 +8,7 @@
 #include "Core/Utils/SafePtr.hpp"
 #include "Platform/VulkanSurfaceProvider.hpp"
 
-#include <Vulkan/vulkan.h>
+#include <vulkan/vulkan.h>
 
 class GLFWwindow;
 
@@ -17,9 +17,9 @@ namespace lum {
 	class GLFWVulkanSurfaceProvider : public IVulkanSurfaceProvider {
 	public:
 
-		GLFWVulkanSurfaceProvider( GLFWwindow* window ) : m_Window( window ) {}
+		GLFWVulkanSurfaceProvider(GLFWwindow* window) : m_Window(window) {}
 
-		VkSurfaceKHR CreateSurface( VkInstance instance ) const override;
+		VkSurfaceKHR CreateSurface(VkInstance instance) const override;
 
 	private:
 

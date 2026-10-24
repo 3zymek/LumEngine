@@ -37,29 +37,29 @@ namespace lum::rhi {
 	class IRenderDevice {
 	public:
 
-		virtual void Initialize( const RenderDeviceCreateInfo& info ) noexcept = 0;
-		virtual void Finalize( ) noexcept = 0;
+		virtual void Initialize(const RenderDeviceCreateInfo& info) noexcept = 0;
+		virtual void Finalize() noexcept = 0;
 
-		virtual void UpdateFrame( ) noexcept = 0;
+		virtual void UpdateFrame() noexcept = 0;
 
-		virtual BufferHandle CreateBuffer( const BufferCreateInfo2& info ) noexcept = 0;
-		virtual void DestroyBuffer( const BufferHandle handle ) noexcept = 0;
+		virtual BufferHandle CreateBuffer(const BufferCreateInfo2& info) noexcept = 0;
+		virtual void DestroyBuffer(const BufferHandle handle) noexcept = 0;
 
-		virtual PipelineHandle CreatePipeline( const PipelineCreateInfo& info ) noexcept = 0;
-		virtual void DestroyPipeline( const PipelineHandle handle ) noexcept = 0;
+		virtual PipelineHandle CreatePipeline(const PipelineCreateInfo& info) noexcept = 0;
+		virtual void DestroyPipeline(const PipelineHandle handle) noexcept = 0;
 
-		virtual ImageHandle CreateImage( const ImageCreateInfo& info ) noexcept = 0;
-		virtual void DestroyImage( const ImageHandle handle ) noexcept = 0;
+		virtual ImageHandle CreateImage(const ImageCreateInfo& info) noexcept = 0;
+		virtual void DestroyImage(const ImageHandle handle) noexcept = 0;
 
-		virtual SamplerHandle CreateSampler( const SamplerCreateInfo& info ) noexcept = 0;
-		virtual void DestroySampler( const SamplerHandle handle ) noexcept = 0;
+		virtual SamplerHandle CreateSampler(const SamplerCreateInfo& info) noexcept = 0;
+		virtual void DestroySampler(const SamplerHandle handle) noexcept = 0;
 
-		virtual ResourceSetHandle CreateResourceSet( const ResourceSetCreateInfo& info ) noexcept = 0;
-		virtual void DestroyResourceSet( const ResourceSetHandle handle ) noexcept = 0;
+		virtual ResourceSetHandle CreateResourceSet(const ResourceSetCreateInfo& info) noexcept = 0;
+		virtual void DestroyResourceSet(const ResourceSetHandle handle) noexcept = 0;
 
-		virtual void SendCommandBuffer( CommandBuffer&& buffer ) noexcept = 0;
+		virtual void SendCommandBuffer(const CommandBuffer& buffer) noexcept = 0;
 
-		virtual ~IRenderDevice( ) = default;
+		virtual ~IRenderDevice() = default;
 
 	};
 

@@ -11,7 +11,7 @@
 /* \                                                 / */
 /*******************************************************/
 #pragma once
-#include <Vulkan/vulkan_core.h>
+#include <vulkan/vulkan_core.h>
 
 namespace lum::rhi::vk {
 

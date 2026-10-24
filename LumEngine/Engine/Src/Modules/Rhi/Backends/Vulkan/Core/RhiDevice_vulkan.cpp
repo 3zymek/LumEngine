@@ -41,27 +41,27 @@ namespace lum::rhi::vk {
 	// PUBLIC
 	// ===========================================================
 
-	void VulkanDevice::Initialize( const RenderDeviceCreateInfo& info ) noexcept {
+	void VulkanDevice::Initialize(const RenderDeviceCreateInfo& info) noexcept {
 
-		if (volkInitialize( ) != VK_SUCCESS) {
-			LUM_LOG_FATAL( "Failed to initialize volk (Vulkan loader)" );
+		if (volkInitialize() != VK_SUCCESS) {
+			LUM_LOG_FATAL("Failed to initialize volk (Vulkan loader)");
 			return;
 		}
 
-		m_SurfaceProvider = static_cast<IVulkanSurfaceProvider*>(&info.m_SurfaceProvider( ));
+		m_SurfaceProvider = static_cast<IVulkanSurfaceProvider*>(&info.m_SurfaceProvider());
 
 		m_IsInitialized = true;
 
-		bind_commands_implementations( );
+		bind_commands_implementations();
 
-		create_vk_instance( info );
-		volkLoadInstance( m_Instance );
-		create_main_surface( );
-		choose_adapter( );
-		create_logical_device( );
-		acquire_queues( );
-		recreate_swapchain( );
-		recreate_swapchain_images( );
+		create_vk_instance(info);
+		volkLoadInstance(m_Instance);
+		create_main_surface();
+		choose_adapter();
+		create_logical_device();
+		acquire_queues();
+		recreate_swapchain();
+		recreate_swapchain_images();
 
 		// ===========================================================
 		// DEBUG
@@ -147,93 +147,93 @@ namespace lum::rhi::vk {
 		// DEBUG
 		// ===========================================================
 
-		create_command_pool( );
-		allocate_command_buffers( );
-		create_sync_primitives( );
+		create_command_pool();
+		allocate_command_buffers();
+		create_sync_primitives();
 
-		info.m_EventBus( ).SubscribePermanently<EWindowResized>(
-			[ & ]( const EWindowResized& e ) {
+		info.m_EventBus().SubscribePermanently<EWindowResized>(
+			[&](const EWindowResized& e) {
 				m_WindowSize = { e.m_Width, e.m_Height };
 			}
 		);
 
 	}
 
-	void VulkanDevice::Finalize( ) noexcept {
+	void VulkanDevice::Finalize() noexcept {
 
-		assert_device( );
+		assert_device();
 
 		if (m_LogicalDevice != VK_NULL_HANDLE && m_IsInitialized) {
 
-			vkDeviceWaitIdle( m_LogicalDevice );
+			vkDeviceWaitIdle(m_LogicalDevice);
 
-			for (auto&& [handle, buffer] : m_Buffers.Iterate( )) {
-				DestroyBuffer( handle );
+			for (auto&& [handle, buffer] : m_Buffers.Iterate()) {
+				DestroyBuffer(handle);
 			}
-			for (auto&& [handle, value] : m_Pipelines.Iterate( )) {
-				DestroyPipeline( handle );
+			for (auto&& [handle, value] : m_Pipelines.Iterate()) {
+				DestroyPipeline(handle);
 			}
-			for (auto&& [handle, value] : m_Images.Iterate( )) {
-				DestroyImage( handle );
+			for (auto&& [handle, value] : m_Images.Iterate()) {
+				DestroyImage(handle);
 			}
 
-			vkDestroyFence( m_LogicalDevice, m_Fence, nullptr );
+			vkDestroyFence(m_LogicalDevice, m_Fence, nullptr);
 
 			for (auto& semaphore : m_ImageAvailableSemaphores) {
-				vkDestroySemaphore( m_LogicalDevice, semaphore, nullptr );
+				vkDestroySemaphore(m_LogicalDevice, semaphore, nullptr);
 			}
 			for (auto& semaphore : m_RenderFinishedSemaphores) {
-				vkDestroySemaphore( m_LogicalDevice, semaphore, nullptr );
+				vkDestroySemaphore(m_LogicalDevice, semaphore, nullptr);
 			}
 
-			vkDestroyCommandPool( m_LogicalDevice, m_CmdPool, nullptr );
+			vkDestroyCommandPool(m_LogicalDevice, m_CmdPool, nullptr);
 
 			for (auto view : m_SwapchainImageViews) {
-				vkDestroyImageView( m_LogicalDevice, view, nullptr );
+				vkDestroyImageView(m_LogicalDevice, view, nullptr);
 			}
 
-			vkDestroySwapchainKHR( m_LogicalDevice, m_Swapchain, nullptr );
+			vkDestroySwapchainKHR(m_LogicalDevice, m_Swapchain, nullptr);
 
-			vkDestroySurfaceKHR( m_Instance, m_MainSurface, nullptr );
-			vkDestroyDevice( m_LogicalDevice, nullptr );
-			vkDestroyInstance( m_Instance, nullptr );
+			vkDestroySurfaceKHR(m_Instance, m_MainSurface, nullptr);
+			vkDestroyDevice(m_LogicalDevice, nullptr);
+			vkDestroyInstance(m_Instance, nullptr);
 
 		}
 
 	}
 
-	void VulkanDevice::UpdateFrame( ) noexcept {
+	void VulkanDevice::UpdateFrame() noexcept {
 
-		assert_device( );
+		assert_device();
 
 		// Sync GPU and CPU
-		vkWaitForFences( m_LogicalDevice, 1, &m_Fence, VK_TRUE, UINT64_MAX );
+		vkWaitForFences(m_LogicalDevice, 1, &m_Fence, VK_TRUE, UINT64_MAX);
 
 		// Acquire image from swapchain
 		uint32 imageIndex{};
-		VkSemaphore& imageAvailableSemaphore = m_ImageAvailableSemaphores[ m_CurrentFrame ];
-		VkResult acquireImageResult = vkAcquireNextImageKHR( m_LogicalDevice, m_Swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex );
+		VkSemaphore& imageAvailableSemaphore = m_ImageAvailableSemaphores[m_CurrentFrame];
+		VkResult acquireImageResult = vkAcquireNextImageKHR(m_LogicalDevice, m_Swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
 		if (acquireImageResult == VK_ERROR_OUT_OF_DATE_KHR) {
-			handle_resize( );
+			handle_resize();
 			return;
 		}
 		if (acquireImageResult != VK_SUCCESS && acquireImageResult != VK_SUBOPTIMAL_KHR) {
 			return;
 		}
-		vkResetFences( m_LogicalDevice, 1, &m_Fence );
+		vkResetFences(m_LogicalDevice, 1, &m_Fence);
 
 
 
 
 
 		// Begin recording
-		VkCommandBuffer& commandBuffer = m_CmdBuffers[ 0 ];
-		vkResetCommandBuffer( commandBuffer, 0 );
+		VkCommandBuffer& commandBuffer = m_CmdBuffers[0];
+		vkResetCommandBuffer(commandBuffer, 0);
 
 		VkCommandBufferBeginInfo beginInfo{};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		vkBeginCommandBuffer( commandBuffer, &beginInfo );
+		vkBeginCommandBuffer(commandBuffer, &beginInfo);
 
 
 
@@ -248,7 +248,7 @@ namespace lum::rhi::vk {
 		barrierToRender.dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT;
 		barrierToRender.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		barrierToRender.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		barrierToRender.image = m_SwapchainImages[ imageIndex ];
+		barrierToRender.image = m_SwapchainImages[imageIndex];
 		barrierToRender.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
 		VkDependencyInfo dependencyInfo{};
@@ -256,7 +256,7 @@ namespace lum::rhi::vk {
 		dependencyInfo.imageMemoryBarrierCount = 1;
 		dependencyInfo.pImageMemoryBarriers = &barrierToRender;
 
-		vkCmdPipelineBarrier2( commandBuffer, &dependencyInfo );
+		vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
 
 
 
@@ -265,7 +265,7 @@ namespace lum::rhi::vk {
 		// Dynamic Rendering
 		VkRenderingAttachmentInfo colorAttachment{};
 		colorAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
-		colorAttachment.imageView = m_SwapchainImageViews[ imageIndex ];
+		colorAttachment.imageView = m_SwapchainImageViews[imageIndex];
 		colorAttachment.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -278,11 +278,11 @@ namespace lum::rhi::vk {
 		renderingInfo.colorAttachmentCount = 1;
 		renderingInfo.pColorAttachments = &colorAttachment;
 
-		vkCmdBeginRendering( commandBuffer, &renderingInfo );
+		vkCmdBeginRendering(commandBuffer, &renderingInfo);
 
-		process_commands( commandBuffer );
+		process_commands(commandBuffer);
 
-		vkCmdEndRendering( commandBuffer );
+		vkCmdEndRendering(commandBuffer);
 
 
 
@@ -299,7 +299,7 @@ namespace lum::rhi::vk {
 		barrierToPresent.dstStageMask = VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT;
 
 		dependencyInfo.pImageMemoryBarriers = &barrierToPresent;
-		vkCmdPipelineBarrier2( commandBuffer, &dependencyInfo );
+		vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
 
 
 
@@ -312,7 +312,7 @@ namespace lum::rhi::vk {
 
 		VkSemaphoreSubmitInfo signalSemaphoreInfo{};
 		signalSemaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
-		signalSemaphoreInfo.semaphore = m_RenderFinishedSemaphores[ imageIndex ];
+		signalSemaphoreInfo.semaphore = m_RenderFinishedSemaphores[imageIndex];
 		signalSemaphoreInfo.stageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT;
 
 		VkCommandBufferSubmitInfo cmdBufferInfo{};
@@ -328,11 +328,11 @@ namespace lum::rhi::vk {
 		submitInfo.commandBufferInfoCount = 1;
 		submitInfo.pCommandBufferInfos = &cmdBufferInfo;
 
-		if (!LUM_VK_RESULT_CHECK( vkEndCommandBuffer( commandBuffer ) )) {
+		if (!LUM_VK_RESULT_CHECK(vkEndCommandBuffer(commandBuffer))) {
 			return;
 		}
 
-		if (!LUM_VK_RESULT_CHECK( vkQueueSubmit2( m_GraphicsQueue, 1, &submitInfo, m_Fence ) )) {
+		if (!LUM_VK_RESULT_CHECK(vkQueueSubmit2(m_GraphicsQueue, 1, &submitInfo, m_Fence))) {
 			return;
 		}
 
@@ -343,12 +343,12 @@ namespace lum::rhi::vk {
 		VkPresentInfoKHR presentInfo{};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = &m_RenderFinishedSemaphores[ imageIndex ];
+		presentInfo.pWaitSemaphores = &m_RenderFinishedSemaphores[imageIndex];
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = &m_Swapchain;
 		presentInfo.pImageIndices = &imageIndex;
 
-		vkQueuePresentKHR( m_PresentQueue, &presentInfo );
+		vkQueuePresentKHR(m_PresentQueue, &presentInfo);
 
 
 
@@ -359,11 +359,11 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::SendCommandBuffer( CommandBuffer&& buffer ) noexcept {
+	void VulkanDevice::SendCommandBuffer(const CommandBuffer& buffer) noexcept {
 
-		assert_device( );
+		assert_device();
 
-		m_CommandBuffersToFlush.emplace( std::move( buffer ) );
+		m_CommandBuffersToFlush.emplace(buffer);
 
 	}
 
@@ -371,80 +371,82 @@ namespace lum::rhi::vk {
 	// RUNTIME HELPERS (PRIVATE)
 	// ===========================================================
 
-	void VulkanDevice::assert_device( ) const {
-		LUM_ASSERT( m_IsInitialized, "RHI Device is not initialized!" );
+	void VulkanDevice::assert_device() const {
+		LUM_ASSERT(m_IsInitialized, "RHI Device is not initialized!");
 	}
 
-	bool VulkanDevice::create_shader_module( const Path& path, VkShaderModule& module ) const noexcept {
+	bool VulkanDevice::create_shader_module(const Path& path, VkShaderModule& module) const noexcept {
 
-		auto resBinaryCode = FileSystem::ReadBinaryFile( path );
+		auto resBinaryCode = FileSystem::ReadBinaryFile(path);
 		if (!resBinaryCode) {
-			LUM_LOG_ERROR( "Failed to create shader: {}!", resBinaryCode.GetError( ) );
+			LUM_LOG_ERROR("Failed to create shader: {}!", resBinaryCode.GetError());
 			return false;
 		}
-		auto& binary = resBinaryCode.ValueRef( );
+		auto& binary = resBinaryCode.ValueRef();
 
 		VkShaderModuleCreateInfo vkInfo{};
 		vkInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		vkInfo.pCode = binary.data( );
-		vkInfo.codeSize = binary.size( ) / sizeof( uint32 );
+		vkInfo.pCode = binary.data();
+		vkInfo.codeSize = binary.size() / sizeof(uint32);
 
-		if (vkCreateShaderModule( m_LogicalDevice, &vkInfo, nullptr, &module ) != VK_SUCCESS) {
-			LUM_LOG_ERROR( "Failed to create shader module! (Vulkan)" );
+		if (vkCreateShaderModule(m_LogicalDevice, &vkInfo, nullptr, &module) != VK_SUCCESS) {
+			LUM_LOG_ERROR("Failed to create shader module! (Vulkan)");
 			return false;
 		}
 
+		return true;
+
 	}
 
-	void VulkanDevice::decode_command_buffer( std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer ) noexcept {
+	void VulkanDevice::decode_command_buffer(std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer) noexcept {
 
-		uint8* current = rawBuffer.data( );
-		const uint8* end = current + rawBuffer.size( );
+		uint8* current = rawBuffer.data();
+		const uint8* end = current + rawBuffer.size();
 
 		while (current < end) {
 
-			CommandType type = *reinterpret_cast<CommandType*>( current );
-			current += sizeof( CommandType );
-			m_CommandProcessor.ExecuteCall( type, vkBuffer, current );
+			CommandType type = *reinterpret_cast<CommandType*>(current);
+			current += sizeof(CommandType);
+			m_CommandProcessor.ExecuteCall(type, vkBuffer, current);
 
 		}
 
 	}
-	void VulkanDevice::process_commands( VkCommandBuffer vkCmdBuffer ) noexcept {
+	void VulkanDevice::process_commands(VkCommandBuffer vkCmdBuffer) noexcept {
 
-		if (m_CommandBuffersToFlush.size( ) == 1) {
-			decode_command_buffer( m_CommandBuffersToFlush.front( ).GetByteStream( ), vkCmdBuffer );
-			m_CommandBuffersToFlush.pop( );
+		if (m_CommandBuffersToFlush.size() == 1) {
+			decode_command_buffer(m_CommandBuffersToFlush.front().GetByteStream(), vkCmdBuffer);
+			m_CommandBuffersToFlush.pop();
 			return;
 
 		}
 
 		auto tempQueue = m_CommandBuffersToFlush;
 		usize totalSize = 0;
-		while (!tempQueue.empty( )) {
+		while (!tempQueue.empty()) {
 
-			totalSize += tempQueue.front( ).GetByteStream( ).size( );
-			tempQueue.pop( );
+			totalSize += tempQueue.front().GetByteStream().size();
+			tempQueue.pop();
 
 		}
 
 		std::vector<uint8> combinedBuffer{};
-		combinedBuffer.reserve( totalSize );
+		combinedBuffer.reserve(totalSize);
 
-		while (!m_CommandBuffersToFlush.empty( )) {
+		while (!m_CommandBuffersToFlush.empty()) {
 
-			auto buffer = m_CommandBuffersToFlush.front( ).GetByteStream( );
+			auto buffer = m_CommandBuffersToFlush.front().GetByteStream();
 
-			usize end = combinedBuffer.size( );
-			combinedBuffer.resize( end + buffer.size( ) );
+			usize end = combinedBuffer.size();
+			combinedBuffer.resize(end + buffer.size());
 
-			std::memcpy( combinedBuffer.data( ) + end, buffer.data( ), buffer.size_bytes( ) );
+			std::memcpy(combinedBuffer.data() + end, buffer.data(), buffer.size_bytes());
 
-			m_CommandBuffersToFlush.pop( );
+			m_CommandBuffersToFlush.pop();
 
 		}
 
-		decode_command_buffer( combinedBuffer, vkCmdBuffer );
+		decode_command_buffer(combinedBuffer, vkCmdBuffer);
 
 	}
 

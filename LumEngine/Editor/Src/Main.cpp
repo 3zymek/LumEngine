@@ -46,15 +46,15 @@ static std::vector<rhi::Vertex> s_Vertices = {
 	}
 };
 
-int main( int argc, char* argv[ ] ) {
+int main(int argc, char* argv[]) {
 
 #	if defined(_WIN32)
-	ResourceLoader::SetProjectRoot( "C:/Users/szymek/Desktop/lumen_assets" );
+	ResourceLoader::SetProjectRoot("C:/Users/szymek/Desktop/lumen_assets");
 #	elif defined(__APPLE__)
-	ResourceLoader::SetProjectRoot( "/Users/br.eeziak/Desktop/glsl" );
+	ResourceLoader::SetProjectRoot("/Users/br.eeziak/Desktop/glsl");
 #	endif
 
-	OwningPtr<rhi::IRenderDevice> device = OwningPtr<rhi::vk::VulkanDevice>::Create( );
+	OwningPtr<rhi::IRenderDevice> device = OwningPtr<rhi::vk::VulkanDevice>::Create();
 
 	ev::EventBus bus{};
 
@@ -63,12 +63,12 @@ int main( int argc, char* argv[ ] ) {
 	winInfo.m_Title = "Vulkan Development";
 	winInfo.m_Height = 800;
 	winInfo.m_Width = 800;
-	window.Initialize( winInfo, bus );
-	OwningPtr<GLFWVulkanSurfaceProvider> surfaceProvider = OwningPtr<GLFWVulkanSurfaceProvider>::Create( reinterpret_cast<GLFWwindow*>(window.GetNativeWindow( )) );
+	window.Initialize(winInfo, bus);
+	OwningPtr<GLFWVulkanSurfaceProvider> surfaceProvider = OwningPtr<GLFWVulkanSurfaceProvider>::Create(reinterpret_cast<GLFWwindow*>(window.GetNativeWindow()));
 
 	uint32 count{};
-	const char** glfwExtensions = glfwGetRequiredInstanceExtensions( &count );
-	std::vector<const char*> extensions( glfwExtensions, glfwExtensions + count );
+	const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&count);
+	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + count);
 
 	rhi::RenderDeviceCreateInfo deviceInfo{};
 	deviceInfo.m_InstanceExtensions = extensions;
@@ -76,7 +76,7 @@ int main( int argc, char* argv[ ] ) {
 	deviceInfo.m_SurfaceProvider = surfaceProvider;
 	deviceInfo.m_EventBus = bus;
 
-	device( ).Initialize( deviceInfo );
+	device().Initialize(deviceInfo);
 
 
 	rhi::PipelineCreateInfo pipInfo{};
@@ -96,45 +96,45 @@ int main( int argc, char* argv[ ] ) {
 	rhi::ColorBlendAttachment attachment{};
 	attachment.m_BlendEnabled = false;
 	attachment.m_ColorMask = rhi::ColorComponentFlag::RGBA;
-	blend.m_Attachments.push_back( attachment );
+	blend.m_Attachments.push_back(attachment);
 
-	pipInfo.m_VertexInputPass = rhi::VertexLayoutConfiguration::GetStatic( ).GetVertexInputPass( );
+	pipInfo.m_VertexInputPass = rhi::VertexLayoutConfiguration::GetStatic().GetVertexInputPass();
 
 	rhi::ShaderInfo vertexInfo{};
 	vertexInfo.m_EntryPoint = "main";
-	vertexInfo.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::External, "debug.vert.spv" );
+	vertexInfo.m_Path = ResourceLoader::ResolveResourcePath(ResourceRoot::External, "debug.vert.spv");
 	vertexInfo.m_Stage = rhi::ShaderStage::Vertex;
-	pipInfo.m_ShaderInfos.push_back( vertexInfo );
+	pipInfo.m_ShaderInfos.push_back(vertexInfo);
 
 	rhi::ShaderInfo fragmentInfo{};
 	fragmentInfo.m_EntryPoint = "main";
-	fragmentInfo.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::External, "debug.frag.spv" );
+	fragmentInfo.m_Path = ResourceLoader::ResolveResourcePath(ResourceRoot::External, "debug.frag.spv");
 	fragmentInfo.m_Stage = rhi::ShaderStage::Fragment;
-	pipInfo.m_ShaderInfos.push_back( fragmentInfo );
+	pipInfo.m_ShaderInfos.push_back(fragmentInfo);
 
-	auto pipeline = device( ).CreatePipeline( pipInfo );
+	auto pipeline = device().CreatePipeline(pipInfo);
 
 
 
 	rhi::BufferCreateInfo2 vboInfo{};
-	vboInfo.m_DataSize = s_Vertices.size( ) * sizeof( rhi::Vertex );
-	vboInfo.m_BufferSize = s_Vertices.size( ) * sizeof( rhi::Vertex );
-	vboInfo.m_Data = s_Vertices.data( );
+	vboInfo.m_DataSize = s_Vertices.size() * sizeof(rhi::Vertex);
+	vboInfo.m_BufferSize = s_Vertices.size() * sizeof(rhi::Vertex);
+	vboInfo.m_Data = s_Vertices.data();
 	vboInfo.m_Usage = rhi::BufferUsage::Vertex;
-	auto vbo = device( ).CreateBuffer( vboInfo );
+	auto vbo = device().CreateBuffer(vboInfo);
 
 	rhi::BufferCreateInfo2 eboInfo{};
-	eboInfo.m_DataSize = s_Indices.size( ) * sizeof( uint32 );
-	eboInfo.m_BufferSize = s_Indices.size( ) * sizeof( uint32 );
-	eboInfo.m_Data = s_Indices.data( );
+	eboInfo.m_DataSize = s_Indices.size() * sizeof(uint32);
+	eboInfo.m_BufferSize = s_Indices.size() * sizeof(uint32);
+	eboInfo.m_Data = s_Indices.data();
 	eboInfo.m_Usage = rhi::BufferUsage::Element;
-	auto ebo = device( ).CreateBuffer( eboInfo );
+	auto ebo = device().CreateBuffer(eboInfo);
 
 	rhi::cmd::BindGraphicsPipeline cmdBindPip{};
 	cmdBindPip.m_Handle = pipeline;
 
 	rhi::cmd::BindVertexBuffers cmdBindVbo{};
-	cmdBindVbo.m_Handles = std::span<rhi::BufferHandle>( &vbo, 1 );
+	cmdBindVbo.m_Handles = std::span<rhi::BufferHandle>(&vbo, 1);
 
 	rhi::cmd::BindElementBuffer cmdBindEbo{};
 	cmdBindEbo.m_Handle = ebo;
@@ -142,7 +142,7 @@ int main( int argc, char* argv[ ] ) {
 	rhi::cmd::DrawIndexed cmdDrawIndexed{};
 	cmdDrawIndexed.m_FirstIndex = 0;
 	cmdDrawIndexed.m_FirstInstance = 0;
-	cmdDrawIndexed.m_IndexCount = s_Indices.size( );
+	cmdDrawIndexed.m_IndexCount = s_Indices.size();
 	cmdDrawIndexed.m_InstanceCount = 1;
 	cmdDrawIndexed.m_VertexOffset = 0;
 
@@ -150,25 +150,25 @@ int main( int argc, char* argv[ ] ) {
 
 	rhi::cmd::SetViewport cmdSetViewport{};
 
-	while (window.IsOpen( )) {
+	rhi::CommandBuffer cmdBuffer{};
+	cmdBuffer.Push(cmdBindPip);
+	cmdBuffer.Push(cmdBindVbo);
+	cmdBuffer.Push(cmdBindEbo);
+	cmdBuffer.Push(cmdSetViewport);
+	cmdBuffer.Push(cmdSetScissors);
+	cmdBuffer.Push(cmdDrawIndexed);
 
-		rhi::CommandBuffer cmdBuffer{};
-		cmdBuffer.Push( cmdBindPip );
-		cmdBuffer.Push( cmdBindVbo );
-		cmdBuffer.Push( cmdBindEbo );
-		cmdBuffer.Push( cmdSetViewport );
-		cmdBuffer.Push( cmdSetScissors );
-		cmdBuffer.Push( cmdDrawIndexed );
+	while (window.IsOpen()) {
 
-		device( ).SendCommandBuffer( std::move( cmdBuffer ) );
+		device().SendCommandBuffer(std::move(cmdBuffer));
 
-		window.Update( );
-		device( ).UpdateFrame( );
+		window.Update();
+		device().UpdateFrame();
 
 
 	}
 
-	device( ).Finalize( );
+	device().Finalize();
 
 
 

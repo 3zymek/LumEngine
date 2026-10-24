@@ -52,34 +52,34 @@ namespace lum::rhi::vk {
 	class LUM_API VulkanDevice : public IRenderDevice {
 	public:
 
-		void Initialize( const RenderDeviceCreateInfo& info ) noexcept override;
-		void Finalize( ) noexcept override;
+		void Initialize(const RenderDeviceCreateInfo& info) noexcept override;
+		void Finalize() noexcept override;
 
-		void UpdateFrame( ) noexcept override;
+		void UpdateFrame() noexcept override;
 
-		BufferHandle CreateBuffer( const BufferCreateInfo2& info ) noexcept override;
-		void DestroyBuffer( const BufferHandle handle ) noexcept override;
+		BufferHandle CreateBuffer(const BufferCreateInfo2& info) noexcept override;
+		void DestroyBuffer(const BufferHandle handle) noexcept override;
 
-		PipelineHandle CreatePipeline( const PipelineCreateInfo& info ) noexcept override;
-		void DestroyPipeline( const PipelineHandle handle ) noexcept override;
+		PipelineHandle CreatePipeline(const PipelineCreateInfo& info) noexcept override;
+		void DestroyPipeline(const PipelineHandle handle) noexcept override;
 
-		ImageHandle CreateImage( const ImageCreateInfo& info ) noexcept override;
-		void DestroyImage( const ImageHandle handle ) noexcept override;
+		ImageHandle CreateImage(const ImageCreateInfo& info) noexcept override;
+		void DestroyImage(const ImageHandle handle) noexcept override;
 
-		SamplerHandle CreateSampler( const SamplerCreateInfo& info ) noexcept override;
-		void DestroySampler( const SamplerHandle handle ) noexcept override;
+		SamplerHandle CreateSampler(const SamplerCreateInfo& info) noexcept override;
+		void DestroySampler(const SamplerHandle handle) noexcept override;
 
-		ResourceSetHandle CreateResourceSet( const ResourceSetCreateInfo& info ) noexcept override;
-		void DestroyResourceSet( const ResourceSetHandle handle ) noexcept override;
+		ResourceSetHandle CreateResourceSet(const ResourceSetCreateInfo& info) noexcept override;
+		void DestroyResourceSet(const ResourceSetHandle handle) noexcept override;
 
-		void SendCommandBuffer( CommandBuffer&& buffer ) noexcept override;
+		void SendCommandBuffer(const CommandBuffer& buffer) noexcept override;
 
 	private:
 
-		static inline constexpr usize s_MaxBuffers		= 256;
-		static inline constexpr usize s_MaxPipelines	= 32;
-		static inline constexpr usize s_MaxImages		= 128;
-		static inline constexpr usize s_MaxSamplers		= 32;
+		static inline constexpr usize s_MaxBuffers = 256;
+		static inline constexpr usize s_MaxPipelines = 32;
+		static inline constexpr usize s_MaxImages = 128;
+		static inline constexpr usize s_MaxSamplers = 32;
 		static inline constexpr usize s_MaxResourceSets = 128;
 
 		HandlePool<
@@ -166,28 +166,28 @@ namespace lum::rhi::vk {
 		// INITIALIZATION HELPERS
 		// ===========================================================
 
-		void create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept;
-		void choose_adapter( ) noexcept;
-		void create_logical_device( ) noexcept;
-		void acquire_queues( ) noexcept;
-		void create_main_surface( ) noexcept;
-		void recreate_swapchain( ) noexcept;
-		void recreate_swapchain_images( ) noexcept;
-		void create_command_pool( ) noexcept;
-		void allocate_command_buffers( ) noexcept;
-		void create_sync_primitives( ) noexcept;
-		void handle_resize( ) noexcept;
-		void bind_commands_implementations( ) noexcept;
+		void create_vk_instance(const RenderDeviceCreateInfo& info) noexcept;
+		void choose_adapter() noexcept;
+		void create_logical_device() noexcept;
+		void acquire_queues() noexcept;
+		void create_main_surface() noexcept;
+		void recreate_swapchain() noexcept;
+		void recreate_swapchain_images() noexcept;
+		void create_command_pool() noexcept;
+		void allocate_command_buffers() noexcept;
+		void create_sync_primitives() noexcept;
+		void handle_resize() noexcept;
+		void bind_commands_implementations() noexcept;
 
 
 		// ===========================================================
 		// RUNTIME HELPERS
 		// ===========================================================
 
-		void assert_device( ) const;
-		bool create_shader_module( const Path& path, VkShaderModule& module ) const noexcept;
-		void decode_command_buffer( std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer ) noexcept;
-		void process_commands( VkCommandBuffer vkCmdBuffer ) noexcept;
+		void assert_device() const;
+		bool create_shader_module(const Path& path, VkShaderModule& module) const noexcept;
+		void decode_command_buffer(std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer) noexcept;
+		void process_commands(VkCommandBuffer vkCmdBuffer) noexcept;
 
 
 	};
