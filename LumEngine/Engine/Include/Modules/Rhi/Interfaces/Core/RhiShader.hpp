@@ -25,6 +25,8 @@ namespace lum::rhi {
 		Compute,
 		Geometry
 	};
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::ShaderStage );
+
 	using ShaderStageFlags = Flags<ShaderStage>;
 
 	struct ShaderInfo {
@@ -35,12 +37,4 @@ namespace lum::rhi {
 
 	};
 
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::ShaderStage );
-
 } // namespace lum::rhi
-
-namespace lum {
-
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::ShaderStage );
-
-} // namespace lum

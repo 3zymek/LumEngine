@@ -37,7 +37,8 @@ namespace lum::rhi {
 		DrawIndexed,
 		SetViewport,
 		SetScissors,
-		UpdateResourceSet
+		UpdateResourceSet,
+		TransferImage
 	};
 
 	template<typename tType>
@@ -59,6 +60,10 @@ namespace lum::rhi {
 
 		std::span<uint8> GetByteStream( ) {
 			return m_Buffer;
+		}
+
+		void Clear( ) noexcept {
+			m_Buffer.clear( );
 		}
 
 	protected:

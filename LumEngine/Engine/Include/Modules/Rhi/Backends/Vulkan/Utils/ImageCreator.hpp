@@ -1,3 +1,15 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
 #include <vulkan/vulkan_core.h>
@@ -22,7 +34,6 @@ namespace lum::rhi::vk {
 	private:
 
 		auto choose_image_view_type(const ImageCreateInfo& info) const noexcept -> VkImageViewType;
-		auto choose_aspect_mask(ImageFormat format) const noexcept -> VkImageAspectFlags;
 
 	};
 

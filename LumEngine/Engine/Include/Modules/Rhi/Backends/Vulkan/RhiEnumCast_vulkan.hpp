@@ -12,14 +12,22 @@
 /*******************************************************/
 #pragma once
 
+#include <vulkan/vulkan_core.h>
+
 #include "Core/CoreDefines.hpp"
-#include "Rhi/Interfaces/Core/RhiShader.hpp"
-#include "Rhi/Interfaces/Core/RhiPipeline.hpp"
+#include "Rhi/Interfaces/Core/RhiBuffer.hpp"
 #include "Rhi/Interfaces/Core/RhiImage.hpp"
-#include "Rhi/Interfaces/Core/RhiSampler.hpp"
+#include "Rhi/Interfaces/Core/RhiPipeline.hpp"
 #include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
+#include "Rhi/Interfaces/Core/RhiSampler.hpp"
+#include "Rhi/Interfaces/Core/RhiShader.hpp"
 
 namespace lum::rhi::vk {
+
+	// Buffer enums conversions
+
+	LUM_NODISCARD auto ToVk( BufferUsageFlags flags ) noexcept -> VkBufferUsageFlags;
+
 
 	// Pipeline enums conversions
 
@@ -40,6 +48,9 @@ namespace lum::rhi::vk {
 	LUM_NODISCARD auto ToVk( ImageFormat format ) noexcept -> VkFormat;
 	LUM_NODISCARD auto ToVk( ImageDimension format ) noexcept -> VkImageType;
 	LUM_NODISCARD auto ToVk( SampleCount samples ) noexcept -> VkSampleCountFlagBits;
+	LUM_NODISCARD auto ToVk( ImageLayout layout ) noexcept -> VkImageLayout;
+
+	LUM_NODISCARD auto GetAspectMask( ImageFormat format ) noexcept -> VkImageAspectFlags;
 
 
 	// Sampler enums conversions

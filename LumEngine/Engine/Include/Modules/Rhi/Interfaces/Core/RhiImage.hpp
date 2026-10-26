@@ -1,3 +1,15 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
 #include "Core/CoreTypes.hpp"
@@ -118,6 +130,18 @@ namespace lum::rhi {
 		D32_FLOAT_S8_UINT,
 
 	};
+	
+	enum class ImageLayout : uint8 {
+		Undefined = 0U,             // Layout is not defined
+		General,                    // General read and write access
+		ColorAttachment,            // Used as a color attachment
+		DepthStencilAttachment,     // Used as a depth/stencil attachment
+		DepthStencilReadOnly,       // Used for depth/stencil read access
+		ShaderReadOnly,             // Used for shader read access
+		TransferSource,             // Used as a copy source
+		TransferDestination,        // Used as a copy destination
+		Present                     // Used for presenting to the screen
+	};
 
 	struct Extent3D {
 
@@ -137,11 +161,6 @@ namespace lum::rhi {
 		Sample64
 	};
 
-	enum class ImageUsage : uint8 {
-		Static = 0U,
-		Dynamic
-	};
-
 	struct ImageCreateInfo {
 
 		ImageUsageFlags m_UsageFlags = ImageUsageFlag::None;
@@ -149,17 +168,25 @@ namespace lum::rhi {
 		ImageFormat m_Format = ImageFormat::RGBA32_FLOAT;
 		Extent3D m_Extent{};
 		ImageViewType m_ViewType = ImageViewType::Default;
-		ImageUsage m_Usage = ImageUsage::Static;
 		SampleCount m_SampleCount = SampleCount::Sample1;
 
 		uint32 m_MipmapLevels = 1;
 		uint32 m_ArrayLayers = 1;
 
-		Optional<ImageData> m_Data{};
-
 	};
 
-	struct Image {
+	struct ImageInfo {
+
+		ImageUsageFlags m_UsageFlags = ImageUsageFlag::None;
+		ImageLayout m_CurrentLayout = ImageLayout::Undefined;
+		ImageFormat m_Format = ImageFormat::RGBA32_FLOAT;
+		Extent3D m_Extent{};
+
+		ImageViewType m_ViewType = ImageViewType::Default;
+		SampleCount m_SampleCount = SampleCount::Sample1;
+
+		uint32 m_MipmapLevels = 1;
+		uint32 m_ArrayLayers = 1;
 
 	};
 

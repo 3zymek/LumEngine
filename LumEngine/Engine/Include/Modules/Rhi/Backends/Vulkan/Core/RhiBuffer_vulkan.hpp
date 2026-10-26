@@ -8,10 +8,10 @@ namespace lum::rhi::vk {
 
 	struct VulkanBuffer {
 
-		BufferDescription m_Desc{};
+		BufferInfo m_Info{};
 		VkBuffer m_VkBuffer{};
-		VkDeviceMemory m_Memory{};
-		VkMemoryRequirements m_MemoryRequirements{};
+		VkDeviceMemory m_VkMemory{};
+		VkMemoryRequirements m_VkMemoryRequirements{};
 
 	};
 

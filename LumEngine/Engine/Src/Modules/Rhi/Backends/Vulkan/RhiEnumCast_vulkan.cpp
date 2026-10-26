@@ -9,8 +9,38 @@
 #include "Rhi/Interfaces/Core/RhiPipeline.hpp"
 #include "Rhi/Interfaces/Core/RhiSampler.hpp"
 #include "Rhi/Interfaces/Core/RhiShader.hpp"
+#include "Rhi/Interfaces/Core/RhiBuffer.hpp"
 
 namespace lum::rhi::vk {
+
+	// Buffer enums conversions
+
+	auto ToVk( BufferUsageFlags flags ) noexcept -> VkBufferUsageFlags {
+
+		VkBufferUsageFlags usage{};
+		if (flags.Has( BufferUsage::Vertex )) {
+			usage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+		}
+		if (flags.Has( BufferUsage::Element )) {
+			usage |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+		}
+		if (flags.Has( BufferUsage::Uniform )) {
+			usage |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+		}
+		if (flags.Has( BufferUsage::ShaderStorage )) {
+			usage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+		}
+		if (flags.Has( BufferUsage::TransferSource )) {
+			usage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+		}
+		if (flags.Has( BufferUsage::TransferDestination )) {
+			usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+		}
+
+		return usage;
+	}
+
+
 
 	auto ToVk( ShaderStage stage ) noexcept -> VkShaderStageFlagBits {
 		switch (stage) {
@@ -249,6 +279,45 @@ namespace lum::rhi::vk {
 		LUM_ASSERT( false, "Invalid {} enum", t_EnumTypeName<SampleCount> );
 		return VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM;
 	}
+
+	LUM_NODISCARD auto ToVk( ImageLayout layout ) noexcept -> VkImageLayout {
+		switch (layout) {
+			case ImageLayout::Undefined:                  return VK_IMAGE_LAYOUT_UNDEFINED;
+			case ImageLayout::General:                    return VK_IMAGE_LAYOUT_GENERAL;
+			case ImageLayout::ColorAttachment:            return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			case ImageLayout::DepthStencilAttachment:     return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			case ImageLayout::DepthStencilReadOnly:       return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+			case ImageLayout::ShaderReadOnly:              return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			case ImageLayout::TransferSource:              return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+			case ImageLayout::TransferDestination:         return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+			case ImageLayout::Present:                     return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		}
+
+		LUM_ASSERT( false, "Invalid {} enum", t_EnumTypeName<ImageLayout> );
+		return VK_IMAGE_LAYOUT_MAX_ENUM;
+	}
+
+	auto GetAspectMask( ImageFormat format ) noexcept -> VkImageAspectFlags {
+
+		switch (format) {
+
+			case ImageFormat::D16_UNORM:
+			case ImageFormat::D32_FLOAT:
+			return VK_IMAGE_ASPECT_DEPTH_BIT;
+
+			case ImageFormat::D24_UNORM_S8_UINT:
+			case ImageFormat::D32_FLOAT_S8_UINT:
+			return VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+
+			default:
+			return VK_IMAGE_ASPECT_COLOR_BIT;
+		}
+
+		LUM_ASSERT( false, "Invalid {} enum", t_EnumTypeName<ImageFormat> );
+		return {};
+
+	}
+
 
 	auto ToVk( SamplerWrap wrap ) noexcept -> VkSamplerAddressMode {
 		switch (wrap) {

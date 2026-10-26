@@ -17,6 +17,8 @@
 #include <vulkan/vulkan_core.h>
 
 #include "Core/CoreDefines.hpp"
+#include "Core/Utils/SafePtr.hpp"
+#include "Rhi/Backends/Vulkan/Core/RhiImage_vulkan.hpp"
 #include "Rhi/RhiTypes.hpp"
 
 namespace lum::rhi::vk {
@@ -71,8 +73,22 @@ namespace lum::rhi::vk {
 			return true;
 		}
 
+		struct TransitionImageInfo {
+
+			SafePtr<VulkanImage> m_Image = nullptr;
+			ImageLayout m_NewLayout = ImageLayout::Undefined;
+
+			VkPipelineStageFlags2 m_NewStage = VK_PIPELINE_STAGE_2_NONE;
+			VkAccessFlags2 m_NewAccess = VK_ACCESS_2_NONE;
+
+			VkCommandBuffer m_VkCommandBuffer = VK_NULL_HANDLE;
+
+		};
+
 #		define LUM_VK_RESULT_CHECK(call) \
 			lum::rhi::vk::detail::ResultValidation( call, #call )
+
+
 
 
 	}

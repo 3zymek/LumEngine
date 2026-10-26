@@ -13,6 +13,7 @@
 #include <vector>
 
 using namespace lum;
+using namespace lum::rhi;
 
 static std::vector<uint32> s_Indices = {
 		0, 1, 2,
@@ -116,14 +117,14 @@ int main( int argc, char* argv[ ] ) {
 
 
 
-	rhi::BufferCreateInfo2 vboInfo{};
+	rhi::BufferCreateInfo vboInfo{};
 	vboInfo.m_DataSize = s_Vertices.size( ) * sizeof( rhi::Vertex );
 	vboInfo.m_BufferSize = s_Vertices.size( ) * sizeof( rhi::Vertex );
 	vboInfo.m_Data = s_Vertices.data( );
 	vboInfo.m_Usage = rhi::BufferUsage::Vertex;
 	auto vbo = device( ).CreateBuffer( vboInfo );
 
-	rhi::BufferCreateInfo2 eboInfo{};
+	rhi::BufferCreateInfo eboInfo{};
 	eboInfo.m_DataSize = s_Indices.size( ) * sizeof( uint32 );
 	eboInfo.m_BufferSize = s_Indices.size( ) * sizeof( uint32 );
 	eboInfo.m_Data = s_Indices.data( );
@@ -150,9 +151,66 @@ int main( int argc, char* argv[ ] ) {
 
 	rhi::cmd::SetViewport cmdSetViewport{};
 
+
+	// MAIN CODE
+
+	auto dataRes = ResourceLoader::LoadImageFromFile(
+		ResourceRoot::External, "test.png"
+	);
+	if (!dataRes)
+		LUM_LOG_FATAL( "{}", dataRes.GetError( ) );
+
+	auto data = dataRes.ValueRef( );
+
+
+	rhi::ImageCreateInfo imageInfo{};
+	imageInfo.m_Dimension = ImageDimension::Image2D;
+	imageInfo.m_Extent = { data.m_Width, data.m_Height, 1 };
+	imageInfo.m_Format = ImageFormat::RGBA32_FLOAT;
+	imageInfo.m_MipmapLevels = 1;
+	imageInfo.m_ViewType = ImageViewType::Default;
+	imageInfo.m_UsageFlags = ImageUsageFlag::ShaderReadable;
+	imageInfo.m_ArrayLayers = 1;
+
+	auto image = device( ).CreateImage( imageInfo );
+
+
+	rhi::SamplerCreateInfo samplerInfo{};
+	auto sampler = device( ).CreateSampler( samplerInfo );
+
+	rhi::ResourceSetBinding binding{};
+	binding.m_Binding = 0;
+	binding.m_ResourceCount = 1;
+	binding.m_ShaderStages = ShaderStage::Vertex;
+	binding.m_Type = ResourceType::CombinedImageSampler;
+
+	rhi::ResourceSetCreateInfo resInfo{};
+	resInfo.m_Bindings.push_back( binding );
+
+	auto resSet = device( ).CreateResourceSet( resInfo );
+	
+	cmd::UpdateResourceSet cmdUpdateResSet{};
+	cmdUpdateResSet.m_ArrayIndex = 0;
+	cmdUpdateResSet.m_Binding = 0;
+	cmdUpdateResSet.m_SetHandle = resSet;
+	cmdUpdateResSet.m_Image.m_ImageHandle = image;
+	cmdUpdateResSet.m_Image.m_SamplerHandle = sampler;
+	
+
+
+	cmd::TransferImage cmdTransferImg{};
+	cmdTransferImg.m_Data = data;
+	cmdTransferImg.m_Image = image;
+	cmdTransferImg.m_StagingOffset = 0;
+
+
+	rhi::CommandBuffer cmdBuffer{};
+
+	cmdBuffer.Push( cmdUpdateResSet );
+	cmdBuffer.Push( cmdTransferImg );
+
 	while (window.IsOpen( )) {
 
-		rhi::CommandBuffer cmdBuffer{};
 		cmdBuffer.Push( cmdBindPip );
 		cmdBuffer.Push( cmdBindVbo );
 		cmdBuffer.Push( cmdBindEbo );
@@ -160,7 +218,8 @@ int main( int argc, char* argv[ ] ) {
 		cmdBuffer.Push( cmdSetScissors );
 		cmdBuffer.Push( cmdDrawIndexed );
 
-		device( ).SendCommandBuffer( std::move( cmdBuffer ) );
+		device( ).SendCommandBuffer( cmdBuffer );
+		cmdBuffer.Clear( );
 
 		window.Update( );
 		device( ).UpdateFrame( );

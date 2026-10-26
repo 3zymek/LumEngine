@@ -18,7 +18,6 @@
 
 #include "Core/Utils/Assert.hpp"
 #include "Core/Utils/LogMacros.hpp"
-#include "Core/Utils/ResourceLoader.hpp"
 #include "Event/EventBus.hpp"
 #include "Event/Events/WindowEvents.hpp"
 #include "Platform/FileSystem/FileSystem.hpp"
@@ -26,6 +25,7 @@
 #include "Platform/VulkanSurfaceProvider.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiImage_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiSampler_vulkan.hpp"
+#include "Rhi/Backends/Vulkan/RhiEnumCast_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/RhiTypes_vulkan.hpp"
 #include "Rhi/Interfaces/Core/RhiCommandBuffer.hpp"
 #include "Rhi/Interfaces/Core/RhiDevice.hpp"
@@ -62,91 +62,6 @@ namespace lum::rhi::vk {
 		acquire_queues( );
 		recreate_swapchain( );
 		recreate_swapchain_images( );
-
-		// ===========================================================
-		// DEBUG
-		// ===========================================================
-		/*
-		auto data = ResourceLoader::LoadImageFromFile( ResourceRoot::External, "test.png" );
-
-		LUM_ASSERT( data, "test.png doesn't exists" );
-
-		rhi::Extent3D extent{};
-		extent.m_Width = data.ValueRef( ).m_Width;
-		extent.m_Height = data.ValueRef( ).m_Height;
-		extent.m_Depth = 1;
-
-		rhi::ImageCreateInfo img{};
-		img.m_Data = data.ValueRef( );
-		img.m_Dimension = rhi::ImageDimension::Image2D;
-		img.m_Format = rhi::ImageFormat::RGBA32_FLOAT;
-		img.m_ArrayLayers = 1;
-		img.m_Extent = extent;
-		img.m_MipmapLevels = 1;
-		img.m_UsageFlags = rhi::ImageUsageFlag::ColorAttachment;
-		img.m_SampleCount = rhi::SampleCount::Sample1;
-
-
-
-		VkDescriptorSetLayoutBinding binding{};
-		binding.binding = 0;
-		binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		binding.descriptorCount = 1;
-		binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-		VkDescriptorSetLayoutCreateInfo layoutInfo{};
-		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = 1;
-		layoutInfo.pBindings = &binding;
-
-		if (!LUM_VK_RESULT_CHECK( vkCreateDescriptorSetLayout( m_LogicalDevice, &layoutInfo, nullptr, &DT_DescriptorSetLayout ) )) {
-			return;
-		}
-
-		VkDescriptorPoolSize poolSize{};
-		poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		poolSize.descriptorCount = 1;
-
-		VkDescriptorPoolCreateInfo poolInfo{};
-		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		poolInfo.poolSizeCount = 1;
-		poolInfo.pPoolSizes = &poolSize;
-		poolInfo.maxSets = 1;
-
-		if (!LUM_VK_RESULT_CHECK( vkCreateDescriptorPool( m_LogicalDevice, &poolInfo, nullptr, &DT_DescriptorPool ) )) {
-			return;
-		}
-
-		VkDescriptorSetAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = DT_DescriptorPool;
-		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = &DT_DescriptorSetLayout;
-
-		if (!LUM_VK_RESULT_CHECK( vkAllocateDescriptorSets( m_LogicalDevice, &allocInfo, &DT_DescriptorSet ) )) {
-			return;
-		}
-
-		VkDescriptorImageInfo imageInfo{};
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = image.m_View;
-		imageInfo.sampler = sampler.m_Sampler;
-
-		VkWriteDescriptorSet descriptorWrite{};
-		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrite.dstSet = DT_DescriptorSet;
-		descriptorWrite.dstBinding = 0;
-		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWrite.descriptorCount = 1;
-		descriptorWrite.pImageInfo = &imageInfo;
-
-		vkUpdateDescriptorSets( m_LogicalDevice, 1, &descriptorWrite, 0, nullptr );
-
-		*/
-		// ===========================================================
-		// DEBUG
-		// ===========================================================
-
 		create_command_pool( );
 		allocate_command_buffers( );
 		create_sync_primitives( );
@@ -359,11 +274,11 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::SendCommandBuffer( CommandBuffer&& buffer ) noexcept {
+	void VulkanDevice::SendCommandBuffer( const CommandBuffer& buffer ) noexcept {
 
 		assert_device( );
 
-		m_CommandBuffersToFlush.emplace( std::move( buffer ) );
+		m_CommandBuffersToFlush.emplace( buffer );
 
 	}
 
@@ -445,6 +360,54 @@ namespace lum::rhi::vk {
 		}
 
 		decode_command_buffer( combinedBuffer, vkCmdBuffer );
+
+	}
+
+	void VulkanDevice::transition_image_layout( const detail::TransitionImageInfo& info ) noexcept {
+		
+		LUM_ASSERT( info.m_Image, "Image cannot be null, fix your code." );
+		LUM_ASSERT( info.m_VkCommandBuffer != VK_NULL_HANDLE, "VkCommandBuffer is null." );
+		
+		auto& imageInfo = info.m_Image( ).m_Info;
+
+		bool sameLayout = imageInfo.m_CurrentLayout == info.m_NewLayout;
+		bool sameStage = info.m_Image( ).m_VkStageMask == info.m_NewStage;
+		bool sameAccess = info.m_Image( ).m_VkAccessMask == info.m_NewAccess;
+
+		if (sameLayout && sameAccess && sameStage) {
+			return;
+		}
+
+		VkImageMemoryBarrier2 barrier{};
+		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
+
+		barrier.srcStageMask = info.m_Image().m_VkStageMask;
+		barrier.srcAccessMask = info.m_Image().m_VkAccessMask;
+		barrier.oldLayout = ToVk( imageInfo.m_CurrentLayout );
+
+		barrier.dstStageMask = info.m_NewStage;
+		barrier.dstAccessMask = info.m_NewAccess;
+		barrier.newLayout = ToVk( info.m_NewLayout );
+
+		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.image = info.m_Image().m_VkImage;
+		barrier.subresourceRange.aspectMask = GetAspectMask( imageInfo.m_Format );
+		barrier.subresourceRange.baseMipLevel = 0;
+		barrier.subresourceRange.levelCount = imageInfo.m_MipmapLevels;
+		barrier.subresourceRange.baseArrayLayer = 0;
+		barrier.subresourceRange.layerCount = imageInfo.m_ArrayLayers;
+
+		VkDependencyInfo dependency{};
+		dependency.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO;
+		dependency.imageMemoryBarrierCount = 1;
+		dependency.pImageMemoryBarriers = &barrier;
+
+		vkCmdPipelineBarrier2( info.m_VkCommandBuffer, &dependency );
+
+		imageInfo.m_CurrentLayout = info.m_NewLayout;
+		info.m_Image( ).m_VkStageMask = info.m_NewStage;
+		info.m_Image( ).m_VkAccessMask = info.m_NewAccess;
 
 	}
 

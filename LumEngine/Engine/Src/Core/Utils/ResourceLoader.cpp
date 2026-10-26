@@ -25,7 +25,7 @@ namespace lum {
 	// Public
 	//=======================================================//
 
-	Result<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, const Path& filepath, ImageFormat expectedFormat ) {
+	Result<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, const Path& filepath, ImageChannels expectedFormat ) {
 
 		Path path = ResolveResourcePath( root, filepath );
 		String strPath = path.ToString( );
@@ -35,14 +35,20 @@ namespace lum {
 			return Result<ImageData>::Failure( "File doesn't exist" );
 		}
 
-		ImageData texture;
+		ImageData texture{};
 		texture.m_IsHdr = path.EndsWith( ".hdr" );
+
+		int32 width = 0;
+		int32 height = 0;
 
 		int32 format{};
 
 		if (texture.m_IsHdr) {
 
-			float32* data = stbi_loadf( strPath.c_str( ), &texture.m_Width, &texture.m_Height, &format, formatCast );
+			float32* data = stbi_loadf( strPath.c_str( ), &width, &height, &format, formatCast );
+			texture.m_Width = static_cast<uint32>(width);
+			texture.m_Height = static_cast<uint32>(height);
+
 			if (!data) {
 				return Result<ImageData>::Failure( stbi_failure_reason( ) );
 			}
@@ -53,7 +59,10 @@ namespace lum {
 		}
 		else {
 
-			unsigned char* data = stbi_load( strPath.c_str( ), &texture.m_Width, &texture.m_Height, &format, formatCast );
+			unsigned char* data = stbi_load( strPath.c_str( ), &width, &height, &format, formatCast );
+			texture.m_Width = static_cast<uint32>(width);
+			texture.m_Height = static_cast<uint32>(height);
+
 			if (!data) {
 				return Result<ImageData>::Failure( stbi_failure_reason( ) );
 			}

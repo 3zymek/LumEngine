@@ -17,9 +17,9 @@ namespace lum::rhi::vk {
 
 	struct VulkanResourceSet {
 
-		VkDescriptorSet m_ResourceSet = VK_NULL_HANDLE;
-		VkDescriptorPool m_ResourcePool = VK_NULL_HANDLE;
-		VkDescriptorSetLayout m_Layout = VK_NULL_HANDLE;
+		VkDescriptorSet m_VkResourceSet = VK_NULL_HANDLE;
+		VkDescriptorPool m_VkResourcePool = VK_NULL_HANDLE;
+		VkDescriptorSetLayout m_VkLayout = VK_NULL_HANDLE;
 
 	};
 

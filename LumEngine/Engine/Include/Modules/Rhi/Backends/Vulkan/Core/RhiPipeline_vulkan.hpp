@@ -5,8 +5,8 @@ namespace lum::rhi::vk {
 
 	struct VulkanPipeline {
 
-		VkPipeline m_Pipeline = VK_NULL_HANDLE;
-		VkPipelineLayout m_Layout = VK_NULL_HANDLE;
+		VkPipeline m_VkPipeline = VK_NULL_HANDLE;
+		VkPipelineLayout m_VkLayout = VK_NULL_HANDLE;
 
 	};
 

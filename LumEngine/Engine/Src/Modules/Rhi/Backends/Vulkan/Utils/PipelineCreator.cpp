@@ -70,7 +70,7 @@ namespace lum::rhi::vk {
 				logicalDevice,
 				&layoutInfo,
 				nullptr,
-				&pipeline.m_Layout
+				&pipeline.m_VkLayout
 			);
 
 		if (layoutResult != VK_SUCCESS) {
@@ -100,7 +100,7 @@ namespace lum::rhi::vk {
 
 		pipInfo.pNext = &renderingInfo;
 		pipInfo.pViewportState = &viewportState;
-		pipInfo.layout = pipeline.m_Layout;
+		pipInfo.layout = pipeline.m_VkLayout;
 
 		const VkResult pipResult =
 			vkCreateGraphicsPipelines(
@@ -109,7 +109,7 @@ namespace lum::rhi::vk {
 				1,
 				&pipInfo,
 				nullptr,
-				&pipeline.m_Pipeline
+				&pipeline.m_VkPipeline
 			);
 
 		if (pipResult != VK_SUCCESS) {

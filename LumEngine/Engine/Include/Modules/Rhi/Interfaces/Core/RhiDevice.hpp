@@ -42,7 +42,7 @@ namespace lum::rhi {
 
 		virtual void UpdateFrame( ) noexcept = 0;
 
-		virtual BufferHandle CreateBuffer( const BufferCreateInfo2& info ) noexcept = 0;
+		virtual BufferHandle CreateBuffer( const BufferCreateInfo& info ) noexcept = 0;
 		virtual void DestroyBuffer( const BufferHandle handle ) noexcept = 0;
 
 		virtual PipelineHandle CreatePipeline( const PipelineCreateInfo& info ) noexcept = 0;
@@ -57,7 +57,7 @@ namespace lum::rhi {
 		virtual ResourceSetHandle CreateResourceSet( const ResourceSetCreateInfo& info ) noexcept = 0;
 		virtual void DestroyResourceSet( const ResourceSetHandle handle ) noexcept = 0;
 
-		virtual void SendCommandBuffer( CommandBuffer&& buffer ) noexcept = 0;
+		virtual void SendCommandBuffer( const CommandBuffer& buffer ) noexcept = 0;
 
 		virtual ~IRenderDevice( ) = default;
 

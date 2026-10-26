@@ -1,13 +1,28 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
-#include "Rhi2/Interfaces/Core/RhiShader.hpp"
-#include "MagicEnum/magic_enum.hpp"
+#include <vulkan/vulkan_core.h>
+
+#include "Core/Utils/Optional.hpp"
+#include "Core/Utils/TypeUtils.hpp"
+#include "Rhi/Interfaces/Core/RhiShader.hpp"
 
 namespace lum::rhi::vk {
 
 	struct VulkanShader {
 
-		ShaderInfo2 m_ShaderInfo{};
+		ShaderInfo m_Info{};
 		VkShaderModule m_VkShader{};
 
 	};

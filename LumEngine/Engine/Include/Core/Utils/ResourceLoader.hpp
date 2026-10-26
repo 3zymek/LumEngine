@@ -27,10 +27,10 @@ namespace lum {
 	struct LUM_API ImageData {
 
 		/* @brief Texture width in pixels. */
-		int32 m_Width = 0;
+		uint32 m_Width = 0;
 
 		/* @brief Texture height in pixels. */
-		int32 m_Height = 0;
+		uint32 m_Height = 0;
 
 		/* @brief Number of color channels (e.g. 3 = RGB, 4 = RGBA). */
 		int32 m_Channels = 0;
@@ -56,7 +56,7 @@ namespace lum {
 
 	};
 
-	enum class LUM_API ImageFormat : uint8 {
+	enum class LUM_API ImageChannels : uint8 {
 		Native	= 0,
 		R		= 1,
 		RG		= 2,
@@ -89,7 +89,7 @@ namespace lum {
 		* @param expectedFormat Number of channels to force (1-4).
 		* @return TextureData on success, or empty on failure.
 		*/
-		LUM_NODISCARD static Result<ImageData> LoadImageFromFile( ResourceRoot root, const Path& filepath, ImageFormat expectedFormat = ImageFormat::Native );
+		LUM_NODISCARD static Result<ImageData> LoadImageFromFile( ResourceRoot root, const Path& filepath, ImageChannels expectedFormat = ImageChannels::Native );
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.

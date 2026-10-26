@@ -13,10 +13,16 @@ namespace lum::rhi {
 		Vertex = 1 << 0, // VBO
 		Element = 1 << 1, // EBO
 		Uniform = 1 << 2, // UBO
-		ShaderStorage = 1 << 3  // SSBO
-	};
+		ShaderStorage = 1 << 3,  // SSBO
 
-	struct BufferCreateInfo2 {
+		TransferSource = 1 << 4, // Source of transfer operations
+		TransferDestination = 1 << 5  // Destination of transfer operations
+	};
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::BufferUsage );
+
+	using BufferUsageFlags = Flags<BufferUsage>;
+
+	struct BufferCreateInfo {
 
 		Flags<BufferUsage> m_Usage{};
 
@@ -26,16 +32,11 @@ namespace lum::rhi {
 
 	};
 
-	struct BufferDescription {
+	struct BufferInfo {
 
-		Flags<BufferUsage> m_Usage{};
+		BufferUsageFlags m_Usage{};
 		usize m_Size = 0;
 
 	};
 
 } // namespace lum::rhi
-namespace lum {
-
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS(rhi::BufferUsage);
-
-} // namespace lum

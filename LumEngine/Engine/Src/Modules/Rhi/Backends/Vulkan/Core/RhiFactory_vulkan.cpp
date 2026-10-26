@@ -31,7 +31,7 @@
 namespace lum::rhi::vk {
 
 
-	BufferHandle VulkanDevice::CreateBuffer( const BufferCreateInfo2& info ) noexcept {
+	BufferHandle VulkanDevice::CreateBuffer( const BufferCreateInfo& info ) noexcept {
 
 		assert_device( );
 
@@ -40,19 +40,7 @@ namespace lum::rhi::vk {
 			return {};
 		}
 
-		VkBufferUsageFlags usage{};
-		if (info.m_Usage.Has( BufferUsage::Vertex )) {
-			usage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-		}
-		if (info.m_Usage.Has( BufferUsage::Element )) {
-			usage |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-		}
-		if (info.m_Usage.Has( BufferUsage::Uniform )) {
-			usage |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-		}
-		if (info.m_Usage.Has( BufferUsage::ShaderStorage )) {
-			usage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-		}
+		auto usage = ToVk( info.m_Usage );
 		if (usage == 0) {
 			LUM_LOG_WARN( "Couldn't create buffer: 0 usage flags in BufferCreateInfo!" );
 			return {};
@@ -71,18 +59,18 @@ namespace lum::rhi::vk {
 			return {};
 		}
 
-		vkGetBufferMemoryRequirements( m_LogicalDevice, vkBuffer.m_VkBuffer, &vkBuffer.m_MemoryRequirements );
+		vkGetBufferMemoryRequirements( m_LogicalDevice, vkBuffer.m_VkBuffer, &vkBuffer.m_VkMemoryRequirements );
 
 		uint32 memoryTypeIndex = m_Adapter.FindMemoryType(
-			vkBuffer.m_MemoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+			vkBuffer.m_VkMemoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 		);
 
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.memoryTypeIndex = memoryTypeIndex;
-		allocInfo.allocationSize = vkBuffer.m_MemoryRequirements.size;
+		allocInfo.allocationSize = vkBuffer.m_VkMemoryRequirements.size;
 
-		if (vkAllocateMemory( m_LogicalDevice, &allocInfo, nullptr, &vkBuffer.m_Memory ) != VK_SUCCESS) {
+		if (vkAllocateMemory( m_LogicalDevice, &allocInfo, nullptr, &vkBuffer.m_VkMemory ) != VK_SUCCESS) {
 			LUM_LOG_ERROR( "Couldn't allocate buffer memory" );
 			vkDestroyBuffer( m_LogicalDevice, vkBuffer.m_VkBuffer, nullptr );
 			return {};
@@ -90,7 +78,7 @@ namespace lum::rhi::vk {
 
 		BufferHandle bufferHandle{};
 
-		if (vkBindBufferMemory( m_LogicalDevice, vkBuffer.m_VkBuffer, vkBuffer.m_Memory, 0 ) != VK_SUCCESS) {
+		if (vkBindBufferMemory( m_LogicalDevice, vkBuffer.m_VkBuffer, vkBuffer.m_VkMemory, 0 ) != VK_SUCCESS) {
 			LUM_LOG_ERROR( "Couldn't create buffer: Binding buffer memory failed" );
 			return {};
 		}
@@ -102,13 +90,13 @@ namespace lum::rhi::vk {
 		if (info.m_Data != nullptr) {
 
 			void* data = nullptr;
-			VkResult res = vkMapMemory( m_LogicalDevice, vkBuffer.m_Memory, 0, info.m_DataSize, 0, &data );
+			VkResult res = vkMapMemory( m_LogicalDevice, vkBuffer.m_VkMemory, 0, info.m_DataSize, 0, &data );
 			if (res != VK_SUCCESS) {
 				LUM_LOG_WARN( "Couldn't map buffer memory!" );
 				return bufferHandle;
 			}
 			memcpy( data, info.m_Data, info.m_DataSize );
-			vkUnmapMemory( m_LogicalDevice, vkBuffer.m_Memory );
+			vkUnmapMemory( m_LogicalDevice, vkBuffer.m_VkMemory );
 		}
 
 		return bufferHandle;
@@ -125,7 +113,7 @@ namespace lum::rhi::vk {
 		vkDeviceWaitIdle( m_LogicalDevice );
 
 		vkDestroyBuffer( m_LogicalDevice, buffer.m_VkBuffer, nullptr );
-		vkFreeMemory( m_LogicalDevice, buffer.m_Memory, nullptr );
+		vkFreeMemory( m_LogicalDevice, buffer.m_VkMemory, nullptr );
 
 		m_Buffers.Remove( handle );
 
@@ -161,8 +149,8 @@ namespace lum::rhi::vk {
 
 		vkDeviceWaitIdle( m_LogicalDevice );
 
-		vkDestroyPipeline( m_LogicalDevice, pipeline.m_Pipeline, nullptr );
-		vkDestroyPipelineLayout( m_LogicalDevice, pipeline.m_Layout, nullptr );
+		vkDestroyPipeline( m_LogicalDevice, pipeline.m_VkPipeline, nullptr );
+		vkDestroyPipelineLayout( m_LogicalDevice, pipeline.m_VkLayout, nullptr );
 
 		m_Pipelines.Remove( handle );
 
@@ -191,10 +179,10 @@ namespace lum::rhi::vk {
 		auto& image = m_Images[ handle ];
 		vkDeviceWaitIdle( m_LogicalDevice );
 
-		if (image.m_Image != VK_NULL_HANDLE)
-			vkDestroyImage( m_LogicalDevice, image.m_Image, nullptr );
-		if (image.m_View != VK_NULL_HANDLE)
-			vkDestroyImageView( m_LogicalDevice, image.m_View, nullptr );
+		if (image.m_VkImage != VK_NULL_HANDLE)
+			vkDestroyImage( m_LogicalDevice, image.m_VkImage, nullptr );
+		if (image.m_VkView != VK_NULL_HANDLE)
+			vkDestroyImageView( m_LogicalDevice, image.m_VkView, nullptr );
 
 		m_Images.Remove( handle );
 
@@ -223,8 +211,8 @@ namespace lum::rhi::vk {
 		auto& sampler = m_Samplers[ handle ];
 		vkDeviceWaitIdle( m_LogicalDevice );
 
-		if (sampler.m_Sampler != VK_NULL_HANDLE)
-			vkDestroySampler( m_LogicalDevice, sampler.m_Sampler, nullptr );
+		if (sampler.m_VkSampler != VK_NULL_HANDLE)
+			vkDestroySampler( m_LogicalDevice, sampler.m_VkSampler, nullptr );
 
 		m_Samplers.Remove( handle );
 
@@ -252,11 +240,11 @@ namespace lum::rhi::vk {
 		auto& set = m_ResourceSets[ handle ];
 		vkDeviceWaitIdle( m_LogicalDevice );
 
-		if (set.m_ResourcePool != VK_NULL_HANDLE) {
-			vkDestroyDescriptorPool( m_LogicalDevice, set.m_ResourcePool, nullptr );
+		if (set.m_VkResourcePool != VK_NULL_HANDLE) {
+			vkDestroyDescriptorPool( m_LogicalDevice, set.m_VkResourcePool, nullptr );
 		}
-		if (set.m_Layout != VK_NULL_HANDLE) {
-			vkDestroyDescriptorSetLayout( m_LogicalDevice, set.m_Layout, nullptr );
+		if (set.m_VkLayout != VK_NULL_HANDLE) {
+			vkDestroyDescriptorSetLayout( m_LogicalDevice, set.m_VkLayout, nullptr );
 		}
 
 		m_ResourceSets.Remove( handle );

@@ -6,7 +6,7 @@ namespace lum::rhi::vk {
 
     struct VulkanSampler {
 
-        VkSampler m_Sampler = VK_NULL_HANDLE;
+        VkSampler m_VkSampler = VK_NULL_HANDLE;
 
     };
 

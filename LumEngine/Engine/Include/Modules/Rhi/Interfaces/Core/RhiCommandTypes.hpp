@@ -12,7 +12,17 @@
 /*******************************************************/
 #pragma once
 
+#include <span>
+
+#include "Core/CoreTypes.hpp"
+#include "Core/Math/Vec2.hpp"
+#include "Core/Utils/ResourceLoader.hpp"
+#include "Rhi/Interfaces/Core/RhiBuffer.hpp"
 #include "Rhi/Interfaces/Core/RhiCommandBuffer.hpp"
+#include "Rhi/Interfaces/Core/RhiImage.hpp"
+#include "Rhi/Interfaces/Core/RhiPipeline.hpp"
+#include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
+#include "Rhi/Interfaces/Core/RhiSampler.hpp"
 
 namespace lum::rhi::cmd {
 
@@ -41,11 +51,11 @@ namespace lum::rhi::cmd {
 		uint32 m_FirstInstance = 0;
 
 		/*
-		 * @brief Value added to each index before accessing the vertex buffer.
-		 *
-		 * Allows the same index buffer to reference different regions of a
-		 * vertex buffer without modifying the stored indices.
-		 */
+		* @brief Value added to each index before accessing the vertex buffer.
+		*
+		* Allows the same index buffer to reference different regions of a
+		* vertex buffer without modifying the stored indices.
+		*/
 		int32 m_VertexOffset = 0;
 	};
 
@@ -97,7 +107,7 @@ namespace lum::rhi::cmd {
 	};
 
 	struct LUM_API UpdateResourceSet : Command {
-	
+
 		LUM_RHI_CMD_TYPE( CommandType::UpdateResourceSet );
 
 		ResourceSetHandle m_SetHandle{};
@@ -115,7 +125,17 @@ namespace lum::rhi::cmd {
 			SamplerHandle m_SamplerHandle{};
 			ImageHandle m_ImageHandle{};
 		} m_Image;
-	
+
+	};
+
+	struct LUM_API TransferImage : Command {
+
+		LUM_RHI_CMD_TYPE( CommandType::TransferImage );
+
+		ImageData m_Data{};
+		ImageHandle m_Image{};
+		usize m_StagingOffset = 0;
+
 	};
 
 } // namespace lum::rhi

@@ -426,5 +426,15 @@ namespace lum::rhi::vk {
 
 	}
 
+	void VulkanDevice::create_staging_buffer( ) noexcept {
+
+		BufferCreateInfo info{};
+		info.m_Usage = BufferUsage::TransferSource;
+		info.m_BufferSize = m_StagingBufferCapacity;
+		auto handle = CreateBuffer( info );
+		m_StagingBuffer = m_Buffers[ handle ].m_VkBuffer;
+
+	}
+
 
 } // namespace lum::rhi::vk

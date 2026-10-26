@@ -63,7 +63,7 @@ namespace lum::rhi::vk {
 
 			VulkanResourceSet resourceSet{};
 
-			const VkResult layoutResult = vkCreateDescriptorSetLayout( logicalDevice, &layoutInfo, nullptr, &resourceSet.m_Layout );
+			const VkResult layoutResult = vkCreateDescriptorSetLayout( logicalDevice, &layoutInfo, nullptr, &resourceSet.m_VkLayout );
 			if (layoutResult != VK_SUCCESS) {
 				return Result<VulkanResourceSet>::Failure(
 					FormatString( "vkCreateDescriptorSetLayout failure (VkResult: {})", static_cast<int32>(layoutResult) )
@@ -76,7 +76,7 @@ namespace lum::rhi::vk {
 			poolInfo.poolSizeCount = poolSizes.size( );
 			poolInfo.pPoolSizes = poolSizes.data( );
 
-			const VkResult poolResult = vkCreateDescriptorPool( logicalDevice, &poolInfo, nullptr, &resourceSet.m_ResourcePool );
+			const VkResult poolResult = vkCreateDescriptorPool( logicalDevice, &poolInfo, nullptr, &resourceSet.m_VkResourcePool );
 			if (poolResult != VK_SUCCESS) {
 				return Result<VulkanResourceSet>::Failure(
 					FormatString( "vkCreateDescriptorPool failure (VkResult: {})", static_cast<int32>(poolResult) )
@@ -85,14 +85,14 @@ namespace lum::rhi::vk {
 
 			VkDescriptorSetAllocateInfo allocInfo{};
 			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-			allocInfo.descriptorPool = resourceSet.m_ResourcePool;
+			allocInfo.descriptorPool = resourceSet.m_VkResourcePool;
 			allocInfo.descriptorSetCount = 1;
-			allocInfo.pSetLayouts = &resourceSet.m_Layout;
+			allocInfo.pSetLayouts = &resourceSet.m_VkLayout;
 
-			const VkResult allocResult = vkAllocateDescriptorSets( logicalDevice, &allocInfo, &resourceSet.m_ResourceSet );
+			const VkResult allocResult = vkAllocateDescriptorSets( logicalDevice, &allocInfo, &resourceSet.m_VkResourceSet );
 			if (allocResult != VK_SUCCESS) {
-				vkDestroyDescriptorPool( logicalDevice, resourceSet.m_ResourcePool, nullptr );
-				vkDestroyDescriptorSetLayout( logicalDevice, resourceSet.m_Layout, nullptr );
+				vkDestroyDescriptorPool( logicalDevice, resourceSet.m_VkResourcePool, nullptr );
+				vkDestroyDescriptorSetLayout( logicalDevice, resourceSet.m_VkLayout, nullptr );
 				return Result<VulkanResourceSet>::Failure(
 					FormatString( "vkAllocateDescriptorSets failure (VkResult: {})", static_cast<int32>(allocResult) )
 				);

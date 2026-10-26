@@ -57,7 +57,7 @@ namespace lum::rhi::vk {
 
 		void UpdateFrame( ) noexcept override;
 
-		BufferHandle CreateBuffer( const BufferCreateInfo2& info ) noexcept override;
+		BufferHandle CreateBuffer( const BufferCreateInfo& info ) noexcept override;
 		void DestroyBuffer( const BufferHandle handle ) noexcept override;
 
 		PipelineHandle CreatePipeline( const PipelineCreateInfo& info ) noexcept override;
@@ -72,7 +72,7 @@ namespace lum::rhi::vk {
 		ResourceSetHandle CreateResourceSet( const ResourceSetCreateInfo& info ) noexcept override;
 		void DestroyResourceSet( const ResourceSetHandle handle ) noexcept override;
 
-		void SendCommandBuffer( CommandBuffer&& buffer ) noexcept override;
+		void SendCommandBuffer( const CommandBuffer& buffer ) noexcept override;
 
 	private:
 
@@ -149,7 +149,6 @@ namespace lum::rhi::vk {
 		std::vector<VkImageView> m_SwapchainImageViews{};
 
 		VkCommandPool m_CmdPool = VK_NULL_HANDLE;
-
 		std::vector<VkCommandBuffer> m_CmdBuffers{ k_MaxFramesInFlight };
 
 		VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
@@ -160,6 +159,9 @@ namespace lum::rhi::vk {
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores{};
 
 		VkFence m_Fence = VK_NULL_HANDLE;
+
+		VkBuffer m_StagingBuffer = VK_NULL_HANDLE;
+		usize m_StagingBufferCapacity = 16 * 1024 * 1024;
 
 
 		// ===========================================================
@@ -178,6 +180,7 @@ namespace lum::rhi::vk {
 		void create_sync_primitives( ) noexcept;
 		void handle_resize( ) noexcept;
 		void bind_commands_implementations( ) noexcept;
+		void create_staging_buffer( ) noexcept;
 
 
 		// ===========================================================
@@ -188,6 +191,7 @@ namespace lum::rhi::vk {
 		bool create_shader_module( const Path& path, VkShaderModule& module ) const noexcept;
 		void decode_command_buffer( std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer ) noexcept;
 		void process_commands( VkCommandBuffer vkCmdBuffer ) noexcept;
+		void transition_image_layout( const detail::TransitionImageInfo& info ) noexcept;
 
 
 	};
