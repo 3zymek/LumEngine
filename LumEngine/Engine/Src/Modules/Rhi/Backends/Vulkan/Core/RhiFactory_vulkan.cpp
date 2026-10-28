@@ -128,7 +128,7 @@ namespace lum::rhi::vk {
 			return {};
 		}
 
-		auto pipeline = PipelineCreator{}.CreatePipeline( m_LogicalDevice, m_Adapter, info );
+		auto pipeline = PipelineCreator{}.CreatePipeline( *this, info );
 		if (!pipeline) {
 			LUM_LOG_ERROR( "Couldn't create pipeline: {}", pipeline.GetError( ) );
 			return {};
@@ -218,7 +218,7 @@ namespace lum::rhi::vk {
 
 	}
 
-	ResourceSetHandle VulkanDevice::CreateResourceSet( const ResourceSetCreateInfo& info ) noexcept {
+	ResourceSetHandle VulkanDevice::CreateResourceSet( const ResourceSetInfo& info ) noexcept {
 
 		if (m_ResourceSets.IsFull( )) {
 			LUM_LOG_WARN( "Couldn't create RHI ResourceSet: Max ResourceSets reached! Increase max ResourceSets count or refactor your code." );

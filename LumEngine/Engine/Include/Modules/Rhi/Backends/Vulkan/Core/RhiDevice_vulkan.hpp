@@ -13,7 +13,7 @@
 #pragma once
 
 #include <array>
-#include <queue>
+#include <deque>
 #include <span>
 #include <vector>
 
@@ -69,17 +69,19 @@ namespace lum::rhi::vk {
 		SamplerHandle CreateSampler( const SamplerCreateInfo& info ) noexcept override;
 		void DestroySampler( const SamplerHandle handle ) noexcept override;
 
-		ResourceSetHandle CreateResourceSet( const ResourceSetCreateInfo& info ) noexcept override;
+		ResourceSetHandle CreateResourceSet( const ResourceSetInfo& info ) noexcept override;
 		void DestroyResourceSet( const ResourceSetHandle handle ) noexcept override;
 
-		void SendCommandBuffer( const CommandBuffer& buffer ) noexcept override;
+		void SendCommandBuffer( CommandBuffer& buffer ) noexcept override;
 
 	private:
 
-		static inline constexpr usize s_MaxBuffers		= 256;
-		static inline constexpr usize s_MaxPipelines	= 32;
-		static inline constexpr usize s_MaxImages		= 128;
-		static inline constexpr usize s_MaxSamplers		= 32;
+		friend class PipelineCreator;
+
+		static inline constexpr usize s_MaxBuffers = 256;
+		static inline constexpr usize s_MaxPipelines = 32;
+		static inline constexpr usize s_MaxImages = 128;
+		static inline constexpr usize s_MaxSamplers = 32;
 		static inline constexpr usize s_MaxResourceSets = 128;
 
 		HandlePool<
@@ -109,7 +111,7 @@ namespace lum::rhi::vk {
 
 
 		VulkanCommandProcessor m_CommandProcessor{};
-		std::queue<CommandBuffer> m_CommandBuffersToFlush{};
+		std::deque<CommandBuffer> m_CommandBuffersToFlush{};
 
 		Vector2u m_WindowSize{};
 
@@ -122,17 +124,6 @@ namespace lum::rhi::vk {
 		uint32 m_CurrentFrame = 0;
 
 		bool m_IsInitialized = false;
-
-
-
-
-		// ===========================================================
-		// DEBUG
-		// ===========================================================
-
-		VkDescriptorSetLayout DT_DescriptorSetLayout{};
-		VkDescriptorPool DT_DescriptorPool{};
-		VkDescriptorSet DT_DescriptorSet{};
 
 
 
@@ -160,8 +151,10 @@ namespace lum::rhi::vk {
 
 		VkFence m_Fence = VK_NULL_HANDLE;
 
-		VkBuffer m_StagingBuffer = VK_NULL_HANDLE;
+		VulkanBuffer m_StagingBuffer{};
 		usize m_StagingBufferCapacity = 16 * 1024 * 1024;
+
+		VkPipelineLayout m_BoundPipelineLayout = VK_NULL_HANDLE;
 
 
 		// ===========================================================
@@ -190,7 +183,37 @@ namespace lum::rhi::vk {
 		void assert_device( ) const;
 		bool create_shader_module( const Path& path, VkShaderModule& module ) const noexcept;
 		void decode_command_buffer( std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer ) noexcept;
-		void process_commands( VkCommandBuffer vkCmdBuffer ) noexcept;
+
+		template<auto tStreamGetter>
+		void process_commands( VkCommandBuffer vkCmdBuffer ) noexcept {
+			
+			if (m_CommandBuffersToFlush.size( ) == 1) {
+				decode_command_buffer( (m_CommandBuffersToFlush.front( ).*tStreamGetter)( ), vkCmdBuffer );
+				return;
+			}
+			
+			usize totalSize = 0;
+			for (auto& buffer : m_CommandBuffersToFlush) {
+				totalSize += (buffer.*tStreamGetter)().size( );
+			}
+
+			std::vector<uint8> combinedBuffer{};
+			combinedBuffer.reserve( totalSize );
+
+			for (auto& commandBuffer : m_CommandBuffersToFlush) {
+
+				auto buffer = (commandBuffer.*tStreamGetter)();
+
+				usize end = combinedBuffer.size( );
+				combinedBuffer.resize( end + buffer.size( ) );
+
+				std::memcpy( combinedBuffer.data( ) + end, buffer.data( ), buffer.size_bytes( ) );
+
+			}
+
+			decode_command_buffer( combinedBuffer, vkCmdBuffer );
+
+		}
 		void transition_image_layout( const detail::TransitionImageInfo& info ) noexcept;
 
 

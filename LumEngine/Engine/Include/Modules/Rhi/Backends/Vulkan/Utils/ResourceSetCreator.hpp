@@ -30,7 +30,7 @@ namespace lum::rhi::vk {
 	class ResourceSetCreator {
 	public:
 
-		Result<VulkanResourceSet> CreateResourceSet( VkDevice logicalDevice, const ResourceSetCreateInfo& info ) {
+		Result<VulkanResourceSet> CreateResourceSet( VkDevice logicalDevice, const ResourceSetInfo& info ) {
 
 			const usize bindingsCount = info.m_Bindings.size( );
 
@@ -62,6 +62,7 @@ namespace lum::rhi::vk {
 			layoutInfo.pBindings = bindings.data( );
 
 			VulkanResourceSet resourceSet{};
+			resourceSet.m_Info = info;
 
 			const VkResult layoutResult = vkCreateDescriptorSetLayout( logicalDevice, &layoutInfo, nullptr, &resourceSet.m_VkLayout );
 			if (layoutResult != VK_SUCCESS) {

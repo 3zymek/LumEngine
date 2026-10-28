@@ -34,6 +34,7 @@ namespace lum::rhi {
 		BindTexture,
 		BindVertexBuffers,
 		BindElementBuffer,
+		BindResourceSet,
 		DrawIndexed,
 		SetViewport,
 		SetScissors,
@@ -48,39 +49,53 @@ namespace lum::rhi {
 
 #	define LUM_RHI_CMD_TYPE( type ) \
 		static inline constexpr CommandType s_Type = type
+#	define LUM_RHI_CMD_PRERENDER( ) \
+		static inline constexpr bool s_PreRender = true
 
 	class CommandBuffer {
 	public:
 
-		template<typename tCommandData>
-			requires ( std::is_convertible_v<tCommandData, Command> && cHasCmdType<tCommandData> )
-		void Push( const tCommandData& data ) {
-			append_command( tCommandData::s_Type, data );
+		template<typename tCommand>
+			requires ( std::is_convertible_v<tCommand, Command> && cHasCmdType<tCommand> )
+		void Push( const tCommand& data ) {
+			append_command( tCommand::s_Type, data );
 		}
 
-		std::span<uint8> GetByteStream( ) {
-			return m_Buffer;
+		std::span<uint8> GetRenderByteStream( ) {
+			return m_RenderBuffer;
+		}
+
+		std::span<uint8> GetPreRenderByteStream( ) {
+			return m_PreRenderBuffer;
 		}
 
 		void Clear( ) noexcept {
-			m_Buffer.clear( );
+			m_RenderBuffer.clear( );
+			m_PreRenderBuffer.clear( );
 		}
 
 	protected:
 
-		template<typename tType>
-		void append_command( CommandType type, const tType& data ) {
-			append_bytes( &type, sizeof( CommandType ) );
-			append_bytes( &data, sizeof( tType ) );
+		template<typename tCommand>
+		void append_command( CommandType type, const tCommand& data ) {
+			if constexpr (requires { tCommand::s_PreRender; }) {
+				append_bytes( &type, sizeof( CommandType ), m_PreRenderBuffer );
+				append_bytes( &data, sizeof( tCommand ), m_PreRenderBuffer );
+			}
+			else {
+				append_bytes( &type, sizeof( CommandType ), m_RenderBuffer );
+				append_bytes( &data, sizeof( tCommand ), m_RenderBuffer );
+			}
 		}
 
-		void append_bytes( const void* data, usize size ) {
-			usize oldSize = m_Buffer.size( );
-			m_Buffer.resize( oldSize + size );
-			std::memcpy( m_Buffer.data( ) + oldSize, data, size );
+		void append_bytes( const void* data, usize size, std::vector<uint8>& buffer ) {
+			usize oldSize = buffer.size( );
+			buffer.resize( oldSize + size );
+			std::memcpy( buffer.data( ) + oldSize, data, size );
 		}
 
-		std::vector<uint8> m_Buffer{};
+		std::vector<uint8> m_RenderBuffer{};
+		std::vector<uint8> m_PreRenderBuffer{};
 
 	};
 

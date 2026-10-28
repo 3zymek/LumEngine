@@ -54,10 +54,10 @@ namespace lum::rhi {
 		virtual SamplerHandle CreateSampler( const SamplerCreateInfo& info ) noexcept = 0;
 		virtual void DestroySampler( const SamplerHandle handle ) noexcept = 0;
 
-		virtual ResourceSetHandle CreateResourceSet( const ResourceSetCreateInfo& info ) noexcept = 0;
+		virtual ResourceSetHandle CreateResourceSet( const ResourceSetInfo& info ) noexcept = 0;
 		virtual void DestroyResourceSet( const ResourceSetHandle handle ) noexcept = 0;
 
-		virtual void SendCommandBuffer( const CommandBuffer& buffer ) noexcept = 0;
+		virtual void SendCommandBuffer( CommandBuffer& buffer ) noexcept = 0;
 
 		virtual ~IRenderDevice( ) = default;
 

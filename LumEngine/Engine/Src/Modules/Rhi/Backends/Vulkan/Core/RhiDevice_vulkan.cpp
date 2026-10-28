@@ -65,6 +65,7 @@ namespace lum::rhi::vk {
 		create_command_pool( );
 		allocate_command_buffers( );
 		create_sync_primitives( );
+		create_staging_buffer( );
 
 		info.m_EventBus( ).SubscribePermanently<EWindowResized>(
 			[ & ]( const EWindowResized& e ) {
@@ -151,9 +152,9 @@ namespace lum::rhi::vk {
 		vkBeginCommandBuffer( commandBuffer, &beginInfo );
 
 
+		process_commands<&CommandBuffer::GetPreRenderByteStream>( commandBuffer );
 
-
-
+		 
 		// Entry barrier
 		VkImageMemoryBarrier2 barrierToRender{};
 		barrierToRender.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
@@ -195,7 +196,7 @@ namespace lum::rhi::vk {
 
 		vkCmdBeginRendering( commandBuffer, &renderingInfo );
 
-		process_commands( commandBuffer );
+		process_commands<&CommandBuffer::GetRenderByteStream>( commandBuffer );
 
 		vkCmdEndRendering( commandBuffer );
 
@@ -270,17 +271,22 @@ namespace lum::rhi::vk {
 
 		// Calculate Frame
 		m_CurrentFrame = (m_CurrentFrame + 1) % k_MaxFramesInFlight;
-
+		m_CommandBuffersToFlush.clear( );
 
 	}
 
-	void VulkanDevice::SendCommandBuffer( const CommandBuffer& buffer ) noexcept {
+	void VulkanDevice::SendCommandBuffer( CommandBuffer& buffer ) noexcept {
 
 		assert_device( );
-
-		m_CommandBuffersToFlush.emplace( buffer );
+		m_CommandBuffersToFlush.push_back( buffer );
 
 	}
+
+
+
+
+
+
 
 	// ===========================================================
 	// RUNTIME HELPERS (PRIVATE)
@@ -323,43 +329,6 @@ namespace lum::rhi::vk {
 			m_CommandProcessor.ExecuteCall( type, vkBuffer, current );
 
 		}
-
-	}
-	void VulkanDevice::process_commands( VkCommandBuffer vkCmdBuffer ) noexcept {
-
-		if (m_CommandBuffersToFlush.size( ) == 1) {
-			decode_command_buffer( m_CommandBuffersToFlush.front( ).GetByteStream( ), vkCmdBuffer );
-			m_CommandBuffersToFlush.pop( );
-			return;
-
-		}
-
-		auto tempQueue = m_CommandBuffersToFlush;
-		usize totalSize = 0;
-		while (!tempQueue.empty( )) {
-
-			totalSize += tempQueue.front( ).GetByteStream( ).size( );
-			tempQueue.pop( );
-
-		}
-
-		std::vector<uint8> combinedBuffer{};
-		combinedBuffer.reserve( totalSize );
-
-		while (!m_CommandBuffersToFlush.empty( )) {
-
-			auto buffer = m_CommandBuffersToFlush.front( ).GetByteStream( );
-
-			usize end = combinedBuffer.size( );
-			combinedBuffer.resize( end + buffer.size( ) );
-
-			std::memcpy( combinedBuffer.data( ) + end, buffer.data( ), buffer.size_bytes( ) );
-
-			m_CommandBuffersToFlush.pop( );
-
-		}
-
-		decode_command_buffer( combinedBuffer, vkCmdBuffer );
 
 	}
 

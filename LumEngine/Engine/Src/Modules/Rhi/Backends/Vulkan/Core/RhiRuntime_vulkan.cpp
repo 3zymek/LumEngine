@@ -30,7 +30,7 @@ namespace lum::rhi::vk {
 				LUM_ASSERT( cmd.m_IndexCount > 0 && cmd.m_InstanceCount > 0, "DrawIndexed called with 0 indices or instances!" );
 
 				vkCmdDrawIndexed( vkCmdBuffer, cmd.m_IndexCount, cmd.m_InstanceCount, cmd.m_FirstIndex, cmd.m_VertexOffset, cmd.m_FirstInstance );
-
+				
 			}
 		);
 
@@ -43,15 +43,17 @@ namespace lum::rhi::vk {
 
 				vkCmdBindPipeline( vkCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pip.m_VkPipeline );
 
+				m_BoundPipelineLayout = pip.m_VkLayout;
+
 			}
 		);
 
 		m_CommandProcessor.RegisterCommandCall<cmd::BindElementBuffer>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::BindElementBuffer& cmd ) {
 
-				LUM_ASSERT( m_Buffers.Contains( cmd.m_Handle ), "Called BindElementBuffer on Buffer that doesn't exist!" );
+				LUM_ASSERT( m_Buffers.Contains( cmd.m_BufferHandle ), "Called BindElementBuffer on Buffer that doesn't exist!" );
 
-				auto& buffer = m_Buffers[ cmd.m_Handle ];
+				auto& buffer = m_Buffers[ cmd.m_BufferHandle ];
 
 				vkCmdBindIndexBuffer( vkCmdBuffer, buffer.m_VkBuffer, cmd.m_StartingOffset, VK_INDEX_TYPE_UINT32 );
 
@@ -61,7 +63,7 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::BindVertexBuffers>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::BindVertexBuffers& cmd ) {
 
-				const usize count = cmd.m_Handles.size( );
+				const usize count = cmd.m_BufferHandles.size( );
 				if (count == 0 || count > k_MaxVertexBufferBindCount) {
 					LUM_LOG_WARN( "Vertex buffer bind overflow, increase limit (Current: {}) or refactor your code.", k_MaxVertexBufferBindCount );
 					return;
@@ -69,9 +71,9 @@ namespace lum::rhi::vk {
 
 				VkBuffer buffers[ k_MaxVertexBufferBindCount ]{};
 
-				for (uint32 i = 0; i < cmd.m_Handles.size( ); i++) {
+				for (uint32 i = 0; i < cmd.m_BufferHandles.size( ); i++) {
 
-					const auto& handle = cmd.m_Handles[ i ];
+					const auto& handle = cmd.m_BufferHandles[ i ];
 					LUM_ASSERT( m_Buffers.Contains( handle ), "Called BindVertexBuffer on Buffer that doesn't exist!" );
 					buffers[ i ] = m_Buffers[ handle ].m_VkBuffer;
 
@@ -134,13 +136,21 @@ namespace lum::rhi::vk {
 
 				auto& set = m_ResourceSets[ cmd.m_SetHandle ];
 
+				const auto& bindings = set.m_Info.m_Bindings;
+				auto it = std::find_if( bindings.begin( ), bindings.end( ), [ &cmd ]( const auto& b ) {
+					return b.m_Binding == cmd.m_Binding;
+				} );
+
+				LUM_ASSERT( it != bindings.end( ), "UpdateResourceSet: Binding {} not found in ResourceSet!", cmd.m_Binding );
+				LUM_ASSERT( cmd.m_ArrayIndex < it->m_ResourceCount, "UpdateResourceSet: Array index {} out of bounds for binding {} (Max: {})!", cmd.m_ArrayIndex, cmd.m_Binding, it->m_ResourceCount );
+
 				VkWriteDescriptorSet info{};
 				info.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 				info.dstSet = set.m_VkResourceSet;
 				info.dstBinding = cmd.m_Binding;
 				info.dstArrayElement = cmd.m_ArrayIndex;
 				info.descriptorCount = 1;
-				info.descriptorType;
+				info.descriptorType = ToVk( it->m_Type );
 
 				VkDescriptorBufferInfo bufferInfo{};
 				if (m_Buffers.Contains( cmd.m_Buffer.m_BufferHandle )) {
@@ -161,12 +171,33 @@ namespace lum::rhi::vk {
 					if (m_Samplers.Contains( cmd.m_Image.m_SamplerHandle )) {
 						imageInfo.sampler = m_Samplers[ cmd.m_Image.m_SamplerHandle ].m_VkSampler;
 					}
-
 					imageInfo.imageLayout = ToVk( image.m_Info.m_CurrentLayout );
+
+					info.pImageInfo = &imageInfo;
 
 				}
 
+				vkUpdateDescriptorSets( m_LogicalDevice, 1, &info, 0, nullptr );
 
+			}
+		);
+
+		m_CommandProcessor.RegisterCommandCall<cmd::BindResourceSet>(
+			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::BindResourceSet& cmd ) {
+
+				LUM_ASSERT( m_ResourceSets.Contains( cmd.m_SetHandle ), "Called BindResourceSet on ResourceSet that doesn't exist!" );
+
+				auto& set = m_ResourceSets[ cmd.m_SetHandle ];
+				
+				vkCmdBindDescriptorSets(
+					vkCmdBuffer,
+					VK_PIPELINE_BIND_POINT_GRAPHICS,
+					m_BoundPipelineLayout,
+					0,
+					1,
+					&set.m_VkResourceSet,
+					0, nullptr
+				);
 
 			}
 		);
@@ -193,6 +224,12 @@ namespace lum::rhi::vk {
 				info.m_VkCommandBuffer = vkCmdBuffer;
 				transition_image_layout( info );
 
+				void* mapped = nullptr;
+				usize imageSize = cmd.m_Data.m_Pixels.size( );
+				vkMapMemory( m_LogicalDevice, m_StagingBuffer.m_VkMemory, 0, imageSize, 0, &mapped );
+				std::memcpy( mapped, cmd.m_Data.m_Pixels.data( ), imageSize );
+				vkUnmapMemory( m_LogicalDevice, m_StagingBuffer.m_VkMemory );
+
 				VkBufferImageCopy region{};
 				region.bufferOffset = cmd.m_StagingOffset;
 				region.bufferRowLength = 0;
@@ -212,12 +249,20 @@ namespace lum::rhi::vk {
 
 				vkCmdCopyBufferToImage(
 					vkCmdBuffer,
-					m_StagingBuffer,
+					m_StagingBuffer.m_VkBuffer,
 					image.m_VkImage,
 					VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 					1,
 					&region
 				);
+
+				detail::TransitionImageInfo readInfo{};
+				readInfo.m_Image = image;
+				readInfo.m_NewLayout = ImageLayout::ShaderReadOnly;
+				readInfo.m_NewStage = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT;
+				readInfo.m_NewAccess = VK_ACCESS_2_SHADER_READ_BIT;
+				readInfo.m_VkCommandBuffer = vkCmdBuffer;
+				transition_image_layout( readInfo );
 
 			}
 		);

@@ -432,7 +432,7 @@ namespace lum::rhi::vk {
 		info.m_Usage = BufferUsage::TransferSource;
 		info.m_BufferSize = m_StagingBufferCapacity;
 		auto handle = CreateBuffer( info );
-		m_StagingBuffer = m_Buffers[ handle ].m_VkBuffer;
+		m_StagingBuffer = m_Buffers[ handle ];
 
 	}
 

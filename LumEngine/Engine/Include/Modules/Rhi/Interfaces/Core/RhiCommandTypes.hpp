@@ -71,7 +71,7 @@ namespace lum::rhi::cmd {
 
 		LUM_RHI_CMD_TYPE( CommandType::BindElementBuffer );
 
-		BufferHandle m_Handle{};
+		BufferHandle m_BufferHandle{};
 		uint32 m_StartingOffset = 0;
 
 	};
@@ -80,7 +80,7 @@ namespace lum::rhi::cmd {
 
 		LUM_RHI_CMD_TYPE( CommandType::BindVertexBuffers );
 
-		std::span<const BufferHandle> m_Handles{};
+		std::span<const BufferHandle> m_BufferHandles{};
 		uint32 m_FirstBinding = 0;
 
 	};
@@ -128,9 +128,18 @@ namespace lum::rhi::cmd {
 
 	};
 
+	struct LUM_API BindResourceSet : Command {
+
+		LUM_RHI_CMD_TYPE( CommandType::BindResourceSet );
+
+		ResourceSetHandle m_SetHandle{};
+
+	};
+
 	struct LUM_API TransferImage : Command {
 
 		LUM_RHI_CMD_TYPE( CommandType::TransferImage );
+		LUM_RHI_CMD_PRERENDER( );
 
 		ImageData m_Data{};
 		ImageHandle m_Image{};

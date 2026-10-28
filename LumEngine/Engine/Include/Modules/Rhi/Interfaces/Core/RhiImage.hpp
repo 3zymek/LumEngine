@@ -41,6 +41,8 @@ namespace lum::rhi {
 		TransientAttachment = 1 << 7
 
 	};
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::rhi::ImageUsageFlag );
+
 	using ImageUsageFlags = Flags<ImageUsageFlag>;
 
 	enum class ImageDimension : uint8 {

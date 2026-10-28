@@ -8,6 +8,7 @@
 #include "Core/Utils/HandlePool.hpp"
 #include "Rhi/Interfaces/Core/RhiImage.hpp"
 #include "Rhi/Interfaces/Core/RhiShader.hpp"
+#include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
 
 namespace lum::rhi {
 
@@ -170,6 +171,12 @@ namespace lum::rhi {
 
 	};
 
+	struct PipelineLayout {
+
+		std::vector<ResourceSetHandle> m_ResourceSets{};
+
+	};
+
 	class VertexLayoutConfiguration {
 	public:
 
@@ -213,6 +220,7 @@ namespace lum::rhi {
 		ColorBlendPass		m_ColorBlendPass{};
 		MultisamplePass		m_MultisamplePass{};
 		VertexInputPass		m_VertexInputPass{};
+		PipelineLayout		m_Layout{};
 
 	};
 

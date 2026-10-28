@@ -11,7 +11,10 @@
 /* \                                                 / */
 /*******************************************************/
 #pragma once
+
 #include <Vulkan/vulkan_core.h>
+
+#include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
 
 namespace lum::rhi::vk {
 
@@ -20,6 +23,8 @@ namespace lum::rhi::vk {
 		VkDescriptorSet m_VkResourceSet = VK_NULL_HANDLE;
 		VkDescriptorPool m_VkResourcePool = VK_NULL_HANDLE;
 		VkDescriptorSetLayout m_VkLayout = VK_NULL_HANDLE;
+
+		ResourceSetInfo m_Info{};
 
 	};
 

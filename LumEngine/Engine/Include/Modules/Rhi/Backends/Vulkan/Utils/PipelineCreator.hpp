@@ -33,17 +33,19 @@ namespace lum::rhi {
 	class MultisamplePass;
 	class AssemblyPass;
 	class VertexInputPass;
+	class PipelineLayout;
 
 } // namespace lum::rhi
 
 namespace lum::rhi::vk {
 
 	class VulkanAdapter;
+	class VulkanDevice;
 
 	class PipelineCreator {
 	public:
 
-		Result<VulkanPipeline> CreatePipeline(const VkDevice logicalDevice, const VulkanAdapter& adapter, const PipelineCreateInfo& info) const noexcept;
+		Result<VulkanPipeline> CreatePipeline(VulkanDevice& device, const PipelineCreateInfo& info) const noexcept;
 
 	private:
 
@@ -53,6 +55,7 @@ namespace lum::rhi::vk {
 		auto setup_multisample_info(const MultisamplePass& info) const noexcept -> VkPipelineMultisampleStateCreateInfo;
 		auto setup_assembly_info(const AssemblyPass& info) const noexcept -> VkPipelineInputAssemblyStateCreateInfo;
 		auto setup_vertex_input_info(const VertexInputPass& info) const noexcept -> VkPipelineVertexInputStateCreateInfo;
+		auto setup_pipeline_layout(const PipelineLayout& info, VulkanDevice& device) const noexcept -> VkPipelineLayout;
 		auto setup_shader_modules(const VkDevice logicalDevice, const PipelineCreateInfo& info) const noexcept -> std::vector<VkPipelineShaderStageCreateInfo>;
 		auto create_shader_module(const VkDevice logicalDevice, const Path& path) const noexcept -> VkShaderModule;
 

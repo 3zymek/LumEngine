@@ -50,9 +50,9 @@ static std::vector<rhi::Vertex> s_Vertices = {
 int main( int argc, char* argv[ ] ) {
 
 #	if defined(_WIN32)
-	ResourceLoader::SetProjectRoot( "C:/Users/szymek/Desktop/lumen_assets" );
+		ResourceLoader::SetProjectRoot( "C:/Users/szymek/Desktop/lumen_assets" );
 #	elif defined(__APPLE__)
-	ResourceLoader::SetProjectRoot( "/Users/br.eeziak/Desktop/glsl" );
+		ResourceLoader::SetProjectRoot( "/Users/br.eeziak/Desktop/glsl" );
 #	endif
 
 	OwningPtr<rhi::IRenderDevice> device = OwningPtr<rhi::vk::VulkanDevice>::Create( );
@@ -80,14 +80,31 @@ int main( int argc, char* argv[ ] ) {
 	device( ).Initialize( deviceInfo );
 
 
+	rhi::ResourceSetBinding binding{};
+	binding.m_Binding = 0;
+	binding.m_ResourceCount = 1;
+	binding.m_ShaderStages = ShaderStage::Fragment;
+	binding.m_Type = ResourceType::CombinedImageSampler;
+
+	rhi::ResourceSetInfo resInfo{};
+	resInfo.m_Bindings.push_back( binding );
+
+	auto resSet = device( ).CreateResourceSet( resInfo );
+
+
+
+
+
 	rhi::PipelineCreateInfo pipInfo{};
+
+	pipInfo.m_Layout.m_ResourceSets.push_back( resSet );
 
 	auto& assembly = pipInfo.m_AssemblyPass;
 	assembly.m_PrimitiveRestart = false;
 	assembly.m_Topology = rhi::PrimitiveTopology::TriangleList;
 
 	auto& rast = pipInfo.m_RasterizationPass;
-	rast.m_CullMode = rhi::CullMode::Back;
+	rast.m_CullMode = rhi::CullMode::None;
 	rast.m_DepthBiasEnabled = false;
 	rast.m_PolygonMode = rhi::PolygonMode::Fill;
 	rast.m_FrontFace = rhi::FrontFace::Clockwise;
@@ -135,10 +152,10 @@ int main( int argc, char* argv[ ] ) {
 	cmdBindPip.m_Handle = pipeline;
 
 	rhi::cmd::BindVertexBuffers cmdBindVbo{};
-	cmdBindVbo.m_Handles = std::span<rhi::BufferHandle>( &vbo, 1 );
+	cmdBindVbo.m_BufferHandles = std::span<rhi::BufferHandle>( &vbo, 1 );
 
 	rhi::cmd::BindElementBuffer cmdBindEbo{};
-	cmdBindEbo.m_Handle = ebo;
+	cmdBindEbo.m_BufferHandle = ebo;
 
 	rhi::cmd::DrawIndexed cmdDrawIndexed{};
 	cmdDrawIndexed.m_FirstIndex = 0;
@@ -155,7 +172,7 @@ int main( int argc, char* argv[ ] ) {
 	// MAIN CODE
 
 	auto dataRes = ResourceLoader::LoadImageFromFile(
-		ResourceRoot::External, "test.png"
+		ResourceRoot::External, "test.png", ImageChannels::RGBA
 	);
 	if (!dataRes)
 		LUM_LOG_FATAL( "{}", dataRes.GetError( ) );
@@ -166,10 +183,10 @@ int main( int argc, char* argv[ ] ) {
 	rhi::ImageCreateInfo imageInfo{};
 	imageInfo.m_Dimension = ImageDimension::Image2D;
 	imageInfo.m_Extent = { data.m_Width, data.m_Height, 1 };
-	imageInfo.m_Format = ImageFormat::RGBA32_FLOAT;
+	imageInfo.m_Format = ImageFormat::RGBA8_SRGB;
+	imageInfo.m_UsageFlags = ImageUsageFlag::ShaderReadable | ImageUsageFlag::TransferDestination;
 	imageInfo.m_MipmapLevels = 1;
 	imageInfo.m_ViewType = ImageViewType::Default;
-	imageInfo.m_UsageFlags = ImageUsageFlag::ShaderReadable;
 	imageInfo.m_ArrayLayers = 1;
 
 	auto image = device( ).CreateImage( imageInfo );
@@ -177,25 +194,16 @@ int main( int argc, char* argv[ ] ) {
 
 	rhi::SamplerCreateInfo samplerInfo{};
 	auto sampler = device( ).CreateSampler( samplerInfo );
-
-	rhi::ResourceSetBinding binding{};
-	binding.m_Binding = 0;
-	binding.m_ResourceCount = 1;
-	binding.m_ShaderStages = ShaderStage::Vertex;
-	binding.m_Type = ResourceType::CombinedImageSampler;
-
-	rhi::ResourceSetCreateInfo resInfo{};
-	resInfo.m_Bindings.push_back( binding );
-
-	auto resSet = device( ).CreateResourceSet( resInfo );
 	
 	cmd::UpdateResourceSet cmdUpdateResSet{};
+	cmdUpdateResSet.m_SetHandle = resSet;
 	cmdUpdateResSet.m_ArrayIndex = 0;
 	cmdUpdateResSet.m_Binding = 0;
-	cmdUpdateResSet.m_SetHandle = resSet;
 	cmdUpdateResSet.m_Image.m_ImageHandle = image;
 	cmdUpdateResSet.m_Image.m_SamplerHandle = sampler;
 	
+	cmd::BindResourceSet cmdBindResSet{};
+	cmdBindResSet.m_SetHandle = resSet;
 
 
 	cmd::TransferImage cmdTransferImg{};
@@ -209,11 +217,12 @@ int main( int argc, char* argv[ ] ) {
 	cmdBuffer.Push( cmdUpdateResSet );
 	cmdBuffer.Push( cmdTransferImg );
 
-	while (window.IsOpen( )) {
+	while (window.IsOpen( )) { 
 
 		cmdBuffer.Push( cmdBindPip );
 		cmdBuffer.Push( cmdBindVbo );
 		cmdBuffer.Push( cmdBindEbo );
+		cmdBuffer.Push( cmdBindResSet );
 		cmdBuffer.Push( cmdSetViewport );
 		cmdBuffer.Push( cmdSetScissors );
 		cmdBuffer.Push( cmdDrawIndexed );
@@ -229,29 +238,5 @@ int main( int argc, char* argv[ ] ) {
 
 	device( ).Finalize( );
 
-
-
-	/*
-
-	lum::EngineCreateInfo desc{};
-	desc.m_ApplicationName = "Test";
-	desc.m_ProjectName = "Vulkan";
-	desc.m_ProjectDir = "C:\\Users\\szymek\\Desktop\\lumen_assets";
-	desc.m_RenderContext = nullptr;
-	desc.m_Window.m_Width = 1280;
-	desc.m_Window.m_Height = 720;
-	lum::Engine engine{};
-	engine.Initialize( desc );
-
-	while (engine.Platform( ).m_Window.Value( ).IsOpen( )) {
-
-		engine.BeginFrame( );
-		engine.Tick( );
-		engine.EndFrame( );
-
-	}
-
-	return 0;
-	*/
 
 }

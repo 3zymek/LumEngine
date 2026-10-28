@@ -14,10 +14,11 @@
 #include "Platform/FileSystem/FileSystem.hpp"
 #include "Platform/FileSystem/Path.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiPipeline_vulkan.hpp"
+#include "Rhi/Backends/Vulkan/Core/RhiDevice_vulkan.hpp"
 #include "Rhi/Backends/Vulkan/RhiEnumCast_vulkan.hpp"
-#include "Rhi/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
 #include "Rhi/Backends/Vulkan/RhiTypes_vulkan.hpp"
 #include "Rhi/Interfaces/Core/RhiPipeline.hpp"
+#include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
 #include "Rhi/Interfaces/Core/RhiShader.hpp"
 
 namespace lum::rhi::vk {
@@ -26,7 +27,7 @@ namespace lum::rhi::vk {
 	// Public
 	//=======================================================//
 
-	Result<VulkanPipeline> PipelineCreator::CreatePipeline(const VkDevice logicalDevice, const VulkanAdapter& adapter, const PipelineCreateInfo& info) const noexcept {
+	Result<VulkanPipeline> PipelineCreator::CreatePipeline( VulkanDevice& device, const PipelineCreateInfo& info ) const noexcept {
 
 		VulkanPipeline pipeline{};
 
@@ -51,33 +52,20 @@ namespace lum::rhi::vk {
 		pipInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipInfo.pDynamicState = &dynamicState;
 
-		VkSurfaceFormatKHR surfaceFormat = adapter.m_SurfaceSupport.SelectSurfaceFormat();
+		VkSurfaceFormatKHR surfaceFormat = device.m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
 		VkPipelineRenderingCreateInfo renderingInfo{};
 		renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
 		renderingInfo.colorAttachmentCount = 1;
 		renderingInfo.pColorAttachmentFormats = &surfaceFormat.format;
 
-		// TODO: ADD PIPELINE LAYOUT TO PipelineCreateInfo2
-		VkPipelineLayoutCreateInfo layoutInfo{};
-		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		layoutInfo.setLayoutCount = 0;
-		layoutInfo.pSetLayouts = nullptr;
-		layoutInfo.pushConstantRangeCount = 0;
-		layoutInfo.pPushConstantRanges = nullptr;
+		auto vkLayout = setup_pipeline_layout( info.m_Layout, device );
 
-		const VkResult layoutResult =
-			vkCreatePipelineLayout(
-				logicalDevice,
-				&layoutInfo,
-				nullptr,
-				&pipeline.m_VkLayout
-			);
-
-		if (layoutResult != VK_SUCCESS) {
+		if (vkLayout == VK_NULL_HANDLE) {
 			return Result<VulkanPipeline>::Failure(
-				FormatString("vkCreatePipelineLayout failure (VkResult: {})", static_cast<int32>(layoutResult))
+				FormatString("vkCreatePipelineLayout failure")
 			);
 		}
+		pipeline.m_VkLayout = vkLayout;
 
 		auto assemblyState = setup_assembly_info(info.m_AssemblyPass);
 		pipInfo.pInputAssemblyState = &assemblyState;
@@ -94,7 +82,7 @@ namespace lum::rhi::vk {
 		auto vertexInputState = setup_vertex_input_info(info.m_VertexInputPass);
 		pipInfo.pVertexInputState = &vertexInputState;
 
-		auto shaderStages = setup_shader_modules(logicalDevice, info);
+		auto shaderStages = setup_shader_modules(device.m_LogicalDevice, info);
 		pipInfo.stageCount = shaderStages.size();
 		pipInfo.pStages = shaderStages.data();
 
@@ -104,7 +92,7 @@ namespace lum::rhi::vk {
 
 		const VkResult pipResult =
 			vkCreateGraphicsPipelines(
-				logicalDevice,
+				device.m_LogicalDevice,
 				VK_NULL_HANDLE,
 				1,
 				&pipInfo,
@@ -119,7 +107,7 @@ namespace lum::rhi::vk {
 		}
 
 		for (auto& shader : shaderStages) {
-			vkDestroyShaderModule(logicalDevice, shader.module, nullptr);
+			vkDestroyShaderModule( device.m_LogicalDevice, shader.module, nullptr);
 		}
 
 		return pipeline;
@@ -254,6 +242,40 @@ namespace lum::rhi::vk {
 		vkInfo.pVertexBindingDescriptions = bindings.data();
 
 		return vkInfo;
+
+	}
+	auto PipelineCreator::setup_pipeline_layout( const PipelineLayout& info, VulkanDevice& device ) const noexcept -> VkPipelineLayout {
+
+		std::vector<VkDescriptorSetLayout> vkSets{};
+		if (!info.m_ResourceSets.empty( )) {
+			
+			vkSets.reserve( info.m_ResourceSets.size( ) );
+
+			for (const auto set : info.m_ResourceSets) {
+				if (device.m_ResourceSets.Contains( set )) {
+					vkSets.push_back( device.m_ResourceSets[ set ].m_VkLayout );
+				}
+			}
+		}
+
+		VkPipelineLayoutCreateInfo vkInfo{};
+		vkInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		vkInfo.pushConstantRangeCount = 0;
+		vkInfo.pPushConstantRanges = nullptr;
+		vkInfo.setLayoutCount = vkSets.size( );
+		vkInfo.pSetLayouts = vkSets.data( );
+		
+		VkPipelineLayout layout = VK_NULL_HANDLE;
+
+		vkCreatePipelineLayout(
+				device.m_LogicalDevice,
+				&vkInfo,
+				nullptr,
+				&layout
+		);
+
+		return layout;
+
 
 	}
 	auto PipelineCreator::setup_shader_modules(const VkDevice logicalDevice, const PipelineCreateInfo& info) const noexcept -> std::vector<VkPipelineShaderStageCreateInfo> {

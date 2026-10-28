@@ -42,7 +42,7 @@ namespace lum::rhi {
 
 	};
 
-	struct ResourceSetCreateInfo {
+	struct ResourceSetInfo {
 
 		std::vector<ResourceSetBinding> m_Bindings{};
 
