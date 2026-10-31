@@ -65,7 +65,7 @@ namespace lum::rhi::vk {
 		create_command_pool( );
 		allocate_command_buffers( );
 		create_sync_primitives( );
-		create_staging_buffer( );
+		create_staging_buffers( );
 
 		info.m_EventBus( ).SubscribePermanently<EWindowResized>(
 			[ & ]( const EWindowResized& e ) {
@@ -92,8 +92,18 @@ namespace lum::rhi::vk {
 			for (auto&& [handle, value] : m_Images.Iterate( )) {
 				DestroyImage( handle );
 			}
-
-			vkDestroyFence( m_LogicalDevice, m_Fence, nullptr );
+			for (auto&& [handle, value] : m_Samplers.Iterate( )) {
+				DestroySampler( handle );
+			}
+			for (auto&& [handle, value] : m_ResourceSets.Iterate( )) {
+				DestroyResourceSet( handle );
+			}
+			for (auto&& [handle, value] : m_ResourceLayouts.Iterate( )) {
+				DestroyResourceLayout( handle );
+			}
+			for (auto& fence : m_InFlightFences) {
+				vkDestroyFence( m_LogicalDevice, fence, nullptr );
+			}
 
 			for (auto& semaphore : m_ImageAvailableSemaphores) {
 				vkDestroySemaphore( m_LogicalDevice, semaphore, nullptr );
@@ -123,7 +133,15 @@ namespace lum::rhi::vk {
 		assert_device( );
 
 		// Sync GPU and CPU
-		vkWaitForFences( m_LogicalDevice, 1, &m_Fence, VK_TRUE, UINT64_MAX );
+		vkWaitForFences( m_LogicalDevice, 1, &m_InFlightFences[ m_CurrentFrame ], VK_TRUE, UINT64_MAX );
+
+		auto& boundStagingBuffers = m_TemporaryStagingBuffers[ m_CurrentFrame ];
+		while (!boundStagingBuffers.empty( )) {
+
+			DestroyBuffer( boundStagingBuffers.front( ) );
+			boundStagingBuffers.pop( );
+
+		}
 
 		// Acquire image from swapchain
 		uint32 imageIndex{};
@@ -137,14 +155,14 @@ namespace lum::rhi::vk {
 		if (acquireImageResult != VK_SUCCESS && acquireImageResult != VK_SUBOPTIMAL_KHR) {
 			return;
 		}
-		vkResetFences( m_LogicalDevice, 1, &m_Fence );
+		vkResetFences( m_LogicalDevice, 1, &m_InFlightFences[ m_CurrentFrame ] );
 
 
 
 
 
 		// Begin recording
-		VkCommandBuffer& commandBuffer = m_CmdBuffers[ 0 ];
+		VkCommandBuffer& commandBuffer = m_CmdBuffers[ m_CurrentFrame ];
 		vkResetCommandBuffer( commandBuffer, 0 );
 
 		VkCommandBufferBeginInfo beginInfo{};
@@ -248,7 +266,7 @@ namespace lum::rhi::vk {
 			return;
 		}
 
-		if (!LUM_VK_RESULT_CHECK( vkQueueSubmit2( m_GraphicsQueue, 1, &submitInfo, m_Fence ) )) {
+		if (!LUM_VK_RESULT_CHECK( vkQueueSubmit2( m_GraphicsQueue, 1, &submitInfo, m_InFlightFences[ m_CurrentFrame ] ) )) {
 			return;
 		}
 

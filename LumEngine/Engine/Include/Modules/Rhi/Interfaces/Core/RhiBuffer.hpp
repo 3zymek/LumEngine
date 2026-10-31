@@ -24,7 +24,7 @@ namespace lum::rhi {
 
 	struct BufferCreateInfo {
 
-		Flags<BufferUsage> m_Usage{};
+		BufferUsageFlags m_Usage{};
 
 		usize m_BufferSize = 0;
 		usize m_DataSize = 0;

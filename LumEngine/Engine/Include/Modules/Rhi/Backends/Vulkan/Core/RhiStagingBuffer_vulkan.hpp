@@ -12,29 +12,30 @@
 /*******************************************************/
 #pragma once
 
-#include <vulkan/vulkan_core.h>
+#include <Vulkan/vulkan_core.h>
 
-#include <Core/Utils/Result.hpp>
-#include <Rhi/Backends/Vulkan/Core/RhiImage_vulkan.hpp>
-#include <Rhi/Backends/Vulkan/Core/RhiSampler_vulkan.hpp>
-#include <Rhi/Interfaces/Core/RhiSampler.hpp>
-#include <Rhi/Interfaces/Core/RhiImage.hpp>
-
+#include "Core/CoreTypes.hpp"
+#include "Rhi/Backends/Vulkan/Core/RhiBuffer_vulkan.hpp"
+#include "Rhi/Interfaces/Core/RhiBuffer.hpp"
 
 namespace lum::rhi::vk {
 
-	class VulkanAdapter;
+	class VulkanDevice;
 
-	class ImageResourceCreator {
+	class StagingBuffer {
 	public:
 
-		Result<VulkanImage> CreateImage(const VkDevice logicalDevice, const VulkanAdapter& adapter, const ImageCreateInfo& info) const noexcept;
-		Result<VulkanSampler> CreateSampler(const VkDevice logicalDevice, const SamplerCreateInfo& info) const noexcept;
+		~StagingBuffer( );
+
+		void Initialize( VulkanDevice& device, usize maxSize ) noexcept;
+		const VulkanBuffer& GetBuffer( ) const noexcept { return m_Buffer; }
 
 	private:
 
-		auto choose_image_view_type(const ImageCreateInfo& info) const noexcept -> VkImageViewType;
+		usize m_MaxSize{};
+		BufferHandle m_Handle{};
+		VulkanBuffer m_Buffer{};
 
 	};
 
-}
+} // namespace lum::rhi::vk

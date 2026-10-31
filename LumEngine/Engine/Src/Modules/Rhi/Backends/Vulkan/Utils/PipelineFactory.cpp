@@ -1,8 +1,20 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #include "Core/CorePch.hpp"
 #include "Rhi/Backends/Vulkan/VulkanPch.hpp"
 
 // Header implementation file
-#include "Rhi/Backends/Vulkan/Utils/PipelineCreator.hpp"
+#include "Rhi/Backends/Vulkan/Utils/PipelineFactory.hpp"
 
 #include "Core/CoreTypes.hpp"
 #include "Core/Utils/Assert.hpp"
@@ -27,7 +39,7 @@ namespace lum::rhi::vk {
 	// Public
 	//=======================================================//
 
-	Result<VulkanPipeline> PipelineCreator::CreatePipeline( VulkanDevice& device, const PipelineCreateInfo& info ) const noexcept {
+	Result<VulkanPipeline> PipelineFactory::CreatePipeline( VulkanDevice& device, const PipelineCreateInfo& info ) const noexcept {
 
 		VulkanPipeline pipeline{};
 
@@ -121,7 +133,7 @@ namespace lum::rhi::vk {
 	// Private
 	//=======================================================//
 
-	auto PipelineCreator::setup_rasterizer_info(const RasterizationPass& info) const noexcept -> VkPipelineRasterizationStateCreateInfo {
+	auto PipelineFactory::setup_rasterizer_info(const RasterizationPass& info) const noexcept -> VkPipelineRasterizationStateCreateInfo {
 
 		VkPipelineRasterizationStateCreateInfo vkInfo{};
 		vkInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -142,7 +154,7 @@ namespace lum::rhi::vk {
 		return vkInfo;
 
 	}
-	auto PipelineCreator::setup_color_blend_info(const ColorBlendPass& info) const noexcept -> VkPipelineColorBlendStateCreateInfo {
+	auto PipelineFactory::setup_color_blend_info(const ColorBlendPass& info) const noexcept -> VkPipelineColorBlendStateCreateInfo {
 
 		const uint32 numColorAttachments = SafeCast<uint32>(info.m_Attachments.size());
 		static std::vector<VkPipelineColorBlendAttachmentState> colorAttachments{};
@@ -177,7 +189,7 @@ namespace lum::rhi::vk {
 		return vkInfo;
 
 	}
-	auto PipelineCreator::setup_multisample_info(const MultisamplePass& info) const noexcept -> VkPipelineMultisampleStateCreateInfo {
+	auto PipelineFactory::setup_multisample_info(const MultisamplePass& info) const noexcept -> VkPipelineMultisampleStateCreateInfo {
 
 		VkPipelineMultisampleStateCreateInfo vkInfo{};
 		vkInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
@@ -188,7 +200,7 @@ namespace lum::rhi::vk {
 		return vkInfo;
 
 	}
-	auto PipelineCreator::setup_assembly_info(const AssemblyPass& info) const noexcept -> VkPipelineInputAssemblyStateCreateInfo {
+	auto PipelineFactory::setup_assembly_info(const AssemblyPass& info) const noexcept -> VkPipelineInputAssemblyStateCreateInfo {
 
 		VkPipelineInputAssemblyStateCreateInfo vkInfo{};
 		vkInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -198,7 +210,7 @@ namespace lum::rhi::vk {
 		return vkInfo;
 
 	}
-	auto PipelineCreator::setup_vertex_input_info(const VertexInputPass& info) const noexcept -> VkPipelineVertexInputStateCreateInfo {
+	auto PipelineFactory::setup_vertex_input_info(const VertexInputPass& info) const noexcept -> VkPipelineVertexInputStateCreateInfo {
 
 		usize numAttributes = info.m_Attributes.size();
 		static std::vector<VkVertexInputAttributeDescription> attributes{};
@@ -244,17 +256,16 @@ namespace lum::rhi::vk {
 		return vkInfo;
 
 	}
-	auto PipelineCreator::setup_pipeline_layout( const PipelineLayout& info, VulkanDevice& device ) const noexcept -> VkPipelineLayout {
+	auto PipelineFactory::setup_pipeline_layout( const PipelineLayout& info, VulkanDevice& device ) const noexcept -> VkPipelineLayout {
 
 		std::vector<VkDescriptorSetLayout> vkSets{};
-		if (!info.m_ResourceSets.empty( )) {
+		if (!info.m_ResourceLayouts.empty( )) {
 			
-			vkSets.reserve( info.m_ResourceSets.size( ) );
+			vkSets.reserve( info.m_ResourceLayouts.size( ) );
 
-			for (const auto set : info.m_ResourceSets) {
-				if (device.m_ResourceSets.Contains( set )) {
-					vkSets.push_back( device.m_ResourceSets[ set ].m_VkLayout );
-				}
+			for (const auto set : info.m_ResourceLayouts) {
+				LUM_ASSERT( device.m_ResourceLayouts.Contains( set ), "Invalid ResourceLayout given while creating pipeline layout" );
+				vkSets.push_back( device.m_ResourceLayouts[ set ].m_VkLayout );
 			}
 		}
 
@@ -278,7 +289,7 @@ namespace lum::rhi::vk {
 
 
 	}
-	auto PipelineCreator::setup_shader_modules(const VkDevice logicalDevice, const PipelineCreateInfo& info) const noexcept -> std::vector<VkPipelineShaderStageCreateInfo> {
+	auto PipelineFactory::setup_shader_modules(const VkDevice logicalDevice, const PipelineCreateInfo& info) const noexcept -> std::vector<VkPipelineShaderStageCreateInfo> {
 
 		usize numShaderInfos = info.m_ShaderInfos.size();
 		LUM_ASSERT(numShaderInfos <= t_EnumCount<ShaderStage>, "Too much shader create infos in PipelineCreateInfo (MAX IS 5)");
@@ -315,7 +326,7 @@ namespace lum::rhi::vk {
 
 	}
 
-	auto PipelineCreator::create_shader_module(const VkDevice logicalDevice, const Path& path) const noexcept -> VkShaderModule {
+	auto PipelineFactory::create_shader_module(const VkDevice logicalDevice, const Path& path) const noexcept -> VkShaderModule {
 
 		auto binaryCodeResult = FileSystem::ReadBinaryFile(path);
 		if (!binaryCodeResult) {

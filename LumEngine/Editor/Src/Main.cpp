@@ -11,6 +11,7 @@
 #include <glfw3.h>
 #include <Rhi/RhiTypes.hpp>
 #include <vector>
+#include "Core/Math/Mat4.hpp";
 
 using namespace lum;
 using namespace lum::rhi;
@@ -80,14 +81,40 @@ int main( int argc, char* argv[ ] ) {
 	device( ).Initialize( deviceInfo );
 
 
-	rhi::ResourceSetBinding binding{};
-	binding.m_Binding = 0;
-	binding.m_ResourceCount = 1;
-	binding.m_ShaderStages = ShaderStage::Fragment;
-	binding.m_Type = ResourceType::CombinedImageSampler;
+	struct CameraData {
+		Matrix4 m_Mvp = Matrix4( 1.0f );
+	} cameraData;
+	cameraData.m_Mvp[ 3 ][ 0 ] = 0.5f;
 
-	rhi::ResourceSetInfo resInfo{};
-	resInfo.m_Bindings.push_back( binding );
+	BufferCreateInfo uboInfo{};
+	uboInfo.m_BufferSize = sizeof( CameraData );
+	uboInfo.m_Usage = BufferUsage::Uniform;
+	uboInfo.m_Data = &cameraData;
+	uboInfo.m_DataSize = sizeof( CameraData );
+
+	auto ubo = device( ).CreateBuffer( uboInfo );
+
+
+	rhi::ResourceSetBinding imageBinding{};
+	imageBinding.m_Binding = 0;
+	imageBinding.m_ResourceCount = 1;
+	imageBinding.m_ShaderStages = ShaderStage::Fragment;
+	imageBinding.m_Type = ResourceType::CombinedImageSampler;
+
+	rhi::ResourceSetBinding cameraBinding{};
+	cameraBinding.m_Binding = 1;
+	cameraBinding.m_ResourceCount = 1;
+	cameraBinding.m_ShaderStages = ShaderStage::Vertex;
+	cameraBinding.m_Type = ResourceType::UniformBuffer;
+
+	rhi::ResourceLayoutCreateInfo layoutInfo{};
+	layoutInfo.m_Bindings.push_back( imageBinding );
+	layoutInfo.m_Bindings.push_back( cameraBinding );
+
+	auto layout = device( ).CreateResourceLayout( layoutInfo );
+
+	rhi::ResourceSetCreateInfo resInfo{};
+	resInfo.m_Layout = layout;
 
 	auto resSet = device( ).CreateResourceSet( resInfo );
 
@@ -97,7 +124,7 @@ int main( int argc, char* argv[ ] ) {
 
 	rhi::PipelineCreateInfo pipInfo{};
 
-	pipInfo.m_Layout.m_ResourceSets.push_back( resSet );
+	pipInfo.m_Layout.m_ResourceLayouts.push_back( layout );
 
 	auto& assembly = pipInfo.m_AssemblyPass;
 	assembly.m_PrimitiveRestart = false;
@@ -195,12 +222,22 @@ int main( int argc, char* argv[ ] ) {
 	rhi::SamplerCreateInfo samplerInfo{};
 	auto sampler = device( ).CreateSampler( samplerInfo );
 	
+	cmd::UpdateBufferInfo updateBuff{};
+	updateBuff.m_ArrayIndex = 0;
+	updateBuff.m_Binding = 1;
+	updateBuff.m_BufferHandle = ubo;
+	updateBuff.m_Offset = 0;
+
+	cmd::UpdateImageInfo updateImg{};
+	updateImg.m_ArrayIndex = 0;
+	updateImg.m_Binding = 0;
+	updateImg.m_ImageHandle = image;
+	updateImg.m_SamplerHandle = sampler;
+
 	cmd::UpdateResourceSet cmdUpdateResSet{};
 	cmdUpdateResSet.m_SetHandle = resSet;
-	cmdUpdateResSet.m_ArrayIndex = 0;
-	cmdUpdateResSet.m_Binding = 0;
-	cmdUpdateResSet.m_Image.m_ImageHandle = image;
-	cmdUpdateResSet.m_Image.m_SamplerHandle = sampler;
+	cmdUpdateResSet.m_BufferInfos.push_back( updateBuff );
+	cmdUpdateResSet.m_ImageInfos.push_back( updateImg );
 	
 	cmd::BindResourceSet cmdBindResSet{};
 	cmdBindResSet.m_SetHandle = resSet;
@@ -209,7 +246,6 @@ int main( int argc, char* argv[ ] ) {
 	cmd::TransferImage cmdTransferImg{};
 	cmdTransferImg.m_Data = data;
 	cmdTransferImg.m_Image = image;
-	cmdTransferImg.m_StagingOffset = 0;
 
 
 	rhi::CommandBuffer cmdBuffer{};

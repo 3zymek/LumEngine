@@ -49,6 +49,13 @@ namespace lum {
 
 namespace lum::rhi::vk {
 
+	namespace detail {
+
+		template<typename tType>
+		using InFlightArray = std::array<tType, k_MaxFramesInFlight>;
+
+	} // namespace detail
+
 	class LUM_API VulkanDevice : public IRenderDevice {
 	public:
 
@@ -69,14 +76,18 @@ namespace lum::rhi::vk {
 		SamplerHandle CreateSampler( const SamplerCreateInfo& info ) noexcept override;
 		void DestroySampler( const SamplerHandle handle ) noexcept override;
 
-		ResourceSetHandle CreateResourceSet( const ResourceSetInfo& info ) noexcept override;
+		ResourceLayoutHandle CreateResourceLayout( const ResourceLayoutCreateInfo& info ) noexcept override;
+		void DestroyResourceLayout( const ResourceLayoutHandle handle ) noexcept override;
+
+		ResourceSetHandle CreateResourceSet( const ResourceSetCreateInfo& info ) noexcept override;
 		void DestroyResourceSet( const ResourceSetHandle handle ) noexcept override;
 
 		void SendCommandBuffer( CommandBuffer& buffer ) noexcept override;
 
 	private:
 
-		friend class PipelineCreator;
+		friend class PipelineFactory;
+		friend class ResourceSetFactory;
 
 		static inline constexpr usize s_MaxBuffers = 256;
 		static inline constexpr usize s_MaxPipelines = 32;
@@ -108,6 +119,12 @@ namespace lum::rhi::vk {
 			ResourceSetHandle,
 			VulkanResourceSet,
 			ResourceSetID> m_ResourceSets{ s_MaxResourceSets };
+
+		HandlePool<
+			ResourceLayoutHandle,
+			VulkanResourceLayout,
+			ResourceLayoutID> m_ResourceLayouts{ s_MaxResourceSets };
+
 
 
 		VulkanCommandProcessor m_CommandProcessor{};
@@ -146,13 +163,12 @@ namespace lum::rhi::vk {
 		VkQueue m_ComputeQueue = VK_NULL_HANDLE;
 		VkQueue m_PresentQueue = VK_NULL_HANDLE;
 
-		std::array<VkSemaphore, k_MaxFramesInFlight> m_ImageAvailableSemaphores{};
+		detail::InFlightArray<VkSemaphore> m_ImageAvailableSemaphores{};
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores{};
 
-		VkFence m_Fence = VK_NULL_HANDLE;
-
-		VulkanBuffer m_StagingBuffer{};
-		usize m_StagingBufferCapacity = 16 * 1024 * 1024;
+		detail::InFlightArray<VkFence> m_InFlightFences{};
+		detail::InFlightArray<VulkanBuffer> m_StagingBuffers{};
+		detail::InFlightArray<std::queue<BufferHandle>> m_TemporaryStagingBuffers{};
 
 		VkPipelineLayout m_BoundPipelineLayout = VK_NULL_HANDLE;
 
@@ -173,7 +189,7 @@ namespace lum::rhi::vk {
 		void create_sync_primitives( ) noexcept;
 		void handle_resize( ) noexcept;
 		void bind_commands_implementations( ) noexcept;
-		void create_staging_buffer( ) noexcept;
+		void create_staging_buffers( ) noexcept;
 
 
 		// ===========================================================

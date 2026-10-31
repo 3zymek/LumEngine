@@ -19,11 +19,11 @@
 
 namespace lum::rhi {
 
-	enum class ShaderStage : uint8 {
-		Vertex = 0U,
-		Fragment,
-		Compute,
-		Geometry
+	enum class ShaderStage : bitfield {
+		Vertex = 1 << 0,
+		Fragment = 1 << 1,
+		Compute = 1 << 2,
+		Geometry = 1 << 3
 	};
 	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::ShaderStage );
 

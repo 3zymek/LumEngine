@@ -21,8 +21,10 @@
 namespace lum::rhi {
 
 	using ResourceSetID = uint32;
+	using ResourceLayoutID = uint32;
 
 	struct ResourceSetHandle : BaseHandle<ResourceSetID> {};
+	struct ResourceLayoutHandle : BaseHandle<ResourceLayoutID> {};
 
 	enum class ResourceType : uint8 {
 		Sampler = 0U,
@@ -42,9 +44,16 @@ namespace lum::rhi {
 
 	};
 
-	struct ResourceSetInfo {
+	struct ResourceLayoutCreateInfo {
 
 		std::vector<ResourceSetBinding> m_Bindings{};
+		ResourceLayoutHandle m_Layout{};
+
+	};
+
+	struct ResourceSetCreateInfo {
+
+		ResourceLayoutHandle m_Layout{};
 
 	};
 

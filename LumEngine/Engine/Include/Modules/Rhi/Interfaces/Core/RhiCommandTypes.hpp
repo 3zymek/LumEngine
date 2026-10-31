@@ -13,6 +13,7 @@
 #pragma once
 
 #include <span>
+#include <vector>
 
 #include "Core/CoreTypes.hpp"
 #include "Core/Math/Vec2.hpp"
@@ -106,25 +107,29 @@ namespace lum::rhi::cmd {
 
 	};
 
+	struct LUM_API UpdateBufferInfo {
+		BufferHandle m_BufferHandle{};
+		uint64 m_Offset = 0;
+		uint64 m_Range = 0;
+		uint32 m_ArrayIndex = 0;
+		uint32 m_Binding = 0;
+	};
+
+	struct LUM_API UpdateImageInfo {
+		SamplerHandle m_SamplerHandle{};
+		ImageHandle m_ImageHandle{};
+		uint32 m_ArrayIndex = 0;
+		uint32 m_Binding = 0;
+	};
+
 	struct LUM_API UpdateResourceSet : Command {
 
 		LUM_RHI_CMD_TYPE( CommandType::UpdateResourceSet );
 
 		ResourceSetHandle m_SetHandle{};
 
-		uint32 m_Binding = 0;
-		uint32 m_ArrayIndex = 0;
-
-		struct {
-			BufferHandle m_BufferHandle{};
-			uint64 m_Offset = 0;
-			uint64 m_Range = 0;
-		} m_Buffer;
-
-		struct {
-			SamplerHandle m_SamplerHandle{};
-			ImageHandle m_ImageHandle{};
-		} m_Image;
+		std::vector<UpdateImageInfo> m_ImageInfos{};
+		std::vector<UpdateBufferInfo> m_BufferInfos{};
 
 	};
 
@@ -143,7 +148,6 @@ namespace lum::rhi::cmd {
 
 		ImageData m_Data{};
 		ImageHandle m_Image{};
-		usize m_StagingOffset = 0;
 
 	};
 

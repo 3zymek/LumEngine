@@ -48,7 +48,7 @@ namespace lum::rhi::vk {
 		}
 
 #		if defined(__APPLE__)
-		extensions.push_back( VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME );
+			extensions.push_back( VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME );
 #		endif
 
 
@@ -67,7 +67,7 @@ namespace lum::rhi::vk {
 		desc.ppEnabledLayerNames = layers.data( );
 
 #		if defined(__APPLE__)
-		desc.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+			desc.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #		endif
 
 		// ENABLE VALIDATION
@@ -155,7 +155,7 @@ namespace lum::rhi::vk {
 		};
 
 #		if defined(__APPLE__)
-		deviceExtensions.push_back( "VK_KHR_portability_subset" );
+			deviceExtensions.push_back( "VK_KHR_portability_subset" );
 #		endif
 
 		const auto& queues = m_Adapter.m_Queues;
@@ -391,28 +391,27 @@ namespace lum::rhi::vk {
 		usize numImages = m_SwapchainImages.size( );
 
 		for (auto& semaphore : m_ImageAvailableSemaphores) {
-			if (vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) != VK_SUCCESS) {
-				LUM_LOG_FATAL( "Failed to create image available semaphore! (Vulkan)" );
+			if (!LUM_VK_RESULT_CHECK( vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) )) {
 				return;
 			}
 		}
 
 		m_RenderFinishedSemaphores.resize( numImages );
 		for (auto& semaphore : m_RenderFinishedSemaphores) {
-			if (vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) != VK_SUCCESS) {
-				LUM_LOG_FATAL( "Failed to create render finished semaphore! (Vulkan)" );
+			if (!LUM_VK_RESULT_CHECK( vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) )) {
 				return;
 			}
 		}
 
+		VkFenceCreateInfo fenceInfo{};
+		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+		for (auto& fence : m_InFlightFences) {
+			if (!LUM_VK_RESULT_CHECK( vkCreateFence( m_LogicalDevice, &fenceInfo, nullptr, &fence ) )) {
+				return;
+			}
 
-		VkFenceCreateInfo fenceCreateInfo{};
-		fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-		fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-		if (vkCreateFence( m_LogicalDevice, &fenceCreateInfo, nullptr, &m_Fence ) != VK_SUCCESS) {
-			LUM_LOG_FATAL( "Failed to create fence! (Vulkan)" );
-			return;
 		}
 
 	}
@@ -421,18 +420,26 @@ namespace lum::rhi::vk {
 
 		vkDeviceWaitIdle( m_LogicalDevice );
 
-		recreate_swapchain_images( );
 		recreate_swapchain( );
+		recreate_swapchain_images( );
 
 	}
 
-	void VulkanDevice::create_staging_buffer( ) noexcept {
+	void VulkanDevice::create_staging_buffers( ) noexcept {
 
 		BufferCreateInfo info{};
 		info.m_Usage = BufferUsage::TransferSource;
-		info.m_BufferSize = m_StagingBufferCapacity;
-		auto handle = CreateBuffer( info );
-		m_StagingBuffer = m_Buffers[ handle ];
+		info.m_BufferSize = 1024 * 1024 * 64;
+
+		for (auto& buffer : m_StagingBuffers) {
+
+			auto handle = CreateBuffer( info );
+			LUM_ASSERT( m_Buffers.Contains( handle ), "Cannot create staging buffers" );
+
+			buffer = m_Buffers[ handle ];
+
+
+		}
 
 	}
 

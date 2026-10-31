@@ -173,7 +173,7 @@ namespace lum::rhi {
 
 	struct PipelineLayout {
 
-		std::vector<ResourceSetHandle> m_ResourceSets{};
+		std::vector<ResourceLayoutHandle> m_ResourceLayouts{};
 
 	};
 

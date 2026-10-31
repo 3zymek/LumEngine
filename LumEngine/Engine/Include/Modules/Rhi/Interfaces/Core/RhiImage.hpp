@@ -183,10 +183,8 @@ namespace lum::rhi {
 		ImageLayout m_CurrentLayout = ImageLayout::Undefined;
 		ImageFormat m_Format = ImageFormat::RGBA32_FLOAT;
 		Extent3D m_Extent{};
-
 		ImageViewType m_ViewType = ImageViewType::Default;
 		SampleCount m_SampleCount = SampleCount::Sample1;
-
 		uint32 m_MipmapLevels = 1;
 		uint32 m_ArrayLayers = 1;
 

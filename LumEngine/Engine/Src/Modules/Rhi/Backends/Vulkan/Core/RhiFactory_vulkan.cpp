@@ -19,14 +19,15 @@
 #include "Core/CoreTypes.hpp"
 #include "Core/Utils/LogMacros.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiBuffer_vulkan.hpp"
-#include "Rhi/Backends/Vulkan/Utils/ImageCreator.hpp"
-#include "Rhi/Backends/Vulkan/Utils/PipelineCreator.hpp"
-#include "Rhi/Backends/Vulkan/Utils/ResourceSetCreator.hpp"
+#include "Rhi/Backends/Vulkan/Utils/BufferFactory.hpp"
+#include "Rhi/Backends/Vulkan/Utils/ImageFactory.hpp"
+#include "Rhi/Backends/Vulkan/Utils/PipelineFactory.hpp"
+#include "Rhi/Backends/Vulkan/Utils/ResourceSetFactory.hpp"
 #include "Rhi/Interfaces/Core/RhiBuffer.hpp"
 #include "Rhi/Interfaces/Core/RhiImage.hpp"
 #include "Rhi/Interfaces/Core/RhiPipeline.hpp"
-#include "Rhi/Interfaces/Core/RhiSampler.hpp"
 #include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
+#include "Rhi/Interfaces/Core/RhiSampler.hpp"
 
 namespace lum::rhi::vk {
 
@@ -40,66 +41,13 @@ namespace lum::rhi::vk {
 			return {};
 		}
 
-		auto usage = ToVk( info.m_Usage );
-		if (usage == 0) {
-			LUM_LOG_WARN( "Couldn't create buffer: 0 usage flags in BufferCreateInfo!" );
+		auto buffer = BufferFactory{}.CreateBuffer( m_LogicalDevice, m_Adapter, info );
+		if (!buffer) {
+			LUM_LOG_WARN( "Couldn't create RHI Buffer: {}", buffer.GetError( ) );
 			return {};
 		}
 
-		VkBufferCreateInfo vkInfo{};
-		vkInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		vkInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		vkInfo.size = info.m_BufferSize;
-		vkInfo.usage = usage;
-
-		VulkanBuffer vkBuffer{};
-
-		if (vkCreateBuffer( m_LogicalDevice, &vkInfo, nullptr, &vkBuffer.m_VkBuffer ) != VK_SUCCESS) {
-			LUM_LOG_ERROR( "Couldn't create buffer: Creation failed" );
-			return {};
-		}
-
-		vkGetBufferMemoryRequirements( m_LogicalDevice, vkBuffer.m_VkBuffer, &vkBuffer.m_VkMemoryRequirements );
-
-		uint32 memoryTypeIndex = m_Adapter.FindMemoryType(
-			vkBuffer.m_VkMemoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-		);
-
-		VkMemoryAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		allocInfo.memoryTypeIndex = memoryTypeIndex;
-		allocInfo.allocationSize = vkBuffer.m_VkMemoryRequirements.size;
-
-		if (vkAllocateMemory( m_LogicalDevice, &allocInfo, nullptr, &vkBuffer.m_VkMemory ) != VK_SUCCESS) {
-			LUM_LOG_ERROR( "Couldn't allocate buffer memory" );
-			vkDestroyBuffer( m_LogicalDevice, vkBuffer.m_VkBuffer, nullptr );
-			return {};
-		}
-
-		BufferHandle bufferHandle{};
-
-		if (vkBindBufferMemory( m_LogicalDevice, vkBuffer.m_VkBuffer, vkBuffer.m_VkMemory, 0 ) != VK_SUCCESS) {
-			LUM_LOG_ERROR( "Couldn't create buffer: Binding buffer memory failed" );
-			return {};
-		}
-		else {
-			bufferHandle = m_Buffers.Append( vkBuffer );
-		}
-
-		// Data insertion
-		if (info.m_Data != nullptr) {
-
-			void* data = nullptr;
-			VkResult res = vkMapMemory( m_LogicalDevice, vkBuffer.m_VkMemory, 0, info.m_DataSize, 0, &data );
-			if (res != VK_SUCCESS) {
-				LUM_LOG_WARN( "Couldn't map buffer memory!" );
-				return bufferHandle;
-			}
-			memcpy( data, info.m_Data, info.m_DataSize );
-			vkUnmapMemory( m_LogicalDevice, vkBuffer.m_VkMemory );
-		}
-
-		return bufferHandle;
+		return m_Buffers.Append( buffer.ValueRef( ) );
 
 	}
 	void VulkanDevice::DestroyBuffer( const BufferHandle handle ) noexcept {
@@ -128,15 +76,13 @@ namespace lum::rhi::vk {
 			return {};
 		}
 
-		auto pipeline = PipelineCreator{}.CreatePipeline( *this, info );
+		auto pipeline = PipelineFactory{}.CreatePipeline( *this, info );
 		if (!pipeline) {
-			LUM_LOG_ERROR( "Couldn't create pipeline: {}", pipeline.GetError( ) );
+			LUM_LOG_ERROR( "Couldn't create RHI Pipeline: {}", pipeline.GetError( ) );
 			return {};
 		}
 
-		auto pipelineHandle = m_Pipelines.Append( pipeline.ValueRef( ) );
-
-		return pipelineHandle;
+		return m_Pipelines.Append( pipeline.ValueRef( ) );
 
 	}
 	void VulkanDevice::DestroyPipeline( const PipelineHandle handle ) noexcept {
@@ -158,14 +104,16 @@ namespace lum::rhi::vk {
 
 	ImageHandle VulkanDevice::CreateImage( const ImageCreateInfo& info ) noexcept {
 
+		assert_device( );
+
 		if (m_Images.IsFull( )) {
 			LUM_LOG_WARN( "Couldn't create RHI Image: Max Images reached! Increase max Images count or refactor your code." );
 			return {};
 		}
 
-		auto image = ImageResourceCreator{}.CreateImage( m_LogicalDevice, m_Adapter, info );
+		auto image = ImageResourceFactory{}.CreateImage( m_LogicalDevice, m_Adapter, info );
 		if (!image) {
-			LUM_LOG_ERROR( "Failed to create RHI Image: {}", image.GetError( ) );
+			LUM_LOG_ERROR( "Couldn't create RHI Image: {}", image.GetError( ) );
 			return {};
 		}
 
@@ -173,6 +121,8 @@ namespace lum::rhi::vk {
 
 	}
 	void VulkanDevice::DestroyImage( const ImageHandle handle ) noexcept {
+
+		assert_device( );
 
 		if (!m_Images.Contains( handle )) return;
 
@@ -190,12 +140,14 @@ namespace lum::rhi::vk {
 
 	SamplerHandle VulkanDevice::CreateSampler( const SamplerCreateInfo& info ) noexcept {
 
+		assert_device( );
+
 		if (m_Samplers.IsFull( )) {
 			LUM_LOG_WARN( "Couldn't create RHI Sampler: Max Samplers reached! Increase max Samplers count or refactor your code." );
 			return {};
 		}
 
-		auto sampler = ImageResourceCreator{}.CreateSampler( m_LogicalDevice, info );
+		auto sampler = ImageResourceFactory{}.CreateSampler( m_LogicalDevice, info );
 		if (!sampler) {
 			LUM_LOG_ERROR( "Couldn't create RHI Sampler: {}", sampler.GetError( ) );
 			return {};
@@ -205,6 +157,8 @@ namespace lum::rhi::vk {
 
 	}
 	void VulkanDevice::DestroySampler( const SamplerHandle handle ) noexcept {
+
+		assert_device( );
 
 		if (!m_Samplers.Contains( handle )) return;
 
@@ -218,22 +172,60 @@ namespace lum::rhi::vk {
 
 	}
 
-	ResourceSetHandle VulkanDevice::CreateResourceSet( const ResourceSetInfo& info ) noexcept {
+	ResourceLayoutHandle VulkanDevice::CreateResourceLayout( const ResourceLayoutCreateInfo& info ) noexcept {
+
+		assert_device( );
+
+		if (m_ResourceLayouts.IsFull( )) {
+			LUM_LOG_WARN( "Couldn't create RHI ResourceLayout: Max ResourceLayouts reached! Increase max ResourceLayouts count or refactor your code." );
+			return {};
+		}
+
+		auto layout = ResourceSetFactory{}.CreateResourceLayout( m_LogicalDevice, info );
+		if (!layout) {
+			LUM_LOG_ERROR( "Couldn't create RHI ResourceLayout: {}", layout.GetError( ) );
+			return {};
+		}
+
+		return m_ResourceLayouts.Append( layout.ValueRef( ) );
+	}
+	void VulkanDevice::DestroyResourceLayout( const ResourceLayoutHandle handle ) noexcept {
+
+		assert_device( );
+
+		if (!m_ResourceLayouts.Contains( handle )) return;
+
+		auto& layout = m_ResourceLayouts[ handle ];
+		vkDeviceWaitIdle( m_LogicalDevice );
+
+		if (layout.m_VkLayout != VK_NULL_HANDLE) {
+			vkDestroyDescriptorSetLayout( m_LogicalDevice, layout.m_VkLayout, nullptr );
+		}
+
+		m_ResourceLayouts.Remove( handle );
+
+	}
+
+	ResourceSetHandle VulkanDevice::CreateResourceSet( const ResourceSetCreateInfo& info ) noexcept {
+
+		assert_device( );
 
 		if (m_ResourceSets.IsFull( )) {
 			LUM_LOG_WARN( "Couldn't create RHI ResourceSet: Max ResourceSets reached! Increase max ResourceSets count or refactor your code." );
 			return {};
 		}
 
-		auto resourceSet = ResourceSetCreator{}.CreateResourceSet( m_LogicalDevice, info );
+		auto resourceSet = ResourceSetFactory{}.CreateResourceSet( *this, info );
 		if (!resourceSet) {
 			LUM_LOG_ERROR( "Couldn't create RHI ResourceSet: {}", resourceSet.GetError( ) );
 			return {};
 		}
 
-		return m_ResourceSets.Append( resourceSet.ValueRef() );
+		return m_ResourceSets.Append( resourceSet.ValueRef( ) );
 	}
 	void VulkanDevice::DestroyResourceSet( const ResourceSetHandle handle ) noexcept {
+
+		assert_device( );
 
 		if (!m_ResourceSets.Contains( handle )) return;
 
@@ -242,9 +234,6 @@ namespace lum::rhi::vk {
 
 		if (set.m_VkResourcePool != VK_NULL_HANDLE) {
 			vkDestroyDescriptorPool( m_LogicalDevice, set.m_VkResourcePool, nullptr );
-		}
-		if (set.m_VkLayout != VK_NULL_HANDLE) {
-			vkDestroyDescriptorSetLayout( m_LogicalDevice, set.m_VkLayout, nullptr );
 		}
 
 		m_ResourceSets.Remove( handle );

@@ -17,7 +17,7 @@ namespace lum::rhi::vk {
 
 	auto ToVk( BufferUsageFlags flags ) noexcept -> VkBufferUsageFlags {
 
-		VkBufferUsageFlags usage{};
+		VkBufferUsageFlags usage = 0;
 		if (flags.Has( BufferUsage::Vertex )) {
 			usage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 		}

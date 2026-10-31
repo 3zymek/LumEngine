@@ -118,6 +118,17 @@ namespace lum {
 			return *this;
 		}
 
+		constexpr bool operator==( tType e ) const noexcept {
+			return m_Flags == ToUnderlyingEnum( e );
+		}
+		constexpr bool operator==( Flags<tType> e ) const noexcept {
+			return m_Flags == e.m_Flags;
+		}
+		template<cArithmetic tArithmetic>
+		constexpr bool operator==( tArithmetic e ) const noexcept {
+			return m_Flags == static_cast<UnderlyingType>( e );
+		}
+
 	};
 
 	constexpr bool IsBitwiseEnum( ... ) { return false; }
