@@ -6,7 +6,11 @@
 namespace lum::rhi {
 
     using SamplerID = uint32;
-    struct SamplerHandle : BaseHandle<SamplerID> {};
+    namespace detail {
+        struct SamplerTag {};
+    } // namespace detail
+
+    using SamplerHandle = BaseHandle<detail::SamplerTag, SamplerID>;
 
     enum class SamplerFilter {
         Linear,

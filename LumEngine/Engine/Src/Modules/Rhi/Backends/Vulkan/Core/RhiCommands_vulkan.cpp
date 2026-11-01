@@ -397,7 +397,7 @@ namespace lum::rhi::vk {
 					return;
 				}
 
-				VulkanBuffer stagingBuffer = m_StagingBuffers[ m_CurrentFrame ];
+				VulkanBuffer stagingBuffer = m_StagingBuffers[ m_CurrentFrameIndex ];
 				BufferHandle fallbackBufferHandle{};
 
 				if (stagingBuffer.m_Info.m_Size < dataSize) {
@@ -487,7 +487,7 @@ namespace lum::rhi::vk {
 
 				transition_image_layout( readInfo );
 
-				m_TemporaryStagingBuffers[ m_CurrentFrame ].push( fallbackBufferHandle );
+				m_TemporaryStagingBuffers[ m_CurrentFrameIndex ].push( fallbackBufferHandle );
 
 			}
 		);

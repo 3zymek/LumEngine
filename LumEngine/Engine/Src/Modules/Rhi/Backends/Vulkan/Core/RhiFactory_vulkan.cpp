@@ -50,18 +50,20 @@ namespace lum::rhi::vk {
 		return m_Buffers.Append( buffer.ValueRef( ) );
 
 	}
-	void VulkanDevice::DestroyBuffer( const BufferHandle handle ) noexcept {
+	void VulkanDevice::DestroyBuffer( BufferHandle& handle ) noexcept {
 
 		assert_device( );
 
-		if (!m_Buffers.Contains( handle )) return;
+		if (!handle) return;
 
 		auto& buffer = m_Buffers[ handle ];
 
 		vkDeviceWaitIdle( m_LogicalDevice );
 
-		vkDestroyBuffer( m_LogicalDevice, buffer.m_VkBuffer, nullptr );
-		vkFreeMemory( m_LogicalDevice, buffer.m_VkMemory, nullptr );
+		if(buffer.m_VkBuffer != VK_NULL_HANDLE)
+			vkDestroyBuffer( m_LogicalDevice, buffer.m_VkBuffer, nullptr );
+		if(buffer.m_VkMemory != VK_NULL_HANDLE)
+			vkFreeMemory( m_LogicalDevice, buffer.m_VkMemory, nullptr );
 
 		m_Buffers.Remove( handle );
 
@@ -85,18 +87,20 @@ namespace lum::rhi::vk {
 		return m_Pipelines.Append( pipeline.ValueRef( ) );
 
 	}
-	void VulkanDevice::DestroyPipeline( const PipelineHandle handle ) noexcept {
+	void VulkanDevice::DestroyPipeline( PipelineHandle& handle ) noexcept {
 
 		assert_device( );
 
-		if (!m_Pipelines.Contains( handle )) return;
+		if (!handle) return;
 
 		auto& pipeline = m_Pipelines[ handle ];
 
 		vkDeviceWaitIdle( m_LogicalDevice );
 
-		vkDestroyPipeline( m_LogicalDevice, pipeline.m_VkPipeline, nullptr );
-		vkDestroyPipelineLayout( m_LogicalDevice, pipeline.m_VkLayout, nullptr );
+		if(pipeline.m_VkPipeline != VK_NULL_HANDLE)
+			vkDestroyPipeline( m_LogicalDevice, pipeline.m_VkPipeline, nullptr );
+		if(pipeline.m_VkLayout != VK_NULL_HANDLE)
+			vkDestroyPipelineLayout( m_LogicalDevice, pipeline.m_VkLayout, nullptr );
 
 		m_Pipelines.Remove( handle );
 
@@ -120,11 +124,11 @@ namespace lum::rhi::vk {
 		return m_Images.Append( image.ValueRef( ) );
 
 	}
-	void VulkanDevice::DestroyImage( const ImageHandle handle ) noexcept {
+	void VulkanDevice::DestroyImage( ImageHandle& handle ) noexcept {
 
 		assert_device( );
 
-		if (!m_Images.Contains( handle )) return;
+		if (!handle) return;
 
 		auto& image = m_Images[ handle ];
 		vkDeviceWaitIdle( m_LogicalDevice );
@@ -133,6 +137,8 @@ namespace lum::rhi::vk {
 			vkDestroyImage( m_LogicalDevice, image.m_VkImage, nullptr );
 		if (image.m_VkView != VK_NULL_HANDLE)
 			vkDestroyImageView( m_LogicalDevice, image.m_VkView, nullptr );
+		if(image.m_VkMemory != VK_NULL_HANDLE)
+			vkFreeMemory( m_LogicalDevice, image.m_VkMemory, nullptr );
 
 		m_Images.Remove( handle );
 
@@ -156,11 +162,11 @@ namespace lum::rhi::vk {
 		return m_Samplers.Append( sampler.ValueRef( ) );
 
 	}
-	void VulkanDevice::DestroySampler( const SamplerHandle handle ) noexcept {
+	void VulkanDevice::DestroySampler( SamplerHandle& handle ) noexcept {
 
 		assert_device( );
 
-		if (!m_Samplers.Contains( handle )) return;
+		if (!handle) return;
 
 		auto& sampler = m_Samplers[ handle ];
 		vkDeviceWaitIdle( m_LogicalDevice );
@@ -189,18 +195,17 @@ namespace lum::rhi::vk {
 
 		return m_ResourceLayouts.Append( layout.ValueRef( ) );
 	}
-	void VulkanDevice::DestroyResourceLayout( const ResourceLayoutHandle handle ) noexcept {
+	void VulkanDevice::DestroyResourceLayout( ResourceLayoutHandle& handle ) noexcept {
 
 		assert_device( );
 
-		if (!m_ResourceLayouts.Contains( handle )) return;
+		if (!handle) return;
 
 		auto& layout = m_ResourceLayouts[ handle ];
 		vkDeviceWaitIdle( m_LogicalDevice );
 
-		if (layout.m_VkLayout != VK_NULL_HANDLE) {
+		if (layout.m_VkLayout != VK_NULL_HANDLE)
 			vkDestroyDescriptorSetLayout( m_LogicalDevice, layout.m_VkLayout, nullptr );
-		}
 
 		m_ResourceLayouts.Remove( handle );
 
@@ -223,18 +228,18 @@ namespace lum::rhi::vk {
 
 		return m_ResourceSets.Append( resourceSet.ValueRef( ) );
 	}
-	void VulkanDevice::DestroyResourceSet( const ResourceSetHandle handle ) noexcept {
+	void VulkanDevice::DestroyResourceSet( ResourceSetHandle& handle ) noexcept {
 
 		assert_device( );
 
-		if (!m_ResourceSets.Contains( handle )) return;
+		if (!handle) return;
 
 		auto& set = m_ResourceSets[ handle ];
 		vkDeviceWaitIdle( m_LogicalDevice );
 
-		if (set.m_VkResourcePool != VK_NULL_HANDLE) {
+		if (set.m_VkResourcePool != VK_NULL_HANDLE)
 			vkDestroyDescriptorPool( m_LogicalDevice, set.m_VkResourcePool, nullptr );
-		}
+
 
 		m_ResourceSets.Remove( handle );
 

@@ -23,8 +23,13 @@ namespace lum::rhi {
 	using ResourceSetID = uint32;
 	using ResourceLayoutID = uint32;
 
-	struct ResourceSetHandle : BaseHandle<ResourceSetID> {};
-	struct ResourceLayoutHandle : BaseHandle<ResourceLayoutID> {};
+	namespace detail {
+		struct ResourceSetTag {};
+		struct ResourceLayoutTag {};
+	} // namespace detail
+	
+	using ResourceSetHandle = BaseHandle<detail::ResourceSetTag, ResourceSetID>;
+	using ResourceLayoutHandle = BaseHandle<detail::ResourceLayoutTag, ResourceLayoutID>;
 
 	enum class ResourceType : uint8 {
 		Sampler = 0U,

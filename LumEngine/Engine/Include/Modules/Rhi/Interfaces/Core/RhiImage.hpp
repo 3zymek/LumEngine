@@ -16,12 +16,15 @@
 #include "Core/Utils/Flags.hpp"
 #include "Core/Utils/HandlePool.hpp"
 #include "Core/Utils/Optional.hpp"
-#include "Core/Utils/ResourceLoader.hpp"
 
 namespace lum::rhi {
 
 	using ImageID = uint32;
-	struct ImageHandle : BaseHandle<ImageID> {};
+	namespace detail {
+		struct ImageTag {};
+	} // namespace detail
+
+	using ImageHandle = BaseHandle<detail::ImageTag, ImageID>;
 
 	enum class ImageUsageFlag : bitfield {
 
@@ -149,7 +152,7 @@ namespace lum::rhi {
 
 		uint32 m_Width = 0;
 		uint32 m_Height = 0;
-		uint32 m_Depth = 0;
+		uint32 m_Depth = 1;
 
 	};
 

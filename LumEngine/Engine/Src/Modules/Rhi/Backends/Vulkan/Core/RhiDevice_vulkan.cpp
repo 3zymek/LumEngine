@@ -61,7 +61,7 @@ namespace lum::rhi::vk {
 		create_logical_device( );
 		acquire_queues( );
 		recreate_swapchain( );
-		recreate_swapchain_images( );
+		recreate_swapchain_primitives( );
 		create_command_pool( );
 		allocate_command_buffers( );
 		create_sync_primitives( );
@@ -133,9 +133,9 @@ namespace lum::rhi::vk {
 		assert_device( );
 
 		// Sync GPU and CPU
-		vkWaitForFences( m_LogicalDevice, 1, &m_InFlightFences[ m_CurrentFrame ], VK_TRUE, UINT64_MAX );
+		vkWaitForFences( m_LogicalDevice, 1, &m_InFlightFences[ m_CurrentFrameIndex ], VK_TRUE, UINT64_MAX );
 
-		auto& boundStagingBuffers = m_TemporaryStagingBuffers[ m_CurrentFrame ];
+		auto& boundStagingBuffers = m_TemporaryStagingBuffers[ m_CurrentFrameIndex ];
 		while (!boundStagingBuffers.empty( )) {
 
 			DestroyBuffer( boundStagingBuffers.front( ) );
@@ -145,7 +145,7 @@ namespace lum::rhi::vk {
 
 		// Acquire image from swapchain
 		uint32 imageIndex{};
-		VkSemaphore& imageAvailableSemaphore = m_ImageAvailableSemaphores[ m_CurrentFrame ];
+		VkSemaphore& imageAvailableSemaphore = m_ImageAvailableSemaphores[ m_CurrentFrameIndex ];
 		VkResult acquireImageResult = vkAcquireNextImageKHR( m_LogicalDevice, m_Swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex );
 
 		if (acquireImageResult == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -155,14 +155,14 @@ namespace lum::rhi::vk {
 		if (acquireImageResult != VK_SUCCESS && acquireImageResult != VK_SUBOPTIMAL_KHR) {
 			return;
 		}
-		vkResetFences( m_LogicalDevice, 1, &m_InFlightFences[ m_CurrentFrame ] );
+		vkResetFences( m_LogicalDevice, 1, &m_InFlightFences[ m_CurrentFrameIndex ] );
 
 
 
 
 
 		// Begin recording
-		VkCommandBuffer& commandBuffer = m_CmdBuffers[ m_CurrentFrame ];
+		VkCommandBuffer& commandBuffer = m_CmdBuffers[ m_CurrentFrameIndex ];
 		vkResetCommandBuffer( commandBuffer, 0 );
 
 		VkCommandBufferBeginInfo beginInfo{};
@@ -192,11 +192,16 @@ namespace lum::rhi::vk {
 
 		vkCmdPipelineBarrier2( commandBuffer, &dependencyInfo );
 
+		auto& depthImage = m_Images[ m_DepthImages[ imageIndex ] ];
 
+		detail::TransitionImageInfo depthTransition{};
+		depthTransition.m_Image = depthImage;
+		depthTransition.m_NewLayout = ImageLayout::DepthStencilAttachment;
+		depthTransition.m_NewAccess = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		depthTransition.m_NewStage = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT;
+		depthTransition.m_VkCommandBuffer = commandBuffer;
+		transition_image_layout( depthTransition );
 
-
-
-		// Dynamic Rendering
 		VkRenderingAttachmentInfo colorAttachment{};
 		colorAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
 		colorAttachment.imageView = m_SwapchainImageViews[ imageIndex ];
@@ -205,12 +210,21 @@ namespace lum::rhi::vk {
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 		colorAttachment.clearValue = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
 
+		VkRenderingAttachmentInfo depthAttachment{};
+		depthAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
+		depthAttachment.imageView = depthImage.m_VkView;
+		depthAttachment.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.clearValue.depthStencil = { 1.0f, 0 };
+
 		VkRenderingInfo renderingInfo{};
 		renderingInfo.sType = VK_STRUCTURE_TYPE_RENDERING_INFO;
 		renderingInfo.renderArea = { { 0, 0 }, m_SwapchainExtent };
 		renderingInfo.layerCount = 1;
 		renderingInfo.colorAttachmentCount = 1;
 		renderingInfo.pColorAttachments = &colorAttachment;
+		renderingInfo.pDepthAttachment = &depthAttachment;
 
 		vkCmdBeginRendering( commandBuffer, &renderingInfo );
 
@@ -266,7 +280,7 @@ namespace lum::rhi::vk {
 			return;
 		}
 
-		if (!LUM_VK_RESULT_CHECK( vkQueueSubmit2( m_GraphicsQueue, 1, &submitInfo, m_InFlightFences[ m_CurrentFrame ] ) )) {
+		if (!LUM_VK_RESULT_CHECK( vkQueueSubmit2( m_GraphicsQueue, 1, &submitInfo, m_InFlightFences[ m_CurrentFrameIndex ] ) )) {
 			return;
 		}
 
@@ -288,7 +302,7 @@ namespace lum::rhi::vk {
 
 
 		// Calculate Frame
-		m_CurrentFrame = (m_CurrentFrame + 1) % k_MaxFramesInFlight;
+		m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % k_MaxFramesInFlight;
 		m_CommandBuffersToFlush.clear( );
 
 	}
@@ -368,7 +382,9 @@ namespace lum::rhi::vk {
 		VkImageMemoryBarrier2 barrier{};
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
 
-		barrier.srcStageMask = info.m_Image().m_VkStageMask;
+		barrier.srcStageMask = (info.m_Image( ).m_VkStageMask == 0 && imageInfo.m_CurrentLayout == ImageLayout::Undefined)
+			? VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT
+			: info.m_Image( ).m_VkStageMask;
 		barrier.srcAccessMask = info.m_Image().m_VkAccessMask;
 		barrier.oldLayout = ToVk( imageInfo.m_CurrentLayout );
 

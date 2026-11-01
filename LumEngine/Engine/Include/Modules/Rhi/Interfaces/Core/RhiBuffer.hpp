@@ -7,7 +7,11 @@
 namespace lum::rhi {
 
 	using BufferID = uint32;
-	struct BufferHandle : public BaseHandle<BufferID> {};
+	namespace detail {
+		struct BufferTag {};
+	} // namespace detail
+
+	using BufferHandle = BaseHandle<detail::BufferTag, BufferID>;
 
 	enum class BufferUsage : bitfield {
 		Vertex = 1 << 0, // VBO

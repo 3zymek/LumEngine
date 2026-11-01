@@ -13,7 +13,11 @@
 namespace lum::rhi {
 
 	using PipelineID = uint32;
-	struct PipelineHandle : public BaseHandle<PipelineID> {};
+	namespace detail {
+		struct PipelineTag {};
+	} // namespace detail
+
+	using PipelineHandle = BaseHandle<detail::PipelineTag, PipelineID>;
 
 	enum class PrimitiveTopology : uint8 {
 		TriangleList = 0U,

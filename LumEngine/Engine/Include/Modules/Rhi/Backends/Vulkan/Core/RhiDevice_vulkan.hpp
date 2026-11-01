@@ -65,22 +65,22 @@ namespace lum::rhi::vk {
 		void UpdateFrame( ) noexcept override;
 
 		BufferHandle CreateBuffer( const BufferCreateInfo& info ) noexcept override;
-		void DestroyBuffer( const BufferHandle handle ) noexcept override;
+		void DestroyBuffer( BufferHandle& handle ) noexcept override;
 
 		PipelineHandle CreatePipeline( const PipelineCreateInfo& info ) noexcept override;
-		void DestroyPipeline( const PipelineHandle handle ) noexcept override;
+		void DestroyPipeline( PipelineHandle& handle ) noexcept override;
 
 		ImageHandle CreateImage( const ImageCreateInfo& info ) noexcept override;
-		void DestroyImage( const ImageHandle handle ) noexcept override;
+		void DestroyImage( ImageHandle& handle ) noexcept override;
 
 		SamplerHandle CreateSampler( const SamplerCreateInfo& info ) noexcept override;
-		void DestroySampler( const SamplerHandle handle ) noexcept override;
+		void DestroySampler( SamplerHandle& handle ) noexcept override;
 
 		ResourceLayoutHandle CreateResourceLayout( const ResourceLayoutCreateInfo& info ) noexcept override;
-		void DestroyResourceLayout( const ResourceLayoutHandle handle ) noexcept override;
+		void DestroyResourceLayout( ResourceLayoutHandle& handle ) noexcept override;
 
 		ResourceSetHandle CreateResourceSet( const ResourceSetCreateInfo& info ) noexcept override;
-		void DestroyResourceSet( const ResourceSetHandle handle ) noexcept override;
+		void DestroyResourceSet( ResourceSetHandle& handle ) noexcept override;
 
 		void SendCommandBuffer( CommandBuffer& buffer ) noexcept override;
 
@@ -138,7 +138,7 @@ namespace lum::rhi::vk {
 		VkExtent2D m_SwapchainExtent{};
 		SafePtr<IVulkanSurfaceProvider> m_SurfaceProvider = nullptr;
 
-		uint32 m_CurrentFrame = 0;
+		uint32 m_CurrentFrameIndex = 0;
 
 		bool m_IsInitialized = false;
 
@@ -155,15 +155,16 @@ namespace lum::rhi::vk {
 
 		std::vector<VkImage> m_SwapchainImages{};
 		std::vector<VkImageView> m_SwapchainImageViews{};
+		std::vector<ImageHandle> m_DepthImages{};
 
 		VkCommandPool m_CmdPool = VK_NULL_HANDLE;
-		std::vector<VkCommandBuffer> m_CmdBuffers{ k_MaxFramesInFlight };
+		detail::InFlightArray<VkCommandBuffer> m_CmdBuffers{};
 
 		VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
 		VkQueue m_ComputeQueue = VK_NULL_HANDLE;
 		VkQueue m_PresentQueue = VK_NULL_HANDLE;
 
-		detail::InFlightArray<VkSemaphore> m_ImageAvailableSemaphores{};
+		std::vector<VkSemaphore> m_ImageAvailableSemaphores{};
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores{};
 
 		detail::InFlightArray<VkFence> m_InFlightFences{};
@@ -183,7 +184,7 @@ namespace lum::rhi::vk {
 		void acquire_queues( ) noexcept;
 		void create_main_surface( ) noexcept;
 		void recreate_swapchain( ) noexcept;
-		void recreate_swapchain_images( ) noexcept;
+		void recreate_swapchain_primitives( ) noexcept;
 		void create_command_pool( ) noexcept;
 		void allocate_command_buffers( ) noexcept;
 		void create_sync_primitives( ) noexcept;
@@ -213,7 +214,8 @@ namespace lum::rhi::vk {
 				totalSize += (buffer.*tStreamGetter)().size( );
 			}
 
-			std::vector<uint8> combinedBuffer{};
+			static std::vector<uint8> combinedBuffer{};
+			combinedBuffer.clear( );
 			combinedBuffer.reserve( totalSize );
 
 			for (auto& commandBuffer : m_CommandBuffersToFlush) {

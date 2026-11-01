@@ -1,4 +1,3 @@
-
 /*******************************************************/
 /* /                                                 \ */
 /*|-------------------|LumEngine|---------------------|*/
@@ -34,7 +33,7 @@ namespace lum::rhi::vk {
 
 		if (logicalDevice == VK_NULL_HANDLE) {
 			return Result<VulkanImage>::Failure(
-				"CreateImage: Invalid logical device."
+				"Invalid logical device."
 			);
 		}
 
@@ -46,13 +45,13 @@ namespace lum::rhi::vk {
 			info.m_MipmapLevels == 0 ||
 			info.m_ArrayLayers == 0) {
 			return Result<VulkanImage>::Failure(
-				"CreateImage: Invalid image dimensions, mip levels or array layers."
+				"Invalid image dimensions, mip levels or array layers."
 			);
 		}
 
 		if (info.m_UsageFlags == 0) {
 			return Result<VulkanImage>::Failure(
-				"CreateImage: Image usage flags cannot be empty."
+				"Image usage flags cannot be empty."
 			);
 		}
 
@@ -81,21 +80,21 @@ namespace lum::rhi::vk {
 		}
 
 		if (info.m_MipmapLevels > maxMipLevels) {
-			return Result<VulkanImage>::Failure( "CreateImage: Mipmap level count exceeds image dimensions." );
+			return Result<VulkanImage>::Failure( "Mipmap level count exceeds image dimensions." );
 		}
 
 		if (info.m_MipmapLevels > 1 &&
 			sampleCount != VK_SAMPLE_COUNT_1_BIT) {
-			return Result<VulkanImage>::Failure( "CreateImage: Multisampled images cannot have multiple mip levels." );
+			return Result<VulkanImage>::Failure( "Multisampled images cannot have multiple mip levels." );
 		}
 
 		if ((imageType != VK_IMAGE_TYPE_2D) && (sampleCount != VK_SAMPLE_COUNT_1_BIT)) {
-			return Result<VulkanImage>::Failure( "CreateImage: Multisampling is only supported for 2D images." );
+			return Result<VulkanImage>::Failure( "Multisampling is only supported for 2D images." );
 		}
 
 		if ((viewType == VK_IMAGE_VIEW_TYPE_1D || viewType == VK_IMAGE_VIEW_TYPE_1D_ARRAY) &&
 			imageType != VK_IMAGE_TYPE_1D) {
-			return Result<VulkanImage>::Failure( "CreateImage: 1D view type requires a 1D image." );
+			return Result<VulkanImage>::Failure( "1D view type requires a 1D image." );
 		}
 
 		if ((viewType == VK_IMAGE_VIEW_TYPE_2D ||
@@ -103,12 +102,12 @@ namespace lum::rhi::vk {
 			  viewType == VK_IMAGE_VIEW_TYPE_CUBE ||
 			  viewType == VK_IMAGE_VIEW_TYPE_CUBE_ARRAY) &&
 			imageType != VK_IMAGE_TYPE_2D) {
-			return Result<VulkanImage>::Failure( "CreateImage: 2D view type requires a 2D image." );
+			return Result<VulkanImage>::Failure( "2D view type requires a 2D image." );
 		}
 
 		if (viewType == VK_IMAGE_VIEW_TYPE_3D &&
 			imageType != VK_IMAGE_TYPE_3D) {
-			return Result<VulkanImage>::Failure( "CreateImage: 3D view type requires a 3D image." );
+			return Result<VulkanImage>::Failure( "3D view type requires a 3D image." );
 		}
 
 		VkImageCreateInfo vkInfo{};
@@ -184,7 +183,7 @@ namespace lum::rhi::vk {
 			requirements.memoryTypeBits == 0) {
 			failureCleanup( );
 
-			return Result<VulkanImage>::Failure( "CreateImage: Invalid image memory requirements." );
+			return Result<VulkanImage>::Failure( "Invalid image memory requirements." );
 		}
 
 		VkMemoryPropertyFlagBits property =
@@ -199,7 +198,7 @@ namespace lum::rhi::vk {
 			(requirements.memoryTypeBits & (1u << memoryTypeIndex)) == 0) {
 			failureCleanup( );
 
-			return Result<VulkanImage>::Failure( "CreateImage: No compatible memory type was found." );
+			return Result<VulkanImage>::Failure( "No compatible memory type was found." );
 		}
 
 		VkMemoryAllocateInfo allocInfo{};
@@ -258,7 +257,7 @@ namespace lum::rhi::vk {
 			failureCleanup( );
 
 			return Result<VulkanImage>::Failure(
-				"CreateImage: Invalid image aspect mask."
+				"Invalid image aspect mask."
 			);
 		}
 
@@ -284,11 +283,11 @@ namespace lum::rhi::vk {
 	Result<VulkanSampler> ImageResourceFactory::CreateSampler( const VkDevice logicalDevice, const SamplerCreateInfo& info ) const noexcept {
 
 		if (logicalDevice == VK_NULL_HANDLE) {
-			return Result<VulkanSampler>::Failure( "CreateSampler: Invalid logical device." );
+			return Result<VulkanSampler>::Failure( "Invalid logical device." );
 		}
 
 		if (info.m_Anisotropy < 0.0f || info.m_MaxAnisotropy < 1.0f) {
-			return Result<VulkanSampler>::Failure( "CreateSampler: Invalid anisotropy parameters." );
+			return Result<VulkanSampler>::Failure( "Invalid anisotropy parameters." );
 		}
 
 		const bool anisotropyEnabled = info.m_Anisotropy > 0.01f;

@@ -68,14 +68,17 @@ namespace lum::ahi {
 	};
 	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::ahi::InitFlag );
 
+	struct ChannelGroupTag {};
 	/* @brief Opaque handle to a channel group. Used for routing and effect processing. */
-	struct ChannelGroupHandle : BaseHandle<> { using BaseHandle::BaseHandle; };
+	using ChannelGroupHandle = BaseHandle<ChannelGroupTag>;
 
+	struct SoundTag {};
 	/* @brief Opaque handle to a loaded sound asset. */
-	struct SoundHandle : BaseHandle<> {};
+	using SoundHandle = BaseHandle<SoundTag>;
 
+	struct AudioEffectTag {};
 	/* @brief Opaque handle to a created audio effect chain. */
-	struct AudioEffectHandle : BaseHandle<> {};
+	using AudioEffectHandle = BaseHandle<AudioEffectTag>;
 
 	/* @brief Sentinel handle representing the master channel group.
 	* Used as the default routing target in AudioDevice::Play().

@@ -69,6 +69,8 @@ namespace lum::rhi::vk {
 		renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
 		renderingInfo.colorAttachmentCount = 1;
 		renderingInfo.pColorAttachmentFormats = &surfaceFormat.format;
+		renderingInfo.depthAttachmentFormat = VK_FORMAT_D32_SFLOAT;
+		renderingInfo.stencilAttachmentFormat = VK_FORMAT_UNDEFINED;
 
 		auto vkLayout = setup_pipeline_layout( info.m_Layout, device );
 
@@ -93,6 +95,9 @@ namespace lum::rhi::vk {
 
 		auto vertexInputState = setup_vertex_input_info(info.m_VertexInputPass);
 		pipInfo.pVertexInputState = &vertexInputState;
+
+		auto depthState = setup_depth_stencil_info( );
+		pipInfo.pDepthStencilState = &depthState;
 
 		auto shaderStages = setup_shader_modules(device.m_LogicalDevice, info);
 		pipInfo.stageCount = shaderStages.size();
@@ -210,34 +215,34 @@ namespace lum::rhi::vk {
 		return vkInfo;
 
 	}
-	auto PipelineFactory::setup_vertex_input_info(const VertexInputPass& info) const noexcept -> VkPipelineVertexInputStateCreateInfo {
+	auto PipelineFactory::setup_vertex_input_info( const VertexInputPass& info ) const noexcept -> VkPipelineVertexInputStateCreateInfo {
 
-		usize numAttributes = info.m_Attributes.size();
+		usize numAttributes = info.m_Attributes.size( );
 		static std::vector<VkVertexInputAttributeDescription> attributes{};
-		attributes.clear();
-		attributes.resize(numAttributes);
+		attributes.clear( );
+		attributes.resize( numAttributes );
 
 		for (uint32 i = 0; i < numAttributes; i++) {
 
-			auto& vkAttr = attributes[i];
-			const auto& attrInfo = info.m_Attributes[i];
+			auto& vkAttr = attributes[ i ];
+			const auto& attrInfo = info.m_Attributes[ i ];
 
 			vkAttr.binding = attrInfo.m_Binding;
-			vkAttr.format = ToVk(attrInfo.m_Format);
+			vkAttr.format = ToVk( attrInfo.m_Format );
 			vkAttr.location = attrInfo.m_Location;
 			vkAttr.offset = attrInfo.m_Offset;
 
 		}
 
-		usize numBindings = info.m_Bindings.size();
+		usize numBindings = info.m_Bindings.size( );
 		static std::vector<VkVertexInputBindingDescription> bindings{};
-		bindings.clear();
-		bindings.resize(numBindings);
+		bindings.clear( );
+		bindings.resize( numBindings );
 
 		for (uint32 i = 0; i < numBindings; i++) {
 
-			auto& vkBinding = bindings[i];
-			const auto& bindingInfo = info.m_Bindings[i];
+			auto& vkBinding = bindings[ i ];
+			const auto& bindingInfo = info.m_Bindings[ i ];
 
 			vkBinding.binding = bindingInfo.m_Binding;
 			vkBinding.inputRate = bindingInfo.m_Instanced ? VK_VERTEX_INPUT_RATE_INSTANCE : VK_VERTEX_INPUT_RATE_VERTEX;
@@ -249,11 +254,26 @@ namespace lum::rhi::vk {
 		VkPipelineVertexInputStateCreateInfo vkInfo{};
 		vkInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		vkInfo.vertexAttributeDescriptionCount = numAttributes;
-		vkInfo.pVertexAttributeDescriptions = attributes.data();
+		vkInfo.pVertexAttributeDescriptions = attributes.data( );
 		vkInfo.vertexBindingDescriptionCount = numBindings;
-		vkInfo.pVertexBindingDescriptions = bindings.data();
+		vkInfo.pVertexBindingDescriptions = bindings.data( );
 
 		return vkInfo;
+
+	}
+	auto PipelineFactory::setup_depth_stencil_info( ) const noexcept -> VkPipelineDepthStencilStateCreateInfo {
+
+		VkPipelineDepthStencilStateCreateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		info.depthTestEnable = VK_TRUE;
+		info.depthWriteEnable = VK_TRUE;
+		info.depthCompareOp = VK_COMPARE_OP_LESS;
+		info.depthBoundsTestEnable = VK_FALSE;
+		info.stencilTestEnable = VK_FALSE;
+		info.minDepthBounds = 0.0f;
+		info.maxDepthBounds = 1.0f;
+
+		return info;
 
 	}
 	auto PipelineFactory::setup_pipeline_layout( const PipelineLayout& info, VulkanDevice& device ) const noexcept -> VkPipelineLayout {

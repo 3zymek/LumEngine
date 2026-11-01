@@ -17,35 +17,32 @@ using namespace lum;
 using namespace lum::rhi;
 
 static std::vector<uint32> s_Indices = {
-		0, 1, 2,
-		2, 3, 0
+	// Pierwszy trójkąt (bliżej / z = 0.0)
+	0, 1, 2,
+	2, 3, 0,
+
+	// Drugi trójkąt testowy z tyłu (głębiej / z = 0.5 lub przesunięty)
+	4, 5, 6,
+	6, 7, 4
 };
 
 static std::vector<rhi::Vertex> s_Vertices = {
+	// --- KEBAB / PIERWSZY KWADRAT (Z = 0.0 - bliżej) ---
 	// Bottom-left
-	{
-		{ -0.5f, -0.5f, 0.0f },
-		{ 1.0f, 0.0f, 0.0f },
-		{ 0.0f, 0.0f }
-	},
+	{ { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } },
 	// Bottom-right
-	{
-		{ 0.5f, -0.5f, 0.0f },
-		{ 0.0f, 1.0f, 0.0f },
-		{ 1.0f, 0.0f }
-	},
+	{ {  0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },
 	// Top-right
-	{
-		{ 0.5f, 0.5f, 0.0f },
-		{ 0.0f, 0.0f, 1.0f },
-		{ 1.0f, 1.0f }
-	},
+	{ {  0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } },
 	// Top-left
-	{
-		{ -0.5f, 0.5f, 0.0f },
-		{ 1.0f, 1.0f, 0.0f },
-		{ 0.0f, 1.0f }
-	}
+	{ { -0.5f,  0.5f, 0.0f }, { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } },
+
+	// --- DRUGI KWADRAT TESTOWY Z TYŁU (Z = 0.5 - dalej, częściowo zasłonięty) ---
+	// Przesunięty w prawo-dół i w głąb (Z = 0.5)
+	{ { -0.2f, -0.2f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f } },
+	{ {  0.8f, -0.2f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f } },
+	{ {  0.8f,  0.8f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } },
+	{ { -0.2f,  0.8f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }
 };
 
 int main( int argc, char* argv[ ] ) {
@@ -84,7 +81,7 @@ int main( int argc, char* argv[ ] ) {
 	struct CameraData {
 		Matrix4 m_Mvp = Matrix4( 1.0f );
 	} cameraData;
-	cameraData.m_Mvp[ 3 ][ 0 ] = 0.5f;
+	//cameraData.m_Mvp[ 3 ][ 0 ] = 0.5f;
 
 	BufferCreateInfo uboInfo{};
 	uboInfo.m_BufferSize = sizeof( CameraData );
@@ -116,7 +113,9 @@ int main( int argc, char* argv[ ] ) {
 	rhi::ResourceSetCreateInfo resInfo{};
 	resInfo.m_Layout = layout;
 
-	auto resSet = device( ).CreateResourceSet( resInfo );
+	auto grassSet = device( ).CreateResourceSet( resInfo );
+	auto stoneSet = device( ).CreateResourceSet( resInfo );
+
 
 
 
@@ -184,13 +183,6 @@ int main( int argc, char* argv[ ] ) {
 	rhi::cmd::BindElementBuffer cmdBindEbo{};
 	cmdBindEbo.m_BufferHandle = ebo;
 
-	rhi::cmd::DrawIndexed cmdDrawIndexed{};
-	cmdDrawIndexed.m_FirstIndex = 0;
-	cmdDrawIndexed.m_FirstInstance = 0;
-	cmdDrawIndexed.m_IndexCount = s_Indices.size( );
-	cmdDrawIndexed.m_InstanceCount = 1;
-	cmdDrawIndexed.m_VertexOffset = 0;
-
 	rhi::cmd::SetScissors cmdSetScissors{};
 
 	rhi::cmd::SetViewport cmdSetViewport{};
@@ -198,25 +190,38 @@ int main( int argc, char* argv[ ] ) {
 
 	// MAIN CODE
 
-	auto dataRes = ResourceLoader::LoadImageFromFile(
+	auto grassTexture = ResourceLoader::LoadImageFromFile(
 		ResourceRoot::External, "test.png", ImageChannels::RGBA
 	);
-	if (!dataRes)
-		LUM_LOG_FATAL( "{}", dataRes.GetError( ) );
+	
+	LUM_ASSERT( grassTexture, grassTexture.GetError( ) );
 
-	auto data = dataRes.ValueRef( );
+	auto stoneTexture = ResourceLoader::LoadImageFromFile(
+		ResourceRoot::External, "stone.png", ImageChannels::RGBA
+	);
+
+	LUM_ASSERT( stoneTexture, stoneTexture.GetError( ) );
+
+	auto& grassData = grassTexture.ValueRef( );
+	auto& stoneData = stoneTexture.ValueRef( );
+
+
 
 
 	rhi::ImageCreateInfo imageInfo{};
 	imageInfo.m_Dimension = ImageDimension::Image2D;
-	imageInfo.m_Extent = { data.m_Width, data.m_Height, 1 };
+	imageInfo.m_Extent = { grassData.m_Width, grassData.m_Height, 1 };
 	imageInfo.m_Format = ImageFormat::RGBA8_SRGB;
 	imageInfo.m_UsageFlags = ImageUsageFlag::ShaderReadable | ImageUsageFlag::TransferDestination;
 	imageInfo.m_MipmapLevels = 1;
 	imageInfo.m_ViewType = ImageViewType::Default;
 	imageInfo.m_ArrayLayers = 1;
 
-	auto image = device( ).CreateImage( imageInfo );
+	auto grassImage = device( ).CreateImage( imageInfo );
+
+	imageInfo.m_Extent = { stoneData.m_Width, stoneData.m_Height, 1 };
+
+	auto stoneImage = device( ).CreateImage( imageInfo );
 
 
 	rhi::SamplerCreateInfo samplerInfo{};
@@ -228,47 +233,82 @@ int main( int argc, char* argv[ ] ) {
 	updateBuff.m_BufferHandle = ubo;
 	updateBuff.m_Offset = 0;
 
-	cmd::UpdateImageInfo updateImg{};
-	updateImg.m_ArrayIndex = 0;
-	updateImg.m_Binding = 0;
-	updateImg.m_ImageHandle = image;
-	updateImg.m_SamplerHandle = sampler;
+	cmd::UpdateImageInfo updateGrassImg{};
+	updateGrassImg.m_ArrayIndex = 0;
+	updateGrassImg.m_Binding = 0;
+	updateGrassImg.m_ImageHandle = grassImage;
+	updateGrassImg.m_SamplerHandle = sampler;
 
-	cmd::UpdateResourceSet cmdUpdateResSet{};
-	cmdUpdateResSet.m_SetHandle = resSet;
-	cmdUpdateResSet.m_BufferInfos.push_back( updateBuff );
-	cmdUpdateResSet.m_ImageInfos.push_back( updateImg );
-	
-	cmd::BindResourceSet cmdBindResSet{};
-	cmdBindResSet.m_SetHandle = resSet;
+	cmd::UpdateImageInfo updateStoneImg{};
+	updateStoneImg.m_ArrayIndex = 0;
+	updateStoneImg.m_Binding = 0;
+	updateStoneImg.m_ImageHandle = stoneImage;
+	updateStoneImg.m_SamplerHandle = sampler;
+
+	cmd::UpdateResourceSet cmdUpdateGrassSet{};
+	cmdUpdateGrassSet.m_SetHandle = grassSet;
+	cmdUpdateGrassSet.m_BufferInfos.push_back( updateBuff );
+	cmdUpdateGrassSet.m_ImageInfos.push_back( updateGrassImg );
+
+	cmd::UpdateResourceSet cmdUpdateStoneSet{};
+	cmdUpdateStoneSet.m_SetHandle = stoneSet;
+	cmdUpdateStoneSet.m_BufferInfos.push_back( updateBuff );
+	cmdUpdateStoneSet.m_ImageInfos.push_back( updateStoneImg );
 
 
-	cmd::TransferImage cmdTransferImg{};
-	cmdTransferImg.m_Data = data;
-	cmdTransferImg.m_Image = image;
+	cmd::TransferImage cmdTransferGrassImg{};
+	cmdTransferGrassImg.m_Data = grassData;
+	cmdTransferGrassImg.m_Image = grassImage;
 
+	cmd::TransferImage cmdTransferStoneImg{};
+	cmdTransferStoneImg.m_Data = stoneData;
+	cmdTransferStoneImg.m_Image = stoneImage;
 
 	rhi::CommandBuffer cmdBuffer{};
 
-	cmdBuffer.Push( cmdUpdateResSet );
-	cmdBuffer.Push( cmdTransferImg );
+	cmdBuffer.Push( cmdUpdateGrassSet );
+	cmdBuffer.Push( cmdUpdateStoneSet );
+	cmdBuffer.Push( cmdTransferGrassImg );
+	cmdBuffer.Push( cmdTransferStoneImg );
 
 	while (window.IsOpen( )) { 
 
 		cmdBuffer.Push( cmdBindPip );
 		cmdBuffer.Push( cmdBindVbo );
 		cmdBuffer.Push( cmdBindEbo );
-		cmdBuffer.Push( cmdBindResSet );
 		cmdBuffer.Push( cmdSetViewport );
 		cmdBuffer.Push( cmdSetScissors );
-		cmdBuffer.Push( cmdDrawIndexed );
+		{
+			rhi::cmd::BindResourceSet bindGrassSet{ .m_SetHandle = grassSet };
+			rhi::cmd::DrawIndexed drawGrass{
+				.m_IndexCount = 6,
+				.m_InstanceCount = 1,
+				.m_FirstIndex = 0,
+				.m_VertexOffset = 0
+			};
+
+			cmdBuffer.Push( bindGrassSet );
+			cmdBuffer.Push( drawGrass );
+		}
+
+		{
+			rhi::cmd::BindResourceSet bindStoneSet{ .m_SetHandle = stoneSet };
+			rhi::cmd::DrawIndexed drawStone{
+				.m_IndexCount = 6,
+				.m_InstanceCount = 1,
+				.m_FirstIndex = 6,
+				.m_VertexOffset = 0,
+			};
+
+			cmdBuffer.Push( bindStoneSet );
+			cmdBuffer.Push( drawStone );
+		}
 
 		device( ).SendCommandBuffer( cmdBuffer );
 		cmdBuffer.Clear( );
 
 		window.Update( );
 		device( ).UpdateFrame( );
-
 
 	}
 

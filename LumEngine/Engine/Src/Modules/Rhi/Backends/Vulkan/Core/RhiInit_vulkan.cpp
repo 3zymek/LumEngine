@@ -311,7 +311,7 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::recreate_swapchain_images( ) noexcept {
+	void VulkanDevice::recreate_swapchain_primitives( ) noexcept {
 
 		for (auto& view : m_SwapchainImageViews) {
 			if (view != VK_NULL_HANDLE) {
@@ -327,28 +327,51 @@ namespace lum::rhi::vk {
 		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
 
 		m_SwapchainImageViews.resize( numImages );
+
+		for (auto& depthHandle : m_DepthImages) {
+			DestroyImage( depthHandle );
+		}
+		m_DepthImages.resize( numImages );
+
 		for (uint32 i = 0; i < numImages; i++) {
 
-			VkImageViewCreateInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-			info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-			info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-			info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-			info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-			info.image = m_SwapchainImages[ i ];
-			info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-			info.format = surfaceFormat.format;
-			info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			info.subresourceRange.baseMipLevel = 0;
-			info.subresourceRange.levelCount = 1;
-			info.subresourceRange.baseArrayLayer = 0;
-			info.subresourceRange.layerCount = 1;
+			// SWAPCHAIN IMAGES
+			VkImageViewCreateInfo vkInfo{};
+			vkInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			vkInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.image = m_SwapchainImages[ i ];
+			vkInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			vkInfo.format = surfaceFormat.format;
+			vkInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			vkInfo.subresourceRange.baseMipLevel = 0;
+			vkInfo.subresourceRange.levelCount = 1;
+			vkInfo.subresourceRange.baseArrayLayer = 0;
+			vkInfo.subresourceRange.layerCount = 1;
 
-			if (vkCreateImageView( m_LogicalDevice, &info, nullptr, &m_SwapchainImageViews[ i ] ) != VK_SUCCESS) {
+			if (vkCreateImageView( m_LogicalDevice, &vkInfo, nullptr, &m_SwapchainImageViews[ i ] ) != VK_SUCCESS) {
 				LUM_LOG_FATAL( "Failed to create swapchain image view at index {}! (Vulkan)", i );
 				return;
 			}
 
+
+
+			// DEPTH IMAGES
+			ImageCreateInfo info{};
+			info.m_UsageFlags = ImageUsageFlag::DepthStencilAttachment;
+			info.m_Format = ImageFormat::D32_FLOAT;
+			info.m_MipmapLevels = 1;
+			info.m_ArrayLayers = 1;
+			info.m_Dimension = ImageDimension::Image2D;
+			info.m_SampleCount = SampleCount::Sample1;
+			info.m_Extent = { m_SwapchainExtent.width, m_SwapchainExtent.height, 1 };
+			info.m_ViewType = ImageViewType::Default;
+
+			m_DepthImages[ i ] = CreateImage( info );
+			LUM_ASSERT( m_DepthImages[i ].IsValid(), "Failed to create depth image for swapchain index {}", i );
+			
 		}
 
 	}
@@ -390,6 +413,7 @@ namespace lum::rhi::vk {
 
 		usize numImages = m_SwapchainImages.size( );
 
+		m_ImageAvailableSemaphores.resize( numImages );
 		for (auto& semaphore : m_ImageAvailableSemaphores) {
 			if (!LUM_VK_RESULT_CHECK( vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) )) {
 				return;
@@ -421,7 +445,7 @@ namespace lum::rhi::vk {
 		vkDeviceWaitIdle( m_LogicalDevice );
 
 		recreate_swapchain( );
-		recreate_swapchain_images( );
+		recreate_swapchain_primitives( );
 
 	}
 

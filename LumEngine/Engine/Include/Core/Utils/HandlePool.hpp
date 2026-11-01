@@ -12,11 +12,11 @@
 /*******************************************************/
 #pragma once
 
-#include "Core/CoreTypes.hpp"
-#include "Core/Utils/TypeUtils.hpp"
-
 #include <vector>
 #include <concepts>
+
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/TypeUtils.hpp"
 
 namespace lum {
 
@@ -27,17 +27,17 @@ namespace lum {
 	*
 	* @tparam tType Unsigned arithmetic type used for ID and generation storage.
 	*/
-	template<std::unsigned_integral tType = uint32>
+	template<typename tTag, std::unsigned_integral tType = uint32>
 	class alignas(8) BaseHandle {
 	public:
 
 		/* @brief Slot index identifying the object location.
 		*  MaxValue indicates an invalid handle.
 		*/
-		tType m_Id{};
+		tType m_Id = MaxValue<tType>();
 
 		/* @brief Generation value used to invalidate old handles after removal. */
-		tType m_Generation{};
+		tType m_Generation = MaxValue<tType>( );
 
 		/* @brief Constructs a handle with a slot ID and generation.
 		* @param id Slot identifier.
@@ -46,7 +46,7 @@ namespace lum {
 		constexpr BaseHandle( tType id, tType gen = 0 ) : m_Id( id ), m_Generation( gen ) {}
 
 		/* @brief Constructs an invalid handle. */
-		constexpr BaseHandle( ) : m_Id( MaxValue<tType>( ) ), m_Generation( 0 ) {}
+		constexpr BaseHandle( ) : m_Id( MaxValue<tType>( ) ), m_Generation( MaxValue<tType>( ) ) {}
 
 		/* @brief Compares two handles.
 		* @param other Handle to compare against.
@@ -62,6 +62,28 @@ namespace lum {
 		*/
 		constexpr bool operator!=( const BaseHandle& other ) const noexcept {
 			return !(*this == other);
+		}
+
+		constexpr void operator=( const BaseHandle& other ) noexcept {
+			m_Id = other.m_Id;
+			m_Generation = other.m_Generation;
+		}
+
+		constexpr bool IsValid( ) const noexcept {
+			return m_Id != MaxValue<tType>( );
+		}
+
+		constexpr bool IsNull( ) const noexcept {
+			return m_Id == MaxValue<tType>( );
+		}
+
+		constexpr explicit operator bool( ) const noexcept {
+			return IsValid( );
+		}
+
+		/* @brief Creates null handle. */
+		static constexpr BaseHandle Null( ) noexcept {
+			return BaseHandle{};
 		}
 
 	};
@@ -235,7 +257,7 @@ namespace lum {
 			if (m_Dense.size( ) >= k_MaxSize)
 				throw std::runtime_error( "Handle pool full" );
 
-			SparseT slot;
+			SparseT slot{};
 
 			if (!m_FreeSlots.empty( )) {
 				slot = m_FreeSlots.back( );
@@ -306,7 +328,7 @@ namespace lum {
 		*
 		* @param handle Handle of the object to remove.
 		*/
-		void Remove( const tHandle handle ) {
+		void Remove( tHandle& handle ) {
 
 			SparseT slot = static_cast<SparseT>(handle.m_Id);
 
@@ -339,6 +361,9 @@ namespace lum {
 			m_FreeSlots.push_back( slot );
 
 			m_SlotToDense[ slot ] = sk_NullSlot;
+
+			handle = tHandle::Null( );
+
 		}
 
 
