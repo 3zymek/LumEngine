@@ -39,7 +39,8 @@ namespace lum::rhi {
 		SetViewport,
 		SetScissors,
 		UpdateResourceSet,
-		TransferImage
+		TransferImage,
+		PushConstants
 	};
 
 	template<typename tType>

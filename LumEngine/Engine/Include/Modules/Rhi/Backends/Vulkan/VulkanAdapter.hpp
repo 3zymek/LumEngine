@@ -46,6 +46,7 @@ namespace lum::rhi::vk {
 		VkPhysicalDevice m_Device = VK_NULL_HANDLE;
 		VkPhysicalDeviceFeatures m_Features{};
 		VkPhysicalDeviceMemoryProperties m_MemoryProperties{};
+		VkPhysicalDeviceProperties m_Properties{};
 		VulkanSurfaceSupport m_SurfaceSupport{};
 		VulkanQueueFamilies	m_Queues{};
 		AdapterDescription m_Desc{};

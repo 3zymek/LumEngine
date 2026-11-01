@@ -492,6 +492,39 @@ namespace lum::rhi::vk {
 			}
 		);
 
+		m_CommandProcessor.RegisterCommandCall<cmd::PushConstants>(
+			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::PushConstants& cmd ) {
+
+				LUM_ASSERT( cmd.m_Data, "PushConstants: Data is nullptr." );
+				LUM_ASSERT( cmd.m_Size > 0, "PushConstants: Invalid data size." );
+				LUM_ASSERT(
+					cmd.m_Size % 4 == 0 && cmd.m_Offset % 4 == 0,
+					"PushConstants: Invalid push constant alignment." 
+				);
+				LUM_ASSERT(
+					cmd.m_Size + cmd.m_Offset <= m_Adapter.m_Properties.limits.maxPushConstantsSize,
+					"PushConstants: Exceeded device limit."
+				);
+				LUM_ASSERT( cmd.m_ShaderStageFlags != 0, "PushConstants: Invalid stage flags." );
+
+				if (m_BoundPipelineLayout == VK_NULL_HANDLE) {
+					LUM_LOG_WARN( "PushConstants: No pipeline layout is currently bound" );
+					return;
+				}
+
+				vkCmdPushConstants(
+					vkCmdBuffer,
+					m_BoundPipelineLayout,
+					ToVk( cmd.m_ShaderStageFlags ),
+					cmd.m_Offset,
+					cmd.m_Size,
+					cmd.m_Data
+				);
+
+
+			}
+		);
+
 	}
 
 } // namespace lum::rhi::vk

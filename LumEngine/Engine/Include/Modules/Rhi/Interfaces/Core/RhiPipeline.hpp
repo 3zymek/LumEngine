@@ -114,10 +114,6 @@ namespace lum::rhi {
 
 	using ColorComponentFlags = Flags<ColorComponentFlag>;
 
-} // namespace lum::rhi
-
-namespace lum::rhi {
-
 	struct ColorBlendAttachment {
 
 		bool m_BlendEnabled = false;
@@ -175,9 +171,16 @@ namespace lum::rhi {
 
 	};
 
+	struct PushConstantRange {
+		ShaderStageFlags m_ShaderStageFlags{};
+		usize m_Offset = 0;
+		usize m_Size = 0;
+	};
+
 	struct PipelineLayout {
 
 		std::vector<ResourceLayoutHandle> m_ResourceLayouts{};
+		std::vector<PushConstantRange> m_PushConstantRanges{};
 
 	};
 

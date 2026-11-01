@@ -289,24 +289,58 @@ namespace lum::rhi::vk {
 			}
 		}
 
+		usize pushConstantsCount = info.m_PushConstantRanges.size( );
+		std::vector<VkPushConstantRange> vkRanges{};
+		vkRanges.resize( pushConstantsCount );
+
+		usize maxSize = 0;
+		for(usize i = 0; i < pushConstantsCount; i++) {
+
+			auto& vkInfo = vkRanges[ i ];
+			const auto& nativeInfo = info.m_PushConstantRanges[ i ];
+
+			LUM_ASSERT( nativeInfo.m_Size > 0, "Invalid push constant range size" );
+			LUM_ASSERT( nativeInfo.m_Offset % 4 == 0, "Invalid push constant offset alignment" );
+			LUM_ASSERT( nativeInfo.m_Size % 4 == 0, "Invalid push constant size alignment" );
+			LUM_ASSERT( nativeInfo.m_ShaderStageFlags != 0, "Invalid shader stage flag" );
+
+			vkInfo.stageFlags = ToVk( nativeInfo.m_ShaderStageFlags );
+			vkInfo.size = nativeInfo.m_Size;
+			vkInfo.offset = nativeInfo.m_Offset;
+
+			maxSize = std::max( maxSize, nativeInfo.m_Offset + nativeInfo.m_Size );
+
+		}
+
+		LUM_ASSERT( 
+			maxSize <= device.m_Adapter.m_Properties.limits.maxPushConstantsSize, 
+			"Push constants buffer overflow" 
+		);
+
+		
+
 		VkPipelineLayoutCreateInfo vkInfo{};
 		vkInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		vkInfo.pushConstantRangeCount = 0;
-		vkInfo.pPushConstantRanges = nullptr;
+		vkInfo.pushConstantRangeCount = pushConstantsCount;
+		vkInfo.pPushConstantRanges = pushConstantsCount > 0 ? vkRanges.data( ) : nullptr;
 		vkInfo.setLayoutCount = vkSets.size( );
-		vkInfo.pSetLayouts = vkSets.data( );
+		vkInfo.pSetLayouts = vkSets.size( ) > 0 ? vkSets.data() : nullptr;
 		
 		VkPipelineLayout layout = VK_NULL_HANDLE;
 
-		vkCreatePipelineLayout(
-				device.m_LogicalDevice,
-				&vkInfo,
-				nullptr,
-				&layout
+		const VkResult result = vkCreatePipelineLayout(
+			device.m_LogicalDevice,
+			&vkInfo,
+			nullptr,
+			&layout
 		);
 
-		return layout;
+		if (result != VK_SUCCESS) {
+			LUM_LOG_ERROR( "Failed to create Vulkan Pipeline Layout: {}", static_cast<int32>( result ) );
+			return VK_NULL_HANDLE;
+		}
 
+		return layout;
 
 	}
 	auto PipelineFactory::setup_shader_modules(const VkDevice logicalDevice, const PipelineCreateInfo& info) const noexcept -> std::vector<VkPipelineShaderStageCreateInfo> {

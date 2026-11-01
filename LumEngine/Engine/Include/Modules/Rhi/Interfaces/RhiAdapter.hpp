@@ -18,12 +18,9 @@ namespace lum::rhi {
 	};
 
 	struct AdapterDescription {
-		String m_AdapterName{};
 		AdapterType m_AdapterType = AdapterType::Unknown;
 		uint64 m_DedicatedVideoMemory = 0;
 		uint64 m_SharedSystemMemory = 0;
-		uint32 m_VendorId = 0;
-		uint32 m_AdapterId = 0;
 	};
 
 

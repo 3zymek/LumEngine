@@ -81,15 +81,7 @@ int main( int argc, char* argv[ ] ) {
 	struct CameraData {
 		Matrix4 m_Mvp = Matrix4( 1.0f );
 	} cameraData;
-	//cameraData.m_Mvp[ 3 ][ 0 ] = 0.5f;
-
-	BufferCreateInfo uboInfo{};
-	uboInfo.m_BufferSize = sizeof( CameraData );
-	uboInfo.m_Usage = BufferUsage::Uniform;
-	uboInfo.m_Data = &cameraData;
-	uboInfo.m_DataSize = sizeof( CameraData );
-
-	auto ubo = device( ).CreateBuffer( uboInfo );
+	cameraData.m_Mvp[ 3 ][ 0 ] = 0.5f;
 
 
 	rhi::ResourceSetBinding imageBinding{};
@@ -98,15 +90,8 @@ int main( int argc, char* argv[ ] ) {
 	imageBinding.m_ShaderStages = ShaderStage::Fragment;
 	imageBinding.m_Type = ResourceType::CombinedImageSampler;
 
-	rhi::ResourceSetBinding cameraBinding{};
-	cameraBinding.m_Binding = 1;
-	cameraBinding.m_ResourceCount = 1;
-	cameraBinding.m_ShaderStages = ShaderStage::Vertex;
-	cameraBinding.m_Type = ResourceType::UniformBuffer;
-
 	rhi::ResourceLayoutCreateInfo layoutInfo{};
 	layoutInfo.m_Bindings.push_back( imageBinding );
-	layoutInfo.m_Bindings.push_back( cameraBinding );
 
 	auto layout = device( ).CreateResourceLayout( layoutInfo );
 
@@ -123,7 +108,13 @@ int main( int argc, char* argv[ ] ) {
 
 	rhi::PipelineCreateInfo pipInfo{};
 
+	PushConstantRange range{};
+	range.m_Size = sizeof( CameraData );
+	range.m_ShaderStageFlags = ShaderStage::Vertex;
+	range.m_Offset = 0;
+
 	pipInfo.m_Layout.m_ResourceLayouts.push_back( layout );
+	pipInfo.m_Layout.m_PushConstantRanges.push_back( range  );
 
 	auto& assembly = pipInfo.m_AssemblyPass;
 	assembly.m_PrimitiveRestart = false;
@@ -226,12 +217,7 @@ int main( int argc, char* argv[ ] ) {
 
 	rhi::SamplerCreateInfo samplerInfo{};
 	auto sampler = device( ).CreateSampler( samplerInfo );
-	
-	cmd::UpdateBufferInfo updateBuff{};
-	updateBuff.m_ArrayIndex = 0;
-	updateBuff.m_Binding = 1;
-	updateBuff.m_BufferHandle = ubo;
-	updateBuff.m_Offset = 0;
+
 
 	cmd::UpdateImageInfo updateGrassImg{};
 	updateGrassImg.m_ArrayIndex = 0;
@@ -247,12 +233,10 @@ int main( int argc, char* argv[ ] ) {
 
 	cmd::UpdateResourceSet cmdUpdateGrassSet{};
 	cmdUpdateGrassSet.m_SetHandle = grassSet;
-	cmdUpdateGrassSet.m_BufferInfos.push_back( updateBuff );
 	cmdUpdateGrassSet.m_ImageInfos.push_back( updateGrassImg );
 
 	cmd::UpdateResourceSet cmdUpdateStoneSet{};
 	cmdUpdateStoneSet.m_SetHandle = stoneSet;
-	cmdUpdateStoneSet.m_BufferInfos.push_back( updateBuff );
 	cmdUpdateStoneSet.m_ImageInfos.push_back( updateStoneImg );
 
 
@@ -264,6 +248,12 @@ int main( int argc, char* argv[ ] ) {
 	cmdTransferStoneImg.m_Data = stoneData;
 	cmdTransferStoneImg.m_Image = stoneImage;
 
+	cmd::PushConstants cmdPushConstants{};
+	cmdPushConstants.m_Data = &cameraData;
+	cmdPushConstants.m_ShaderStageFlags = ShaderStage::Vertex;
+	cmdPushConstants.m_Size = sizeof( cameraData );
+	cmdPushConstants.m_Offset = 0;
+
 	rhi::CommandBuffer cmdBuffer{};
 
 	cmdBuffer.Push( cmdUpdateGrassSet );
@@ -271,9 +261,10 @@ int main( int argc, char* argv[ ] ) {
 	cmdBuffer.Push( cmdTransferGrassImg );
 	cmdBuffer.Push( cmdTransferStoneImg );
 
-	while (window.IsOpen( )) { 
+	while (window.IsOpen( )) {
 
 		cmdBuffer.Push( cmdBindPip );
+		cmdBuffer.Push( cmdPushConstants );
 		cmdBuffer.Push( cmdBindVbo );
 		cmdBuffer.Push( cmdBindEbo );
 		cmdBuffer.Push( cmdSetViewport );

@@ -112,8 +112,7 @@ namespace lum::rhi::vk {
 			return Result<VulkanAdapter>::Failure( );
 		}
 
-		VkPhysicalDeviceProperties props{};
-		vkGetPhysicalDeviceProperties( device, &props );
+		vkGetPhysicalDeviceProperties( device, &adapter.m_Properties );
 
 		VkPhysicalDeviceMemoryProperties memProps{};
 		vkGetPhysicalDeviceMemoryProperties( device, &memProps );
@@ -170,17 +169,13 @@ namespace lum::rhi::vk {
 
 		}
 
-		adapter.m_Desc.m_AdapterName = props.deviceName;
-		adapter.m_Desc.m_AdapterId = props.deviceID;
-		adapter.m_Desc.m_VendorId = props.vendorID;
-
 		// Features evaluation
 
 		for (auto feature : m_Requirements.GetRequiredFeatures( )) {
 
 			auto it = sk_AdapterFeaturesMap.find( feature );
 			if (it == sk_AdapterFeaturesMap.end( )) {
-				LUM_LOG_ERROR( "Adapter '{}' missing required feature!", props.deviceName );
+				LUM_LOG_ERROR( "Adapter '{}' missing required feature!", adapter.m_Properties.deviceName );
 				continue;
 			}
 
@@ -198,7 +193,7 @@ namespace lum::rhi::vk {
 
 			auto it = sk_AdapterFeaturesMap.find( feature );
 			if (it == sk_AdapterFeaturesMap.end( )) {
-				LUM_LOG_ERROR( "Adapter '{}' missing required feature!", props.deviceName );
+				LUM_LOG_ERROR( "Adapter '{}' missing required feature!", adapter.m_Properties.deviceName );
 				continue;
 			}
 

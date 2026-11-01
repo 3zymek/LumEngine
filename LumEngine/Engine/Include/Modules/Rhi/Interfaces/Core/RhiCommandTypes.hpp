@@ -151,4 +151,15 @@ namespace lum::rhi::cmd {
 
 	};
 
+	struct LUM_API PushConstants : Command {
+
+		LUM_RHI_CMD_TYPE( CommandType::PushConstants );
+		
+		void* m_Data = nullptr;
+		usize m_Size = 0;
+		usize m_Offset = 0;
+		ShaderStageFlags m_ShaderStageFlags{};
+
+	};
+
 } // namespace lum::rhi
