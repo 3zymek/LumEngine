@@ -4,15 +4,24 @@
 //
 //=============================================================================//
 #pragma once
-#include "Event/EventCommon.hpp"
-#include "Core/Utils/LumAssert.hpp"
+
+#include <array>
+#include <utility>
+#include <vector>
+
+#include "Core/CoreTypes.hpp"
 #include "Core/Limits.hpp"
+#include "Core/Utils/Assert.hpp"
+#include "Core/Utils/LogMacros.hpp"
+#include "Core/Utils/TypeUtils.hpp"
+#include "Event/EventTypes.hpp"
 
 namespace lum::ev::detail {
 
 	/* @brief Abstract base for type-erased event pool storage. */
 	struct EventPoolBase {
 		virtual void FlushEvents( ) = 0;
+		virtual ~EventPoolBase( ) = default;
 	};
 
 	/* @brief Manages subscriptions and deferred dispatch for a single event type.
@@ -28,8 +37,8 @@ namespace lum::ev::detail {
 	public:
 
 		EventPool( ) {
-			mEventsCurrent.reserve( limits::kMaxCallbackPerFrame );
-			mEventsNext.reserve( limits::kMaxCallbackPerFrame );
+			m_EventsCurrent.reserve( limits::k_MaxCallbackPerFrame );
+			m_EventsNext.reserve( limits::k_MaxCallbackPerFrame );
 		}
 
 		/* @brief Registers a one-shot callback. Destroyed automatically after first dispatch.
@@ -39,8 +48,8 @@ namespace lum::ev::detail {
 		*/
 		template<typename tLambda>
 		SubscriptionID Subscribe( tLambda&& lambda ) {
-			setup_callback( std::forward<tLambda>( lambda ), mCallbacks[ mCallbackCount ] );
-			return mCallbackCount++;
+			setup_callback( std::forward<tLambda>( lambda ), m_Callbacks[ m_CallbackCount ] );
+			return m_CallbackCount++;
 		}
 
 		/* @brief Registers a persistent callback that survives across frames.
@@ -50,9 +59,9 @@ namespace lum::ev::detail {
 		*/
 		template<typename tLambda>
 		SubscriptionID SubscribePermanently( tLambda&& lambda ) {
-			for (usize i = 0; i < limits::kMaxPermanentCallbacks; i++) {
-				if (!mPermanentCallbacks[ i ].mActive) {
-					setup_callback( std::forward<tLambda>( lambda ), mPermanentCallbacks[ i ] );
+			for (usize i = 0; i < limits::k_MaxPermanentCallbacks; i++) {
+				if (!m_PermanentCallbacks[ i ].m_Active) {
+					setup_callback( std::forward<tLambda>( lambda ), m_PermanentCallbacks[ i ] );
 					return i;
 				}
 			}
@@ -64,9 +73,9 @@ namespace lum::ev::detail {
 		*  @param id SubscriptionID returned by Subscribe().
 		*/
 		void Unsubscribe( SubscriptionID id ) {
-			if (mCallbackCount < id) return;
-			auto& callback = mCallbacks[ id ];
-			if (callback.mActive)
+			if (m_CallbackCount < id) return;
+			auto& callback = m_Callbacks[ id ];
+			if (callback.m_Active)
 				callback.Destroy( );
 		}
 
@@ -74,8 +83,8 @@ namespace lum::ev::detail {
 		*  @param id SubscriptionID returned by SubscribePermanently().
 		*/
 		void UnsubscribePermanent( SubscriptionID id ) {
-			auto& callback = mPermanentCallbacks[ id ];
-			if (callback.mActive)
+			auto& callback = m_PermanentCallbacks[ id ];
+			if (callback.m_Active)
 				callback.Destroy( );
 		}
 
@@ -83,11 +92,11 @@ namespace lum::ev::detail {
 		*  @param event Event instance to queue.
 		*/
 		void Emit( const tType& event ) {
-			if (mEventsCurrent.size( ) >= limits::kMaxEventEmitsPerFrame) return;
-			if (!mFlushing)
-				mEventsCurrent.push_back( event );
+			if (m_EventsCurrent.size( ) >= limits::k_MaxEventEmitsPerFrame) return;
+			if (!m_Flushing)
+				m_EventsCurrent.push_back( event );
 			else
-				mEventsNext.push_back( event );
+				m_EventsNext.push_back( event );
 		}
 
 		/* @brief Dispatches all queued events to subscribers.
@@ -95,26 +104,26 @@ namespace lum::ev::detail {
 		*  Events emitted during dispatch are deferred to the next flush.
 		*/
 		void FlushEvents( ) override {
-			mFlushing = true;
+			m_Flushing = true;
 
-			for (auto& event : mEventsCurrent)
+			for (auto& event : m_EventsCurrent)
 				invoke_callbacks( event );
 
-			mEventsCurrent.clear( );
-			mFlushing = false;
-			std::swap( mEventsCurrent, mEventsNext );
+			m_EventsCurrent.clear( );
+			m_Flushing = false;
+			std::swap( m_EventsCurrent, m_EventsNext );
 		}
 
 	private:
 
-		std::array<EventCallback, limits::kMaxCallbackPerFrame>   mCallbacks;
-		std::array<EventCallback, limits::kMaxPermanentCallbacks> mPermanentCallbacks;
-		SubscriptionID mCallbackCount = 0;
+		std::array<EventCallback, limits::k_MaxCallbackPerFrame>   m_Callbacks{};
+		std::array<EventCallback, limits::k_MaxPermanentCallbacks> m_PermanentCallbacks{};
+		SubscriptionID m_CallbackCount = 0;
 
-		std::vector<tType> mEventsCurrent;
-		std::vector<tType> mEventsNext;
+		std::vector<tType> m_EventsCurrent{};
+		std::vector<tType> m_EventsNext{};
 
-		bool mFlushing = false;
+		bool m_Flushing = false;
 
 		/* @brief Stores a lambda in a callback slot using placement new.
 		*  @tparam tLambda Type of the lambda to store.
@@ -126,15 +135,15 @@ namespace lum::ev::detail {
 			LUM_SASSERT( sizeof( LambdaStorage ) >= sizeof( tLambda ) && "Lambda too big for buffer" );
 			LUM_SASSERT( alignof(LambdaStorage) >= alignof(tLambda) && "Lambda alignment mismatch" );
 
-			new (&callback.mStorage) tLambda( std::forward<tLambda>( lambda ) );
+			new (&callback.m_Storage) tLambda( std::forward<tLambda>( lambda ) );
 
-			callback.mInvoke = []( void* userParam, const void* event ) {
-				(*reinterpret_cast< tLambda* >(userParam))(*reinterpret_cast< const tType* >(event));
+			callback.m_Invoke = []( void* userParam, const void* event ) {
+				(*reinterpret_cast<tLambda*>(userParam))(*reinterpret_cast<const tType*>(event));
 				};
-			callback.mDestroy = []( void* userParam ) {
-				reinterpret_cast< tLambda* >(userParam)->~tLambda( );
+			callback.m_Destroy = []( void* userParam ) {
+				reinterpret_cast<tLambda*>(userParam)->~tLambda( );
 				};
-			callback.mActive = true;
+			callback.m_Active = true;
 		}
 
 		/* @brief Invokes all active callbacks for the given event.
@@ -142,19 +151,19 @@ namespace lum::ev::detail {
 		*  @param event Event instance to dispatch.
 		*/
 		void invoke_callbacks( const tType& event ) {
-			auto temp = mCallbackCount;
+			auto temp = m_CallbackCount;
 
 			for (int32 i = 0; i < temp; i++) {
-				auto& callback = mCallbacks[ i ];
-				if (!callback.mActive) continue;
-				callback.mInvoke( &callback.mStorage, &event );
+				auto& callback = m_Callbacks[ i ];
+				if (!callback.m_Active) continue;
+				callback.m_Invoke( &callback.m_Storage, &event );
 				callback.Destroy( );
 			}
-			mCallbackCount = 0;
+			m_CallbackCount = 0;
 
-			for (auto& callback : mPermanentCallbacks) {
-				if (callback.mActive)
-					callback.mInvoke( &callback.mStorage, &event );
+			for (auto& callback : m_PermanentCallbacks) {
+				if (callback.m_Active)
+					callback.m_Invoke( &callback.m_Storage, &event );
 			}
 		}
 

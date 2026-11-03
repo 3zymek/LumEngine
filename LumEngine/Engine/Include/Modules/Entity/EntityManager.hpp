@@ -1,15 +1,23 @@
-//========= Copyright (C) 2025-present 3zymek, MIT License ============//
-//
-// Purpose: Manages entity component pools and their lifecycle.
-//          Handles component add/remove/query per entity,
-//          pool creation on demand, and multi-component iteration.
-//
-//=============================================================================//
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
+#include "Core/CoreTypes.hpp"
+#include "Core/CoreDefines.hpp"
+#include "Core/Utils/SafePtr.hpp"
 #include "Core/Limits.hpp"
 
-#include "Entity/EcsCommon.hpp"
+#include "Entity/EcsTypes.hpp"
 #include "Entity/ComponentPool.hpp"
 
 namespace lum {
@@ -27,24 +35,26 @@ namespace lum {
 		* iterating over entities that share a set of component types.
 		*/
 		class LUM_API EntityManager {
-			public:
+		public:
 
 			EntityManager( ) { initialize_pools( ); }
 
 			/* @brief Move constructor. Transfers all component pool ownership from other. */
 			EntityManager( EntityManager&& other ) noexcept {
-				for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
-					mComponentPools[ i ] = other.mComponentPools[ i ];
-					other.mComponentPools[ i ] = nullptr;
+				for (int32 i = 0; i < limits::k_MaxComponentTypes; i++) {
+					m_ComponentPools[ i ] = other.m_ComponentPools[ i ];
+					other.m_ComponentPools[ i ] = nullptr;
 				}
-				mEventBus = other.mEventBus;
-				other.mEventBus = nullptr;
+				m_EventBus = other.m_EventBus;
+				other.m_EventBus = nullptr;
 			}
 
 			~EntityManager( ) { destroy_pools( ); }
 
 			/* @brief Binds the entity manager to an event bus for component lifecycle events. */
-			void Initialize( ev::EventBus* bus ) { mEventBus = bus; }
+			void Initialize( ev::EventBus& bus ) {
+				m_EventBus = bus;
+			}
 
 			//=========================================================================
 			// Entity creation / destruction
@@ -162,7 +172,7 @@ namespace lum {
 			* @param callback Callable with signature (tFirst&, tRest&...).
 			*/
 			template<detail::cComponent tFirst, detail::cComponent... tRest, typename tCallback>
-			void Each( tCallback&& callback );
+			void Iterate( tCallback&& callback );
 
 			/* @brief Iterates over all entities that have tFirst and all tRest components.
 			* Callback receives entity ID followed by component references.
@@ -177,9 +187,9 @@ namespace lum {
 			*/
 			template<typename tCallback>
 			void ForEachComponent( EntityID entityId, tCallback&& callback ) {
-				for (int32 i = 0; i < limits::kMaxComponentTypes; i++) {
-					if (mComponentPools[ i ] && mComponentPools[ i ]->Contains( entityId ))
-						callback( mComponentPools[ i ]->GetBase( entityId ), mComponentPools[ i ] );
+				for (int32 i = 0; i < limits::k_MaxComponentTypes; i++) {
+					if (m_ComponentPools[ i ] && m_ComponentPools[ i ]->Contains( entityId ))
+						callback( m_ComponentPools[ i ]->GetBase( entityId ), m_ComponentPools[ i ] );
 				}
 			}
 
@@ -193,12 +203,12 @@ namespace lum {
 			template<detail::cComponent tType>
 			detail::ComponentPool<tType>& GetPool( );
 
-			private:
+		private:
 
 			/* @brief Array of component pools indexed by component type ID. */
-			ComponentBasePool* mComponentPools[ limits::kMaxComponentTypes ];
+			ComponentBasePool* m_ComponentPools[ limits::k_MaxComponentTypes ];
 
-			ev::EventBus* mEventBus = nullptr;
+			SafePtr<ev::EventBus> m_EventBus = nullptr;
 
 			/* @brief Initializes all pool slots to nullptr. */
 			void initialize_pools( );

@@ -5,7 +5,9 @@
 //=============================================================================//
 #pragma once
 
-#include "Scene/SceneManager.hpp"
+//#include "Scene/SceneManager.hpp"
+#include "Core/CoreDefines.hpp"
+#include "Core/Utils/SafePtr.hpp"
 #include "Entity/TransformSystem.hpp"
 
 namespace lum {
@@ -15,14 +17,23 @@ namespace lum {
 	class AudioModule;
 	namespace ev { class EventBus; }
 
+	struct LUM_API SceneModuleCreateInfo {
+
+		SafePtr<ResourceModule> m_ResourceModule = nullptr;
+		SafePtr<RenderModule>	m_RenderModule = nullptr;
+		SafePtr<AudioModule>	m_AudioModule = nullptr;
+		SafePtr<ev::EventBus>	m_EventBus = nullptr;
+
+	};
+
 	// Owns the scene manager and wires it up with all engine subsystems.
 	// Must be initialized last — depends on platform, resources, render and audio.
 	class LUM_API SceneModule {
 	public:
 
-		SceneManager mSceneMgr{};
+		//SceneManager m_SceneMgr{};
 
-		void Initialize( ResourceModule& res, RenderModule& render, AudioModule& audio, ev::EventBus& bus );
+		void Initialize( const SceneModuleCreateInfo& info );
 
 	};
 

@@ -6,7 +6,8 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/CoreCommon.hpp"
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/TypeUtils.hpp"
 
 namespace lum {
 
@@ -24,20 +25,19 @@ namespace lum {
 	struct Ranged {
 
 		/* @brief Stored clamped value. */
-		tType mValue{};
+		tType m_Value{};
 
 		/* @brief Constructs a ranged value.
 		* @param val Initial value, clamped to the valid range.
 		*/
-		constexpr Ranged( tType val )
-			: mValue( std::clamp( val, tMin, tMax ) ) { }
+		constexpr Ranged( tType val ) : m_Value( Clamp( val, tMin, tMax ) ) { }
 
 		/* @brief Assigns a new value.
 		* @param oth Value to assign.
 		* @return Reference to this object.
 		*/
 		constexpr Ranged& operator=( tType oth ) {
-			mValue = std::clamp( oth, tMin, tMax );
+			m_Value = Clamp( oth, tMin, tMax );
 			return *this;
 		}
 
@@ -45,7 +45,7 @@ namespace lum {
 		* @return Stored clamped value.
 		*/
 		constexpr operator tType( ) const {
-			return mValue;
+			return m_Value;
 		}
 
 	};

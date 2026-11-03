@@ -2,15 +2,19 @@ from tools.init_cmake import setup_cmake
 from tools.init_fmod import setup_fmod
 from tools.init_glfw import setup_glfw
 from tools.init_assimp import setup_assimp
-from tools.init_imgui import setup_imgui
+from tools.init_qt import setup_qt
 from tools.init_stb import setup_stb
+from tools.init_vulkan import setup_vulkan
+from tools.init_magic_enum import setup_magic_enum
 
 
 setup_fmod()
-setup_imgui()
+setup_qt()
 setup_stb()
 setup_glfw()
 setup_assimp()
+setup_vulkan()
+setup_magic_enum()
 setup_cmake()
 
 print("Setup finished")

@@ -5,25 +5,29 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/CoreCommon.hpp"
+#include <algorithm>
+#include <optional>
+#include <utility>
+#include <source_location>
+
+#include "Core/CoreDefines.hpp"
+#include "Core/Utils/Assert.hpp"
+#include "Core/Utils/StringUtils.hpp"
 
 namespace lum {
 
-	/*
-	* @brief Wrapper class representing an optional value that may or may not exist.
+	/* @brief Wrapper class representing an optional value that may or may not exist.
 	* @tparam tType The underlying value type to store.
 	*/
 	template<typename tType>
 	class LUM_API Optional {
 	public:
 
-		/*
-		* @brief Constructs an empty Optional object.
-		*/
-		Optional( ) : mValue( std::nullopt ) { }
+		/* @brief Constructs an empty Optional object. */
+		Optional( ) : m_Value( std::nullopt ) { }
 
-		Optional( const tType& value ) : mValue( value ) { }
-		Optional( tType&& value ) : mValue( std::move( value ) ) { }
+		Optional( const tType& value ) : m_Value( value ) { }
+		Optional( tType&& value ) : m_Value( std::move( value ) ) { }
 
 		Optional( const Optional& ) = default;
 		Optional( Optional&& ) = default;
@@ -39,7 +43,7 @@ namespace lum {
 		}
 
 		LUM_FORCEINLINE bool HasValue( ) const {
-			return mValue.has_value( );
+			return m_Value.has_value( );
 		}
 
 		/*
@@ -47,26 +51,23 @@ namespace lum {
 		* @return Reference to the underlying value.
 		* Asserts at runtime in Debug builds if no value is set.
 		*/
-		LUM_FORCEINLINE tType& Value( ) {
-			LUM_ASSERT( HasValue( ), "Optional has no value." );
-			return *mValue;
+		LUM_FORCEINLINE tType& Value( const std::source_location current = std::source_location::current() ) {
+			assert_getter( current );
+			return *m_Value;
 		}
 
-		/*
-		* @brief Accesses the contained value as a const reference.
+		/* @brief Accesses the contained value as a const reference.
 		* @return Const reference to the underlying value.
 		* Asserts at runtime in Debug builds if no value is set.
 		*/
-		LUM_FORCEINLINE const tType& Value( ) const {
-			LUM_ASSERT( HasValue( ), "Optional has no value." );
-			return *mValue;
+		LUM_FORCEINLINE const tType& Value( const std::source_location current = std::source_location::current() ) const {
+			assert_getter( current );
+			return *m_Value;
 		}
 
-		/*
-		* @brief Resets the Optional instance back to an empty state.
-		*/
+		/* @brief Resets the Optional instance back to an empty state. */
 		LUM_FORCEINLINE void Reset( ) {
-			mValue.reset( );
+			m_Value.reset( );
 		}
 
 		explicit operator bool( ) const {
@@ -91,7 +92,14 @@ namespace lum {
 
 	private:
 
-		std::optional<tType> mValue; ///< Internal std::optional container instance.
+		void assert_getter( const std::source_location& loc ) const {
+			LUM_ASSERT(
+				HasValue( ),
+				FormatString<256>( "Tried to access empty Optional<tType> in file {} at line {}", loc.file_name( ), loc.line( ) )
+			);
+		}
+
+		std::optional<tType> m_Value; //< Internal std::optional container instance.
 
 	};
 

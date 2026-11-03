@@ -1,11 +1,22 @@
-//========= Copyright (C) 2025-present 3zymek, MIT License ============//
-//
-// Purpose: Name component for the ECS.
-//
-//=============================================================================//
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
+#include "Core/CoreDefines.hpp"
+#include "Core/CoreTypes.hpp"
 #include "Core/Utils/FixedString.hpp"
-#include "Entity/EcsCommon.hpp"
+#include "Core/Utils/TypeID.hpp"
+#include "Entity/EcsTypes.hpp"
+
 #include "Entity/Components/Name.gen.hpp"
 
 namespace lum {
@@ -19,7 +30,8 @@ namespace lum {
 		LUM_GENERATED_BODY( )
 
 		/* @brief Null-terminated fixed-size name string. Max 31 usable characters. */
-		LUM_PROPERTY( ) FixedString<32> mName;
+		LUM_PROPERTY( ) 
+		FixedString<32> m_Name;
 
 	};
 

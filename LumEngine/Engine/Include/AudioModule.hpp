@@ -4,6 +4,7 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Ahi/Core/AhiDevice.hpp"
 #include "Audio/AudioManager.hpp"
 
@@ -14,8 +15,8 @@ namespace lum {
 	class LUM_API AudioModule {
 	public:
 
-		ahi::AudioDevice* mAudioDevice = nullptr;
-		AudioManager mAudioMgr{};
+		OwningPtr<ahi::IAudioDevice> m_AudioDevice = nullptr;
+		AudioManager m_AudioMgr{};
 
 		void Initialize( ev::EventBus& bus );
 		void Finalize( );

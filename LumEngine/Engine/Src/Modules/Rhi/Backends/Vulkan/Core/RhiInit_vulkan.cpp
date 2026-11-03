@@ -1,0 +1,471 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
+#include "Core/CorePch.hpp"
+#include "Rhi/Backends/Vulkan/VulkanPch.hpp"
+
+// Header implementation file
+#include "Rhi/Backends/Vulkan/Core/RhiDevice_vulkan.hpp"
+
+#include "Core/CoreTypes.hpp"
+#include "Core/Math/MathUtils.hpp"
+#include "Core/Utils/LogMacros.hpp"
+#include "Core/Utils/ResourceLoader.hpp"
+#include "Core/Utils/Result.hpp"
+#include "Core/Utils/SafeCast.hpp"
+#include "Core/Utils/TypeUtils.hpp"
+#include "Platform/SurfaceProvider.hpp"
+#include "Platform/VulkanSurfaceProvider.hpp"
+#include "Rhi/Backends/Vulkan/RhiTypes_vulkan.hpp"
+#include "Rhi/Backends/Vulkan/Utils/VulkanAdapterEvaluator.hpp"
+#include "Rhi/Interfaces/Core/RhiBuffer.hpp"
+#include "Rhi/Interfaces/Core/RhiDevice.hpp"
+#include "Rhi/Interfaces/Core/RhiPipeline.hpp"
+#include "Rhi/Interfaces/Core/RhiShader.hpp"
+#include "Rhi/Interfaces/RhiAdapter.hpp"
+#include "Rhi/RhiTypes.hpp"
+
+namespace lum::rhi::vk {
+
+	void VulkanDevice::create_vk_instance( const RenderDeviceCreateInfo& info ) noexcept {
+
+		std::vector<const char*> layers = {
+			"VK_LAYER_KHRONOS_validation"
+		};
+
+		std::vector<const char*> extensions = info.m_InstanceExtensions;
+		if (info.m_EnableValidation) {
+			extensions.push_back( VK_EXT_DEBUG_UTILS_EXTENSION_NAME );
+		}
+
+#		if defined(__APPLE__)
+			extensions.push_back( VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME );
+#		endif
+
+
+		VkApplicationInfo appInfo{};
+		appInfo.apiVersion = VK_MAKE_VERSION( 1, 3, 0 );
+		appInfo.engineVersion = VK_MAKE_VERSION( 0, 3, 0 );
+		appInfo.pApplicationName = "Blank";
+		appInfo.pEngineName = "LumEngine";
+
+		VkInstanceCreateInfo desc{};
+		desc.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+		desc.pApplicationInfo = &appInfo;
+		desc.enabledExtensionCount = SafeCast<uint32>( extensions.size( ) );
+		desc.ppEnabledExtensionNames = extensions.data( );
+		desc.enabledLayerCount = layers.size( );
+		desc.ppEnabledLayerNames = layers.data( );
+
+#		if defined(__APPLE__)
+			desc.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#		endif
+
+		// ENABLE VALIDATION
+		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+		if (info.m_EnableValidation) {
+
+			debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+
+			debugCreateInfo.messageSeverity =
+				VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
+				VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+
+			debugCreateInfo.messageType =
+				VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+				VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+				VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+
+			debugCreateInfo.pfnUserCallback =
+				[]( VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+					VkDebugUtilsMessageTypeFlagsEXT type,
+					const VkDebugUtilsMessengerCallbackDataEXT* data,
+					void* userData ) -> VkBool32 {
+						if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
+							LUM_LOG_ERROR( "[VULKAN VALIDATION] {}", data->pMessage );
+						}
+						else {
+							LUM_LOG_WARN( "[VULKAN VALIDATION] {}", data->pMessage );
+						}
+						return VK_FALSE;
+				};
+
+			desc.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
+			desc.enabledLayerCount = SafeCast<uint32>( layers.size( ) );
+			desc.ppEnabledLayerNames = layers.data( );
+
+		}
+
+		if (vkCreateInstance( &desc, nullptr, &m_Instance ) != VK_SUCCESS) {
+			LUM_LOG_FATAL( "Failed to create VkInstance!" );
+		}
+
+	}
+
+	void VulkanDevice::choose_adapter( ) noexcept {
+
+		uint32 numDevices = 0;
+		vkEnumeratePhysicalDevices( m_Instance, &numDevices, nullptr );
+		if (numDevices <= 0) {
+			LUM_LOG_FATAL( "There are no physical devices to be found!" );
+			return;
+		}
+		std::vector<VkPhysicalDevice> devices( numDevices );
+		vkEnumeratePhysicalDevices( m_Instance, &numDevices, devices.data( ) );
+
+		VulkanAdapter bestAdapter{};
+
+		for (uint32 i = 0; i < numDevices; i++) {
+
+			auto evaluated = m_AdapterEvaluator.EvaluateAdapter( devices[ i ], m_MainSurface );
+
+			if (!evaluated)
+				continue;
+
+			auto& val = evaluated.ValueRef( );
+
+			if (val.m_Score > bestAdapter.m_Score && val.m_Queues.IsValid( ))
+				bestAdapter = val;
+
+		}
+
+		if (bestAdapter.m_Score == 0 || !bestAdapter.m_Queues.IsValid( )) {
+			LUM_LOG_FATAL( "Failed to initialize Vulkan backend: None of the ({}) detected GPU(s) satisfy LumEngine's minimum required features!", numDevices );
+			return;
+		}
+
+		m_Adapter = bestAdapter;
+
+	}
+
+	void VulkanDevice::create_logical_device( ) noexcept {
+
+		// ENABLE SWAPCHAIN CONFIGURATION
+		std::vector<const char*> deviceExtensions = {
+			VK_KHR_SWAPCHAIN_EXTENSION_NAME
+		};
+
+#		if defined(__APPLE__)
+			deviceExtensions.push_back( "VK_KHR_portability_subset" );
+#		endif
+
+		const auto& queues = m_Adapter.m_Queues;
+
+		float32 priorities = 1.0f;
+
+		VkDeviceQueueCreateInfo graphicsQueueInfo{};
+		graphicsQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		graphicsQueueInfo.pQueuePriorities = &priorities;
+		graphicsQueueInfo.queueCount = 1;
+		graphicsQueueInfo.queueFamilyIndex = queues.m_GraphicsQueueIndex;
+
+		VkDeviceQueueCreateInfo computeQueueInfo{};
+		computeQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		computeQueueInfo.pQueuePriorities = &priorities;
+		computeQueueInfo.queueCount = 1;
+		computeQueueInfo.queueFamilyIndex = queues.m_ComputeQueueIndex;
+
+		VkDeviceQueueCreateInfo presentQueueInfo{};
+		presentQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		presentQueueInfo.pQueuePriorities = &priorities;
+		presentQueueInfo.queueCount = 1;
+		presentQueueInfo.queueFamilyIndex = queues.m_PresentQueueIndex;
+
+		std::vector<VkDeviceQueueCreateInfo> queueInfos{};
+		queueInfos.push_back( graphicsQueueInfo );
+
+		if (queues.m_GraphicsQueueIndex != queues.m_PresentQueueIndex) {
+			queueInfos.push_back( presentQueueInfo );
+		}
+
+		if (queues.HasQueue( queues.m_ComputeQueueIndex ) &&
+			queues.m_ComputeQueueIndex != queues.m_PresentQueueIndex &&
+			queues.m_ComputeQueueIndex != queues.m_GraphicsQueueIndex) {
+
+			queueInfos.push_back( computeQueueInfo );
+
+		}
+
+		VkDeviceCreateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		info.enabledExtensionCount = SafeCast<uint32>( deviceExtensions.size( ) );
+		info.ppEnabledExtensionNames = deviceExtensions.data( );
+		info.pEnabledFeatures = &m_Adapter.m_Features;
+		info.queueCreateInfoCount = SafeCast<uint32>( queueInfos.size( ) );
+		info.pQueueCreateInfos = queueInfos.data( );
+		info.pNext = detail::LogicalDeviceFeatures::GetStatic( ).GetChainHead( );
+
+		const VkResult result = vkCreateDevice( m_Adapter.m_Device, &info, nullptr, &m_LogicalDevice );
+
+		if (result != VK_SUCCESS) {
+			LUM_LOG_FATAL( "vkCreateDevice() failure (VkResult: {})", static_cast<int32>(result) );
+		}
+
+	}
+
+	void VulkanDevice::acquire_queues( ) noexcept {
+
+		vkGetDeviceQueue( m_LogicalDevice, m_Adapter.m_Queues.m_GraphicsQueueIndex, 0, &m_GraphicsQueue );
+		vkGetDeviceQueue( m_LogicalDevice, m_Adapter.m_Queues.m_PresentQueueIndex, 0, &m_PresentQueue );
+
+		if (m_Adapter.m_Queues.HasQueue( m_Adapter.m_Queues.m_ComputeQueueIndex )) {
+			vkGetDeviceQueue( m_LogicalDevice, m_Adapter.m_Queues.m_ComputeQueueIndex, 0, &m_ComputeQueue );
+		}
+
+	}
+
+	void VulkanDevice::create_main_surface( ) noexcept {
+
+		m_MainSurface = m_SurfaceProvider( ).CreateSurface( m_Instance );
+
+	}
+
+	void VulkanDevice::recreate_swapchain( ) noexcept {
+
+		m_Adapter.QuerySurfaceCapabilities( m_MainSurface );
+
+		VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		uint32 numQueueFamilyIndex = 0;
+		const uint32* pQueueFamilyIndices = nullptr;
+
+		uint32 graphicsIdx = m_Adapter.m_Queues.m_GraphicsQueueIndex;
+		uint32 presentIdx = m_Adapter.m_Queues.m_PresentQueueIndex;
+
+		uint32 queueFamilyIndices[ ] = { graphicsIdx, presentIdx };
+
+		if (graphicsIdx != presentIdx) {
+			sharingMode = VK_SHARING_MODE_CONCURRENT;
+			numQueueFamilyIndex = 2;
+			pQueueFamilyIndices = queueFamilyIndices;
+		}
+
+		const auto& capabilities = m_Adapter.m_SurfaceSupport.m_Capabilities;
+		uint32 imageCount = capabilities.minImageCount + 1;
+		if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount) {
+			imageCount = capabilities.maxImageCount;
+		}
+
+		VkPresentModeKHR presentMode = m_Adapter.m_SurfaceSupport.SelectPresentMode( );
+		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
+		VkSwapchainKHR oldSwapchain = m_Swapchain;
+
+		if (capabilities.currentExtent.width != UINT32_MAX) {
+			m_SwapchainExtent = capabilities.currentExtent;
+		}
+		else {
+			m_SwapchainExtent.width = Clamp(
+				m_WindowSize.m_X,
+				capabilities.minImageExtent.width,
+				capabilities.maxImageExtent.width
+			);
+			m_SwapchainExtent.height = Clamp(
+				m_WindowSize.m_Y,
+				capabilities.minImageExtent.height,
+				capabilities.maxImageExtent.height
+			);
+		}
+
+		VkSwapchainCreateInfoKHR info{};
+		info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+		info.pQueueFamilyIndices = pQueueFamilyIndices;
+		info.queueFamilyIndexCount = numQueueFamilyIndex;
+		info.clipped = VK_TRUE;
+		info.presentMode = presentMode;
+		info.oldSwapchain = oldSwapchain;
+
+		info.minImageCount = imageCount;
+		info.imageColorSpace = surfaceFormat.colorSpace;
+		info.imageFormat = surfaceFormat.format;
+		info.imageSharingMode = sharingMode;
+		info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		info.imageExtent = m_SwapchainExtent;
+		info.imageArrayLayers = 1;
+
+		info.preTransform = capabilities.currentTransform;
+		info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+		info.surface = m_MainSurface;
+
+		LUM_LOG_INFO(
+			"Swapchain extent: {}x{} | Window: {}x{}",
+			m_SwapchainExtent.width,
+			m_SwapchainExtent.height,
+			m_WindowSize.m_X,
+			m_WindowSize.m_Y
+		);
+
+		if (!LUM_VK_RESULT_CHECK( vkCreateSwapchainKHR( m_LogicalDevice, &info, nullptr, &m_Swapchain ) )) {
+			return;
+		}
+		if (oldSwapchain != VK_NULL_HANDLE) {
+			vkDestroySwapchainKHR( m_LogicalDevice, oldSwapchain, nullptr );
+		}
+
+	}
+
+	void VulkanDevice::recreate_swapchain_primitives( ) noexcept {
+
+		for (auto& view : m_SwapchainImageViews) {
+			if (view != VK_NULL_HANDLE) {
+				vkDestroyImageView( m_LogicalDevice, view, nullptr );
+			}
+		}
+
+		uint32 numImages = 0;
+		vkGetSwapchainImagesKHR( m_LogicalDevice, m_Swapchain, &numImages, nullptr );
+		m_SwapchainImages.resize( numImages );
+		vkGetSwapchainImagesKHR( m_LogicalDevice, m_Swapchain, &numImages, m_SwapchainImages.data( ) );
+
+		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
+
+		m_SwapchainImageViews.resize( numImages );
+
+		for (auto& depthHandle : m_DepthImages) {
+			DestroyImage( depthHandle );
+		}
+		m_DepthImages.resize( numImages );
+
+		for (uint32 i = 0; i < numImages; i++) {
+
+			// SWAPCHAIN IMAGES
+			VkImageViewCreateInfo vkInfo{};
+			vkInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			vkInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.image = m_SwapchainImages[ i ];
+			vkInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			vkInfo.format = surfaceFormat.format;
+			vkInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			vkInfo.subresourceRange.baseMipLevel = 0;
+			vkInfo.subresourceRange.levelCount = 1;
+			vkInfo.subresourceRange.baseArrayLayer = 0;
+			vkInfo.subresourceRange.layerCount = 1;
+
+			if (vkCreateImageView( m_LogicalDevice, &vkInfo, nullptr, &m_SwapchainImageViews[ i ] ) != VK_SUCCESS) {
+				LUM_LOG_FATAL( "Failed to create swapchain image view at index {}! (Vulkan)", i );
+				return;
+			}
+
+
+
+			// DEPTH IMAGES
+			ImageCreateInfo info{};
+			info.m_UsageFlags = ImageUsageFlag::DepthStencilAttachment;
+			info.m_Format = ImageFormat::D32_FLOAT;
+			info.m_MipmapLevels = 1;
+			info.m_ArrayLayers = 1;
+			info.m_Dimension = ImageDimension::Image2D;
+			info.m_SampleCount = SampleCount::Sample1;
+			info.m_Extent = { m_SwapchainExtent.width, m_SwapchainExtent.height, 1 };
+			info.m_ViewType = ImageViewType::Default;
+
+			m_DepthImages[ i ] = CreateImage( info );
+			LUM_ASSERT( m_DepthImages[i ].IsValid(), "Failed to create depth image for swapchain index {}", i );
+			
+		}
+
+	}
+
+	void VulkanDevice::create_command_pool( ) noexcept {
+
+		if (!m_Adapter.m_Queues.HasQueue( m_Adapter.m_Queues.m_GraphicsQueueIndex )) {
+			LUM_LOG_ERROR( "Cannot create command pool: Adapter doesn't have graphics queue index! (Vulkan)" );
+			return;
+		}
+
+		VkCommandPoolCreateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		info.queueFamilyIndex = m_Adapter.m_Queues.m_GraphicsQueueIndex;
+		info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
+		if (vkCreateCommandPool( m_LogicalDevice, &info, nullptr, &m_CmdPool ) != VK_SUCCESS) {
+			LUM_LOG_FATAL( "Failed to create command pool! (Vulkan)" );
+			return;
+		}
+
+	}
+
+	void VulkanDevice::allocate_command_buffers( ) noexcept {
+
+		VkCommandBufferAllocateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		info.commandPool = m_CmdPool;
+		info.commandBufferCount = SafeCast<uint32>( m_CmdBuffers.size( ) );
+		info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+
+		vkAllocateCommandBuffers( m_LogicalDevice, &info, m_CmdBuffers.data( ) );
+
+	}
+
+	void VulkanDevice::create_sync_primitives( ) noexcept {
+
+		VkSemaphoreCreateInfo semaphoreInfo{};
+		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+		usize numImages = m_SwapchainImages.size( );
+
+		m_ImageAvailableSemaphores.resize( numImages );
+		for (auto& semaphore : m_ImageAvailableSemaphores) {
+			if (!LUM_VK_RESULT_CHECK( vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) )) {
+				return;
+			}
+		}
+
+		m_RenderFinishedSemaphores.resize( numImages );
+		for (auto& semaphore : m_RenderFinishedSemaphores) {
+			if (!LUM_VK_RESULT_CHECK( vkCreateSemaphore( m_LogicalDevice, &semaphoreInfo, nullptr, &semaphore ) )) {
+				return;
+			}
+		}
+
+		VkFenceCreateInfo fenceInfo{};
+		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+		for (auto& fence : m_InFlightFences) {
+			if (!LUM_VK_RESULT_CHECK( vkCreateFence( m_LogicalDevice, &fenceInfo, nullptr, &fence ) )) {
+				return;
+			}
+
+
+		}
+
+	}
+
+	void VulkanDevice::handle_resize( ) noexcept {
+
+		vkDeviceWaitIdle( m_LogicalDevice );
+
+		recreate_swapchain( );
+		recreate_swapchain_primitives( );
+
+	}
+
+	void VulkanDevice::create_staging_buffers( ) noexcept {
+
+		BufferCreateInfo info{};
+		info.m_Usage = BufferUsage::TransferSource;
+		info.m_BufferSize = 1024 * 1024 * 64;
+
+		for (auto& buffer : m_StagingBuffers) {
+
+			auto handle = CreateBuffer( info );
+			LUM_ASSERT( m_Buffers.Contains( handle ), "Cannot create staging buffers" );
+
+			buffer = m_Buffers[ handle ];
+
+
+		}
+
+	}
+
+
+} // namespace lum::rhi::vk

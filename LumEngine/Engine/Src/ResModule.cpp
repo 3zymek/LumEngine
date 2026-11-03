@@ -9,26 +9,26 @@
 
 namespace lum {
 
-	//---------------------------------------------------------
+	//=======================================================//
 	// Public
-	//---------------------------------------------------------
+	//=======================================================//
 
-	void ResourceModule::Initialize( PlatformModule& platform, ev::EventBus& bus ) {
+	//void ResourceModule::Initialize( PlatformModule& platform, ev::EventBus& bus ) {
 
-		mCtx.mEvBus = &bus;
-		mCtx.mMaterialMgr = &mMaterialMgr;
-		mCtx.mMeshMgr = &mMeshMgr;
-		mCtx.mRenderDev = platform.mRenderDevice;
-		mCtx.mShaderMgr = &mShaderMgr;
-		mCtx.mTextureMgr = &mTextureMgr;
+	//	m_Ctx.m_EventBus		= bus;
+	//	m_Ctx.m_MeshMgr			= m_MeshMgr;
+	//	m_Ctx.m_MaterialMgr		= m_MaterialMgr;
+	//	m_Ctx.m_ShaderMgr		= m_ShaderMgr;
+	//	m_Ctx.m_TextureMgr		= m_TextureMgr;
+	//	m_Ctx.m_RenderDev		= platform.m_RenderDevice( );
 		
-		render::ValidateRendererContext( mCtx );
+	//	m_Ctx.Validate( );
 
-		mTextureMgr.Initialize( platform.mRenderDevice );
-		mMeshMgr.Initialize( &mCtx );
-		mShaderMgr.Initialize( platform.mRenderDevice );
-		mMaterialMgr.Initialize( &mCtx );
+	//	m_TextureMgr.Initialize( platform.m_RenderDevice() );
+	//	m_MeshMgr.Initialize( m_Ctx );
+	//	m_ShaderMgr.Initialize( platform.m_RenderDevice() );
+	//	m_MaterialMgr.Initialize( m_Ctx );
 
-	}
+	//}
 
 } // namespace lum

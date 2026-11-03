@@ -1,5 +1,14 @@
 #pragma once
 
+#include <qpoint.h>
+
+#include "Core/CoreTypes.hpp"
+#include "Core/Math/MathUtils.hpp"
+#include "Core/Math/MatrixOperations.hpp"
+#include "Core/Math/Vec2.hpp"
+#include "Core/Math/Vec3.hpp"
+#include "Core/Utils/TypeUtils.hpp"
+#include "EditorPch.hpp"
 #include "Event/Events/WindowEvents.hpp"
 
 namespace lum::editor {
@@ -7,81 +16,118 @@ namespace lum::editor {
 	class EditorCamera {
 	public:
 
-		render::RenderCamera Update( float64 delta, bool moveMouse = true ) {
+		enum class Direction {
+			Forward,
+			Backward,
+			Right,
+			Left
+		};
 
-			Vector3 forward = Normalize( mTarget - mPosition );
-			Vector3 right = Normalize( Cross( forward, Vector3( 0, 1, 0 ) ) );
-			Vector3 up = Normalize( Cross( right, forward ) );
+		void Move( Direction dir ) {
+			float32 moveSpeed = (m_MovementSpeed * m_DeltaTime);
+			switch (dir) {
+				case Direction::Forward:
+				{
+					m_Position += (m_Forward * moveSpeed);
+					break;
+				}
+				case Direction::Backward:
+				{
+					m_Position -= (m_Forward * moveSpeed);
+					break;
+				}
+				case Direction::Right:
+				{
+					m_Position += (m_Right * moveSpeed);
+					break;
+				}
+				case Direction::Left:
+				{
+					m_Position -= (m_Right * moveSpeed);
+					break;
+				}
+				default: break;
+			}
+		}
+		
+		void /*render::RenderCamera*/ Update( float64 delta, bool unlocked = false ) {
+			/*
+			m_Forward = Normalize( m_Target - m_Position );
+			m_Right = Normalize( Cross( m_Forward, Vector3( 0.0f, 1.0f, 0.0f ) ) );
+			Vector3 up = Normalize( Cross( m_Right, m_Forward ) );
 
-			static bool sbInitialized = false;
-			static Vector2 sLastPos;
+			m_DeltaTime = delta;
 
-			Vector2 currentPos = input::GetMousePos( );
+			static bool s_Initialized = false;
+			static Vector2 s_LastPos = Vector2( 0.0f, 0.0f );
 
-			if (!sbInitialized) {
-				sLastPos = currentPos;
-				sbInitialized = true;
+			QPoint pos = QCursor::pos( );
+
+			Vector2 currentPos = Vector2(
+				SafeCast<float32>( pos.x( ) ),
+				SafeCast<float32>( pos.y( ) )
+			);
+
+			if (!s_Initialized) {
+				s_LastPos = currentPos;
+				s_Initialized = true;
 			}
 
-			if (moveMouse) {
+			if (unlocked) {
 
-				float32 moveSpeed = mMovementSpeed * delta;
+				Vector2 deltaPos = currentPos - s_LastPos;
+				s_LastPos = currentPos;
 
-				if (input::KeyPressed( input::Key::W )) mPosition += forward * moveSpeed;
-				if (input::KeyPressed( input::Key::S )) mPosition -= forward * moveSpeed;
-				if (input::KeyPressed( input::Key::A )) mPosition -= right * moveSpeed;
-				if (input::KeyPressed( input::Key::D )) mPosition += right * moveSpeed;
+				m_Yaw += deltaPos.m_X * m_Sensivity;
+				m_Pitch -= deltaPos.m_Y * m_Sensivity;
+				m_Pitch = Clamp( m_Pitch, -89.0f, 89.0f );
 
-				Vector2 currentPos = input::GetMousePos( );
-				Vector2 deltaPos = currentPos - sLastPos;
-				sLastPos = currentPos;
-
-				mYaw += deltaPos.mX * mSensivity;
-				mPitch -= deltaPos.mY * mSensivity;
-				mPitch = std::clamp( mPitch, -89.0f, 89.0f );
-
-				Vector3 direction;
-				direction.mX = cos( Radians( mYaw ) ) * cos( Radians( mPitch ) );
-				direction.mY = sin( Radians( mPitch ) );
-				direction.mZ = sin( Radians( mYaw ) ) * cos( Radians( mPitch ) );
-				mTarget = mPosition + Normalize( direction );
-				mUp = up;
+				Vector3 dir{};
+				dir.m_X = cos( Radians( m_Yaw ) * cos( Radians( m_Pitch ) ) );
+				dir.m_Y = sin( Radians( m_Pitch ) );
+				dir.m_Z = sin( Radians( m_Yaw ) ) * cos( Radians( m_Pitch ) );
+				m_Target = m_Position + Normalize( dir );
+				m_Up = up;
 
 			}
-			else sLastPos = input::GetMousePos( );
+			else s_LastPos = currentPos;
 
-			render::RenderCamera data;
-
-			data.mPosition = mPosition;
-			data.mProjection = Perspective( Radians( mFov ), mAspectRatio, mNearPlane, mFarPlane );
-			data.mView = LookAt( mPosition, mTarget, mUp );
+			render::RenderCamera data{};
+			data.m_Position = m_Position;
+			data.m_Projection = Perspective( Radians( m_Fov ), m_AspectRatio, m_NearPlane, m_FarPlane );
+			data.m_View = LookAt( m_Position, m_Target, m_Up );
 
 			return data;
-
+			*/
 		}
 
-		inline void SetAspectRatio( float32 ratio ) noexcept { mAspectRatio = ratio; }
-
+		inline void SetAspectRatio( float32 ratio ) noexcept {
+			m_AspectRatio = ratio;
+		}
 
 	private:
 
-		float32 mMovementSpeed = 13.0f;
-		float32 mSensivity = 0.1f;
+		float32 m_DeltaTime = 0.0f;
 
-		float32 mYaw = -90.0f;
-		float32 mPitch = 0.0f;
+		float32 m_MovementSpeed = 13.0f;
+		float32 m_Sensivity = 0.1f;
 
-		float32 mAspectRatio = 16.0f / 9.0f;
+		float32 m_Yaw = -90.0f;
+		float32 m_Pitch = 0.0f;
 
-		float32 mFov = 90.0f;
-		float32 mNearPlane = 0.1f;
-		float32 mFarPlane = 1000.0f;
+		float32 m_AspectRatio = 16.0f / 9.0f;
 
-		Vector3 mPosition = Vector3( 0.0f, 0.0f, 3.0f );
-		Vector3 mUp = Vector3( 0.0f, 1.0f, 0.0f );
-		Vector3 mTarget;
+		float32 m_Fov = 90.0f;
+		float32 m_NearPlane = 0.1f;
+		float32 m_FarPlane = 1000.0f;
+
+		Vector3 m_Position = Vector3( 0.0f, 0.0f, 0.0f );
+		Vector3 m_Up = Vector3( 0.0f, 1.0f, 0.0f );
+		Vector3 m_Target = Vector3( 1.0f, 0.0f, 0.0f );
+
+		Vector3 m_Forward = Vector3( 0.0f, 0.0f, 0.0f );
+		Vector3 m_Right = Vector3( 1.0f, 0.0f, 0.0f );
 
 	};
 
-
-}
+} // namespace lum::editor

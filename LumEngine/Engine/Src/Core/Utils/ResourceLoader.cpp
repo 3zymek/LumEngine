@@ -3,25 +3,29 @@
 // Purpose: Loads assets (textures, sounds, shaders, models)
 // 
 //=============================================================================//
-#pragma once
+#include "Core/CorePch.hpp"
 
+#include <assimp/mesh.h>
+#include <Assimp/Importer.hpp>
+#include <Assimp/Postprocess.h>
+#include <Assimp/Scene.h>
+#include <stb_image.h>
+
+#include "Core/CoreTypes.hpp"
 #include "Core/Utils/ResourceLoader.hpp"
-#include "Rhi/RhiCommon.hpp"
-
-//====== Backend ======
-#include <stb_image.h>			// Loading textures
-#include <Assimp/Importer.hpp>	// Loading Models
-#include <Assimp/Scene.h>		// Loading Models
-#include <Assimp/Postprocess.h> // Loading Models
-//=====================
+#include "Core/Utils/Result.hpp"
+#include "Core/Utils/TypeUtils.hpp"
+#include "Platform/FileSystem/FileSystem.hpp"
+#include "Platform/FileSystem/Path.hpp"
+#include "Rhi/RhiTypes.hpp"
 
 namespace lum {
 
-	//---------------------------------------------------------
+	//=======================================================//
 	// Public
-	//---------------------------------------------------------
+	//=======================================================//
 
-	Result<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, const Path& filepath, ImageFormat expectedFormat ) {
+	Result<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, const Path& filepath, ImageChannels expectedFormat ) {
 
 		Path path = ResolveResourcePath( root, filepath );
 		String strPath = path.ToString( );
@@ -31,30 +35,39 @@ namespace lum {
 			return Result<ImageData>::Failure( "File doesn't exist" );
 		}
 
-		ImageData texture;
-		texture.mIsHdr = path.EndsWith( ".hdr" );
+		ImageData texture{};
+		texture.m_IsHdr = path.EndsWith( ".hdr" );
+
+		int32 width = 0;
+		int32 height = 0;
 
 		int32 format{};
 
-		if (texture.mIsHdr) {
+		if (texture.m_IsHdr) {
 
-			float32* data = stbi_loadf( strPath.c_str(), &texture.mWidth, &texture.mHeight, &format, formatCast );
+			float32* data = stbi_loadf( strPath.c_str( ), &width, &height, &format, formatCast );
+			texture.m_Width = static_cast<uint32>(width);
+			texture.m_Height = static_cast<uint32>(height);
+
 			if (!data) {
 				return Result<ImageData>::Failure( stbi_failure_reason( ) );
 			}
-			texture.mChannels = (formatCast != 0) ? formatCast : format;
-			texture.mFloatPixels.assign( data, data + texture.mWidth * texture.mHeight * texture.mChannels );
+			texture.m_Channels = (formatCast != 0) ? formatCast : format;
+			texture.m_FloatPixels.assign( data, data + texture.m_Width * texture.m_Height * texture.m_Channels );
 			stbi_image_free( data );
 
 		}
 		else {
 
-			unsigned char* data = stbi_load( strPath.c_str( ), &texture.mWidth, &texture.mHeight, &format, formatCast );
+			unsigned char* data = stbi_load( strPath.c_str( ), &width, &height, &format, formatCast );
+			texture.m_Width = static_cast<uint32>(width);
+			texture.m_Height = static_cast<uint32>(height);
+
 			if (!data) {
 				return Result<ImageData>::Failure( stbi_failure_reason( ) );
 			}
-			texture.mChannels = (formatCast != 0) ? formatCast : format;
-			texture.mPixels.assign( data, data + texture.mWidth * texture.mHeight * texture.mChannels );
+			texture.m_Channels = (formatCast != 0) ? formatCast : format;
+			texture.m_Pixels.assign( data, data + texture.m_Width * texture.m_Height * texture.m_Channels );
 			stbi_image_free( data );
 
 		}
@@ -81,7 +94,7 @@ namespace lum {
 			return Result<MeshGeometry>::Failure( importer.GetErrorString( ) );
 		}
 
-		MeshGeometry finalData;
+		MeshGeometry finalData{};
 
 		uint32 elementOffset = 0;
 
@@ -90,58 +103,58 @@ namespace lum {
 			aiMesh* mesh = scene->mMeshes[ meshIndex ];
 
 			for (uint32 vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
-				Vertex vert;
-
-				vert.mPosition = {
+				rhi::Vertex vert{};
+				/*
+				vert.m_Position = {
 					mesh->mVertices[ vertexIndex ].x,
 					mesh->mVertices[ vertexIndex ].y,
 					mesh->mVertices[ vertexIndex ].z
 				};
 
 				if (mesh->HasNormals( )) {
-					vert.mNormal = {
+					vert.m_Normal = {
 						mesh->mNormals[ vertexIndex ].x,
 						mesh->mNormals[ vertexIndex ].y,
 						mesh->mNormals[ vertexIndex ].z
 					};
 				}
-				else vert.mNormal = { 0.0f, 0.0f, 0.0f };
+				else vert.m_Normal = { 0.0f, 0.0f, 0.0f };
 
 				if (mesh->HasTangentsAndBitangents( )) {
-					vert.mTangent = {
+					vert.m_Tangent = {
 						mesh->mTangents[ vertexIndex ].x,
 						mesh->mTangents[ vertexIndex ].y,
 						mesh->mTangents[ vertexIndex ].z
 					};
-					vert.mBitangent = {
+					vert.m_Bitangent = {
 						mesh->mBitangents[ vertexIndex ].x,
 						mesh->mBitangents[ vertexIndex ].y,
 						mesh->mBitangents[ vertexIndex ].z
 					};
 				}
 				else {
-					vert.mTangent = { 0.0f, 0.0f, 0.0f };
-					vert.mBitangent = { 0.0f, 0.0f, 0.0f };
+					vert.m_Tangent = { 0.0f, 0.0f, 0.0f };
+					vert.m_Bitangent = { 0.0f, 0.0f, 0.0f };
 				}
 
 				if (mesh->mTextureCoords[ 0 ]) {
-					vert.mUv = {
+					vert.m_Uv = {
 						mesh->mTextureCoords[ 0 ][ vertexIndex ].x,
 						mesh->mTextureCoords[ 0 ][ vertexIndex ].y
 					};
 
 				}
-				else vert.mUv = { 0.0f, 0.0f };
+				else vert.m_Uv = { 0.0f, 0.0f };
 
-				finalData.mVertices.push_back( vert );
-
+				finalData.m_Vertices.push_back( vert );
+				*/ // TODO: AFTER RHI REFACTOR
 			}
 
 			for (uint32 faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
 				aiFace face = mesh->mFaces[ faceIndex ];
 
 				for (uint32 elementIndex = 0; elementIndex < face.mNumIndices; ++elementIndex) {
-					finalData.mIndices.push_back( face.mIndices[ elementIndex ] + elementOffset );
+					finalData.m_Indices.push_back( face.mIndices[ elementIndex ] + elementOffset );
 				}
 
 
@@ -158,30 +171,32 @@ namespace lum {
 
 		Path path = ResolveResourcePath( root, filepath );
 
-		auto shaderSource = FileSystem::ReadAllText( path );
-		if (!shaderSource) {
-			return shaderSource;
+		auto shaderSourceResut = FileSystem::ReadAllText( path );
+		if (!shaderSourceResut) {
+			return shaderSourceResut;
 		}
+		auto& src = shaderSourceResut.ValueRef( );
 
-		auto defines = FileSystem::ReadAllText( sShaderDefineFile );
-		if (!defines) {
-			return defines;
+		auto definesResult = FileSystem::ReadAllText( s_ShaderDefineFile );
+		if (!definesResult) {
+			return definesResult;
 		}
+		auto& defines = definesResult.ValueRef( );
 
 		String version{};
 		String clippedSource{};
-		usize versionIdx = shaderSource->find( "#version" );
+		usize versionIdx = src.find( "#version" );
 		if (versionIdx != String::npos) {
 
-			usize end = shaderSource->find( '\n', versionIdx );
-			version = shaderSource->substr( versionIdx, end - versionIdx );
-			clippedSource = shaderSource->substr( end );
-		
+			usize end = src.find( '\n', versionIdx );
+			version = src.substr( versionIdx, end - versionIdx );
+			clippedSource = src.substr( end );
+
 		}
 
 		std::stringstream ss;
 		ss << version << '\n';
-		ss << defines.ValueRef() << '\n';
+		ss << definesResult.ValueRef( ) << '\n';
 		ss << clippedSource;
 
 		return ss.str( );
@@ -189,9 +204,9 @@ namespace lum {
 
 	Path ResourceLoader::ResolveResourcePath( ResourceRoot root, const Path& filepath ) {
 		if (root == ResourceRoot::External)
-			return (sProjectRoot / filepath).LexicallyNormal( );
+			return (s_ProjectRoot / filepath).LexicallyNormal( );
 		else if (root == ResourceRoot::Internal)
-			return (sInternalAssetsRoot / filepath).LexicallyNormal( );
+			return (s_InternalAssetsRoot / filepath).LexicallyNormal( );
 		return Path( );
 	}
 

@@ -40,9 +40,9 @@ namespace lum {
 	template<cArithmetic tType>
 	Matrix4 Translate( const Matrix4& m, const TVector4<tType>& pos ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 12 ] = pos.mX;
-		result.mData[ 13 ] = pos.mY;
-		result.mData[ 14 ] = pos.mZ;
+		result.m_Data[ 12 ] = pos.m_X;
+		result.m_Data[ 13 ] = pos.m_Y;
+		result.m_Data[ 14 ] = pos.m_Z;
 		return m * result;
 	}
 
@@ -55,9 +55,9 @@ namespace lum {
 	template<cArithmetic tType>
 	Matrix4 Translate( const Matrix4& m, const TVector3<tType>& pos ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 12 ] = pos.mX;
-		result.mData[ 13 ] = pos.mY;
-		result.mData[ 14 ] = pos.mZ;
+		result.m_Data[ 12 ] = pos.m_X;
+		result.m_Data[ 13 ] = pos.m_Y;
+		result.m_Data[ 14 ] = pos.m_Z;
 		return m * result;
 	}
 
@@ -70,8 +70,8 @@ namespace lum {
 	template<cArithmetic tType>
 	Matrix4 Translate( const Matrix4& m, const TVector2<tType>& pos ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 12 ] = pos.mX;
-		result.mData[ 13 ] = pos.mY;
+		result.m_Data[ 12 ] = pos.m_X;
+		result.m_Data[ 13 ] = pos.m_Y;
 		return m * result;
 	}
 
@@ -89,9 +89,9 @@ namespace lum {
 	template<cArithmetic tType>
 	Matrix4 Scale( const Matrix4& m, const TVector4<tType>& scale ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 0 ] = scale.mX;
-		result.mData[ 5 ] = scale.mY;
-		result.mData[ 10 ] = scale.mZ;
+		result.m_Data[ 0 ] = scale.m_X;
+		result.m_Data[ 5 ] = scale.m_Y;
+		result.m_Data[ 10 ] = scale.m_Z;
 		return m * result;
 	}
 
@@ -104,9 +104,9 @@ namespace lum {
 	template<cArithmetic tType>
 	Matrix4 Scale( const Matrix4& m, const TVector3<tType>& scale ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 0 ] = scale.mX;
-		result.mData[ 5 ] = scale.mY;
-		result.mData[ 10 ] = scale.mZ;
+		result.m_Data[ 0 ] = scale.m_X;
+		result.m_Data[ 5 ] = scale.m_Y;
+		result.m_Data[ 10 ] = scale.m_Z;
 		return m * result;
 	}
 
@@ -119,8 +119,8 @@ namespace lum {
 	template<cArithmetic tType>
 	Matrix4 Scale( const Matrix4& m, const TVector2<tType>& scale ) {
 		Matrix4 result( 1.0f );
-		result.mData[ 0 ] = scale.mX;
-		result.mData[ 5 ] = scale.mY;
+		result.m_Data[ 0 ] = scale.m_X;
+		result.m_Data[ 5 ] = scale.m_Y;
 		return m * result;
 	}
 
@@ -168,7 +168,7 @@ namespace lum {
 	*/
 	template<cArithmetic tType>
 	Matrix4 Rotate( const Matrix4& m, const TVector3<tType>& v ) {
-		Quaternion q = FromEuler( v.mX, v.mY, v.mZ );
+		Quaternion q = FromEuler( v.m_X, v.m_Y, v.m_Z );
 		return m * ToMat4( q );
 	}
 
@@ -226,22 +226,22 @@ namespace lum {
 		Vector3 u = Cross( r, f );
 
 		Matrix4 result;
-		result.mData[ 0 ] = r.mX;
-		result.mData[ 1 ] = u.mX;
-		result.mData[ 2 ] = -f.mX;
+		result.m_Data[ 0 ] = r.m_X;
+		result.m_Data[ 1 ] = u.m_X;
+		result.m_Data[ 2 ] = -f.m_X;
 
-		result.mData[ 4 ] = r.mY;
-		result.mData[ 5 ] = u.mY;
-		result.mData[ 6 ] = -f.mY;
+		result.m_Data[ 4 ] = r.m_Y;
+		result.m_Data[ 5 ] = u.m_Y;
+		result.m_Data[ 6 ] = -f.m_Y;
 
-		result.mData[ 8 ] = r.mZ;
-		result.mData[ 9 ] = u.mZ;
-		result.mData[ 10 ] = -f.mZ;
+		result.m_Data[ 8 ] = r.m_Z;
+		result.m_Data[ 9 ] = u.m_Z;
+		result.m_Data[ 10 ] = -f.m_Z;
 
-		result.mData[ 12 ] = -Dot( r, eye );
-		result.mData[ 13 ] = -Dot( u, eye );
-		result.mData[ 14 ] = Dot( f, eye );
-		result.mData[ 15 ] = 1.0f;
+		result.m_Data[ 12 ] = -Dot( r, eye );
+		result.m_Data[ 13 ] = -Dot( u, eye );
+		result.m_Data[ 14 ] = Dot( f, eye );
+		result.m_Data[ 15 ] = 1.0f;
 		return result;
 	}
 

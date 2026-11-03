@@ -27,7 +27,10 @@ bin/
 Debug/
 Release/
 build/
-Lumengine/External
+LumEngine/External
+.vscode/
+.DS_Store
+.clang-format
 
 !tools/*.dll
 !tools/*.json

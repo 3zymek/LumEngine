@@ -5,7 +5,7 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/Types.hpp"
+#include "Core/CoreTypes.hpp"
 
 namespace lum {
 
@@ -21,6 +21,6 @@ namespace lum {
 	* @return Value of π represented as the requested type.
 	*/
 	template<cArithmetic tType = float32>
-	constexpr tType Pi( ) { return static_cast< tType >(3.14159265358979323846264338327950288); }
+	constexpr tType Pi( ) { return static_cast<tType>(3.14159265358979323846264338327950288); }
 
 } // namespace lum

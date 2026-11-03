@@ -9,13 +9,15 @@
 #include "Ahi/Core/AhiDevice.hpp"
 #include "Ahi/Backend/FmodDevice.hpp"
 
+#include "Core/Utils/OwningPtr.hpp"
+
 namespace lum::ahi {
 
-	AudioDevice* CreateDevice( AudioBackend backend ) {
+	OwningPtr<IAudioDevice> CreateDevice( AudioBackend backend ) {
 		switch (backend) {
-			case AudioBackend::Fmod: return new fmod::FMODDevice();
+			case AudioBackend::Fmod: return OwningPtr<fmod::FMODDevice>::Create();
 		}
-		return new fmod::FMODDevice( );
+		return OwningPtr<fmod::FMODDevice>::Create( );
 	}
 
 }

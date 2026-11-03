@@ -8,20 +8,6 @@
 
 namespace lum {
 
-	void Logger::FormatTime( uint64 timestamp, char* out ) {
-		std::time_t t = timestamp / 1000;
-		std::tm tm{};
 
-		localtime_s( &tm, &t );
-
-		std::strftime( out, 16, "%H:%M:%S", &tm );
-	}
-	uint64 Logger::get_time( ) {
-		using namespace std::chrono;
-
-		return duration_cast< milliseconds >(
-			system_clock::now( ).time_since_epoch( )
-		).count( );
-	}
 
 }

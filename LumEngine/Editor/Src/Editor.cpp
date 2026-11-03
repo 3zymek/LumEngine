@@ -1,201 +1,78 @@
 #include "Editor.hpp"
-#include "EditorDependencies.gen.hpp"
-#include "Core/Utils/Fonts.hpp"
-#include "Core/Utils/Shortcuts.hpp"
-#include "Core/Utils/Style.hpp"
-#include "Entity/Components/Mesh.hpp"
+#include <QTimer>
+#include <QTextEdit>
+#include "Platform/QtContextCreator.hpp"
+#include "Event/Events/WindowEvents.hpp"
+//#include "Render/Renderer.hpp"
 
 namespace lum::editor {
 
 	void Editor::Initialize( ) {
+		/*
+		m_Window = new QMainWindow( );
+		m_Window->setWindowTitle( "LumEngine Editor" );
+		m_Window->resize( 1280, 720 );
 
-		auto iconData = ResourceLoader::LoadImageFromFile(
-			ResourceRoot::Internal, "branding/lumengine-icon.png", ImageFormat::RGBA
-		);
+		//m_RenderContext = QtContextCreator::Create( QtContextCreator::Api::OpenGL );
+		//m_RenderContext->Initialize( );
 
-		EngineCreateInfo desc{};
-		desc.mProjectName = "LumEngineEditor";
-		desc.mApplicationName = "LumEngineEditor";
-		desc.mRenderingBackend = rhi::RenderBackend::OpenGL;
-		desc.mProjectDir = "C:/Users/szymek/Desktop/lumen_assets";
-		desc.mWindow.mIconData = iconData ? iconData.ValueRef( ) : Optional<ImageData>::Empty();
+		EngineCreateInfo info{};
+		info.m_ProjectDir = "C:\\Users\\szymek\\Desktop\\lumen_assets";
+		//info.m_RenderContext = m_RenderContext.get( );
+		info.m_Window.m_Width = 1280;
+		info.m_Window.m_Height = 720;
+		m_Engine.Initialize( info );
 
-		mEngine.Initialize( desc ); 
-		mEngine.SetScene( "scene.lsc" );
+		m_Engine.Scene( ).m_SceneMgr.LoadScene( "scene.lsc" );
+		m_Engine.Scene( ).m_SceneMgr.SetScene( "scene.lsc" );
 
-		init_imgui( &mEngine.GetModulePlatform( ).mWindow );
-
-		RegisterEditorComponents( skComponentsEntries );
-		for (auto& [hash, entry] : skComponentsEntries) {
-			skComponentsByCategory[ entry.mCategoryName ].emplace_back( &entry );
+		{
+			ViewportCreateInfo	info{};
+			info.m_RenderDevice	= m_Engine.Platform( ).m_RenderDevice( );
+			//info.m_RenderContext = m_RenderContext.get( );
+			info.m_EventBus		= m_Engine.EventBus( );
+			info.m_Engine		= m_Engine;
+			//m_Viewport.Initialize( info );
 		}
 
-		mWindow = &mEngine.GetModulePlatform( ).mWindow;
-		mRenderDevice = mEngine.GetModulePlatform( ).mRenderDevice;
-		mRenderer = &mEngine.GetModuleRender( ).mRenderer;
-		
-		mSceneInspector.Initialize( &mEngine.GetEventBus( ) );
+		//m_Window->setCentralWidget( &m_Viewport );
+		m_Window->show( );
 
-	}
+		EWindowResized initialResizeEvent{};
+		initialResizeEvent.m_Width = 1280;
+		initialResizeEvent.m_Height = 720;
+		//mEngine.EventBus( ).Emit( initialResizeEvent );
 
-	void Editor::Finalize( ) {
-		mEngine.Finalize( );
+		//m_Viewport.SetTexture( m_Engine.Render( ).m_Renderer.GetFrameTexture( ) );
+
+		QTimer* timer = new QTimer( m_Window );
+		QObject::connect(
+			timer,
+			&QTimer::timeout,
+			[ & ]( ) {
+				
+				//m_RenderContext->MakeCurrent( );
+
+				m_Engine.BeginFrame( );
+
+				m_Engine.Tick( );
+				m_Engine.EndFrame( );
+
+				//m_Viewport.update( );
+
+			}
+		);
+		timer->start( 1 );*/
+
 	}
 
 	void Editor::Run( ) {
-
-		while (mEngine.IsRunning( )) {
-
-			float64 delta = mEngine.GetDeltaTime( );
-
-			mEngine.BeginFrame( );
-			begin_imgui( );
-
-			mEngine.Tick( );
-
-			Update( delta );
-
-			auto& meshMgr = mEngine.GetModuleResource( ).mMeshMgr;
-			mEngine.GetModuleScene( ).mSceneMgr.GetCurrentScene( )->mEntityMgr.Each<CStaticMesh>(
-				[&]( CStaticMesh& mesh ) {
-					if (mesh.mPath != mesh.mLastLoadedPath) {
-						mesh.mHandle = meshMgr.CreateStatic( mesh.mPath );
-						mesh.mLastLoadedPath = mesh.mPath;
-					}
-				} 
-			);
-
-			mEngine.EndFrame( );
-			end_imgui( );
-			mEngine.GetModulePlatform( ).mRenderDevice->SwapBuffers( );
-
-		}
-
-	}
-	void Editor::Update( float64 delta ) {
-
-		mCurrentScene = mEngine.GetModuleScene( ).mSceneMgr.GetCurrentScene( );
-
-		draw_layout( );
-		draw_menu_bar( );
-		mViewport.Update( delta, mRenderer->GetFrameTexture( ), mRenderDevice, mWindow, mRenderer );
-		mSceneInspector.Update( mCurrentScene );
-		mEntityInspector.Update( mSceneInspector.GetSelectedEntity( ), mCurrentScene );
-
-		mExplorer.Update( ResourceLoader::GetProjectRoot( ) );
-
-		mConsole.Update( );
-
+		m_QtApp.exec( );
 	}
 
+	void Editor::Finalize( ) {
 
-
-
-	void Editor::draw_menu_bar( ) {
-
-		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0.0f, 12.0f ) );
-		ImGui::PushStyleColor( ImGuiCol_MenuBarBg, style::skBg );
-		if (ImGui::BeginMainMenuBar( )) {
-			if (ImGui::BeginMenu( "Scene" )) {
-				ImGui::MenuItem( "New Scene", "Ctrl + N" );
-				ImGui::MenuItem( "Open scene", "Ctrl + O" );
-				
-				if (ImGui::MenuItem( "Save scene", "Ctrl + S" )) {
-					auto& sceneModule = mEngine.GetModuleScene( );
-					Scene* currentScene = sceneModule.mSceneMgr.GetCurrentScene( );
-					if(currentScene) 
-						sceneModule.mSceneMgr.SaveScene( *currentScene );
-				}
-
-				ImGui::Separator( );
-				if (ImGui::MenuItem( "Quit", "Ctrl + Q" )) {
-					mEngine.GetModulePlatform( ).mWindow.Close( );
-				} ImGui::SameLine( ); ImGui::TextUnformatted( ICON_FA_TIMES );
-				ImGui::EndMenu( );
-			}
-			if (ImGui::BeginMenu( "Project" )) {
-				ImGui::EndMenu( );
-			}
-			ImGui::EndMainMenuBar( );
-		}
-		ImGui::PopStyleColor( );
-		ImGui::PopStyleVar( );
-	}
-	void Editor::draw_layout( ) {
-
-		static bool bLayoutInitialized = false;
-
-		ImGuiDockNodeFlags dockFlags =
-			ImGuiDockNodeFlags_NoUndocking |
-			ImGuiDockNodeFlags_NoResize;
-
-		ImGuiID dockID = ImGui::DockSpaceOverViewport( dockFlags );
-
-		if (!bLayoutInitialized) {
-
-			bLayoutInitialized = true;
-
-			ImGui::DockBuilderRemoveNode( dockID );
-			ImGui::DockBuilderAddNode( dockID, ImGuiDockNodeFlags_DockSpace );
-			ImGui::DockBuilderSetNodeSize( dockID, ImGui::GetMainViewport( )->Size );
-
-			ImGuiID left, halfRight;
-			ImGui::DockBuilderSplitNode( dockID, ImGuiDir_Left, 0.25f, &left, &halfRight );
-
-			ImGuiID middle, right;
-			ImGui::DockBuilderSplitNode( halfRight, ImGuiDir_Left, 0.75f, &middle, &right );
-
-			ImGuiID console, viewport;
-			ImGui::DockBuilderSplitNode( middle, ImGuiDir_Down, 0.25f, &console, &viewport );
-
-			ImGuiID sceneInspector, fileExplorer;
-			ImGui::DockBuilderSplitNode( left, ImGuiDir_Up, 0.5f, &sceneInspector, &fileExplorer );
-
-			ImGui::DockBuilderDockWindow( "Console", console );
-			ImGui::DockBuilderDockWindow( "Viewport", viewport );
-			ImGui::DockBuilderDockWindow( "Scene", sceneInspector );
-			ImGui::DockBuilderDockWindow( "Entity", right );
-			ImGui::DockBuilderDockWindow( "File System", fileExplorer );
-
-			ImGui::DockBuilderFinish( dockID );
-
-			set_flags_recursive( ImGui::DockBuilderGetNode( dockID ), ImGuiDockNodeFlags_NoWindowMenuButton );
-		}
-
-	}
-	void Editor::init_imgui( Window* window ) {
-
-		ImGui::CreateContext( );
-
-		ImGui_ImplGlfw_InitForOpenGL( static_cast< GLFWwindow* >(window->GetNativeWindow( )), true );
-		ImGui_ImplOpenGL3_Init( "#version 450" );
-
-		style::ApplyTheme( );
-
-		Fonts::Initialize( );
-		ImGui::GetIO( ).FontDefault = Fonts::sDefaultSmall;
-		ImGui::GetIO( ).ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-	}
-	void Editor::set_flags_recursive( ImGuiDockNode* node, ImGuiDockNodeFlags flags ) {
-		if (!node) return;
-		node->LocalFlags |= flags;
-		set_flags_recursive( node->ChildNodes[ 0 ], flags );
-		set_flags_recursive( node->ChildNodes[ 1 ], flags );
-	}
-	void Editor::begin_imgui( ) {
-
-		ImGui_ImplOpenGL3_NewFrame( );
-		ImGui_ImplGlfw_NewFrame( );
-		ImGui::NewFrame( );
-
-		ImGui::GetIO( ).WantCaptureKeyboard = false;
-
-	}
-	void Editor::end_imgui( ) {
-
-		ImGui::Render( );
-		ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData( ) );
+		m_Engine.Finalize( );
 
 	}
 

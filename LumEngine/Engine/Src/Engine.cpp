@@ -4,61 +4,93 @@
 //
 //=============================================================================//
 
+#include "Core/CorePch.hpp"
+
+#include "Core/CoreTypes.hpp"
+#include "Core/Utils/ResourceLoader.hpp"
+#include "CreateInfo.hpp"
 #include "Engine.hpp"
 
 namespace lum {
 
-	//---------------------------------------------------------
+	//=======================================================//
 	// Public
-	//---------------------------------------------------------
+	//=======================================================//
 
 	void Engine::Initialize( const EngineCreateInfo& info ) {
-	    
-		ResourceLoader::SetProjectRoot( info.mProjectDir );
 
-		mAudio.Initialize( mEventBus );
-		mPlatform.Initialize( info, mEventBus );
-		mRes.Initialize( mPlatform, mEventBus );
-		mRender.Initialize( mPlatform,  mRes, mEventBus );
-		mScene.Initialize( mRes, mRender, mAudio, mEventBus );
+		ResourceLoader::SetProjectRoot( info.m_ProjectDir );
 
+		m_AudioModule.Initialize( m_EventBus );
+		m_Platform.Initialize( info, m_EventBus );
+		//m_ResourceModule.Initialize( m_Platform, m_EventBus );
+		/*
+		{
+			RenderModuleCreateInfo desc{};
+			desc.m_EventBus = m_EventBus;
+			desc.m_RenderDev = m_Platform.m_RenderDevice( );
+			desc.m_ResourceModule = &m_ResourceModule;
+			m_RenderModule.Initialize( desc );
+		}
+
+		{
+			SceneModuleCreateInfo desc{};
+			desc.m_AudioModule = m_AudioModule;
+			desc.m_ResourceModule = m_ResourceModule;
+			desc.m_RenderModule = m_RenderModule;
+			desc.m_EventBus = m_EventBus;
+			m_SceneModule.Initialize( desc );
+		}
+		*/
 	}
 	void Engine::BeginFrame( ) {
 
-		mPlatform.mWindow.Update( );
-		mEventBus.FlushEvents( );
-		mRender.mRenderer.BeginFrame( );
-		
+		if (m_Platform.m_Window.HasValue( ))
+			m_Platform.m_Window.Value( ).Update( );
+
+		m_EventBus.FlushEvents( );
+
+		//m_Platform.m_RenderDevice( ).SetClearColor( { 1.0f, 1.0f, 0.0f, 1.0f } );
+
+		//m_RenderModule.m_Renderer.BeginFrame( );
+
 	}
 	void Engine::EndFrame( ) {
-		
-		mRender.mRenderer.EndFrame( );
+
+		//m_RenderModule.m_Renderer.EndFrame( );
+
+		//m_Platform.m_ActiveRenderContext( ).SwapBuffers( );
 
 	}
 	void Engine::Tick( ) {
+		/*
+		SceneInstance* scene = m_SceneModule.m_SceneMgr.GetCurrentScene( );
 
-		TransformSystem::Update( mScene.mSceneMgr.GetCurrentScene( ) );
+		if (scene) {
+			TransformSystem::Update( *scene );
+			m_AudioModule.m_AudioMgr.UpdateInstances( &scene->m_EntityMgr );
+			m_RenderModule.m_RenderSys.Update( *scene );
+		}
 
-		mRender.mRenderSys.Update( mScene.mSceneMgr.GetCurrentScene( ), &mPlatform.mWindow );
-
-		mAudio.mAudioMgr.UpdateInstances( &mScene.mSceneMgr.GetCurrentScene( )->mEntityMgr );
-		mAudio.mAudioDevice->SubmitFrame( );
-
+		m_AudioModule.m_AudioDevice( ).SubmitFrame( );
+		*/
 	}
 	void Engine::Finalize( ) {
 
-		mPlatform.Finalize( );
+		m_Platform.Finalize( );
 
 	}
 
 	float64 Engine::GetDeltaTime( ) {
+		using clock = std::chrono::high_resolution_clock;
 
-		static float64 sLastTime = 0;
-		float64 currentTime = mPlatform.mWindow.GetTime( );
-		float64 delta = currentTime - sLastTime;
-		sLastTime = mPlatform.mWindow.GetTime( );
-		return delta;
+		static auto s_LastTime = clock::now( );
+		auto currentTime = clock::now( );
 
+		std::chrono::duration<float64> delta = currentTime - s_LastTime;
+		s_LastTime = currentTime;
+
+		return delta.count( );
 	}
 
-}
+} // namespace lum

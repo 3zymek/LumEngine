@@ -4,9 +4,12 @@
 //
 //=============================================================================//
 
+#include <glfw3.h>
+
+#include "CreateInfo.hpp"
+#include "Platform/Input/Input.hpp"
+#include "Platform/Window.hpp"
 #include "PlatformModule.hpp"
-#include "Platform/InputCommon.hpp"
-#include "Rhi/Core/RhiDevice.hpp"
 
 namespace lum {
 
@@ -16,19 +19,29 @@ namespace lum {
 
 	void PlatformModule::Initialize( EngineCreateInfo info, ev::EventBus& bus ) {
 
-		info.mWindow.mTitle = info.mApplicationName;
+		info.m_Window.m_Title = info.m_ApplicationName;
 
-		mWindow.Initialize( info.mWindow, bus );
-		input::SetActiveWindow( static_cast< GLFWwindow* >(mWindow.GetNativeWindow( )) );
+		if (!info.m_RenderContext) {
 
-		mRenderDevice = rhi::CreateDevice( info.mRenderingBackend );
-		mRenderDevice->Initialize( &mWindow );
+			// Create default window with default LumEngine backends
+
+			m_Window = Window{};
+			m_Window.Value( ).Initialize( info.m_Window, bus );
+
+			auto* glfwWindow = static_cast<GLFWwindow*>(m_Window.Value( ).GetNativeWindow( ));
+
+		}
+		else {
+
+		}
+
+		//m_RenderDevice = rhi::CreateDevice( info.m_RenderingBackend );
+		//m_RenderDevice( ).Initialize( );
 
 	}
 
 	void PlatformModule::Finalize( ) {
-		mRenderDevice->Finalize( );
-		delete mRenderDevice;
+		//m_RenderDevice( ).Finalize( );
 	}
 
 } // namespace lum

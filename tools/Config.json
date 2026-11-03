@@ -48,7 +48,7 @@
     "PHYSICS":   "ICON_FA_CROSSHAIRS",
     "AUDIO":     "ICON_FA_VOLUME_UP"
   },
-  "prefixes": ["m", "b"],
+  "prefixes": ["m_"],
   "blueprints": {
     "file_preamble": [
       "//========= Copyright (C) 2025-present 3zymek, MIT License ============//",
@@ -64,9 +64,9 @@
     ],
 
     "deserialize_registry_source_basefile": [
-      "#include \"Scene/Format/FormatCommon.hpp\"",
-      "#include \"Scene/SceneManager.hpp\"",
-      "#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
+      "//#include \"Scene/Format/FormatTypes.hpp\"",
+      "//#include \"Scene/SceneManager.hpp\"",
+      "//#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
       "",
       "{DeserializeFunctions}",
       ""
@@ -80,21 +80,21 @@
       "\tdetail::ExpectOpeningBracketNext( tokens, i );",
       "\t{ClassName} {Var}{};",
       "\twhile( InBlock( tokens, i ) ) {",
-      "\t\tif( tokens[i].mType == TokenType::Parameter ) {\n",
+      "\t\tif( tokens[i].m_Type == TokenType::Parameter ) {\n",
       "\t\t\t{Fields}",
       "\t\t}",
       "\t\ti++;",
       "\t}",
-      "\tctx.mScene.mEntityMgr.AddComponent( ctx.mCurrentEntity, {Var} );",
+      "\tctx.m_Scene.m_EntityMgr.AddComponent( ctx.m_CurrentEntity, {Var} );",
       "}"
     ],
     "deserialize_fn_field_first": [
-      "if( tokens[i].mValue == \"{FieldSerializationName}\" ) {",
+      "if( tokens[i].m_Value == \"{FieldSerializationName}\" ) {",
       "\t{Var}.{FieldName} = {Reader}( tokens, i );",
       "}"
     ],
     "deserialize_fn_field_next": [
-      "else if( tokens[i].mValue == \"{FieldSerializationName}\" ) {",
+      "else if( tokens[i].m_Value == \"{FieldSerializationName}\" ) {",
       "\t{Var}.{FieldName} = {Reader}( tokens, i );",
       "}"
     ],
@@ -108,9 +108,9 @@
     ],
 
     "serialize_registry_source_basefile": [
-      "#include \"Scene/Format/FormatCommon.hpp\"",
-      "#include \"Scene/SceneManager.hpp\"",
-      "#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
+      "//#include \"Scene/Format/FormatTypes.hpp\"",
+      "//#include \"Scene/SceneManager.hpp\"",
+      "//#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
       "",
       "{SerializeFunctions}",
       ""
@@ -146,8 +146,8 @@
       "}"
     ],
     "editor_registry_basefile": [
-      "#include \"Core/EditorCommon.hpp\"",
-      "#include \"Entity/EcsCommon.hpp\"",
+      "//#include \"Core/EditorCommon.hpp\"",
+      "//#include \"Entity/EcsCommon.hpp\"",
       "",
       "{EditorRegistryBody}",
       ""
@@ -255,9 +255,10 @@
       ");"
     ],
     "scene_registry_basefile": [
-      "#include \"Scene/Format/FormatCommon.hpp\"",
-      "#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
-      "#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
+      "#include <vector>\n",
+      "//#include \"Scene/Format/FormatTypes.hpp\"",
+      "//#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
+      "//#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
       "namespace lum::fmt {",
       "",
       "\t{SceneRegistryBody}",

@@ -11,6 +11,14 @@
 #define LUM_GENERATED_BODY( )
 #define LUM_CLASS_EXTENSIONS( )
 
+#if defined(_DEBUG) || !defined(NDEBUG)
+#   define LUM_DEBUG 1
+#   define LUM_RELEASE 0
+#else
+#   define LUM_DEBUG 0
+#   define LUM_RELEASE 1
+#endif
+
 #if defined(_WIN32)
 #   if defined(LUM_ENGINE_BUILD)
 #       define LUM_API __declspec(dllexport)
@@ -20,24 +28,28 @@
 #       define LUM_API
 #   endif
 #else
-#   define LUM_API
+#   if defined(LUM_ENGINE_BUILD) && defined(LUM_DYNAMIC_LIBRARIES)
+#       define LUM_API __attribute__((visibility("default")))
+#   else
+#       define LUM_API
+#   endif
 #endif
 
 #if defined(_MSC_VER)
-#define LUM_FORCEINLINE __forceinline
-#define LUM_DEBUGBREAK() __debugbreak()
-
-#elif defined(__GNUC__)
-#	define LUM_FORCEINLINE __attribute__((always_inline)) inline
-#	define LUM_DEBUGBREAK() __builtin_trap()
+#   define LUM_FORCEINLINE __forceinline
+#   define LUM_DEBUGBREAK() __debugbreak()
 
 #elif defined(__clang__)
-#	define LUM_FORCEINLINE __attribute__((always_inline)) inline
-#	define LUM_DEBUGBREAK() __builtin_debugtrap()
+#   define LUM_FORCEINLINE __attribute__((always_inline)) inline
+#   define LUM_DEBUGBREAK() __builtin_debugtrap()
+
+#elif defined(__GNUC__)
+#   define LUM_FORCEINLINE __attribute__((always_inline)) inline
+#   define LUM_DEBUGBREAK() __builtin_trap()
 
 #else
-#	define LUM_FORCEINLINE inline
-#	define LUM_DEBUGBREAK() ((void)0)
+#   define LUM_FORCEINLINE inline
+#   define LUM_DEBUGBREAK() ((void)0)
 #endif
 
 #if (defined(__cplusplus) && __cplusplus >= 201703L) \

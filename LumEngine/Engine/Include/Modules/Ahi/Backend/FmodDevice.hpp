@@ -4,12 +4,13 @@
 //
 //=============================================================================//
 #pragma once
+
 #include "Ahi/Core/AhiDevice.hpp"
 #include "Platform/FileSystem/FileSystem.hpp"
 
 namespace lum::ahi::fmod {
 
-	class FMODDevice : public AudioDevice {
+	class FMODDevice : public IAudioDevice {
 	public:
 
 		// Lifecycle
@@ -18,12 +19,12 @@ namespace lum::ahi::fmod {
 
 		// Sound loading
 		SoundHandle LoadSound( Path path, Flags<SoundFlag> flags ) override;
-		void        UnloadSound( SoundHandle& sound ) override;
+		void UnloadSound( SoundHandle& sound ) override;
 
 		// Effects
 		AudioEffectHandle CreateEffect( const AudioEffectCreateInfo& desc ) override;
 		AudioEffectHandle CreateEffect( ahi::EffectPreset preset ) override;
-		void              DeleteEffect( AudioEffectHandle& effect ) override;
+		void DeleteEffect( AudioEffectHandle& effect ) override;
 
 		// Channel groups
 		void SetGroupEffect( ChannelGroupHandle group, AudioEffectHandle effect ) override;
@@ -48,13 +49,13 @@ namespace lum::ahi::fmod {
 
 	private:
 
-		FMOD::System* mSystem = nullptr;
+		FMOD::System* m_System = nullptr;
 
 		// Handle casts
-		FMOD::Sound* to_fmod_sound( void* ptr ) const noexcept { return static_cast< FMOD::Sound* >(ptr); }
-		FMOD::Channel* to_fmod_channel( void* ptr ) const noexcept { return static_cast< FMOD::Channel* >(ptr); }
-		FMOD::ChannelGroup* to_fmod_channel_group( void* ptr )  const noexcept { return static_cast< FMOD::ChannelGroup* >(ptr); }
-		FMOD::DSP* to_fmod_dsp( void* ptr ) const noexcept { return static_cast< FMOD::DSP* >(ptr); }
+		FMOD::Sound*		to_fmod_sound			( void* ptr ) const noexcept { return static_cast<FMOD::Sound*>(ptr); }
+		FMOD::Channel*		to_fmod_channel			( void* ptr ) const noexcept { return static_cast<FMOD::Channel*>(ptr); }
+		FMOD::ChannelGroup* to_fmod_channel_group	( void* ptr ) const noexcept { return static_cast<FMOD::ChannelGroup*>(ptr); }
+		FMOD::DSP*			to_fmod_dsp				( void* ptr ) const noexcept { return static_cast<FMOD::DSP*>(ptr); }
 
 		// Flag translation
 		static FMOD_MODE      translate_sound_flags( Flags<SoundFlag> flags );

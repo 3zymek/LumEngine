@@ -11,23 +11,23 @@
 
 namespace lum {
 
-	//---------------------------------------------------------
+	//=======================================================//
 	// Public
-	//---------------------------------------------------------
+	//=======================================================//
 
-	void RenderModule::Initialize( PlatformModule& platform, ResourceModule& res, ev::EventBus& bus ) {
+	//void RenderModule::Initialize( const RenderModuleCreateInfo& info ) {
 
-		render::RendererContext ctx;
-		ctx.mMaterialMgr = &res.mMaterialMgr;
-		ctx.mMeshMgr = &res.mMeshMgr;
-		ctx.mTextureMgr = &res.mTextureMgr;
-		ctx.mRenderDev = platform.mRenderDevice;
-		ctx.mShaderMgr = &res.mShaderMgr;
-		ctx.mEvBus = &bus;
-		mRenderer.Initialize( ctx, platform.mWindow.GetWidth(), platform.mWindow.GetHeight() );
+		//render::RendererContext ctx{};
+		//ctx.m_MaterialMgr	= info.m_ResourceModule( ).m_MaterialMgr;
+		//ctx.m_MeshMgr		= info.m_ResourceModule( ).m_MeshMgr;
+		//ctx.m_TextureMgr		= info.m_ResourceModule( ).m_TextureMgr;
+		//ctx.m_ShaderMgr		= info.m_ResourceModule( ).m_ShaderMgr;
+		//ctx.m_RenderDev		= info.m_RenderDev;
+		//ctx.m_EventBus		= info.m_EventBus;
 
-		mRenderSys.Initialize( &mRenderer );
+		//m_Renderer.Initialize( ctx, info.m_ViewportWidth, info.m_ViewportHeight );
+		//m_RenderSys.Initialize( &m_Renderer );
 
-	}
+	//}
 
 } // namespace lum
