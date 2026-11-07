@@ -346,14 +346,14 @@ namespace lum::rhi::vk {
 	auto PipelineFactory::setup_shader_modules(const VkDevice logicalDevice, const PipelineCreateInfo& info) const noexcept -> std::vector<VkPipelineShaderStageCreateInfo> {
 
 		usize numShaderInfos = info.m_ShaderInfos.size();
-		LUM_ASSERT(numShaderInfos <= t_EnumCount<ShaderStage>, "Too much shader create infos in PipelineCreateInfo (MAX IS 5)");
+		LUM_ASSERT(numShaderInfos <= t_EnumCount<ShaderStageFlag>, "Too much shader create infos in PipelineCreateInfo (MAX IS 5)");
 
 		if (numShaderInfos == 0) {
 			LUM_LOG_WARN("Couldn't create shader modules: There are 0 shader infos in pipeline.");
 			return {};
 		}
 
-		std::array<bool, t_EnumCount<ShaderStage>> shaderSlots{};
+		std::array<bool, t_EnumCount<ShaderStageFlag>> shaderSlots{};
 		std::vector<VkPipelineShaderStageCreateInfo> shaderStages{};
 
 		for (auto& shaderInfo : info.m_ShaderInfos) {

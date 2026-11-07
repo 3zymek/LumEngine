@@ -24,7 +24,7 @@ namespace lum {
 
 	void GeometryPass::Initialize( RendererContext& ctx ) {
 
-		ctx.IsValid( );
+		ctx.Assert( );
 		m_Ctx = ctx;
 
 		m_PendingInstances.reserve( limits::k_MaxDrawCallsPerFrame );
@@ -32,7 +32,7 @@ namespace lum {
 
 		{
 			rhi::BufferCreateInfo info{};
-			info.m_Usage = rhi::BufferUsage::Uniform;
+			info.m_Usage = rhi::BufferUsageFlag::Uniform;
 			//info.m_
 		}
 

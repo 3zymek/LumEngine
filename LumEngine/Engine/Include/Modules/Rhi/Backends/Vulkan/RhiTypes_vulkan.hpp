@@ -88,9 +88,6 @@ namespace lum::rhi::vk {
 #		define LUM_VK_RESULT_CHECK(call) \
 			lum::rhi::vk::detail::ResultValidation( call, #call )
 
-
-
-
 	}
 
 } // namespace lum::rhi::vk

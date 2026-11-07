@@ -11,8 +11,35 @@
 #include <glfw3.h>
 #include <Rhi/RhiTypes.hpp>
 #include <vector>
-#include "Core/Math/Mat4.hpp";
+#include "Core/Math/Mat4.hpp"
+#include "Rendering/VertexLayoutConfig.hpp"
+#include "Engine.hpp"
 
+int main( ) {
+
+	lum::EngineCreateInfo info{};
+	info.m_ApplicationName = "chuj";
+	info.m_ProjectDir = "C:/Users/szymek/Desktop/lumen_assets";
+
+	lum::Engine engine{};
+
+	engine.Initialize( info );
+
+	while (engine.Running()) {
+		
+		engine.BeginFrame( );
+
+		engine.Tick( );
+
+		engine.EndFrame( );
+
+	}
+
+	engine.Finalize( );
+
+}
+
+/*
 using namespace lum;
 using namespace lum::rhi;
 
@@ -64,7 +91,7 @@ int main( int argc, char* argv[ ] ) {
 	winInfo.m_Width = 800;
 	window.Initialize( winInfo, bus );
 	OwningPtr<GLFWVulkanSurfaceProvider> surfaceProvider = OwningPtr<GLFWVulkanSurfaceProvider>::Create( reinterpret_cast<GLFWwindow*>(window.GetNativeWindow( )) );
-
+	
 	uint32 count{};
 	const char** glfwExtensions = glfwGetRequiredInstanceExtensions( &count );
 	std::vector<const char*> extensions( glfwExtensions, glfwExtensions + count );
@@ -87,7 +114,7 @@ int main( int argc, char* argv[ ] ) {
 	rhi::ResourceSetBinding imageBinding{};
 	imageBinding.m_Binding = 0;
 	imageBinding.m_ResourceCount = 1;
-	imageBinding.m_ShaderStages = ShaderStage::Fragment;
+	imageBinding.m_ShaderStages = ShaderStageFlag::Fragment;
 	imageBinding.m_Type = ResourceType::CombinedImageSampler;
 
 	rhi::ResourceLayoutCreateInfo layoutInfo{};
@@ -110,7 +137,7 @@ int main( int argc, char* argv[ ] ) {
 
 	PushConstantRange range{};
 	range.m_Size = sizeof( CameraData );
-	range.m_ShaderStageFlags = ShaderStage::Vertex;
+	range.m_ShaderStageFlags = ShaderStageFlag::Vertex;
 	range.m_Offset = 0;
 
 	pipInfo.m_Layout.m_ResourceLayouts.push_back( layout );
@@ -121,7 +148,7 @@ int main( int argc, char* argv[ ] ) {
 	assembly.m_Topology = rhi::PrimitiveTopology::TriangleList;
 
 	auto& rast = pipInfo.m_RasterizationPass;
-	rast.m_CullMode = rhi::CullMode::None;
+	rast.m_CullMode = rhi::CullMode::Back;
 	rast.m_DepthBiasEnabled = false;
 	rast.m_PolygonMode = rhi::PolygonMode::Fill;
 	rast.m_FrontFace = rhi::FrontFace::Clockwise;
@@ -133,18 +160,18 @@ int main( int argc, char* argv[ ] ) {
 	attachment.m_ColorMask = rhi::ColorComponentFlag::RGBA;
 	blend.m_Attachments.push_back( attachment );
 
-	pipInfo.m_VertexInputPass = rhi::VertexLayoutConfiguration::GetStatic( ).GetVertexInputPass( );
+	pipInfo.m_VertexInputPass = VertexLayoutConfiguration::GetStatic( ).GetVertexInputPass( );
 
 	rhi::ShaderInfo vertexInfo{};
 	vertexInfo.m_EntryPoint = "main";
 	vertexInfo.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::External, "debug.vert.spv" );
-	vertexInfo.m_Stage = rhi::ShaderStage::Vertex;
+	vertexInfo.m_Stage = rhi::ShaderStageFlag::Vertex;
 	pipInfo.m_ShaderInfos.push_back( vertexInfo );
 
 	rhi::ShaderInfo fragmentInfo{};
 	fragmentInfo.m_EntryPoint = "main";
 	fragmentInfo.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::External, "debug.frag.spv" );
-	fragmentInfo.m_Stage = rhi::ShaderStage::Fragment;
+	fragmentInfo.m_Stage = rhi::ShaderStageFlag::Fragment;
 	pipInfo.m_ShaderInfos.push_back( fragmentInfo );
 
 	auto pipeline = device( ).CreatePipeline( pipInfo );
@@ -155,14 +182,14 @@ int main( int argc, char* argv[ ] ) {
 	vboInfo.m_DataSize = s_Vertices.size( ) * sizeof( rhi::Vertex );
 	vboInfo.m_BufferSize = s_Vertices.size( ) * sizeof( rhi::Vertex );
 	vboInfo.m_Data = s_Vertices.data( );
-	vboInfo.m_Usage = rhi::BufferUsage::Vertex;
+	vboInfo.m_Usage = rhi::BufferUsageFlag::Vertex;
 	auto vbo = device( ).CreateBuffer( vboInfo );
 
 	rhi::BufferCreateInfo eboInfo{};
 	eboInfo.m_DataSize = s_Indices.size( ) * sizeof( uint32 );
 	eboInfo.m_BufferSize = s_Indices.size( ) * sizeof( uint32 );
 	eboInfo.m_Data = s_Indices.data( );
-	eboInfo.m_Usage = rhi::BufferUsage::Element;
+	eboInfo.m_Usage = rhi::BufferUsageFlag::Element;
 	auto ebo = device( ).CreateBuffer( eboInfo );
 
 	rhi::cmd::BindGraphicsPipeline cmdBindPip{};
@@ -250,7 +277,7 @@ int main( int argc, char* argv[ ] ) {
 
 	cmd::PushConstants cmdPushConstants{};
 	cmdPushConstants.m_Data = &cameraData;
-	cmdPushConstants.m_ShaderStageFlags = ShaderStage::Vertex;
+	cmdPushConstants.m_ShaderStageFlags = ShaderStageFlag::Vertex;
 	cmdPushConstants.m_Size = sizeof( cameraData );
 	cmdPushConstants.m_Offset = 0;
 
@@ -306,4 +333,4 @@ int main( int argc, char* argv[ ] ) {
 	device( ).Finalize( );
 
 
-}
+}*/

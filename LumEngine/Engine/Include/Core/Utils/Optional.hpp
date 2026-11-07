@@ -1,8 +1,15 @@
-//========= Copyright (C) 2025-present 3zymek, MIT License ============//
-//
-// Purpose: Stores optional value with explicit checking and safety assertions.
-//
-//=============================================================================//
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
 #include <algorithm>
@@ -101,6 +108,81 @@ namespace lum {
 
 		std::optional<tType> m_Value; //< Internal std::optional container instance.
 
+	};
+
+	template<typename tType>
+	class LUM_API Optional<tType&> {
+	public:
+
+		/* @brief Constructs an empty Optional reference. */
+		Optional( ) noexcept : m_Value( nullptr ) {}
+
+		Optional( tType& value ) noexcept : m_Value( &value ) {}
+
+		Optional( const Optional& ) = default;
+		Optional( Optional&& ) = default;
+		Optional& operator=( const Optional& ) = default;
+		Optional& operator=( Optional&& ) = default;
+
+		static Optional Empty( ) noexcept {
+			return Optional( );
+		}
+
+		LUM_FORCEINLINE bool HasValue( ) const noexcept {
+			return m_Value != nullptr;
+		}
+
+		LUM_FORCEINLINE tType& Value(
+			const std::source_location current = std::source_location::current( )
+		) {
+			assert_getter( current );
+			return *m_Value;
+		}
+
+		LUM_FORCEINLINE const tType& Value(
+			const std::source_location current = std::source_location::current( )
+		) const {
+			assert_getter( current );
+			return *m_Value;
+		}
+
+		LUM_FORCEINLINE void Reset( ) noexcept {
+			m_Value = nullptr;
+		}
+
+		explicit operator bool( ) const noexcept {
+			return HasValue( );
+		}
+
+		tType& operator*( ) {
+			return Value( );
+		}
+
+		const tType& operator*( ) const {
+			return Value( );
+		}
+
+		tType* operator->( ) {
+			return &Value( );
+		}
+
+		const tType* operator->( ) const {
+			return &Value( );
+		}
+
+	private:
+
+		void assert_getter( const std::source_location& loc ) const {
+			LUM_ASSERT(
+				HasValue( ),
+				FormatString<256>(
+					"Tried to access empty Optional<tType> in file {} at line {}",
+					loc.file_name( ), loc.line( )
+				)
+			);
+		}
+
+		tType* m_Value = nullptr;
 	};
 
 } // namespace lum

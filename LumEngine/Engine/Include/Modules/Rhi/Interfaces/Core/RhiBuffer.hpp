@@ -13,7 +13,7 @@ namespace lum::rhi {
 
 	using BufferHandle = BaseHandle<detail::BufferTag, BufferID>;
 
-	enum class BufferUsage : bitfield {
+	enum class BufferUsageFlag : bitfield {
 		Vertex = 1 << 0, // VBO
 		Element = 1 << 1, // EBO
 		Uniform = 1 << 2, // UBO
@@ -22,9 +22,9 @@ namespace lum::rhi {
 		TransferSource = 1 << 4, // Source of transfer operations
 		TransferDestination = 1 << 5  // Destination of transfer operations
 	};
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::BufferUsage );
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::BufferUsageFlag );
 
-	using BufferUsageFlags = Flags<BufferUsage>;
+	using BufferUsageFlags = Flags<BufferUsageFlag>;
 
 	struct BufferCreateInfo {
 

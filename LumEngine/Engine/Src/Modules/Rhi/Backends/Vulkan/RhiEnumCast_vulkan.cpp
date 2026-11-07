@@ -18,22 +18,22 @@ namespace lum::rhi::vk {
 	auto ToVk( BufferUsageFlags flags ) noexcept -> VkBufferUsageFlags {
 
 		VkBufferUsageFlags usage = 0;
-		if (flags.Has( BufferUsage::Vertex )) {
+		if (flags.Has( BufferUsageFlag::Vertex )) {
 			usage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 		}
-		if (flags.Has( BufferUsage::Element )) {
+		if (flags.Has( BufferUsageFlag::Element )) {
 			usage |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 		}
-		if (flags.Has( BufferUsage::Uniform )) {
+		if (flags.Has( BufferUsageFlag::Uniform )) {
 			usage |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 		}
-		if (flags.Has( BufferUsage::ShaderStorage )) {
+		if (flags.Has( BufferUsageFlag::ShaderStorage )) {
 			usage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 		}
-		if (flags.Has( BufferUsage::TransferSource )) {
+		if (flags.Has( BufferUsageFlag::TransferSource )) {
 			usage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 		}
-		if (flags.Has( BufferUsage::TransferDestination )) {
+		if (flags.Has( BufferUsageFlag::TransferDestination )) {
 			usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 		}
 
@@ -42,23 +42,23 @@ namespace lum::rhi::vk {
 
 
 
-	auto ToVk( ShaderStage stage ) noexcept -> VkShaderStageFlagBits {
+	auto ToVk( ShaderStageFlag stage ) noexcept -> VkShaderStageFlagBits {
 		switch (stage) {
-			case ShaderStage::Vertex:   return VK_SHADER_STAGE_VERTEX_BIT;
-			case ShaderStage::Fragment: return VK_SHADER_STAGE_FRAGMENT_BIT;
-			case ShaderStage::Compute:  return VK_SHADER_STAGE_COMPUTE_BIT;
-			case ShaderStage::Geometry: return VK_SHADER_STAGE_GEOMETRY_BIT;
+			case ShaderStageFlag::Vertex:   return VK_SHADER_STAGE_VERTEX_BIT;
+			case ShaderStageFlag::Fragment: return VK_SHADER_STAGE_FRAGMENT_BIT;
+			case ShaderStageFlag::Compute:  return VK_SHADER_STAGE_COMPUTE_BIT;
+			case ShaderStageFlag::Geometry: return VK_SHADER_STAGE_GEOMETRY_BIT;
 		}
-		LUM_ASSERT( false, "Invalid {} enum", t_EnumTypeName<ShaderStage> );
+		LUM_ASSERT( false, "Invalid {} enum", t_EnumTypeName<ShaderStageFlag> );
 		return VK_SHADER_STAGE_ALL;
 	}
 	auto ToVk( ShaderStageFlags flags ) noexcept -> VkShaderStageFlags {
 		VkShaderStageFlags vkFlags = 0;
 
-		if (flags.Has( ShaderStage::Vertex ))   vkFlags |= VK_SHADER_STAGE_VERTEX_BIT;
-		if (flags.Has( ShaderStage::Fragment )) vkFlags |= VK_SHADER_STAGE_FRAGMENT_BIT;
-		if (flags.Has( ShaderStage::Compute ))  vkFlags |= VK_SHADER_STAGE_COMPUTE_BIT;
-		if (flags.Has( ShaderStage::Geometry )) vkFlags |= VK_SHADER_STAGE_GEOMETRY_BIT;
+		if (flags.Has( ShaderStageFlag::Vertex ))   vkFlags |= VK_SHADER_STAGE_VERTEX_BIT;
+		if (flags.Has( ShaderStageFlag::Fragment )) vkFlags |= VK_SHADER_STAGE_FRAGMENT_BIT;
+		if (flags.Has( ShaderStageFlag::Compute ))  vkFlags |= VK_SHADER_STAGE_COMPUTE_BIT;
+		if (flags.Has( ShaderStageFlag::Geometry )) vkFlags |= VK_SHADER_STAGE_GEOMETRY_BIT;
 
 		return vkFlags;
 	}

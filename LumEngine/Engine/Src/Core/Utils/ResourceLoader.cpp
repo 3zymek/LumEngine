@@ -25,18 +25,19 @@ namespace lum {
 	// Public
 	//=======================================================//
 
-	Result<ImageData> ResourceLoader::LoadImageFromFile( ResourceRoot root, const Path& filepath, ImageChannels expectedFormat ) {
+	Result<ImageData> ResourceLoader::LoadImageFromFile( const Path& filepath, ImageChannels expectedFormat ) {
 
-		Path path = ResolveResourcePath( root, filepath );
-		String strPath = path.ToString( );
+		String strPath = filepath.ToString( );
 		uint8 formatCast = ToUnderlyingEnum( expectedFormat );
 
-		if (!FileSystem::Exists( path )) {
-			return Result<ImageData>::Failure( "File doesn't exist" );
+		if (!FileSystem::Exists( filepath )) {
+			return Result<ImageData>::Failure( 
+				FormatString( "File {} doesn't exist", filepath.ToString() ) 
+			);
 		}
 
 		ImageData texture{};
-		texture.m_IsHdr = path.EndsWith( ".hdr" );
+		texture.m_IsHdr = filepath.EndsWith( ".hdr" );
 
 		int32 width = 0;
 		int32 height = 0;

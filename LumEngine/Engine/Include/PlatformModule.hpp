@@ -1,14 +1,23 @@
-//========= Copyright (C) 2025-present 3zymek, MIT License ============//
-//
-// Purpose: Platform module — window and render device lifecycle.
-//
-//=============================================================================//
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
-#include "Platform/Window.hpp"
-#include "CreateInfo.hpp"
-#include "Core/Utils/SafePtr.hpp"
+#include "Core/Utils/Optional.hpp"
 #include "Core/Utils/OwningPtr.hpp"
+#include "Core/Utils/SafePtr.hpp"
+#include "CreateInfo.hpp"
+#include "Platform/Window.hpp"
+#include "Rhi/Interfaces/Core/RhiDevice.hpp"
 
 namespace lum {
 
@@ -43,11 +52,11 @@ namespace lum {
 	class LUM_API PlatformModule {
 	public:
 
-		Optional<Window> m_Window = Optional<Window>::Empty();
+		Optional<Window> m_Window = Optional<Window>::Empty( );
 
 		OwningPtr<rhi::IRenderDevice> m_RenderDevice = nullptr;
 
-		void Initialize( EngineCreateInfo info, ev::EventBus& bus );
+		void Initialize( EngineCreateInfo& info, ev::EventBus& bus );
 		void Finalize( );
 
 	};

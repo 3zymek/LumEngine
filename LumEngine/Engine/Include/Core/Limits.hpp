@@ -81,4 +81,6 @@ namespace lum::limits {
 	/* @brief Maximum character length of an error message generated during asset loading. */
 	inline constexpr usize k_MaxErrorAssetLoadLength = 128;
 
+	inline constexpr usize k_MaxLoadedImagesCapacity = 128;
+
 } // namespace lum::limits

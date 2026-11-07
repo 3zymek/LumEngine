@@ -239,14 +239,14 @@ namespace lum::rhi::vk {
 				auto& layout = m_ResourceLayouts[ set.m_Info.m_Layout ];
 
 				std::vector<VkWriteDescriptorSet> writeSets{};
-				std::vector<VkDescriptorBufferInfo> bufferInfos{};
-				std::vector<VkDescriptorImageInfo> imageInfos{};
+				std::vector<VkDescriptorBufferInfo> vkBufferInfos{};
+				std::vector<VkDescriptorImageInfo> vkImageInfos{};
 
-				const auto writeCount = cmd.m_BufferInfos.size( ) + cmd.m_ImageInfos.size( );
+				const auto writeCount = cmd.m_BufferInfos.Size( ) + cmd.m_ImageInfos.Size( );
 
 				writeSets.reserve( writeCount );
-				bufferInfos.reserve( cmd.m_BufferInfos.size( ) );
-				imageInfos.reserve( cmd.m_ImageInfos.size( ) );
+				vkBufferInfos.reserve( cmd.m_BufferInfos.Size( ) );
+				vkImageInfos.reserve( cmd.m_ImageInfos.Size( ) );
 
 				for (const auto& bufferInfo : cmd.m_BufferInfos) {
 
@@ -273,7 +273,7 @@ namespace lum::rhi::vk {
 					vkBufferInfo.offset = bufferInfo.m_Offset;
 					vkBufferInfo.range = range;
 
-					bufferInfos.push_back( vkBufferInfo );
+					vkBufferInfos.push_back( vkBufferInfo );
 
 					VkWriteDescriptorSet vkInfo{};
 					vkInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -282,7 +282,7 @@ namespace lum::rhi::vk {
 					vkInfo.dstArrayElement = bufferInfo.m_ArrayIndex;
 					vkInfo.descriptorCount = 1;
 					vkInfo.descriptorType = ToVk( it->m_Type );
-					vkInfo.pBufferInfo = &bufferInfos.back( );
+					vkInfo.pBufferInfo = &vkBufferInfos.back( );
 
 					writeSets.push_back( vkInfo );
 				}
@@ -317,7 +317,7 @@ namespace lum::rhi::vk {
 						LUM_ASSERT( image.m_Info.m_CurrentLayout == ImageLayout::General, "UpdateResourceSet: Storage image is not in general layout!" );
 					}
 
-					imageInfos.push_back( vkImageInfo );
+					vkImageInfos.push_back( vkImageInfo );
 
 					VkWriteDescriptorSet vkInfo{};
 					vkInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -326,7 +326,7 @@ namespace lum::rhi::vk {
 					vkInfo.dstArrayElement = imageInfo.m_ArrayIndex;
 					vkInfo.descriptorCount = 1;
 					vkInfo.descriptorType = ToVk( it->m_Type );
-					vkInfo.pImageInfo = &imageInfos.back( );
+					vkInfo.pImageInfo = &vkImageInfos.back( );
 
 					writeSets.push_back( vkInfo );
 				}
@@ -371,7 +371,15 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::TransferImage>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::TransferImage& cmd ) {
 
-				if (cmd.m_Data.m_Width == 0 || cmd.m_Data.m_Height == 0 || cmd.m_Data.m_Pixels.empty( )) {
+				auto cachedData = ResourceRegistry::GetStatic( ).GetCachedImage( cmd.m_DataHandle );
+				if (!cachedData) {
+					LUM_LOG_WARN( "TransferImage: Invalid image data handle" );
+					return;
+				}
+
+				const auto& data = cachedData.Value( );
+
+				if (data.m_Width == 0 || data.m_Height == 0 || data.m_Pixels.empty( )) {
 					LUM_LOG_WARN( "TransferImage: Invalid image dimensions or pixel data." );
 					return;
 				}
@@ -383,14 +391,14 @@ namespace lum::rhi::vk {
 
 				auto& image = m_Images[ cmd.m_Image ];
 
-				if (cmd.m_Data.m_Width != image.m_Info.m_Extent.m_Width ||
-					cmd.m_Data.m_Height != image.m_Info.m_Extent.m_Height) {
+				if (data.m_Width != image.m_Info.m_Extent.m_Width ||
+					data.m_Height != image.m_Info.m_Extent.m_Height) {
 					LUM_LOG_WARN( "TransferImage: Pixel dimensions do not match image dimensions." );
 					return;
 				}
 
 				const VkDeviceSize dataSize =
-					static_cast<VkDeviceSize>(cmd.m_Data.m_Pixels.size( ));
+					static_cast<VkDeviceSize>(data.m_Pixels.size( ));
 
 				if (dataSize == 0) {
 					LUM_LOG_WARN( "TransferImage: Invalid staging buffer range." );
@@ -400,18 +408,21 @@ namespace lum::rhi::vk {
 				VulkanBuffer stagingBuffer = m_StagingBuffers[ m_CurrentFrameIndex ];
 				BufferHandle fallbackBufferHandle{};
 
+				/*
 				if (stagingBuffer.m_Info.m_Size < dataSize) {
 					BufferCreateInfo bufferInfo{};
 					bufferInfo.m_BufferSize = dataSize;
 					bufferInfo.m_DataSize = dataSize;
-					bufferInfo.m_Data = cmd.m_Data.m_Pixels.data( );
-					bufferInfo.m_Usage = BufferUsage::TransferSource;
+					bufferInfo.m_Data = data.m_Pixels.data( );
+					bufferInfo.m_Usage = BufferUsageFlag::TransferSource;
 
-					fallbackBufferHandle = CreateBuffer( bufferInfo );
-					LUM_ASSERT( m_Buffers.Contains( fallbackBufferHandle ), "TransferImage: Couldn't create fallback staging buffer" );
-					stagingBuffer = m_Buffers[ fallbackBufferHandle ];
+					BufferHandle fallbackBufferHandle = CreateBuffer( bufferInfo );
+					LUM_ASSERT( m_Buffers.Contains( fallbackBufferHandle ), "TransferImage: Couldn't create staging buffer" );
+					VulkanBuffer stagingBuffer = m_Buffers[ fallbackBufferHandle ];
+
+					m_TemporaryStagingBuffers[ m_CurrentFrameIndex ].push( fallbackBufferHandle );
 				}
-				else {
+				else*/ {
 
 					void* mapped = nullptr;
 
@@ -431,7 +442,7 @@ namespace lum::rhi::vk {
 
 					std::memcpy(
 						mapped,
-						cmd.m_Data.m_Pixels.data( ),
+						data.m_Pixels.data( ),
 						static_cast<usize>(dataSize)
 					);
 
@@ -464,8 +475,8 @@ namespace lum::rhi::vk {
 
 				region.imageOffset = { 0, 0, 0 };
 				region.imageExtent = {
-					cmd.m_Data.m_Width,
-					cmd.m_Data.m_Height,
+					data.m_Width,
+					data.m_Height,
 					1
 				};
 
@@ -486,8 +497,6 @@ namespace lum::rhi::vk {
 				readInfo.m_VkCommandBuffer = vkCmdBuffer;
 
 				transition_image_layout( readInfo );
-
-				m_TemporaryStagingBuffers[ m_CurrentFrameIndex ].push( fallbackBufferHandle );
 
 			}
 		);

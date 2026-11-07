@@ -52,7 +52,6 @@ namespace lum::rhi {
 	struct ResourceLayoutCreateInfo {
 
 		std::vector<ResourceSetBinding> m_Bindings{};
-		ResourceLayoutHandle m_Layout{};
 
 	};
 

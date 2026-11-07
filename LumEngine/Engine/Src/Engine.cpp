@@ -1,8 +1,15 @@
-//========= Copyright (C) 2025-present 3zymek, MIT License ============//
-//
-// Purpose: Core engine class — owns and orchestrates all engine modules.
-//
-//=============================================================================//
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 
 #include "Core/CorePch.hpp"
 
@@ -17,22 +24,22 @@ namespace lum {
 	// Public
 	//=======================================================//
 
-	void Engine::Initialize( const EngineCreateInfo& info ) {
+	void Engine::Initialize( EngineCreateInfo& info ) {
 
 		ResourceLoader::SetProjectRoot( info.m_ProjectDir );
 
 		m_AudioModule.Initialize( m_EventBus );
 		m_Platform.Initialize( info, m_EventBus );
 		//m_ResourceModule.Initialize( m_Platform, m_EventBus );
-		/*
+		
 		{
 			RenderModuleCreateInfo desc{};
 			desc.m_EventBus = m_EventBus;
-			desc.m_RenderDev = m_Platform.m_RenderDevice( );
-			desc.m_ResourceModule = &m_ResourceModule;
+			desc.m_RenderDevice = m_Platform.m_RenderDevice( );
+			//desc.m_ResourceModule = &m_ResourceModule;
 			m_RenderModule.Initialize( desc );
 		}
-
+		/*
 		{
 			SceneModuleCreateInfo desc{};
 			desc.m_AudioModule = m_AudioModule;
@@ -50,16 +57,14 @@ namespace lum {
 
 		m_EventBus.FlushEvents( );
 
-		//m_Platform.m_RenderDevice( ).SetClearColor( { 1.0f, 1.0f, 0.0f, 1.0f } );
-
-		//m_RenderModule.m_Renderer.BeginFrame( );
+		m_RenderModule.m_Renderer.BeginFrame( );
 
 	}
 	void Engine::EndFrame( ) {
 
-		//m_RenderModule.m_Renderer.EndFrame( );
+		m_RenderModule.m_Renderer.EndFrame( );
 
-		//m_Platform.m_ActiveRenderContext( ).SwapBuffers( );
+		m_Platform.m_RenderDevice( ).UpdateFrame( );
 
 	}
 	void Engine::Tick( ) {

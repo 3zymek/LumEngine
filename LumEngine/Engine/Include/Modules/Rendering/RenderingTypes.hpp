@@ -11,7 +11,9 @@
 /* \                                                 / */
 /*******************************************************/
 #pragma once
+#include "Core/CoreDefines.hpp"
 #include "Core/CoreTypes.hpp"
+#include "Core/Utils/Assert.hpp"
 #include "Core/Utils/SafePtr.hpp"
 
 namespace lum {
@@ -29,7 +31,7 @@ namespace lum {
 
 		SafePtr<rhi::IRenderDevice> m_RenderDevice = nullptr;
 
-		void IsValid( ) const {
+		void Assert( ) const {
 			LUM_ASSERT( m_RenderDevice, "RendererContext: IRenderDevice is nullptr" );
 		}
 
@@ -42,7 +44,5 @@ namespace lum {
 		SafePtr<CMaterialInstance> m_Material = nullptr;
 
 	};
-
-
 
 } // namespace lum

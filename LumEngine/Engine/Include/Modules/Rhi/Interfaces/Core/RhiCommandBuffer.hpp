@@ -79,14 +79,21 @@ namespace lum::rhi {
 
 		template<typename tCommand>
 		void append_command( CommandType type, const tCommand& data ) {
-			if constexpr (requires { tCommand::s_PreRender; }) {
-				append_bytes( &type, sizeof( CommandType ), m_PreRenderBuffer );
-				append_bytes( &data, sizeof( tCommand ), m_PreRenderBuffer );
-			}
-			else {
-				append_bytes( &type, sizeof( CommandType ), m_RenderBuffer );
-				append_bytes( &data, sizeof( tCommand ), m_RenderBuffer );
-			}
+
+			static_assert(
+				std::is_trivially_copyable_v<tCommand> && 
+			   "Command type is not trivially copyable"
+			);
+
+				if constexpr (requires { tCommand::s_PreRender; }) {
+					append_bytes( &type, sizeof( CommandType ), m_PreRenderBuffer );
+					append_bytes( &data, sizeof( tCommand ), m_PreRenderBuffer );
+				}
+				else {
+					append_bytes( &type, sizeof( CommandType ), m_RenderBuffer );
+					append_bytes( &data, sizeof( tCommand ), m_RenderBuffer );
+				}
+			
 		}
 
 		void append_bytes( const void* data, usize size, std::vector<uint8>& buffer ) {

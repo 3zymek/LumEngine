@@ -19,20 +19,20 @@
 
 namespace lum::rhi {
 
-	enum class ShaderStage : bitfield {
+	enum class ShaderStageFlag : bitfield {
 		Vertex = 1 << 0,
 		Fragment = 1 << 1,
 		Compute = 1 << 2,
 		Geometry = 1 << 3
 	};
-	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::ShaderStage );
+	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( rhi::ShaderStageFlag );
 
-	using ShaderStageFlags = Flags<ShaderStage>;
+	using ShaderStageFlags = Flags<ShaderStageFlag>;
 
 	struct ShaderInfo {
 
 		Path m_Path{}; // Path to shader from project's root
-		ShaderStage m_Stage{};
+		ShaderStageFlag m_Stage{};
 		String m_EntryPoint{};
 
 	};

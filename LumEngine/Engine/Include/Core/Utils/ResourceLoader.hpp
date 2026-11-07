@@ -89,7 +89,7 @@ namespace lum {
 		* @param expectedFormat Number of channels to force (1-4).
 		* @return TextureData on success, or empty on failure.
 		*/
-		LUM_NODISCARD static Result<ImageData> LoadImageFromFile( ResourceRoot root, const Path& filepath, ImageChannels expectedFormat = ImageChannels::Native );
+		LUM_NODISCARD static Result<ImageData> LoadImageFromFile( const Path& filepath, ImageChannels expectedFormat = ImageChannels::Native );
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.

@@ -10,32 +10,29 @@
 /*|          Licensed under the MIT License           |*/
 /* \                                                 / */
 /*******************************************************/
-#pragma once
 
-#include <Vulkan/vulkan_core.h>
+#include "Core/CoreDefines.hpp"
 
-#include "Core/CoreTypes.hpp"
-#include "Rhi/Backends/Vulkan/Core/RhiBuffer_vulkan.hpp"
-#include "Rhi/Interfaces/Core/RhiBuffer.hpp"
+namespace lum {
 
-namespace lum::rhi::vk {
+	namespace rhi {
 
-	class VulkanDevice;
+		struct VertexInputPass;
 
-	class StagingBuffer {
+	} // namespace rhi
+
+	class VertexLayoutConfiguration {
 	public:
 
-		~StagingBuffer( );
-
-		void Initialize( VulkanDevice& device, usize maxSize ) noexcept;
-		const VulkanBuffer& GetBuffer( ) const noexcept { return m_Buffer; }
+		LUM_NODISCARD static const VertexLayoutConfiguration& GetStatic( ) noexcept;
+		LUM_NODISCARD rhi::VertexInputPass GetVertexInputPass( ) const;
 
 	private:
 
-		usize m_MaxSize{};
-		BufferHandle m_Handle{};
-		VulkanBuffer m_Buffer{};
+		VertexLayoutConfiguration( const VertexLayoutConfiguration& ) = delete;
+		VertexLayoutConfiguration( VertexLayoutConfiguration&& ) = delete;
+		VertexLayoutConfiguration( ) = default;
 
 	};
 
-} // namespace lum::rhi::vk
+} // namespace lum

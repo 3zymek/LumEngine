@@ -31,7 +31,7 @@ namespace lum::rhi::vk {
 
 	// Pipeline enums conversions
 
-	LUM_NODISCARD auto ToVk( ShaderStage stage ) noexcept -> VkShaderStageFlagBits;
+	LUM_NODISCARD auto ToVk( ShaderStageFlag stage ) noexcept -> VkShaderStageFlagBits;
 	LUM_NODISCARD auto ToVk( ShaderStageFlags flags ) noexcept -> VkShaderStageFlags;
 	LUM_NODISCARD auto ToVk( PrimitiveTopology topology ) noexcept -> VkPrimitiveTopology;
 	LUM_NODISCARD auto ToVk( CullMode mode ) noexcept -> VkCullModeFlags;

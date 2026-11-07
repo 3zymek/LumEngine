@@ -29,7 +29,7 @@ namespace lum::rhi::vk {
 
 	struct VulkanShaderProgram {
 
-		std::array<Optional<VulkanShader>, t_EnumCount<ShaderStage>> m_Shaders{};
+		std::array<Optional<VulkanShader>, t_EnumCount<ShaderStageFlag>> m_Shaders{};
 
 	};
 

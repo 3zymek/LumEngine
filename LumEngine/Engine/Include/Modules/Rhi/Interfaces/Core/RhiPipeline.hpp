@@ -184,41 +184,6 @@ namespace lum::rhi {
 
 	};
 
-	class VertexLayoutConfiguration {
-	public:
-
-		LUM_NODISCARD static const VertexLayoutConfiguration& GetStatic() noexcept {
-			static VertexLayoutConfiguration val{};
-			return val;
-		}
-
-		LUM_NODISCARD VertexInputPass GetVertexInputPass() const {
-
-			VertexInputPass info{};
-
-			VertexBinding binding{};
-			binding.m_Binding = 0;
-			binding.m_Instanced = false;
-			binding.m_Stride = sizeof(Vertex);
-			info.m_Bindings.push_back(binding);
-
-			info.m_Attributes.reserve(3);
-
-			info.m_Attributes.push_back({ 0, 0, 0, ImageFormat::RGB32_FLOAT });
-			info.m_Attributes.push_back({ 1, 0, 12, ImageFormat::RGB32_FLOAT });
-			info.m_Attributes.push_back({ 2, 0, 24, ImageFormat::RG32_FLOAT });
-
-			return info;
-		}
-
-	private:
-
-		VertexLayoutConfiguration(const VertexLayoutConfiguration&) = delete;
-		VertexLayoutConfiguration(VertexLayoutConfiguration&&) = delete;
-		VertexLayoutConfiguration() = default;
-
-	};
-
 	struct PipelineCreateInfo {
 
 		std::vector<ShaderInfo> m_ShaderInfos{};

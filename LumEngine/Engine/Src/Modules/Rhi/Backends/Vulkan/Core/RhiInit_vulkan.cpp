@@ -452,7 +452,7 @@ namespace lum::rhi::vk {
 	void VulkanDevice::create_staging_buffers( ) noexcept {
 
 		BufferCreateInfo info{};
-		info.m_Usage = BufferUsage::TransferSource;
+		info.m_Usage = BufferUsageFlag::TransferSource;
 		info.m_BufferSize = 1024 * 1024 * 64;
 
 		for (auto& buffer : m_StagingBuffers) {

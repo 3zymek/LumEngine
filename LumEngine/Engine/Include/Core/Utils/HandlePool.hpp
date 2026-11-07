@@ -64,11 +64,6 @@ namespace lum {
 			return !(*this == other);
 		}
 
-		constexpr void operator=( const BaseHandle& other ) noexcept {
-			m_Id = other.m_Id;
-			m_Generation = other.m_Generation;
-		}
-
 		constexpr bool IsValid( ) const noexcept {
 			return m_Id != MaxValue<tType>( );
 		}
@@ -218,7 +213,10 @@ namespace lum {
 		* @param id Slot identifier.
 		* @return Reference to stored object.
 		*/
-		inline constexpr tValue& operator[]( SparseT id ) {
+		inline tValue& operator[]( SparseT id ) {
+			return m_Dense[ m_SlotToDense[ id ] ];
+		}
+		inline const tValue& operator[]( SparseT id ) const {
 			return m_Dense[ m_SlotToDense[ id ] ];
 		}
 
@@ -228,7 +226,10 @@ namespace lum {
 		* @param handle Object handle.
 		* @return Reference to stored object.
 		*/
-		inline constexpr tValue& operator[]( tHandle handle ) {
+		inline tValue& operator[]( tHandle handle ) {
+			return m_Dense[ m_SlotToDense[ handle.m_Id ] ];
+		}
+		inline const tValue& operator[]( tHandle handle ) const {
 			return m_Dense[ m_SlotToDense[ handle.m_Id ] ];
 		}
 
