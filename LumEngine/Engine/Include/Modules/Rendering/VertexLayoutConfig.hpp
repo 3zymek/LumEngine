@@ -25,7 +25,7 @@ namespace lum {
 	public:
 
 		LUM_NODISCARD static const VertexLayoutConfiguration& GetStatic( ) noexcept;
-		LUM_NODISCARD rhi::VertexInputPass GetVertexInputPass( ) const;
+		LUM_NODISCARD rhi::VertexInputPass GetDefaultConfiguration( ) const;
 
 	private:
 

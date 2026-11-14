@@ -34,6 +34,7 @@ namespace lum::rhi {
 	class AssemblyPass;
 	class VertexInputPass;
 	class PipelineLayout;
+	class DepthStencilPass;
 
 } // namespace lum::rhi
 
@@ -55,7 +56,7 @@ namespace lum::rhi::vk {
 		auto setup_multisample_info( const MultisamplePass& info ) const noexcept -> VkPipelineMultisampleStateCreateInfo;
 		auto setup_assembly_info( const AssemblyPass& info ) const noexcept -> VkPipelineInputAssemblyStateCreateInfo;
 		auto setup_vertex_input_info( const VertexInputPass& info ) const noexcept -> VkPipelineVertexInputStateCreateInfo;
-		auto setup_depth_stencil_info( ) const noexcept -> VkPipelineDepthStencilStateCreateInfo;
+		auto setup_depth_stencil_info( const DepthStencilPass& info ) const noexcept -> VkPipelineDepthStencilStateCreateInfo;
 		auto setup_pipeline_layout( const PipelineLayout& info, VulkanDevice& device ) const noexcept -> VkPipelineLayout;
 		auto setup_shader_modules( const VkDevice logicalDevice, const PipelineCreateInfo& info ) const noexcept -> std::vector<VkPipelineShaderStageCreateInfo>;
 		auto create_shader_module( const VkDevice logicalDevice, const Path& path ) const noexcept -> VkShaderModule;

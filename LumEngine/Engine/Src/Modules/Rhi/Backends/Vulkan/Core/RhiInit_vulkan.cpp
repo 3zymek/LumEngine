@@ -294,17 +294,8 @@ namespace lum::rhi::vk {
 		info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 		info.surface = m_MainSurface;
 
-		LUM_LOG_INFO(
-			"Swapchain extent: {}x{} | Window: {}x{}",
-			m_SwapchainExtent.width,
-			m_SwapchainExtent.height,
-			m_WindowSize.m_X,
-			m_WindowSize.m_Y
-		);
+		LUM_VK_RESULT_ASSERT( vkCreateSwapchainKHR( m_LogicalDevice, &info, nullptr, &m_Swapchain ) );
 
-		if (!LUM_VK_RESULT_CHECK( vkCreateSwapchainKHR( m_LogicalDevice, &info, nullptr, &m_Swapchain ) )) {
-			return;
-		}
 		if (oldSwapchain != VK_NULL_HANDLE) {
 			vkDestroySwapchainKHR( m_LogicalDevice, oldSwapchain, nullptr );
 		}
@@ -313,12 +304,91 @@ namespace lum::rhi::vk {
 
 	void VulkanDevice::recreate_swapchain_primitives( ) noexcept {
 
-		for (auto& view : m_SwapchainImageViews) {
+		vkDeviceWaitIdle( m_LogicalDevice );
+
+		for (auto& img : m_SwapchainImageHandles) {
+			auto view = m_Images[ img ].m_VkView;
 			if (view != VK_NULL_HANDLE) {
 				vkDestroyImageView( m_LogicalDevice, view, nullptr );
 			}
 		}
 
+		uint32 numImages = 0;
+		vkGetSwapchainImagesKHR( m_LogicalDevice, m_Swapchain, &numImages, nullptr );
+		std::vector<VkImage> swapchainImages = std::vector<VkImage>( numImages );
+		vkGetSwapchainImagesKHR( m_LogicalDevice, m_Swapchain, &numImages, swapchainImages.data( ) );
+
+		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
+
+		for (auto& depthHandle : m_DepthImages) {
+			DestroyImage( depthHandle );
+		}
+
+		LUM_LOG_INFO( "New swapchain extent: {}x{}", m_SwapchainExtent.width, m_SwapchainExtent.height );
+
+		m_DepthImages.resize( numImages );
+		m_SwapchainImageHandles.resize( numImages );
+
+		for (uint32 i = 0; i < numImages; i++) {
+
+			auto& imageHandle = m_SwapchainImageHandles[ i ];
+
+			if (!m_Images.Contains( imageHandle )) {
+				VulkanImage image{};
+				image.m_OwnsImage = false;
+
+				imageHandle = m_Images.Append( image );
+			}
+
+			auto& image = m_Images[ imageHandle ];
+
+			image.m_VkImage = swapchainImages[ i ];
+			image.m_VkView = VK_NULL_HANDLE;
+			image.m_Info.m_CurrentLayout = ImageLayout::Undefined;
+
+			// SWAPCHAIN IMAGES
+			VkImageViewCreateInfo vkInfo{};
+			vkInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			vkInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+			vkInfo.image = swapchainImages[ i ];
+			vkInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			vkInfo.format = surfaceFormat.format;
+			vkInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			vkInfo.subresourceRange.baseMipLevel = 0;
+			vkInfo.subresourceRange.levelCount = 1;
+			vkInfo.subresourceRange.baseArrayLayer = 0;
+			vkInfo.subresourceRange.layerCount = 1;
+
+			LUM_VK_RESULT_ASSERT( vkCreateImageView( m_LogicalDevice, &vkInfo, nullptr, &image.m_VkView ) );
+
+
+
+			// DEPTH IMAGES
+			ImageCreateInfo depthInfo{};
+			depthInfo.m_UsageFlags = ImageUsageFlag::DepthStencilAttachment;
+			depthInfo.m_Format = ImageFormat::D32_FLOAT;
+			depthInfo.m_MipmapLevels = 1;
+			depthInfo.m_ArrayLayers = 1;
+			depthInfo.m_Dimension = ImageDimension::Image2D;
+			depthInfo.m_SampleCount = SampleCount::Sample1;
+			depthInfo.m_Extent = { m_SwapchainExtent.width, m_SwapchainExtent.height, 1 };
+			depthInfo.m_ViewType = ImageViewType::Default;
+
+			m_DepthImages[ i ] = CreateImage( depthInfo );
+			LUM_ASSERT( m_DepthImages[ i ].IsValid( ), "Failed to create depth image for swapchain index {}", i );
+
+		}
+
+		/*
+		for (auto& view : m_SwapchainImageViews) {
+			if (view != VK_NULL_HANDLE) {
+				vkDestroyImageView( m_LogicalDevice, view, nullptr );
+			}
+		}
+		
 		uint32 numImages = 0;
 		vkGetSwapchainImagesKHR( m_LogicalDevice, m_Swapchain, &numImages, nullptr );
 		m_SwapchainImages.resize( numImages );
@@ -327,12 +397,13 @@ namespace lum::rhi::vk {
 		VkSurfaceFormatKHR surfaceFormat = m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
 
 		m_SwapchainImageViews.resize( numImages );
+		
 
 		for (auto& depthHandle : m_DepthImages) {
 			DestroyImage( depthHandle );
 		}
 		m_DepthImages.resize( numImages );
-
+		
 		for (uint32 i = 0; i < numImages; i++) {
 
 			// SWAPCHAIN IMAGES
@@ -373,6 +444,7 @@ namespace lum::rhi::vk {
 			LUM_ASSERT( m_DepthImages[i ].IsValid(), "Failed to create depth image for swapchain index {}", i );
 			
 		}
+		*/
 
 	}
 
@@ -411,7 +483,7 @@ namespace lum::rhi::vk {
 		VkSemaphoreCreateInfo semaphoreInfo{};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-		usize numImages = m_SwapchainImages.size( );
+		usize numImages = m_SwapchainImageHandles.size( );
 
 		m_ImageAvailableSemaphores.resize( numImages );
 		for (auto& semaphore : m_ImageAvailableSemaphores) {

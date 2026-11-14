@@ -26,6 +26,8 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::DrawIndexed>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::DrawIndexed& cmd ) {
 
+				LUM_ASSERT( m_RenderingActive, "DrawIndexed: Rendering is inactive" );
+
 				if (vkCmdBuffer == VK_NULL_HANDLE ||
 					cmd.m_IndexCount == 0 ||
 					cmd.m_InstanceCount == 0) {
@@ -47,6 +49,8 @@ namespace lum::rhi::vk {
 
 		m_CommandProcessor.RegisterCommandCall<cmd::BindGraphicsPipeline>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::BindGraphicsPipeline& cmd ) {
+
+				LUM_ASSERT( m_RenderingActive, "BindGraphicsPipeline: Rendering is inactive" );
 
 				if (vkCmdBuffer == VK_NULL_HANDLE ||
 					!m_Pipelines.Contains( cmd.m_Handle )) {
@@ -76,6 +80,8 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::BindElementBuffer>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::BindElementBuffer& cmd ) {
 
+				LUM_ASSERT( m_RenderingActive, "BindElementBuffer: Rendering is inactive" );
+
 				if (vkCmdBuffer == VK_NULL_HANDLE ||
 					!m_Buffers.Contains( cmd.m_BufferHandle )) {
 					LUM_LOG_WARN( "BindElementBuffer: Invalid command buffer or buffer handle." );
@@ -102,7 +108,9 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::BindVertexBuffers>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::BindVertexBuffers& cmd ) {
 
-				const usize count = cmd.m_BufferHandles.size( );
+				LUM_ASSERT( m_RenderingActive, "BindVertexBuffer: Rendering is inactive" );
+
+				const usize count = cmd.m_BufferHandles.Size( );
 
 				if (vkCmdBuffer == VK_NULL_HANDLE ||
 					count == 0 ||
@@ -150,6 +158,8 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::SetViewport>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::SetViewport& cmd ) {
 
+				LUM_ASSERT( m_RenderingActive, "SetViewport: Rendering is inactive" );
+
 				if (vkCmdBuffer == VK_NULL_HANDLE) {
 					LUM_LOG_WARN( "SetViewport: Invalid command buffer." );
 					return;
@@ -190,6 +200,8 @@ namespace lum::rhi::vk {
 
 		m_CommandProcessor.RegisterCommandCall<cmd::SetScissors>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::SetScissors& cmd ) {
+
+				LUM_ASSERT( m_RenderingActive, "SetScissors: Rendering is inactive" );
 
 				if (vkCmdBuffer == VK_NULL_HANDLE) {
 					LUM_LOG_WARN( "SetScissors: Invalid command buffer." );
@@ -371,6 +383,8 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::TransferImage>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::TransferImage& cmd ) {
 
+				LUM_ASSERT( !m_RenderingActive, "TransferImage: Rendering is active!" );
+
 				auto cachedData = ResourceRegistry::GetStatic( ).GetCachedImage( cmd.m_DataHandle );
 				if (!cachedData) {
 					LUM_LOG_WARN( "TransferImage: Invalid image data handle" );
@@ -397,8 +411,7 @@ namespace lum::rhi::vk {
 					return;
 				}
 
-				const VkDeviceSize dataSize =
-					static_cast<VkDeviceSize>(data.m_Pixels.size( ));
+				const VkDeviceSize dataSize = static_cast<VkDeviceSize>(data.m_Pixels.size( ));
 
 				if (dataSize == 0) {
 					LUM_LOG_WARN( "TransferImage: Invalid staging buffer range." );
@@ -422,7 +435,8 @@ namespace lum::rhi::vk {
 
 					m_TemporaryStagingBuffers[ m_CurrentFrameIndex ].push( fallbackBufferHandle );
 				}
-				else*/ {
+				else*/
+				{
 
 					void* mapped = nullptr;
 
@@ -508,7 +522,7 @@ namespace lum::rhi::vk {
 				LUM_ASSERT( cmd.m_Size > 0, "PushConstants: Invalid data size." );
 				LUM_ASSERT(
 					cmd.m_Size % 4 == 0 && cmd.m_Offset % 4 == 0,
-					"PushConstants: Invalid push constant alignment." 
+					"PushConstants: Invalid push constant alignment."
 				);
 				LUM_ASSERT(
 					cmd.m_Size + cmd.m_Offset <= m_Adapter.m_Properties.limits.maxPushConstantsSize,
@@ -530,6 +544,296 @@ namespace lum::rhi::vk {
 					cmd.m_Data
 				);
 
+
+			}
+		);
+
+
+
+		m_CommandProcessor.RegisterCommandCall<cmd::BeginRendering>(
+			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::BeginRendering& cmd ) {
+
+				LUM_ASSERT( !m_RenderingActive, "BeginRendering: Rendering is already active!" );
+				LUM_ASSERT( cmd.m_RenderArea.m_Width > 0, "BeginRendering: RenderArea width cannot be <= 0" );
+				LUM_ASSERT( cmd.m_RenderArea.m_Height > 0, "BeginRendering: RenderArea height cannot be <= 0" );
+
+				VkRenderingInfo vkInfo{};
+				vkInfo.sType = VK_STRUCTURE_TYPE_RENDERING_INFO;
+				vkInfo.pNext = nullptr;
+				vkInfo.flags = 0;
+				vkInfo.renderArea.offset = { 0, 0 };
+				vkInfo.renderArea.extent = {
+					cmd.m_RenderArea.m_Width,
+					cmd.m_RenderArea.m_Height
+				};
+
+				vkInfo.layerCount = cmd.m_LayerCount;
+				vkInfo.viewMask = 0;
+
+				//==============================================================
+				// Color Attachments
+				//==============================================================//
+
+				FixedVector<VkRenderingAttachmentInfo, 4> vkColorAttachments{};
+
+				for (const RenderingAttachment& attachment : cmd.m_ColorAttachments) {
+
+					LUM_ASSERT( m_Images.Contains( attachment.m_Image ), "BeginRendering: Invalid color attachment image" );
+
+					auto& image = m_Images[ attachment.m_Image ];
+
+					detail::TransitionImageInfo transitionInfo{};
+					transitionInfo.m_Image = image;
+					transitionInfo.m_VkCommandBuffer = vkCmdBuffer;
+					transitionInfo.m_NewLayout = ImageLayout::ColorAttachment;
+					transitionInfo.m_NewStage = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
+					transitionInfo.m_NewAccess =
+						VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT |
+						VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT;
+
+					transition_image_layout( transitionInfo );
+
+					VkRenderingAttachmentInfo vkAttachment{};
+					vkAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
+					vkAttachment.storeOp = ToVk( attachment.m_StoreOp );
+					vkAttachment.loadOp = ToVk( attachment.m_LoadOp );
+					vkAttachment.clearValue = VkClearValue{
+						.color = {
+							attachment.m_ClearValue.m_Color.m_RGBA.m_R,
+							attachment.m_ClearValue.m_Color.m_RGBA.m_G,
+							attachment.m_ClearValue.m_Color.m_RGBA.m_B,
+							attachment.m_ClearValue.m_Color.m_RGBA.m_A
+						}
+					};
+					vkAttachment.imageView = image.m_VkView;
+					vkAttachment.imageLayout = ToVk( image.m_Info.m_CurrentLayout );
+
+					vkColorAttachments.PushBack( vkAttachment );
+
+					//vkColorAttachments.PushBack( );
+
+					/*
+					if (attachment.m_Image == k_CurrentSwachainImage) {
+
+						hasCurrentSwapchainAttachment = true;
+
+						auto& swapchainImage = m_Images[ k_CurrentSwachainImage ];
+
+						imageView = swapchainImage.m_VkView;
+
+						// Swapchain image transition
+						VkImageMemoryBarrier2 barrier{};
+						barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
+						barrier.srcStageMask = VK_PIPELINE_STAGE_2_NONE;
+						barrier.srcAccessMask = VK_ACCESS_2_NONE;
+						barrier.dstStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
+						barrier.dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT |
+							VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT;
+						barrier.oldLayout = m_SwapchainImageLayouts[ m_CurrentFrameIndex ];
+						barrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+						barrier.image = m_SwapchainImages[ m_CurrentFrameIndex ];
+						barrier.subresourceRange = {
+							VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1
+						};
+
+						VkDependencyInfo dependencyInfo{};
+						dependencyInfo.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO;
+						dependencyInfo.imageMemoryBarrierCount = 1;
+						dependencyInfo.pImageMemoryBarriers = &barrier;
+
+						vkCmdPipelineBarrier2( vkCmdBuffer, &dependencyInfo );
+
+						m_SwapchainImageLayouts[ m_CurrentFrameIndex ] = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+					}
+					else {
+
+						LUM_ASSERT(
+							m_Images.Contains( attachment.m_Image ),
+							"BeginRendering: Invalid ColorAttachment image"
+						);
+
+						auto& imageInfo = m_Images[ attachment.m_Image ];
+
+						detail::TransitionImageInfo transitionInfo{};
+						transitionInfo.m_Image = imageInfo;
+						transitionInfo.m_VkCommandBuffer = vkCmdBuffer;
+						transitionInfo.m_NewLayout = ImageLayout::ColorAttachment;
+						transitionInfo.m_NewStage = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
+						transitionInfo.m_NewAccess =
+							VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT |
+							VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT;
+
+						transition_image_layout( transitionInfo );
+
+						imageView = imageInfo.m_VkView;
+					}*/
+
+					//==============================================================
+					// Depth Attachment
+					//==============================================================//
+
+					VkRenderingAttachmentInfo vkDepthAttachment{};
+
+					if (cmd.m_DepthAttachment) {
+
+						const RenderingAttachment& attachment = cmd.m_DepthAttachment.Value( );
+
+						LUM_ASSERT( m_Images.Contains( attachment.m_Image ), "BeginRendering: Invalid DepthAttachment image" );
+						auto& imageInfo = m_Images[ attachment.m_Image ];
+
+						detail::TransitionImageInfo transitionInfo{};
+						transitionInfo.m_Image = imageInfo;
+						transitionInfo.m_VkCommandBuffer = vkCmdBuffer;
+						transitionInfo.m_NewLayout = ImageLayout::DepthStencilAttachment;
+						transitionInfo.m_NewStage =
+							VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT |
+							VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT;
+						transitionInfo.m_NewAccess =
+							VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT |
+							(attachment.m_LoadOp == LoadOp::Load
+								? VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT
+								: 0);
+
+						transition_image_layout( transitionInfo );
+
+						vkDepthAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
+						vkDepthAttachment.pNext = nullptr;
+						vkDepthAttachment.imageView = imageInfo.m_VkView;
+						vkDepthAttachment.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+						vkDepthAttachment.resolveMode = VK_RESOLVE_MODE_NONE;
+						vkDepthAttachment.resolveImageView = VK_NULL_HANDLE;
+						vkDepthAttachment.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+						vkDepthAttachment.loadOp = ToVk( attachment.m_LoadOp );
+						vkDepthAttachment.storeOp = ToVk( attachment.m_StoreOp );
+						vkDepthAttachment.clearValue.depthStencil = {
+							attachment.m_ClearValue.m_DepthStencil.m_Depth,
+							attachment.m_ClearValue.m_DepthStencil.m_Stencil
+						};
+
+						vkInfo.pDepthAttachment = &vkDepthAttachment;
+					}
+
+					//==============================================================
+					// Stencil Attachment
+					//==============================================================//
+
+					VkRenderingAttachmentInfo vkStencilAttachment{};
+
+					if (cmd.m_StencilAttachment) {
+
+						const RenderingAttachment& attachment = cmd.m_StencilAttachment.Value( );
+
+						LUM_ASSERT( m_Images.Contains( attachment.m_Image ), "BeginRendering: Invalid StencilAttachment image" );
+						auto& imageInfo = m_Images[ attachment.m_Image ];
+
+						detail::TransitionImageInfo transitionInfo{};
+						transitionInfo.m_Image = imageInfo;
+						transitionInfo.m_VkCommandBuffer = vkCmdBuffer;
+						transitionInfo.m_NewLayout = ImageLayout::DepthStencilAttachment;
+						transitionInfo.m_NewStage =
+							VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT |
+							VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT;
+						transitionInfo.m_NewAccess =
+							VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT |
+							(attachment.m_LoadOp == LoadOp::Load
+								? VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT
+								: 0);
+
+						transition_image_layout( transitionInfo );
+
+						vkStencilAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
+						vkStencilAttachment.pNext = nullptr;
+						vkStencilAttachment.imageView = imageInfo.m_VkView;
+						vkStencilAttachment.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+						vkStencilAttachment.resolveMode = VK_RESOLVE_MODE_NONE;
+						vkStencilAttachment.resolveImageView = VK_NULL_HANDLE;
+						vkStencilAttachment.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+						vkStencilAttachment.loadOp = ToVk( attachment.m_LoadOp );
+						vkStencilAttachment.storeOp = ToVk( attachment.m_StoreOp );
+						vkStencilAttachment.clearValue.depthStencil = {
+							attachment.m_ClearValue.m_DepthStencil.m_Depth,
+							attachment.m_ClearValue.m_DepthStencil.m_Stencil
+						};
+
+						vkInfo.pStencilAttachment = &vkStencilAttachment;
+					}
+
+					vkInfo.colorAttachmentCount = static_cast<uint32>(vkColorAttachments.Size( ));
+					vkInfo.pColorAttachments = vkColorAttachments.Empty( ) ? nullptr : vkColorAttachments.Data( );
+
+					vkCmdBeginRendering( vkCmdBuffer, &vkInfo );
+
+					m_RenderingActive = true;
+
+				}
+			}
+		);
+
+		m_CommandProcessor.RegisterCommandCall<cmd::EndRendering>(
+			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::EndRendering& cmd ) {
+
+				LUM_ASSERT( m_RenderingActive, "EndRendering: Rendering is not active!" );
+
+				vkCmdEndRendering( vkCmdBuffer );
+
+				m_RenderingActive = false;
+			}
+		);
+
+
+		m_CommandProcessor.RegisterCommandCall<cmd::CopyImageToImage>(
+			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::CopyImageToImage& cmd ) {
+
+				LUM_ASSERT( cmd.m_Src == cmd.m_Dst, "CopyImageToImage: Same images given in the descriptor." );
+
+				if (!m_Images.Contains( cmd.m_Src )) {
+					LUM_LOG_WARN( "CopyImageToImage: Source image is invalid" );
+					return;
+				}
+				if (!m_Images.Contains( cmd.m_Dst )) {
+					LUM_LOG_WARN( "CopyImageToImage: Destination image is invalid" );
+					return;
+				}
+
+				auto& src = m_Images[ cmd.m_Src ];
+				auto& dst = m_Images[ cmd.m_Dst ];
+
+				VkCopyImageToImageInfo info{};
+				info.sType = VK_STRUCTURE_TYPE_COPY_IMAGE_TO_IMAGE_INFO;
+				info.srcImage = src.m_VkImage;
+				info.srcImageLayout = ToVk( src.m_Info.m_CurrentLayout );
+				info.dstImage = dst.m_VkImage;
+				info.dstImageLayout = ToVk( dst.m_Info.m_CurrentLayout );
+
+				const VkResult res = vkCopyImageToImage( m_LogicalDevice, &info );
+				if (res != VK_SUCCESS) {
+					LUM_LOG_ERROR( "CopyImageToImage: Failed with VkResult {}", static_cast<int32>(res) );
+					return;
+				}
+
+			}
+		);
+
+		m_CommandProcessor.RegisterCommandCall<cmd::UpdateBuffer>(
+			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::UpdateBuffer& cmd ) {
+
+				LUM_ASSERT( cmd.m_DataSize <= 0, "UpdateBuffer: Invalid data size" );
+				LUM_ASSERT( !m_RenderingActive, "UpdateBuffer: Rendering is active" );
+
+				if (!m_Buffers.Contains( cmd.m_Buffer )) {
+					LUM_LOG_WARN( "UpdateBuffer: Destination buffer is invalid" );
+					return;
+				}
+
+				auto& buffer = m_Buffers[ cmd.m_Buffer ];
+
+				vkCmdUpdateBuffer(
+					vkCmdBuffer,
+					buffer.m_VkBuffer,
+					cmd.m_Offset,
+					cmd.m_DataSize,
+					cmd.m_NewData
+				);
 
 			}
 		);

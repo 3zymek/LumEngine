@@ -59,6 +59,18 @@ namespace lum::rhi::vk {
 
 		};
 
+		struct TransitionImageInfo {
+
+			SafePtr<VulkanImage> m_Image = nullptr;
+			ImageLayout m_NewLayout = ImageLayout::Undefined;
+
+			VkPipelineStageFlags2 m_NewStage = VK_PIPELINE_STAGE_2_NONE;
+			VkAccessFlags2 m_NewAccess = VK_ACCESS_2_NONE;
+
+			VkCommandBuffer m_VkCommandBuffer = VK_NULL_HANDLE;
+
+		};
+
 		LUM_NODISCARD inline bool ResultValidation( const VkResult res, const char* fnName, const std::source_location loc = std::source_location::current( ) ) noexcept {
 			if (res != VK_SUCCESS) {
 				LUM_LOG_ERROR(
@@ -73,21 +85,24 @@ namespace lum::rhi::vk {
 			return true;
 		}
 
-		struct TransitionImageInfo {
-
-			SafePtr<VulkanImage> m_Image = nullptr;
-			ImageLayout m_NewLayout = ImageLayout::Undefined;
-
-			VkPipelineStageFlags2 m_NewStage = VK_PIPELINE_STAGE_2_NONE;
-			VkAccessFlags2 m_NewAccess = VK_ACCESS_2_NONE;
-
-			VkCommandBuffer m_VkCommandBuffer = VK_NULL_HANDLE;
-
-		};
+		inline void ResultAssert( const VkResult res, const char* fnName, const std::source_location loc = std::source_location::current( ) ) noexcept {
+			LUM_ASSERT(
+				res == VK_SUCCESS,
+				"Vulkan error: '{}' failed with VkResult: {}\n  -> At {}:{}",
+				fnName,
+				static_cast<int32>(res),
+				loc.file_name( ),
+				loc.line( )
+			);
+		}
 
 #		define LUM_VK_RESULT_CHECK(call) \
 			lum::rhi::vk::detail::ResultValidation( call, #call )
 
+#		define LUM_VK_RESULT_ASSERT(call) \
+			lum::rhi::vk::detail::ResultAssert( call, #call );
+
 	}
+
 
 } // namespace lum::rhi::vk

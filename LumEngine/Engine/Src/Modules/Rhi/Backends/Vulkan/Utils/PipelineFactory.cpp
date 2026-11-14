@@ -96,13 +96,13 @@ namespace lum::rhi::vk {
 		auto vertexInputState = setup_vertex_input_info(info.m_VertexInputPass);
 		pipInfo.pVertexInputState = &vertexInputState;
 
-		auto depthState = setup_depth_stencil_info( );
+		auto depthState = setup_depth_stencil_info( info.m_DepthStencilPass );
 		pipInfo.pDepthStencilState = &depthState;
 
 		auto shaderStages = setup_shader_modules(device.m_LogicalDevice, info);
 		pipInfo.stageCount = shaderStages.size();
 		pipInfo.pStages = shaderStages.data();
-
+		
 		pipInfo.pNext = &renderingInfo;
 		pipInfo.pViewportState = &viewportState;
 		pipInfo.layout = pipeline.m_VkLayout;
@@ -261,19 +261,38 @@ namespace lum::rhi::vk {
 		return vkInfo;
 
 	}
-	auto PipelineFactory::setup_depth_stencil_info( ) const noexcept -> VkPipelineDepthStencilStateCreateInfo {
+	auto PipelineFactory::setup_depth_stencil_info( const DepthStencilPass& info ) const noexcept -> VkPipelineDepthStencilStateCreateInfo {
 
-		VkPipelineDepthStencilStateCreateInfo info{};
-		info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-		info.depthTestEnable = VK_TRUE;
-		info.depthWriteEnable = VK_TRUE;
-		info.depthCompareOp = VK_COMPARE_OP_LESS;
-		info.depthBoundsTestEnable = VK_FALSE;
-		info.stencilTestEnable = VK_FALSE;
-		info.minDepthBounds = 0.0f;
-		info.maxDepthBounds = 1.0f;
+		VkPipelineDepthStencilStateCreateInfo vkInfo{};
+		vkInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 
-		return info;
+		vkInfo.depthTestEnable = info.m_DepthTestEnabled ? VK_TRUE : VK_FALSE;
+		vkInfo.depthWriteEnable = info.m_DepthWriteEnabled ? VK_TRUE : VK_FALSE;
+		vkInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+
+		vkInfo.stencilTestEnable = info.m_StencilTestEnabled ? VK_TRUE : VK_FALSE;
+
+		const auto setupStencilOpState = []( const StencilOpState& state ) noexcept -> VkStencilOpState {
+			VkStencilOpState vkState{};
+			vkState.failOp = ToVk( state.m_FailOp );
+			vkState.passOp = ToVk( state.m_PassOp );
+			vkState.depthFailOp = ToVk( state.m_DepthFailOp );
+			vkState.compareOp = ToVk( state.m_CompareOp );
+			vkState.compareMask = state.m_CompareMask;
+			vkState.writeMask = state.m_WriteMask;
+			vkState.reference = state.m_Reference;
+
+			return vkState;
+		};
+
+		vkInfo.front = setupStencilOpState( info.m_FrontStencil );
+		vkInfo.back = setupStencilOpState( info.m_BackStencil );
+
+		vkInfo.depthBoundsTestEnable = info.m_DepthBoundsTestEnabled ? VK_TRUE : VK_FALSE;
+		vkInfo.minDepthBounds = info.m_MinDepthBounds;
+		vkInfo.maxDepthBounds = info.m_MaxDepthBounds;
+
+		return vkInfo;
 
 	}
 	auto PipelineFactory::setup_pipeline_layout( const PipelineLayout& info, VulkanDevice& device ) const noexcept -> VkPipelineLayout {

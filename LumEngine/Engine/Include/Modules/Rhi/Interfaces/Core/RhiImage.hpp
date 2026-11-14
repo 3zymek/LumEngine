@@ -156,6 +156,13 @@ namespace lum::rhi {
 
 	};
 
+	struct Extent2D {
+
+		uint32 m_Width = 0;
+		uint32 m_Height = 0;
+
+	};
+
 	enum class SampleCount : uint8 {
 		Sample1 = 0U,
 		Sample2,

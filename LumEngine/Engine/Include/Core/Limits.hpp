@@ -57,9 +57,6 @@ namespace lum::limits {
 
 	//============================= Render ==================================
 
-	/* @brief Maximum number of models that can be loaded simultaneously. */
-	inline constexpr usize k_MaxModels = 256;
-
 	/* @brief Maximum number of lights active in a single frame. Mirrors LUM_MAX_LIGHTS. */
 	//inline constexpr usize k_MaxLights = LUM_MAX_LIGHTS;
 
@@ -81,6 +78,9 @@ namespace lum::limits {
 	/* @brief Maximum character length of an error message generated during asset loading. */
 	inline constexpr usize k_MaxErrorAssetLoadLength = 128;
 
-	inline constexpr usize k_MaxLoadedImagesCapacity = 128;
+	inline constexpr usize k_MaxLoadedImages = 128;
+
+	/* @brief Maximum number of models that can be loaded simultaneously. */
+	inline constexpr usize k_MaxLoadedMeshes = 256;
 
 } // namespace lum::limits

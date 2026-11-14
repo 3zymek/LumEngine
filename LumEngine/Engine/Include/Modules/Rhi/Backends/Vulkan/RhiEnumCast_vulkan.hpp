@@ -21,6 +21,7 @@
 #include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
 #include "Rhi/Interfaces/Core/RhiSampler.hpp"
 #include "Rhi/Interfaces/Core/RhiShader.hpp"
+#include "Rhi/Interfaces/Core/RhiCommandDescriptors.hpp"
 
 namespace lum::rhi::vk {
 
@@ -40,6 +41,8 @@ namespace lum::rhi::vk {
 	LUM_NODISCARD auto ToVk( BlendFactor factor ) noexcept -> VkBlendFactor;
 	LUM_NODISCARD auto ToVk( BlendOp op ) noexcept -> VkBlendOp;
 	LUM_NODISCARD auto ToVk( ColorComponentFlags flags ) noexcept -> VkColorComponentFlags;
+	LUM_NODISCARD auto ToVk( CompareOp op ) noexcept -> VkCompareOp;
+	LUM_NODISCARD auto ToVk( StencilOp op ) noexcept -> VkStencilOp;
 
 
 	// Image enums conversions
@@ -62,7 +65,16 @@ namespace lum::rhi::vk {
 
 	// Descriptor set enums conversions
 
-	LUM_NODISCARD auto ToVk( ResourceType ) noexcept -> VkDescriptorType;
+	LUM_NODISCARD auto ToVk( ResourceType type ) noexcept -> VkDescriptorType;
+
+
+	// BeginRendering enums conversions
+
+	LUM_NODISCARD auto ToVk( LoadOp loadOp ) noexcept -> VkAttachmentLoadOp;
+	LUM_NODISCARD auto ToVk( StoreOp storeOp ) noexcept -> VkAttachmentStoreOp;
+
+
+
 
 
 } // namespace lum::rhi::vk

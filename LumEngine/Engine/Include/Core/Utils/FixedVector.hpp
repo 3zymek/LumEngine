@@ -50,6 +50,10 @@ namespace lum {
 			return m_Data[ index ];
 		}
 
+		LUM_NODISCARD bool Empty( ) const noexcept {
+			return m_CurrentSize == 0;
+		}
+
 		LUM_NODISCARD usize Size( ) const noexcept {
 			return m_CurrentSize;
 		}

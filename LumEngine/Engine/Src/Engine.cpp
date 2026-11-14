@@ -64,8 +64,6 @@ namespace lum {
 
 		m_RenderModule.m_Renderer.EndFrame( );
 
-		m_Platform.m_RenderDevice( ).UpdateFrame( );
-
 	}
 	void Engine::Tick( ) {
 		/*

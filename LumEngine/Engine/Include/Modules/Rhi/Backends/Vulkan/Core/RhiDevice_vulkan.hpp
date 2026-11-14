@@ -13,7 +13,7 @@
 #pragma once
 
 #include <array>
-#include <deque>
+#include <queue>
 #include <span>
 #include <vector>
 
@@ -61,6 +61,11 @@ namespace lum::rhi::vk {
 
 		void Initialize( const RenderDeviceCreateInfo& info ) noexcept override;
 		void Finalize( ) noexcept override;
+		ImageHandle GetCurrentSwapchainImage( ) const noexcept override;
+		Extent2D GetSwapchainExtent( ) const noexcept override;
+
+		bool BeginFrame( ) override;
+		void EndFrame( ) override;
 
 		void UpdateFrame( ) noexcept override;
 
@@ -153,8 +158,8 @@ namespace lum::rhi::vk {
 		VkSurfaceKHR m_MainSurface = VK_NULL_HANDLE;
 		VkSwapchainKHR m_Swapchain = VK_NULL_HANDLE;
 
-		std::vector<VkImage> m_SwapchainImages{};
-		std::vector<VkImageView> m_SwapchainImageViews{};
+		uint32 m_CurrentSwapchainImageIndex = 0;
+		std::vector<ImageHandle> m_SwapchainImageHandles{};
 		std::vector<ImageHandle> m_DepthImages{};
 
 		VkCommandPool m_CmdPool = VK_NULL_HANDLE;
@@ -172,6 +177,8 @@ namespace lum::rhi::vk {
 		detail::InFlightArray<std::queue<BufferHandle>> m_TemporaryStagingBuffers{};
 
 		VkPipelineLayout m_BoundPipelineLayout = VK_NULL_HANDLE;
+
+		bool m_RenderingActive = false;
 
 
 		// ===========================================================
@@ -201,37 +208,7 @@ namespace lum::rhi::vk {
 		bool create_shader_module( const Path& path, VkShaderModule& module ) const noexcept;
 		void decode_command_buffer( std::span<uint8> rawBuffer, VkCommandBuffer& vkBuffer ) noexcept;
 
-		template<auto tStreamGetter>
-		void process_commands( VkCommandBuffer vkCmdBuffer ) noexcept {
-			
-			if (m_CommandBuffersToFlush.size( ) == 1) {
-				decode_command_buffer( (m_CommandBuffersToFlush.front( ).*tStreamGetter)( ), vkCmdBuffer );
-				return;
-			}
-			
-			usize totalSize = 0;
-			for (auto& buffer : m_CommandBuffersToFlush) {
-				totalSize += (buffer.*tStreamGetter)().size( );
-			}
-
-			static std::vector<uint8> combinedBuffer{};
-			combinedBuffer.clear( );
-			combinedBuffer.reserve( totalSize );
-
-			for (auto& commandBuffer : m_CommandBuffersToFlush) {
-
-				auto buffer = (commandBuffer.*tStreamGetter)();
-
-				usize end = combinedBuffer.size( );
-				combinedBuffer.resize( end + buffer.size( ) );
-
-				std::memcpy( combinedBuffer.data( ) + end, buffer.data( ), buffer.size_bytes( ) );
-
-			}
-
-			decode_command_buffer( combinedBuffer, vkCmdBuffer );
-
-		}
+		void process_commands( VkCommandBuffer vkCmdBuffer ) noexcept;
 		void transition_image_layout( const detail::TransitionImageInfo& info ) noexcept;
 
 

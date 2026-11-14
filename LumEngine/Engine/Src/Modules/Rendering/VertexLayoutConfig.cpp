@@ -25,24 +25,43 @@ namespace lum {
 		return val;
 	}
 
-	LUM_NODISCARD rhi::VertexInputPass VertexLayoutConfiguration::GetVertexInputPass( ) const {
+    LUM_NODISCARD rhi::VertexInputPass VertexLayoutConfiguration::GetDefaultConfiguration( ) const {
 
-		rhi::VertexInputPass info{};
+        rhi::VertexInputPass info{};
 
-		rhi::VertexBinding binding{};
-		binding.m_Binding = 0;
-		binding.m_Instanced = false;
-		binding.m_Stride = sizeof( rhi::Vertex );
-		info.m_Bindings.push_back( binding );
+        // Vertex binding
+        rhi::VertexBinding binding{};
+        binding.m_Binding = 0;
+        binding.m_Instanced = false;
+        binding.m_Stride = sizeof( rhi::Vertex );
 
-		info.m_Attributes.reserve( 3 );
+        info.m_Bindings.push_back( binding );
 
-		info.m_Attributes.push_back( { 0, 0, 0, rhi::ImageFormat::RGB32_FLOAT } );
-		info.m_Attributes.push_back( { 1, 0, 12, rhi::ImageFormat::RGB32_FLOAT } );
-		info.m_Attributes.push_back( { 2, 0, 24, rhi::ImageFormat::RG32_FLOAT } );
+        // Position
+        info.m_Attributes.push_back( {
+            0,
+            0,
+            offsetof( rhi::Vertex, m_Position ),
+            rhi::ImageFormat::RGB32_FLOAT
+        } );
 
-		return info;
+        // Normal
+        info.m_Attributes.push_back( {
+            1,
+            0,
+            offsetof( rhi::Vertex, m_Normal ),
+            rhi::ImageFormat::RGB32_FLOAT
+        } );
 
-	}
+        // UV
+        info.m_Attributes.push_back( {
+            2,
+            0,
+            offsetof( rhi::Vertex, m_UV ),
+            rhi::ImageFormat::RG32_FLOAT
+        } );
+
+        return info;
+    }
 
 } // namespace lum

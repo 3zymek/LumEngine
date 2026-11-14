@@ -1,3 +1,15 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
 #include <vector>
@@ -7,8 +19,8 @@
 #include "Core/Math/Vec4.hpp"
 #include "Core/Utils/HandlePool.hpp"
 #include "Rhi/Interfaces/Core/RhiImage.hpp"
-#include "Rhi/Interfaces/Core/RhiShader.hpp"
 #include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
+#include "Rhi/Interfaces/Core/RhiShader.hpp"
 
 namespace lum::rhi {
 
@@ -170,6 +182,59 @@ namespace lum::rhi {
 		std::vector<VertexBinding> m_Bindings{};
 
 	};
+	
+	enum class CompareOp : uint8 {
+		Never = 0U,
+		Less,
+		Equal,
+		LessOrEqual,
+		Greater,
+		NotEqual,
+		GreaterOrEqual,
+		Always
+	};
+
+	enum class StencilOp : uint8 {
+		Keep = 0U,
+		Zero,
+		Replace,
+		IncrementAndClamp,
+		DecrementAndClamp,
+		Invert,
+		IncrementAndWrap,
+		DecrementAndWrap
+	};
+
+	struct StencilOpState {
+
+		StencilOp m_FailOp = StencilOp::Keep;
+		StencilOp m_PassOp = StencilOp::Keep;
+		StencilOp m_DepthFailOp = StencilOp::Keep;
+
+		CompareOp m_CompareOp = CompareOp::Always;
+
+		uint32 m_CompareMask = ~0u;
+		uint32 m_WriteMask = ~0u;
+		uint32 m_Reference = 0;
+
+	};
+
+	struct DepthStencilPass {
+
+		bool m_DepthTestEnabled = false;
+		bool m_DepthWriteEnabled = true;
+		
+		bool m_StencilTestEnabled = false;
+
+		StencilOpState m_FrontStencil{};
+		StencilOpState m_BackStencil{};
+
+		float32 m_MinDepthBounds = 0.0f;
+		float32 m_MaxDepthBounds = 1.0f;
+
+		bool m_DepthBoundsTestEnabled = false;
+
+	};
 
 	struct PushConstantRange {
 		ShaderStageFlags m_ShaderStageFlags{};
@@ -192,6 +257,7 @@ namespace lum::rhi {
 		ColorBlendPass		m_ColorBlendPass{};
 		MultisamplePass		m_MultisamplePass{};
 		VertexInputPass		m_VertexInputPass{};
+		DepthStencilPass	m_DepthStencilPass{};
 		PipelineLayout		m_Layout{};
 
 	};

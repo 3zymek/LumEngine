@@ -27,7 +27,6 @@ namespace lum::rhi {
 
 	class IRenderDevice;
 
-
 	struct Command {};
 	enum class CommandType : uint8 {
 		BindPipeline = 0U,
@@ -40,7 +39,11 @@ namespace lum::rhi {
 		SetScissors,
 		UpdateResourceSet,
 		TransferImage,
-		PushConstants
+		PushConstants,
+		BeginRendering,
+		EndRendering,
+		CopyImage,
+		UpdateBuffer
 	};
 
 	template<typename tType>
@@ -50,8 +53,8 @@ namespace lum::rhi {
 
 #	define LUM_RHI_CMD_TYPE( type ) \
 		static inline constexpr CommandType s_Type = type
-#	define LUM_RHI_CMD_PRERENDER( ) \
-		static inline constexpr bool s_PreRender = true
+#	define LUM_RHI_CMD_RENDERING_INACTIVE( ) \
+		static inline constexpr bool s_RenderingInactive = true
 
 	class CommandBuffer {
 	public:
@@ -62,17 +65,12 @@ namespace lum::rhi {
 			append_command( tCommand::s_Type, data );
 		}
 
-		std::span<uint8> GetRenderByteStream( ) {
-			return m_RenderBuffer;
-		}
-
-		std::span<uint8> GetPreRenderByteStream( ) {
-			return m_PreRenderBuffer;
+		std::span<uint8> GetByteStream( ) {
+			return m_Buffer;
 		}
 
 		void Clear( ) noexcept {
-			m_RenderBuffer.clear( );
-			m_PreRenderBuffer.clear( );
+			m_Buffer.clear( );
 		}
 
 	protected:
@@ -85,14 +83,8 @@ namespace lum::rhi {
 			   "Command type is not trivially copyable"
 			);
 
-				if constexpr (requires { tCommand::s_PreRender; }) {
-					append_bytes( &type, sizeof( CommandType ), m_PreRenderBuffer );
-					append_bytes( &data, sizeof( tCommand ), m_PreRenderBuffer );
-				}
-				else {
-					append_bytes( &type, sizeof( CommandType ), m_RenderBuffer );
-					append_bytes( &data, sizeof( tCommand ), m_RenderBuffer );
-				}
+			append_bytes( &type, sizeof( CommandType ), m_Buffer );
+			append_bytes( &data, sizeof( tCommand ), m_Buffer );
 			
 		}
 
@@ -102,8 +94,7 @@ namespace lum::rhi {
 			std::memcpy( buffer.data( ) + oldSize, data, size );
 		}
 
-		std::vector<uint8> m_RenderBuffer{};
-		std::vector<uint8> m_PreRenderBuffer{};
+		std::vector<uint8> m_Buffer{};
 
 	};
 

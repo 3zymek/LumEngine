@@ -42,8 +42,6 @@ namespace lum {
 
 		RendererContext m_Context{};
 
-		rhi::CommandBuffer m_CmdBuffer{};
-
 		struct {
 
 			rhi::ImageHandle m_FrameImage{};

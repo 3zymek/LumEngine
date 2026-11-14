@@ -83,6 +83,10 @@ namespace lum::rhi::vk {
 
 			vkDeviceWaitIdle( m_LogicalDevice );
 
+			for (auto img : m_SwapchainImageHandles) {
+				vkDestroyImageView( m_LogicalDevice, m_Images[ img ].m_VkView, nullptr );
+			}
+
 			for (auto&& [handle, buffer] : m_Buffers.Iterate( )) {
 				DestroyBuffer( handle );
 			}
@@ -114,10 +118,6 @@ namespace lum::rhi::vk {
 
 			vkDestroyCommandPool( m_LogicalDevice, m_CmdPool, nullptr );
 
-			for (auto view : m_SwapchainImageViews) {
-				vkDestroyImageView( m_LogicalDevice, view, nullptr );
-			}
-
 			vkDestroySwapchainKHR( m_LogicalDevice, m_Swapchain, nullptr );
 
 			vkDestroySurfaceKHR( m_Instance, m_MainSurface, nullptr );
@@ -128,38 +128,50 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::UpdateFrame( ) noexcept {
+	ImageHandle VulkanDevice::GetCurrentSwapchainImage( ) const noexcept {
+		return m_SwapchainImageHandles[ m_CurrentFrameIndex ];
+	}
+
+	Extent2D VulkanDevice::GetSwapchainExtent( ) const noexcept {
+		return { m_SwapchainExtent.width, m_SwapchainExtent.height };
+	}
+
+	bool VulkanDevice::BeginFrame( ) {
 
 		assert_device( );
 
-		// Sync GPU and CPU
 		vkWaitForFences( m_LogicalDevice, 1, &m_InFlightFences[ m_CurrentFrameIndex ], VK_TRUE, UINT64_MAX );
 
-		auto& boundStagingBuffers = m_TemporaryStagingBuffers[ m_CurrentFrameIndex ];
-		while (!boundStagingBuffers.empty( )) {
-
-			DestroyBuffer( boundStagingBuffers.front( ) );
-			boundStagingBuffers.pop( );
-
-		}
-
-		// Acquire image from swapchain
 		uint32 imageIndex{};
-		VkSemaphore& imageAvailableSemaphore = m_ImageAvailableSemaphores[ m_CurrentFrameIndex ];
-		VkResult acquireImageResult = vkAcquireNextImageKHR( m_LogicalDevice, m_Swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex );
 
-		if (acquireImageResult == VK_ERROR_OUT_OF_DATE_KHR) {
+		VkResult result = vkAcquireNextImageKHR(
+			m_LogicalDevice,
+			m_Swapchain,
+			UINT64_MAX,
+			m_ImageAvailableSemaphores[ m_CurrentFrameIndex ],
+			VK_NULL_HANDLE,
+			&imageIndex
+		);
+
+		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
 			handle_resize( );
-			return;
+			return false;
 		}
-		if (acquireImageResult != VK_SUCCESS && acquireImageResult != VK_SUBOPTIMAL_KHR) {
-			return;
-		}
-		vkResetFences( m_LogicalDevice, 1, &m_InFlightFences[ m_CurrentFrameIndex ] );
 
+		if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+			return false;
 
+		m_CurrentSwapchainImageIndex = imageIndex;
 
+		vkResetFences(
+			m_LogicalDevice, 1,
+			&m_InFlightFences[ m_CurrentFrameIndex ]
+		);
 
+		return true;
+
+	}
+	void VulkanDevice::EndFrame( ) {
 
 		// Begin recording
 		VkCommandBuffer& commandBuffer = m_CmdBuffers[ m_CurrentFrameIndex ];
@@ -170,9 +182,77 @@ namespace lum::rhi::vk {
 		vkBeginCommandBuffer( commandBuffer, &beginInfo );
 
 
-		process_commands<&CommandBuffer::GetPreRenderByteStream>( commandBuffer );
+		process_commands( commandBuffer );
 
-		 
+
+		detail::TransitionImageInfo swapchainImageBarrier{};
+		swapchainImageBarrier.m_Image = m_Images[ m_SwapchainImageHandles[ m_CurrentSwapchainImageIndex ] ];
+		swapchainImageBarrier.m_NewLayout = ImageLayout::Present;
+		swapchainImageBarrier.m_NewAccess = VK_ACCESS_2_NONE;
+		swapchainImageBarrier.m_NewStage = VK_PIPELINE_STAGE_2_NONE;
+		swapchainImageBarrier.m_VkCommandBuffer = commandBuffer;
+		transition_image_layout( swapchainImageBarrier );
+
+
+
+		VkSemaphore& imageAvailableSemaphore = m_ImageAvailableSemaphores[ m_CurrentFrameIndex ];
+
+		// Send commands to GPU
+		VkSemaphoreSubmitInfo waitSemaphoreInfo{};
+		waitSemaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
+		waitSemaphoreInfo.semaphore = imageAvailableSemaphore;
+		waitSemaphoreInfo.stageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+		VkSemaphoreSubmitInfo signalSemaphoreInfo{};
+		signalSemaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
+		signalSemaphoreInfo.semaphore = m_RenderFinishedSemaphores[ m_CurrentSwapchainImageIndex ];
+		signalSemaphoreInfo.stageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT;
+
+		VkCommandBufferSubmitInfo cmdBufferInfo{};
+		cmdBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO;
+		cmdBufferInfo.commandBuffer = commandBuffer;
+
+		VkSubmitInfo2 submitInfo{};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2;
+		submitInfo.waitSemaphoreInfoCount = 1;
+		submitInfo.pWaitSemaphoreInfos = &waitSemaphoreInfo;
+		submitInfo.signalSemaphoreInfoCount = 1;
+		submitInfo.pSignalSemaphoreInfos = &signalSemaphoreInfo;
+		submitInfo.commandBufferInfoCount = 1;
+		submitInfo.pCommandBufferInfos = &cmdBufferInfo;
+
+		if (!LUM_VK_RESULT_CHECK( vkEndCommandBuffer( commandBuffer ) )) {
+			return;
+		}
+
+		if (!LUM_VK_RESULT_CHECK( vkQueueSubmit2( m_GraphicsQueue, 1, &submitInfo, m_InFlightFences[ m_CurrentFrameIndex ] ) )) {
+			return;
+		}
+
+
+
+
+		// Present
+		VkPresentInfoKHR presentInfo{};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = &m_RenderFinishedSemaphores[ m_CurrentSwapchainImageIndex ];
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = &m_Swapchain;
+		presentInfo.pImageIndices = &m_CurrentSwapchainImageIndex;
+
+		vkQueuePresentKHR( m_PresentQueue, &presentInfo );
+
+
+		// Calculate Frame
+		m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % k_MaxFramesInFlight;
+		m_CommandBuffersToFlush.clear( );
+
+	}
+
+	void VulkanDevice::UpdateFrame( ) noexcept {
+
+		/*
 		// Entry barrier
 		VkImageMemoryBarrier2 barrierToRender{};
 		barrierToRender.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
@@ -228,15 +308,9 @@ namespace lum::rhi::vk {
 
 		vkCmdBeginRendering( commandBuffer, &renderingInfo );
 
-		process_commands<&CommandBuffer::GetRenderByteStream>( commandBuffer );
+		//process_commands<&CommandBuffer::GetRenderByteStream>( commandBuffer );
 
 		vkCmdEndRendering( commandBuffer );
-
-
-
-
-
-
 
 		// Outry barrier
 		VkImageMemoryBarrier2 barrierToPresent = barrierToRender;
@@ -248,62 +322,7 @@ namespace lum::rhi::vk {
 
 		dependencyInfo.pImageMemoryBarriers = &barrierToPresent;
 		vkCmdPipelineBarrier2( commandBuffer, &dependencyInfo );
-
-
-
-
-		// Send commands to GPU
-		VkSemaphoreSubmitInfo waitSemaphoreInfo{};
-		waitSemaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
-		waitSemaphoreInfo.semaphore = imageAvailableSemaphore;
-		waitSemaphoreInfo.stageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
-
-		VkSemaphoreSubmitInfo signalSemaphoreInfo{};
-		signalSemaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
-		signalSemaphoreInfo.semaphore = m_RenderFinishedSemaphores[ imageIndex ];
-		signalSemaphoreInfo.stageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT;
-
-		VkCommandBufferSubmitInfo cmdBufferInfo{};
-		cmdBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO;
-		cmdBufferInfo.commandBuffer = commandBuffer;
-
-		VkSubmitInfo2 submitInfo{};
-		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2;
-		submitInfo.waitSemaphoreInfoCount = 1;
-		submitInfo.pWaitSemaphoreInfos = &waitSemaphoreInfo;
-		submitInfo.signalSemaphoreInfoCount = 1;
-		submitInfo.pSignalSemaphoreInfos = &signalSemaphoreInfo;
-		submitInfo.commandBufferInfoCount = 1;
-		submitInfo.pCommandBufferInfos = &cmdBufferInfo;
-
-		if (!LUM_VK_RESULT_CHECK( vkEndCommandBuffer( commandBuffer ) )) {
-			return;
-		}
-
-		if (!LUM_VK_RESULT_CHECK( vkQueueSubmit2( m_GraphicsQueue, 1, &submitInfo, m_InFlightFences[ m_CurrentFrameIndex ] ) )) {
-			return;
-		}
-
-
-
-
-		// Present
-		VkPresentInfoKHR presentInfo{};
-		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = &m_RenderFinishedSemaphores[ imageIndex ];
-		presentInfo.swapchainCount = 1;
-		presentInfo.pSwapchains = &m_Swapchain;
-		presentInfo.pImageIndices = &imageIndex;
-
-		vkQueuePresentKHR( m_PresentQueue, &presentInfo );
-
-
-
-
-		// Calculate Frame
-		m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % k_MaxFramesInFlight;
-		m_CommandBuffersToFlush.clear( );
+		*/
 
 	}
 
@@ -361,6 +380,37 @@ namespace lum::rhi::vk {
 			m_CommandProcessor.ExecuteCall( type, vkBuffer, current );
 
 		}
+
+	}
+
+	void VulkanDevice::process_commands( VkCommandBuffer vkCmdBuffer ) noexcept {
+
+		if (m_CommandBuffersToFlush.size( ) == 1) {
+			decode_command_buffer( m_CommandBuffersToFlush.front( ).GetByteStream(), vkCmdBuffer);
+			return;
+		}
+
+		usize totalSize = 0;
+		for (auto& buffer : m_CommandBuffersToFlush) {
+			totalSize += buffer.GetByteStream().size( );
+		}
+
+		static std::vector<uint8> combinedBuffer{};
+		combinedBuffer.clear( );
+		combinedBuffer.reserve( totalSize );
+
+		for (auto& commandBuffer : m_CommandBuffersToFlush) {
+
+			auto buffer = commandBuffer.GetByteStream();
+
+			usize end = combinedBuffer.size( );
+			combinedBuffer.resize( end + buffer.size( ) );
+
+			std::memcpy( combinedBuffer.data( ) + end, buffer.data( ), buffer.size_bytes( ) );
+
+		}
+
+		decode_command_buffer( combinedBuffer, vkCmdBuffer );
 
 	}
 

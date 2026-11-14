@@ -29,6 +29,8 @@ namespace lum::rhi::vk {
 		VkImageView m_VkView = VK_NULL_HANDLE;
 		VkDeviceMemory m_VkMemory = VK_NULL_HANDLE;
 
+		bool m_OwnsImage = true;
+
 	};
 
 } // namespace lum::rhi::vk

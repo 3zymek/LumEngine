@@ -15,12 +15,15 @@
 #include <span>
 #include <vector>
 
+#include "Core/CoreDefines.hpp"
 #include "Core/CoreTypes.hpp"
 #include "Core/Math/Vec2.hpp"
 #include "Core/Utils/FixedVector.hpp"
+#include "Core/Utils/Optional.hpp"
 #include "Core/Utils/ResourceRegistry.hpp"
 #include "Rhi/Interfaces/Core/RhiBuffer.hpp"
 #include "Rhi/Interfaces/Core/RhiCommandBuffer.hpp"
+#include "Rhi/Interfaces/Core/RhiCommandDescriptors.hpp"
 #include "Rhi/Interfaces/Core/RhiImage.hpp"
 #include "Rhi/Interfaces/Core/RhiPipeline.hpp"
 #include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
@@ -88,8 +91,8 @@ namespace lum::rhi::cmd {
 
 		LUM_RHI_CMD_TYPE( CommandType::BindVertexBuffers );
 
-		/* @brief Handles of the vertex buffers to bind. */
-		std::span<const BufferHandle> m_BufferHandles{};
+		/* @brief Handles of the vertex buffers to bind. MAX 5 */
+		FixedVector<BufferHandle, k_MaxVertexBufferBindCount> m_BufferHandles{};
 
 		/* @brief Index of the first vertex buffer binding. */
 		uint32 m_FirstBinding = 0;
@@ -131,46 +134,6 @@ namespace lum::rhi::cmd {
 		Vector2u m_Extent = Vector2u( 0, 0 );
 	};
 
-	/* @brief Describes a buffer resource update within a resource set.
-	* Specifies the buffer and the range of data associated with a descriptor binding.
-	*/
-	struct LUM_API UpdateBufferInfo {
-
-		/* @brief Handle of the buffer to bind. */
-		BufferHandle m_BufferHandle{};
-
-		/* @brief Byte offset into the buffer. */
-		uint64 m_Offset = 0;
-
-		/* @brief Size of the buffer range in bytes. */
-		uint64 m_Range = 0;
-
-		/* @brief Array element index within the descriptor binding. */
-		uint32 m_ArrayIndex = 0;
-
-		/* @brief Descriptor binding index. */
-		uint32 m_Binding = 0;
-
-	};
-
-	/* @brief Describes an image resource update within a resource set.
-	* Specifies the image and sampler associated with a descriptor binding.
-	*/
-	struct LUM_API UpdateImageInfo {
-
-		/* @brief Handle of the sampler to associate with the image. */
-		SamplerHandle m_SamplerHandle{};
-
-		/* @brief Handle of the image to bind. */
-		ImageHandle m_ImageHandle{};
-
-		/* @brief Array element index within the descriptor binding. */
-		uint32 m_ArrayIndex = 0;
-
-		/* @brief Descriptor binding index. */
-		uint32 m_Binding = 0;
-
-	};
 
 	/* @brief Command for updating the contents of a resource set.
 	* Provides buffer and image resources that will be associated with
@@ -210,7 +173,7 @@ namespace lum::rhi::cmd {
 	struct LUM_API TransferImage : Command {
 
 		LUM_RHI_CMD_TYPE( CommandType::TransferImage );
-		LUM_RHI_CMD_PRERENDER( );
+		LUM_RHI_CMD_RENDERING_INACTIVE( );
 
 		/* @brief Image data to upload. */
 		ResourceImageHandle m_DataHandle{};
@@ -231,7 +194,7 @@ namespace lum::rhi::cmd {
 		LUM_RHI_CMD_TYPE( CommandType::PushConstants );
 
 		/* @brief Pointer to the data to upload. */
-		void* m_Data = nullptr;
+		const void* m_Data = nullptr;
 
 		/* @brief Size of the data in bytes. */
 		usize m_Size = 0;
@@ -241,6 +204,50 @@ namespace lum::rhi::cmd {
 
 		/* @brief Shader stages that can access the specified push constants. */
 		ShaderStageFlags m_ShaderStageFlags{};
+	};
+
+
+	struct LUM_API BeginRendering : Command {
+
+		LUM_RHI_CMD_TYPE( CommandType::BeginRendering );
+		LUM_RHI_CMD_RENDERING_INACTIVE( );
+
+		uint32 m_LayerCount = 1;
+		// In future if needed: add multiview
+
+		FixedVector<RenderingAttachment, 4> m_ColorAttachments{};
+		Optional<RenderingAttachment> m_DepthAttachment{};
+		Optional<RenderingAttachment> m_StencilAttachment{};
+
+		Extent2D m_RenderArea{};
+
+	};
+
+	struct LUM_API EndRendering : Command {
+
+		LUM_RHI_CMD_TYPE( CommandType::EndRendering );
+
+	};
+
+	struct LUM_API CopyImageToImage : Command {
+
+		LUM_RHI_CMD_TYPE( CommandType::CopyImage );
+
+		ImageHandle m_Src{};
+		ImageHandle m_Dst{};
+
+	};
+
+	struct LUM_API UpdateBuffer : Command {
+
+		LUM_RHI_CMD_TYPE( CommandType::UpdateBuffer );
+
+		BufferHandle m_Buffer{};
+
+		const void* m_NewData{};
+		usize m_DataSize = 0;
+		usize m_Offset = 0;
+
 	};
 
 } // namespace lum::rhi::cmd

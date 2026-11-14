@@ -76,11 +76,9 @@ namespace lum {
 		return texture;
 	}
 
-	Result<MeshGeometry> ResourceLoader::LoadMeshFromFile( ResourceRoot root, const Path& filepath ) {
+	Result<MeshGeometry> ResourceLoader::LoadMeshFromFile( const Path& filepath ) {
 
-		Path path = ResolveResourcePath( root, filepath );
-
-		if (!FileSystem::Exists( path )) {
+		if (!FileSystem::Exists( filepath )) {
 			return Result<MeshGeometry>::Failure( "File doesn't exist" );
 		}
 
@@ -89,7 +87,7 @@ namespace lum {
 		flags |= aiProcess_FlipUVs;
 		flags |= aiProcess_Triangulate;
 		flags |= aiProcess_CalcTangentSpace;
-		const aiScene* scene = importer.ReadFile( path.ToString( ), flags );
+		const aiScene* scene = importer.ReadFile( filepath.ToString( ), flags );
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			return Result<MeshGeometry>::Failure( importer.GetErrorString( ) );
@@ -105,7 +103,7 @@ namespace lum {
 
 			for (uint32 vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
 				rhi::Vertex vert{};
-				/*
+				
 				vert.m_Position = {
 					mesh->mVertices[ vertexIndex ].x,
 					mesh->mVertices[ vertexIndex ].y,
@@ -113,15 +111,18 @@ namespace lum {
 				};
 
 				if (mesh->HasNormals( )) {
+					/*
 					vert.m_Normal = {
 						mesh->mNormals[ vertexIndex ].x,
 						mesh->mNormals[ vertexIndex ].y,
 						mesh->mNormals[ vertexIndex ].z
 					};
+					*/
 				}
-				else vert.m_Normal = { 0.0f, 0.0f, 0.0f };
+				//else vert.m_Normal = { 0.0f, 0.0f, 0.0f };
 
 				if (mesh->HasTangentsAndBitangents( )) {
+					/*
 					vert.m_Tangent = {
 						mesh->mTangents[ vertexIndex ].x,
 						mesh->mTangents[ vertexIndex ].y,
@@ -132,23 +133,24 @@ namespace lum {
 						mesh->mBitangents[ vertexIndex ].y,
 						mesh->mBitangents[ vertexIndex ].z
 					};
+					*/
 				}
 				else {
-					vert.m_Tangent = { 0.0f, 0.0f, 0.0f };
-					vert.m_Bitangent = { 0.0f, 0.0f, 0.0f };
+					//vert.m_Tangent = { 0.0f, 0.0f, 0.0f };
+					//vert.m_Bitangent = { 0.0f, 0.0f, 0.0f };
 				}
 
 				if (mesh->mTextureCoords[ 0 ]) {
-					vert.m_Uv = {
+					vert.m_UV = {
 						mesh->mTextureCoords[ 0 ][ vertexIndex ].x,
 						mesh->mTextureCoords[ 0 ][ vertexIndex ].y
 					};
 
 				}
-				else vert.m_Uv = { 0.0f, 0.0f };
+				else vert.m_UV = { 0.0f, 0.0f };
 
 				finalData.m_Vertices.push_back( vert );
-				*/ // TODO: AFTER RHI REFACTOR
+
 			}
 
 			for (uint32 faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {

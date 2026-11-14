@@ -1,49 +1,48 @@
-#version 450 core
-layout( binding = LUM_TEX_ALBEDO	) uniform sampler2D tAlbedo;
-layout( binding = LUM_TEX_NORMAL	) uniform sampler2D tNormal;
-layout( binding = LUM_TEX_ROUGHNESS	) uniform sampler2D tRoughness;
-layout( binding = LUM_TEX_METALNESS	) uniform sampler2D tMetalness;
+#version 460
+//layout( set = 0, binding = 2 ) uniform sampler2D in_Albedo;
+//layout( binding = LUM_TEX_NORMAL	) uniform sampler2D tNormal;
+//layout( binding = LUM_TEX_ROUGHNESS	) uniform sampler2D tRoughness;
+//layout( binding = LUM_TEX_METALNESS	) uniform sampler2D tMetalness;
 
-layout( location = LUM_GBUFFER_ALBEDO ) out vec4 gAlbedo;
-layout( location = LUM_GBUFFER_NORMAL ) out vec4 gNormal;
+layout( location = 0 ) out vec4 g_Albedo;
+//layout( location = LUM_GBUFFER_NORMAL ) out vec4 gNormal;
 
-layout( std140, binding = LUM_UBO_CAMERA_BINDING ) uniform CameraUniforms {
-	
-	mat4 uCameraView;
-	mat4 uCameraProj;
-	mat4 uCameraInvProj;
-	vec4 uCameraPos;
+layout( set = 0, binding = 0, std140 ) uniform CameraUniforms {
+	mat4 m_View;
+	mat4 m_Projection;
+	mat4 m_InvertedProjection;
+	vec4 m_Position;
+} u_CameraData;
 
-};
+//layout( set = 0, binding = 1, std140 ) uniform MaterialUniforms {
+//	vec4 m_BaseColor;
+//	float m_Roughness;
+//	float m_Metalness;
+//} u_MaterialData;
 
-layout( std140, binding = LUM_UBO_MATERIAL_BINDING ) uniform MaterialUniforms {
-
-	vec4 uMatBaseColor;
-	float uMatRoughness;
-	float uMatMetallic;
-
-};
-
-in vec3 fPos;
-in vec2 fUV;
-in mat3 fTBN;
+in vec3 f_Position;
+in vec2 f_UV;
+//in mat3 fTBN;
 
 void main( ) {
 
-	vec4 albedoTex = texture(tAlbedo, fUV);
-	vec3 albedo = albedoTex.rgb * uMatBaseColor.rgb;
+	g_Albedo = vec4( 1.0, 1.0, 1.0, 1.0 );
 
-	float roughness = texture(tRoughness, fUV).r * uMatRoughness;
-	float metallic = texture(tMetalness, fUV).r * uMatMetallic;
+	//vec4 albedo = texture(in_Albedo, f_Uv).rgb; // * uMatBaseColor.rgb;
+
+	//float roughness = texture(tRoughness, fUV).r * uMatRoughness;
+	//float metallic = texture(tMetalness, fUV).r * uMatMetallic;
 	//if(metallic == 0)
 		//metallic = uMatMetallic;
 
-	vec3 normal = texture(tNormal, fUV).rgb;
+	//vec3 normal = texture(tNormal, fUV).rgb;
 
-	normal = normalize(normal * 2.0 - 1.0);
-	normal = normalize(fTBN * normal);
+	//normal = normalize(normal * 2.0 - 1.0);
+	//normal = normalize(fTBN * normal);
 
-	gAlbedo = vec4(albedo, roughness);
-	gNormal = vec4(normal, metallic);
+
+	//gAlbedo = vec4(albedo, roughness);
+	//gNormal = vec4(normal, metallic);
 	//gNormal = vec4(normal, 1.0);
+
 }

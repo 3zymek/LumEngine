@@ -63,7 +63,60 @@ namespace lum {
 
 	void Renderer::EndFrame( ) {
 
-		m_Context.m_RenderDevice( ).SendCommandBuffer( m_CmdBuffer );
+		if (!m_Context.m_RenderDevice( ).BeginFrame( ))
+			return;
+
+		rhi::CommandBuffer commands{};
+
+		rhi::RenderingAttachment attachment{};
+		attachment.m_Image = m_Context.m_RenderDevice( ).GetCurrentSwapchainImage( );
+		attachment.m_StoreOp = rhi::StoreOp::Store;
+		attachment.m_LoadOp = rhi::LoadOp::Clear;
+		attachment.m_ClearValue = rhi::RenderingAttachment::ClearValue::Color( { 0.0f, 0.0f, 0.0f, 0.0f } );
+
+		rhi::cmd::BeginRendering beginRendering{};
+		beginRendering.m_RenderArea = m_Context.m_RenderDevice( ).GetSwapchainExtent( );
+		beginRendering.m_ColorAttachments.PushBack( attachment );
+		beginRendering.m_LayerCount = 1;
+		commands.Push( beginRendering );
+
+		rhi::cmd::BindGraphicsPipeline bindPip{
+			.m_Handle = m_ScreenQuad.m_Pipeline
+		};
+		commands.Push( bindPip );
+
+		rhi::cmd::BindVertexBuffers bindVbo{};
+		bindVbo.m_BufferHandles.PushBack( m_ScreenQuad.m_VertexBuffer );
+		commands.Push( bindVbo );
+
+		rhi::cmd::BindElementBuffer bindEbo{
+			.m_BufferHandle = m_ScreenQuad.m_ElementBuffer
+		};
+		commands.Push( bindEbo );
+
+		rhi::cmd::SetScissors setScissors{};
+		rhi::cmd::SetViewport setViewport{};
+		commands.Push( setScissors );
+		commands.Push( setViewport );
+
+		rhi::cmd::BindResourceSet bindSet{
+			.m_SetHandle = m_ScreenQuad.m_ResourceSet
+		};
+		commands.Push( bindSet );
+
+		rhi::cmd::DrawIndexed drawIndexed{
+			.m_IndexCount = 6,
+			.m_InstanceCount = 1,
+			.m_FirstIndex = 0,
+			.m_VertexOffset = 0
+		};
+		commands.Push( drawIndexed );
+
+		commands.Push( rhi::cmd::EndRendering{} );
+
+		m_Context.m_RenderDevice( ).SendCommandBuffer( commands );
+
+		m_Context.m_RenderDevice( ).EndFrame( );
 
 	}
 
@@ -74,7 +127,7 @@ namespace lum {
 		auto grassPath = ResourceLoader::ResolveResourcePath(
 			ResourceRoot::External, "test.png"
 		);
-		auto grassTexture = ResourceRegistry::GetStatic( ).LoadImageFromFile( grassPath );
+		auto grassTexture = ResourceRegistry::GetStatic( ).LoadResourceFromFile<ResourceType::Image>( grassPath );
 		auto grassData = ResourceRegistry::GetStatic( ).GetCachedImage( grassTexture );
 
 		const auto& unpacked = grassData.Value( );
@@ -132,7 +185,7 @@ namespace lum {
 
 
 		{ // Assign frame image and sampler to resource set
-			rhi::cmd::UpdateImageInfo imgInfo{};
+			rhi::UpdateImageInfo imgInfo{};
 			imgInfo.m_ArrayIndex = 0;
 			imgInfo.m_Binding = 0;
 			imgInfo.m_ImageHandle = m_ScreenQuad.m_FrameImage;
@@ -143,43 +196,6 @@ namespace lum {
 			setInfo.m_ImageInfos.PushBack( imgInfo );
 
 			cmdBuffer.Push( setInfo );
-		}
-
-		{ // Main renderer loop commands
-
-			rhi::cmd::BindGraphicsPipeline bindPip{
-				.m_Handle = m_ScreenQuad.m_Pipeline
-			};
-			m_CmdBuffer.Push( bindPip );
-
-			rhi::cmd::BindVertexBuffers bindVbo{
-				.m_BufferHandles = std::span<rhi::BufferHandle>( &m_ScreenQuad.m_VertexBuffer, 1 )
-			};
-			m_CmdBuffer.Push( bindVbo );
-
-			rhi::cmd::BindElementBuffer bindEbo{
-				.m_BufferHandle = m_ScreenQuad.m_ElementBuffer
-			};
-			m_CmdBuffer.Push( bindEbo );
-
-			rhi::cmd::SetScissors setScissors{};
-			rhi::cmd::SetViewport setViewport{};
-			m_CmdBuffer.Push( setScissors );
-			m_CmdBuffer.Push( setViewport );
-
-			rhi::cmd::BindResourceSet bindSet{
-				.m_SetHandle = m_ScreenQuad.m_ResourceSet
-			};
-			m_CmdBuffer.Push( bindSet );
-
-			rhi::cmd::DrawIndexed drawIndexed{
-				.m_IndexCount = 6,
-				.m_InstanceCount = 1,
-				.m_FirstIndex = 0,
-				.m_VertexOffset = 0
-			};
-			m_CmdBuffer.Push( drawIndexed );
-
 		}
 
 	}
@@ -202,7 +218,7 @@ namespace lum {
 			m_ScreenQuad.m_ResourceLayout = m_Context.m_RenderDevice( ).CreateResourceLayout( info );
 
 		}
-		
+
 		{
 			rhi::PipelineCreateInfo info{};
 
@@ -225,7 +241,7 @@ namespace lum {
 			attachment.m_ColorMask = rhi::ColorComponentFlag::RGBA;
 			blend.m_Attachments.push_back( attachment );
 
-			info.m_VertexInputPass = VertexLayoutConfiguration::GetStatic( ).GetVertexInputPass( );
+			info.m_VertexInputPass = VertexLayoutConfiguration::GetStatic( ).GetDefaultConfiguration( );
 
 			rhi::ShaderInfo vertexInfo{};
 			vertexInfo.m_EntryPoint = "main";

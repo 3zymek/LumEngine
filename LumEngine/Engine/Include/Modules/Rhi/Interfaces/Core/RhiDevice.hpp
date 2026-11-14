@@ -81,10 +81,18 @@ namespace lum::rhi {
 
 		/* @brief Releases all resources owned by the render device. */
 		virtual void Finalize( ) noexcept = 0;
+		 
+		virtual bool BeginFrame( ) = 0;
+		virtual void EndFrame( ) = 0;
 
 		/* @brief Updates the render device state for the next frame. */
 		virtual void UpdateFrame( ) noexcept = 0;
 
+		/* @brief Returns swapchain image handle of current frame. */
+		virtual ImageHandle GetCurrentSwapchainImage( ) const noexcept = 0;
+
+		/* @brief Returns swapchain's extent. */
+		virtual Extent2D GetSwapchainExtent( ) const noexcept = 0;
 
 
 		//=========================================================================

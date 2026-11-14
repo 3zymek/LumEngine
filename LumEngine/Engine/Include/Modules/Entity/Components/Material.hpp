@@ -38,11 +38,11 @@ namespace lum {
 
 		/* @brief Roughness scalar fallback when no map is bound. */
 		LUM_PROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) 
-		float32 m_RoughnessValue = 0.0f;
+		float32 m_Roughness = 0.0f;
 
 		/* @brief Metallic scalar fallback when no map is bound. */
 		LUM_PROPERTY( DragSpeed = 0.01, MaxVal = 1.0f ) 
-		float32 m_MetallicValue = 0.0f;
+		float32 m_Metalness = 0.0f;
 
 		rhi::ImageHandle m_AlbedoImg{};		/* @brief Albedo (base color) texture map. */
 		rhi::ImageHandle m_NormalImg{};		/* @brief Normal map for surface detail. */

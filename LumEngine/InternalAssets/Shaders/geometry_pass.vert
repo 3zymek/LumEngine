@@ -1,43 +1,46 @@
-#version 450 core
-layout( location = LUM_LAYOUT_POSITION	) in vec3 aPos;
-layout( location = LUM_LAYOUT_NORMAL	) in vec3 aNormal;
-layout( location = LUM_LAYOUT_UV		) in vec2 aUV;
-layout( location = LUM_LAYOUT_TANGENT	) in vec3 aTangent;
-layout( location = LUM_LAYOUT_BITANGENT	) in vec3 aBitangent;
-layout( std140, binding = LUM_UBO_CAMERA_BINDING ) uniform CameraUniforms {
-	
-	mat4 uCameraView;
-	mat4 uCameraProj;
-	mat4 uCameraInvProj;
-	vec4 uCameraPos;
+#version 460
+layout(location = 0) in vec3 in_Position;
+layout(location = 1) in vec3 in_Normal;
+layout(location = 2) in vec2 in_UV;
+/*
+layout( set = 0, binding = 0, std140 ) uniform CameraUniforms {
+	mat4 m_View;
+	mat4 m_Projection;
+	mat4 m_InvertedProjection;
+	vec4 m_Position;
+} u_CameraData;
+*/
 
-};
-layout( std140, binding = LUM_UBO_MODEL_BINDING ) uniform ModelUniforms {
+layout( push_constant, std140 ) uniform PushConstants {
+	mat4 m_Matrix;
+} pc_Model;
 
-	mat4 uModelMatrix;
-	
-};
+layout(location = 0) out vec3 f_Position;
+layout(location = 1) out vec2 f_UV;
 
-out vec2 fUV;
-out vec3 fPos;
-
-out mat3 fTBN;
+//out mat3 fTBN;
 
 void main( ) {
-	
-	gl_Position = 
-		uCameraProj *
-		uCameraView *
-		uModelMatrix *
-		vec4(aPos, 1.0);
-	
-	mat3 normalMatrix = transpose(inverse(mat3(uModelMatrix)));
-	fUV = aUV;
-	fPos = (uModelMatrix * vec4(aPos, 1.0)).xyz;
-	
-	vec3 T = normalize(normalMatrix * aTangent);
-	vec3 B = normalize(normalMatrix * aBitangent);
-	vec3 N = normalize(normalMatrix * aNormal);
-	fTBN = mat3(T, B, N);
 
+	gl_Position = vec4(in_Position, 1.0);
+
+	f_Position = in_Position;
+	f_UV = in_UV;
+
+	/*
+	gl_Position = 
+		u_CameraData.m_Projection *
+		u_CameraData.m_View *
+		pc_Model.m_Matrix *
+		vec4( in_Pos, 1.0 );
+	
+	//mat3 normalMatrix = transpose(inverse(mat3(uModelMatrix)));
+	f_UV = in_UV;
+	f_Pos = (pc_Model.m_Matrix * vec4(in_Pos, 1.0)).xyz;
+	
+	//vec3 T = normalize(normalMatrix * aTangent);
+	//vec3 B = normalize(normalMatrix * aBitangent);
+	//vec3 N = normalize(normalMatrix * aNormal);
+	//fTBN = mat3(T, B, N);
+	*/
 }

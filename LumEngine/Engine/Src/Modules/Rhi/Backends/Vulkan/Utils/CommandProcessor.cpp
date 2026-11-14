@@ -33,7 +33,6 @@ namespace lum::rhi::vk {
 			FormatString( "Unregistered CommandType ({}) encountered during decoding stream. Did you forget to register its handler?", type )
 		);
 
-		
 		call.m_InvokeFn( &call.m_Storage, vkCmdBuffer, ptr );
 
 	}

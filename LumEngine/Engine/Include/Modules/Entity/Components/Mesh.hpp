@@ -14,6 +14,7 @@
 #include "Core/CoreDefines.hpp"
 #include "Core/CoreTypes.hpp"
 #include "Core/Utils/TypeID.hpp"
+#include "Core/Utils/ResourceRegistry.hpp"
 #include "Entity/EcsTypes.hpp"
 
 #include "Entity/Components/Mesh.gen.hpp"
@@ -35,7 +36,7 @@ namespace lum {
 		String m_LastLoadedPath = "";
 
 		/* @brief Handle to the static mesh asset registered in MeshManager. */
-		//StaticMeshHandle m_Handle;
+		ResourceMeshHandle m_ResourceHandle{};
 
 	};
 

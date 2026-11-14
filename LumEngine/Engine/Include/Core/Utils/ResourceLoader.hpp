@@ -5,17 +5,16 @@
 //=============================================================================//
 #pragma once
 
-#include "Core/CoreTypes.hpp"
 #include "Core/CoreDefines.hpp"
+#include "Core/CoreTypes.hpp"
 #include "Core/Utils/Result.hpp"
 #include "Platform/FileSystem/FileSystem.hpp"
 #include "Platform/FileSystem/Path.hpp"
+#include "Rhi/RhiTypes.hpp"
 
 #include <vector>
 
 namespace lum {
-
-	namespace rhi { struct Vertex; }
 
 	/* @brief Identifies the root directory used for asset path resolution. */
 	enum class LUM_API ResourceRoot : byte {
@@ -96,7 +95,7 @@ namespace lum {
 		* @param filepath Path relative to the selected root.
 		* @return Populated MeshData or empty on failure.
 		*/
-		LUM_NODISCARD static Result<MeshGeometry> LoadMeshFromFile( ResourceRoot root, const Path& filepath );
+		LUM_NODISCARD static Result<MeshGeometry> LoadMeshFromFile( const Path& filepath );
 
 		/* @brief Loads a shader source file from disk.
 		* Prepends the engine shader define header automatically.

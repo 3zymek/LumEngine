@@ -140,6 +140,37 @@ namespace lum::rhi::vk {
 
 		return vkFlags;
 	}
+	auto ToVk( CompareOp op ) noexcept -> VkCompareOp {
+		switch (op) {
+			case CompareOp::Never:          return VK_COMPARE_OP_NEVER;
+			case CompareOp::Less:           return VK_COMPARE_OP_LESS;
+			case CompareOp::Equal:           return VK_COMPARE_OP_EQUAL;
+			case CompareOp::LessOrEqual:     return VK_COMPARE_OP_LESS_OR_EQUAL;
+			case CompareOp::Greater:         return VK_COMPARE_OP_GREATER;
+			case CompareOp::NotEqual:        return VK_COMPARE_OP_NOT_EQUAL;
+			case CompareOp::GreaterOrEqual:  return VK_COMPARE_OP_GREATER_OR_EQUAL;
+			case CompareOp::Always:          return VK_COMPARE_OP_ALWAYS;
+		}
+
+		LUM_ASSERT( false, "Invalid {} enum", t_EnumTypeName<CompareOp> );
+		return VK_COMPARE_OP_MAX_ENUM;
+	}
+
+	auto ToVk( StencilOp op ) noexcept -> VkStencilOp {
+		switch (op) {
+			case StencilOp::Keep:              return VK_STENCIL_OP_KEEP;
+			case StencilOp::Zero:              return VK_STENCIL_OP_ZERO;
+			case StencilOp::Replace:           return VK_STENCIL_OP_REPLACE;
+			case StencilOp::IncrementAndClamp: return VK_STENCIL_OP_INCREMENT_AND_CLAMP;
+			case StencilOp::DecrementAndClamp: return VK_STENCIL_OP_DECREMENT_AND_CLAMP;
+			case StencilOp::Invert:            return VK_STENCIL_OP_INVERT;
+			case StencilOp::IncrementAndWrap:  return VK_STENCIL_OP_INCREMENT_AND_WRAP;
+			case StencilOp::DecrementAndWrap:  return VK_STENCIL_OP_DECREMENT_AND_WRAP;
+		}
+
+		LUM_ASSERT( false, "Invalid {} enum", t_EnumTypeName<StencilOp> );
+		return VK_STENCIL_OP_MAX_ENUM;
+	}
 
 
 
@@ -355,6 +386,30 @@ namespace lum::rhi::vk {
 
 		LUM_ASSERT( false, "Invalid {} enum", t_EnumTypeName<ResourceType> );
 		return VK_DESCRIPTOR_TYPE_MAX_ENUM;
+	}
+
+
+	// BeginRendering enums conversions
+
+	auto ToVk( LoadOp loadOp ) noexcept -> VkAttachmentLoadOp {
+		switch (loadOp) {
+			case LoadOp::Load:     return VK_ATTACHMENT_LOAD_OP_LOAD;
+			case LoadOp::Clear:    return VK_ATTACHMENT_LOAD_OP_CLEAR;
+			case LoadOp::DontCare: return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		}
+
+		LUM_ASSERT( false, "Invalid {} enum", t_EnumTypeName<LoadOp> );
+		return VK_ATTACHMENT_LOAD_OP_MAX_ENUM;
+	}
+
+	auto ToVk( StoreOp storeOp ) noexcept -> VkAttachmentStoreOp {
+		switch (storeOp) {
+			case StoreOp::Store:   return VK_ATTACHMENT_STORE_OP_STORE;
+			case StoreOp::DontCare: return VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		}
+
+		LUM_ASSERT( false, "Invalid {} enum", t_EnumTypeName<StoreOp> );
+		return VK_ATTACHMENT_STORE_OP_MAX_ENUM;
 	}
 
 } // namespace lum::rhi::vk

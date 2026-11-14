@@ -131,14 +131,18 @@ namespace lum::rhi::vk {
 		if (!handle) return;
 
 		auto& image = m_Images[ handle ];
-		vkDeviceWaitIdle( m_LogicalDevice );
+		if (image.m_OwnsImage) {
 
-		if (image.m_VkImage != VK_NULL_HANDLE)
-			vkDestroyImage( m_LogicalDevice, image.m_VkImage, nullptr );
-		if (image.m_VkView != VK_NULL_HANDLE)
-			vkDestroyImageView( m_LogicalDevice, image.m_VkView, nullptr );
-		if(image.m_VkMemory != VK_NULL_HANDLE)
-			vkFreeMemory( m_LogicalDevice, image.m_VkMemory, nullptr );
+			vkDeviceWaitIdle( m_LogicalDevice );
+
+			if (image.m_VkImage != VK_NULL_HANDLE)
+				vkDestroyImage( m_LogicalDevice, image.m_VkImage, nullptr );
+			if (image.m_VkView != VK_NULL_HANDLE)
+				vkDestroyImageView( m_LogicalDevice, image.m_VkView, nullptr );
+			if (image.m_VkMemory != VK_NULL_HANDLE)
+				vkFreeMemory( m_LogicalDevice, image.m_VkMemory, nullptr );
+
+		}
 
 		m_Images.Remove( handle );
 
