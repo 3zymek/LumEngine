@@ -189,10 +189,10 @@ namespace lum::rhi::vk {
 		if (flags.Has( ImageUsageFlag::InputAttachment )) {
 			result |= VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 		}
-		if (flags.Has( ImageUsageFlag::ShaderReadable )) {
+		if (flags.Has( ImageUsageFlag::ShaderSampled )) {
 			result |= VK_IMAGE_USAGE_SAMPLED_BIT;
 		}
-		if (flags.Has( ImageUsageFlag::ShaderReadWrite )) {
+		if (flags.Has( ImageUsageFlag::ShaderStorage )) {
 			result |= VK_IMAGE_USAGE_STORAGE_BIT;
 		}
 		if (flags.Has( ImageUsageFlag::TransferDestination )) {

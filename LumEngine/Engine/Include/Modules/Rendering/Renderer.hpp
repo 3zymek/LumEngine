@@ -22,6 +22,8 @@
 #include "Rhi/Interfaces/Core/RhiPipeline.hpp"
 #include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
 #include "Rhi/Interfaces/Core/RhiSampler.hpp"
+#include "Rendering/Passes/GeometryPass.hpp"
+#include "Rendering/DeferredBuffer.hpp"
 #include "Rhi/RhiTypes.hpp"
 
 namespace lum {
@@ -40,7 +42,10 @@ namespace lum {
 
 	private:
 
-		RendererContext m_Context{};
+		RendererContext m_Ctx{};
+
+		DeferredBuffer m_DeferredBuffer{};
+		GeometryPass m_GeometryPass{};
 
 		struct {
 

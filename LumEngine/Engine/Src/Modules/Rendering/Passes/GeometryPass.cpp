@@ -64,9 +64,30 @@ namespace lum {
 			};
 			info.m_VertexInputPass = VertexLayoutConfiguration::GetStatic( ).GetDefaultConfiguration( );
 
-			auto& depth = info.m_DepthStencilPass;
-			depth.m_DepthTestEnabled = true;
-			depth.m_DepthWriteEnabled = true;
+			//auto& depth = info.m_DepthStencilPass;
+			//depth.m_DepthTestEnabled = true;
+			//depth.m_DepthWriteEnabled = true;
+
+			auto& rast = info.m_RasterizationPass;
+			rast.m_CullMode = rhi::CullMode::Back;
+			rast.m_DepthBiasEnabled = false;
+			rast.m_PolygonMode = rhi::PolygonMode::Fill;
+			rast.m_FrontFace = rhi::FrontFace::Clockwise;
+			rast.m_RasterizerEnabled = true;
+
+			rhi::ShaderInfo vertexShader{};
+			vertexShader.m_EntryPoint = "main";
+			vertexShader.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::Internal, "Shaders/geometry_pass.vert.spv" );
+			vertexShader.m_Stage = rhi::ShaderStageFlag::Vertex;
+			info.m_ShaderInfos.push_back( vertexShader );
+
+			rhi::ShaderInfo fragmentShader{};
+			fragmentShader.m_EntryPoint = "main";
+			fragmentShader.m_Path = ResourceLoader::ResolveResourcePath( ResourceRoot::Internal, "Shaders/geometry_pass.frag.spv" );
+			fragmentShader.m_Stage = rhi::ShaderStageFlag::Fragment;
+			info.m_ShaderInfos.push_back( fragmentShader );
+
+			info.m_AssemblyPass.m_Topology = rhi::PrimitiveTopology::TriangleList;
 
 			m_GeometryPipeline = m_Ctx( ).m_RenderDevice( ).CreatePipeline( info );
 
@@ -99,6 +120,11 @@ namespace lum {
 		beginRendering.m_ColorAttachments.PushBack( attachment );
 		beginRendering.m_RenderArea = m_Ctx( ).m_RenderDevice( ).GetSwapchainExtent( );
 
+		rhi::cmd::TransitionImage albedoAsAttachment{};
+		albedoAsAttachment.m_Image = m_AlbedoAttachment;
+		albedoAsAttachment.m_NewUse = rhi::ImageUse::ColorAttachment;
+		buffer.Push( albedoAsAttachment );
+
 		buffer.Push( beginRendering );
 
 		rhi::cmd::BindGraphicsPipeline bindPip{
@@ -106,15 +132,25 @@ namespace lum {
 		};
 		buffer.Push( bindPip );
 
-		rhi::cmd::BindResourceSet bindSet{
-			.m_SetHandle = m_ResourceSet
-		};
-		buffer.Push( bindSet );
+		rhi::cmd::SetScissors setScissors{};
+		rhi::cmd::SetViewport setViewport{};
+		buffer.Push( setScissors );
+		buffer.Push( setViewport );
+
+		//rhi::cmd::BindResourceSet bindSet{
+		//	.m_SetHandle = m_ResourceSet
+		//};
+		//buffer.Push( bindSet );
 
 
 		for (auto& instance : m_PendingInstances) {
 			draw_instance( instance, buffer );
 		}
+
+		buffer.Push( rhi::cmd::EndRendering{} );
+
+		m_Ctx( ).m_RenderDevice( ).SendCommandBuffer( buffer );
+
 	}
 
 	void GeometryPass::draw_instance( const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer ) noexcept {

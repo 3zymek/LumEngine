@@ -33,8 +33,8 @@ namespace lum::rhi {
 		TransferSource = 1 << 0,
 		TransferDestination = 1 << 1,
 
-		ShaderReadable = 1 << 2, // Sampled
-		ShaderReadWrite = 1 << 3, // Storage
+		ShaderSampled = 1 << 2, // Sampled
+		ShaderStorage = 1 << 3, // Storage
 
 		ColorAttachment = 1 << 4,
 		DepthStencilAttachment = 1 << 5,
@@ -47,6 +47,20 @@ namespace lum::rhi {
 	LUM_ENABLE_ENUM_BITFLAG_OPERATIONS( lum::rhi::ImageUsageFlag );
 
 	using ImageUsageFlags = Flags<ImageUsageFlag>;
+
+	// Backend-independent image state requested by a render pass or render graph.
+	// The backend maps this intent to API-specific layouts, states and barriers.
+	enum class ImageUse : uint8 {
+		ColorAttachment,
+		DepthStencilAttachment,
+		Sampled,
+		StorageRead,
+		StorageWrite,
+		StorageReadWrite,
+		TransferSource,
+		TransferDestination,
+		Present
+	};
 
 	enum class ImageDimension : uint8 {
 		Image1D = 0U,

@@ -15,8 +15,8 @@ layout( push_constant, std140 ) uniform PushConstants {
 	mat4 m_Matrix;
 } pc_Model;
 
-layout(location = 0) out vec3 f_Position;
-layout(location = 1) out vec2 f_UV;
+layout( location = 0 ) out vec3 f_Position;
+layout( location = 1 ) out vec2 f_UV;
 
 //out mat3 fTBN;
 

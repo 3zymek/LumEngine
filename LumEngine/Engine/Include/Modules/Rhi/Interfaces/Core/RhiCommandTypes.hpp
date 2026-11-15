@@ -229,6 +229,18 @@ namespace lum::rhi::cmd {
 
 	};
 
+	// Requests an image use; it does not expose native API barrier details.
+	// RenderGraph is expected to generate this command from pass declarations.
+	struct LUM_API TransitionImage : Command {
+
+		LUM_RHI_CMD_TYPE( CommandType::TransitionImage );
+		LUM_RHI_CMD_RENDERING_INACTIVE( );
+
+		ImageHandle m_Image{};
+		ImageUse m_NewUse = ImageUse::Sampled;
+		ShaderStageFlags m_ShaderStages{};
+	};
+
 	struct LUM_API CopyImageToImage : Command {
 
 		LUM_RHI_CMD_TYPE( CommandType::CopyImage );

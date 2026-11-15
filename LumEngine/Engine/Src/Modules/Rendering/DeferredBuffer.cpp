@@ -56,7 +56,7 @@ namespace lum {
 		info.m_Format = rhi::ImageFormat::RGBA16_FLOAT;
 		info.m_SampleCount = rhi::SampleCount::Sample1;
 		info.m_ViewType = rhi::ImageViewType::Default;
-		info.m_UsageFlags = rhi::ImageUsageFlag::ShaderReadWrite;
+		info.m_UsageFlags = rhi::ImageUsageFlag::ColorAttachment | rhi::ImageUsageFlag::ShaderSampled;
 
 		m_AlbedoAttachment = m_Ctx( ).m_RenderDevice( ).CreateImage( info );
 		LUM_ASSERT( m_AlbedoAttachment, "Invalid albedo attachment in DeferredBuffer" );

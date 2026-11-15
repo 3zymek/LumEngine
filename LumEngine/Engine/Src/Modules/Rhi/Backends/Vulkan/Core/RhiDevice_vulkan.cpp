@@ -250,82 +250,6 @@ namespace lum::rhi::vk {
 
 	}
 
-	void VulkanDevice::UpdateFrame( ) noexcept {
-
-		/*
-		// Entry barrier
-		VkImageMemoryBarrier2 barrierToRender{};
-		barrierToRender.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
-		barrierToRender.srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
-		barrierToRender.srcAccessMask = VK_ACCESS_2_NONE;
-		barrierToRender.dstStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
-		barrierToRender.dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT;
-		barrierToRender.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		barrierToRender.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		barrierToRender.image = m_SwapchainImages[ imageIndex ];
-		barrierToRender.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-
-		VkDependencyInfo dependencyInfo{};
-		dependencyInfo.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO;
-		dependencyInfo.imageMemoryBarrierCount = 1;
-		dependencyInfo.pImageMemoryBarriers = &barrierToRender;
-
-		vkCmdPipelineBarrier2( commandBuffer, &dependencyInfo );
-
-		auto& depthImage = m_Images[ m_DepthImages[ imageIndex ] ];
-
-		detail::TransitionImageInfo depthTransition{};
-		depthTransition.m_Image = depthImage;
-		depthTransition.m_NewLayout = ImageLayout::DepthStencilAttachment;
-		depthTransition.m_NewAccess = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-		depthTransition.m_NewStage = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT;
-		depthTransition.m_VkCommandBuffer = commandBuffer;
-		transition_image_layout( depthTransition );
-
-		VkRenderingAttachmentInfo colorAttachment{};
-		colorAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
-		colorAttachment.imageView = m_SwapchainImageViews[ imageIndex ];
-		colorAttachment.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		colorAttachment.clearValue = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
-
-		VkRenderingAttachmentInfo depthAttachment{};
-		depthAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
-		depthAttachment.imageView = depthImage.m_VkView;
-		depthAttachment.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		depthAttachment.clearValue.depthStencil = { 1.0f, 0 };
-
-		VkRenderingInfo renderingInfo{};
-		renderingInfo.sType = VK_STRUCTURE_TYPE_RENDERING_INFO;
-		renderingInfo.renderArea = { { 0, 0 }, m_SwapchainExtent };
-		renderingInfo.layerCount = 1;
-		renderingInfo.colorAttachmentCount = 1;
-		renderingInfo.pColorAttachments = &colorAttachment;
-		renderingInfo.pDepthAttachment = &depthAttachment;
-
-		vkCmdBeginRendering( commandBuffer, &renderingInfo );
-
-		//process_commands<&CommandBuffer::GetRenderByteStream>( commandBuffer );
-
-		vkCmdEndRendering( commandBuffer );
-
-		// Outry barrier
-		VkImageMemoryBarrier2 barrierToPresent = barrierToRender;
-		barrierToPresent.srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT;
-		barrierToPresent.dstAccessMask = 0;
-		barrierToPresent.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		barrierToPresent.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		barrierToPresent.dstStageMask = VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT;
-
-		dependencyInfo.pImageMemoryBarriers = &barrierToPresent;
-		vkCmdPipelineBarrier2( commandBuffer, &dependencyInfo );
-		*/
-
-	}
-
 	void VulkanDevice::SendCommandBuffer( CommandBuffer& buffer ) noexcept {
 
 		assert_device( );
@@ -425,7 +349,19 @@ namespace lum::rhi::vk {
 		bool sameStage = info.m_Image( ).m_VkStageMask == info.m_NewStage;
 		bool sameAccess = info.m_Image( ).m_VkAccessMask == info.m_NewAccess;
 
-		if (sameLayout && sameAccess && sameStage) {
+		const VkAccessFlags2 writeAccessMask =
+			VK_ACCESS_2_SHADER_WRITE_BIT |
+			VK_ACCESS_2_SHADER_STORAGE_WRITE_BIT |
+			VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT |
+			VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT |
+			VK_ACCESS_2_TRANSFER_WRITE_BIT |
+			VK_ACCESS_2_HOST_WRITE_BIT |
+			VK_ACCESS_2_MEMORY_WRITE_BIT;
+		const bool hasWriteAccess = (info.m_NewAccess & writeAccessMask) != 0;
+
+		// Repeated read-only use needs no dependency. Keep barriers between
+		// identical write usages too, since they still need write-after-write ordering.
+		if (sameLayout && sameAccess && sameStage && !hasWriteAccess) {
 			return;
 		}
 

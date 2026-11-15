@@ -43,7 +43,8 @@ namespace lum::rhi {
 		BeginRendering,
 		EndRendering,
 		CopyImage,
-		UpdateBuffer
+		UpdateBuffer,
+		TransitionImage
 	};
 
 	template<typename tType>

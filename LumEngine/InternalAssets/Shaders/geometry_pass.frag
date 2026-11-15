@@ -20,8 +20,8 @@ layout( set = 0, binding = 0, std140 ) uniform CameraUniforms {
 //	float m_Metalness;
 //} u_MaterialData;
 
-in vec3 f_Position;
-in vec2 f_UV;
+layout( location = 0 ) in vec3 f_Position;
+layout( location = 1 ) in vec2 f_UV;
 //in mat3 fTBN;
 
 void main( ) {

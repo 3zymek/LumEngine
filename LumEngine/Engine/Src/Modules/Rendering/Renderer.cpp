@@ -26,14 +26,20 @@
 #include "Rhi/Interfaces/Core/RhiPipeline.hpp"
 #include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
 #include "Rhi/Interfaces/Core/RhiSampler.hpp"
+#include "Rendering/Passes/GeometryPass.hpp"
+#include "Rendering/DeferredBuffer.hpp"
 
 namespace lum {
 
 	void Renderer::Initialize( const RendererContext& ctx, uint32 initialWidth, uint32 initialHeight ) noexcept {
 
 		ctx.Assert( );
+		m_Ctx = ctx;
 
-		m_Context = ctx;
+		rhi::Extent2D swapchainExt = m_Ctx.m_RenderDevice( ).GetSwapchainExtent( );
+		m_DeferredBuffer.Initialize( m_Ctx, swapchainExt.m_Width, swapchainExt.m_Height );
+
+		m_GeometryPass.Initialize( m_Ctx, m_DeferredBuffer );
 
 		rhi::CommandBuffer initialCmdBuffer{};
 
@@ -41,17 +47,17 @@ namespace lum {
 		create_main_pipeline( );
 		setup_resources( initialCmdBuffer );
 
-		m_Context.m_RenderDevice( ).SendCommandBuffer( initialCmdBuffer );
+		m_Ctx.m_RenderDevice( ).SendCommandBuffer( initialCmdBuffer );
 
 	}
 
 	const rhi::ImageHandle Renderer::GetFrameTexture( ) const noexcept {
-		return m_ScreenQuad.m_FrameImage;
+		return m_DeferredBuffer.GetAttachment( DeferredAttachment::Albedo );
 	}
 
 	void Renderer::SubmitInstance( const RenderInstance& instance ) noexcept {
 
-
+		m_GeometryPass.SubmitInstance( instance );
 
 	}
 
@@ -63,46 +69,60 @@ namespace lum {
 
 	void Renderer::EndFrame( ) {
 
-		if (!m_Context.m_RenderDevice( ).BeginFrame( ))
+		if (!m_Ctx.m_RenderDevice( ).BeginFrame( ))
 			return;
 
-		rhi::CommandBuffer commands{};
+		m_GeometryPass.DrawScene( );
+
+		rhi::CommandBuffer cmdBuffer{};
 
 		rhi::RenderingAttachment attachment{};
-		attachment.m_Image = m_Context.m_RenderDevice( ).GetCurrentSwapchainImage( );
+		attachment.m_Image = m_Ctx.m_RenderDevice( ).GetCurrentSwapchainImage( );
 		attachment.m_StoreOp = rhi::StoreOp::Store;
 		attachment.m_LoadOp = rhi::LoadOp::Clear;
 		attachment.m_ClearValue = rhi::RenderingAttachment::ClearValue::Color( { 0.0f, 0.0f, 0.0f, 0.0f } );
 
 		rhi::cmd::BeginRendering beginRendering{};
-		beginRendering.m_RenderArea = m_Context.m_RenderDevice( ).GetSwapchainExtent( );
+		beginRendering.m_RenderArea = m_Ctx.m_RenderDevice( ).GetSwapchainExtent( );
 		beginRendering.m_ColorAttachments.PushBack( attachment );
 		beginRendering.m_LayerCount = 1;
-		commands.Push( beginRendering );
+
+		rhi::cmd::TransitionImage swapchainAsAttachment{};
+		swapchainAsAttachment.m_Image = attachment.m_Image;
+		swapchainAsAttachment.m_NewUse = rhi::ImageUse::ColorAttachment;
+		cmdBuffer.Push( swapchainAsAttachment );
+
+		rhi::cmd::TransitionImage sampledAlbedo{};
+		sampledAlbedo.m_Image = m_DeferredBuffer.GetAttachment( DeferredAttachment::Albedo );
+		sampledAlbedo.m_NewUse = rhi::ImageUse::Sampled;
+		sampledAlbedo.m_ShaderStages = rhi::ShaderStageFlag::Fragment;
+		cmdBuffer.Push( sampledAlbedo );
+
+		cmdBuffer.Push( beginRendering );
 
 		rhi::cmd::BindGraphicsPipeline bindPip{
 			.m_Handle = m_ScreenQuad.m_Pipeline
 		};
-		commands.Push( bindPip );
+		cmdBuffer.Push( bindPip );
 
 		rhi::cmd::BindVertexBuffers bindVbo{};
 		bindVbo.m_BufferHandles.PushBack( m_ScreenQuad.m_VertexBuffer );
-		commands.Push( bindVbo );
+		cmdBuffer.Push( bindVbo );
 
 		rhi::cmd::BindElementBuffer bindEbo{
 			.m_BufferHandle = m_ScreenQuad.m_ElementBuffer
 		};
-		commands.Push( bindEbo );
+		cmdBuffer.Push( bindEbo );
 
 		rhi::cmd::SetScissors setScissors{};
 		rhi::cmd::SetViewport setViewport{};
-		commands.Push( setScissors );
-		commands.Push( setViewport );
+		cmdBuffer.Push( setScissors );
+		cmdBuffer.Push( setViewport );
 
 		rhi::cmd::BindResourceSet bindSet{
 			.m_SetHandle = m_ScreenQuad.m_ResourceSet
 		};
-		commands.Push( bindSet );
+		cmdBuffer.Push( bindSet );
 
 		rhi::cmd::DrawIndexed drawIndexed{
 			.m_IndexCount = 6,
@@ -110,44 +130,33 @@ namespace lum {
 			.m_FirstIndex = 0,
 			.m_VertexOffset = 0
 		};
-		commands.Push( drawIndexed );
+		cmdBuffer.Push( drawIndexed );
 
-		commands.Push( rhi::cmd::EndRendering{} );
+		cmdBuffer.Push( rhi::cmd::EndRendering{} );
 
-		m_Context.m_RenderDevice( ).SendCommandBuffer( commands );
+		m_Ctx.m_RenderDevice( ).SendCommandBuffer( cmdBuffer );
 
-		m_Context.m_RenderDevice( ).EndFrame( );
+		m_Ctx.m_RenderDevice( ).EndFrame( );
 
 	}
 
 	void Renderer::create_screen_quad_image( uint32 width, uint32 height, rhi::CommandBuffer& cmdBuff ) {
 
-		m_Context.m_RenderDevice( ).DestroyImage( m_ScreenQuad.m_FrameImage );
+		m_Ctx.m_RenderDevice( ).DestroyImage( m_ScreenQuad.m_FrameImage );
 
-		auto grassPath = ResourceLoader::ResolveResourcePath(
-			ResourceRoot::External, "test.png"
-		);
-		auto grassTexture = ResourceRegistry::GetStatic( ).LoadResourceFromFile<ResourceType::Image>( grassPath );
-		auto grassData = ResourceRegistry::GetStatic( ).GetCachedImage( grassTexture );
-
-		const auto& unpacked = grassData.Value( );
+		rhi::Extent2D swapchainExtent = m_Ctx.m_RenderDevice( ).GetSwapchainExtent( );
 
 		rhi::ImageCreateInfo info{};
 		info.m_ArrayLayers = 1;
 		info.m_MipmapLevels = 1;
-		info.m_Extent = { unpacked.m_Width, unpacked.m_Height, 1 };
+		info.m_Extent = { swapchainExtent.m_Width, swapchainExtent.m_Height, 1 };
 		info.m_Dimension = rhi::ImageDimension::Image2D;
 		info.m_Format = rhi::ImageFormat::RGBA8_SRGB;
 		info.m_ViewType = rhi::ImageViewType::Default;
-		info.m_UsageFlags = rhi::ImageUsageFlag::ShaderReadable | rhi::ImageUsageFlag::TransferDestination;
+		info.m_UsageFlags = rhi::ImageUsageFlag::ShaderSampled | rhi::ImageUsageFlag::TransferDestination;
 
-		m_ScreenQuad.m_FrameImage = m_Context.m_RenderDevice( ).CreateImage( info );
+		m_ScreenQuad.m_FrameImage = m_Ctx.m_RenderDevice( ).CreateImage( info );
 
-		rhi::cmd::TransferImage transferImg{};
-		transferImg.m_Image = m_ScreenQuad.m_FrameImage;
-		transferImg.m_DataHandle = grassTexture;
-
-		cmdBuff.Push( transferImg );
 	}
 
 	void Renderer::setup_resources( rhi::CommandBuffer& cmdBuffer ) {
@@ -155,7 +164,7 @@ namespace lum {
 		{ // Frame sampler
 
 			rhi::SamplerCreateInfo info{ };
-			m_ScreenQuad.m_FrameSampler = m_Context.m_RenderDevice( ).CreateSampler( info );
+			m_ScreenQuad.m_FrameSampler = m_Ctx.m_RenderDevice( ).CreateSampler( info );
 
 		}
 		{ // VBO
@@ -164,7 +173,7 @@ namespace lum {
 			info.m_BufferSize = m_ScreenQuad.s_Vertices.size( ) * sizeof( rhi::Vertex );
 			info.m_DataSize = m_ScreenQuad.s_Vertices.size( ) * sizeof( rhi::Vertex );
 			info.m_Data = m_ScreenQuad.s_Vertices.data( );
-			m_ScreenQuad.m_VertexBuffer = m_Context.m_RenderDevice( ).CreateBuffer( info );
+			m_ScreenQuad.m_VertexBuffer = m_Ctx.m_RenderDevice( ).CreateBuffer( info );
 		}
 		{ // EBO
 			rhi::BufferCreateInfo info{};
@@ -172,14 +181,14 @@ namespace lum {
 			info.m_BufferSize = m_ScreenQuad.s_Indices.size( ) * sizeof( uint32 );
 			info.m_DataSize = m_ScreenQuad.s_Indices.size( ) * sizeof( uint32 );
 			info.m_Data = m_ScreenQuad.s_Indices.data( );
-			m_ScreenQuad.m_ElementBuffer = m_Context.m_RenderDevice( ).CreateBuffer( info );
+			m_ScreenQuad.m_ElementBuffer = m_Ctx.m_RenderDevice( ).CreateBuffer( info );
 		}
 		{ // Resource set
 
 			rhi::ResourceSetCreateInfo info{};
 			info.m_Layout = m_ScreenQuad.m_ResourceLayout;
 
-			m_ScreenQuad.m_ResourceSet = m_Context.m_RenderDevice( ).CreateResourceSet( info );
+			m_ScreenQuad.m_ResourceSet = m_Ctx.m_RenderDevice( ).CreateResourceSet( info );
 
 		}
 
@@ -188,7 +197,7 @@ namespace lum {
 			rhi::UpdateImageInfo imgInfo{};
 			imgInfo.m_ArrayIndex = 0;
 			imgInfo.m_Binding = 0;
-			imgInfo.m_ImageHandle = m_ScreenQuad.m_FrameImage;
+			imgInfo.m_ImageHandle = m_DeferredBuffer.GetAttachment( DeferredAttachment::Albedo );
 			imgInfo.m_SamplerHandle = m_ScreenQuad.m_FrameSampler;
 
 			rhi::cmd::UpdateResourceSet setInfo{};
@@ -215,7 +224,7 @@ namespace lum {
 			rhi::ResourceLayoutCreateInfo info{};
 			info.m_Bindings.push_back( binding );
 
-			m_ScreenQuad.m_ResourceLayout = m_Context.m_RenderDevice( ).CreateResourceLayout( info );
+			m_ScreenQuad.m_ResourceLayout = m_Ctx.m_RenderDevice( ).CreateResourceLayout( info );
 
 		}
 
@@ -255,7 +264,7 @@ namespace lum {
 			fragmentInfo.m_Stage = rhi::ShaderStageFlag::Fragment;
 			info.m_ShaderInfos.push_back( fragmentInfo );
 
-			m_ScreenQuad.m_Pipeline = m_Context.m_RenderDevice( ).CreatePipeline( info );
+			m_ScreenQuad.m_Pipeline = m_Ctx.m_RenderDevice( ).CreatePipeline( info );
 		}
 
 	}

@@ -85,9 +85,6 @@ namespace lum::rhi {
 		virtual bool BeginFrame( ) = 0;
 		virtual void EndFrame( ) = 0;
 
-		/* @brief Updates the render device state for the next frame. */
-		virtual void UpdateFrame( ) noexcept = 0;
-
 		/* @brief Returns swapchain image handle of current frame. */
 		virtual ImageHandle GetCurrentSwapchainImage( ) const noexcept = 0;
 

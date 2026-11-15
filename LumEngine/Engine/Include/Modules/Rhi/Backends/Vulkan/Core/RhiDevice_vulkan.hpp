@@ -67,8 +67,6 @@ namespace lum::rhi::vk {
 		bool BeginFrame( ) override;
 		void EndFrame( ) override;
 
-		void UpdateFrame( ) noexcept override;
-
 		BufferHandle CreateBuffer( const BufferCreateInfo& info ) noexcept override;
 		void DestroyBuffer( BufferHandle& handle ) noexcept override;
 

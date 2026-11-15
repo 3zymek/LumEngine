@@ -344,7 +344,10 @@ namespace lum::rhi::vk {
 
 			image.m_VkImage = swapchainImages[ i ];
 			image.m_VkView = VK_NULL_HANDLE;
+			image.m_Info.m_UsageFlags = ImageUsageFlag::ColorAttachment;
 			image.m_Info.m_CurrentLayout = ImageLayout::Undefined;
+			image.m_VkStageMask = VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT;
+			image.m_VkAccessMask = VK_ACCESS_2_NONE;
 
 			// SWAPCHAIN IMAGES
 			VkImageViewCreateInfo vkInfo{};

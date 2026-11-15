@@ -316,7 +316,19 @@ namespace lum::rhi::vk {
 
 					VkDescriptorImageInfo vkImageInfo{};
 					vkImageInfo.imageView = image.m_VkView;
-					vkImageInfo.imageLayout = ToVk( image.m_Info.m_CurrentLayout );
+					switch (it->m_Type) {
+						case ResourceType::CombinedImageSampler:
+						case ResourceType::SampledImage:
+						vkImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+						break;
+
+						case ResourceType::StorageImage:
+						vkImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+						break;
+
+						default:
+						break;
+					}
 
 					if (it->m_Type == ResourceType::CombinedImageSampler) {
 						LUM_ASSERT( m_Samplers.Contains( imageInfo.m_SamplerHandle ), "UpdateResourceSet: Missing sampler for combined image sampler descriptor!" );
@@ -481,8 +493,7 @@ namespace lum::rhi::vk {
 				region.bufferRowLength = 0;
 				region.bufferImageHeight = 0;
 
-				region.imageSubresource.aspectMask =
-					GetAspectMask( image.m_Info.m_Format );
+				region.imageSubresource.aspectMask = GetAspectMask( image.m_Info.m_Format );
 				region.imageSubresource.mipLevel = 0;
 				region.imageSubresource.baseArrayLayer = 0;
 				region.imageSubresource.layerCount = 1;
@@ -550,6 +561,87 @@ namespace lum::rhi::vk {
 
 
 
+		m_CommandProcessor.RegisterCommandCall<cmd::TransitionImage>(
+			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::TransitionImage& cmd ) {
+
+				LUM_ASSERT( !m_RenderingActive, "TransitionImage: Cannot transition an image while rendering is active" );
+				LUM_ASSERT( m_Images.Contains( cmd.m_Image ), "TransitionImage: Invalid image handle" );
+
+				auto& image = m_Images[ cmd.m_Image ];
+				detail::TransitionImageInfo transitionInfo{};
+				transitionInfo.m_Image = image;
+				transitionInfo.m_VkCommandBuffer = vkCmdBuffer;
+
+				switch (cmd.m_NewUse) {
+					case ImageUse::ColorAttachment:
+						LUM_ASSERT( image.m_Info.m_UsageFlags.Has( ImageUsageFlag::ColorAttachment ),
+							"TransitionImage: Image lacks ColorAttachment usage" );
+						transitionInfo.m_NewLayout = ImageLayout::ColorAttachment;
+						transitionInfo.m_NewStage = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
+						transitionInfo.m_NewAccess = VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT;
+						break;
+					case ImageUse::DepthStencilAttachment:
+						LUM_ASSERT( image.m_Info.m_UsageFlags.Has( ImageUsageFlag::DepthStencilAttachment ),
+							"TransitionImage: Image lacks DepthStencilAttachment usage" );
+						transitionInfo.m_NewLayout = ImageLayout::DepthStencilAttachment;
+						transitionInfo.m_NewStage = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT;
+						transitionInfo.m_NewAccess = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+						break;
+					case ImageUse::Sampled:
+						LUM_ASSERT( image.m_Info.m_UsageFlags.Has( ImageUsageFlag::ShaderSampled ),
+							"TransitionImage: Image lacks ShaderSampled usage" );
+						LUM_ASSERT( !cmd.m_ShaderStages.IsEmpty( ), "TransitionImage: Sampled use requires shader stages" );
+						transitionInfo.m_NewLayout = ImageLayout::ShaderReadOnly;
+						if (cmd.m_ShaderStages.Has( ShaderStageFlag::Vertex )) transitionInfo.m_NewStage |= VK_PIPELINE_STAGE_2_VERTEX_SHADER_BIT;
+						if (cmd.m_ShaderStages.Has( ShaderStageFlag::Fragment )) transitionInfo.m_NewStage |= VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT;
+						if (cmd.m_ShaderStages.Has( ShaderStageFlag::Geometry )) transitionInfo.m_NewStage |= VK_PIPELINE_STAGE_2_GEOMETRY_SHADER_BIT;
+						if (cmd.m_ShaderStages.Has( ShaderStageFlag::Compute )) transitionInfo.m_NewStage |= VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT;
+						transitionInfo.m_NewAccess = VK_ACCESS_2_SHADER_SAMPLED_READ_BIT;
+						break;
+					case ImageUse::StorageRead:
+					case ImageUse::StorageWrite:
+					case ImageUse::StorageReadWrite:
+						LUM_ASSERT( image.m_Info.m_UsageFlags.Has( ImageUsageFlag::ShaderStorage ),
+							"TransitionImage: Image lacks ShaderStorage usage" );
+						LUM_ASSERT( !cmd.m_ShaderStages.IsEmpty( ), "TransitionImage: Storage use requires shader stages" );
+						transitionInfo.m_NewLayout = ImageLayout::General;
+						if (cmd.m_ShaderStages.Has( ShaderStageFlag::Vertex )) transitionInfo.m_NewStage |= VK_PIPELINE_STAGE_2_VERTEX_SHADER_BIT;
+						if (cmd.m_ShaderStages.Has( ShaderStageFlag::Fragment )) transitionInfo.m_NewStage |= VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT;
+						if (cmd.m_ShaderStages.Has( ShaderStageFlag::Geometry )) transitionInfo.m_NewStage |= VK_PIPELINE_STAGE_2_GEOMETRY_SHADER_BIT;
+						if (cmd.m_ShaderStages.Has( ShaderStageFlag::Compute )) transitionInfo.m_NewStage |= VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT;
+						if (cmd.m_NewUse == ImageUse::StorageRead || cmd.m_NewUse == ImageUse::StorageReadWrite)
+							transitionInfo.m_NewAccess |= VK_ACCESS_2_SHADER_STORAGE_READ_BIT;
+						if (cmd.m_NewUse == ImageUse::StorageWrite || cmd.m_NewUse == ImageUse::StorageReadWrite)
+							transitionInfo.m_NewAccess |= VK_ACCESS_2_SHADER_STORAGE_WRITE_BIT;
+						break;
+					case ImageUse::TransferSource:
+						LUM_ASSERT( image.m_Info.m_UsageFlags.Has( ImageUsageFlag::TransferSource ),
+							"TransitionImage: Image lacks TransferSource usage" );
+						transitionInfo.m_NewLayout = ImageLayout::TransferSource;
+						transitionInfo.m_NewStage = VK_PIPELINE_STAGE_2_COPY_BIT;
+						transitionInfo.m_NewAccess = VK_ACCESS_2_TRANSFER_READ_BIT;
+						break;
+					case ImageUse::TransferDestination:
+						LUM_ASSERT( image.m_Info.m_UsageFlags.Has( ImageUsageFlag::TransferDestination ),
+							"TransitionImage: Image lacks TransferDestination usage" );
+						transitionInfo.m_NewLayout = ImageLayout::TransferDestination;
+						transitionInfo.m_NewStage = VK_PIPELINE_STAGE_2_COPY_BIT;
+						transitionInfo.m_NewAccess = VK_ACCESS_2_TRANSFER_WRITE_BIT;
+						break;
+					case ImageUse::Present:
+						transitionInfo.m_NewLayout = ImageLayout::Present;
+						transitionInfo.m_NewStage = VK_PIPELINE_STAGE_2_NONE;
+						transitionInfo.m_NewAccess = VK_ACCESS_2_NONE;
+						break;
+					default:
+						LUM_ASSERT( false, "TransitionImage: Unsupported image use" );
+						return;
+				}
+
+				transition_image_layout( transitionInfo );
+			}
+		);
+
 		m_CommandProcessor.RegisterCommandCall<cmd::BeginRendering>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::BeginRendering& cmd ) {
 
@@ -581,17 +673,8 @@ namespace lum::rhi::vk {
 					LUM_ASSERT( m_Images.Contains( attachment.m_Image ), "BeginRendering: Invalid color attachment image" );
 
 					auto& image = m_Images[ attachment.m_Image ];
-
-					detail::TransitionImageInfo transitionInfo{};
-					transitionInfo.m_Image = image;
-					transitionInfo.m_VkCommandBuffer = vkCmdBuffer;
-					transitionInfo.m_NewLayout = ImageLayout::ColorAttachment;
-					transitionInfo.m_NewStage = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
-					transitionInfo.m_NewAccess =
-						VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT |
-						VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT;
-
-					transition_image_layout( transitionInfo );
+					LUM_ASSERT( image.m_Info.m_CurrentLayout == ImageLayout::ColorAttachment,
+						"BeginRendering: Color attachment was not declared for ColorAttachment use" );
 
 					VkRenderingAttachmentInfo vkAttachment{};
 					vkAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
@@ -610,64 +693,6 @@ namespace lum::rhi::vk {
 
 					vkColorAttachments.PushBack( vkAttachment );
 
-					//vkColorAttachments.PushBack( );
-
-					/*
-					if (attachment.m_Image == k_CurrentSwachainImage) {
-
-						hasCurrentSwapchainAttachment = true;
-
-						auto& swapchainImage = m_Images[ k_CurrentSwachainImage ];
-
-						imageView = swapchainImage.m_VkView;
-
-						// Swapchain image transition
-						VkImageMemoryBarrier2 barrier{};
-						barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
-						barrier.srcStageMask = VK_PIPELINE_STAGE_2_NONE;
-						barrier.srcAccessMask = VK_ACCESS_2_NONE;
-						barrier.dstStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
-						barrier.dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT |
-							VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT;
-						barrier.oldLayout = m_SwapchainImageLayouts[ m_CurrentFrameIndex ];
-						barrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-						barrier.image = m_SwapchainImages[ m_CurrentFrameIndex ];
-						barrier.subresourceRange = {
-							VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1
-						};
-
-						VkDependencyInfo dependencyInfo{};
-						dependencyInfo.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO;
-						dependencyInfo.imageMemoryBarrierCount = 1;
-						dependencyInfo.pImageMemoryBarriers = &barrier;
-
-						vkCmdPipelineBarrier2( vkCmdBuffer, &dependencyInfo );
-
-						m_SwapchainImageLayouts[ m_CurrentFrameIndex ] = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-					}
-					else {
-
-						LUM_ASSERT(
-							m_Images.Contains( attachment.m_Image ),
-							"BeginRendering: Invalid ColorAttachment image"
-						);
-
-						auto& imageInfo = m_Images[ attachment.m_Image ];
-
-						detail::TransitionImageInfo transitionInfo{};
-						transitionInfo.m_Image = imageInfo;
-						transitionInfo.m_VkCommandBuffer = vkCmdBuffer;
-						transitionInfo.m_NewLayout = ImageLayout::ColorAttachment;
-						transitionInfo.m_NewStage = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
-						transitionInfo.m_NewAccess =
-							VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT |
-							VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT;
-
-						transition_image_layout( transitionInfo );
-
-						imageView = imageInfo.m_VkView;
-					}*/
-
 					//==============================================================
 					// Depth Attachment
 					//==============================================================//
@@ -680,21 +705,8 @@ namespace lum::rhi::vk {
 
 						LUM_ASSERT( m_Images.Contains( attachment.m_Image ), "BeginRendering: Invalid DepthAttachment image" );
 						auto& imageInfo = m_Images[ attachment.m_Image ];
-
-						detail::TransitionImageInfo transitionInfo{};
-						transitionInfo.m_Image = imageInfo;
-						transitionInfo.m_VkCommandBuffer = vkCmdBuffer;
-						transitionInfo.m_NewLayout = ImageLayout::DepthStencilAttachment;
-						transitionInfo.m_NewStage =
-							VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT |
-							VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT;
-						transitionInfo.m_NewAccess =
-							VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT |
-							(attachment.m_LoadOp == LoadOp::Load
-								? VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT
-								: 0);
-
-						transition_image_layout( transitionInfo );
+						LUM_ASSERT( imageInfo.m_Info.m_CurrentLayout == ImageLayout::DepthStencilAttachment,
+							"BeginRendering: Depth attachment was not declared for DepthStencilAttachment use" );
 
 						vkDepthAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
 						vkDepthAttachment.pNext = nullptr;
@@ -725,21 +737,8 @@ namespace lum::rhi::vk {
 
 						LUM_ASSERT( m_Images.Contains( attachment.m_Image ), "BeginRendering: Invalid StencilAttachment image" );
 						auto& imageInfo = m_Images[ attachment.m_Image ];
-
-						detail::TransitionImageInfo transitionInfo{};
-						transitionInfo.m_Image = imageInfo;
-						transitionInfo.m_VkCommandBuffer = vkCmdBuffer;
-						transitionInfo.m_NewLayout = ImageLayout::DepthStencilAttachment;
-						transitionInfo.m_NewStage =
-							VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT |
-							VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT;
-						transitionInfo.m_NewAccess =
-							VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT |
-							(attachment.m_LoadOp == LoadOp::Load
-								? VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT
-								: 0);
-
-						transition_image_layout( transitionInfo );
+						LUM_ASSERT( imageInfo.m_Info.m_CurrentLayout == ImageLayout::DepthStencilAttachment,
+							"BeginRendering: Stencil attachment was not declared for DepthStencilAttachment use" );
 
 						vkStencilAttachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
 						vkStencilAttachment.pNext = nullptr;
