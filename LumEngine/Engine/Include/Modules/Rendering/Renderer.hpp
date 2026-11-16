@@ -28,12 +28,16 @@
 
 namespace lum {
 
+	namespace ev {
+		class EventBus;
+	} // namespace ev
+
 	class LUM_API Renderer {
 	public:
 
 		Renderer( ) = default;
 
-		void Initialize( const RendererContext& ctx, uint32 initialWidth, uint32 initialHeight ) noexcept;
+		void Initialize( const RendererContext& ctx, ev::EventBus& bus, uint32 initialWidth, uint32 initialHeight ) noexcept;
 		const rhi::ImageHandle GetFrameTexture( ) const noexcept;
 		void SubmitInstance( const RenderInstance& instance ) noexcept;
 
@@ -80,7 +84,7 @@ namespace lum {
 
 		} m_ScreenQuad;
 
-		void create_screen_quad_image( uint32 width, uint32 height, rhi::CommandBuffer& cmdBuff );
+		void create_screen_quad_primitives( uint32 width, uint32 height, rhi::CommandBuffer& cmdBuff );
 		void setup_resources( rhi::CommandBuffer& cmdBuffer );
 		void create_main_pipeline( );
 

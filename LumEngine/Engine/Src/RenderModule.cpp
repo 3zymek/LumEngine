@@ -28,7 +28,7 @@ namespace lum {
 		RendererContext ctx{};
 		ctx.m_RenderDevice = info.m_RenderDevice;
 
-		m_Renderer.Initialize( ctx, info.m_ViewportWidth, info.m_ViewportHeight );
+		m_Renderer.Initialize( ctx, info.m_EventBus.Ref(), info.m_ViewportWidth, info.m_ViewportHeight );
 		//m_RenderSys.Initialize( &m_Renderer );
 
 	}

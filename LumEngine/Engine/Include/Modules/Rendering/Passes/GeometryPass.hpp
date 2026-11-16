@@ -74,7 +74,8 @@ namespace lum {
 		rhi::BufferHandle m_MaterialUbo{};
 		rhi::BufferHandle m_VertexBuffer{};
 		rhi::PipelineHandle m_GeometryPipeline{};
-		rhi::ImageHandle m_AlbedoAttachment = rhi::ImageHandle::Null( );
+		rhi::ImageHandle m_AlbedoAttachment{};
+		rhi::ImageHandle m_DepthAttachment{};
 
 		void draw_instance( const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer ) noexcept;
 		void draw_mesh( const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer ) noexcept;

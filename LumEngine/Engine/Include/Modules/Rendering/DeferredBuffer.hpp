@@ -28,16 +28,15 @@ namespace lum {
 	class DeferredBuffer {
 	public:
 
-		void Initialize( RendererContext& ctx, uint32 width, uint32 height );
-
+		void RecreatePrimitives( SafePtr<rhi::IRenderDevice> renderDevice, rhi::Extent2D extent );
 		rhi::ImageHandle GetAttachment( DeferredAttachment attachment ) const noexcept;
 
 	private:
 
-		SafePtr<RendererContext> m_Ctx = nullptr;
 		rhi::ImageHandle m_AlbedoAttachment{};
+		rhi::ImageHandle m_DepthAttachment{};
 
-		void create_assets( uint32 width, uint32 height );
+		void create_assets( SafePtr<rhi::IRenderDevice> renderDevice, rhi::Extent2D extent );
 
 
 	};

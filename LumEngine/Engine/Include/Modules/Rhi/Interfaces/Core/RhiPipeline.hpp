@@ -259,6 +259,7 @@ namespace lum::rhi {
 		VertexInputPass		m_VertexInputPass{};
 		DepthStencilPass	m_DepthStencilPass{};
 		PipelineLayout		m_Layout{};
+		std::vector<ImageFormat> m_ColorAttachmentFormats{};
 
 	};
 

@@ -52,7 +52,6 @@ namespace lum {
 			info.m_DataSize = meshData.m_Vertices.size( ) * sizeof( rhi::Vertex );
 			info.m_Usage = rhi::BufferUsageFlag::Vertex;
 			renderResources.m_VertexBuffer = m_Ctx( ).m_RenderDevice( ).CreateBuffer( info );
-			renderResources.m_VertexBuffer = meshData.m_Vertices.size( );
 
 		}
 		{ // Element buffer

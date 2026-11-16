@@ -374,6 +374,7 @@ namespace lum {
 		*/
 		constexpr inline bool Contains( tHandle handle ) const noexcept {
 			return (handle.m_Id < m_Generations.size( )) &&
+				(m_SlotToDense[ handle.m_Id ] != sk_NullSlot) &&
 				(handle.m_Generation == m_Generations[ handle.m_Id ]);
 		}
 

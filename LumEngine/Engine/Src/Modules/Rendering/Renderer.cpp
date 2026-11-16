@@ -16,6 +16,13 @@
 #include "Rendering/Renderer.hpp"
 
 #include "Core/CoreTypes.hpp"
+#include "Entity/Components/Material.hpp"
+#include "Entity/Components/Mesh.hpp"
+#include "Entity/Components/Transform.hpp"
+#include "Event/EventBus.hpp"
+#include "Event/Events/WindowEvents.hpp"
+#include "Rendering/DeferredBuffer.hpp"
+#include "Rendering/Passes/GeometryPass.hpp"
 #include "Rendering/RenderingTypes.hpp"
 #include "Rendering/VertexLayoutConfig.hpp"
 #include "Rhi/Interfaces/Core/RhiBuffer.hpp"
@@ -26,24 +33,31 @@
 #include "Rhi/Interfaces/Core/RhiPipeline.hpp"
 #include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
 #include "Rhi/Interfaces/Core/RhiSampler.hpp"
-#include "Rendering/Passes/GeometryPass.hpp"
-#include "Rendering/DeferredBuffer.hpp"
 
 namespace lum {
 
-	void Renderer::Initialize( const RendererContext& ctx, uint32 initialWidth, uint32 initialHeight ) noexcept {
+	void Renderer::Initialize( const RendererContext& ctx, ev::EventBus& bus, uint32 initialWidth, uint32 initialHeight ) noexcept {
 
 		ctx.Assert( );
 		m_Ctx = ctx;
 
 		rhi::Extent2D swapchainExt = m_Ctx.m_RenderDevice( ).GetSwapchainExtent( );
-		m_DeferredBuffer.Initialize( m_Ctx, swapchainExt.m_Width, swapchainExt.m_Height );
+		m_DeferredBuffer.RecreatePrimitives( m_Ctx.m_RenderDevice, swapchainExt );
 
 		m_GeometryPass.Initialize( m_Ctx, m_DeferredBuffer );
 
 		rhi::CommandBuffer initialCmdBuffer{};
 
-		create_screen_quad_image( initialWidth, initialHeight, initialCmdBuffer );
+		bus.SubscribePermanently<EWindowResized>( 
+			[ & ]( const EWindowResized& ev ) {
+				rhi::CommandBuffer buffer{};
+				this->create_screen_quad_primitives( ev.m_Width, ev.m_Height, buffer );
+				m_DeferredBuffer.RecreatePrimitives( m_Ctx.m_RenderDevice, { ev.m_Width, ev.m_Height } );
+				m_Ctx.m_RenderDevice( ).SendCommandBuffer( buffer );
+			} 
+		);
+
+		create_screen_quad_primitives( initialWidth, initialHeight, initialCmdBuffer );
 		create_main_pipeline( );
 		setup_resources( initialCmdBuffer );
 
@@ -72,23 +86,46 @@ namespace lum {
 		if (!m_Ctx.m_RenderDevice( ).BeginFrame( ))
 			return;
 
+		// DEBUG
+
+		static OwningPtr<CStaticMesh> mesh = OwningPtr<CStaticMesh>::Create( );
+
+		static bool loaded = false;
+		if (!loaded) {
+			auto handle = ResourceRegistry::GetStatic().LoadResourceFromFile<ResourceType::Mesh>(
+				ResourceLoader::ResolveResourcePath( ResourceRoot::External, "TestTriangle.obj" )
+			);
+			mesh( ).m_ResourceHandle = handle;
+		}
+
+		static OwningPtr<CTransform> transform = OwningPtr<CTransform>::Create( );
+
+		RenderInstance instance{};
+		instance.m_Material = nullptr;
+		instance.m_StaticMesh = mesh;
+		instance.m_Transform = transform;
+
+		m_GeometryPass.SubmitInstance( instance );
+
+		// DEBUG
+
 		m_GeometryPass.DrawScene( );
 
 		rhi::CommandBuffer cmdBuffer{};
 
-		rhi::RenderingAttachment attachment{};
-		attachment.m_Image = m_Ctx.m_RenderDevice( ).GetCurrentSwapchainImage( );
-		attachment.m_StoreOp = rhi::StoreOp::Store;
-		attachment.m_LoadOp = rhi::LoadOp::Clear;
-		attachment.m_ClearValue = rhi::RenderingAttachment::ClearValue::Color( { 0.0f, 0.0f, 0.0f, 0.0f } );
+		rhi::RenderingAttachment swapchainAttachment{};
+		swapchainAttachment.m_Image = m_Ctx.m_RenderDevice( ).GetCurrentSwapchainImage( );
+		swapchainAttachment.m_StoreOp = rhi::StoreOp::Store;
+		swapchainAttachment.m_LoadOp = rhi::LoadOp::Clear;
+		swapchainAttachment.m_ClearValue = rhi::RenderingAttachment::ClearValue::Color( { 0.0f, 0.0f, 0.0f, 0.0f } );
 
 		rhi::cmd::BeginRendering beginRendering{};
 		beginRendering.m_RenderArea = m_Ctx.m_RenderDevice( ).GetSwapchainExtent( );
-		beginRendering.m_ColorAttachments.PushBack( attachment );
+		beginRendering.m_ColorAttachments.PushBack( swapchainAttachment );
 		beginRendering.m_LayerCount = 1;
 
 		rhi::cmd::TransitionImage swapchainAsAttachment{};
-		swapchainAsAttachment.m_Image = attachment.m_Image;
+		swapchainAsAttachment.m_Image = swapchainAttachment.m_Image;
 		swapchainAsAttachment.m_NewUse = rhi::ImageUse::ColorAttachment;
 		cmdBuffer.Push( swapchainAsAttachment );
 
@@ -140,22 +177,23 @@ namespace lum {
 
 	}
 
-	void Renderer::create_screen_quad_image( uint32 width, uint32 height, rhi::CommandBuffer& cmdBuff ) {
+	void Renderer::create_screen_quad_primitives( uint32 width, uint32 height, rhi::CommandBuffer& cmdBuff ) {
 
 		m_Ctx.m_RenderDevice( ).DestroyImage( m_ScreenQuad.m_FrameImage );
 
 		rhi::Extent2D swapchainExtent = m_Ctx.m_RenderDevice( ).GetSwapchainExtent( );
+		{
+			rhi::ImageCreateInfo info{};
+			info.m_ArrayLayers = 1;
+			info.m_MipmapLevels = 1;
+			info.m_Extent = { swapchainExtent.m_Width, swapchainExtent.m_Height, 1 };
+			info.m_Dimension = rhi::ImageDimension::Image2D;
+			info.m_Format = rhi::ImageFormat::RGBA8_SRGB;
+			info.m_ViewType = rhi::ImageViewType::Default;
+			info.m_UsageFlags = rhi::ImageUsageFlag::ShaderSampled | rhi::ImageUsageFlag::TransferDestination;
 
-		rhi::ImageCreateInfo info{};
-		info.m_ArrayLayers = 1;
-		info.m_MipmapLevels = 1;
-		info.m_Extent = { swapchainExtent.m_Width, swapchainExtent.m_Height, 1 };
-		info.m_Dimension = rhi::ImageDimension::Image2D;
-		info.m_Format = rhi::ImageFormat::RGBA8_SRGB;
-		info.m_ViewType = rhi::ImageViewType::Default;
-		info.m_UsageFlags = rhi::ImageUsageFlag::ShaderSampled | rhi::ImageUsageFlag::TransferDestination;
-
-		m_ScreenQuad.m_FrameImage = m_Ctx.m_RenderDevice( ).CreateImage( info );
+			m_ScreenQuad.m_FrameImage = m_Ctx.m_RenderDevice( ).CreateImage( info );
+		}
 
 	}
 

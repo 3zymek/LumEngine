@@ -129,7 +129,7 @@ namespace lum::rhi::vk {
 	}
 
 	ImageHandle VulkanDevice::GetCurrentSwapchainImage( ) const noexcept {
-		return m_SwapchainImageHandles[ m_CurrentFrameIndex ];
+		return m_SwapchainImageHandles[ m_CurrentSwapchainImageIndex ];
 	}
 
 	Extent2D VulkanDevice::GetSwapchainExtent( ) const noexcept {

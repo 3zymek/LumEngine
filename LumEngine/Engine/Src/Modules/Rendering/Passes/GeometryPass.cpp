@@ -54,6 +54,13 @@ namespace lum {
 
 			rhi::PipelineCreateInfo info{};
 
+			rhi::PushConstantRange range{};
+			range.m_Offset = 0;
+			range.m_ShaderStageFlags = rhi::ShaderStageFlag::Vertex;
+			range.m_Size = sizeof( Matrix4 );
+
+			info.m_Layout.m_PushConstantRanges.push_back( range );
+
 			// Albedo attachment
 			rhi::ColorBlendAttachment albedo{};
 			albedo.m_BlendEnabled = false;
@@ -62,6 +69,7 @@ namespace lum {
 			info.m_ColorBlendPass.m_Attachments = {
 				albedo
 			};
+			info.m_ColorAttachmentFormats = { rhi::ImageFormat::RGBA16_FLOAT };
 			info.m_VertexInputPass = VertexLayoutConfiguration::GetStatic( ).GetDefaultConfiguration( );
 
 			//auto& depth = info.m_DepthStencilPass;
@@ -109,15 +117,21 @@ namespace lum {
 
 		rhi::CommandBuffer buffer{};
 
-		rhi::RenderingAttachment attachment{};
-		attachment.m_ClearValue = attachment.m_ClearValue.Color( { 0.0f, 0.0f, 0.0f, 0.0f } );
-		attachment.m_Image = m_AlbedoAttachment;
-		attachment.m_LoadOp = rhi::LoadOp::Clear;
-		attachment.m_StoreOp = rhi::StoreOp::Store;
+		rhi::RenderingAttachment colorAttachment{};
+		colorAttachment.m_Image = m_AlbedoAttachment;
+		colorAttachment.m_StoreOp = rhi::StoreOp::Store;
+		colorAttachment.m_LoadOp = rhi::LoadOp::Clear;
+		colorAttachment.m_ClearValue = colorAttachment.m_ClearValue.Color( { 0.0f, 0.0f, 0.0f, 0.0f } );
+
+		rhi::RenderingAttachment depthAttachment{};
+		depthAttachment.m_Image = m_DepthAttachment;
+		depthAttachment.m_StoreOp = rhi::StoreOp::Store;
+		depthAttachment.m_LoadOp = rhi::LoadOp::Clear;
+		depthAttachment.m_ClearValue = rhi::RenderingAttachment::ClearValue::Color( { 0.0f, 0.0f, 0.0f, 0.0f } );
 
 		rhi::cmd::BeginRendering beginRendering{};
 		beginRendering.m_LayerCount = 1;
-		beginRendering.m_ColorAttachments.PushBack( attachment );
+		beginRendering.m_ColorAttachments.PushBack( colorAttachment );
 		beginRendering.m_RenderArea = m_Ctx( ).m_RenderDevice( ).GetSwapchainExtent( );
 
 		rhi::cmd::TransitionImage albedoAsAttachment{};
@@ -146,6 +160,7 @@ namespace lum {
 		for (auto& instance : m_PendingInstances) {
 			draw_instance( instance, buffer );
 		}
+		m_PendingInstances.Clear( );
 
 		buffer.Push( rhi::cmd::EndRendering{} );
 

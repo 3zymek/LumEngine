@@ -65,10 +65,26 @@ namespace lum::rhi::vk {
 		pipInfo.pDynamicState = &dynamicState;
 
 		VkSurfaceFormatKHR surfaceFormat = device.m_Adapter.m_SurfaceSupport.SelectSurfaceFormat( );
+		std::vector<VkFormat> colorAttachmentFormats{};
+		if (info.m_ColorAttachmentFormats.empty( )) {
+			colorAttachmentFormats.assign( info.m_ColorBlendPass.m_Attachments.size( ), surfaceFormat.format );
+		}
+		else {
+			if (info.m_ColorAttachmentFormats.size( ) != info.m_ColorBlendPass.m_Attachments.size( )) {
+				return Result<VulkanPipeline>::Failure(
+					FormatString( "Color attachment format count ({}) does not match color blend attachment count ({}).", info.m_ColorAttachmentFormats.size( ), info.m_ColorBlendPass.m_Attachments.size( ) )
+				);
+			}
+
+			colorAttachmentFormats.reserve( info.m_ColorAttachmentFormats.size( ) );
+			for (const ImageFormat format : info.m_ColorAttachmentFormats)
+				colorAttachmentFormats.push_back( ToVk( format ) );
+		}
+
 		VkPipelineRenderingCreateInfo renderingInfo{};
 		renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
-		renderingInfo.colorAttachmentCount = 1;
-		renderingInfo.pColorAttachmentFormats = &surfaceFormat.format;
+		renderingInfo.colorAttachmentCount = SafeCast<uint32>(colorAttachmentFormats.size( ));
+		renderingInfo.pColorAttachmentFormats = colorAttachmentFormats.empty( ) ? nullptr : colorAttachmentFormats.data( );
 		renderingInfo.depthAttachmentFormat = VK_FORMAT_D32_SFLOAT;
 		renderingInfo.stencilAttachmentFormat = VK_FORMAT_UNDEFINED;
 

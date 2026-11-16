@@ -26,12 +26,12 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::DrawIndexed>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::DrawIndexed& cmd ) {
 
-				LUM_ASSERT( m_RenderingActive, "DrawIndexed: Rendering is inactive" );
+				LUM_ASSERT( m_RenderingActive, "DrawIndexed: Rendering must be active before issuing an indexed draw (commandBufferNull={}).", static_cast<uint32>(vkCmdBuffer == VK_NULL_HANDLE) );
 
 				if (vkCmdBuffer == VK_NULL_HANDLE ||
 					cmd.m_IndexCount == 0 ||
 					cmd.m_InstanceCount == 0) {
-					LUM_LOG_WARN( "DrawIndexed: Invalid command parameters." );
+					LUM_LOG_WARN( "DrawIndexed: Skipping draw; commandBufferNull={}, indexCount={}, instanceCount={}, firstIndex={}, vertexOffset={}, firstInstance={}.", static_cast<uint32>(vkCmdBuffer == VK_NULL_HANDLE), cmd.m_IndexCount, cmd.m_InstanceCount, cmd.m_FirstIndex, cmd.m_VertexOffset, cmd.m_FirstInstance );
 					return;
 				}
 
@@ -54,7 +54,7 @@ namespace lum::rhi::vk {
 
 				if (vkCmdBuffer == VK_NULL_HANDLE ||
 					!m_Pipelines.Contains( cmd.m_Handle )) {
-					LUM_LOG_WARN( "BindGraphicsPipeline: Invalid command buffer or pipeline handle." );
+					LUM_LOG_WARN( "BindGraphicsPipeline: Skipping bind; commandBufferNull={}, pipelineId={}, pipelineGeneration={}, handleExists={}.", static_cast<uint32>(vkCmdBuffer == VK_NULL_HANDLE), cmd.m_Handle.m_Id, cmd.m_Handle.m_Generation, static_cast<uint32>(m_Pipelines.Contains( cmd.m_Handle )) );
 					return;
 				}
 
@@ -62,7 +62,7 @@ namespace lum::rhi::vk {
 
 				if (pip.m_VkPipeline == VK_NULL_HANDLE ||
 					pip.m_VkLayout == VK_NULL_HANDLE) {
-					LUM_LOG_WARN( "BindGraphicsPipeline: Invalid Vulkan pipeline or pipeline layout." );
+					LUM_LOG_WARN( "BindGraphicsPipeline: Pipeline id {} has invalid Vulkan objects (VkPipelineNull={}, VkPipelineLayoutNull={}).", cmd.m_Handle.m_Id, static_cast<uint32>(pip.m_VkPipeline == VK_NULL_HANDLE), static_cast<uint32>(pip.m_VkLayout == VK_NULL_HANDLE) );
 					return;
 				}
 
@@ -84,14 +84,14 @@ namespace lum::rhi::vk {
 
 				if (vkCmdBuffer == VK_NULL_HANDLE ||
 					!m_Buffers.Contains( cmd.m_BufferHandle )) {
-					LUM_LOG_WARN( "BindElementBuffer: Invalid command buffer or buffer handle." );
+					LUM_LOG_WARN( "BindElementBuffer: Skipping index-buffer bind; commandBufferNull={}, bufferId={}, bufferGeneration={}, handleExists={}, offset={}.", static_cast<uint32>(vkCmdBuffer == VK_NULL_HANDLE), cmd.m_BufferHandle.m_Id, cmd.m_BufferHandle.m_Generation, static_cast<uint32>(m_Buffers.Contains( cmd.m_BufferHandle )), cmd.m_StartingOffset );
 					return;
 				}
 
 				auto& buffer = m_Buffers[ cmd.m_BufferHandle ];
 
 				if (buffer.m_VkBuffer == VK_NULL_HANDLE) {
-					LUM_LOG_WARN( "BindElementBuffer: Invalid Vulkan buffer." );
+					LUM_LOG_WARN( "BindElementBuffer: Buffer id {} has a null VkBuffer.", cmd.m_BufferHandle.m_Id );
 					return;
 				}
 
@@ -116,7 +116,7 @@ namespace lum::rhi::vk {
 					count == 0 ||
 					count > k_MaxVertexBufferBindCount ||
 					cmd.m_FirstBinding > std::numeric_limits<uint32>::max( ) - count) {
-					LUM_LOG_WARN( "BindVertexBuffers: Invalid command parameters." );
+					LUM_LOG_WARN( "BindVertexBuffers: Skipping bind; commandBufferNull={}, bufferCount={}, maxCount={}, firstBinding={}.", static_cast<uint32>(vkCmdBuffer == VK_NULL_HANDLE), count, k_MaxVertexBufferBindCount, cmd.m_FirstBinding );
 					return;
 				}
 
@@ -127,14 +127,14 @@ namespace lum::rhi::vk {
 					const auto& handle = cmd.m_BufferHandles[ i ];
 
 					if (!m_Buffers.Contains( handle )) {
-						LUM_LOG_WARN( "BindVertexBuffers: Buffer handle does not exist." );
+						LUM_LOG_WARN( "BindVertexBuffers: Buffer id {} generation {} at command index {} does not exist.", handle.m_Id, handle.m_Generation, i );
 						return;
 					}
 
 					const auto& buffer = m_Buffers[ handle ];
 
 					if (buffer.m_VkBuffer == VK_NULL_HANDLE) {
-						LUM_LOG_WARN( "BindVertexBuffers: Invalid Vulkan buffer." );
+						LUM_LOG_WARN( "BindVertexBuffers: Buffer id {} at command index {} contains a null VkBuffer.", handle.m_Id, i );
 						return;
 					}
 
@@ -180,7 +180,7 @@ namespace lum::rhi::vk {
 					cmd.m_MaxDepth > 1.0f ||
 					cmd.m_MinDepth > cmd.m_MaxDepth) {
 
-					LUM_LOG_WARN( "SetViewport: Invalid viewport parameters." );
+					LUM_LOG_WARN( "SetViewport: Invalid viewport; position=({}, {}), size=({}, {}), depth=[{}, {}], swapchainExtent=({}, {}).", cmd.m_Position.m_X, cmd.m_Position.m_Y, size.m_X, size.m_Y, cmd.m_MinDepth, cmd.m_MaxDepth, m_SwapchainExtent.width, m_SwapchainExtent.height );
 					return;
 
 				}
@@ -218,7 +218,7 @@ namespace lum::rhi::vk {
 					scissor.extent = m_SwapchainExtent;
 				}
 				else if (cmd.m_Extent.m_X == 0 || cmd.m_Extent.m_Y == 0) {
-					LUM_LOG_WARN( "SetScissors: Invalid scissor extent." );
+					LUM_LOG_WARN( "SetScissors: Extent must be either fully zero (use swapchain) or fully nonzero; requested=({}, {}).", cmd.m_Extent.m_X, cmd.m_Extent.m_Y );
 					return;
 				}
 				else {
@@ -232,7 +232,7 @@ namespace lum::rhi::vk {
 					scissor.offset.y < 0 ||
 					static_cast<uint64>( scissor.offset.x ) + scissor.extent.width > m_SwapchainExtent.width ||
 					static_cast<uint64>( scissor.offset.y ) + scissor.extent.height > m_SwapchainExtent.height) {
-					LUM_LOG_WARN( "SetScissors: Scissor rectangle exceeds swapchain extent." );
+					LUM_LOG_WARN( "SetScissors: Rectangle offset=({}, {}), extent=({}, {}) exceeds swapchain extent=({}, {}).", scissor.offset.x, scissor.offset.y, scissor.extent.width, scissor.extent.height, m_SwapchainExtent.width, m_SwapchainExtent.height );
 					return;
 				}
 
@@ -244,8 +244,8 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::UpdateResourceSet>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::UpdateResourceSet& cmd ) {
 
-				LUM_ASSERT( m_LogicalDevice != VK_NULL_HANDLE, "UpdateResourceSet: Invalid logical device!" );
-				LUM_ASSERT( m_ResourceSets.Contains( cmd.m_SetHandle ), "Called UpdateResourceBuffer on ResourceSet that doesn't exist!" );
+				LUM_ASSERT( m_LogicalDevice != VK_NULL_HANDLE, "UpdateResourceSet: Cannot update set id {} because VkDevice is null.", cmd.m_SetHandle.m_Id );
+				LUM_ASSERT( m_ResourceSets.Contains( cmd.m_SetHandle ), "UpdateResourceSet: Resource set id {} generation {} does not exist.", cmd.m_SetHandle.m_Id, cmd.m_SetHandle.m_Generation );
 
 				auto& set = m_ResourceSets[ cmd.m_SetHandle ];
 				auto& layout = m_ResourceLayouts[ set.m_Info.m_Layout ];
@@ -262,7 +262,7 @@ namespace lum::rhi::vk {
 
 				for (const auto& bufferInfo : cmd.m_BufferInfos) {
 
-					LUM_ASSERT( m_Buffers.Contains( bufferInfo.m_BufferHandle ), "UpdateResourceSet: Updated buffer doesn't exist!" );
+					LUM_ASSERT( m_Buffers.Contains( bufferInfo.m_BufferHandle ), "UpdateResourceSet: Buffer id {} generation {} for binding {} array element {} does not exist.", bufferInfo.m_BufferHandle.m_Id, bufferInfo.m_BufferHandle.m_Generation, bufferInfo.m_Binding, bufferInfo.m_ArrayIndex );
 
 					auto& buffer = m_Buffers[ bufferInfo.m_BufferHandle ];
 
@@ -274,11 +274,11 @@ namespace lum::rhi::vk {
 					LUM_ASSERT( it != bindings.end( ), "UpdateResourceSet: Buffer binding {} not found in ResourceSet!", bufferInfo.m_Binding );
 					LUM_ASSERT( it->m_Type == ResourceType::UniformBuffer || it->m_Type == ResourceType::StorageBuffer, "UpdateResourceSet: Buffer resource type does not match binding {}!", bufferInfo.m_Binding );
 					LUM_ASSERT( bufferInfo.m_ArrayIndex < it->m_ResourceCount, "UpdateResourceSet: Array index of Buffer {} out of bounds for binding {} (Max: {})!", bufferInfo.m_ArrayIndex, bufferInfo.m_Binding, it->m_ResourceCount );
-					LUM_ASSERT( bufferInfo.m_Offset <= buffer.m_Info.m_Size, "UpdateResourceSet: Buffer offset exceeds buffer size!" );
+					LUM_ASSERT( bufferInfo.m_Offset <= buffer.m_Info.m_Size, "UpdateResourceSet: Buffer id {} binding {} offset {} exceeds buffer size {}.", bufferInfo.m_BufferHandle.m_Id, bufferInfo.m_Binding, bufferInfo.m_Offset, buffer.m_Info.m_Size );
 
 					const VkDeviceSize range = bufferInfo.m_Range == 0 ? VK_WHOLE_SIZE : bufferInfo.m_Range;
 
-					LUM_ASSERT( range == VK_WHOLE_SIZE || range <= buffer.m_Info.m_Size - bufferInfo.m_Offset, "UpdateResourceSet: Buffer range exceeds buffer size!" );
+					LUM_ASSERT( range == VK_WHOLE_SIZE || range <= buffer.m_Info.m_Size - bufferInfo.m_Offset, "UpdateResourceSet: Buffer id {} binding {} range {} at offset {} exceeds buffer size {}.", bufferInfo.m_BufferHandle.m_Id, bufferInfo.m_Binding, range, bufferInfo.m_Offset, buffer.m_Info.m_Size );
 
 					VkDescriptorBufferInfo vkBufferInfo{};
 					vkBufferInfo.buffer = buffer.m_VkBuffer;
@@ -301,7 +301,7 @@ namespace lum::rhi::vk {
 
 				for (const auto& imageInfo : cmd.m_ImageInfos) {
 
-					LUM_ASSERT( m_Images.Contains( imageInfo.m_ImageHandle ), "UpdateResourceSet: Updated image doesn't exist!" );
+					LUM_ASSERT( m_Images.Contains( imageInfo.m_ImageHandle ), "UpdateResourceSet: Image id {} generation {} for binding {} array element {} does not exist.", imageInfo.m_ImageHandle.m_Id, imageInfo.m_ImageHandle.m_Generation, imageInfo.m_Binding, imageInfo.m_ArrayIndex );
 
 					auto& image = m_Images[ imageInfo.m_ImageHandle ];
 
@@ -367,14 +367,14 @@ namespace lum::rhi::vk {
 				if (vkCmdBuffer == VK_NULL_HANDLE ||
 					m_BoundPipelineLayout == VK_NULL_HANDLE ||
 					!m_ResourceSets.Contains( cmd.m_SetHandle )) {
-					LUM_LOG_WARN( "BindResourceSet: Invalid command buffer, pipeline layout or resource set." );
+					LUM_LOG_WARN( "BindResourceSet: Skipping bind; commandBufferNull={}, pipelineLayoutNull={}, setId={}, setGeneration={}, setExists={}.", static_cast<uint32>(vkCmdBuffer == VK_NULL_HANDLE), static_cast<uint32>(m_BoundPipelineLayout == VK_NULL_HANDLE), cmd.m_SetHandle.m_Id, cmd.m_SetHandle.m_Generation, static_cast<uint32>(m_ResourceSets.Contains( cmd.m_SetHandle )) );
 					return;
 				}
 
 				auto& set = m_ResourceSets[ cmd.m_SetHandle ];
 
 				if (set.m_VkResourceSet == VK_NULL_HANDLE) {
-					LUM_LOG_WARN( "BindResourceSet: Invalid Vulkan descriptor set." );
+					LUM_LOG_WARN( "BindResourceSet: Resource set id {} contains a null VkDescriptorSet.", cmd.m_SetHandle.m_Id );
 					return;
 				}
 
@@ -462,7 +462,7 @@ namespace lum::rhi::vk {
 					);
 
 					if (mapResult != VK_SUCCESS || mapped == nullptr) {
-						LUM_LOG_WARN( "TransferImage: Failed to map staging memory. VkResult: {}", static_cast<int>(mapResult) );
+					LUM_LOG_ERROR( "TransferImage: vkMapMemory failed (VkResult={}, frame={}, requestedBytes={}, stagingSize={}, imageId={}).", static_cast<int>(mapResult), m_CurrentFrameIndex, dataSize, stagingBuffer.m_Info.m_Size, cmd.m_Image.m_Id );
 						return;
 					}
 
@@ -529,17 +529,18 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::PushConstants>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::PushConstants& cmd ) {
 
-				LUM_ASSERT( cmd.m_Data, "PushConstants: Data is nullptr." );
-				LUM_ASSERT( cmd.m_Size > 0, "PushConstants: Invalid data size." );
+				LUM_ASSERT( cmd.m_Data, "PushConstants: Data pointer is null (offset={}, size={}).", cmd.m_Offset, cmd.m_Size );
+				LUM_ASSERT( cmd.m_Size > 0, "PushConstants: Size must be greater than zero (offset={}).", cmd.m_Offset );
 				LUM_ASSERT(
 					cmd.m_Size % 4 == 0 && cmd.m_Offset % 4 == 0,
-					"PushConstants: Invalid push constant alignment."
+					"PushConstants: Offset and size must be 4-byte aligned (offset={}, size={}).", cmd.m_Offset, cmd.m_Size
 				);
 				LUM_ASSERT(
-					cmd.m_Size + cmd.m_Offset <= m_Adapter.m_Properties.limits.maxPushConstantsSize,
-					"PushConstants: Exceeded device limit."
+					cmd.m_Offset <= m_Adapter.m_Properties.limits.maxPushConstantsSize &&
+					cmd.m_Size <= m_Adapter.m_Properties.limits.maxPushConstantsSize - cmd.m_Offset,
+					"PushConstants: Range [offset={}, end={}) exceeds maxPushConstantsSize={}.", cmd.m_Offset, cmd.m_Offset + cmd.m_Size, m_Adapter.m_Properties.limits.maxPushConstantsSize
 				);
-				LUM_ASSERT( cmd.m_ShaderStageFlags != 0, "PushConstants: Invalid stage flags." );
+				LUM_ASSERT( cmd.m_ShaderStageFlags != 0, "PushConstants: Shader stage flags are empty (offset={}, size={}).", cmd.m_Offset, cmd.m_Size );
 
 				if (m_BoundPipelineLayout == VK_NULL_HANDLE) {
 					LUM_LOG_WARN( "PushConstants: No pipeline layout is currently bound" );
@@ -564,8 +565,8 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::TransitionImage>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::TransitionImage& cmd ) {
 
-				LUM_ASSERT( !m_RenderingActive, "TransitionImage: Cannot transition an image while rendering is active" );
-				LUM_ASSERT( m_Images.Contains( cmd.m_Image ), "TransitionImage: Invalid image handle" );
+				LUM_ASSERT( !m_RenderingActive, "TransitionImage: Cannot transition image id {} to use {} while dynamic rendering is active.", cmd.m_Image.m_Id, static_cast<uint32>(cmd.m_NewUse) );
+				LUM_ASSERT( m_Images.Contains( cmd.m_Image ), "TransitionImage: Image id {} generation {} does not exist (requested use {}).", cmd.m_Image.m_Id, cmd.m_Image.m_Generation, static_cast<uint32>(cmd.m_NewUse) );
 
 				auto& image = m_Images[ cmd.m_Image ];
 				detail::TransitionImageInfo transitionInfo{};
@@ -645,9 +646,9 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::BeginRendering>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::BeginRendering& cmd ) {
 
-				LUM_ASSERT( !m_RenderingActive, "BeginRendering: Rendering is already active!" );
-				LUM_ASSERT( cmd.m_RenderArea.m_Width > 0, "BeginRendering: RenderArea width cannot be <= 0" );
-				LUM_ASSERT( cmd.m_RenderArea.m_Height > 0, "BeginRendering: RenderArea height cannot be <= 0" );
+				LUM_ASSERT( !m_RenderingActive, "BeginRendering: A rendering scope is already active; cannot begin area {}x{} with {} color attachment(s), depth={}, stencil={}.", cmd.m_RenderArea.m_Width, cmd.m_RenderArea.m_Height, cmd.m_ColorAttachments.Size(), static_cast<uint32>(static_cast<bool>(cmd.m_DepthAttachment)), static_cast<uint32>(static_cast<bool>(cmd.m_StencilAttachment)) );
+				LUM_ASSERT( cmd.m_RenderArea.m_Width > 0, "BeginRendering: Render area width must be > 0 (width={}, height={}).", cmd.m_RenderArea.m_Width, cmd.m_RenderArea.m_Height );
+				LUM_ASSERT( cmd.m_RenderArea.m_Height > 0, "BeginRendering: Render area height must be > 0 (width={}, height={}).", cmd.m_RenderArea.m_Width, cmd.m_RenderArea.m_Height );
 
 				VkRenderingInfo vkInfo{};
 				vkInfo.sType = VK_STRUCTURE_TYPE_RENDERING_INFO;
@@ -771,7 +772,7 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::EndRendering>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::EndRendering& cmd ) {
 
-				LUM_ASSERT( m_RenderingActive, "EndRendering: Rendering is not active!" );
+				LUM_ASSERT( m_RenderingActive, "EndRendering: No rendering scope is active; commandBufferNull={}.", static_cast<uint32>(vkCmdBuffer == VK_NULL_HANDLE) );
 
 				vkCmdEndRendering( vkCmdBuffer );
 
@@ -783,7 +784,7 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::CopyImageToImage>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::CopyImageToImage& cmd ) {
 
-				LUM_ASSERT( cmd.m_Src == cmd.m_Dst, "CopyImageToImage: Same images given in the descriptor." );
+				LUM_ASSERT( cmd.m_Src != cmd.m_Dst, "CopyImageToImage: Source and destination refer to the same image id {}.", cmd.m_Src.m_Id );
 
 				if (!m_Images.Contains( cmd.m_Src )) {
 					LUM_LOG_WARN( "CopyImageToImage: Source image is invalid" );
@@ -816,15 +817,21 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::UpdateBuffer>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::UpdateBuffer& cmd ) {
 
-				LUM_ASSERT( cmd.m_DataSize <= 0, "UpdateBuffer: Invalid data size" );
-				LUM_ASSERT( !m_RenderingActive, "UpdateBuffer: Rendering is active" );
+				LUM_ASSERT( cmd.m_DataSize > 0, "UpdateBuffer: Data size must be greater than zero (bufferId={}, offset={}, size={}).", cmd.m_Buffer.m_Id, cmd.m_Offset, cmd.m_DataSize );
+				LUM_ASSERT( cmd.m_DataSize <= 65536 && cmd.m_DataSize % 4 == 0, "UpdateBuffer: Vulkan update size must be 4-byte aligned and at most 65536 bytes (bufferId={}, offset={}, size={}).", cmd.m_Buffer.m_Id, cmd.m_Offset, cmd.m_DataSize );
+				LUM_ASSERT( cmd.m_NewData != nullptr, "UpdateBuffer: Source data is null (bufferId={}, offset={}, size={}).", cmd.m_Buffer.m_Id, cmd.m_Offset, cmd.m_DataSize );
+				LUM_ASSERT( !m_RenderingActive, "UpdateBuffer: Cannot update buffer id {} at offset {} ({} bytes) while rendering is active.", cmd.m_Buffer.m_Id, cmd.m_Offset, cmd.m_DataSize );
 
 				if (!m_Buffers.Contains( cmd.m_Buffer )) {
-					LUM_LOG_WARN( "UpdateBuffer: Destination buffer is invalid" );
+					LUM_LOG_WARN( "UpdateBuffer: Destination buffer id {} generation {} does not exist; offset={}, size={}.", cmd.m_Buffer.m_Id, cmd.m_Buffer.m_Generation, cmd.m_Offset, cmd.m_DataSize );
 					return;
 				}
 
 				auto& buffer = m_Buffers[ cmd.m_Buffer ];
+				if (buffer.m_VkBuffer == VK_NULL_HANDLE || cmd.m_Offset > buffer.m_Info.m_Size || cmd.m_DataSize > buffer.m_Info.m_Size - cmd.m_Offset) {
+					LUM_LOG_ERROR( "UpdateBuffer: Invalid destination range; bufferId={}, VkBufferNull={}, offset={}, size={}, bufferSize={}.", cmd.m_Buffer.m_Id, static_cast<uint32>(buffer.m_VkBuffer == VK_NULL_HANDLE), cmd.m_Offset, cmd.m_DataSize, buffer.m_Info.m_Size );
+					return;
+				}
 
 				vkCmdUpdateBuffer(
 					vkCmdBuffer,
