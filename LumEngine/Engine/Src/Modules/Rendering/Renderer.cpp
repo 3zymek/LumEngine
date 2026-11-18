@@ -105,8 +105,11 @@ namespace lum {
 
 		static OwningPtr<CTransform> transform = OwningPtr<CTransform>::Create();
 
+		static OwningPtr<CMaterialInstance> material = OwningPtr<CMaterialInstance>::Create();
+		material().m_BaseColor = Vector3(1.0f, 0.0f, 0.0f);
+
 		RenderInstance instance{};
-		instance.m_Material = nullptr;
+		instance.m_Material = material;
 		instance.m_StaticMesh = mesh;
 		instance.m_Transform = transform;
 

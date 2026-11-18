@@ -7,11 +7,23 @@
 layout( location = 0 ) out vec4 g_Albedo;
 //layout( location = LUM_GBUFFER_NORMAL ) out vec4 gNormal;
 
-//layout( set = 0, binding = 1, std140 ) uniform MaterialUniforms {
-//	vec4 m_BaseColor;
-//	float m_Roughness;
-//	float m_Metalness;
-//} u_MaterialData;
+struct MaterialData {
+	vec4 m_BaseColor;
+	float m_Roughness;
+	float m_Metalness;
+};
+
+layout( set = 0, binding = 1, std430 ) readonly buffer MaterialBuffer {
+	MaterialData m_Materials[];
+} u_MaterialBuffer;
+
+layout( push_constant, std140 ) uniform PushConstants {
+	mat4 m_Matrix;
+	uint m_MaterialIndex;
+	uint _m_Pad0;
+	uint _m_Pad1;
+	uint _m_Pad2;
+} pc_Draw;
 
 layout( location = 0 ) in vec3 f_Position;
 layout( location = 1 ) in vec2 f_UV;
@@ -19,7 +31,7 @@ layout( location = 1 ) in vec2 f_UV;
 
 void main( ) {
 
-	g_Albedo = vec4( 1.0, 1.0, 1.0, 1.0 );
+	g_Albedo = u_MaterialBuffer.m_Materials[pc_Draw.m_MaterialIndex].m_BaseColor;
 
 	//vec4 albedo = texture(in_Albedo, f_Uv).rgb; // * uMatBaseColor.rgb;
 

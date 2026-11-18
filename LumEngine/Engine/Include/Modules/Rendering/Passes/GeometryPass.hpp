@@ -13,6 +13,8 @@
 #pragma once
 
 #include <vector>
+#include <array>
+#include <unordered_map>
 
 #include "Core/CoreTypes.hpp"
 #include "Core/Limits.hpp"
@@ -50,6 +52,12 @@ namespace lum {
 		Vector4 m_Position{};
 	};
 
+	struct alignas(16) DrawPushConstants {
+		Matrix4 m_Model{};
+		uint32 m_MaterialIndex = 0;
+		uint32 _m_Pad[3]{};
+	};
+
 	class GeometryPass {
 	public:
 
@@ -63,6 +71,9 @@ namespace lum {
 	private:
 
 		CameraGPU m_PendingCamera{};
+		std::array<MaterialGPU, limits::k_MaxDrawCallsPerFrame + 1> m_MaterialData{};
+		std::array<DrawPushConstants, limits::k_MaxDrawCallsPerFrame> m_DrawPushConstants{};
+		std::unordered_map<const CMaterialInstance*, uint32> m_MaterialIndices{};
 		SafePtr<DeferredBuffer> m_DeferredBuffer = nullptr;
 		SafePtr<RendererContext> m_Ctx = nullptr;
 		MeshBuilder m_MeshBuilder{};
@@ -78,10 +89,9 @@ namespace lum {
 		rhi::BufferHandle m_MaterialUbo{};
 		rhi::PipelineHandle m_GeometryPipeline{};
 
-		void draw_instance(const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer) noexcept;
+		void draw_instance(const RenderInstance& instance, uint32 drawIndex, rhi::CommandBuffer& cmdBuffer) noexcept;
 		void draw_mesh(const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer) noexcept;
 		void upload_model_matrix(const RenderInstance& instance) noexcept;
-		void upload_material(const CMaterialInstance& instance) noexcept;
 
 	};
 

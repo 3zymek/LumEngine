@@ -43,8 +43,8 @@ namespace lum {
 
 		{ // Material buffer
 			rhi::BufferCreateInfo info{};
-			info.m_Usage = rhi::BufferUsageFlag::Uniform | rhi::BufferUsageFlag::TransferDestination;
-			info.m_BufferSize = sizeof(MaterialGPU);
+			info.m_Usage = rhi::BufferUsageFlag::ShaderStorage | rhi::BufferUsageFlag::TransferDestination;
+			info.m_BufferSize = sizeof(m_MaterialData);
 			m_MaterialUbo = m_Ctx().m_RenderDevice().CreateBuffer(info);
 		}
 		{ // Camera buffer
@@ -55,14 +55,23 @@ namespace lum {
 		}
 
 		{ // Resource layout
-			rhi::ResourceSetBinding binding{};
-			binding.m_Binding = 0;
-			binding.m_ShaderStages = rhi::ShaderStageFlag::Vertex;
-			binding.m_ResourceCount = 1;
-			binding.m_Type = rhi::ResourceType::UniformBuffer;
+			rhi::ResourceSetBinding cameraBinding{};
+			cameraBinding.m_Binding = 0;
+			cameraBinding.m_ShaderStages = rhi::ShaderStageFlag::Vertex;
+			cameraBinding.m_ResourceCount = 1;
+			cameraBinding.m_Type = rhi::ResourceType::UniformBuffer;
+
+			rhi::ResourceSetBinding materialBinding{};
+			materialBinding.m_Binding = 1;
+			materialBinding.m_ResourceCount = 1;
+			materialBinding.m_ShaderStages = rhi::ShaderStageFlag::Fragment;
+			materialBinding.m_Type = rhi::ResourceType::StorageBuffer;
+
 			rhi::ResourceLayoutCreateInfo info{};
-			info.m_Bindings.push_back(binding);
+			info.m_Bindings.push_back(cameraBinding);
+			info.m_Bindings.push_back(materialBinding);
 			m_ResourceLayout = m_Ctx().m_RenderDevice().CreateResourceLayout(info);
+
 		}
 
 		{ // Geometry pipeline
@@ -72,8 +81,8 @@ namespace lum {
 
 			rhi::PushConstantRange range{};
 			range.m_Offset = 0;
-			range.m_ShaderStageFlags = rhi::ShaderStageFlag::Vertex;
-			range.m_Size = sizeof(Matrix4);
+			range.m_ShaderStageFlags = rhi::ShaderStageFlag::Vertex | rhi::ShaderStageFlag::Fragment;
+			range.m_Size = sizeof(DrawPushConstants);
 
 			info.m_Layout.m_PushConstantRanges.push_back(range);
 
@@ -124,13 +133,22 @@ namespace lum {
 		}
 
 		rhi::cmd::UpdateResourceSet updateRes{};
-		rhi::UpdateBufferInfo updateBuff{};
-		updateBuff.m_ArrayIndex = 0;
-		updateBuff.m_Binding = 0;
-		updateBuff.m_BufferHandle = m_CameraUbo;
-		updateBuff.m_Offset = 0;
-		updateBuff.m_Range = sizeof(CameraGPU);
-		updateRes.m_BufferInfos.PushBack(updateBuff);
+
+		rhi::UpdateBufferInfo updateCameraBuffer{};
+		updateCameraBuffer.m_ArrayIndex = 0;
+		updateCameraBuffer.m_Binding = 0;
+		updateCameraBuffer.m_BufferHandle = m_CameraUbo;
+		updateCameraBuffer.m_Offset = 0;
+		updateCameraBuffer.m_Range = sizeof(CameraGPU);
+		updateRes.m_BufferInfos.PushBack(updateCameraBuffer);
+
+		rhi::UpdateBufferInfo updateMaterialBuffer{};
+		updateMaterialBuffer.m_ArrayIndex = 0;
+		updateMaterialBuffer.m_Binding = 1;
+		updateMaterialBuffer.m_BufferHandle = m_MaterialUbo;
+		updateMaterialBuffer.m_Range = sizeof(m_MaterialData);
+		updateRes.m_BufferInfos.PushBack(updateMaterialBuffer);
+
 		updateRes.m_SetHandle = m_ResourceSet;
 
 		rhi::CommandBuffer cmdBuffer{};
@@ -173,6 +191,32 @@ namespace lum {
 		updateBuffer.m_Offset = 0;
 		buffer.Push(updateBuffer);
 
+		m_MaterialIndices.clear();
+		m_MaterialData[0] = MaterialGPU{};
+		uint32 nextMaterialIndex = 1;
+		for (auto& instance : m_PendingInstances) {
+			if (!instance.m_Material)
+				continue;
+			const CMaterialInstance* material = &instance.m_Material();
+			if (m_MaterialIndices.contains(material))
+				continue;
+			if (nextMaterialIndex >= m_MaterialData.size()) {
+				LUM_LOG_WARN("GeometryPass: Material capacity reached; using default material for additional instances.");
+				continue;
+			}
+			m_MaterialIndices.emplace(material, nextMaterialIndex);
+			auto& gpuMaterial = m_MaterialData[nextMaterialIndex++];
+			gpuMaterial.m_BaseColor = Vector4(material->m_BaseColor.m_X, material->m_BaseColor.m_Y, material->m_BaseColor.m_Z, 1.0f);
+			gpuMaterial.m_Roughness = material->m_Roughness;
+			gpuMaterial.m_Metalness = material->m_Metalness;
+		}
+
+		rhi::cmd::UpdateBuffer updateMaterials{};
+		updateMaterials.m_Buffer = m_MaterialUbo;
+		updateMaterials.m_DataSize = sizeof(m_MaterialData);
+		updateMaterials.m_NewData = m_MaterialData.data();
+		buffer.Push(updateMaterials);
+
 		rhi::RenderingAttachment colorAttachment{};
 		colorAttachment.m_Image = m_DeferredBuffer().GetAttachment(DeferredAttachment::Albedo);
 		colorAttachment.m_StoreOp = rhi::StoreOp::Store;
@@ -213,14 +257,9 @@ namespace lum {
 		buffer.Push(setScissors);
 		buffer.Push(setViewport);
 
-		rhi::cmd::BindResourceSet bindSet{
-			.m_SetHandle = m_ResourceSet
-		};
-		buffer.Push(bindSet);
-
-
+		uint32 drawIndex = 0;
 		for (auto& instance : m_PendingInstances) {
-			draw_instance(instance, buffer);
+			draw_instance(instance, drawIndex++, buffer);
 		}
 		m_PendingInstances.Clear();
 
@@ -230,13 +269,23 @@ namespace lum {
 
 	}
 
-	void GeometryPass::draw_instance(const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer) noexcept {
+	void GeometryPass::draw_instance(const RenderInstance& instance, uint32 drawIndex, rhi::CommandBuffer& cmdBuffer) noexcept {
+		rhi::cmd::BindResourceSet bindSet{ .m_SetHandle = m_ResourceSet };
+		cmdBuffer.Push(bindSet);
 
+		auto& pushData = m_DrawPushConstants[drawIndex];
+		pushData.m_Model = instance.m_Transform().m_WorldMatrix;
+		pushData.m_MaterialIndex = 0;
+		if (instance.m_Material) {
+			auto it = m_MaterialIndices.find(&instance.m_Material());
+			if (it != m_MaterialIndices.end())
+				pushData.m_MaterialIndex = it->second;
+		}
 		rhi::cmd::PushConstants modelConstant{
-			.m_Data = instance.m_Transform().m_WorldMatrix.Data(),
-			.m_Size = sizeof(Matrix4),
+			.m_Data = &pushData,
+			.m_Size = sizeof(DrawPushConstants),
 			.m_Offset = 0,
-			.m_ShaderStageFlags = rhi::ShaderStageFlag::Vertex
+			.m_ShaderStageFlags = rhi::ShaderStageFlag::Vertex | rhi::ShaderStageFlag::Fragment
 		};
 
 		cmdBuffer.Push(modelConstant);
@@ -277,15 +326,4 @@ namespace lum {
 
 
 	}
-	void GeometryPass::upload_material(const CMaterialInstance& instance) noexcept {
-
-		//MaterialGPU mat{};
-		//mat.m_BaseColor = { instance.m_BaseColor, 1.0f };
-		//mat.m_Metalness = instance.m_Metalness;
-		//mat.m_Roughness = instance.m_Roughness;
-
-		//rhi::cmd::
-
-	}
-
 } // namespace lum

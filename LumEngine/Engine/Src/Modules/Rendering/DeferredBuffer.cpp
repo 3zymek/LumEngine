@@ -23,7 +23,6 @@ namespace lum {
 
 	void DeferredBuffer::RecreatePrimitives(SafePtr<rhi::IRenderDevice> renderDevice, rhi::Extent2D extent) {
 		create_assets(renderDevice, extent);
-
 	}
 
 	rhi::ImageHandle DeferredBuffer::GetAttachment(DeferredAttachment attachment) const noexcept {

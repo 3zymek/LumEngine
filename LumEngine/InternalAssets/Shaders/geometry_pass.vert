@@ -12,6 +12,10 @@ layout( set = 0, binding = 0, std140 ) uniform CameraUniforms {
 
 layout( push_constant, std140 ) uniform PushConstants {
 	mat4 m_Matrix;
+	uint m_MaterialIndex;
+	uint _m_Pad0;
+	uint _m_Pad1;
+	uint _m_Pad2;
 } pc_Model;
 
 layout( location = 0 ) out vec3 f_Position;
