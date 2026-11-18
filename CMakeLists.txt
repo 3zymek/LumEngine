@@ -128,7 +128,7 @@ target_link_libraries(LumEngine PRIVATE
 )
 
 # ── EDITOR ────────────────────────────────────────────────────────────────────
-file(GLOB_RECURSE EDITOR_CPP     "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Src/*.cpp")
+file(GLOB_RECURSE EDITOR_CPP CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Src/*.cpp")
 
 file(GLOB_RECURSE EDITOR_HEADERS "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/*.hpp"
                                  "${CMAKE_SOURCE_DIR}/LumEngine/Editor/Include/*.h"

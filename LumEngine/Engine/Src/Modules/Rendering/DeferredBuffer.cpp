@@ -21,39 +21,60 @@
 
 namespace lum {
 
-	void DeferredBuffer::RecreatePrimitives( SafePtr<rhi::IRenderDevice> renderDevice, rhi::Extent2D extent ) {
-		create_assets( renderDevice, extent );
+	void DeferredBuffer::RecreatePrimitives(SafePtr<rhi::IRenderDevice> renderDevice, rhi::Extent2D extent) {
+		create_assets(renderDevice, extent);
 
 	}
 
-	rhi::ImageHandle DeferredBuffer::GetAttachment( DeferredAttachment attachment ) const noexcept {
-		switch ( attachment ) {
-			case DeferredAttachment::Albedo:
-				return m_AlbedoAttachment;
-			case DeferredAttachment::Depth:
-				return m_DepthAttachment;
-			default:
+	rhi::ImageHandle DeferredBuffer::GetAttachment(DeferredAttachment attachment) const noexcept {
+		switch (attachment) {
+		case DeferredAttachment::Albedo:
+			return m_AlbedoAttachment;
+		case DeferredAttachment::Depth:
+			return m_DepthAttachment;
+		default:
 			break;
 		}
 		return m_AlbedoAttachment;
 	}
 
-	void DeferredBuffer::create_assets( SafePtr<rhi::IRenderDevice> renderDevice, rhi::Extent2D extent ) {
+	void DeferredBuffer::create_assets(SafePtr<rhi::IRenderDevice> renderDevice, rhi::Extent2D extent) {
 
-		renderDevice( ).DestroyImage( m_AlbedoAttachment );
+		{ // Albedo attachment
+			renderDevice().DestroyImage(m_AlbedoAttachment);
 
-		rhi::ImageCreateInfo info{};
-		info.m_ArrayLayers = 1;
-		info.m_MipmapLevels = 1;
-		info.m_Extent = { extent.m_Width, extent.m_Height, 1 };
-		info.m_Dimension = rhi::ImageDimension::Image2D;
-		info.m_Format = rhi::ImageFormat::RGBA16_FLOAT;
-		info.m_SampleCount = rhi::SampleCount::Sample1;
-		info.m_ViewType = rhi::ImageViewType::Default;
-		info.m_UsageFlags = rhi::ImageUsageFlag::ColorAttachment | rhi::ImageUsageFlag::ShaderSampled;
+			rhi::ImageCreateInfo info{};
+			info.m_ArrayLayers = 1;
+			info.m_MipmapLevels = 1;
+			info.m_Extent = { extent.m_Width, extent.m_Height, 1 };
+			info.m_Dimension = rhi::ImageDimension::Image2D;
+			info.m_Format = rhi::ImageFormat::RGBA16_FLOAT;
+			info.m_SampleCount = rhi::SampleCount::Sample1;
+			info.m_ViewType = rhi::ImageViewType::Default;
+			info.m_UsageFlags = rhi::ImageUsageFlag::ColorAttachment | rhi::ImageUsageFlag::ShaderSampled;
 
-		m_AlbedoAttachment = renderDevice( ).CreateImage( info );
-		LUM_ASSERT( m_AlbedoAttachment, "Invalid albedo attachment in DeferredBuffer" );
+			m_AlbedoAttachment = renderDevice().CreateImage(info);
+			LUM_ASSERT(m_AlbedoAttachment, "Invalid albedo attachment in DeferredBuffer");
+		}
+
+		{ // Depth attachment
+			renderDevice().DestroyImage(m_DepthAttachment);
+
+			rhi::ImageCreateInfo info{};
+			info.m_ArrayLayers = 1;
+			info.m_MipmapLevels = 1;
+			info.m_Extent = { extent.m_Width, extent.m_Height, 1 };
+			info.m_Dimension = rhi::ImageDimension::Image2D;
+			info.m_Format = rhi::ImageFormat::D32_FLOAT;
+			info.m_SampleCount = rhi::SampleCount::Sample1;
+			info.m_ViewType = rhi::ImageViewType::Default;
+			info.m_UsageFlags = rhi::ImageUsageFlag::DepthStencilAttachment | rhi::ImageUsageFlag::ShaderSampled;
+
+			m_DepthAttachment = renderDevice().CreateImage(info);
+			LUM_ASSERT(m_DepthAttachment, "Invalid albedo attachment in DeferredBuffer");
+		}
+
+
 
 	}
 

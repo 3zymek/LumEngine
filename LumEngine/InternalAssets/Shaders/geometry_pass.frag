@@ -7,13 +7,6 @@
 layout( location = 0 ) out vec4 g_Albedo;
 //layout( location = LUM_GBUFFER_NORMAL ) out vec4 gNormal;
 
-layout( set = 0, binding = 0, std140 ) uniform CameraUniforms {
-	mat4 m_View;
-	mat4 m_Projection;
-	mat4 m_InvertedProjection;
-	vec4 m_Position;
-} u_CameraData;
-
 //layout( set = 0, binding = 1, std140 ) uniform MaterialUniforms {
 //	vec4 m_BaseColor;
 //	float m_Roughness;

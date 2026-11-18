@@ -1,4 +1,4 @@
-//#include "Editor.hpp"
+#include "Core/EditorCamera.hpp"
 #include "Core/Utils/OwningPtr.hpp"
 #include "Core/Utils/ResourceLoader.hpp"
 #include "Event/EventBus.hpp"
@@ -15,27 +15,33 @@
 #include "Rendering/VertexLayoutConfig.hpp"
 #include "Engine.hpp"
 
-int main( ) {
+int main() {
 
 	lum::EngineCreateInfo info{};
 	info.m_ApplicationName = "chuj";
+#if defined(WIN32)
 	info.m_ProjectDir = "C:/Users/szymek/Desktop/lumen_assets";
+#elif defined(__APPLE__)
+	info.m_ProjectDir = "/Users/br.eeziak/Desktop/lumen_assets";
+#endif
 
 	lum::Engine engine{};
 
-	engine.Initialize( info );
+	engine.Initialize(info);
+	lum::editor::EditorCamera editorCamera{};
 
 	while (engine.Running()) {
-		
-		engine.BeginFrame( );
 
-		engine.Tick( );
+		engine.BeginFrame();
+		editorCamera.Update(engine.GetDeltaTime(), engine.Render().m_Renderer);
 
-		engine.EndFrame( );
+		engine.Tick();
+
+		engine.EndFrame();
 
 	}
 
-	engine.Finalize( );
+	engine.Finalize();
 
 }
 
@@ -91,7 +97,7 @@ int main( int argc, char* argv[ ] ) {
 	winInfo.m_Width = 800;
 	window.Initialize( winInfo, bus );
 	OwningPtr<GLFWVulkanSurfaceProvider> surfaceProvider = OwningPtr<GLFWVulkanSurfaceProvider>::Create( reinterpret_cast<GLFWwindow*>(window.GetNativeWindow( )) );
-	
+
 	uint32 count{};
 	const char** glfwExtensions = glfwGetRequiredInstanceExtensions( &count );
 	std::vector<const char*> extensions( glfwExtensions, glfwExtensions + count );
@@ -211,7 +217,7 @@ int main( int argc, char* argv[ ] ) {
 	auto grassTexture = ResourceLoader::LoadImageFromFile(
 		ResourceRoot::External, "test.png", ImageChannels::RGBA
 	);
-	
+
 	LUM_ASSERT( grassTexture, grassTexture.GetError( ) );
 
 	auto stoneTexture = ResourceLoader::LoadImageFromFile(

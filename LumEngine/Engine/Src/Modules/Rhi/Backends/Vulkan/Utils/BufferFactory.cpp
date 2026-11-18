@@ -31,6 +31,8 @@ namespace lum::rhi::vk {
 		vkInfo.usage = usage;
 
 		VulkanBuffer buffer{};
+		buffer.m_Info.m_Usage = info.m_Usage;
+		buffer.m_Info.m_Size = info.m_BufferSize;
 
 		const VkResult result = vkCreateBuffer( logicalDevice, &vkInfo, nullptr, &buffer.m_VkBuffer );
 		if (result != VK_SUCCESS) {

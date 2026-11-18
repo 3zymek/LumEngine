@@ -18,6 +18,7 @@
 #include "Platform/Input/Input.hpp"
 #include "Platform/Window.hpp"
 #include "PlatformModule.hpp"
+#include "Platform/Input/Backends/GLFWInputProvider.hpp"
 #include "Rhi/Interfaces/Core/RhiDevice.hpp"
 #include "Rhi/Backends/Vulkan/Core/RhiDevice_vulkan.hpp"
 #include "Platform/GLFWVulkanSurfaceProvider.hpp"
@@ -28,7 +29,7 @@ namespace lum {
 	// Public
 	//---------------------------------------------------------
 
-	void PlatformModule::Initialize( EngineCreateInfo& info, ev::EventBus& bus ) {
+	void PlatformModule::Initialize(EngineCreateInfo& info, ev::EventBus& bus) {
 
 		info.m_Window.m_Title = info.m_ApplicationName;
 
@@ -37,22 +38,28 @@ namespace lum {
 			// Create default window with default LumEngine backends
 
 			m_Window = Window{};
-			m_Window.Value( ).Initialize( info.m_Window, bus );
-
-			auto* glfwWindow = static_cast<GLFWwindow*>(m_Window.Value( ).GetNativeWindow( ));
+			m_Window.Value().Initialize(info.m_Window, bus);
 
 		}
 		else {
 
 		}
 
-		m_RenderDevice = OwningPtr<rhi::vk::VulkanDevice>::Create( );
+		m_RenderDevice = OwningPtr<rhi::vk::VulkanDevice>::Create();
 
 		uint32 count{};
-		const char** glfwExtensions = glfwGetRequiredInstanceExtensions( &count );
-		std::vector<const char*> extensions( glfwExtensions, glfwExtensions + count );
+		const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&count);
+		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + count);
 
-		OwningPtr<GLFWVulkanSurfaceProvider> surfaceProvider = OwningPtr<GLFWVulkanSurfaceProvider>::Create( reinterpret_cast<GLFWwindow*>(m_Window.Value( ).GetNativeWindow( )) );
+		OwningPtr<GLFWVulkanSurfaceProvider> surfaceProvider = OwningPtr<GLFWVulkanSurfaceProvider>::Create(reinterpret_cast<GLFWwindow*>(m_Window.Value().GetNativeWindow()));
+		if (info.m_InputProvider) {
+			input::detail::SetInputProvider(info.m_InputProvider.Ref());
+		} else {
+			m_InputProvider = OwningPtr<input::GLFWInputProvider>::Create(
+				*static_cast<GLFWwindow*>(m_Window.Value().GetNativeWindow())
+			);
+			input::detail::SetInputProvider(m_InputProvider.Ref());
+		}
 
 		rhi::RenderDeviceCreateInfo deviceInfo{};
 		deviceInfo.m_InstanceExtensions = extensions;
@@ -60,12 +67,12 @@ namespace lum {
 		deviceInfo.m_SurfaceProvider = surfaceProvider;
 		deviceInfo.m_EventBus = bus;
 
-		m_RenderDevice( ).Initialize( deviceInfo );
+		m_RenderDevice().Initialize(deviceInfo);
 
 	}
 
-	void PlatformModule::Finalize( ) {
-		m_RenderDevice( ).Finalize( );
+	void PlatformModule::Finalize() {
+		m_RenderDevice().Finalize();
 	}
 
 } // namespace lum

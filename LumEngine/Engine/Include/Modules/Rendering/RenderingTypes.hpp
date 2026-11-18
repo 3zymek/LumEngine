@@ -13,6 +13,8 @@
 #pragma once
 #include "Core/CoreDefines.hpp"
 #include "Core/CoreTypes.hpp"
+#include "Core/Math/Mat4.hpp"
+#include "Core/Math/Vec4.hpp"
 #include "Core/Utils/Assert.hpp"
 #include "Core/Utils/SafePtr.hpp"
 
@@ -31,8 +33,8 @@ namespace lum {
 
 		SafePtr<rhi::IRenderDevice> m_RenderDevice = nullptr;
 
-		void Assert( ) const {
-			LUM_ASSERT( m_RenderDevice, "RendererContext: IRenderDevice is nullptr" );
+		void Assert() const {
+			LUM_ASSERT(m_RenderDevice, "RendererContext: IRenderDevice is nullptr");
 		}
 
 	};

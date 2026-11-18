@@ -35,11 +35,11 @@ namespace lum {
 
 	struct alignas(16) MaterialGPU {
 
-		Vector4 m_BaseColor = Vector4( 1.0f );
+		Vector4 m_BaseColor = Vector4(1.0f);
 		float32 m_Roughness = 0.5f;
 		float32 m_Metalness = 0.0f;
 
-		float32 _m_Pad[ 2 ]{};
+		float32 _m_Pad[2]{};
 
 	};
 
@@ -53,14 +53,17 @@ namespace lum {
 	class GeometryPass {
 	public:
 
-		GeometryPass( ) = default;
+		GeometryPass() = default;
 
-		void Initialize( RendererContext& ctx, DeferredBuffer& deferredBuffer );
-		void SubmitInstance( const RenderInstance& instance );
-		void DrawScene( );
+		void Initialize(RendererContext& ctx, DeferredBuffer& deferredBuffer);
+		void SubmitInstance(const RenderInstance& instance);
+		void SubmitCameraData(Vector3 pos, Vector3 front, Vector3 up, Vector3 right);
+		void DrawScene();
 
 	private:
 
+		CameraGPU m_PendingCamera{};
+		SafePtr<DeferredBuffer> m_DeferredBuffer = nullptr;
 		SafePtr<RendererContext> m_Ctx = nullptr;
 		MeshBuilder m_MeshBuilder{};
 
@@ -71,16 +74,14 @@ namespace lum {
 
 		rhi::ResourceLayoutHandle m_ResourceLayout{};
 		rhi::ResourceSetHandle m_ResourceSet{};
+		rhi::BufferHandle m_CameraUbo{};
 		rhi::BufferHandle m_MaterialUbo{};
-		rhi::BufferHandle m_VertexBuffer{};
 		rhi::PipelineHandle m_GeometryPipeline{};
-		rhi::ImageHandle m_AlbedoAttachment{};
-		rhi::ImageHandle m_DepthAttachment{};
 
-		void draw_instance( const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer ) noexcept;
-		void draw_mesh( const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer ) noexcept;
-		void upload_model_matrix( const RenderInstance& instance ) noexcept;
-		void upload_material( const CMaterialInstance& instance ) noexcept;
+		void draw_instance(const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer) noexcept;
+		void draw_mesh(const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer) noexcept;
+		void upload_model_matrix(const RenderInstance& instance) noexcept;
+		void upload_material(const CMaterialInstance& instance) noexcept;
 
 	};
 

@@ -35,14 +35,15 @@ namespace lum {
 	class LUM_API Renderer {
 	public:
 
-		Renderer( ) = default;
+		Renderer() = default;
 
-		void Initialize( const RendererContext& ctx, ev::EventBus& bus, uint32 initialWidth, uint32 initialHeight ) noexcept;
-		const rhi::ImageHandle GetFrameTexture( ) const noexcept;
-		void SubmitInstance( const RenderInstance& instance ) noexcept;
+		void Initialize(const RendererContext& ctx, ev::EventBus& bus, uint32 initialWidth, uint32 initialHeight) noexcept;
+		const rhi::ImageHandle GetFrameTexture() const noexcept;
+		void SubmitInstance(const RenderInstance& instance) noexcept;
+		void SubmitCameraData(Vector3 position, Vector3 front, Vector3 up, Vector3 right) noexcept;
 
-		void BeginFrame( );
-		void EndFrame( );
+		void BeginFrame();
+		void EndFrame();
 
 	private:
 
@@ -51,7 +52,7 @@ namespace lum {
 		DeferredBuffer m_DeferredBuffer{};
 		GeometryPass m_GeometryPass{};
 
-		struct {
+		struct ScreenQuad {
 
 			rhi::ImageHandle m_FrameImage{};
 			rhi::SamplerHandle m_FrameSampler{};
@@ -64,17 +65,10 @@ namespace lum {
 			rhi::ResourceSetHandle m_ResourceSet{};
 
 			static inline const std::vector<rhi::Vertex> s_Vertices = {
-				// Bottom-left
-				{ { -1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f } },
-
-				// Bottom-right
-				{ {  1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f } },
-
-				// Top-right
-				{ {  1.0f,  1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } },
-
-				// Top-left
-				{ { -1.0f,  1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }
+				{ { -1.0f, -1.0f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 0.0f } },
+				{ { 1.0f, -1.0f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 0.0f } },
+				{ { 1.0f,  1.0f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } },
+				{ { -1.0f,  1.0f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f } }
 			};
 
 			static inline const std::vector<uint32> s_Indices = {
@@ -84,9 +78,9 @@ namespace lum {
 
 		} m_ScreenQuad;
 
-		void create_screen_quad_primitives( uint32 width, uint32 height, rhi::CommandBuffer& cmdBuff );
-		void setup_resources( rhi::CommandBuffer& cmdBuffer );
-		void create_main_pipeline( );
+		void create_screen_quad_primitives(uint32 width, uint32 height, rhi::CommandBuffer& cmdBuff);
+		void setup_resources(rhi::CommandBuffer& cmdBuffer);
+		void create_main_pipeline();
 
 	};
 

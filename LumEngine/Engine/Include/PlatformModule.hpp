@@ -17,6 +17,7 @@
 #include "Core/Utils/SafePtr.hpp"
 #include "CreateInfo.hpp"
 #include "Platform/Window.hpp"
+#include "Platform/Input/InputProvider.hpp"
 #include "Rhi/Interfaces/Core/RhiDevice.hpp"
 
 namespace lum {
@@ -52,12 +53,13 @@ namespace lum {
 	class LUM_API PlatformModule {
 	public:
 
-		Optional<Window> m_Window = Optional<Window>::Empty( );
+		Optional<Window> m_Window = Optional<Window>::Empty();
 
 		OwningPtr<rhi::IRenderDevice> m_RenderDevice = nullptr;
+		OwningPtr<input::IInputProvider> m_InputProvider = nullptr;
 
-		void Initialize( EngineCreateInfo& info, ev::EventBus& bus );
-		void Finalize( );
+		void Initialize(EngineCreateInfo& info, ev::EventBus& bus);
+		void Finalize();
 
 	};
 
