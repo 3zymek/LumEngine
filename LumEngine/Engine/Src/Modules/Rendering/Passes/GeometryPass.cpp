@@ -110,13 +110,17 @@ namespace lum {
 
 			rhi::ShaderInfo vertexShader{};
 			vertexShader.m_EntryPoint = "main";
-			vertexShader.m_Path = ResourceLoader::ResolveResourcePath(ResourceRoot::Internal, "Shaders/geometry_pass.vert.spv");
+			vertexShader.m_Path = ResourceLoader::ResolveResourcePath(
+				ResourceRoot::Internal, "Shaders/GeometryPass.vert.spv"
+			);
 			vertexShader.m_Stage = rhi::ShaderStageFlag::Vertex;
 			info.m_ShaderInfos.push_back(vertexShader);
 
 			rhi::ShaderInfo fragmentShader{};
 			fragmentShader.m_EntryPoint = "main";
-			fragmentShader.m_Path = ResourceLoader::ResolveResourcePath(ResourceRoot::Internal, "Shaders/geometry_pass.frag.spv");
+			fragmentShader.m_Path = ResourceLoader::ResolveResourcePath(
+				ResourceRoot::Internal, "Shaders/GeometryPass.frag.spv"
+			);
 			fragmentShader.m_Stage = rhi::ShaderStageFlag::Fragment;
 			info.m_ShaderInfos.push_back(fragmentShader);
 

@@ -1,21 +1,23 @@
 #version 450 core
-layout( binding = LUM_GBUFFER_ALBEDO    ) uniform sampler2D gAlbedo;
-layout( binding = LUM_GBUFFER_NORMAL    ) uniform sampler2D gNormal;
-layout( binding = LUM_GBUFFER_DEPTH     ) uniform sampler2D gDepth;
-layout( binding = LUM_SHADOW_MAP		) uniform sampler2D tShadowMap;
-layout( binding = LUM_TEX_IRRADIANCE 	) uniform samplerCube tIrradianceMap;
-layout( binding = LUM_TEX_PREFILTERED	) uniform samplerCube tPrefilteredMap;
+layout( set = 0, binding = 1 ) uniform sampler2D u_Albedo;
+layout( set = 0, binding = 2 ) uniform sampler2D u_Depth;
+//layout( binding = LUM_GBUFFER_ALBEDO    ) uniform sampler2D gAlbedo;
+//layout( binding = LUM_GBUFFER_NORMAL    ) uniform sampler2D gNormal;
+//layout( binding = LUM_GBUFFER_DEPTH     ) uniform sampler2D gDepth;
+//layout( binding = LUM_SHADOW_MAP        ) uniform sampler2D tShadowMap;
+//layout( binding = LUM_TEX_IRRADIANCE    ) uniform samplerCube tIrradianceMap;
+//layout( binding = LUM_TEX_PREFILTERED    ) uniform samplerCube tPrefilteredMap;
+/*
+struct PointLight {
 
-struct FPointLight {
-
-	vec3 mPosition;
-	float mIntensity;
-	vec3 mColor;
-	float mRadius;
+	vec3 m_Position;
+	float m_Intensity;
+	vec3 m_Color;
+	float m_Radius;
 
 };
 
-struct FSpotLight {
+struct SpotLight {
 
     vec3 mPosition;
     float mIntensity;
@@ -30,48 +32,54 @@ struct FSpotLight {
     float _mPad[3];
 
 };
-struct FLightningContext {
+*/
 
-    vec3 albedo;
-    vec3 N;
-    vec3 V;
-    vec3 F0;
-    float roughness;
-    float metallic;
-    vec3 fPos;
+// SHADER ONLY
+struct LightningContext {
 
-};
-
-layout( std140, binding = LUM_UBO_CAMERA_BINDING ) uniform CameraUniforms {
-	
-	mat4 uCameraView;
-	mat4 uCameraProj;
-	mat4 uCameraInvViewProj;
-	vec4 uCameraPos;
+    vec3 m_Albedo;
+    vec3 m_N;
+    vec3 m_V;
+    vec3 m_F0;
+    float m_Roughness;
+    float m_Metalness;
+    vec3 m_FragPos;
 
 };
 
-layout( std430, binding = LUM_SSBO_LIGHTS_BINDING ) readonly buffer LightBuffer {
+layout( set = 0, binding = 0, std140 ) uniform CameraUniforms {
+	mat4 m_View;
+	mat4 m_Projection;
+	mat4 m_InvertedProjection;
+	vec4 m_Position;
+} u_CameraData;
+
+/*
+layout( set = 0, binding = 3, std430 ) readonly buffer LightBuffer {
 	
-	FPointLight uPointLights[LUM_MAX_LIGHTS];
-	FSpotLight uSpotLights[LUM_MAX_LIGHTS];
+	PointLight uPointLights[100];
+	SpotLight uSpotLights[100];
 	int uActivePointLights;
 	int uActiveSpotLights;
 
-} aLightBuffer;
+} u_LightBuffer;
+*/
 
-layout( std140, binding = LUM_UBO_DIRECTIONAL_LIGHT ) uniform DirectionalLight {
+layout( set = 0, binding = 3, std140 ) uniform DirectionalLight {
 
-	vec4 mDirDirection;
-	vec4 mDirColor;
-	float mDirIntensity;
+	vec4 m_Direction;
+	vec4 m_Color;
+	float m_Intensity;
 
-};
+} u_DirectionalLight;
+
+/*
 layout(std140, binding = LUM_UBO_LIGHTSPACE_MATRIX) uniform LightSpaceMatrix {
 
     mat4 lightSpaceMatrix;
 
 };
+*/
 
 //======================================
 // PBR
@@ -88,7 +96,7 @@ float DistributionGGX( vec3 N, vec3 H, float roughness ) {
 	float NdotH2 = NdotH * NdotH;
 
 	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-	denom = LUM_PI * denom * denom;
+	denom = 3.141549 * denom * denom;
 
 	return a2 / denom;
 
@@ -127,8 +135,8 @@ vec3 CookTorrance( vec3 N, vec3 V, vec3 L, float roughness, vec3 F0 ) {
 //======================================
 // Shadows
 //======================================
-
-float CalculateShadow( FLightningContext ctx ) {
+/*
+float CalculateShadow( LightningContext ctx ) {
 	
 	vec3 L = normalize(-mDirDirection.xyz);
 
@@ -212,28 +220,54 @@ void CalculateSpotLights(inout vec3 Lo, in FLightningContext ctx){
 	}
 
 }
-void CalculateDirectionalLight( inout vec3 Lo, in FLightningContext ctx ){
+*/
+void CalculateDirectionalLight( inout vec3 Lo, in LightningContext ctx ){
 
-	float shadow = CalculateShadow(ctx);
-	vec3 L = normalize(-mDirDirection.xyz);
+	//float shadow = CalculateShadow(ctx);
+	vec3 L = normalize(-u_DirectionalLight.m_Direction.xyz);
 
-	vec3 H = normalize(ctx.V + L);
-	float NdotL = max(dot(ctx.N, L), 0.0);
-	vec3 F = FresnelSchlick(max(dot(H, ctx.V), 0.0), ctx.F0);
+	vec3 H = normalize(ctx.m_V + L);
+	float NdotL = max(dot(ctx.m_N, L), 0.0);
+	vec3 F = FresnelSchlick(max(dot(H, ctx.m_V), 0.0), ctx.m_F0);
 	vec3 kS = F;
-	vec3 kD = (1.0 - kS) * (1.0 - ctx.metallic);
-	vec3 specular = CookTorrance(ctx.N, ctx.V, L, ctx.roughness, ctx.F0);
+	vec3 kD = (1.0 - kS) * (1.0 - ctx.m_Metalness);
+	vec3 specular = CookTorrance(ctx.m_N, ctx.m_V, L, ctx.m_Roughness, ctx.m_F0);
 
-	vec3 diffuse = (ctx.albedo / LUM_PI) * kD;
-	Lo += (1.0 - shadow) * (diffuse + specular) * NdotL * mDirColor.rgb * mDirIntensity;
+	vec3 diffuse = (ctx.m_Albedo / 3.141549) * kD;
+	Lo += (diffuse + specular) * NdotL * u_DirectionalLight.m_Color.rgb * u_DirectionalLight.m_Intensity;
 
 }
 
-in vec2 fUV;
-out vec4 oFinalColor;
+layout( location = 0 ) in vec2 f_UV;
+layout( location = 0 ) out vec4 o_Color;
 
 void main( ) {
 
+	vec3 albedo = texture(u_Albedo, f_UV).rgb;
+	float depth = texture(u_Depth, f_UV).r;
+
+	vec4 ndc = vec4(f_UV * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
+	vec4 worldPos = u_CameraData.m_InvertedProjection * ndc;
+	worldPos /= worldPos.w;
+	vec3 fragPos = worldPos.xyz;
+
+	vec3 lo = vec3(0.0);
+	vec3 fresnel = mix(vec3(0.03), albedo, 1.0 /* <- IN FUTURE METALNESS */);
+
+	LightningContext context;
+	context.m_Albedo = albedo;
+	context.m_N = vec3(0.0, 0.0, 1.0);
+	context.m_V = normalize(u_CameraData.m_Position.xyz - fragPos);
+	context.m_F0 = fresnel;
+	context.m_Roughness = 0.5;
+	context.m_Metalness = 0.0;
+	context.m_FragPos = fragPos;
+
+	CalculateDirectionalLight(lo, context);
+
+	o_Color = vec4(lo, 1.0);
+
+/*
 	vec4 albedoTex = texture(gAlbedo, fUV);
 	vec3 albedo = albedoTex.rgb;
 	float roughness = albedoTex.a;
@@ -280,5 +314,6 @@ void main( ) {
 	Lo += diffuseIBL + specularIBL;
 
 	oFinalColor = vec4(Lo, 1.0);
+*/
 
 }

@@ -1,14 +1,14 @@
-#version 450 core
+#version 460
 
-layout(location = LUM_LAYOUT_POSITION) in vec3 aPos;
-layout(location = LUM_LAYOUT_NORMAL) in vec3 aNormal;
-layout(location = LUM_LAYOUT_UV) in vec2 aUV;
+layout(location = 0) in vec3 in_Position;
+layout(location = 1) in vec3 in_Normal;
+layout(location = 2) in vec2 in_UV;
 
-out vec2 fUV;
+layout(location = 0) out vec2 f_UV;
 
 void main() {
     
-    gl_Position = vec4(aPos, 1.0);
-    fUV = aUV;
+    gl_Position = vec4(in_Position, 1.0);
+    f_UV = in_UV;
 
 }
