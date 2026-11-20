@@ -1,8 +1,15 @@
-//========= Copyright (C) 2025-present 3zymek, MIT License ============//
-//
-// Purpose: Render module — renderer and render system lifecycle.
-//
-//=============================================================================//
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
 #include "Core/CoreTypes.hpp"
@@ -18,7 +25,7 @@ namespace lum {
 	namespace ev { class EventBus; }
 
 	struct RenderModuleCreateInfo {
-	
+
 		SafePtr<rhi::IRenderDevice> m_RenderDevice = nullptr;
 		SafePtr<ResourceModule> m_ResourceModule = nullptr;
 		SafePtr<ev::EventBus> m_EventBus = nullptr;
@@ -35,7 +42,7 @@ namespace lum {
 		Renderer	 m_Renderer{};
 		//render::RenderSystem m_RenderSys{};
 
-		void Initialize( const RenderModuleCreateInfo& info );
+		void Initialize(const RenderModuleCreateInfo& info);
 
 	};
 

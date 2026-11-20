@@ -1,11 +1,18 @@
-//========= Copyright (C) 2025-present 3zymek, MIT License ============//
-//
-// Purpose: Scene module — scene manager lifecycle.
-//
-//=============================================================================//
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
-//#include "Scene/SceneManager.hpp"
+#include "Scene/SceneManager.hpp"
 #include "Core/CoreDefines.hpp"
 #include "Core/Utils/SafePtr.hpp"
 #include "Entity/TransformSystem.hpp"
@@ -13,13 +20,11 @@
 namespace lum {
 
 	class RenderModule;
-	class ResourceModule;
 	class AudioModule;
 	namespace ev { class EventBus; }
 
 	struct LUM_API SceneModuleCreateInfo {
 
-		SafePtr<ResourceModule> m_ResourceModule = nullptr;
 		SafePtr<RenderModule>	m_RenderModule = nullptr;
 		SafePtr<AudioModule>	m_AudioModule = nullptr;
 		SafePtr<ev::EventBus>	m_EventBus = nullptr;
@@ -31,9 +36,9 @@ namespace lum {
 	class LUM_API SceneModule {
 	public:
 
-		//SceneManager m_SceneMgr{};
+		SceneManager m_SceneMgr{};
 
-		void Initialize( const SceneModuleCreateInfo& info );
+		void Initialize(const SceneModuleCreateInfo& info);
 
 	};
 

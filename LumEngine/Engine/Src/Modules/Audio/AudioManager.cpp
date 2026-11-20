@@ -5,22 +5,24 @@
 //
 //=============================================================================//
 
+// Header impl file
+#include "Audio/AudioManager.hpp"
+
 #include <Ahi/AhiTypes.hpp>
 #include <Ahi/Core/AhiSound.hpp>
 #include <Core/CoreTypes.hpp>
 #include <Core/Utils/LogMacros.hpp>
 #include <Core/Utils/StringUtils.hpp>
 #include <Platform/FileSystem/Path.hpp>
-
 #include "Ahi/Core/AhiDevice.hpp"
-#include "Audio/AudioManager.hpp"
 #include "Core/Utils/ResourceLoader.hpp"
 #include "Entity/EntityManager.hpp"
 #include "Event/EventBus.hpp"
 #include "Event/Events/EntityEvents.hpp"
-//#include "Entity/Components/Transform.hpp"
-//#include "Entity/Components/AudioEmitter.hpp"
-//#include "Entity/Components/Camera.hpp"
+#include "Entity/Components/AudioEmitter.hpp"
+#include "Entity/Components/Transform.hpp"
+#include "Entity/Components/AudioEmitter.hpp"
+#include "Entity/Components/Camera.hpp"
 
 namespace lum {
 
@@ -28,253 +30,251 @@ namespace lum {
 	// Public
 	//=======================================================//
 
-	void AudioManager::Initialize( ahi::IAudioDevice& device, ev::EventBus& bus ) {
+	void AudioManager::Initialize(ahi::IAudioDevice& device, ev::EventBus& bus) {
 
 		m_Device = device;
 		m_EventBus = bus;
 
-		m_EventBus( ).SubscribePermanently<EEntityDestroyed>(
-			[ & ]( const EEntityDestroyed& ev ) {
+		m_EventBus().SubscribePermanently<EEntityDestroyed>(
+			[&](const EEntityDestroyed& ev) {
 
-				if (m_Instances.contains( ev.m_Id ))
-					m_Instances[ ev.m_Id ].m_Flags.Set( ahi::SoundInstanceFlag::Kill );
+				if (m_Instances.contains(ev.m_Id))
+					m_Instances[ev.m_Id].m_Flags.Set(ahi::SoundInstanceFlag::Kill);
 
-			} );
+			});
 
 	}
 
-	ahi::SoundHandle AudioManager::FindSound( StringView relativePath, SoundCategory cat ) {
+	ahi::SoundHandle AudioManager::FindSound(StringView relativePath, SoundCategory cat) {
 
-		HashedString hash = HashString( relativePath );
-		if (m_Sounds.contains( hash )) return m_Sounds[ hash ];
+		HashedString hash = HashString(relativePath);
+		if (m_Sounds.contains(hash)) return m_Sounds[hash];
 
-		Path fullPath = ResourceLoader::ResolveResourcePath( ResourceRoot::External, relativePath );
+		Path fullPath = ResourceLoader::ResolveResourcePath(ResourceRoot::External, relativePath);
 
-		ahi::SoundHandle handle = m_Device( ).LoadSound( fullPath, ahi::detail::GetSoundFlags( cat ) );
-		m_Sounds.insert( { hash, handle } );
+		ahi::SoundHandle handle = m_Device().LoadSound(fullPath, ahi::detail::GetSoundFlags(cat));
+		m_Sounds.insert({ hash, handle });
 
-		LUM_LOG_INFO( "Loaded sound %s", relativePath.data( ) );
+		LUM_LOG_INFO("Loaded sound %s", relativePath.data());
 		return handle;
 
 	}
-	ahi::SoundHandle AudioManager::FindSound( StringView relativePath, StringView cat ) {
+	ahi::SoundHandle AudioManager::FindSound(StringView relativePath, StringView cat) {
 
-		return FindSound( relativePath, ahi::detail::ParseSoundCategory( cat ) );
-
-	}
-	void AudioManager::UnloadSound( StringView alias ) {
-
-		HashedString hash = HashString( alias );
-
-		if (m_Sounds.contains( hash ))
-			m_Sounds.erase( HashString( alias ) );
+		return FindSound(relativePath, ahi::detail::ParseSoundCategory(cat));
 
 	}
+	void AudioManager::UnloadSound(StringView alias) {
 
-	void AudioManager::PlayOneShot( StringView relativePath, const ahi::SoundPlaybackDescription& desc ) {
+		HashedString hash = HashString(alias);
 
-		ahi::SoundHandle sound = FindSound( relativePath );
-		m_Device( ).PlayOneShot( sound, desc );
+		if (m_Sounds.contains(hash))
+			m_Sounds.erase(HashString(alias));
 
 	}
 
-	void AudioManager::Set3DListenerAttributes( const ahi::ListenerAttributes& attrs ) {
+	void AudioManager::PlayOneShot(StringView relativePath, const ahi::SoundPlaybackDescription& desc) {
 
-		m_Device( ).Set3DListenerAttributes( attrs );
-
-	}
-
-	void AudioManager::StopAll( ) {
-
-		m_Device( ).StopAll( );
+		ahi::SoundHandle sound = FindSound(relativePath);
+		m_Device().PlayOneShot(sound, desc);
 
 	}
 
-	ahi::AudioEffectHandle AudioManager::CreateEffect( StringView name, ahi::EffectPreset preset ) {
+	void AudioManager::Set3DListenerAttributes(const ahi::ListenerAttributes& attrs) {
 
-		return CreateEffect( name, ahi::detail::k_EffectPresetLookup[ ToUnderlyingEnum( preset ) ] );
+		m_Device().Set3DListenerAttributes(attrs);
 
 	}
-	ahi::AudioEffectHandle AudioManager::CreateEffect( StringView name, const ahi::AudioEffectCreateInfo& desc ) {
 
-		HashedString hash = HashString( name );
+	void AudioManager::StopAll() {
 
-		if (!m_Effects.contains( hash )) {
-			m_Effects[ hash ] = m_Device( ).CreateEffect( desc );
+		m_Device().StopAll();
+
+	}
+
+	ahi::AudioEffectHandle AudioManager::CreateEffect(StringView name, ahi::EffectPreset preset) {
+
+		return CreateEffect(name, ahi::detail::k_EffectPresetLookup[ToUnderlyingEnum(preset)]);
+
+	}
+	ahi::AudioEffectHandle AudioManager::CreateEffect(StringView name, const ahi::AudioEffectCreateInfo& desc) {
+
+		HashedString hash = HashString(name);
+
+		if (!m_Effects.contains(hash)) {
+			m_Effects[hash] = m_Device().CreateEffect(desc);
 		}
 
-		return m_Effects[ hash ];
+		return m_Effects[hash];
 
 	}
-	void AudioManager::DeleteEffect( StringView name ) {
+	void AudioManager::DeleteEffect(StringView name) {
 
-		HashedString hash = HashString( name );
-		if (!m_Effects.contains( hash )) {
-			LUM_LOG_WARN( "Effect named {} doesn't exist", name.data( ) );
+		HashedString hash = HashString(name);
+		if (!m_Effects.contains(hash)) {
+			LUM_LOG_WARN("Effect named {} doesn't exist", name.data());
 			return;
 		}
-		DeleteEffect( m_Effects[ hash ] );
+		DeleteEffect(m_Effects[hash]);
 
 	}
-	void AudioManager::DeleteEffect( ahi::AudioEffectHandle effect ) {
+	void AudioManager::DeleteEffect(ahi::AudioEffectHandle effect) {
 
-		m_Device( ).DeleteEffect( effect );
+		m_Device().DeleteEffect(effect);
 
 	}
 
-	ahi::AudioEffectHandle AudioManager::FindEffect( StringView name ) {
+	ahi::AudioEffectHandle AudioManager::FindEffect(StringView name) {
 
-		HashedString hash = HashString( name );
+		HashedString hash = HashString(name);
 
-		if (!m_Effects.contains( hash )) {
-			LUM_LOG_WARN( "Effect named %s doesn't exist", name.data( ) );
+		if (!m_Effects.contains(hash)) {
+			LUM_LOG_WARN("Effect named %s doesn't exist", name.data());
 			return {};
 		}
 
-		return m_Effects[ hash ];
+		return m_Effects[hash];
 
 	}
 
-	ahi::ChannelGroupHandle AudioManager::FindGroup( StringView name ) {
+	ahi::ChannelGroupHandle AudioManager::FindGroup(StringView name) {
 
-		HashedString hash = HashString( name );
+		HashedString hash = HashString(name);
 
-		if (!m_Groups.contains( hash )) {
-			m_Groups[ hash ] = m_Device( ).CreateChannelGroup( name );
+		if (!m_Groups.contains(hash)) {
+			m_Groups[hash] = m_Device().CreateChannelGroup(name);
 		}
 
-		return m_Groups[ hash ];
+		return m_Groups[hash];
 
 	}
 
-	void AudioManager::BindEffectToGroup( ahi::ChannelGroupHandle group, ahi::AudioEffectHandle effect ) {
+	void AudioManager::BindEffectToGroup(ahi::ChannelGroupHandle group, ahi::AudioEffectHandle effect) {
 
-		m_Device( ).SetGroupEffect( group, effect );
+		m_Device().SetGroupEffect(group, effect);
 
 	}
-	void AudioManager::BindEffectToGroup( ahi::ChannelGroupHandle group, StringView effect ) {
+	void AudioManager::BindEffectToGroup(ahi::ChannelGroupHandle group, StringView effect) {
 
-		HashedString hash = HashString( effect );
-		if (!m_Effects.contains( hash )) {
-			LUM_LOG_WARN( "Invalid effect" );
+		HashedString hash = HashString(effect);
+		if (!m_Effects.contains(hash)) {
+			LUM_LOG_WARN("Invalid effect");
 			return;
 		}
-		BindEffectToGroup( group, m_Effects[ hash ] );
+		BindEffectToGroup(group, m_Effects[hash]);
 
 	}
-	void AudioManager::BindEffectToGroup( StringView group, ahi::AudioEffectHandle effect ) {
+	void AudioManager::BindEffectToGroup(StringView group, ahi::AudioEffectHandle effect) {
 
-		HashedString hash = HashString( group );
-		if (!m_Groups.contains( hash )) {
-			LUM_LOG_WARN( "Invalid group" );
+		HashedString hash = HashString(group);
+		if (!m_Groups.contains(hash)) {
+			LUM_LOG_WARN("Invalid group");
 			return;
 		}
-		BindEffectToGroup( m_Groups[ hash ], effect );
+		BindEffectToGroup(m_Groups[hash], effect);
 
 	}
-	void AudioManager::BindEffectToGroup( StringView group, StringView effect ) {
+	void AudioManager::BindEffectToGroup(StringView group, StringView effect) {
 
-		HashedString hashGroup = HashString( group );
-		HashedString hashEffect = HashString( effect );
+		HashedString hashGroup = HashString(group);
+		HashedString hashEffect = HashString(effect);
 
-		if (!m_Groups.contains( hashGroup )) {
-			LUM_LOG_WARN( "Invalid group" );
+		if (!m_Groups.contains(hashGroup)) {
+			LUM_LOG_WARN("Invalid group");
 			return;
 		}
-		if (!m_Effects.contains( hashEffect )) {
-			LUM_LOG_WARN( "Invalid effect" );
+		if (!m_Effects.contains(hashEffect)) {
+			LUM_LOG_WARN("Invalid effect");
 			return;
 		}
-		BindEffectToGroup( m_Groups[ hashGroup ], m_Effects[ hashEffect ] );
+		BindEffectToGroup(m_Groups[hashGroup], m_Effects[hashEffect]);
 
 	}
-	void AudioManager::SetGroupVolume( StringView group, float32 volume ) {
+	void AudioManager::SetGroupVolume(StringView group, float32 volume) {
 
-		HashedString hash = HashString( group );
-		if (!m_Groups.contains( hash )) {
-			LUM_LOG_WARN( "Group {} dosen't exist", group.data( ) );
+		HashedString hash = HashString(group);
+		if (!m_Groups.contains(hash)) {
+			LUM_LOG_WARN("Group {} dosen't exist", group.data());
 			return;
 		}
-		SetGroupVolume( m_Groups[ hash ], volume );
+		SetGroupVolume(m_Groups[hash], volume);
 
 	}
-	void AudioManager::SetGroupVolume( ahi::ChannelGroupHandle group, float32 volume ) {
+	void AudioManager::SetGroupVolume(ahi::ChannelGroupHandle group, float32 volume) {
 
-		m_Device( ).SetGroupVolume( group, volume );
+		m_Device().SetGroupVolume(group, volume);
 
 	}
-	void AudioManager::SetGroupPitch( StringView group, float32 pitch ) {
+	void AudioManager::SetGroupPitch(StringView group, float32 pitch) {
 
-		HashedString hash = HashString( group );
-		if (!m_Groups.contains( hash )) {
-			LUM_LOG_WARN( "Group {} dosen't exist", group.data( ) );
+		HashedString hash = HashString(group);
+		if (!m_Groups.contains(hash)) {
+			LUM_LOG_WARN("Group {} dosen't exist", group.data());
 			return;
 		}
-		SetGroupPitch( m_Groups[ hash ], pitch );
+		SetGroupPitch(m_Groups[hash], pitch);
 
 	}
-	void AudioManager::SetGroupPitch( ahi::ChannelGroupHandle group, float32 pitch ) {
+	void AudioManager::SetGroupPitch(ahi::ChannelGroupHandle group, float32 pitch) {
 
-		m_Device( ).SetGroupPitch( group, pitch );
-
-	}
-
-	void AudioManager::SetMasterVolume( float32 volume ) {
-
-		m_Device( ).SetMasterVolume( volume );
+		m_Device().SetGroupPitch(group, pitch);
 
 	}
 
-	void AudioManager::UpdateInstances( ecs::EntityManager* m_Gr ) {
-		/*
-		m_Gr->Iterate<CCamera, CTransform>(
-			[ & ]( CCamera& camera, CTransform& transform ) {
+	void AudioManager::SetMasterVolume(float32 volume) {
+
+		m_Device().SetMasterVolume(volume);
+
+	}
+
+	void AudioManager::UpdateInstances(ecs::EntityManager& mgr) {
+
+		mgr.Iterate<CCamera, CTransform>(
+			[&](CCamera& camera, CTransform& transform) {
 				ahi::ListenerAttributes attrs;
 
 				attrs.m_Position = transform.m_Position;
 				attrs.m_Up = camera.m_Up;
-				attrs.m_Forward = Normalize( camera.m_Target - transform.m_Position );
+				attrs.m_Forward = Normalize(camera.m_Target - transform.m_Position);
 
-				Set3DListenerAttributes( attrs );
+				Set3DListenerAttributes(attrs);
 
-			} );
+			});
 
-		m_Gr->EachWithID<CTransform, CAudioEmitter>(
-			[ & ]( EntityID id, CTransform& transf, CAudioEmitter& emitter ) {
-			*/
-			/*
-			if (emitter.m_Marked) {
+		mgr.EachWithID<CTransform, CAudioEmitter>(
+			[&](EntityID id, CTransform& transf, CAudioEmitter& emitter) {
 
-				auto& inst = m_Instances[ id ];
+				if (emitter.m_Paused) {
 
-				inst.m_Volume = emitter.m_Volume;
-				inst.m_Pitch = emitter.m_Pitch;
-				inst.m_MinDistance = emitter.m_MinDistance;
-				inst.m_MaxDistance = emitter.m_MaxDistance;
-				if (emitter.m_Paused)
-					inst.m_Flags.Set( ahi::SoundInstanceFlag::Paused );
-				if (emitter.m_Playing)
-					inst.m_Flags.Set( ahi::SoundInstanceFlag::Playing );
-				if (emitter.m_Looped)
-					inst.m_Flags.Set( ahi::SoundInstanceFlag::Looped );
-				if (emitter.m_Play)
-					inst.m_Flags.Set( ahi::SoundInstanceFlag::Play );
-				inst.m_Sound = emitter.m_Sound;
+					auto& inst = m_Instances[id];
 
-				inst.m_Position = transf.m_Position;
+					inst.m_Volume = emitter.m_Volume;
+					inst.m_Pitch = emitter.m_Pitch;
+					inst.m_MinDistance = emitter.m_MinDistance;
+					inst.m_MaxDistance = emitter.m_MaxDistance;
+					if (emitter.m_Paused)
+						inst.m_Flags.Set(ahi::SoundInstanceFlag::Paused);
+					if (emitter.m_Playing)
+						inst.m_Flags.Set(ahi::SoundInstanceFlag::Playing);
+					if (emitter.m_Looped)
+						inst.m_Flags.Set(ahi::SoundInstanceFlag::Looped);
+					if (emitter.m_Play)
+						inst.m_Flags.Set(ahi::SoundInstanceFlag::Play);
+					inst.m_Sound = emitter.m_Sound;
 
-			}
+					inst.m_Position = transf.m_Position;
 
-			emitter.m_Marked = false;
-			*/
+				}
 
-			//} );
+				//emitter.m_Marked = false;
 
-		for (auto it = m_Instances.begin( ); it != m_Instances.end( );) {
+			});
 
-			m_Device( ).UpdateInstance( it->second );
-			if (it->second.m_Flags.Has( ahi::SoundInstanceFlag::Kill )) {
-				it = m_Instances.erase( it );
+		for (auto it = m_Instances.begin(); it != m_Instances.end();) {
+
+			m_Device().UpdateInstance(it->second);
+			if (it->second.m_Flags.Has(ahi::SoundInstanceFlag::Kill)) {
+				it = m_Instances.erase(it);
 			}
 			else ++it;
 

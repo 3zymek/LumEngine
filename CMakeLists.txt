@@ -29,15 +29,15 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
 
 # ── LHC ──────────────────────────────────────────────────────────────────────
-#set(LHC_ROOT_DIR "${CMAKE_SOURCE_DIR}/LumEngine")
+set(LHC_ROOT_DIR "${CMAKE_SOURCE_DIR}/LumEngine")
 
-#find_program(DOTNET_EXECUTABLE dotnet REQUIRED)
+find_program(DOTNET_EXECUTABLE dotnet REQUIRED)
 
-#add_custom_target(RunLHC ALL
-#    COMMAND ${DOTNET_EXECUTABLE} "${CMAKE_SOURCE_DIR}/tools/LumenHeaderCompiler.dll" "${LHC_ROOT_DIR}"
-#    COMMENT "Running LHC..."
-#    VERBATIM
-#)
+add_custom_target(RunLHC ALL
+    COMMAND ${DOTNET_EXECUTABLE} "${CMAKE_SOURCE_DIR}/tools/LumenHeaderCompiler.dll" "${LHC_ROOT_DIR}"
+    COMMENT "Running LHC..."
+    VERBATIM
+)
 
 if(MSVC)
     add_compile_options(/Bt)
@@ -71,7 +71,7 @@ add_library(LumEngine STATIC
     ${EXTERNAL_CPP_IMPL}
 )
 
-#add_dependencies(LumEngine RunLHC)
+add_dependencies(LumEngine RunLHC)
 
 set_source_files_properties(${ENGINE_C}          PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 set_source_files_properties(${EXTERNAL_C}        PROPERTIES SKIP_PRECOMPILE_HEADERS ON)

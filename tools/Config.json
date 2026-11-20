@@ -33,22 +33,24 @@
     "class_extensions_macro": "LUM_CLASS_EXTENSIONS( )"
   },
   "category_colors": {
-    "GENERAL":   "#C8C8C8",
+    "GENERAL": "#C8C8C8",
     "TRANSFORM": "#F0C27A",
     "RENDERING": "#7AB8F0",
     "LIGHTNING": "#F0E97A",
-    "PHYSICS":   "#A8F07A",
-    "AUDIO":     "#C47AF0"
+    "PHYSICS": "#A8F07A",
+    "AUDIO": "#C47AF0"
   },
   "category_icons": {
-    "GENERAL":   "ICON_FA_DOT_CIRCLE",
+    "GENERAL": "ICON_FA_DOT_CIRCLE",
     "TRANSFORM": "ICON_FA_ARROWS_ALT",
     "RENDERING": "ICON_FA_CUBE",
     "LIGHTNING": "ICON_FA_LIGHTBULB",
-    "PHYSICS":   "ICON_FA_CROSSHAIRS",
-    "AUDIO":     "ICON_FA_VOLUME_UP"
+    "PHYSICS": "ICON_FA_CROSSHAIRS",
+    "AUDIO": "ICON_FA_VOLUME_UP"
   },
-  "prefixes": ["m_"],
+  "prefixes": [
+    "m_"
+  ],
   "blueprints": {
     "file_preamble": [
       "//========= Copyright (C) 2025-present 3zymek, MIT License ============//",
@@ -62,11 +64,10 @@
       "//",
       "//=============================================================================//"
     ],
-
     "deserialize_registry_source_basefile": [
-      "//#include \"Scene/Format/FormatTypes.hpp\"",
-      "//#include \"Scene/SceneManager.hpp\"",
-      "//#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
+      "#include \"Scene/Format/FormatTypes.hpp\"",
+      "#include \"Scene/SceneManager.hpp\"",
+      "#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
       "",
       "{DeserializeFunctions}",
       ""
@@ -103,14 +104,13 @@
       "\t{Fields}",
       "}"
     ],
-    "deserialize_fn_register_field": [ 
-      "map[ HashStr( \"{DeserializeName}\" ) ] = {DeserializeFunctionName};" 
+    "deserialize_fn_register_field": [
+      "map[ HashStr( \"{DeserializeName}\" ) ] = {DeserializeFunctionName};"
     ],
-
     "serialize_registry_source_basefile": [
-      "//#include \"Scene/Format/FormatTypes.hpp\"",
-      "//#include \"Scene/SceneManager.hpp\"",
-      "//#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
+      "#include \"Scene/Format/FormatTypes.hpp\"",
+      "#include \"Scene/SceneManager.hpp\"",
+      "#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
       "",
       "{SerializeFunctions}",
       ""
@@ -121,7 +121,7 @@
     ],
     "serialize_fn_body": [
       "{Signature} {",
-      "\t{ClassName}* {Var} = static_cast<{ClassName}*>( base );",
+      "\tauto* {Var} = static_cast<{ClassName}*>( base );",
       "\tsb.AppendLine( \"\t@{SerializationName} {\" );",
       "\t{Fields}",
       "\tsb.AppendLine( \"\t}\" );",
@@ -131,8 +131,6 @@
       "sb.AppendLine( \"\t\t{FieldSerializeName}: \" );",
       "{Writer}( {Var}->{FieldName}, sb );"
     ],
-
-
     "editor_fn": [
       "{Signature} {",
       "\tauto* {Var} = mgr.GetComponent<{ClassName}>( entity );",
@@ -146,13 +144,13 @@
       "}"
     ],
     "editor_registry_basefile": [
-      "//#include \"Core/EditorCommon.hpp\"",
-      "//#include \"Entity/EcsCommon.hpp\"",
+      "#include \"Core/EditorCommon.hpp\"",
+      "#include \"Entity/EcsCommon.hpp\"",
       "",
       "{EditorRegistryBody}",
       ""
     ],
-    "editor_registry_field": [ 
+    "editor_registry_field": [
       "map[ TypeRegistry::GetTypeId<{ClassName}>( ) ] = EditorComponentMetadata ({",
       "\t&{DrawInspectorFn},",
       "\t[]( ecs::EntityManager& mgr, EntityID id ) { mgr.AddComponent<{ClassName}>( id ); },",
@@ -162,7 +160,6 @@
       "\tTypeRegistry::GetTypeId<{ClassName}>(),",
       "});"
     ],
-
     "ecs_traits_instance_basefile": [
       "//#include PLACE INCLUDES HERE IF NEEDED",
       "namespace lum {",
@@ -174,10 +171,10 @@
       "} // namespace lum"
     ],
     "ecs_trait_generated_body": [
-      "inline static constexpr StringView skSerializationName = \"{SerializationName}\";",
-      "inline static constexpr StringView skDisplayName = \"{DisplayName}\";",
-      "inline static constexpr StringView skCategoryName = \"{CategoryName}\";",
-      "inline static constexpr uint64 skSerializationId = {SerializationID};",
+      "inline static constexpr StringView s_SerializationName = \"{SerializationName}\";",
+      "inline static constexpr StringView s_DisplayName = \"{DisplayName}\";",
+      "inline static constexpr StringView s_CategoryName = \"{CategoryName}\";",
+      "inline static constexpr uint64 s_SerializationId = {SerializationID};",
       "inline static const uint64 GetTypeId( ) {",
       "\treturn TypeRegistry::GetTypeId<{ClassName}>( );",
       "}"
@@ -189,13 +186,11 @@
       "};"
     ],
     "ecs_trait_extensions_body": [
-      "inline static constexpr StringView skSerializationName = \"{SerializationName}\";",
-      "inline static constexpr StringView skDisplayName = \"{DisplayName}\";",
-      "inline static constexpr StringView skCategoryName = \"{CategoryName}\";",
-      "inline static constexpr uint64 skSerializationId = {SerializationID};"
+      "inline static constexpr StringView s_SerializationName = \"{SerializationName}\";",
+      "inline static constexpr StringView s_DisplayName = \"{DisplayName}\";",
+      "inline static constexpr StringView s_CategoryName = \"{CategoryName}\";",
+      "inline static constexpr uint64 s_SerializationId = {SerializationID};"
     ],
-
-
     "editor_traits_basefile": [
       "//#include PLACE INCLUDES HERE IF NEEDED",
       "namespace lum::editor {",
@@ -213,13 +208,13 @@
       "} // namespace lum::editor"
     ],
     "editor_trait_category_color": [
-        "inline ImVec4 GetCategoryColor( StringView cat ) {",
-        "\tstatic std::unordered_map<HashedString, ImVec4> sColors = {",
-        "\t\t{Fields}",
-        "\t};",
-        "\tauto it = sColors.find( HashString( cat ) );",
-        "\treturn it != sColors.end() ? it->second : ImVec4( 1.0f, 1.0f, 1.0f, 1.0f);",
-        "}"
+      "inline ImVec4 GetCategoryColor( StringView cat ) {",
+      "\tstatic std::unordered_map<HashedString, ImVec4> sColors = {",
+      "\t\t{Fields}",
+      "\t};",
+      "\tauto it = sColors.find( HashString( cat ) );",
+      "\treturn it != sColors.end() ? it->second : ImVec4( 1.0f, 1.0f, 1.0f, 1.0f);",
+      "}"
     ],
     "editor_trait_category_color_field": [
       "{ HashString( \"{CategoryName}\" ), ImVec4({Color}) },"
@@ -236,7 +231,6 @@
     "editor_trait_category_icon_field": [
       "{ HashString( \"{CategoryName}\" ), {Icon} },"
     ],
-
     "scene_registry_fn": [
       "{Signature} {",
       "",
@@ -256,41 +250,32 @@
     ],
     "scene_registry_basefile": [
       "#include <vector>\n",
-      "//#include \"Scene/Format/FormatTypes.hpp\"",
-      "//#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
-      "//#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
+      "#include \"Scene/Format/FormatTypes.hpp\"",
+      "#include \"Scene/Format/DeserializeFunctions.gen.hpp\"",
+      "#include \"Scene/Format/SerializeFunctions.gen.hpp\"",
       "namespace lum::fmt {",
       "",
       "\t{SceneRegistryBody}",
       "",
       "} // namespace lum::fmt"
     ]
-
-    
-
   },
   "templates": {
-
     "deserialize_fn_var": "component",
     "deserialize_fn_name": "LGEN_Deserialize{ClassName}",
     "deserialize_fn_signature": "void LGEN_Deserialize{ClassName}( std::vector<lum::fmt::Token>& tokens, lum::int32& i, lum::fmt::DeserializeContext& ctx )",
     "deserialize_namespace": "lum::fmt::detail",
-
-    "serialize_fn_var": "component", 
+    "serialize_fn_var": "component",
     "serialize_fn_name": "LGEN_Serialize{ClassName}",
     "serialize_fn_signature": "void LGEN_Serialize{ClassName}( StringBuilder& sb, ComponentBase* base )",
     "serialize_namespace": "lum::fmt::detail",
-    
     "ecs_traits_forward_declare_namespace": "lum",
-
     "editor_fn_var": "component",
     "editor_fn_name": "LGEN_DrawInspector{ClassName}",
     "editor_fn_signature": "void LGEN_DrawInspector{ClassName}( ecs::EntityManager& mgr, lum::EntityID entity )",
     "editor_namespace": "lum::editor",
     "editor_registry_fn_signature": "void RegisterEditorComponents( std::unordered_map<uint64, EditorComponentMetadata>& map )",
-
     "scene_registry_fn_signature": "void RegisterSceneComponents( std::vector<SceneComponentInfo>& infos )"
-    
   },
   "defaults": {
     "drag_speed": "0.01f",

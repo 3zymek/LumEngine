@@ -12,11 +12,11 @@
 /*******************************************************/
 #pragma once
 
+#include <type_traits>
+
 #include "Core/CoreTypes.hpp"
 #include "Core/CoreDefines.hpp"
 #include "Core/Utils/TypeUtils.hpp"
-
-#include <type_traits>
 
 namespace lum {
 
@@ -52,7 +52,7 @@ namespace lum {
 		} // namespace lum::ecs::detail
 
 		/* @brief Means that entity doesn't exists. */
-		inline constexpr EntityID k_NullEntity = MaxValue<EntityID>( );
+		inline constexpr EntityID k_NullEntity = MaxValue<EntityID>();
 
 		template<detail::cComponent tType>
 		struct EcsTraits;

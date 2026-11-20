@@ -14,8 +14,19 @@
 #include "Core/Math/Mat4.hpp"
 #include "Rendering/VertexLayoutConfig.hpp"
 #include "Engine.hpp"
+#include <filesystem>
 
-int main() {
+int main(int argc, char* argv[]) {
+	// ResourceLoader resolves engine assets relative to the working directory.
+	// Anchor it to the executable so launching from Terminal's home directory works.
+	if (argc > 0 && argv[0] && std::filesystem::path(argv[0]).has_parent_path()) {
+		std::error_code error{};
+		auto executablePath = std::filesystem::absolute(argv[0], error);
+		if (!error)
+			std::filesystem::current_path(executablePath.parent_path(), error);
+	}
+	// Refresh roots initialized before main() after anchoring the working directory.
+	lum::ResourceLoader::SetRoot(std::filesystem::current_path().parent_path() / "LumEngine");
 
 	lum::EngineCreateInfo info{};
 	info.m_ApplicationName = "chuj";

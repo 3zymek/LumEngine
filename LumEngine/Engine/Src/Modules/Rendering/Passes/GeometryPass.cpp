@@ -105,7 +105,7 @@ namespace lum {
 			rast.m_CullMode = rhi::CullMode::Back;
 			rast.m_DepthBiasEnabled = false;
 			rast.m_PolygonMode = rhi::PolygonMode::Fill;
-			rast.m_FrontFace = rhi::FrontFace::Clockwise;
+			rast.m_FrontFace = rhi::FrontFace::CounterClockwise;
 			rast.m_RasterizerEnabled = true;
 
 			rhi::ShaderInfo vertexShader{};
@@ -197,7 +197,7 @@ namespace lum {
 		for (auto& instance : m_PendingInstances) {
 			if (!instance.m_Material)
 				continue;
-			const CMaterialInstance* material = &instance.m_Material();
+			const CMaterialInstance* material = instance.m_Material.Ptr();
 			if (m_MaterialIndices.contains(material))
 				continue;
 			if (nextMaterialIndex >= m_MaterialData.size()) {
@@ -290,11 +290,7 @@ namespace lum {
 
 		cmdBuffer.Push(modelConstant);
 
-		//const auto mat = instance.m_Material;
-		//upload_material( mat.Ref( ) );
-
 		draw_mesh(instance, cmdBuffer);
-
 
 	}
 
@@ -321,9 +317,5 @@ namespace lum {
 		cmdBuffer.Push(drawIndexed);
 
 	}
-	void GeometryPass::upload_model_matrix(const RenderInstance& instance) noexcept {
 
-
-
-	}
 } // namespace lum

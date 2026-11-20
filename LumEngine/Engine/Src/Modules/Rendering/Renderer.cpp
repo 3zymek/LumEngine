@@ -16,6 +16,7 @@
 #include "Rendering/Renderer.hpp"
 
 #include "Core/CoreTypes.hpp"
+#include "Core/Math/MatrixOperations.hpp"
 #include "Entity/Components/Material.hpp"
 #include "Entity/Components/Mesh.hpp"
 #include "Entity/Components/Transform.hpp"
@@ -95,12 +96,23 @@ namespace lum {
 
 		static OwningPtr<CStaticMesh> mesh = OwningPtr<CStaticMesh>::Create();
 
-		static bool loaded = false;
-		if (!loaded) {
+		static bool triangleLoaded = false;
+		if (!triangleLoaded) {
 			auto handle = ResourceRegistry::GetStatic().LoadResourceFromFile<ResourceType::Mesh>(
 				ResourceLoader::ResolveResourcePath(ResourceRoot::External, "TestTriangle.obj")
 			);
 			mesh().m_ResourceHandle = handle;
+			triangleLoaded = true;
+		}
+
+		static OwningPtr<CStaticMesh> rectangleMesh = OwningPtr<CStaticMesh>::Create();
+		static bool rectangleLoaded = false;
+		if (!rectangleLoaded) {
+			auto handle = ResourceRegistry::GetStatic().LoadResourceFromFile<ResourceType::Mesh>(
+				ResourceLoader::ResolveResourcePath(ResourceRoot::External, "TestRectangle.obj")
+			);
+			rectangleMesh().m_ResourceHandle = handle;
+			rectangleLoaded = true;
 		}
 
 		static OwningPtr<CTransform> transform = OwningPtr<CTransform>::Create();
@@ -114,6 +126,22 @@ namespace lum {
 		instance.m_Transform = transform;
 
 		m_GeometryPass.SubmitInstance(instance);
+
+		static OwningPtr<CTransform> rectangleTransform = OwningPtr<CTransform>::Create();
+		static OwningPtr<CMaterialInstance> rectangleMaterial = OwningPtr<CMaterialInstance>::Create();
+		static bool rectangleTransformInitialized = false;
+		if (!rectangleTransformInitialized) {
+			rectangleTransform().m_Position = Vector3(1.5f, 0.0f, -1.4f);
+			rectangleTransform().m_WorldMatrix = Translate(Matrix4(1.0f), rectangleTransform().m_Position);
+			rectangleTransformInitialized = true;
+		}
+
+		rectangleMaterial().m_BaseColor = Vector3(0.0f, 1.0f, 1.0f);
+		RenderInstance rectangleInstance{};
+		rectangleInstance.m_Material = rectangleMaterial;
+		rectangleInstance.m_StaticMesh = rectangleMesh;
+		rectangleInstance.m_Transform = rectangleTransform;
+		m_GeometryPass.SubmitInstance(rectangleInstance);
 
 		// DEBUG
 

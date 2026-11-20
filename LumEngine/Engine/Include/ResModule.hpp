@@ -1,8 +1,15 @@
-//========= Copyright (C) 2025-present 3zymek, MIT License ============//
-//
-// Purpose: Resource module — GPU-side asset manager lifecycle.
-//
-//=============================================================================//
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
 //#include "Render/TextureManager.hpp"

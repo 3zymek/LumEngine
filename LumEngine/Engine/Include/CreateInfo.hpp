@@ -1,3 +1,15 @@
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
 #include "Core/CoreTypes.hpp"
@@ -20,7 +32,7 @@ namespace lum {
 
 		SafePtr<IRenderContext> m_RenderContext = nullptr;
 		SafePtr<input::IInputProvider> m_InputProvider = nullptr;
-		
+
 		//rhi::RenderBackend m_RenderingBackend;
 
 	};

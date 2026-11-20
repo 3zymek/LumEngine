@@ -116,6 +116,19 @@ namespace lum::rhi::vk {
 		pipInfo.pDepthStencilState = &depthState;
 
 		auto shaderStages = setup_shader_modules(device.m_LogicalDevice, info);
+		const bool hasInvalidShader = std::any_of(
+			shaderStages.begin(), shaderStages.end(),
+			[]( const VkPipelineShaderStageCreateInfo& stage ) { return stage.module == VK_NULL_HANDLE; }
+		);
+		if (hasInvalidShader) {
+			for (const auto& stage : shaderStages) {
+				if (stage.module != VK_NULL_HANDLE)
+					vkDestroyShaderModule( device.m_LogicalDevice, stage.module, nullptr );
+			}
+			vkDestroyPipelineLayout( device.m_LogicalDevice, pipeline.m_VkLayout, nullptr );
+			pipeline.m_VkLayout = VK_NULL_HANDLE;
+			return Result<VulkanPipeline>::Failure( "Failed to load one or more pipeline shaders." );
+		}
 		pipInfo.stageCount = shaderStages.size();
 		pipInfo.pStages = shaderStages.data();
 		

@@ -91,7 +91,6 @@ namespace lum {
 
 		void draw_instance(const RenderInstance& instance, uint32 drawIndex, rhi::CommandBuffer& cmdBuffer) noexcept;
 		void draw_mesh(const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer) noexcept;
-		void upload_model_matrix(const RenderInstance& instance) noexcept;
 
 	};
 

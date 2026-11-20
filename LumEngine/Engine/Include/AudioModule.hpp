@@ -1,8 +1,15 @@
-//========= Copyright (C) 2025-present 3zymek, MIT License ============//
-//
-// Purpose: Audio module — AHI device and audio manager lifecycle.
-//
-//=============================================================================//
+/*******************************************************/
+/* /                                                 \ */
+/*|-------------------|LumEngine|---------------------|*/
+/*|            Cross-Platform Game Engine             |*/
+/*|===================================================|*/
+/*|                    GitHub:                        |*/
+/*|       https://github.com/3zymek/LumEngine         |*/
+/*|                                                   |*/
+/*|        Copyright (c) 2025-present 3zymek          |*/
+/*|          Licensed under the MIT License           |*/
+/* \                                                 / */
+/*******************************************************/
 #pragma once
 
 #include "Ahi/Core/AhiDevice.hpp"
@@ -18,8 +25,8 @@ namespace lum {
 		OwningPtr<ahi::IAudioDevice> m_AudioDevice = nullptr;
 		AudioManager m_AudioMgr{};
 
-		void Initialize( ev::EventBus& bus );
-		void Finalize( );
+		void Initialize(ev::EventBus& bus);
+		void Finalize();
 
 	};
 

@@ -56,11 +56,11 @@ namespace lum {
 	};
 
 	enum class LUM_API ImageChannels : uint8 {
-		Native	= 0,
-		R		= 1,
-		RG		= 2,
-		RGB		= 3,
-		RGBA	= 4
+		Native = 0,
+		R = 1,
+		RG = 2,
+		RGB = 3,
+		RGBA = 4
 	};
 
 
@@ -77,10 +77,16 @@ namespace lum {
 		/* @brief Sets the project root directory for external asset resolution.
 		* @param path Absolute path to the project root.
 		*/
-		static void SetProjectRoot( Path path ) { s_ProjectRoot = path; }
+		static void SetProjectRoot(Path path) { s_ProjectRoot = path; }
+
+		/* @brief Sets the LumEngine source/content root used for bundled assets. */
+		static void SetRoot(Path path) {
+			s_InternalAssetsRoot = path / "InternalAssets";
+			s_ShaderDefineFile = path / "Engine" / "Include" / "Modules" / "Render" / "ShadersDefine.h";
+		}
 
 		/* @brief Returns the current project root path as a string. */
-		LUM_NODISCARD static String GetProjectRoot( ) { return s_ProjectRoot.ToString( ); }
+		LUM_NODISCARD static String GetProjectRoot() { return s_ProjectRoot.ToString(); }
 
 		/* @brief Loads a texture from disk.
 		* @param root           Root directory identifier.
@@ -88,14 +94,14 @@ namespace lum {
 		* @param expectedFormat Number of channels to force (1-4).
 		* @return TextureData on success, or empty on failure.
 		*/
-		LUM_NODISCARD static Result<ImageData> LoadImageFromFile( const Path& filepath, ImageChannels expectedFormat = ImageChannels::Native );
+		LUM_NODISCARD static Result<ImageData> LoadImageFromFile(const Path& filepath, ImageChannels expectedFormat = ImageChannels::Native);
 
 		/* @brief Loads a mesh from disk.
 		* @param root Root directory identifier.
 		* @param filepath Path relative to the selected root.
 		* @return Populated MeshData or empty on failure.
 		*/
-		LUM_NODISCARD static Result<MeshGeometry> LoadMeshFromFile( const Path& filepath );
+		LUM_NODISCARD static Result<MeshGeometry> LoadMeshFromFile(const Path& filepath);
 
 		/* @brief Loads a shader source file from disk.
 		* Prepends the engine shader define header automatically.
@@ -103,14 +109,14 @@ namespace lum {
 		* @param filepath Path relative to the selected root.
 		* @return Shader source as String or empty on failure.
 		*/
-		LUM_NODISCARD static Result<String> BuildShaderSource( ResourceRoot root, const Path& filepath );
+		LUM_NODISCARD static Result<String> BuildShaderSource(ResourceRoot root, const Path& filepath);
 
 		/* @brief Resolves an absolute path from a root directory and a relative filepath.
 		* @param root     Root directory identifier.
 		* @param filepath Path relative to the selected root.
 		* @return Resolved absolute path, or empty if the file does not exist.
 		*/
-		static Path ResolveResourcePath( ResourceRoot root, const Path& filepath );
+		static Path ResolveResourcePath(ResourceRoot root, const Path& filepath);
 
 	private:
 
@@ -118,14 +124,14 @@ namespace lum {
 		static inline Path s_ProjectRoot{ "" };
 
 		/* @brief Absolute path to the engine internal assets directory. */
-		static inline Path s_InternalAssetsRoot = FileSystem::CurrentPath().ParentPath( ) / "LumEngine" / "InternalAssets";
+		static inline Path s_InternalAssetsRoot = FileSystem::CurrentPath().ParentPath() / "LumEngine" / "InternalAssets";
 
 		/* @brief Path to the shared shader define header prepended to all shaders. */
-		static inline Path s_ShaderDefineFile = FileSystem::CurrentPath( ).ParentPath( ) / "LumEngine" / "Engine" / "Include" / "Modules" / "Render" / "ShadersDefine.h";
+		static inline Path s_ShaderDefineFile = FileSystem::CurrentPath().ParentPath() / "LumEngine" / "Engine" / "Include" / "Modules" / "Render" / "ShadersDefine.h";
 
-		ResourceLoader( const ResourceLoader& ) = delete;
-		ResourceLoader( ResourceLoader&& ) = delete;
-		ResourceLoader( ) = default;
+		ResourceLoader(const ResourceLoader&) = delete;
+		ResourceLoader(ResourceLoader&&) = delete;
+		ResourceLoader() = default;
 
 	};
 
