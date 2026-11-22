@@ -15,6 +15,7 @@
 #include "Core/CoreTypes.hpp"
 #include "Core/Utils/SafePtr.hpp"
 #include "Rendering/RenderingTypes.hpp"
+#include "Core/Utils/SafePtr.hpp"
 #include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
 #include "Rhi/Interfaces/Core/RhiPipeline.hpp"
 #include "Rhi/Interfaces/Core/RhiBuffer.hpp"

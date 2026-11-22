@@ -40,7 +40,7 @@ namespace lum {
 		void Initialize(const RendererContext& ctx, ev::EventBus& bus, uint32 initialWidth, uint32 initialHeight) noexcept;
 		const rhi::ImageHandle GetFrameTexture() const noexcept;
 		void SubmitInstance(const RenderInstance& instance) noexcept;
-		void SubmitCameraData(Vector3 position, Vector3 front, Vector3 up, Vector3 right) noexcept;
+		void SubmitCameraData( const CameraData& data ) noexcept;
 
 		void BeginFrame();
 		void EndFrame();

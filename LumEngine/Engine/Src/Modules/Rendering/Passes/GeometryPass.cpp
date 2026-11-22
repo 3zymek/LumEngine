@@ -32,26 +32,26 @@
 
 namespace lum {
 
-	void GeometryPass::Initialize(RendererContext& ctx, DeferredBuffer& deferredBuffer) {
+	void GeometryPass::Initialize( RendererContext& ctx, DeferredBuffer& deferredBuffer ) {
 
-		ctx.Assert();
+		ctx.Assert( );
 		m_Ctx = ctx;
 
-		m_MeshBuilder.Initialize(m_Ctx);
+		m_MeshBuilder.Initialize( m_Ctx );
 
 		m_DeferredBuffer = deferredBuffer;
 
 		{ // Material buffer
 			rhi::BufferCreateInfo info{};
 			info.m_Usage = rhi::BufferUsageFlag::ShaderStorage | rhi::BufferUsageFlag::TransferDestination;
-			info.m_BufferSize = sizeof(m_MaterialData);
-			m_MaterialUbo = m_Ctx().m_RenderDevice().CreateBuffer(info);
+			info.m_BufferSize = sizeof( m_MaterialData );
+			m_MaterialUbo = m_Ctx( ).m_RenderDevice( ).CreateBuffer( info );
 		}
 		{ // Camera buffer
 			rhi::BufferCreateInfo info{};
 			info.m_Usage = rhi::BufferUsageFlag::Uniform | rhi::BufferUsageFlag::TransferDestination;
-			info.m_BufferSize = sizeof(CameraGPU);
-			m_CameraUbo = m_Ctx().m_RenderDevice().CreateBuffer(info);
+			info.m_BufferSize = sizeof( CameraGPU );
+			m_CameraUbo = m_Ctx( ).m_RenderDevice( ).CreateBuffer( info );
 		}
 
 		{ // Resource layout
@@ -68,23 +68,23 @@ namespace lum {
 			materialBinding.m_Type = rhi::ResourceType::StorageBuffer;
 
 			rhi::ResourceLayoutCreateInfo info{};
-			info.m_Bindings.push_back(cameraBinding);
-			info.m_Bindings.push_back(materialBinding);
-			m_ResourceLayout = m_Ctx().m_RenderDevice().CreateResourceLayout(info);
+			info.m_Bindings.push_back( cameraBinding );
+			info.m_Bindings.push_back( materialBinding );
+			m_ResourceLayout = m_Ctx( ).m_RenderDevice( ).CreateResourceLayout( info );
 
 		}
 
 		{ // Geometry pipeline
 
 			rhi::PipelineCreateInfo info{};
-			info.m_Layout.m_ResourceLayouts.push_back(m_ResourceLayout);
+			info.m_Layout.m_ResourceLayouts.push_back( m_ResourceLayout );
 
 			rhi::PushConstantRange range{};
 			range.m_Offset = 0;
 			range.m_ShaderStageFlags = rhi::ShaderStageFlag::Vertex | rhi::ShaderStageFlag::Fragment;
-			range.m_Size = sizeof(DrawPushConstants);
+			range.m_Size = sizeof( DrawPushConstants );
 
-			info.m_Layout.m_PushConstantRanges.push_back(range);
+			info.m_Layout.m_PushConstantRanges.push_back( range );
 
 			// Albedo attachment
 			rhi::ColorBlendAttachment albedo{};
@@ -95,7 +95,7 @@ namespace lum {
 				albedo
 			};
 			info.m_ColorAttachmentFormats = { rhi::ImageFormat::RGBA16_FLOAT };
-			info.m_VertexInputPass = VertexLayoutConfiguration::GetStatic().GetDefaultConfiguration();
+			info.m_VertexInputPass = VertexLayoutConfiguration::GetStatic( ).GetDefaultConfiguration( );
 
 			auto& depth = info.m_DepthStencilPass;
 			depth.m_DepthTestEnabled = true;
@@ -114,7 +114,7 @@ namespace lum {
 				ResourceRoot::Internal, "Shaders/GeometryPass.vert.spv"
 			);
 			vertexShader.m_Stage = rhi::ShaderStageFlag::Vertex;
-			info.m_ShaderInfos.push_back(vertexShader);
+			info.m_ShaderInfos.push_back( vertexShader );
 
 			rhi::ShaderInfo fragmentShader{};
 			fragmentShader.m_EntryPoint = "main";
@@ -122,18 +122,18 @@ namespace lum {
 				ResourceRoot::Internal, "Shaders/GeometryPass.frag.spv"
 			);
 			fragmentShader.m_Stage = rhi::ShaderStageFlag::Fragment;
-			info.m_ShaderInfos.push_back(fragmentShader);
+			info.m_ShaderInfos.push_back( fragmentShader );
 
 			info.m_AssemblyPass.m_Topology = rhi::PrimitiveTopology::TriangleList;
 
-			m_GeometryPipeline = m_Ctx().m_RenderDevice().CreatePipeline(info);
+			m_GeometryPipeline = m_Ctx( ).m_RenderDevice( ).CreatePipeline( info );
 
 		}
 
 		{ // Resource set
 			rhi::ResourceSetCreateInfo info{};
 			info.m_Layout = m_ResourceLayout;
-			m_ResourceSet = m_Ctx().m_RenderDevice().CreateResourceSet(info);
+			m_ResourceSet = m_Ctx( ).m_RenderDevice( ).CreateResourceSet( info );
 		}
 
 		rhi::cmd::UpdateResourceSet updateRes{};
@@ -143,174 +143,176 @@ namespace lum {
 		updateCameraBuffer.m_Binding = 0;
 		updateCameraBuffer.m_BufferHandle = m_CameraUbo;
 		updateCameraBuffer.m_Offset = 0;
-		updateCameraBuffer.m_Range = sizeof(CameraGPU);
-		updateRes.m_BufferInfos.PushBack(updateCameraBuffer);
+		updateCameraBuffer.m_Range = sizeof( CameraGPU );
+		updateRes.m_BufferInfos.PushBack( updateCameraBuffer );
 
 		rhi::UpdateBufferInfo updateMaterialBuffer{};
 		updateMaterialBuffer.m_ArrayIndex = 0;
 		updateMaterialBuffer.m_Binding = 1;
 		updateMaterialBuffer.m_BufferHandle = m_MaterialUbo;
-		updateMaterialBuffer.m_Range = sizeof(m_MaterialData);
-		updateRes.m_BufferInfos.PushBack(updateMaterialBuffer);
+		updateMaterialBuffer.m_Range = sizeof( m_MaterialData );
+		updateRes.m_BufferInfos.PushBack( updateMaterialBuffer );
 
 		updateRes.m_SetHandle = m_ResourceSet;
 
 		rhi::CommandBuffer cmdBuffer{};
-		cmdBuffer.Push(updateRes);
-		m_Ctx().m_RenderDevice().SendCommandBuffer(cmdBuffer);
+		cmdBuffer.Push( updateRes );
+		m_Ctx( ).m_RenderDevice( ).SendCommandBuffer( cmdBuffer );
 
 	}
 
-	void GeometryPass::SubmitInstance(const RenderInstance& instance) {
-		if (m_PendingInstances.Size() >= m_PendingInstances.Capacity()) {
-			LUM_LOG_WARN("Max draw calls per frame limit reached");
+	void GeometryPass::SubmitInstance( const RenderInstance& instance ) {
+		if (m_PendingInstances.Size( ) >= m_PendingInstances.Capacity( )) {
+			LUM_LOG_WARN( "Max draw calls per frame limit reached" );
 			return;
 		}
-		m_PendingInstances.PushBack(instance);
+		m_PendingInstances.PushBack( instance );
 	}
 
-	void GeometryPass::SubmitCameraData(Vector3 pos, Vector3 front, Vector3 up, Vector3 right) {
+	void GeometryPass::SubmitCameraData( const CameraData& data ) {
 
-		m_PendingCamera.m_View = LookAt(pos, pos + front, up);
-		rhi::Extent2D swapchainExtent = m_Ctx().m_RenderDevice().GetSwapchainExtent();
+		m_PendingCamera.m_View = LookAt( data.m_Position, data.m_Position + data.m_Front, data.m_Up );
+		rhi::Extent2D swapchainExtent = m_Ctx( ).m_RenderDevice( ).GetSwapchainExtent( );
 		m_PendingCamera.m_Projection = Perspective(
-			Radians(45.0f),
-			swapchainExtent.m_Width / swapchainExtent.m_Height,
+			Radians( data.m_Fov ),
+			static_cast<float64>(swapchainExtent.m_Width) / static_cast<float64>(swapchainExtent.m_Height),
 			0.01f,
 			10000.0f
 		);
-		m_PendingCamera.m_InvertedProjection = Inverse(m_PendingCamera.m_Projection);
-		m_PendingCamera.m_Position = Vector4(pos.m_X, pos.m_Y, pos.m_Z, 0.0f);
+		m_PendingCamera.m_InvertedProjection = Inverse( m_PendingCamera.m_Projection );
+
+		auto& pos = data.m_Position;
+		m_PendingCamera.m_Position = Vector4( pos.m_X, pos.m_Y, pos.m_Z, 0.0f );
 
 	}
 
-	void GeometryPass::DrawScene() {
+	void GeometryPass::DrawScene( ) {
 
 		rhi::CommandBuffer buffer{};
 
 		rhi::cmd::UpdateBuffer updateBuffer{};
 		updateBuffer.m_Buffer = m_CameraUbo;
-		updateBuffer.m_DataSize = sizeof(CameraGPU);
+		updateBuffer.m_DataSize = sizeof( CameraGPU );
 		updateBuffer.m_NewData = &m_PendingCamera;
 		updateBuffer.m_Offset = 0;
-		buffer.Push(updateBuffer);
+		buffer.Push( updateBuffer );
 
-		m_MaterialIndices.clear();
-		m_MaterialData[0] = MaterialGPU{};
+		m_MaterialIndices.clear( );
+		m_MaterialData[ 0 ] = MaterialGPU{};
 		uint32 nextMaterialIndex = 1;
 		for (auto& instance : m_PendingInstances) {
 			if (!instance.m_Material)
 				continue;
-			const CMaterialInstance* material = instance.m_Material.Ptr();
-			if (m_MaterialIndices.contains(material))
+			const CMaterialInstance* material = instance.m_Material.Ptr( );
+			if (m_MaterialIndices.contains( material ))
 				continue;
-			if (nextMaterialIndex >= m_MaterialData.size()) {
-				LUM_LOG_WARN("GeometryPass: Material capacity reached; using default material for additional instances.");
+			if (nextMaterialIndex >= m_MaterialData.size( )) {
+				LUM_LOG_WARN( "GeometryPass: Material capacity reached; using default material for additional instances." );
 				continue;
 			}
-			m_MaterialIndices.emplace(material, nextMaterialIndex);
-			auto& gpuMaterial = m_MaterialData[nextMaterialIndex++];
-			gpuMaterial.m_BaseColor = Vector4(material->m_BaseColor.m_X, material->m_BaseColor.m_Y, material->m_BaseColor.m_Z, 1.0f);
+			m_MaterialIndices.emplace( material, nextMaterialIndex );
+			auto& gpuMaterial = m_MaterialData[ nextMaterialIndex++ ];
+			gpuMaterial.m_BaseColor = Vector4( material->m_BaseColor.m_X, material->m_BaseColor.m_Y, material->m_BaseColor.m_Z, 1.0f );
 			gpuMaterial.m_Roughness = material->m_Roughness;
 			gpuMaterial.m_Metalness = material->m_Metalness;
 		}
 
 		rhi::cmd::UpdateBuffer updateMaterials{};
 		updateMaterials.m_Buffer = m_MaterialUbo;
-		updateMaterials.m_DataSize = sizeof(m_MaterialData);
-		updateMaterials.m_NewData = m_MaterialData.data();
-		buffer.Push(updateMaterials);
+		updateMaterials.m_DataSize = sizeof( m_MaterialData );
+		updateMaterials.m_NewData = m_MaterialData.data( );
+		buffer.Push( updateMaterials );
 
 		rhi::RenderingAttachment colorAttachment{};
-		colorAttachment.m_Image = m_DeferredBuffer().GetAttachment(DeferredAttachment::Albedo);
+		colorAttachment.m_Image = m_DeferredBuffer( ).GetAttachment( DeferredAttachment::Albedo );
 		colorAttachment.m_StoreOp = rhi::StoreOp::Store;
 		colorAttachment.m_LoadOp = rhi::LoadOp::Clear;
-		colorAttachment.m_ClearValue = colorAttachment.m_ClearValue.Color({ 0.0f, 0.0f, 0.0f, 0.0f });
+		colorAttachment.m_ClearValue = colorAttachment.m_ClearValue.Color( { 0.0f, 0.0f, 0.0f, 0.0f } );
 
 		rhi::RenderingAttachment depthAttachment{};
-		depthAttachment.m_Image = m_DeferredBuffer().GetAttachment(DeferredAttachment::Depth);
+		depthAttachment.m_Image = m_DeferredBuffer( ).GetAttachment( DeferredAttachment::Depth );
 		depthAttachment.m_StoreOp = rhi::StoreOp::Store;
 		depthAttachment.m_LoadOp = rhi::LoadOp::Clear;
-		depthAttachment.m_ClearValue = rhi::RenderingAttachment::ClearValue::DepthStencil(1.0f, 0);
+		depthAttachment.m_ClearValue = rhi::RenderingAttachment::ClearValue::DepthStencil( 1.0f, 0 );
 
 		rhi::cmd::BeginRendering beginRendering{};
 		beginRendering.m_LayerCount = 1;
-		beginRendering.m_ColorAttachments.PushBack(colorAttachment);
+		beginRendering.m_ColorAttachments.PushBack( colorAttachment );
 		beginRendering.m_DepthAttachment = depthAttachment;
-		beginRendering.m_RenderArea = m_Ctx().m_RenderDevice().GetSwapchainExtent();
+		beginRendering.m_RenderArea = m_Ctx( ).m_RenderDevice( ).GetSwapchainExtent( );
 
 		rhi::cmd::TransitionImage albedoAsAttachment{};
-		albedoAsAttachment.m_Image = m_DeferredBuffer().GetAttachment(DeferredAttachment::Albedo);
+		albedoAsAttachment.m_Image = m_DeferredBuffer( ).GetAttachment( DeferredAttachment::Albedo );
 		albedoAsAttachment.m_NewUse = rhi::ImageUse::ColorAttachment;
-		buffer.Push(albedoAsAttachment);
+		buffer.Push( albedoAsAttachment );
 
 		rhi::cmd::TransitionImage depthAsAttachment{};
 		depthAsAttachment.m_Image = depthAttachment.m_Image;
 		depthAsAttachment.m_NewUse = rhi::ImageUse::DepthStencilAttachment;
-		buffer.Push(depthAsAttachment);
+		buffer.Push( depthAsAttachment );
 
-		buffer.Push(beginRendering);
+		buffer.Push( beginRendering );
 
 		rhi::cmd::BindGraphicsPipeline bindPip{
 			.m_Handle = m_GeometryPipeline
 		};
-		buffer.Push(bindPip);
+		buffer.Push( bindPip );
 
 		rhi::cmd::SetScissors setScissors{};
 		rhi::cmd::SetViewport setViewport{};
-		buffer.Push(setScissors);
-		buffer.Push(setViewport);
+		buffer.Push( setScissors );
+		buffer.Push( setViewport );
 
 		uint32 drawIndex = 0;
 		for (auto& instance : m_PendingInstances) {
-			draw_instance(instance, drawIndex++, buffer);
+			draw_instance( instance, drawIndex++, buffer );
 		}
-		m_PendingInstances.Clear();
+		m_PendingInstances.Clear( );
 
-		buffer.Push(rhi::cmd::EndRendering{});
+		buffer.Push( rhi::cmd::EndRendering{} );
 
-		m_Ctx().m_RenderDevice().SendCommandBuffer(buffer);
+		m_Ctx( ).m_RenderDevice( ).SendCommandBuffer( buffer );
 
 	}
 
-	void GeometryPass::draw_instance(const RenderInstance& instance, uint32 drawIndex, rhi::CommandBuffer& cmdBuffer) noexcept {
+	void GeometryPass::draw_instance( const RenderInstance& instance, uint32 drawIndex, rhi::CommandBuffer& cmdBuffer ) noexcept {
 		rhi::cmd::BindResourceSet bindSet{ .m_SetHandle = m_ResourceSet };
-		cmdBuffer.Push(bindSet);
+		cmdBuffer.Push( bindSet );
 
-		auto& pushData = m_DrawPushConstants[drawIndex];
-		pushData.m_Model = instance.m_Transform().m_WorldMatrix;
+		auto& pushData = m_DrawPushConstants[ drawIndex ];
+		pushData.m_Model = instance.m_Transform( ).m_WorldMatrix;
 		pushData.m_MaterialIndex = 0;
 		if (instance.m_Material) {
-			auto it = m_MaterialIndices.find(&instance.m_Material());
-			if (it != m_MaterialIndices.end())
+			auto it = m_MaterialIndices.find( &instance.m_Material( ) );
+			if (it != m_MaterialIndices.end( ))
 				pushData.m_MaterialIndex = it->second;
 		}
 		rhi::cmd::PushConstants modelConstant{
 			.m_Data = &pushData,
-			.m_Size = sizeof(DrawPushConstants),
+			.m_Size = sizeof( DrawPushConstants ),
 			.m_Offset = 0,
 			.m_ShaderStageFlags = rhi::ShaderStageFlag::Vertex | rhi::ShaderStageFlag::Fragment
 		};
 
-		cmdBuffer.Push(modelConstant);
+		cmdBuffer.Push( modelConstant );
 
-		draw_mesh(instance, cmdBuffer);
+		draw_mesh( instance, cmdBuffer );
 
 	}
 
-	void GeometryPass::draw_mesh(const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer) noexcept {
+	void GeometryPass::draw_mesh( const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer ) noexcept {
 
-		const auto& renderResources = m_MeshBuilder.GetOrCreateMeshRenderResources(instance.m_StaticMesh().m_ResourceHandle);
+		const auto& renderResources = m_MeshBuilder.GetOrCreateMeshRenderResources( instance.m_StaticMesh( ).m_ResourceHandle );
 
 		rhi::cmd::BindVertexBuffers bindVertexBuffers{};
-		bindVertexBuffers.m_BufferHandles.PushBack(renderResources.m_VertexBuffer);
+		bindVertexBuffers.m_BufferHandles.PushBack( renderResources.m_VertexBuffer );
 		bindVertexBuffers.m_FirstBinding = 0;
-		cmdBuffer.Push(bindVertexBuffers);
+		cmdBuffer.Push( bindVertexBuffers );
 
 		rhi::cmd::BindElementBuffer bindElementBuffer{};
 		bindElementBuffer.m_BufferHandle = renderResources.m_ElementBuffer;
 		bindElementBuffer.m_StartingOffset = 0;
-		cmdBuffer.Push(bindElementBuffer);
+		cmdBuffer.Push( bindElementBuffer );
 
 		rhi::cmd::DrawIndexed drawIndexed{};
 		drawIndexed.m_FirstIndex = 0;
@@ -318,7 +320,7 @@ namespace lum {
 		drawIndexed.m_IndexCount = renderResources.m_IndicesCount;
 		drawIndexed.m_InstanceCount = 1;
 		drawIndexed.m_VertexOffset = 0;
-		cmdBuffer.Push(drawIndexed);
+		cmdBuffer.Push( drawIndexed );
 
 	}
 

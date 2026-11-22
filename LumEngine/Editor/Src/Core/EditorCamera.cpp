@@ -40,7 +40,13 @@ namespace lum::editor {
 		if (input::KeyPressed(Key::Space)) m_Position += worldUp * moveDistance;
 		if (input::KeyPressed(Key::LeftControl)) m_Position -= worldUp * moveDistance;
 
-		renderer.SubmitCameraData(m_Position, forward, up, right);
+		CameraData data{};
+		data.m_Position = m_Position;
+		data.m_Front = forward;
+		data.m_Right = right;
+		data.m_Up = up;
+		data.m_Fov = 60.0f;
+		renderer.SubmitCameraData(data);
 	}
 
 } // namespace lum::editor

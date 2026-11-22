@@ -37,11 +37,11 @@ namespace lum {
 
 	struct alignas(16) MaterialGPU {
 
-		Vector4 m_BaseColor = Vector4(1.0f);
+		Vector4 m_BaseColor = Vector4( 1.0f );
 		float32 m_Roughness = 0.5f;
 		float32 m_Metalness = 0.0f;
 
-		float32 _m_Pad[2]{};
+		float32 _m_Pad[ 2 ]{};
 
 	};
 
@@ -55,18 +55,18 @@ namespace lum {
 	struct alignas(16) DrawPushConstants {
 		Matrix4 m_Model{};
 		uint32 m_MaterialIndex = 0;
-		uint32 _m_Pad[3]{};
+		uint32 _m_Pad[ 3 ]{};
 	};
 
 	class GeometryPass {
 	public:
 
-		GeometryPass() = default;
+		GeometryPass( ) = default;
 
-		void Initialize(RendererContext& ctx, DeferredBuffer& deferredBuffer);
-		void SubmitInstance(const RenderInstance& instance);
-		void SubmitCameraData(Vector3 pos, Vector3 front, Vector3 up, Vector3 right);
-		void DrawScene();
+		void Initialize( RendererContext& ctx, DeferredBuffer& deferredBuffer );
+		void SubmitInstance( const RenderInstance& instance );
+		void SubmitCameraData( const CameraData& data );
+		void DrawScene( );
 
 	private:
 
@@ -89,8 +89,8 @@ namespace lum {
 		rhi::BufferHandle m_MaterialUbo{};
 		rhi::PipelineHandle m_GeometryPipeline{};
 
-		void draw_instance(const RenderInstance& instance, uint32 drawIndex, rhi::CommandBuffer& cmdBuffer) noexcept;
-		void draw_mesh(const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer) noexcept;
+		void draw_instance( const RenderInstance& instance, uint32 drawIndex, rhi::CommandBuffer& cmdBuffer ) noexcept;
+		void draw_mesh( const RenderInstance& instance, rhi::CommandBuffer& cmdBuffer ) noexcept;
 
 	};
 

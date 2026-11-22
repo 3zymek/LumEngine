@@ -15,6 +15,7 @@
 #include "Core/CoreTypes.hpp"
 #include "Core/Math/Mat4.hpp"
 #include "Core/Math/Vec4.hpp"
+#include "Core/Math/Vec3.hpp"
 #include "Core/Utils/Assert.hpp"
 #include "Core/Utils/SafePtr.hpp"
 
@@ -36,6 +37,16 @@ namespace lum {
 		void Assert() const {
 			LUM_ASSERT(m_RenderDevice, "RendererContext: IRenderDevice is nullptr");
 		}
+
+	};
+
+	struct CameraData {
+
+		Vector3 m_Position{};
+		Vector3 m_Front{};
+		Vector3 m_Up{};
+		Vector3 m_Right{};
+		float32 m_Fov = 60.0f; // In degrees
 
 	};
 

@@ -47,6 +47,8 @@ namespace lum {
 	}
 	void Engine::BeginFrame() {
 
+		m_FrameStart = Clock::now( );
+
 		if (m_Platform.m_Window.HasValue())
 			m_Platform.m_Window.Value().Update();
 
@@ -58,6 +60,20 @@ namespace lum {
 	void Engine::EndFrame() {
 
 		m_RenderModule.m_Renderer.EndFrame();
+
+		if (m_MaxFps <= 0) {
+
+			const auto frameTime = Clock::now( ) - m_FrameStart;
+			const auto targetFrameTime = std::chrono::duration<double>( 1.0 / m_MaxFps );
+
+			if (frameTime < targetFrameTime) {
+				std::this_thread::sleep_until( m_FrameStart + targetFrameTime );
+			}
+
+		}
+
+		m_DeltaTime = std::chrono::duration<float64>( Clock::now( ) - m_LastDelta ).count( );
+		m_LastDelta = Clock::now( );
 
 	}
 	void Engine::Tick() {
@@ -78,16 +94,8 @@ namespace lum {
 
 	}
 
-	float64 Engine::GetDeltaTime() {
-		using clock = std::chrono::high_resolution_clock;
-
-		static auto s_LastTime = clock::now();
-		auto currentTime = clock::now();
-
-		std::chrono::duration<float64> delta = currentTime - s_LastTime;
-		s_LastTime = currentTime;
-
-		return delta.count();
+	float64 Engine::GetDeltaTime() const noexcept {
+		return m_DeltaTime;
 	}
 
 } // namespace lum

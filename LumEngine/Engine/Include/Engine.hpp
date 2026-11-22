@@ -12,6 +12,8 @@
 /*******************************************************/
 #pragma once
 
+#include <chrono>
+
 #include "AudioModule.hpp"
 #include "CreateInfo.hpp"
 #include "PlatformModule.hpp"
@@ -28,22 +30,30 @@ namespace lum {
 	class LUM_API Engine {
 	public:
 
-		void Initialize(EngineCreateInfo& info);
-		void SetScene(const Path& path) { m_SceneModule.m_SceneMgr.SetScene(path); }
-		void BeginFrame();
-		void EndFrame();
-		void Tick();
-		void Finalize();
-		bool Running() { return m_Platform.m_Window.Value().IsOpen(); }
-		float64 GetDeltaTime();
+		void Initialize( EngineCreateInfo& info );
+		void SetScene( const Path& path ) { m_SceneModule.m_SceneMgr.SetScene( path ); }
+		void BeginFrame( );
+		void EndFrame( );
+		void Tick( );
+		void Finalize( );
+		bool Running( ) { return m_Platform.m_Window.Value( ).IsOpen( ); }
+		float64 GetDeltaTime( ) const noexcept;
 
-		ev::EventBus& EventBus() { return m_EventBus; }
-		AudioModule& Audio() { return m_AudioModule; }
-		PlatformModule& Platform() { return m_Platform; }
-		RenderModule& Render() { return m_RenderModule; }
-		SceneModule& Scene() { return m_SceneModule; }
+		ev::EventBus& EventBus( ) { return m_EventBus; }
+		AudioModule& Audio( ) { return m_AudioModule; }
+		PlatformModule& Platform( ) { return m_Platform; }
+		RenderModule& Render( ) { return m_RenderModule; }
+		SceneModule& Scene( ) { return m_SceneModule; }
 
 	private:
+
+		using Clock = std::chrono::steady_clock;
+
+		Clock::time_point m_FrameStart{};
+		Clock::time_point m_LastDelta{};
+
+		float64 m_DeltaTime = 0.0;
+		uint32 m_MaxFps = 120;
 
 		// Initialization order
 		ev::EventBus	m_EventBus{};

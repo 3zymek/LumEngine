@@ -14,6 +14,7 @@
 // Header impl file
 #include "Rendering/Passes/LightPass.hpp"
 
+#include "Core/Utils/SafePtr.hpp"
 #include "Core/Utils/ResourceLoader.hpp"
 #include "Rhi/Interfaces/Core/RhiDevice.hpp"
 #include "Rhi/Interfaces/Core/RhiPipeline.hpp"
@@ -24,7 +25,7 @@ namespace lum {
 
     void LightPass::Initialize(RendererContext& ctx, DeferredBuffer& buffer) {
 
-        ctx().Assert();
+        ctx.Assert();
         m_Ctx = ctx;
 
         m_DeferredBuffer = buffer;
@@ -40,8 +41,12 @@ namespace lum {
 
         }
         { // Lights pipeline
+
+            rhi::PipelineLayout layout{};
+            layout.m_ResourceLayouts.push_back( m_ResourceLayout );
+
             rhi::PipelineCreateInfo info{};
-            info.m_Layout = m_ResourceLayout;
+            info.m_Layout = layout;
 
             rhi::ShaderInfo vertexInfo{};
             vertexInfo.m_EntryPoint = "main";

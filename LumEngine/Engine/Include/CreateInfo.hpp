@@ -25,13 +25,16 @@ namespace lum {
 	struct EngineCreateInfo {
 
 		Path m_ProjectDir{};
-		String m_ProjectName = "m_YLumenProject";
-		String m_ApplicationName = "m_YLumenApp";
+		String m_ProjectName = "MyLumenProject";
+		String m_ApplicationName = "MyLumenApp";
 
 		WindowCreateInfo m_Window{};
 
 		SafePtr<IRenderContext> m_RenderContext = nullptr;
 		SafePtr<input::IInputProvider> m_InputProvider = nullptr;
+
+		//bool m_Vsync = false;
+		uint32 m_MaxFps = 60;
 
 		//rhi::RenderBackend m_RenderingBackend;
 
