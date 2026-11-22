@@ -29,12 +29,13 @@ namespace lum::rhi {
 
 	struct Command {};
 	enum class CommandType : uint8 {
-		BindPipeline = 0U,
+		DrawIndexed = 0U,
+		Draw,
+		BindPipeline,
 		BindTexture,
 		BindVertexBuffers,
 		BindElementBuffer,
 		BindResourceSet,
-		DrawIndexed,
 		SetViewport,
 		SetScissors,
 		UpdateResourceSet,

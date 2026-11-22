@@ -59,6 +59,28 @@ namespace lum::rhi::cmd {
 		int32 m_VertexOffset = 0;
 	};
 
+	/* @brief Command for issuing a non-indexed draw call.
+	* Renders primitives from vertices in the currently bound vertex buffers.
+	* Supports instanced rendering and selecting specific vertex and instance ranges.
+	*/
+	struct LUM_API Draw : Command {
+
+		LUM_RHI_CMD_TYPE( CommandType::Draw );
+
+		/* @brief Number of vertices to render. */
+		uint32 m_VertexCount = 0;
+
+		/* @brief Number of instances to render. */
+		uint32 m_InstanceCount = 0;
+
+		/* @brief Index of the first vertex to render. */
+		uint32 m_FirstVertex = 0;
+
+		/* @brief Index of the first instance to render. */
+		uint32 m_FirstInstance = 0;
+
+	};
+
 	/* @brief Command for binding a graphics pipeline.
 	* Sets the graphics pipeline used by subsequent rendering commands.
 	*/

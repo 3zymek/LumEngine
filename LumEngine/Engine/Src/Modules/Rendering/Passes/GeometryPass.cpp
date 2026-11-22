@@ -188,40 +188,10 @@ namespace lum {
 
 	void GeometryPass::DrawScene( ) {
 
-		rhi::CommandBuffer buffer{};
+		rhi::CommandBuffer cmdBuffer{};
 
-		rhi::cmd::UpdateBuffer updateBuffer{};
-		updateBuffer.m_Buffer = m_CameraUbo;
-		updateBuffer.m_DataSize = sizeof( CameraGPU );
-		updateBuffer.m_NewData = &m_PendingCamera;
-		updateBuffer.m_Offset = 0;
-		buffer.Push( updateBuffer );
-
-		m_MaterialIndices.clear( );
-		m_MaterialData[ 0 ] = MaterialGPU{};
-		uint32 nextMaterialIndex = 1;
-		for (auto& instance : m_PendingInstances) {
-			if (!instance.m_Material)
-				continue;
-			const CMaterialInstance* material = instance.m_Material.Ptr( );
-			if (m_MaterialIndices.contains( material ))
-				continue;
-			if (nextMaterialIndex >= m_MaterialData.size( )) {
-				LUM_LOG_WARN( "GeometryPass: Material capacity reached; using default material for additional instances." );
-				continue;
-			}
-			m_MaterialIndices.emplace( material, nextMaterialIndex );
-			auto& gpuMaterial = m_MaterialData[ nextMaterialIndex++ ];
-			gpuMaterial.m_BaseColor = Vector4( material->m_BaseColor.m_X, material->m_BaseColor.m_Y, material->m_BaseColor.m_Z, 1.0f );
-			gpuMaterial.m_Roughness = material->m_Roughness;
-			gpuMaterial.m_Metalness = material->m_Metalness;
-		}
-
-		rhi::cmd::UpdateBuffer updateMaterials{};
-		updateMaterials.m_Buffer = m_MaterialUbo;
-		updateMaterials.m_DataSize = sizeof( m_MaterialData );
-		updateMaterials.m_NewData = m_MaterialData.data( );
-		buffer.Push( updateMaterials );
+		send_camera( cmdBuffer );
+		send_materials( cmdBuffer );
 
 		rhi::RenderingAttachment colorAttachment{};
 		colorAttachment.m_Image = m_DeferredBuffer( ).GetAttachment( DeferredAttachment::Albedo );
@@ -244,34 +214,32 @@ namespace lum {
 		rhi::cmd::TransitionImage albedoAsAttachment{};
 		albedoAsAttachment.m_Image = m_DeferredBuffer( ).GetAttachment( DeferredAttachment::Albedo );
 		albedoAsAttachment.m_NewUse = rhi::ImageUse::ColorAttachment;
-		buffer.Push( albedoAsAttachment );
+		cmdBuffer.Push( albedoAsAttachment );
 
 		rhi::cmd::TransitionImage depthAsAttachment{};
 		depthAsAttachment.m_Image = depthAttachment.m_Image;
 		depthAsAttachment.m_NewUse = rhi::ImageUse::DepthStencilAttachment;
-		buffer.Push( depthAsAttachment );
+		cmdBuffer.Push( depthAsAttachment );
 
-		buffer.Push( beginRendering );
+		cmdBuffer.Push( beginRendering );
 
 		rhi::cmd::BindGraphicsPipeline bindPip{
 			.m_Handle = m_GeometryPipeline
 		};
-		buffer.Push( bindPip );
+		cmdBuffer.Push( bindPip );
 
-		rhi::cmd::SetScissors setScissors{};
-		rhi::cmd::SetViewport setViewport{};
-		buffer.Push( setScissors );
-		buffer.Push( setViewport );
+		cmdBuffer.Push( rhi::cmd::SetScissors{} );
+		cmdBuffer.Push( rhi::cmd::SetViewport{} );
 
 		uint32 drawIndex = 0;
 		for (auto& instance : m_PendingInstances) {
-			draw_instance( instance, drawIndex++, buffer );
+			draw_instance( instance, drawIndex++, cmdBuffer );
 		}
 		m_PendingInstances.Clear( );
 
-		buffer.Push( rhi::cmd::EndRendering{} );
+		cmdBuffer.Push( rhi::cmd::EndRendering{} );
 
-		m_Ctx( ).m_RenderDevice( ).SendCommandBuffer( buffer );
+		m_Ctx( ).m_RenderDevice( ).SendCommandBuffer( cmdBuffer );
 
 	}
 
@@ -321,6 +289,46 @@ namespace lum {
 		drawIndexed.m_InstanceCount = 1;
 		drawIndexed.m_VertexOffset = 0;
 		cmdBuffer.Push( drawIndexed );
+
+	}
+
+	void GeometryPass::send_materials( rhi::CommandBuffer& cmdBuffer ) noexcept {
+
+		m_MaterialIndices.clear( );
+		m_MaterialData[ 0 ] = MaterialGPU{};
+		uint32 nextMaterialIndex = 1;
+		for (auto& instance : m_PendingInstances) {
+			if (!instance.m_Material)
+				continue;
+			const CMaterialInstance* material = instance.m_Material.Ptr( );
+			if (m_MaterialIndices.contains( material ))
+				continue;
+			if (nextMaterialIndex >= m_MaterialData.size( )) {
+				LUM_LOG_WARN( "GeometryPass: Material capacity reached; using default material for additional instances." );
+				continue;
+			}
+			m_MaterialIndices.emplace( material, nextMaterialIndex );
+			auto& gpuMaterial = m_MaterialData[ nextMaterialIndex++ ];
+			gpuMaterial.m_BaseColor = Vector4( material->m_BaseColor.m_X, material->m_BaseColor.m_Y, material->m_BaseColor.m_Z, 1.0f );
+			gpuMaterial.m_Roughness = material->m_Roughness;
+			gpuMaterial.m_Metalness = material->m_Metalness;
+		}
+
+		rhi::cmd::UpdateBuffer updateMaterials{};
+		updateMaterials.m_Buffer = m_MaterialUbo;
+		updateMaterials.m_DataSize = sizeof( m_MaterialData );
+		updateMaterials.m_NewData = m_MaterialData.data( );
+		cmdBuffer.Push( updateMaterials );
+
+	}
+	void GeometryPass::send_camera( rhi::CommandBuffer& cmdBuffer ) noexcept {
+
+		rhi::cmd::UpdateBuffer updateBuffer{};
+		updateBuffer.m_Buffer = m_CameraUbo;
+		updateBuffer.m_DataSize = sizeof( CameraGPU );
+		updateBuffer.m_NewData = &m_PendingCamera;
+		updateBuffer.m_Offset = 0;
+		cmdBuffer.Push( updateBuffer );
 
 	}
 

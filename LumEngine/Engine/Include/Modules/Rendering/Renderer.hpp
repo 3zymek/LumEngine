@@ -23,6 +23,7 @@
 #include "Rhi/Interfaces/Core/RhiResourceSet.hpp"
 #include "Rhi/Interfaces/Core/RhiSampler.hpp"
 #include "Rendering/Passes/GeometryPass.hpp"
+#include "Rendering/Passes/LightPass.hpp"
 #include "Rendering/DeferredBuffer.hpp"
 #include "Rhi/RhiTypes.hpp"
 
@@ -51,6 +52,7 @@ namespace lum {
 
 		DeferredBuffer m_DeferredBuffer{};
 		GeometryPass m_GeometryPass{};
+		LightPass m_LightPass{};
 
 		struct ScreenQuad {
 

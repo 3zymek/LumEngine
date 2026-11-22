@@ -22,6 +22,7 @@ namespace lum {
 	enum class DeferredAttachment {
 		Albedo,
 		Normal,
+		Lit,
 		Depth
 	};
 
@@ -35,6 +36,7 @@ namespace lum {
 
 		rhi::ImageHandle m_AlbedoAttachment{};
 		rhi::ImageHandle m_DepthAttachment{};
+		rhi::ImageHandle m_LitAttachment{};
 
 		void create_assets( SafePtr<rhi::IRenderDevice> renderDevice, rhi::Extent2D extent );
 

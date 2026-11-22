@@ -46,14 +46,16 @@ namespace lum {
 		m_DeferredBuffer.RecreatePrimitives( m_Ctx.m_RenderDevice, swapchainExt );
 
 		m_GeometryPass.Initialize( m_Ctx, m_DeferredBuffer );
+		m_LightPass.Initialize( m_Ctx, m_DeferredBuffer );
 
 		rhi::CommandBuffer initialCmdBuffer{};
 
 		bus.SubscribePermanently<EWindowResized>(
 			[ & ]( const EWindowResized& ev ) {
 				rhi::CommandBuffer buffer{};
-				this->create_screen_quad_primitives( ev.m_Width, ev.m_Height, buffer );
 				m_DeferredBuffer.RecreatePrimitives( m_Ctx.m_RenderDevice, { ev.m_Width, ev.m_Height } );
+				m_LightPass.RefreshResources( );
+				this->create_screen_quad_primitives( ev.m_Width, ev.m_Height, buffer );
 				m_Ctx.m_RenderDevice( ).SendCommandBuffer( buffer );
 			}
 		);
@@ -67,7 +69,7 @@ namespace lum {
 	}
 
 	const rhi::ImageHandle Renderer::GetFrameTexture( ) const noexcept {
-		return m_DeferredBuffer.GetAttachment( DeferredAttachment::Albedo );
+		return m_DeferredBuffer.GetAttachment( DeferredAttachment::Lit );
 	}
 
 	void Renderer::SubmitInstance( const RenderInstance& instance ) noexcept {
@@ -78,6 +80,7 @@ namespace lum {
 
 	void Renderer::SubmitCameraData( const CameraData& data ) noexcept {
 		m_GeometryPass.SubmitCameraData( data );
+		m_LightPass.SubmitCameraData( data );
 	}
 
 	void Renderer::BeginFrame( ) {
@@ -146,6 +149,7 @@ namespace lum {
 		// DEBUG
 
 		m_GeometryPass.DrawScene( );
+		m_LightPass.DrawScene( );
 
 		rhi::CommandBuffer cmdBuffer{};
 
@@ -166,7 +170,7 @@ namespace lum {
 		cmdBuffer.Push( swapchainAsAttachment );
 
 		rhi::cmd::TransitionImage sampledAlbedo{};
-		sampledAlbedo.m_Image = m_DeferredBuffer.GetAttachment( DeferredAttachment::Albedo );
+		sampledAlbedo.m_Image = m_DeferredBuffer.GetAttachment( DeferredAttachment::Lit);
 		sampledAlbedo.m_NewUse = rhi::ImageUse::Sampled;
 		sampledAlbedo.m_ShaderStages = rhi::ShaderStageFlag::Fragment;
 		cmdBuffer.Push( sampledAlbedo );
@@ -271,7 +275,7 @@ namespace lum {
 			rhi::UpdateImageInfo imgInfo{};
 			imgInfo.m_ArrayIndex = 0;
 			imgInfo.m_Binding = 0;
-			imgInfo.m_ImageHandle = m_DeferredBuffer.GetAttachment( DeferredAttachment::Albedo );
+			imgInfo.m_ImageHandle = m_DeferredBuffer.GetAttachment( DeferredAttachment::Lit );
 			imgInfo.m_SamplerHandle = m_ScreenQuad.m_FrameSampler;
 
 			rhi::cmd::UpdateResourceSet setInfo{};

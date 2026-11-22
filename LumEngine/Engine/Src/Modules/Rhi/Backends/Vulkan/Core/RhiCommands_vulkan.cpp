@@ -23,6 +23,29 @@ namespace lum::rhi::vk {
 
 	void VulkanDevice::bind_commands_implementations( ) noexcept {
 
+		m_CommandProcessor.RegisterCommandCall<cmd::Draw>(
+			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::Draw& cmd ) {
+
+				LUM_ASSERT( m_RenderingActive, "Draw: Rendering must be active before issuing a draw (commandBufferNull={}).", static_cast<uint32>(vkCmdBuffer == VK_NULL_HANDLE) );
+
+				if (vkCmdBuffer == VK_NULL_HANDLE ||
+					cmd.m_VertexCount == 0 ||
+					cmd.m_InstanceCount == 0) {
+					LUM_LOG_WARN( "Draw: Skipping draw; commandBufferNull={}, vertexCount={}, instanceCount={}, firstVertex={}, firstInstance={}.", static_cast<uint32>(vkCmdBuffer == VK_NULL_HANDLE), cmd.m_VertexCount, cmd.m_InstanceCount, cmd.m_FirstVertex, cmd.m_FirstInstance );
+					return;
+				}
+
+				vkCmdDraw(
+					vkCmdBuffer,
+					cmd.m_VertexCount,
+					cmd.m_InstanceCount,
+					cmd.m_FirstVertex,
+					cmd.m_FirstInstance
+				);
+
+			}
+		);
+
 		m_CommandProcessor.RegisterCommandCall<cmd::DrawIndexed>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::DrawIndexed& cmd ) {
 

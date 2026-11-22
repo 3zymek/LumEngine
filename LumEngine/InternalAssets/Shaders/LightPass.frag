@@ -221,7 +221,7 @@ void CalculateSpotLights(inout vec3 Lo, in FLightningContext ctx){
 
 }
 */
-void CalculateDirectionalLight( inout vec3 Lo, in LightningContext ctx ){
+void CalculateDirectionalLight( inout vec3 Lo, in LightningContext ctx ) {
 
 	//float shadow = CalculateShadow(ctx);
 	vec3 L = normalize(-u_DirectionalLight.m_Direction.xyz);
@@ -252,20 +252,20 @@ void main( ) {
 	vec3 fragPos = worldPos.xyz;
 
 	vec3 lo = vec3(0.0);
-	vec3 fresnel = mix(vec3(0.03), albedo, 1.0 /* <- IN FUTURE METALNESS */);
+	vec3 f0 = mix(vec3(0.03), albedo, 1.0 /* <- IN FUTURE METALNESS */);
 
 	LightningContext context;
 	context.m_Albedo = albedo;
 	context.m_N = vec3(0.0, 0.0, 1.0);
 	context.m_V = normalize(u_CameraData.m_Position.xyz - fragPos);
-	context.m_F0 = fresnel;
+	context.m_F0 = f0;
 	context.m_Roughness = 0.5;
 	context.m_Metalness = 0.0;
 	context.m_FragPos = fragPos;
 
 	CalculateDirectionalLight(lo, context);
 
-	o_Color = vec4(lo, 1.0);
+	o_Color = vec4(lo, 1.0); 
 
 /*
 	vec4 albedoTex = texture(gAlbedo, fUV);
