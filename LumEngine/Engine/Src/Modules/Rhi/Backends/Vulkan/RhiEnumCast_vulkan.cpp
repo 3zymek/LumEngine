@@ -377,7 +377,6 @@ namespace lum::rhi::vk {
 	auto ToVk( ResourceType type ) noexcept -> VkDescriptorType {
 		switch (type) {
 			case ResourceType::Sampler:                return VK_DESCRIPTOR_TYPE_SAMPLER;
-			case ResourceType::CombinedImageSampler:   return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			case ResourceType::SampledImage:           return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
 			case ResourceType::StorageImage:           return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 			case ResourceType::UniformBuffer:          return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;

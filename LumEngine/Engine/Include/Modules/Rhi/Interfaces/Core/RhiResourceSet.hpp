@@ -33,7 +33,6 @@ namespace lum::rhi {
 
 	enum class ResourceType : uint8 {
 		Sampler = 0U,
-		CombinedImageSampler,
 		SampledImage,
 		StorageImage,
 		UniformBuffer,

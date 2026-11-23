@@ -47,9 +47,6 @@ namespace lum::rhi {
     */
     struct LUM_API UpdateImageInfo {
 
-        /* @brief Handle of the sampler to associate with the image. */
-        SamplerHandle m_SamplerHandle{};
-
         /* @brief Handle of the image to bind. */
         ImageHandle m_ImageHandle{};
 
@@ -57,6 +54,16 @@ namespace lum::rhi {
         uint32 m_ArrayIndex = 0;
 
         /* @brief Descriptor binding index. */
+        uint32 m_Binding = 0;
+
+    };
+
+    struct LUM_API UpdateSamplerInfo {
+
+        SamplerHandle m_SamplerHandle{};
+        
+        uint32 m_ArrayIndex = 0;
+
         uint32 m_Binding = 0;
 
     };

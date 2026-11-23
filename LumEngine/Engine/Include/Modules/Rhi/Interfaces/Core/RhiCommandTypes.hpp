@@ -173,6 +173,10 @@ namespace lum::rhi::cmd {
 
 		/* @brief Buffer resources to associate with the resource set. (max is 4) */
 		FixedVector<UpdateBufferInfo, 4> m_BufferInfos{};
+
+		/* @brief Sampler resources to associate with the resource set. (max is 4) */
+		FixedVector<UpdateSamplerInfo, 4> m_SamplerInfos{};
+
 	};
 
 	/* @brief Command for binding a resource set.

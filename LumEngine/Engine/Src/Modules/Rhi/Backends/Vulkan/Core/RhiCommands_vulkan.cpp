@@ -267,41 +267,135 @@ namespace lum::rhi::vk {
 		m_CommandProcessor.RegisterCommandCall<cmd::UpdateResourceSet>(
 			[ this ]( VkCommandBuffer vkCmdBuffer, const cmd::UpdateResourceSet& cmd ) {
 
-				LUM_ASSERT( m_LogicalDevice != VK_NULL_HANDLE, "UpdateResourceSet: Cannot update set id {} because VkDevice is null.", cmd.m_SetHandle.m_Id );
-				LUM_ASSERT( m_ResourceSets.Contains( cmd.m_SetHandle ), "UpdateResourceSet: Resource set id {} generation {} does not exist.", cmd.m_SetHandle.m_Id, cmd.m_SetHandle.m_Generation );
+				// Validate the set and its layout before resolving descriptor bindings.
+				LUM_ASSERT(
+					m_LogicalDevice != VK_NULL_HANDLE,
+					"UpdateResourceSet: Cannot update set id {} because VkDevice is null.",
+					cmd.m_SetHandle.m_Id
+				);
+				LUM_ASSERT(
+					m_ResourceSets.Contains( cmd.m_SetHandle ),
+					"UpdateResourceSet: Resource set id {} generation {} does not exist.",
+					cmd.m_SetHandle.m_Id,
+					cmd.m_SetHandle.m_Generation
+				);
+
+				if (m_LogicalDevice == VK_NULL_HANDLE ||
+					!m_ResourceSets.Contains( cmd.m_SetHandle )) {
+					return;
+				}
 
 				auto& set = m_ResourceSets[ cmd.m_SetHandle ];
+				LUM_ASSERT(
+					set.m_VkResourceSet != VK_NULL_HANDLE,
+					"UpdateResourceSet: Set id {} has a null VkDescriptorSet.",
+					cmd.m_SetHandle.m_Id
+				);
+				if (set.m_VkResourceSet == VK_NULL_HANDLE) return;
+				LUM_ASSERT(
+					m_ResourceLayouts.Contains( set.m_Info.m_Layout ),
+					"UpdateResourceSet: Layout id {} generation {} for set id {} is invalid.",
+					set.m_Info.m_Layout.m_Id,
+					set.m_Info.m_Layout.m_Generation,
+					cmd.m_SetHandle.m_Id
+				);
+				if (!m_ResourceLayouts.Contains( set.m_Info.m_Layout )) {
+					return;
+				}
+
 				auto& layout = m_ResourceLayouts[ set.m_Info.m_Layout ];
 
 				std::vector<VkWriteDescriptorSet> writeSets{};
 				std::vector<VkDescriptorBufferInfo> vkBufferInfos{};
 				std::vector<VkDescriptorImageInfo> vkImageInfos{};
 
-				const auto writeCount = cmd.m_BufferInfos.Size( ) + cmd.m_ImageInfos.Size( );
+				// Descriptor writes keep pointers into these vectors until the update call.
+				const auto writeCount = cmd.m_BufferInfos.Size( ) +
+					cmd.m_ImageInfos.Size( ) + cmd.m_SamplerInfos.Size( );
 
 				writeSets.reserve( writeCount );
 				vkBufferInfos.reserve( cmd.m_BufferInfos.Size( ) );
-				vkImageInfos.reserve( cmd.m_ImageInfos.Size( ) );
+				vkImageInfos.reserve(
+					cmd.m_ImageInfos.Size( ) + cmd.m_SamplerInfos.Size( )
+				);
 
 				for (const auto& bufferInfo : cmd.m_BufferInfos) {
 
-					LUM_ASSERT( m_Buffers.Contains( bufferInfo.m_BufferHandle ), "UpdateResourceSet: Buffer id {} generation {} for binding {} array element {} does not exist.", bufferInfo.m_BufferHandle.m_Id, bufferInfo.m_BufferHandle.m_Generation, bufferInfo.m_Binding, bufferInfo.m_ArrayIndex );
+					LUM_ASSERT(
+						m_Buffers.Contains( bufferInfo.m_BufferHandle ),
+						"UpdateResourceSet: Buffer id {} generation {} for binding {} "
+						"array element {} does not exist.",
+						bufferInfo.m_BufferHandle.m_Id,
+						bufferInfo.m_BufferHandle.m_Generation,
+						bufferInfo.m_Binding,
+						bufferInfo.m_ArrayIndex
+					);
+					if (!m_Buffers.Contains( bufferInfo.m_BufferHandle )) {
+						continue;
+					}
 
 					auto& buffer = m_Buffers[ bufferInfo.m_BufferHandle ];
+					LUM_ASSERT(
+						buffer.m_VkBuffer != VK_NULL_HANDLE,
+						"UpdateResourceSet: Buffer id {} has a null VkBuffer.",
+						bufferInfo.m_BufferHandle.m_Id
+					);
+					if (buffer.m_VkBuffer == VK_NULL_HANDLE) continue;
 
 					const auto& bindings = layout.m_Info.m_Bindings;
 					auto it = std::find_if( bindings.begin( ), bindings.end( ), [ &bufferInfo ]( const auto& b ) {
 						return b.m_Binding == bufferInfo.m_Binding;
 					} );
 
-					LUM_ASSERT( it != bindings.end( ), "UpdateResourceSet: Buffer binding {} not found in ResourceSet!", bufferInfo.m_Binding );
-					LUM_ASSERT( it->m_Type == ResourceType::UniformBuffer || it->m_Type == ResourceType::StorageBuffer, "UpdateResourceSet: Buffer resource type does not match binding {}!", bufferInfo.m_Binding );
-					LUM_ASSERT( bufferInfo.m_ArrayIndex < it->m_ResourceCount, "UpdateResourceSet: Array index of Buffer {} out of bounds for binding {} (Max: {})!", bufferInfo.m_ArrayIndex, bufferInfo.m_Binding, it->m_ResourceCount );
-					LUM_ASSERT( bufferInfo.m_Offset <= buffer.m_Info.m_Size, "UpdateResourceSet: Buffer id {} binding {} offset {} exceeds buffer size {}.", bufferInfo.m_BufferHandle.m_Id, bufferInfo.m_Binding, bufferInfo.m_Offset, buffer.m_Info.m_Size );
+					LUM_ASSERT(
+						it != bindings.end( ),
+						"UpdateResourceSet: Buffer binding {} not found in resource set.",
+						bufferInfo.m_Binding
+					);
+					if (it == bindings.end( )) continue;
+					LUM_ASSERT(
+						it->m_Type == ResourceType::UniformBuffer ||
+						it->m_Type == ResourceType::StorageBuffer,
+						"UpdateResourceSet: Buffer resource type does not match binding {}.",
+						bufferInfo.m_Binding
+					);
+					if (it->m_Type != ResourceType::UniformBuffer &&
+						it->m_Type != ResourceType::StorageBuffer) continue;
+					LUM_ASSERT(
+						bufferInfo.m_ArrayIndex < it->m_ResourceCount,
+						"UpdateResourceSet: Buffer array index {} exceeds binding {} "
+						"count {}.",
+						bufferInfo.m_ArrayIndex,
+						bufferInfo.m_Binding,
+						it->m_ResourceCount
+					);
+					if (bufferInfo.m_ArrayIndex >= it->m_ResourceCount) continue;
+					LUM_ASSERT(
+						bufferInfo.m_Offset <= buffer.m_Info.m_Size,
+						"UpdateResourceSet: Buffer id {} binding {} offset {} "
+						"exceeds buffer size {}.",
+						bufferInfo.m_BufferHandle.m_Id,
+						bufferInfo.m_Binding,
+						bufferInfo.m_Offset,
+						buffer.m_Info.m_Size
+					);
+					if (bufferInfo.m_Offset > buffer.m_Info.m_Size) continue;
 
 					const VkDeviceSize range = bufferInfo.m_Range == 0 ? VK_WHOLE_SIZE : bufferInfo.m_Range;
 
-					LUM_ASSERT( range == VK_WHOLE_SIZE || range <= buffer.m_Info.m_Size - bufferInfo.m_Offset, "UpdateResourceSet: Buffer id {} binding {} range {} at offset {} exceeds buffer size {}.", bufferInfo.m_BufferHandle.m_Id, bufferInfo.m_Binding, range, bufferInfo.m_Offset, buffer.m_Info.m_Size );
+					LUM_ASSERT(
+						range == VK_WHOLE_SIZE ||
+						range <= buffer.m_Info.m_Size - bufferInfo.m_Offset,
+						"UpdateResourceSet: Buffer id {} binding {} range {} at offset {} "
+						"exceeds buffer size {}.",
+						bufferInfo.m_BufferHandle.m_Id,
+						bufferInfo.m_Binding,
+						range,
+						bufferInfo.m_Offset,
+						buffer.m_Info.m_Size
+					);
+					if (range != VK_WHOLE_SIZE &&
+						range > buffer.m_Info.m_Size - bufferInfo.m_Offset) continue;
 
 					VkDescriptorBufferInfo vkBufferInfo{};
 					vkBufferInfo.buffer = buffer.m_VkBuffer;
@@ -324,23 +418,57 @@ namespace lum::rhi::vk {
 
 				for (const auto& imageInfo : cmd.m_ImageInfos) {
 
-					LUM_ASSERT( m_Images.Contains( imageInfo.m_ImageHandle ), "UpdateResourceSet: Image id {} generation {} for binding {} array element {} does not exist.", imageInfo.m_ImageHandle.m_Id, imageInfo.m_ImageHandle.m_Generation, imageInfo.m_Binding, imageInfo.m_ArrayIndex );
+					LUM_ASSERT(
+						m_Images.Contains( imageInfo.m_ImageHandle ),
+						"UpdateResourceSet: Image id {} generation {} for binding {} "
+						"array element {} does not exist.",
+						imageInfo.m_ImageHandle.m_Id,
+						imageInfo.m_ImageHandle.m_Generation,
+						imageInfo.m_Binding,
+						imageInfo.m_ArrayIndex
+					);
+					if (!m_Images.Contains( imageInfo.m_ImageHandle )) continue;
 
 					auto& image = m_Images[ imageInfo.m_ImageHandle ];
+					LUM_ASSERT(
+						image.m_VkView != VK_NULL_HANDLE,
+						"UpdateResourceSet: Image id {} has a null VkImageView.",
+						imageInfo.m_ImageHandle.m_Id
+					);
+					if (image.m_VkView == VK_NULL_HANDLE) continue;
 
 					const auto& bindings = layout.m_Info.m_Bindings;
 					auto it = std::find_if( bindings.begin( ), bindings.end( ), [ &imageInfo ]( const auto& b ) {
 						return b.m_Binding == imageInfo.m_Binding;
 					} );
 
-					LUM_ASSERT( it != bindings.end( ), "UpdateResourceSet: Image binding {} not found in ResourceSet!", imageInfo.m_Binding );
-					LUM_ASSERT( it->m_Type == ResourceType::CombinedImageSampler || it->m_Type == ResourceType::SampledImage || it->m_Type == ResourceType::StorageImage, "UpdateResourceSet: Image resource type does not match binding {}!", imageInfo.m_Binding );
-					LUM_ASSERT( imageInfo.m_ArrayIndex < it->m_ResourceCount, "UpdateResourceSet: Array index of Image {} out of bounds for binding {} (Max: {})!", imageInfo.m_ArrayIndex, imageInfo.m_Binding, it->m_ResourceCount );
+					LUM_ASSERT(
+						it != bindings.end( ),
+						"UpdateResourceSet: Image binding {} not found in resource set.",
+						imageInfo.m_Binding
+					);
+					if (it == bindings.end( )) continue;
+					LUM_ASSERT(
+						it->m_Type == ResourceType::SampledImage ||
+						it->m_Type == ResourceType::StorageImage,
+						"UpdateResourceSet: Image resource type does not match binding {}.",
+						imageInfo.m_Binding
+					);
+					if (it->m_Type != ResourceType::SampledImage &&
+						it->m_Type != ResourceType::StorageImage) continue;
+					LUM_ASSERT(
+						imageInfo.m_ArrayIndex < it->m_ResourceCount,
+						"UpdateResourceSet: Image array index {} exceeds binding {} "
+						"count {}.",
+						imageInfo.m_ArrayIndex,
+						imageInfo.m_Binding,
+						it->m_ResourceCount
+					);
+					if (imageInfo.m_ArrayIndex >= it->m_ResourceCount) continue;
 
 					VkDescriptorImageInfo vkImageInfo{};
 					vkImageInfo.imageView = image.m_VkView;
 					switch (it->m_Type) {
-						case ResourceType::CombinedImageSampler:
 						case ResourceType::SampledImage:
 						vkImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 						break;
@@ -353,15 +481,23 @@ namespace lum::rhi::vk {
 						break;
 					}
 
-					if (it->m_Type == ResourceType::CombinedImageSampler) {
-						LUM_ASSERT( m_Samplers.Contains( imageInfo.m_SamplerHandle ), "UpdateResourceSet: Missing sampler for combined image sampler descriptor!" );
-						vkImageInfo.sampler = m_Samplers[ imageInfo.m_SamplerHandle ].m_VkSampler;
-					}
-					else if (it->m_Type == ResourceType::SampledImage) {
-						LUM_ASSERT( image.m_Info.m_CurrentLayout == ImageLayout::ShaderReadOnly, "UpdateResourceSet: Sampled image is not in shader-read-only layout!" );
+					if (it->m_Type == ResourceType::SampledImage) {
+						LUM_ASSERT(
+							image.m_Info.m_CurrentLayout == ImageLayout::ShaderReadOnly,
+							"UpdateResourceSet: Sampled image at binding {} is not in "
+							"shader-read-only layout.",
+							imageInfo.m_Binding
+						);
+						if (image.m_Info.m_CurrentLayout != ImageLayout::ShaderReadOnly) continue;
 					}
 					else if (it->m_Type == ResourceType::StorageImage) {
-						LUM_ASSERT( image.m_Info.m_CurrentLayout == ImageLayout::General, "UpdateResourceSet: Storage image is not in general layout!" );
+						LUM_ASSERT(
+							image.m_Info.m_CurrentLayout == ImageLayout::General,
+							"UpdateResourceSet: Storage image at binding {} is not in "
+							"general layout.",
+							imageInfo.m_Binding
+						);
+						if (image.m_Info.m_CurrentLayout != ImageLayout::General) continue;
 					}
 
 					vkImageInfos.push_back( vkImageInfo );
@@ -378,8 +514,83 @@ namespace lum::rhi::vk {
 					writeSets.push_back( vkInfo );
 				}
 
-				if (!writeSets.empty( ))
-					vkUpdateDescriptorSets( m_LogicalDevice, static_cast<uint32>(writeSets.size( )), writeSets.data( ), 0, nullptr );
+				for (const auto& samplerInfo : cmd.m_SamplerInfos) {
+
+					LUM_ASSERT(
+						m_Samplers.Contains( samplerInfo.m_SamplerHandle ),
+						"UpdateResourceSet: Sampler id {} generation {} for binding {} "
+						"array element {} does not exist.",
+						samplerInfo.m_SamplerHandle.m_Id,
+						samplerInfo.m_SamplerHandle.m_Generation,
+						samplerInfo.m_Binding,
+						samplerInfo.m_ArrayIndex
+					);
+					if (!m_Samplers.Contains( samplerInfo.m_SamplerHandle )) continue;
+
+					const auto& bindings = layout.m_Info.m_Bindings;
+					auto it = std::find_if(
+						bindings.begin( ), bindings.end( ),
+						[ &samplerInfo ]( const auto& binding ) {
+							return binding.m_Binding == samplerInfo.m_Binding;
+						}
+					);
+
+					LUM_ASSERT(
+						it != bindings.end( ),
+						"UpdateResourceSet: Sampler binding {} not found in resource set.",
+						samplerInfo.m_Binding
+					);
+					if (it == bindings.end( )) continue;
+					LUM_ASSERT(
+						it->m_Type == ResourceType::Sampler,
+						"UpdateResourceSet: Sampler resource type does not match "
+						"binding {}.",
+						samplerInfo.m_Binding
+					);
+					if (it->m_Type != ResourceType::Sampler) continue;
+					LUM_ASSERT(
+						samplerInfo.m_ArrayIndex < it->m_ResourceCount,
+						"UpdateResourceSet: Sampler array index {} exceeds binding {} "
+						"count {}.",
+						samplerInfo.m_ArrayIndex,
+						samplerInfo.m_Binding,
+						it->m_ResourceCount
+					);
+					if (samplerInfo.m_ArrayIndex >= it->m_ResourceCount) continue;
+
+					VkDescriptorImageInfo vkSamplerInfo{};
+					vkSamplerInfo.sampler = m_Samplers[ samplerInfo.m_SamplerHandle ].m_VkSampler;
+					LUM_ASSERT(
+						vkSamplerInfo.sampler != VK_NULL_HANDLE,
+						"UpdateResourceSet: Sampler id {} has a null VkSampler.",
+						samplerInfo.m_SamplerHandle.m_Id
+					);
+					if (vkSamplerInfo.sampler == VK_NULL_HANDLE) continue;
+
+					vkImageInfos.push_back( vkSamplerInfo );
+
+					VkWriteDescriptorSet vkInfo{};
+					vkInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+					vkInfo.dstSet = set.m_VkResourceSet;
+					vkInfo.dstBinding = samplerInfo.m_Binding;
+					vkInfo.dstArrayElement = samplerInfo.m_ArrayIndex;
+					vkInfo.descriptorCount = 1;
+					vkInfo.descriptorType = ToVk( it->m_Type );
+					vkInfo.pImageInfo = &vkImageInfos.back( );
+
+					writeSets.push_back( vkInfo );
+
+				}
+
+				if (!writeSets.empty( )) {
+					vkUpdateDescriptorSets(
+						m_LogicalDevice,
+						static_cast<uint32>(writeSets.size( )),
+						writeSets.data( ),
+						0,
+						nullptr
+					);
+				}
 
 			}
 		);
