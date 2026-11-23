@@ -337,13 +337,17 @@ namespace lum {
 
 			rhi::ShaderInfo vertexInfo{};
 			vertexInfo.m_EntryPoint = "main";
-			vertexInfo.m_Path = ResourceLoader::ResolveResourcePath(ResourceRoot::Internal, "Shaders/screen_quad.vert.spv");
+			vertexInfo.m_Path = ResourceLoader::ResolveResourcePath(
+				ResourceRoot::Internal, "Shaders/ScreenQuad.vert.spv"
+			);
 			vertexInfo.m_Stage = rhi::ShaderStageFlag::Vertex;
 			info.m_ShaderInfos.push_back(vertexInfo);
 
 			rhi::ShaderInfo fragmentInfo{};
 			fragmentInfo.m_EntryPoint = "main";
-			fragmentInfo.m_Path = ResourceLoader::ResolveResourcePath(ResourceRoot::Internal, "Shaders/screen_quad.frag.spv");
+			fragmentInfo.m_Path = ResourceLoader::ResolveResourcePath(
+				ResourceRoot::Internal, "Shaders/ScreenQuad.frag.spv"
+			);
 			fragmentInfo.m_Stage = rhi::ShaderStageFlag::Fragment;
 			info.m_ShaderInfos.push_back(fragmentInfo);
 

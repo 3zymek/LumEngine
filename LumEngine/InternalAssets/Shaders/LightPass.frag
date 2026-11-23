@@ -1,13 +1,56 @@
 #version 450 core
 layout( set = 0, binding = 1 ) uniform sampler2D u_Albedo;
 layout( set = 0, binding = 2 ) uniform sampler2D u_Depth;
+
+layout( set = 0, binding = 3, std140 ) uniform DirectionalLight {
+
+	vec4 m_Direction;
+	vec4 m_Color;
+	float m_Intensity;
+
+} u_DirectionalLight;
+
+layout( set = 0, binding = 0, std140 ) uniform CameraUniforms {
+	mat4 m_View;
+	mat4 m_Projection;
+	mat4 m_InvertedProjection;
+	vec4 m_Position;
+} u_CameraData;
+
+layout( location = 0 ) in vec2 f_UV;
+layout( location = 0 ) out vec4 o_Color;
+
+void CalculateDirectionalLight() {
+
+}
+
+void main() {
+
+	vec3 albedo = texture(u_Albedo, f_UV).rgb;
+	float depth = texture(u_Depth, f_UV).r;
+
+	// Normalized Device Coordinates
+	vec4 ndc = vec4(
+		f_UV * 2.0 - 1.0,
+		depth * 2.0 - 1.0,
+		1
+	);
+
+	vec4 viewPos = u_CameraData.m_InvertedProjection * ndc;
+	viewPos /= viewPos.w;
+	vec3 fragPos = viewPos.xyz;
+
+
+}
+
+/*
 //layout( binding = LUM_GBUFFER_ALBEDO    ) uniform sampler2D gAlbedo;
 //layout( binding = LUM_GBUFFER_NORMAL    ) uniform sampler2D gNormal;
 //layout( binding = LUM_GBUFFER_DEPTH     ) uniform sampler2D gDepth;
 //layout( binding = LUM_SHADOW_MAP        ) uniform sampler2D tShadowMap;
 //layout( binding = LUM_TEX_IRRADIANCE    ) uniform samplerCube tIrradianceMap;
 //layout( binding = LUM_TEX_PREFILTERED    ) uniform samplerCube tPrefilteredMap;
-/*
+
 struct PointLight {
 
 	vec3 m_Position;
@@ -32,7 +75,7 @@ struct SpotLight {
     float _mPad[3];
 
 };
-*/
+
 
 // SHADER ONLY
 struct LightningContext {
@@ -47,14 +90,6 @@ struct LightningContext {
 
 };
 
-layout( set = 0, binding = 0, std140 ) uniform CameraUniforms {
-	mat4 m_View;
-	mat4 m_Projection;
-	mat4 m_InvertedProjection;
-	vec4 m_Position;
-} u_CameraData;
-
-/*
 layout( set = 0, binding = 3, std430 ) readonly buffer LightBuffer {
 	
 	PointLight uPointLights[100];
@@ -63,23 +98,13 @@ layout( set = 0, binding = 3, std430 ) readonly buffer LightBuffer {
 	int uActiveSpotLights;
 
 } u_LightBuffer;
-*/
 
-layout( set = 0, binding = 3, std140 ) uniform DirectionalLight {
 
-	vec4 m_Direction;
-	vec4 m_Color;
-	float m_Intensity;
-
-} u_DirectionalLight;
-
-/*
 layout(std140, binding = LUM_UBO_LIGHTSPACE_MATRIX) uniform LightSpaceMatrix {
 
     mat4 lightSpaceMatrix;
 
 };
-*/
 
 //======================================
 // PBR
@@ -96,7 +121,7 @@ float DistributionGGX( vec3 N, vec3 H, float roughness ) {
 	float NdotH2 = NdotH * NdotH;
 
 	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-	denom = 3.141549 * denom * denom;
+	denom = 3.141592 * denom * denom;
 
 	return a2 / denom;
 
@@ -135,7 +160,7 @@ vec3 CookTorrance( vec3 N, vec3 V, vec3 L, float roughness, vec3 F0 ) {
 //======================================
 // Shadows
 //======================================
-/*
+
 float CalculateShadow( LightningContext ctx ) {
 	
 	vec3 L = normalize(-mDirDirection.xyz);
@@ -220,7 +245,7 @@ void CalculateSpotLights(inout vec3 Lo, in FLightningContext ctx){
 	}
 
 }
-*/
+
 void CalculateDirectionalLight( inout vec3 Lo, in LightningContext ctx ) {
 
 	//float shadow = CalculateShadow(ctx);
@@ -233,13 +258,10 @@ void CalculateDirectionalLight( inout vec3 Lo, in LightningContext ctx ) {
 	vec3 kD = (1.0 - kS) * (1.0 - ctx.m_Metalness);
 	vec3 specular = CookTorrance(ctx.m_N, ctx.m_V, L, ctx.m_Roughness, ctx.m_F0);
 
-	vec3 diffuse = (ctx.m_Albedo / 3.141549) * kD;
+	vec3 diffuse = (ctx.m_Albedo / 3.141592) * kD;
 	Lo += (diffuse + specular) * NdotL * u_DirectionalLight.m_Color.rgb * u_DirectionalLight.m_Intensity;
 
 }
-
-layout( location = 0 ) in vec2 f_UV;
-layout( location = 0 ) out vec4 o_Color;
 
 void main( ) {
 
@@ -252,7 +274,7 @@ void main( ) {
 	vec3 fragPos = worldPos.xyz;
 
 	vec3 lo = vec3(0.0);
-	vec3 f0 = mix(vec3(0.03), albedo, 1.0 /* <- IN FUTURE METALNESS */);
+	vec3 f0 = mix(vec3(0.03), albedo, 1.0 <- IN FUTURE METALNESS );
 
 	LightningContext context;
 	context.m_Albedo = albedo;
@@ -267,7 +289,6 @@ void main( ) {
 
 	o_Color = vec4(lo, 1.0); 
 
-/*
 	vec4 albedoTex = texture(gAlbedo, fUV);
 	vec3 albedo = albedoTex.rgb;
 	float roughness = albedoTex.a;
@@ -314,6 +335,7 @@ void main( ) {
 	Lo += diffuseIBL + specularIBL;
 
 	oFinalColor = vec4(Lo, 1.0);
-*/
+
 
 }
+*/
