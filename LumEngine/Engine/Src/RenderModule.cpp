@@ -23,12 +23,13 @@
 
 namespace lum {
 
-	void RenderModule::Initialize( const RenderModuleCreateInfo& info ) {
+	void RenderModule::Initialize(const RenderModuleCreateInfo& info) {
 
 		RendererContext ctx{};
 		ctx.m_RenderDevice = info.m_RenderDevice;
+		ctx.m_EventBus = info.m_EventBus;
 
-		m_Renderer.Initialize( ctx, info.m_EventBus.Ref(), info.m_ViewportWidth, info.m_ViewportHeight );
+		m_Renderer.Initialize(ctx, info.m_EventBus.Ref());
 		//m_RenderSys.Initialize( &m_Renderer );
 
 	}

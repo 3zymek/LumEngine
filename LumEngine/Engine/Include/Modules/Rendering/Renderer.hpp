@@ -38,10 +38,10 @@ namespace lum {
 
 		Renderer() = default;
 
-		void Initialize(const RendererContext& ctx, ev::EventBus& bus, uint32 initialWidth, uint32 initialHeight) noexcept;
+		void Initialize(const RendererContext& ctx, ev::EventBus& bus);
 		const rhi::ImageHandle GetFrameTexture() const noexcept;
 		void SubmitInstance(const RenderInstance& instance) noexcept;
-		void SubmitCameraData( const CameraData& data ) noexcept;
+		void SubmitCameraData(const CameraData& data) noexcept;
 
 		void BeginFrame();
 		void EndFrame();
@@ -80,8 +80,9 @@ namespace lum {
 
 		} m_ScreenQuad;
 
-		void create_screen_quad_primitives(uint32 width, uint32 height, rhi::CommandBuffer& cmdBuff);
+		void create_screen_quad_primitives();
 		void setup_resources(rhi::CommandBuffer& cmdBuffer);
+		void update_resource_set();
 		void create_main_pipeline();
 
 	};

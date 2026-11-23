@@ -15,42 +15,50 @@
 // Header file impl
 #include "Rendering/DeferredBuffer.hpp"
 
+#include "Rhi/Interfaces/Core/RhiDevice.hpp"
 #include "Rhi/Interfaces/Core/RhiImage.hpp"
 #include "Rhi/Interfaces/Core/RhiDevice.hpp"
 #include "Core/CoreTypes.hpp"
 
 namespace lum {
 
-	void DeferredBuffer::RecreatePrimitives( SafePtr<rhi::IRenderDevice> renderDevice, rhi::Extent2D extent ) {
-		create_assets( renderDevice, extent );
+	void DeferredBuffer::Initialize(rhi::IRenderDevice& device) {
+		m_RenderDevice = device;
+		create_assets();
 	}
 
-	rhi::ImageHandle DeferredBuffer::GetAttachment( DeferredAttachment attachment ) const noexcept {
+	void DeferredBuffer::RefreshResources() {
+		create_assets();
+	}
+
+	rhi::ImageHandle DeferredBuffer::GetAttachment(DeferredAttachment attachment) const noexcept {
 		switch (attachment) {
-			case DeferredAttachment::Albedo:
-			{
-				return m_AlbedoAttachment;
-			}
-			case DeferredAttachment::Depth:
-			{
-				return m_DepthAttachment;
-			}
-			case DeferredAttachment::Lit:
-			{
-				return m_LitAttachment;
-			}
-			default:
-			{
-				break;
-			}
+		case DeferredAttachment::Albedo:
+		{
+			return m_AlbedoAttachment;
+		}
+		case DeferredAttachment::Depth:
+		{
+			return m_DepthAttachment;
+		}
+		case DeferredAttachment::Lit:
+		{
+			return m_LitAttachment;
+		}
+		default:
+		{
+			break;
+		}
 		}
 		return m_AlbedoAttachment;
 	}
 
-	void DeferredBuffer::create_assets( SafePtr<rhi::IRenderDevice> renderDevice, rhi::Extent2D extent ) {
+	void DeferredBuffer::create_assets() {
+
+		auto extent = m_RenderDevice().GetSwapchainExtent();
 
 		{ // Albedo attachment
-			renderDevice( ).DestroyImage( m_AlbedoAttachment );
+			m_RenderDevice().DestroyImage(m_AlbedoAttachment);
 
 			rhi::ImageCreateInfo info{};
 			info.m_ArrayLayers = 1;
@@ -62,12 +70,12 @@ namespace lum {
 			info.m_ViewType = rhi::ImageViewType::Default;
 			info.m_UsageFlags = rhi::ImageUsageFlag::ColorAttachment | rhi::ImageUsageFlag::ShaderSampled;
 
-			m_AlbedoAttachment = renderDevice( ).CreateImage( info );
-			LUM_ASSERT( m_AlbedoAttachment, "Invalid albedo attachment in DeferredBuffer" );
+			m_AlbedoAttachment = m_RenderDevice().CreateImage(info);
+			LUM_ASSERT(m_AlbedoAttachment, "Invalid albedo attachment in DeferredBuffer");
 		}
 
 		{ // Depth attachment
-			renderDevice( ).DestroyImage( m_DepthAttachment );
+			m_RenderDevice().DestroyImage(m_DepthAttachment);
 
 			rhi::ImageCreateInfo info{};
 			info.m_ArrayLayers = 1;
@@ -79,12 +87,12 @@ namespace lum {
 			info.m_ViewType = rhi::ImageViewType::Default;
 			info.m_UsageFlags = rhi::ImageUsageFlag::DepthStencilAttachment | rhi::ImageUsageFlag::ShaderSampled;
 
-			m_DepthAttachment = renderDevice( ).CreateImage( info );
-			LUM_ASSERT( m_DepthAttachment, "Invalid albedo attachment in DeferredBuffer" );
+			m_DepthAttachment = m_RenderDevice().CreateImage(info);
+			LUM_ASSERT(m_DepthAttachment, "Invalid albedo attachment in DeferredBuffer");
 		}
 
 		{ // Lit attachment
-			renderDevice( ).DestroyImage( m_LitAttachment );
+			m_RenderDevice().DestroyImage(m_LitAttachment);
 
 			rhi::ImageCreateInfo info{};
 			info.m_ArrayLayers = 1;
@@ -96,11 +104,9 @@ namespace lum {
 			info.m_ViewType = rhi::ImageViewType::Default;
 			info.m_UsageFlags = rhi::ImageUsageFlag::ColorAttachment | rhi::ImageUsageFlag::ShaderSampled;
 
-			m_LitAttachment = renderDevice( ).CreateImage( info );
-			LUM_ASSERT( m_LitAttachment, "Invalid albedo attachment in DeferredBuffer" );
+			m_LitAttachment = m_RenderDevice().CreateImage(info);
+			LUM_ASSERT(m_LitAttachment, "Invalid albedo attachment in DeferredBuffer");
 		}
-
-
 	}
 
 } // namespace lum

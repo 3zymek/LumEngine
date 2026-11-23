@@ -29,10 +29,15 @@ namespace lum {
 		class IRenderDevice;
 	} // namespace rhi
 
+	namespace ev {
+		class EventBus;
+	} // namespace ev
+
 	class RendererContext {
 	public:
 
 		SafePtr<rhi::IRenderDevice> m_RenderDevice = nullptr;
+		SafePtr<ev::EventBus> m_EventBus = nullptr;
 
 		void Assert() const {
 			LUM_ASSERT(m_RenderDevice, "RendererContext: IRenderDevice is nullptr");

@@ -39,8 +39,7 @@ namespace lum {
 	class LUM_API RenderModule {
 	public:
 
-		Renderer	 m_Renderer{};
-		//render::RenderSystem m_RenderSys{};
+		Renderer m_Renderer{};
 
 		void Initialize(const RenderModuleCreateInfo& info);
 
