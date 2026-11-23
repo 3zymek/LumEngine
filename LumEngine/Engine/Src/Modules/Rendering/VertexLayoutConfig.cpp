@@ -58,7 +58,23 @@ namespace lum {
             2,
             0,
             offsetof( rhi::Vertex, m_UV ),
-            rhi::ImageFormat::RG32_FLOAT
+            rhi::ImageFormat::RGB32_FLOAT
+        } );
+
+        // Tangent
+        info.m_Attributes.push_back( {
+            3,
+            0,
+            offsetof( rhi::Vertex, m_Tangent ),
+            rhi::ImageFormat::RGB16_FLOAT
+        } );
+
+        // Tangent
+        info.m_Attributes.push_back( {
+            4,
+            0,
+            offsetof( rhi::Vertex, m_Bitangent ),
+            rhi::ImageFormat::RGB16_FLOAT
         } );
 
         return info;

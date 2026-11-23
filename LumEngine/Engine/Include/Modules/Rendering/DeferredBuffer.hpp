@@ -39,6 +39,7 @@ namespace lum {
 		rhi::ImageHandle m_AlbedoAttachment{};
 		rhi::ImageHandle m_DepthAttachment{};
 		rhi::ImageHandle m_LitAttachment{};
+		rhi::ImageHandle m_NormalAttachment{};
 
 		void create_assets();
 

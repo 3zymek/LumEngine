@@ -25,6 +25,8 @@ namespace lum::rhi {
 		Vector3 m_Position = Vector3( 0.0f, 0.0f, 0.0f );
 		Vector3 m_Normal = Vector3( 0.0f, 0.0f, 0.0f );
 		Vector2 m_UV = Vector2( 0.0f, 0.0f );
+		Vector3 m_Tangent = Vector3( 0.0f, 0.0f, 0.0f );
+		Vector3 m_Bitangent = Vector3( 0.0f, 0.0f, 0.0f );
 	};
 
 } // namespace lum::rhi
