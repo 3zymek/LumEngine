@@ -1,6 +1,6 @@
 struct VSInput {
-    [[vk::location(0)]] float3 m_Position  : POSITION;
-    [[vk::location(1)]] float2 m_UV        : TEXCOORD;
+    [[vk::location(0)]] float3 m_Position : POSITION;
+    [[vk::location(1)]] float2 m_UV : TEXCOORD;
 };
 
 struct VSOutput {
@@ -33,8 +33,8 @@ struct PSOutput {
 }
 
 PSOutput PSMain(PSInput input) {
-    
+
     VSOutput output;
-    output.m_Color = input.m_FrameTexture.Sample( input.m_FrameSampler, input.m_UV);
-    
+    output.m_Color = input.m_FrameTexture.Sample(input.m_FrameSampler, input.m_UV);
+
 }

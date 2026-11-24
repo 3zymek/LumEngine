@@ -121,10 +121,17 @@ elseif(APPLE)
     set( ASSIMP_LIB_DIR "${DYLIB_DIR}/libassimp.6.0.5.dylib" )
 endif()
 
+if(WIN32)
+    set(SLANG_LIB_DIR "${CMAKE_SOURCE_DIR}/LumEngine/External/Slang/Lib/slang-compiler.lib")
+elseif(APPLE)
+    set(SLANG_LIB_DIR "${DYLIB_DIR}/libslang-compiler.0.2026.22.1.dylib")
+endif()
+
 target_link_libraries(LumEngine PRIVATE
     ${FMOD_LIB_DIR}
     ${GLFW_LIB_DIR}
     ${ASSIMP_LIB_DIR}
+    ${SLANG_LIB_DIR}
 )
 
 # ── EDITOR ────────────────────────────────────────────────────────────────────

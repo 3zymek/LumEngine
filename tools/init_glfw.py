@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import os
 import sys
 import zipfile
 import shutil
@@ -29,28 +28,29 @@ def setup_glfw():
         zipRef.extractall(glfwDir)
 
     print("Moving GLFW...")
-    dllDir = glfwDir / "Dll"
-    if dllDir.exists():
-        if sys.platform == "darwin":
+    if sys.platform == "darwin":
 
-            macosDllDir = rootDir / "LumEngine" / "External" / "Dylib"
+        dllDir = glfwDir / "Dylib"
 
-            macosDllDir.mkdir(parents=True, exist_ok=True)
+        dstDir = rootDir / "LumEngine" / "External" / "Dylib"
+        dstDir.mkdir(parents=True, exist_ok=True)
 
-            for dllFile in dllDir.glob("*.dylib"):
-                shutil.copy2(dllFile, macosDllDir)
+        for dllFile in dllDir.glob("*.dylib"):
+            shutil.copy2(dllFile, dstDir)
 
-        elif sys.platform == "win32":
+    elif sys.platform == "win32":
+
+        dllDir = glfwDir / "Dll"
         
-            debugDir = rootDir / "build" / "Debug"
-            releaseDir = rootDir / "build" / "Release"
+        debugDir = rootDir / "build" / "Debug"
+        releaseDir = rootDir / "build" / "Release"
         
-            debugDir.mkdir(parents=True, exist_ok=True)
-            releaseDir.mkdir(parents=True, exist_ok=True)
+        debugDir.mkdir(parents=True, exist_ok=True)
+        releaseDir.mkdir(parents=True, exist_ok=True)
         
-            for dllFile in dllDir.glob("*.dll"):
-                shutil.copy2(dllFile, debugDir)
-                shutil.copy2(dllFile, releaseDir)
+        for dllFile in dllDir.glob("*.dll"):
+            shutil.copy2(dllFile, debugDir)
+            shutil.copy2(dllFile, releaseDir)
 
     print("Cleaning up...")
     if glfwZip.exists():

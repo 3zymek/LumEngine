@@ -21,6 +21,9 @@
 #include "Rendering/RenderingTypes.hpp"
 #include "ResModule.hpp"
 
+#include <slang/slang.h>
+#include <slang/slang-com-ptr.h>
+
 namespace lum {
 
 	void RenderModule::Initialize(const RenderModuleCreateInfo& info) {
@@ -31,6 +34,18 @@ namespace lum {
 
 		m_Renderer.Initialize(ctx, info.m_EventBus.Ref());
 		//m_RenderSys.Initialize( &m_Renderer );
+
+		Slang::ComPtr<slang::IGlobalSession> globalSession;
+
+		const SlangResult result =
+			slang::createGlobalSession(globalSession.writeRef());
+
+		if (result != SLANG_OK) {
+			std::cout << "Slang initialization failed!\n";
+			return;
+		}
+
+		std::cout << "Slang initialized successfully!\n";
 
 	}
 
