@@ -48,15 +48,22 @@ namespace lum {
 			albedoBinding.m_Binding = 1;
 			albedoBinding.m_ResourceCount = 1;
 			albedoBinding.m_ShaderStages = rhi::ShaderStageFlag::Fragment;
-			//albedoBinding.m_Type = rhi::ResourceType::CombinedImageSampler;
+			albedoBinding.m_Type = rhi::ResourceType::SampledImage;
 			info.m_Bindings.push_back( albedoBinding );
 
 			rhi::ResourceSetBinding depthBinding{};
 			depthBinding.m_Binding = 2;
 			depthBinding.m_ResourceCount = 1;
 			depthBinding.m_ShaderStages = rhi::ShaderStageFlag::Fragment;
-			//depthBinding.m_Type = rhi::ResourceType::CombinedImageSampler;
+			depthBinding.m_Type = rhi::ResourceType::SampledImage;
 			info.m_Bindings.push_back( depthBinding );
+
+			rhi::ResourceSetBinding samplerBinding{};
+			samplerBinding.m_Binding = 5;
+			samplerBinding.m_ResourceCount = 1;
+			samplerBinding.m_ShaderStages = rhi::ShaderStageFlag::Fragment;
+			samplerBinding.m_Type = rhi::ResourceType::Sampler;
+			info.m_Bindings.push_back( samplerBinding );
 
 			rhi::ResourceSetBinding dirLightBinding{};
 			dirLightBinding.m_Binding = 3;
@@ -232,13 +239,13 @@ namespace lum {
 	}
 
 	void LightPass::update_resource_set( rhi::CommandBuffer& cmdBuffer ) noexcept {
+
 		rhi::cmd::UpdateResourceSet update{};
 		update.m_SetHandle = m_ResourceSet;
 
 		for (const auto binding : { 1U, 2U }) {
 			rhi::UpdateImageInfo image{};
 			image.m_ImageHandle = m_DeferredBuffer( ).GetAttachment( binding == 1 ? DeferredAttachment::Albedo : DeferredAttachment::Depth );
-			//image.m_SamplerHandle = m_FrameSampler;
 			image.m_Binding = binding;
 			update.m_ImageInfos.PushBack( image );
 		}
@@ -254,7 +261,15 @@ namespace lum {
 		light.m_Range = sizeof( m_DirLight );
 		light.m_Binding = 3;
 		update.m_BufferInfos.PushBack( light );
+
+		rhi::UpdateSamplerInfo sampler{};
+		sampler.m_ArrayIndex = 0;
+		sampler.m_Binding = 5;
+		sampler.m_SamplerHandle = m_FrameSampler;
+		update.m_SamplerInfos.PushBack( sampler );
+
 		cmdBuffer.Push( update );
+
 	}
 
 }

@@ -122,7 +122,7 @@ elseif(APPLE)
 endif()
 
 if(WIN32)
-    set(SLANG_LIB_DIR "${CMAKE_SOURCE_DIR}/LumEngine/External/Slang/Lib/slang-compiler.lib")
+    set(SLANG_LIB_DIR "${CMAKE_SOURCE_DIR}/LumEngine/External/Slangc/Lib/slang-compiler.lib")
 elseif(APPLE)
     set(SLANG_LIB_DIR "${DYLIB_DIR}/libslang-compiler.0.2026.22.1.dylib")
 endif()

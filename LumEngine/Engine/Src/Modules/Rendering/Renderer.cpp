@@ -274,19 +274,27 @@ namespace lum {
 	}
 
 	void Renderer::update_resource_set( ) {
+
 		rhi::CommandBuffer cmdBuffer{};
 		{ // Assign frame image and sampler to resource set
-			rhi::UpdateImageInfo imgInfo{};
-			imgInfo.m_ArrayIndex = 0;
-			imgInfo.m_Binding = 0;
-			imgInfo.m_ImageHandle = m_DeferredBuffer.GetAttachment( DeferredAttachment::Lit );
-			//imgInfo.m_SamplerHandle = m_ScreenQuad.m_FrameSampler;
+			
+			rhi::UpdateImageInfo imageInfo{};
+			imageInfo.m_ArrayIndex = 0;
+			imageInfo.m_Binding = 0;
+			imageInfo.m_ImageHandle = m_DeferredBuffer.GetAttachment( DeferredAttachment::Lit );
+			
+			rhi::UpdateSamplerInfo samplerInfo{};
+			samplerInfo.m_ArrayIndex = 0;
+			samplerInfo.m_Binding = 1;
+			samplerInfo.m_SamplerHandle = m_ScreenQuad.m_FrameSampler;
 
 			rhi::cmd::UpdateResourceSet setInfo{};
 			setInfo.m_SetHandle = m_ScreenQuad.m_ResourceSet;
-			setInfo.m_ImageInfos.PushBack( imgInfo );
+			setInfo.m_ImageInfos.PushBack( imageInfo );
+			setInfo.m_SamplerInfos.PushBack( samplerInfo );
 
 			cmdBuffer.Push( setInfo );
+
 		}
 
 		m_Ctx.m_RenderDevice( ).SendCommandBuffer( cmdBuffer );
@@ -298,14 +306,21 @@ namespace lum {
 		{ // Resource layout
 
 			// Binding for screen image
-			rhi::ResourceSetBinding binding{};
-			binding.m_Binding = 0;
-			binding.m_ResourceCount = 1;
-			binding.m_ShaderStages = rhi::ShaderStageFlag::Fragment;
-			//binding.m_Type = rhi::ResourceType::CombinedImageSampler;
+			rhi::ResourceSetBinding imageBinding{};
+			imageBinding.m_Binding = 0;
+			imageBinding.m_ResourceCount = 1;
+			imageBinding.m_ShaderStages = rhi::ShaderStageFlag::Fragment;
+			imageBinding.m_Type = rhi::ResourceType::SampledImage;
+
+			rhi::ResourceSetBinding samplerBinding{};
+			samplerBinding.m_Binding = 1;
+			samplerBinding.m_ResourceCount = 1;
+			samplerBinding.m_ShaderStages = rhi::ShaderStageFlag::Fragment;
+			samplerBinding.m_Type = rhi::ResourceType::Sampler;
 
 			rhi::ResourceLayoutCreateInfo info{};
-			info.m_Bindings.push_back( binding );
+			info.m_Bindings.push_back( imageBinding );
+			info.m_Bindings.push_back( samplerBinding );
 
 			m_ScreenQuad.m_ResourceLayout = m_Ctx.m_RenderDevice( ).CreateResourceLayout( info );
 

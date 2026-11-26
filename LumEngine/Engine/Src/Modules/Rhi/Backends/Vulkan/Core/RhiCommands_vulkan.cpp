@@ -481,25 +481,6 @@ namespace lum::rhi::vk {
 						break;
 					}
 
-					if (it->m_Type == ResourceType::SampledImage) {
-						LUM_ASSERT(
-							image.m_Info.m_CurrentLayout == ImageLayout::ShaderReadOnly,
-							"UpdateResourceSet: Sampled image at binding {} is not in "
-							"shader-read-only layout.",
-							imageInfo.m_Binding
-						);
-						if (image.m_Info.m_CurrentLayout != ImageLayout::ShaderReadOnly) continue;
-					}
-					else if (it->m_Type == ResourceType::StorageImage) {
-						LUM_ASSERT(
-							image.m_Info.m_CurrentLayout == ImageLayout::General,
-							"UpdateResourceSet: Storage image at binding {} is not in "
-							"general layout.",
-							imageInfo.m_Binding
-						);
-						if (image.m_Info.m_CurrentLayout != ImageLayout::General) continue;
-					}
-
 					vkImageInfos.push_back( vkImageInfo );
 
 					VkWriteDescriptorSet vkInfo{};

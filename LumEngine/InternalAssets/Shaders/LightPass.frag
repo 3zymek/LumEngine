@@ -1,6 +1,7 @@
 #version 450 core
-layout( set = 0, binding = 1 ) uniform sampler2D u_Albedo;
-layout( set = 0, binding = 2 ) uniform sampler2D u_Depth;
+layout( set = 0, binding = 1 ) uniform texture2D u_Albedo;
+layout( set = 0, binding = 2 ) uniform texture2D u_Depth;
+layout( set = 0, binding = 5 ) uniform sampler u_Sampler;
 
 layout( set = 0, binding = 3, std140 ) uniform DirectionalLight {
 
@@ -26,8 +27,8 @@ void CalculateDirectionalLight() {
 
 void main() {
 
-	vec3 albedo = texture(u_Albedo, f_UV).rgb;
-	float depth = texture(u_Depth, f_UV).r;
+	vec3 albedo = texture(sampler2D(u_Albedo, u_Sampler), f_UV).rgb;
+	float depth = texture(sampler2D(u_Depth, u_Sampler), f_UV).r;
 
 	// Normalized Device Coordinates
 	vec4 ndc = vec4(
@@ -39,6 +40,8 @@ void main() {
 	vec4 viewPos = u_CameraData.m_InvertedProjection * ndc;
 	viewPos /= viewPos.w;
 	vec3 fragPos = viewPos.xyz;
+
+	o_Color = vec4(albedo, 1.0);
 
 
 }
